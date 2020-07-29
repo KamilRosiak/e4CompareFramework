@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="FeatureDiagramModificationSet" nsURI="www.example.com/featureDiagramChangeOperation"
+    nsPrefix="FDCO">
+  <eClassifiers xsi:type="ecore:EClass" name="FeatureModelModificationSet">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="modifications" upperBound="-1"
+        eType="#//Modification" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="affectedFeatureModelName"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Modification">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="featureID" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="timeStamp" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="delta" eType="#//Delta"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="modificationType" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="precisionTime" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="referencedArtifacts" upperBound="-1"
+        eType="ecore:EClass feature-metamodel.ecore#//ArtifactReference" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Delta">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="property" lowerBound="1"
+        eType="#//DeltaProperties"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valuePriorChange" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="valueAfterChange" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="DeltaProperties">
+    <eLiterals name="FEATURE_NAME"/>
+    <eLiterals name="FEATURE_ABSTRACTION" value="1"/>
+    <eLiterals name="FEATURE_VISIBILITY" value="2"/>
+    <eLiterals name="FEATURE_VARIABILITY" value="3"/>
+    <eLiterals name="FEATURE_GROUP_VARIABILITY" value="4"/>
+    <eLiterals name="LINE_TO_PARENT_RESET" value="5"/>
+  </eClassifiers>
+</ecore:EPackage>

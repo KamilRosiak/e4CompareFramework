@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="GraphHandler" name="GraphHandler" schema="schema/GraphHandler.exsd"/>
+   <extension
+         id="id"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="graphView.e4xmi">
+      </fragment>
+   </extension>
+
+
+</plugin>

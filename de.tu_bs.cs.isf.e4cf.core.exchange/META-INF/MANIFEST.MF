@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Exchange
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.core.exchange;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.core.exchange
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.e4.core.di.annotations,
+ org.eclipse.emf.ecore.xmi,
+ de.tu_bs.cs.isf.e4cf.core,
+ de.tu_bs.cs.isf.e4cf.EMFModelLoader,
+ de.tu_bs.cs.isf.e4cf.featuremodel.model,
+ de.tu_bs.cs.isf.e4cf.featuremodel.core,
+ de.tu_bs.cs.isf.e4cf.meta_models,
+ de.tu_bs.cs.isf.e4cf.parts.project_explorer;bundle-version="1.0.0"

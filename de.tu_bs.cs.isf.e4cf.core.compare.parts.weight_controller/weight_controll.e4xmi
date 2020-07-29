@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_hcZEwIWtEeiCZPlEXUKaEQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hcZEwYWtEeiCZPlEXUKaEQ" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.information_window">
+    <elements xsi:type="basic:Part" xmi:id="_hcZEwoWtEeiCZPlEXUKaEQ" elementId="de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller/de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller.WeightControlView" label="Weight Control" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core.compare/icons/weight16.png"/>
+  </fragments>
+</fragment:ModelFragments>

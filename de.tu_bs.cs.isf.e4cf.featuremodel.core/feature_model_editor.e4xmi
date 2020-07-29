@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_Mb3GACpYEem7T9hjc-lJ9w">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_NJYTUCpYEem7T9hjc-lJ9w" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.work_window" positionInList="index:0">
+    <elements xsi:type="basic:Part" xmi:id="_UgYWECpYEem7T9hjc-lJ9w" elementId="de.tu_bs.cs.isf.e4cf.featuremodel.core" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.featuremodel.core/de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorController" label="Feature Model Editor" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.featuremodel.core/icon/feature_model_editor_16.png"/>
+  </fragments>
+</fragment:ModelFragments>

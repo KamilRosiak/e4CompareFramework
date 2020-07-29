@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Attribute_manager
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.swt,
+ org.eclipse.e4.ui.services,
+ org.eclipse.e4.ui.di,
+ org.eclipse.e4.ui.workbench,
+ de.tu_bs.cs.isf.e4cf.core.compare;bundle-version="1.0.0",
+ de.tu_bs.cs.isf.e4cf.core
+Export-Package: de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager.extension,
+ de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager.util

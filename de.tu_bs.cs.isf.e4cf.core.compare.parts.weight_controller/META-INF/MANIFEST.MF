@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Weight_controller
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: javax.inject,
+ org.eclipse.jface,
+ org.eclipse.e4.ui.di,
+ org.eclipse.e4.core.di.annotations,
+ de.tu_bs.cs.isf.e4cf.core.compare
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: javax.annotation;version="1.2.0"
+Automatic-Module-Name: de.tu_bs.cs.isf.familymining.ppu_iec.parts.weight_controller
+Export-Package: de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller.slider

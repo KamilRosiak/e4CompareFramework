@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://www.tu-braunschweig.de/isf/familyMining/simulink/familyModel"
+            class="familyModel.FamilyModelPackage"
+            genModel="model/familyModel.genmodel">
+      </package>
+   </extension>
+   <extension
+         id="de.tu_bs.cs.isf.e4cf.core.compare.parts.family_model_view.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+      <project_explorer_file_attr
+            file_extension="fam"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.core.compare.parts.family_model_view.contribution.FamFileExtension">
+      </project_explorer_file_attr>
+   </extension>
+
+</plugin>

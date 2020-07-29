@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Parser_Antlr
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.parser.antlr
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.parser.antlr
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.swt
+Export-Package: de.tu_bs.cs.isf.e4cf.parser.antlr.grammar_check,
+ de.tu_bs.cs.isf.e4cf.parser.antlr.util

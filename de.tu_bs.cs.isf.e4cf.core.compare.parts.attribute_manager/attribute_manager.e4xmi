@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_hcZEwIWtEeiCZPlEXUKaEQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hcZEwYWtEeiCZPlEXUKaEQ" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.information_window">
+    <elements xsi:type="basic:Part" xmi:id="_hcZEwoWtEeiCZPlEXUKaEQ" elementId="de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager/de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager.AttributeManagerController" label="Attribute Manager" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core.compare/icons/attribute_manager/attribute_manager_16.png">
+      <menus xsi:type="menu:PopupMenu" xmi:id="_92b_EABlEemoz4W4puemmA" elementId="de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager.popupmenu">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_kEY8kP1gEeiokIM_wwpueQ" elementId="de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager.popupmenu.expand_attributes" label="expand attribute groups" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core.compare/icons/handler/expand_16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.compare/de.tu_bs.cs.isf.e4cf.core.compare.handler.ExpandTreeHandler"/>
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_mOzlsP1gEeiokIM_wwpueQ" elementId="de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager.popupmenu.colapse_attributes" label="colapse ttribute groups" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core.compare/icons/handler/collapse_16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.compare/de.tu_bs.cs.isf.e4cf.core.compare.handler.CollapseTreeHandler"/>
+      </menus>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

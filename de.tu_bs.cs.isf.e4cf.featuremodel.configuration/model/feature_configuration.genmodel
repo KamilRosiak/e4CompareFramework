@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.configuration/src-gen"
+    editDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.configuration.edit/src" editorDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.configuration.editor/src"
+    modelPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.configuration" modelName="Feature_configuration"
+    editPluginClass="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.provider.Feature_configurationEditPlugin"
+    editorPluginClass="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.presentation.Feature_configurationEditorPlugin"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" testSuiteClass="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.tests.Feature_configurationAllTests"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    editPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.edit" editorPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.editor"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>feature_configuration.ecore</foreignModel>
+  <genPackages prefix="FeatureConfiguration" basePackage="de.tu_bs.cs.isf.e4cf.featuremodel.configuration"
+      disposableProviderFactory="true" fileExtensions="fc" ecorePackage="feature_configuration.ecore#/">
+    <genClasses ecoreClass="feature_configuration.ecore#//FeatureConfiguration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature_configuration.ecore#//FeatureConfiguration/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureConfiguration/featureSelection"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureConfiguration/featureDiagram"/>
+      <genOperations ecoreOperation="feature_configuration.ecore#//FeatureConfiguration/toString"/>
+    </genClasses>
+    <genClasses ecoreClass="feature_configuration.ecore#//FeatureToBooleanMap">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureToBooleanMap/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature_configuration.ecore#//FeatureToBooleanMap/value"/>
+    </genClasses>
+  </genPackages>
+  <genPackages prefix="FeatureDiagram" ecorePackage="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#/">
+    <genClasses ecoreClass="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//FeatureDiagramm">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//FeatureDiagramm/root"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//FeatureDiagramm/identifierIncrement"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//FeatureDiagramm/Constraints"/>
+    </genClasses>
+    <genClasses ecoreClass="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/children"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/description"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/mandatory"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/alternative"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/or"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/graphicalfeature"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/parent"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/identifier"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/abstract"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/hidden"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//Feature/artifactReferences"/>
+    </genClasses>
+    <genClasses ecoreClass="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//GraphicalFeature">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//GraphicalFeature/x"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//GraphicalFeature/y"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//GraphicalFeature/width"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//GraphicalFeature/height"/>
+    </genClasses>
+    <genClasses ecoreClass="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//ArtifactReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//ArtifactReference/artifactClearName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore#//ArtifactReference/referencedArtifactIDs"/>
+    </genClasses>
+  </genPackages>
+  <genPackages prefix="CrossTreeConstraints" ecorePackage="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Operator">
+      <genEnumLiterals ecoreEnumLiteral="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Operator/AND"/>
+      <genEnumLiterals ecoreEnumLiteral="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Operator/OR"/>
+      <genEnumLiterals ecoreEnumLiteral="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Operator/IMPLIES"/>
+      <genEnumLiterals ecoreEnumLiteral="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Operator/EQUALS"/>
+      <genEnumLiterals ecoreEnumLiteral="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Operator/NONE"/>
+    </genEnums>
+    <genClasses ecoreClass="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Formula">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Formula/operator"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Formula/formula"/>
+    </genClasses>
+    <genClasses ecoreClass="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Literal">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//Literal/name"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//AbstractConstraint">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//AbstractConstraint/isNegated"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ../../de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore#//AbstractConstraint/description"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

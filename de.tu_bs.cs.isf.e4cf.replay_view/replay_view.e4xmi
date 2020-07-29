@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_EzhV4D3cEeqfH-b_BmbMbg">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_FulP8D3cEeqfH-b_BmbMbg" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.information_window">
+    <elements xsi:type="basic:Part" xmi:id="_M3InAD3cEeqfH-b_BmbMbg" elementId="de.tu_bs.cs.isf.e4cf.replay_view.part" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.replay_view/de.tu_bs.cs.isf.e4cf.replay_view.ReplayViewController" label="Replay View" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.replay_view/icons/replay_32.png" closeable="true"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_TN76YEUWEeq_9JxZpASOeQ" featurename="children" parentElementId="de.tu_bs.cs.isf.e4cf.parts.project_explorer.context_menu">
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_cDEIAEUWEeq_9JxZpASOeQ" elementId="de.tu_bs.cs.isf.e4cf.replay_view.addModificationSetsItem" label="Add Replay Modification Sets" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.replay_view/icons/replay_24.png" mnemonics="r" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.replay_view/de.tu_bs.cs.isf.e4cf.replay_view.handler.AddModificationSetsMenuHandler"/>
+  </fragments>
+</fragment:ModelFragments>

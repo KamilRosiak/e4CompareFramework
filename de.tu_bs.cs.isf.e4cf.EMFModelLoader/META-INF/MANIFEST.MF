@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EMFModelLoader
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.EMFModelLoader;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.EMFModelLoader
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.emf.ecore.xmi,
+ de.tu_bs.cs.isf.e4cf.core,
+ org.eclipse.emf.ecore
+Export-Package: de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.EMFModelLoader.impl
+Bundle-ClassPath: .

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="FeatureModel" nsURI="www.example.com/featureIdeDiagram" nsPrefix="FM">
+  <eClassifiers xsi:type="ecore:EClass" name="FeatureModell">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="properties" eType="#//Properties"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="struct" eType="#//Struct"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="constraints" eType="#//Constraints"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="calculations" eType="#//Calculations"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="comments" eType="#//Comments"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="featureOrder" eType="#//FeatureOrder"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Properties">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="graphics" eType="#//Graphic"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Graphic">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="key" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Struct">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="and" eType="#//Feature"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="or" eType="#//Feature"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="feature" eType="#//Feature"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="alt" eType="#//Feature"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Feature">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mandatory" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="and" upperBound="-1" eType="#//Feature"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="or" upperBound="-1" eType="#//Feature"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="feature" upperBound="-1"
+        eType="#//Feature" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hidden" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="alt" upperBound="-1" eType="#//Feature"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="graphics" eType="#//Graphic"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Constraints">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rule" upperBound="-1" eType="#//Rule"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Rule">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="imp" upperBound="-1" eType="#//Opearation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="not" upperBound="-1" eType="#//Opearation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="disj" upperBound="-1" eType="#//Opearation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conj" upperBound="-1" eType="#//Opearation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="iff" upperBound="-1" eType="#//Opearation"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Opearation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="var" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="imp" upperBound="-1" eType="#//Opearation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="not" upperBound="-1" eType="#//Opearation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="disj" upperBound="-1" eType="#//Opearation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conj" upperBound="-1" eType="#//Opearation"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="iff" upperBound="-1" eType="#//Opearation"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="Operator">
+    <eLiterals name="CONJ" value="1"/>
+    <eLiterals name="DISJ" value="2"/>
+    <eLiterals name="IMP" value="3"/>
+    <eLiterals name="IFF" value="4"/>
+    <eLiterals name="NOT" value="5"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Calculations">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Auto" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Constraints" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Features" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Redundant" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Tautology" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Comments">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="c" eType="#//C"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="C"/>
+  <eClassifiers xsi:type="ecore:EClass" name="FeatureOrder">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="userDefined" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+</ecore:EPackage>

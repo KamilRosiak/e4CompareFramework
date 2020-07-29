@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="__STXoPsBEem9tdzG4hzf1g">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_AFehAPsCEem9tdzG4hzf1g" featurename="children" parentElementId="de.tu_bs.cs.isf.e4cf.parts.project_explorer.context_menu">
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_IcSa8PsCEem9tdzG4hzf1g" elementId="de.tu_bs.cs.isf.e4cf.parser.directmenuitem.parsefiles" label="Parse Files" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core/icons/Explorer_View/items/model16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.parser/de.tu_bs.cs.isf.e4cf.parser.handlers.ImportModelHandler"/>
+  </fragments>
+</fragment:ModelFragments>

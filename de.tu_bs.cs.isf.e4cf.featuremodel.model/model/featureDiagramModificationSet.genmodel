@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model/src-gen"
+    modelPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model" modelName="FeatureDiagramModificationSet"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" usedGenPackages="feature-metamodel.genmodel#//FeatureDiagram constraint-metamodel.genmodel#//CrossTreeConstraints"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>featureDiagramModificationSet.ecore</foreignModel>
+  <genPackages prefix="FeatureDiagramModificationSet" disposableProviderFactory="true"
+      ecorePackage="featureDiagramModificationSet.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="featureDiagramModificationSet.ecore#//DeltaProperties">
+      <genEnumLiterals ecoreEnumLiteral="featureDiagramModificationSet.ecore#//DeltaProperties/FEATURE_NAME"/>
+      <genEnumLiterals ecoreEnumLiteral="featureDiagramModificationSet.ecore#//DeltaProperties/FEATURE_ABSTRACTION"/>
+      <genEnumLiterals ecoreEnumLiteral="featureDiagramModificationSet.ecore#//DeltaProperties/FEATURE_VISIBILITY"/>
+      <genEnumLiterals ecoreEnumLiteral="featureDiagramModificationSet.ecore#//DeltaProperties/FEATURE_VARIABILITY"/>
+      <genEnumLiterals ecoreEnumLiteral="featureDiagramModificationSet.ecore#//DeltaProperties/FEATURE_GROUP_VARIABILITY"/>
+      <genEnumLiterals ecoreEnumLiteral="featureDiagramModificationSet.ecore#//DeltaProperties/LINE_TO_PARENT_RESET"/>
+    </genEnums>
+    <genClasses ecoreClass="featureDiagramModificationSet.ecore#//FeatureModelModificationSet">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureDiagramModificationSet.ecore#//FeatureModelModificationSet/modifications"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureDiagramModificationSet.ecore#//FeatureModelModificationSet/affectedFeatureModelName"/>
+    </genClasses>
+    <genClasses ecoreClass="featureDiagramModificationSet.ecore#//Modification">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureDiagramModificationSet.ecore#//Modification/featureID"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureDiagramModificationSet.ecore#//Modification/timeStamp"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureDiagramModificationSet.ecore#//Modification/delta"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureDiagramModificationSet.ecore#//Modification/modificationType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureDiagramModificationSet.ecore#//Modification/precisionTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EReference featureDiagramModificationSet.ecore#//Modification/referencedArtifacts"/>
+    </genClasses>
+    <genClasses ecoreClass="featureDiagramModificationSet.ecore#//Delta">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureDiagramModificationSet.ecore#//Delta/property"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureDiagramModificationSet.ecore#//Delta/valuePriorChange"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureDiagramModificationSet.ecore#//Delta/valueAfterChange"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

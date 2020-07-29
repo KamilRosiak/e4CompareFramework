@@ -1,0 +1,53 @@
+.feature {
+	-fx-background-color: 
+        #000000,
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(white, #7ebcea);
+    -fx-background-insets: 0,1,1,2;
+    -fx-background-radius: 2,1,1,1;
+    -fx-padding: 2 5 2 5;
+    -fx-text-fill: black;
+    -fx-font-family: Monospaced;
+	-fx-font-size: 10px;
+	-fx-border-width: 1px;	
+}
+
+.abstractFeature {
+	-fx-font-style: italic; 
+	-fx-font-weight: bold;
+}
+
+.feature:hover {
+	-fx-background-color: 
+        #b1c6fc,
+        linear-gradient(white, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(white, #7ebcea);
+    -fx-background-insets: 0,1,1,2;
+    -fx-background-radius: 2,1,1,1;
+    -fx-padding: 2 5 2 5;
+    -fx-text-fill: black;
+    -fx-font-family: Monospaced;
+	-fx-font-size: 10px;
+}
+
+.featureIsPartOfSelection {
+	-fx-background-color:
+		#000000,
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(white, #7ebcea);
+    -fx-background-insets: 0, 1, 1, 2;
+}
+
+.upperFeatureConnectorMandatory {
+    -fx-fill  : linear-gradient(from 20% 0% to 50% 100%, black 0%, #263e75 100%);
+    -fx-stroke: black;
+}
+
+.upperFeatureConnectorOptional {
+    -fx-fill  : linear-gradient(from 20% 0% to 50% 100%, white 0%, #7ebcea 100%);
+	-fx-stroke: black;
+}
+

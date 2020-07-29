@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_jO0joAiHEeqotNp4VmbysQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_sAPV8AiHEeqotNp4VmbysQ" featurename="children" parentElementId="de.tu_bs.cs.isf.e4cf.parts.project_explorer.context_menu" positionInList="">
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_1If68AiHEeqotNp4VmbysQ" elementId="de.tu_bs.cs_isf.familymining.rcp_e4.featureide.directmenuitem.import_xml" visible="false" label="Import .xml as feature model" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core.exchange/res/icons/FeatureIcon.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.exchange/de.tu_bs.cs.isf.e4cf.core.exchange.fide.importer.ConvertToFeatureModelXmlHandler">
+      <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_-QEaEB6ZEeqrzararyW9Gg" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.exchange/de.tu_bs.cs.isf.e4cf.core.exchange.fide.importer.ConvertToFeatureModelXmlHandler"/>
+    </elements>
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_67wTAAiHEeqotNp4VmbysQ" elementId="de.tu_bs.cs_isf.familymining.rcp_e4.featureide.directmenuitem.export_xml" visible="false" label="Export feature model as .xml" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core.exchange/res/icons/FeatureIcon.png" type="Check" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.exchange/de.tu_bs.cs.isf.e4cf.core.exchange.fide.exporter.ConvertToFeatureIdeXmlHandler">
+      <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_MwUKsB6KEeqP15bIJxmllQ" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.exchange/de.tu_bs.cs.isf.e4cf.core.exchange.fide.exporter.ConvertToFeatureIdeXmlHandler"/>
+    </elements>
+    <elements xsi:type="menu:MenuSeparator" xmi:id="_a9SuIB6HEeqFb5ZhDHgqRA" elementId="de.tu_bs.cs_isf.familymining.rcp_e4.featureide.menuseparator.0"/>
+  </fragments>
+</fragment:ModelFragments>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="INodeCallbackInterface" name="INodeCallback Interface" schema="schema/INodeCallbackInterface.exsd"/>
+   <extension-point id="IParserInterface" name="IParser Interface" schema="schema/IParserInterface.exsd"/>
+   <extension-point id="IParserProcessInterface" name="IParserProcess Interface" schema="schema/IParserProcessInterface.exsd"/>
+
+   <extension
+         id="de.tu_bs.cs.isf.e4cf.parser.parse_files_fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="notexists"
+            uri="parser.e4xmi">
+      </fragment>
+   </extension>
+
+</plugin>

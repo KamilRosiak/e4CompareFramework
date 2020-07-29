@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.featuremode
+ l.constraint_view
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view;singleton:=true
+Bundle-Name: Constraint_view
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.swt,
+ org.eclipse.e4.ui.di,
+ org.eclipse.e4.ui.model.workbench,
+ javax.inject,
+ org.eclipse.e4.core.di.annotations,
+ org.eclipse.e4.core.contexts,
+ de.tu_bs.cs.isf.e4cf.core,
+ de.tu_bs.cs.isf.e4cf.featuremodel.model,
+ de.tu_bs.cs.isf.e4cf.featuremodel.core
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+

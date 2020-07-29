@@ -1,0 +1,22 @@
+.styled-text-area {
+	-fx-font-family: consolas; 
+	-fx-font-size: 13pt; 
+	-fx-font-weight: bold;
+}
+
+.hbox {
+    -fx-background-color: #2f4f4f;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}
+
+.operator { -fx-fill: #7f0055; 
+}
+
+.paren { -fx-fill: blue; 
+}
+
+.error { -fx-underline: true;
+	
+}
+

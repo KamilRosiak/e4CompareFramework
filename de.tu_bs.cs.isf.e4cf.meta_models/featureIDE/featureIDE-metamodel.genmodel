@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.tu_bs.cs.isf.e4cf.meta_models/src-gen"
+    editDirectory="/de.tu_bs.cs.isf.e4cf.meta_models/src-gen" modelPluginID="de.tu_bs.cs.isf.e4cf.meta_models"
+    modelName="FeatureIDE-metamodel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    editPluginID="de.tu_bs.cs.isf.e4cf.meta_models" operationReflection="true"
+    importOrganizing="true">
+  <foreignModel>featureIDE-metamodel.ecore</foreignModel>
+  <genPackages prefix="FeatureModel" disposableProviderFactory="true" ecorePackage="featureIDE-metamodel.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="featureIDE-metamodel.ecore#//Operator">
+      <genEnumLiterals ecoreEnumLiteral="featureIDE-metamodel.ecore#//Operator/CONJ"/>
+      <genEnumLiterals ecoreEnumLiteral="featureIDE-metamodel.ecore#//Operator/DISJ"/>
+      <genEnumLiterals ecoreEnumLiteral="featureIDE-metamodel.ecore#//Operator/IMP"/>
+      <genEnumLiterals ecoreEnumLiteral="featureIDE-metamodel.ecore#//Operator/IFF"/>
+      <genEnumLiterals ecoreEnumLiteral="featureIDE-metamodel.ecore#//Operator/NOT"/>
+    </genEnums>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//FeatureModell">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//FeatureModell/properties"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//FeatureModell/struct"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//FeatureModell/constraints"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//FeatureModell/calculations"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//FeatureModell/comments"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//FeatureModell/featureOrder"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Properties">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Properties/graphics"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Graphic">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Graphic/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Graphic/value"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Struct">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Struct/and"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Struct/or"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Struct/feature"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Struct/alt"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Feature">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Feature/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Feature/mandatory"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Feature/and"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Feature/or"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Feature/feature"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Feature/hidden"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Feature/abstract"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Feature/alt"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Feature/description"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Feature/graphics"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Constraints">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Constraints/rule"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Rule">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Rule/imp"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Rule/not"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Rule/disj"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Rule/conj"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Rule/iff"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Opearation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Opearation/var"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Opearation/imp"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Opearation/not"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Opearation/disj"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Opearation/conj"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Opearation/iff"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Calculations">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Calculations/Auto"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Calculations/Constraints"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Calculations/Features"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Calculations/Redundant"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//Calculations/Tautology"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//Comments">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference featureIDE-metamodel.ecore#//Comments/c"/>
+    </genClasses>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//C"/>
+    <genClasses ecoreClass="featureIDE-metamodel.ecore#//FeatureOrder">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute featureIDE-metamodel.ecore#//FeatureOrder/userDefined"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

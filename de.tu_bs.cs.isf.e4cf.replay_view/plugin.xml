@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="de.tu_bs.cs.isf.e4cf.replay_view.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="replay_view.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.core.PreferencesPage">
+      <pref_page_attr
+            pref_page_attr="de.tu_bs.cs.isf.e4cf.replay_view.preferences.ReplayPreferencePage">
+      </pref_page_attr>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+      <project_explorer_file_attr
+            file_extension="fdco"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.replay_view.handler.AddModificationSetDoubleClickHandler">
+      </project_explorer_file_attr>
+   </extension>
+
+</plugin>

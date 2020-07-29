@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="ITextEditor" name="ITextEditor Interface" schema="schema/ITextEditor.exsd"/>
+   <extension-point id="PreferencesPage" name="PreferencesPage" schema="schema/PreferencesPage.exsd"/>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="de.tu_bs.cs.isf.e4cf.core"
+            application="de.tu_bs.cs.isf.e4cf.core.FrameworkE4Application">
+         <property
+               name="appName"
+               value="de.tu_bs.cs.isf.e4cf.core">
+         </property>
+         <property
+               name="lifeCycleURI"
+               value="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.application_model.LifeCycleManager">
+         </property>
+      </product>
+   </extension>
+   
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.core.PreferencesPage">
+      <pref_page_attr
+            pref_page_attr="de.tu_bs.cs.isf.e4cf.core.preferences.pages.GeneralPreferencePage">
+      </pref_page_attr>
+   </extension>
+
+  <extension id="FrameworkE4Application" point="org.eclipse.core.runtime.applications"> 
+      <application> 
+         <run class="de.tu_bs.cs.isf.e4cf.core.application_model.FrameworkE4Application"> 
+            <parameter name="optimize" value="true"/> 
+         </run> 
+      </application> 
+   </extension>
+  <extension
+        id="de.tu_bs.cs.isf.e4cf.core.css.theme"
+        name="dark theme"
+        point="org.eclipse.e4.ui.css.swt.theme">
+     <theme
+           basestylesheeturi="css/default.css"
+           id="de.tu_bs.cs.isf.e4cf.core.css.default"
+           label="default">
+     </theme>
+     <theme
+           basestylesheeturi="css/dark.css"
+           id="de.tu_bs.cs.isf.e4cf.core.css.dark"
+           label="dark">
+     </theme>
+     <theme
+           basestylesheeturi="css/blue.css"
+           id="de.tu_bs.cs.isf.e4cf.core.css.blue"
+           label="blue">
+     </theme>
+  </extension> 
+
+</plugin>

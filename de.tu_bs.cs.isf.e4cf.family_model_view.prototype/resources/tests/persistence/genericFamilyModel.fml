@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fam:FamilyModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:fam="www.example.com/family_model_prototype" name="ExampleFamilyModel">
+  <variationPoints variabilityCategory="OPTIONAL" name="VP1">
+    <variantArtefacts name="VA1">
+      <artefacts href="resources/tests/persistence/variant1.car#//@wheels.0"/>
+    </variantArtefacts>
+  </variationPoints>
+  <variationPoints variabilityCategory="ALTERNATIVE" name="VP2">
+    <variantArtefacts name="VA2">
+      <artefacts href="resources/tests/persistence/variant2.car#//@wheels.1"/>
+    </variantArtefacts>
+  </variationPoints>
+  <variationPoints variabilityCategory="MANDATORY" name="VP3">
+    <variantArtefacts name="VA3">
+      <artefacts href="resources/tests/persistence/variant1.car#//@wheels.1"/>
+    </variantArtefacts>
+  </variationPoints>
+  <variants identifier="VARIANT 1">
+    <instance href="resources/tests/persistence/variant1.car#/"/>
+  </variants>
+  <variants identifier="VARIANT 2">
+    <instance href="resources/tests/persistence/variant2.car#/"/>
+  </variants>
+</fam:FamilyModel>

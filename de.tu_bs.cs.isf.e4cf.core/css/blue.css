@@ -1,0 +1,73 @@
+.MPartStack {
+  swt-tab-renderer: null;
+  swt-selected-tabs-background: #FFFFFF #c1d5ef;
+  swt-simple: true;
+  swt-mru-visible: true;
+}
+
+Label {
+    font: Verdana 8px;
+    color: black;
+}
+
+Composite Label {
+    color: black;
+}
+
+Text {
+    font: Verdana 8px;
+}
+
+/* Identifies only those SWT Text elements
+appearing within a Composite */
+
+Composite Text {
+    background-color: white;
+    color: black;
+}
+
+/* Identifies only those SWT Text elements
+appearing within a Group */
+
+Group, Group Group, Group Label, Group Composite, Group CLabel {
+	background-color: #e3efff;
+	border-visible: false;
+}
+
+Group Combo {
+	color : #FFFFFF #c1d5ef;
+}
+
+CTabFolder ,SashForm {
+	background-color: #c1d5ef;
+	border-visible: false;
+}
+
+/* background uses a gradient */
+
+.MTrimBar {
+    background-color: #e3efff #c1d5ef;
+    color: white;
+    font: Verdana 8px;
+}
+
+Shell {
+    background-color: #e3efff #c1d5ef 100%;
+}
+
+Shell Text, Shell Label {
+    background-color: #e3efff;
+}
+
+Shell Composite {
+	background-color: #e3efff #c1d5ef;
+}
+
+Group Button {
+	background-color: #e3efff #c1d5ef;
+}
+
+Shell Group , Shell Group Composite , Shell Group Composite Button {
+	background-color: #e3efff;
+	border-visible: false;
+}

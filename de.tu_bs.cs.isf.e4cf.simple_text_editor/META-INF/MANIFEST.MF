@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: simple_text_editor
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.simple_text_editor;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.swt;bundle-version="3.106.1",
+ de.tu_bs.cs.isf.e4cf.core
+Automatic-Module-Name: de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.simple_text_editor

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated feature-metamodel -->
+      <package
+            uri="www.example.com/featureDiagram"
+            class="FeatureDiagram.FeatureDiagramPackage"
+            genModel="model/feature-metamodel.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated featureDiagramModificationSet -->
+      <package
+            uri="www.example.com/featureDiagramChangeOperation"
+            class="FeatureDiagramModificationSet.FeatureDiagramModificationSetPackage"
+            genModel="model/featureDiagramModificationSet.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated constraint-metamodel -->
+      <package
+            uri="www.example.com/CrossTreeConstraints"
+            class="CrossTreeConstraints.CrossTreeConstraintsPackage"
+            genModel="model/constraint-metamodel.genmodel"/>
+   </extension>
+
+</plugin>

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Meta_models
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.meta_models;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.meta_models
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.emf.ecore
+Export-Package: FeatureModel,
+ FeatureModel.impl

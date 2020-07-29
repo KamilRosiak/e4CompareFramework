@@ -1,0 +1,49 @@
+.feature {
+	-fx-background-color: 
+        #000000,
+        linear-gradient(white, grey),
+        linear-gradient(white, grey),
+        linear-gradient(white, grey);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 6 15 6 15;
+    -fx-text-fill: black;
+	-fx-font-size: 10px;	
+}
+
+.abstractFeature {
+	-fx-font-style: italic; 
+	-fx-font-weight: bold;
+}
+
+.featureIsPartOfSelection {
+	-fx-background-color: radial-gradient( focus-angle 0.0deg, focus-distance 0.0%, center 50.0% 50.0%, radius 50.0%, rgb(255,255,255) 0.0, rgb(7,20,48) 100.0 ),
+        linear-gradient(white, grey);
+    -fx-background-insets: 0,3;
+}
+
+.feature:hover {
+	-fx-background-color: 
+        #b1c6fc,
+        linear-gradient(grey, black),
+        linear-gradient(black 90%, black),
+        linear-gradient(white, grey);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 6 15 6 15;
+    -fx-text-fill: black;
+	-fx-font-size: 10px;
+}
+
+.upperFeatureConnectorMandatory {
+    -fx-fill  : linear-gradient(from 20% 0% to 50% 100%, black 0%, Black 100%);
+    -fx-stroke: black;
+}
+
+.upperFeatureConnectorOptional {
+    -fx-fill  : linear-gradient(from 20% 0% to 50% 100%, white 0%, grey 100%);
+	-fx-stroke: black;
+}
+
+
+

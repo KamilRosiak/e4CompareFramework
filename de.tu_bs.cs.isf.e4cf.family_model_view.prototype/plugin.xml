@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="family_model_properties" name="Family Model Properties" schema="schema/family_model_properties.exsd"/>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated example_data_structure -->
+      <package
+            uri="www.example.com/Car"
+            class="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car.CarPackage"
+            genModel="model/example_data_structure.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated family_model -->
+      <package
+            uri="www.example.com/family_model_prototype"
+            class="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelPackage"
+            genModel="model/family_model.genmodel"/>
+   </extension>
+   <extension
+         id="id1"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="family_model_view.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.family_model_properties">
+      <artefactSpecialization
+            extensionProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarExtensionProvider"
+            iconProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarIconProvider"
+            id="car_artefact_specialization"
+            labelProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarLabelProvider">
+      </artefactSpecialization>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+      <project_explorer_file_attr
+            file_extension="fml"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.FamilyModelProjectExplorerExtension">
+      </project_explorer_file_attr>
+   </extension>
+
+</plugin>

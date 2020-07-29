@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="FeatureModelEditorTheme" name="FeatureModelEditorTheme" schema="schema/de.tu_bs.cs.isf.e4cf.featuremodel.core.exsd"/>
+
+   <extension
+         id="de.rosi.spl.featuremodel.core.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="feature_model_editor.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+      <project_explorer_file_attr
+            file_extension="fm"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.featuremodel.core.contribution.project_explorer.FMFileExtension">
+      </project_explorer_file_attr>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorTheme">
+      <theme_attr
+            theme_attr="de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme">
+      </theme_attr>
+      <theme_attr
+            theme_attr="de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DarkTheme">
+      </theme_attr>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.core.PreferencesPage">
+      <pref_page_attr
+            pref_page_attr="de.tu_bs.cs.isf.e4cf.featuremodel.core.contribution.preferences.FeatureEditorPreferencePage">
+      </pref_page_attr>
+   </extension>
+
+</plugin>

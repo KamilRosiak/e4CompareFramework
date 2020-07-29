@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated solution -->
+      <package
+            uri="www.tu-bs.de/isf/solution_model"
+            class="SolutionModel.SolutionModelPackage"
+            genModel="Model/solution.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated solution -->
+      <package
+            uri="www.tu-bs.de/isf/metric_model"
+            class="MetricModel.MetricModelPackage"
+            genModel="Model/solution.genmodel"/>
+   </extension>
+
+</plugin>

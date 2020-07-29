@@ -1,0 +1,2 @@
+icon: refresh_16, icon_link: https://www.iconfinder.com/icons/3229643/material_designs_refresh_retry_icon, author: Hassan khaled, author_link: https://www.iconfinder.com/Mr_nash
+icon: delete_16, icon_link: https://www.iconfinder.com/icons/928426/bin_delete_empty_junk_remove_trash_icon, author: Chanut is Industries, author_link: https://www.iconfinder.com/Chanut-is

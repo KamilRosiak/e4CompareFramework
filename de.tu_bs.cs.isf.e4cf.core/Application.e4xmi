@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_VnmacNSzEeGBn6dQ9VPexA" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.application" bindingContexts="_VnmacdSzEeGBn6dQ9VPexA _LuvWkJOGEeqtr4_VGBCQRA">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_Vnmah9SzEeGBn6dQ9VPexA" elementId="de.tu_bs.cs.isf.e4cf.core.window.main" label="e4CompareFramework" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core/icons/framework_logo_96.png" width="800" height="600">
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_Vnmaj9SzEeGBn6dQ9VPexA" elementId="de.tu_bs.cs.isf.e4cf.core.perspectiveStack">
+      <children xsi:type="advanced:Perspective" xmi:id="_VnmakNSzEeGBn6dQ9VPexA" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.perspective.default" accessibilityPhrase="" selectedElement="_VnnBgNSzEeGBn6dQ9VPexA" label="default" iconURI="">
+        <tags>Perspective</tags>
+        <tags>categoryTag:General</tags>
+        <children xsi:type="basic:PartSashContainer" xmi:id="_VnnBgNSzEeGBn6dQ9VPexA" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.partsashcontainer_all" horizontal="true">
+          <children xsi:type="basic:PartStack" xmi:id="_VnnBgdSzEeGBn6dQ9VPexA" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.left_window" containerData="3400">
+            <tags>newtablook</tags>
+            <tags>org.eclipse.e4.primaryNavigationStack</tags>
+          </children>
+          <children xsi:type="basic:PartSashContainer" xmi:id="_FZ8cQN5tEeeLOfSJNqUAsQ" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.right_window">
+            <children xsi:type="basic:PartStack" xmi:id="_nOKt0OsoEeemLbAzd3q-Uw" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.work_window"/>
+            <children xsi:type="basic:PartStack" xmi:id="_rJuxAOsTEeeclfn9QEtfHg" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.information_window"/>
+          </children>
+        </children>
+      </children>
+    </children>
+    <mainMenu xmi:id="_QvSvMM3rEeeNGpUvb_Or0w" elementId="menu:org.eclipse.ui.main.menu">
+      <children xsi:type="menu:Menu" xmi:id="_SO9LIM3rEeeNGpUvb_Or0w" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.menu.file" label="File">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_pbCA8NtkEeebS6ixYoIvnw" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.directmenuitem.exit" label="Exit" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core/icons/framework/exit_icon_16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.handlers.QuitHandler"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_yO_IYN0GEeib7fkHGar4Jw" elementId="de.tu_bs.cs.isf.e4cf.core.window_menu" label="Window">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_58_V4N0GEeib7fkHGar4Jw" elementId="de.tu_bs.cs.isf.e4cf.core.directmenuitem.preferences" label="Preferences" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core/icons/preference_16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.handlers.ShowPreferences"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_08ZVMOskEeeaQqMVMqveFw" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.menu.help" label="Help">
+        <children xsi:type="menu:DirectMenuItem" xmi:id="_GSmGYBMaEem84rmwBfiT9w" elementId="de.tu_bs.cs.isf.e4cf.core.directmenuitem.checkforupdates" label="Check for Updates" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core/icons/framework/update_16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.handlers.UpdateHandler"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_xB7moJOOEeqtr4_VGBCQRA" elementId="de.tu_bs.cs.isf.e4cf.core.handledmenuitem.save" label="Save" command="_VpJLYCeCEei7oI_dCRTSJA"/>
+      </children>
+    </mainMenu>
+    <trimBars xmi:id="_VOV6ANTAEeGTY-uOtVc6Mg" elementId="org.eclipse.ui.main.toolbar">
+      <children xsi:type="menu:ToolBar" xmi:id="_DrzhINOFEeegpLtgE6ZSow" elementId="de.tu_bs.cs.isf.e4cf.core.toolbar"/>
+      <children xsi:type="menu:ToolControl" xmi:id="_HfwXsPLxEeev_9p6EezjNg" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.toolcontrol.2" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.parts.space_control.SpacerControl">
+        <tags>stretch</tags>
+      </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_8_wOkPLuEeev_9p6EezjNg" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.toolcontrol.1" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.parts.perspective_switch.PerspectivSwitchComboControl"/>
+    </trimBars>
+    <trimBars xmi:id="_91R0MCJhEemrjvxJQjEByw" elementId="de.tu_bs.cs.isf.e4cf.core.status_bar" side="Bottom">
+      <children xsi:type="menu:ToolControl" xmi:id="_9KKlMCJiEemrjvxJQjEByw" elementId="de.tu_bs.cs.isf.e4cf.core.toolcontrol.1" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.status_bar.E4CStatusBar"/>
+    </trimBars>
+  </children>
+  <handlers xmi:id="_PUWzANtkEeebS6ixYoIvnw" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.handler.0" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.handlers.QuitHandler" command="_L8gGYNtkEeebS6ixYoIvnw"/>
+  <handlers xmi:id="_OlLIcJOXEeqtr4_VGBCQRA" elementId="de.tu_bs.cs.isf.e4cf.core.handler.save" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.handlers.SaveHandler" command="_VpJLYCeCEei7oI_dCRTSJA"/>
+  <bindingTables xmi:id="_VnmafNSzEeGBn6dQ9VPexA" elementId="de.tu_bs.cs.isf.e4cf.core.core_binding_table" bindingContext="_LuvWkJOGEeqtr4_VGBCQRA">
+    <bindings xmi:id="_BezF4JOIEeqtr4_VGBCQRA" elementId="de.tu_bs.cs.isf.e4cf.core.keybinding.0" keySequence="M1+S" command="_VpJLYCeCEei7oI_dCRTSJA"/>
+  </bindingTables>
+  <rootContext xmi:id="_VnmacdSzEeGBn6dQ9VPexA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
+    <children xmi:id="_VnmactSzEeGBn6dQ9VPexA" elementId="org.eclipse.ui.contexts.window" name="mainWindowContext"/>
+    <children xmi:id="_Vnmac9SzEeGBn6dQ9VPexA" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
+  </rootContext>
+  <rootContext xmi:id="_LuvWkJOGEeqtr4_VGBCQRA" elementId="org.eclipse.ui.contexts.window" name="KeyBindingContext" description="Binding Context for general key bindings"/>
+  <descriptors xmi:id="_Xne9gCGGEei0h4Q_xTXQjQ" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.partdescriptor.text_editor" label="text_editor" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core/icons/fm_logo16.png" tooltip="" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.parts.text_editor.TextEditorContainer">
+    <handlers xmi:id="_dMuHMCLEEeiOrNgdjfiZjA" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.handler.1" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.parts.project_explorer.commands.OpenFileHandler" command="_whUhYCLlEeiOrNgdjfiZjA"/>
+    <handlers xmi:id="_zo-mwCeDEei7oI_dCRTSJA" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.handler.2" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core/de.tu_bs.cs.isf.e4cf.core.parts.text_editor.handlers.SaveFileHandler" command="_VpJLYCeCEei7oI_dCRTSJA"/>
+    <toolbar xmi:id="_fIifACd3Eeiol505uK5M0g" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.toolbar.text_editor">
+      <children xsi:type="menu:ToolBarSeparator" xmi:id="_u_s6ECd5Eeiol505uK5M0g" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.toolbarseparator.0"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_WRw2ICd4Eeiol505uK5M0g" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.handledtoolitem.save" label="Save" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core/icons/save_edit.png" tooltip="saves the file" command="_VpJLYCeCEei7oI_dCRTSJA"/>
+      <children xsi:type="menu:ToolBarSeparator" xmi:id="_4EpsYCd5Eeiol505uK5M0g" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.toolbarseparator.1"/>
+    </toolbar>
+  </descriptors>
+  <commands xmi:id="_L8gGYNtkEeebS6ixYoIvnw" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.command.exit_command" commandName="exit_command" description="Close the Application "/>
+  <commands xmi:id="_whUhYCLlEeiOrNgdjfiZjA" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.command.open_file_command" commandName="open_file_command" description="Open a file in the editor"/>
+  <commands xmi:id="_VpJLYCeCEei7oI_dCRTSJA" elementId="org.eclipse.ui.file.save" commandName="Save" description="Save the current part" category="_qWpLYJQzEeqsBr-xxBfewQ"/>
+  <commands xmi:id="_lrq28J16Eeirr-D6NXoX4w" elementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.command.parse_models" commandName="Parse Models" description="opens &quot;Parse Model&quot;-wizard"/>
+  <addons xmi:id="_VnmadNSzEeGBn6dQ9VPexA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_VnmaddSzEeGBn6dQ9VPexA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_VnmadtSzEeGBn6dQ9VPexA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_Vnmad9SzEeGBn6dQ9VPexA" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_VnmaeNSzEeGBn6dQ9VPexA" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_s-3jIJQ5EeqFpuVmN-_Atg" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <addons xmi:id="_VnmaedSzEeGBn6dQ9VPexA" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+  <categories xmi:id="_qWpLYJQzEeqsBr-xxBfewQ" elementId="de.tu_bs.cs.isf.e4cf.core.category.files" name="Files" description="File Input/Output"/>
+</application:Application>

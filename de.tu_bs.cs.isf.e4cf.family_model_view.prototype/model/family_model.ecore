@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="FamilyModel" nsURI="www.example.com/family_model_prototype"
+    nsPrefix="fam">
+  <eClassifiers xsi:type="ecore:EClass" name="FamilyModel">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="variationPoints" upperBound="-1"
+        eType="#//VariationPoint" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="variants" upperBound="-1"
+        eType="#//Variant" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Variant">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="instance" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="identifier" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="VariationPoint">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="variantArtefacts" lowerBound="1"
+        upperBound="-1" eType="#//VariantArtefact" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="children" upperBound="-1"
+        eType="#//VariationPoint" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parent" eType="#//VariationPoint"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="variabilityCategory" eType="#//VariabilityCategory"
+        defaultValueLiteral="UNSET"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="VariantArtefact">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="artefacts" lowerBound="1"
+        upperBound="-1" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="origins" upperBound="-1"
+        eType="#//Variant"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="VariabilityCategory">
+    <eLiterals name="UNSET"/>
+    <eLiterals name="MANDATORY" value="1"/>
+    <eLiterals name="ALTERNATIVE" value="2"/>
+    <eLiterals name="OPTIONAL" value="3"/>
+  </eClassifiers>
+</ecore:EPackage>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.tu_bs.cs.isf.e4cf.family_model_view.prototype/src-gen"
+    modelPluginID="de.tu_bs.cs.isf.e4cf.family_model_view.prototype"
+    modelName="FamilyModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    usedGenPackages="../../org.eclipse.emf.ecore/model/Ecore.genmodel#//ecore" operationReflection="true"
+    importOrganizing="true">
+  <foreignModel>family_model.ecore</foreignModel>
+  <genPackages prefix="FamilyModel" basePackage="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model"
+      disposableProviderFactory="true" ecorePackage="family_model.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="family_model.ecore#//VariabilityCategory">
+      <genEnumLiterals ecoreEnumLiteral="family_model.ecore#//VariabilityCategory/UNSET"/>
+      <genEnumLiterals ecoreEnumLiteral="family_model.ecore#//VariabilityCategory/MANDATORY"/>
+      <genEnumLiterals ecoreEnumLiteral="family_model.ecore#//VariabilityCategory/ALTERNATIVE"/>
+      <genEnumLiterals ecoreEnumLiteral="family_model.ecore#//VariabilityCategory/OPTIONAL"/>
+    </genEnums>
+    <genClasses ecoreClass="family_model.ecore#//FamilyModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute family_model.ecore#//FamilyModel/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference family_model.ecore#//FamilyModel/variationPoints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference family_model.ecore#//FamilyModel/variants"/>
+    </genClasses>
+    <genClasses ecoreClass="family_model.ecore#//Variant">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference family_model.ecore#//Variant/instance"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute family_model.ecore#//Variant/identifier"/>
+    </genClasses>
+    <genClasses ecoreClass="family_model.ecore#//VariationPoint">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference family_model.ecore#//VariationPoint/variantArtefacts"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference family_model.ecore#//VariationPoint/children"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference family_model.ecore#//VariationPoint/parent"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute family_model.ecore#//VariationPoint/variabilityCategory"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute family_model.ecore#//VariationPoint/name"/>
+    </genClasses>
+    <genClasses ecoreClass="family_model.ecore#//VariantArtefact">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference family_model.ecore#//VariantArtefact/artefacts"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute family_model.ecore#//VariantArtefact/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference family_model.ecore#//VariantArtefact/origins"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
