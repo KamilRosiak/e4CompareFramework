@@ -11,13 +11,15 @@ import de.tu_bs.cs.isf.e4cf.graph.core.elements.parts.SimpleGraphPart;
 
 public class GefClusterLayout implements Layout<SimpleGraphPart> {
 
+	private static final double CLUSTER_RADIUS_MULTIPLIER = 40.0;
+
+	protected static final double DIST_FROM_TOP = 300.0;
+	
 	protected Set<GefLayoutNode> layoutNodes = new TreeSet<>();
 	
-	protected double radius;
 	private double padding;
 	
-	public GefClusterLayout(double radius, double padding) {
-		this.radius = radius;
+	public GefClusterLayout(double padding) {
 		this.padding = padding;
 	}
 	
@@ -65,20 +67,25 @@ public class GefClusterLayout implements Layout<SimpleGraphPart> {
 			int memberSize = cluster.size(); // 
 			double x = 0, y = 0; // visual coordinates
 			double angleStep = 2.0 * Math.PI / memberSize; // in radian [0..2*PI]
+			double radius = 0.0; // gets updated for every cluster
 			
 			if (memberSize == 1) { // single element cluster
 				center += padding; // move center according to this single-cluster element
 				
 				GraphNodePart graphNodePart = cluster.get(0).get();
 				graphNodePart.getVisual().setTranslateX(center);
-				graphNodePart.getVisual().setTranslateY(radius);
+				graphNodePart.getVisual().setTranslateY(DIST_FROM_TOP);
 			} else { // multi element cluster circular arrangement
-				center += radius + padding; // move center to the next cluster center
+				radius = memberSize * CLUSTER_RADIUS_MULTIPLIER; // circle radius depends on total elements in cluster
+				center += padding + radius; // move center to the next cluster center
 				
 				for (int memberIndex = 0; memberIndex < memberSize; memberIndex++) { // travel along circle and position elements
 					double angle = memberIndex * angleStep;
 					x = center + Math.cos(angle) * radius; // clusters arranged horizontally
-					y = radius + Math.sin(angle) * radius; // cluster center y coordinate is fixed
+					y = DIST_FROM_TOP + Math.sin(angle) * radius; // cluster center y coordinate is fixed
+					
+					// translate node to center it along circle
+					x -= cluster.get(memberIndex).getWidth() / 2.0;
 					
 					GraphNodePart graphNodePart = cluster.get(memberIndex).get();
 					graphNodePart.getVisual().setTranslateX(x);

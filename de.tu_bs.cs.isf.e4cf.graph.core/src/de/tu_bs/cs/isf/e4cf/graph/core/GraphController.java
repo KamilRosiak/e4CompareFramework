@@ -27,7 +27,6 @@ import javafx.scene.Scene;
 
 public class GraphController {
 
-	private static final double LAYOUT_CLUSTER_RADIUS = 300.0;
 	private static final double LAYOUT_CLUSTER_PADDING = 200.0;
 	
 	private HistoricizingDomain domain;
@@ -111,7 +110,7 @@ public class GraphController {
 	}
 
 	private void formatGraph() {
-		GefClusterLayout clusterLayout = new GefClusterLayout(LAYOUT_CLUSTER_RADIUS, LAYOUT_CLUSTER_PADDING);
+		GefClusterLayout clusterLayout = new GefClusterLayout(LAYOUT_CLUSTER_PADDING);
 		clusterLayout.init(getGraphPart());
 		clusterLayout.format();
 	}
