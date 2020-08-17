@@ -16,6 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
+
 /**
  * This is completely stateless utility class and provides a different choice of message dialogs that are usable within the RCP e4 platform.
  * @author {Kamil Rosiak, Alexander Schlie}

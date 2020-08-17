@@ -5,6 +5,21 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>e4CompareFramework </name>
   <description>Rapid Prototyping Framework</description>
+	<repositories>
+	    <repository>
+	      <id>central</id>
+	      <name>Central Repository</name>
+	      <url>https://repo1.maven.org/maven2</url>
+	      <layout>default</layout>
+	      <snapshots>
+	        <enabled>false</enabled>
+	      </snapshots>
+	    </repository>
+	    <repository>
+	     <id>javaxt.com</id>
+	     <url>http://www.javaxt.com/maven</url>
+	   </repository>
+	</repositories>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -28,9 +43,9 @@
   </build>
   <dependencies>
   	<dependency>
-    <groupId>javax.inject</groupId>
+    	<groupId>javax.inject</groupId>
    		 <artifactId>javax.inject</artifactId>
-    	  <version>1</version>
+    	 <version>1</version>
 	</dependency>
   </dependencies>
 </project>
