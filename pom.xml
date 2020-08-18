@@ -19,14 +19,37 @@
 	<modules>
 		<!--Plugin-Modules-->
         <module>de.tu_bs.cs.isf.e4cf.core</module>
-
-		
+		<module>de.tu_bs.cs.isf.e4cf.compare</module>
+		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager</module>
+		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.compare_engine</module>
+		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view</module>
+		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.family_model_view</module>
+		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller</module>
+		<module>de.tu_bs.cs.isf.e4cf.core.exchange</module>
+		<module>de.tu_bs.cs.isf.e4cf.EMFModelLoader</module>
+		<module>de.tu_bs.cs.isf.e4cf.family_model_view.prototype</module>
+		<module>de.tu_bs.cs.isf.e4cf.featuremodel.configuration</module>
+		<module>de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view</module>
+		<module>de.tu_bs.cs.isf.e4cf.featuremodel.core</module>
+		<module>de.tu_bs.cs.isf.e4cf.featuremodel.model</module>
+	    <module>de.tu_bs.cs.isf.e4cf.graph.core</module>
+		<module>de.tu_bs.cs.isf.e4cf.graph.model</module>
+		<module>de.tu_bs.cs.isf.e4cf.meta_models</module>	
+		<module>de.tu_bs.cs.isf.e4cf.metric</module>
+		<module>de.tu_bs.cs.isf.e4cf.parser</module>
+		<module>de.tu_bs.cs.isf.e4cf.parser.antlr</module>
+		<module>de.tu_bs.cs.isf.e4cf.parts.consol_view</module>	
+		<module>de.tu_bs.cs.isf.e4cf.parts.project_explorer</module>
+		<module>de.tu_bs.cs.isf.e4cf.replay_view</module>	
+		<module>de.tu_bs.cs.isf.e4cf.simple_text_editor</module>	
+		<module>de.tu_bs.cs.isf.e4cf.solution</module>	
+		<module>de.tu_bs.cs.isf.e4cf.solver</module>			
 		<!--Testmodules-->
 
 	</modules>
 
-
 	<build>
+		<sourceDirectory>src</sourceDirectory>
 		<plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

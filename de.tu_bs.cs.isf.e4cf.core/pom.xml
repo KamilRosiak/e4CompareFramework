@@ -6,8 +6,6 @@
 	  <version>1.0</version>
 	  <relativePath>../pom.xml</relativePath>
   </parent>
-
-  <groupId>de.tu_bs.cs.isf.e4cf.core</groupId>
   <artifactId>de.tu_bs.cs.isf.e4cf.core</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  </project>
+</project>
