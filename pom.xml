@@ -20,7 +20,8 @@
 		<!--Plugin-Modules-->
         <module>de.tu_bs.cs.isf.e4cf.core</module>
 		<module>de.tu_bs.cs.isf.e4cf.compare</module>
-		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager</module>
+		
+		<!-- <module>de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager</module>
 		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.compare_engine</module>
 		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view</module>
 		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.family_model_view</module>
@@ -43,7 +44,7 @@
 		<module>de.tu_bs.cs.isf.e4cf.replay_view</module>	
 		<module>de.tu_bs.cs.isf.e4cf.simple_text_editor</module>	
 		<module>de.tu_bs.cs.isf.e4cf.solution</module>	
-		<module>de.tu_bs.cs.isf.e4cf.solver</module>			
+		<module>de.tu_bs.cs.isf.e4cf.solver</module>	--!>		
 		<!--Testmodules-->
 
 	</modules>
