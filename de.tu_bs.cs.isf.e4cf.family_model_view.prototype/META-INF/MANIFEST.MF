@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car,
+Export-Package: de.tu_bs.cs.isf.e4cf.family_model_view.prototype,
+ de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car.impl,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car.util,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel,

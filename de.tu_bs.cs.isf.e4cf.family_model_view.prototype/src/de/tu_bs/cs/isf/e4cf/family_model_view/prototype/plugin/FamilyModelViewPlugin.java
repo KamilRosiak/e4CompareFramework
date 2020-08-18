@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.family_model_view.prototype.plugin;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,11 +8,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 import de.tu_bs.cs.isf.e4cf.core.plugin.ExtensionPointContext;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.ArtefactFilter;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.ExtensionProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.IconProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.LabelProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.FamilyModelTransformation;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultArtefactFilter;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultFamilyModelExtensionProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultFamilyModelIconProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultFamilyModelLabelProvider;
@@ -67,70 +68,65 @@ public class FamilyModelViewPlugin {
 	}
 	
 	public LabelProvider getArtefactLabelProviderFromExtension() {
-		Object obj = createExecutableAttribute(artefactSpecializationConfigs, FamilyModelViewStrings.FM_LABEL_PROVIDER_ATTR);
-		return obj != null ? (LabelProvider) obj : null;
+		List<LabelProvider> artefactLabelProviders = createExecutableAttributes(artefactSpecializationConfigs, FamilyModelViewStrings.FM_LABEL_PROVIDER_ATTR);
+		return artefactLabelProviders != null ? artefactLabelProviders.get(0) : null;
 	}
 	
 	public ExtensionProvider getArtefactExtensionProviderFromExtension() {
-		Object obj = createExecutableAttribute(artefactSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
-		return obj != null ? (ExtensionProvider) obj : null;
+		List<ExtensionProvider> extensionProviders = createExecutableAttributes(artefactSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
+		return extensionProviders != null ? extensionProviders.get(0) : null;
 	}
 	
 	public IconProvider getArtefactIconProviderFromExtension() {
-		Object obj = createExecutableAttribute(artefactSpecializationConfigs, FamilyModelViewStrings.FM_ICON_PROVIDER_ATTR);
-		return obj != null ? (IconProvider) obj : null;
+		List<IconProvider> iconProviders = createExecutableAttributes(artefactSpecializationConfigs, FamilyModelViewStrings.FM_ICON_PROVIDER_ATTR);
+		return iconProviders != null ? iconProviders.get(0) : null;
+	}
+	
+	public ArtefactFilter getArtefactFilterFromExtension() {
+		List<ArtefactFilter> filters = createExecutableAttributes(artefactSpecializationConfigs, FamilyModelViewStrings.FM_ARTEFACT_FILTER_ATTR);
+		return filters != null ? filters.get(0) : new DefaultArtefactFilter();
 	}
 	
 	public LabelProvider getFamilyModelLabelProviderFromExtension() {
-		Object obj = createExecutableAttribute(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_LABEL_PROVIDER_ATTR);
-		if (obj != null) {
-			return (LabelProvider) obj;
-		} else {
-			return new DefaultFamilyModelLabelProvider();
-		}
+		List<LabelProvider> labelProviders = createExecutableAttributes(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_LABEL_PROVIDER_ATTR);
+		return labelProviders != null ? labelProviders.get(0) : new DefaultFamilyModelLabelProvider();
 	}
 	
 	public ExtensionProvider getFamilyModelExtensionProviderFromExtension() {
-		Object obj = createExecutableAttribute(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
-		if (obj != null) {
-			return (ExtensionProvider) obj;
-		} else {
-			return new DefaultFamilyModelExtensionProvider();
-		}
+		List<ExtensionProvider> extensionProviders = createExecutableAttributes(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
+		return extensionProviders != null ? extensionProviders.get(0) : new DefaultFamilyModelExtensionProvider();
 	}
 	
 	public List<FamilyModelTransformation> getTransformationsFromExtension() {
-		try {
-			List<FamilyModelTransformation> fmTransformations = new ArrayList<>();
-			for (IConfigurationElement transformationConfig : transformationConfigs) {
-				Object o = transformationConfig.createExecutableExtension(FamilyModelViewStrings.FM_TRANSFORMATION_ATTR);
-				fmTransformations.add((FamilyModelTransformation) o);
-			}
-			return fmTransformations;
-		} catch (CoreException e) {
-			e.printStackTrace();
-			return Collections.emptyList();
-		}			
+		return createExecutableAttributes(transformationConfigs, FamilyModelViewStrings.FM_TRANSFORMATION_ATTR);
 	}
 	
 	public IconProvider getFamilyModelIconProviderFromExtension() {
-		Object obj = createExecutableAttribute(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
-		if (obj != null) {
-			return (IconProvider) obj;
-		} else {
-			return new DefaultFamilyModelIconProvider();
-		}
+		List<IconProvider> iconProviders = createExecutableAttributes(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
+		return iconProviders != null ? iconProviders.get(0) : new DefaultFamilyModelIconProvider();
 	}
-	
-	private Object createExecutableAttribute(List<IConfigurationElement> configs, String executableAttr) {
+
+	/**
+	 * Instantiates a list of configuration elements and returns them.
+	 * 
+	 * @param configs
+	 * @param executableAttr
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> List<T> createExecutableAttributes(List<IConfigurationElement> configs, String executableAttr) {
 		if (configs.isEmpty()) {
 			return null;
 		}
 		
 		try {
-			return configs.get(0).createExecutableExtension(executableAttr);
+			List<T> typedExecutables = new ArrayList<>();
+			for (IConfigurationElement config : configs) {
+				Object obj = config.createExecutableExtension(executableAttr);
+				typedExecutables.add((T) obj);
+			}
+			return typedExecutables;
 		} catch (CoreException e) {
-			e.printStackTrace();
 			return null;
 		}
 	}

@@ -6,16 +6,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.FXToolbar;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.ArtefactFilter;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.FamilyModelViewController;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.GenericFamilyModel;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariationPoint;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.FXArtefactTree;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.FXFamilyModelTree;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXFamilyModelElement;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.menu.ShowDetailsItem;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.toolbar.LoadHandler;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.toolbar.SaveHandler;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariationPoint;
 import javafx.embed.swt.FXCanvas;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -45,14 +46,16 @@ public class FamilyModelView {
 	
 	private FXTreeBuilder familyTreeBuilder;
 	private FXTreeBuilder artefactTreeBuilder;
+	private ArtefactFilter artefactFilter;
 	private GenericFamilyModel familyModel;
 	
 	private FamilyModelViewController fmvController;
 
-	public FamilyModelView(Composite parent, FXTreeBuilder fmTreeBuilder, FXTreeBuilder artefactTreeBuilder, FamilyModelViewController fmvController) {
+	public FamilyModelView(Composite parent, FXTreeBuilder fmTreeBuilder, FXTreeBuilder artefactTreeBuilder, ArtefactFilter artefactFilter, FamilyModelViewController fmvController) {
 		this.familyTreeBuilder = fmTreeBuilder;
 		this.artefactTreeBuilder = artefactTreeBuilder;
 		this.fmvController = fmvController;
+		this.artefactFilter = artefactFilter;
 
 		this.fxCanvas = new FXCanvas(parent, SWT.NONE);
 		this.fxCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -86,7 +89,7 @@ public class FamilyModelView {
 		BorderPane.setMargin(familyModelBox, new Insets(10, 5, 10, 5));
         
 		// build the artefact view
-		artefactTree = new FXArtefactTree(familyTreeBuilder, artefactTreeBuilder);
+		artefactTree = new FXArtefactTree(familyTreeBuilder, artefactTreeBuilder, artefactFilter);
 
 		// set a fixed ratio between family model and artefact pane
         familyModelPane.widthProperty().addListener((observable, oldValue, newValue) -> {
