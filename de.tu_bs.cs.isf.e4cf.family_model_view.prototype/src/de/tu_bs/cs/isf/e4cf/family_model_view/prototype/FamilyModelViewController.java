@@ -40,7 +40,6 @@ import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullExtensionProvid
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullLabelProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FXTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FamilyModelView;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultArtefactFilter;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXVariantResourceDialog;
 
 public class FamilyModelViewController {
@@ -57,13 +56,10 @@ public class FamilyModelViewController {
 	private LabelProvider artefactLabelProvider;
 	private ExtensionProvider artefactExtensionProvider;
 	private IconProvider artefactIconProvider;
-	private ArtefactFilter artefactFilter;
 	
 	private List<FamilyModelTransformation> fmTransformations;
 
 	private MPart part;
-
-
 	
 	@Inject
 	public FamilyModelViewController(ServiceContainer services) {
@@ -126,11 +122,6 @@ public class FamilyModelViewController {
 		if (fmTransformations == null) {
 			fmTransformations = Collections.emptyList();
 		}
-		
-		this.artefactFilter = thisPlugin.getArtefactFilterFromExtension();
-		if (artefactFilter == null) {
-			artefactFilter = new DefaultArtefactFilter();
-		}
 	}
 	
 	private void initializeFamilyModel(FamilyModel familyModel) {
@@ -147,11 +138,11 @@ public class FamilyModelViewController {
 		// create family model provider 
 		FXTreeBuilder familyModelTreeBuilder = new FXTreeBuilder(fmvLabelProvider, fmvIconProvider);
 		
-		// Create artefact tree builder
-		FXTreeBuilder artefactTreeBuilder = new FXTreeBuilder(artefactLabelProvider, artefactIconProvider);
+		// Create car artefact tree builder
+		FXTreeBuilder carArtefactTreeBuilder = new FXTreeBuilder(artefactLabelProvider, artefactIconProvider);
 		
 		// initialize the family model view
-		familyModelView = new FamilyModelView(parent, familyModelTreeBuilder, artefactTreeBuilder, artefactFilter, this);
+		familyModelView = new FamilyModelView(parent, familyModelTreeBuilder, carArtefactTreeBuilder, this);
 		familyModelView.showFamilyModel(familyModelWrapper);
 	}
 	
@@ -333,7 +324,7 @@ public class FamilyModelViewController {
 		this.familyModelWrapper = familyModelWrapper;
 		this.part.setDirty(this.familyModelWrapper != null);
 	}
-	
+
 	public String getLabel(EObject eobject) {
 		if (eobject == null) {
 			return null;
@@ -368,15 +359,5 @@ public class FamilyModelViewController {
 		}
 		
 		return null;
-	}
-	
-	/**
-	 * Applies the filter provided through plugin extension.
-	 * 
-	 * @param eobject
-	 * @return
-	 */
-	public boolean filter(EObject eobject) {
-		return artefactFilter.apply(eobject);
 	}
 }

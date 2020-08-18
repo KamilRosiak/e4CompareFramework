@@ -1,252 +1,40 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.tu_bs.isf.cs.e4cf</groupId>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.tu_bs.isf.cs.e4cf</groupId>
     <artifactId>e4CompareFrameowork</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
     <name>Parent POM of all subprojects</name>
 
-	<properties>
-		<tycho-version>1.1.0</tycho-version>
-		<tycho-extras-version>1.1.0</tycho-extras-version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<tycho.testArgLine></tycho.testArgLine>
-	</properties>
-
-	<modules>
-		<!--Plugin-Modules-->
+    <modules>
         <module>de.tu_bs.cs.isf.e4cf.core</module>
-		<module>de.tu_bs.cs.isf.e4cf.compare</module>
-		
-		<!-- <module>de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager</module>
-		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.compare_engine</module>
-		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view</module>
-		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.family_model_view</module>
-		<module>de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller</module>
-		<module>de.tu_bs.cs.isf.e4cf.core.exchange</module>
-		<module>de.tu_bs.cs.isf.e4cf.EMFModelLoader</module>
-		<module>de.tu_bs.cs.isf.e4cf.family_model_view.prototype</module>
-		<module>de.tu_bs.cs.isf.e4cf.featuremodel.configuration</module>
-		<module>de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view</module>
-		<module>de.tu_bs.cs.isf.e4cf.featuremodel.core</module>
-		<module>de.tu_bs.cs.isf.e4cf.featuremodel.model</module>
-	    <module>de.tu_bs.cs.isf.e4cf.graph.core</module>
-		<module>de.tu_bs.cs.isf.e4cf.graph.model</module>
-		<module>de.tu_bs.cs.isf.e4cf.meta_models</module>	
-		<module>de.tu_bs.cs.isf.e4cf.metric</module>
-		<module>de.tu_bs.cs.isf.e4cf.parser</module>
-		<module>de.tu_bs.cs.isf.e4cf.parser.antlr</module>
-		<module>de.tu_bs.cs.isf.e4cf.parts.consol_view</module>	
-		<module>de.tu_bs.cs.isf.e4cf.parts.project_explorer</module>
-		<module>de.tu_bs.cs.isf.e4cf.replay_view</module>	
-		<module>de.tu_bs.cs.isf.e4cf.simple_text_editor</module>	
-		<module>de.tu_bs.cs.isf.e4cf.solution</module>	
-		<module>de.tu_bs.cs.isf.e4cf.solver</module>-->		
-		<!--Testmodules-->
+    </modules>
 
-	</modules>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
-	<build>
-		<plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <reportOutputDirectory>${project.basedir}/../Javadoc</reportOutputDirectory>
-                    <destDir>${project.name}</destDir>
-                    <debug>true</debug>
-                    <doclint>none</doclint>
-                    <failOnWarnings>false</failOnWarnings>
-                </configuration>
-            </plugin>
-        
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<extensions>true</extensions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho-version}</version>
-				<configuration>
-					<pomDependencies>consider</pomDependencies>
-					<environments>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-packaging-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<!-- <dependencies> <dependency> <groupId>org.eclipse.tycho.extras</groupId> 
-					<artifactId>tycho-buildtimestamp-jgit</artifactId> <version>${tycho-extras-version}</version> 
-					</dependency> </dependencies> <configuration> <timestampProvider>jgit</timestampProvider> 
-					<jgit.ignore> pom.xml </jgit.ignore> </configuration> -->
-			</plugin>
-
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-surefire-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<configuration>
-					<useUIHarness>true</useUIHarness>
-					<includes>
-						<include>**/T*.java</include>
-						<include>**/B*.java</include>
-						<include>**/*Test.java</include>
-						<include>**/*Tests.java</include>
-					</includes>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.4</version>
-				<executions>
-					<execution>
-						<id>jacoco-initialize</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>jacoco-report</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-resources-plugin
-										</artifactId>
-										<versionRange>
-											[2.4.3,)
-										</versionRange>
-										<goals>
-											<goal>resources</goal>
-											<goal>testResources</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.eclipse.tycho
-										</groupId>
-										<artifactId>
-											tycho-compiler-plugin
-										</artifactId>
-										<versionRange>
-											[0.23.1,)
-										</versionRange>
-										<goals>
-											<goal>compile</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.eclipse.tycho
-										</groupId>
-										<artifactId>
-											tycho-packaging-plugin
-										</artifactId>
-										<versionRange>
-											[0.23.1,)
-										</versionRange>
-										<goals>
-											<goal>build-qualifier</goal>
-											<goal>build-qualifier-aggregator</goal>
-											<goal>validate-id</goal>
-											<goal>validate-version</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-
-	<!-- mvn clean verify jacoco:report -->
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.4</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
-
-	<repositories>
-		<repository>
-			<id>2020-06</id>
-			<url>http://download.eclipse.org/releases/2020-06</url>
-			<layout>p2</layout>
-		</repository>
-	</repositories>
-
-	<dependencies>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

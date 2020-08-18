@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.swt,
  org.eclipse.e4.ui.services,
  org.eclipse.e4.ui.di,
  org.eclipse.e4.ui.workbench,
- de.tu_bs.cs.isf.e4cf.core,
- de.tu_bs.cs.isf.e4cf.core.compare
+ de.tu_bs.cs.isf.e4cf.core.compare;bundle-version="1.0.0",
+ de.tu_bs.cs.isf.e4cf.core
 Export-Package: de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager.extension,
  de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager.util
