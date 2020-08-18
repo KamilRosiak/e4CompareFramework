@@ -2,7 +2,7 @@
 package de.tu_bs.cs.isf.e4cf.family_model_view.prototype;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -16,24 +16,18 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.swt.widgets.Composite;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelFactory;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelPackage;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariabilityCategory;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariationPoint;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.EMFResourceSetManager;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.IResourceManager;
+import de.tu_bs.cs.isf.e4cf.core.util.emf.EMFResourceSetManager;
+import de.tu_bs.cs.isf.e4cf.core.util.emf.IResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.plugin.FamilyModelViewPlugin;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewEvents;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.tests.CarExampleBuilder;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.EmptyIconProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.FamilyModelTransformation;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullExtensionProvider;
@@ -41,6 +35,12 @@ import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullLabelProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FXTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FamilyModelView;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXVariantResourceDialog;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelFactory;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelPackage;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariabilityCategory;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variant;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariationPoint;
 
 public class FamilyModelViewController {
 		
@@ -70,16 +70,7 @@ public class FamilyModelViewController {
 		collectProviderExtensions();
 		
 		// initialize the family model dummy
-		FamilyModel fm = CarExampleBuilder.createCarFamilyModel();
-		GenericFamilyModel genericFamilyModel = new GenericFamilyModel(
-				new EMFResourceSetManager(
-					(eclass) -> FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION, 
-					(eclass) -> FamilyModelViewStrings.FM_DEFAULT_FILE_EXT
-				)
-			);
-		genericFamilyModel.setInternalFamilyModel(fm);
-		
-		setFamilyModelWrapper(genericFamilyModel);
+		setFamilyModelWrapper(createDummyModel());
 		initializeFamilyModel(familyModelWrapper.getInternalFamilyModel());
 	}
 	
@@ -117,16 +108,11 @@ public class FamilyModelViewController {
 		if (artefactIconProvider == null) {
 			artefactIconProvider = new EmptyIconProvider();
 		}
-		
-		this.fmTransformations = thisPlugin.getTransformationsFromExtension();
-		if (fmTransformations == null) {
-			fmTransformations = Collections.emptyList();
-		}
 	}
 	
 	private void initializeFamilyModel(FamilyModel familyModel) {
 		String extension = fmvExtensionProvider.getExtension(FamilyModelPackage.eINSTANCE.getFamilyModel());
-		IResourceManager resourceManager = new EMFResourceSetManager(artefactExtensionProvider, fmvExtensionProvider);
+		IResourceManager resourceManager = new EMFResourceSetManager(Arrays.asList(extension));
 		GenericFamilyModel genericFamilyModel = new GenericFamilyModel(familyModel, resourceManager);
 		setFamilyModelWrapper(genericFamilyModel);
 	}
@@ -185,12 +171,7 @@ public class FamilyModelViewController {
 		model.getVariationPoints().add(groupAlternative);
 
 		
-		GenericFamilyModel genericFamilyModel = new GenericFamilyModel(
-			new EMFResourceSetManager(
-				(eclass) -> FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION, 
-				(eclass) -> FamilyModelViewStrings.FM_DEFAULT_FILE_EXT
-			)
-		);
+		GenericFamilyModel genericFamilyModel = new GenericFamilyModel(new EMFResourceSetManager(Arrays.asList(FamilyModelViewStrings.FM_DEFAULT_FILE_EXT)));
 		genericFamilyModel.setInternalFamilyModel(model);
 		
 		return genericFamilyModel;
@@ -228,17 +209,25 @@ public class FamilyModelViewController {
 		
 		Map<EObject, String> resourceMap = dialog.getResourceMap();
 		if (resourceMap.isEmpty()) {
-			RCPMessageProvider.errorMessage("Save Family Model", "The resource path could not be initialized correctly. "
-					+ "You haven't choosen a root directory.");
+			RCPMessageProvider.errorMessage("Save Family Model", "The resource paths could not be initialized correctly. "
+					+ "Is there a resource path for the family model and each variant?");
 			return;
+		}
+		
+		// add the URIs 
+		for (Variant variant : fm.getVariants()) {
+			if (variant.getInstance().eResource() == null) {
+				URI variantUri = URI.createFileURI(resourceMap.get(variant));
+				familyModelWrapper.addVariantMapping(variant, variantUri);
+			}
 		}
 		
 		// save the family model along with the referenced variants
 		try {
-			String rootPath = resourceMap.get(fm);
-			familyModelWrapper.save(rootPath);
+			String fmPath = resourceMap.get(fm);
+			familyModelWrapper.save(fmPath);
 			part.setDirty(false);
-			System.out.println("Saved the family model under the directory \""+rootPath+"\"");
+			System.out.println("Saved the family model under \""+fmPath+"\"");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -257,7 +246,8 @@ public class FamilyModelViewController {
 			e.printStackTrace();
 		}
  		
-		part.setDirty(false);
+ 		// dirty part 
+		part.setDirty(true);
 	}
 	
 	@Optional
@@ -272,9 +262,8 @@ public class FamilyModelViewController {
 		// Initialize the view
 		familyModelView.showFamilyModel(familyModelWrapper);
 		
-		// dirty part if the requested family model has a resource associated with it
-		Resource fmResource = familyModelWrapper.getInternalFamilyModel().eResource();
-		if (fmResource == null || !fmResource.isModified()) {
+		// dirty part if the requested family model is different from before
+		if (this.familyModelWrapper.getInternalFamilyModel() != fm) {
 			part.setDirty(true);
 		}
 	}
@@ -290,7 +279,7 @@ public class FamilyModelViewController {
 		}
 			
 		// apply transformation
-		FamilyModel fm = fmTransformation.get().apply(object);
+		FamilyModel fm = fmTransformation.get().transform(object);
 		
 		if (fm == null) {
 			RCPMessageProvider.errorMessage("Transform Family Model", "Transformation to family model failed.");

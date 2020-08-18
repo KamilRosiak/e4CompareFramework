@@ -43,8 +43,7 @@ public class CarExampleBuilder {
 				}
 		);
 		
-		FamilyModelDataGen fmDataGenerator = new FamilyModelDataGen();
-		FamilyModel fm = fmDataGenerator.createExampleGenericFamilyModel(
+		FamilyModel fm = FamilyModelDataGen.createExampleGenericFamilyModel(
 				car1, car2, 
 				car1.getWheels().get(0), car2.getWheels().get(1), car1.getWheels().get(1));
 		

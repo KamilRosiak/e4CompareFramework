@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ASCII"?>
+<car:Car xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:car="www.example.com/Car" Label="car2">
+  <wheels traction="50" model="AMD"/>
+  <wheels traction="60" model="AMD"/>
+  <wheels traction="70" model="AMD"/>
+  <wheels traction="80" model="AMD"/>
+</car:Car>

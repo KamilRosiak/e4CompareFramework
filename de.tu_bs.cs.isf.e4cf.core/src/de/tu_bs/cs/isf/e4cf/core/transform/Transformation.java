@@ -4,5 +4,4 @@ import java.util.function.Function;
 
 public interface Transformation<R> extends Function<Object, R> {
 	
-	public boolean canTransform(Object object);
 }

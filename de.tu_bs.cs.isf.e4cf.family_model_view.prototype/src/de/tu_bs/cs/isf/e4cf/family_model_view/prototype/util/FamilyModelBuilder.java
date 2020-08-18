@@ -15,7 +15,7 @@ public class FamilyModelBuilder {
 
 	private static FamilyModelFactory fmFactory = FamilyModelFactory.eINSTANCE;
 	
-	public FamilyModel createFamilyModel(String name, VariationPoint[] variationPoints, Variant[] variants) {
+	public static FamilyModel createFamilyModel(String name, VariationPoint[] variationPoints, Variant[] variants) {
 		FamilyModel familyModel = fmFactory.createFamilyModel();
 		familyModel.setName(name);
 		familyModel.getVariationPoints().addAll(Arrays.asList(variationPoints));
@@ -23,18 +23,17 @@ public class FamilyModelBuilder {
 		return familyModel;
 	}
 	
-	public VariationPoint createVariationPoint(String name, VariabilityCategory variability, VariantArtefact[] variantArtefacts, VariationPoint[] children, VariationPoint parent) {
+	public static VariationPoint createVariationPoint(String name, VariabilityCategory variability, VariantArtefact[] variantArtefacts, VariationPoint[] children, VariationPoint parent) {
 		VariationPoint variationPoint = fmFactory.createVariationPoint();
 		variationPoint.setName(name);
 		variationPoint.setVariabilityCategory(variability);
 		variationPoint.getVariantArtefacts().addAll(Arrays.asList(variantArtefacts));
 		variationPoint.getChildren().addAll(Arrays.asList(children));
 		variationPoint.setParent(parent);
-		if (parent != null) parent.getChildren().add(variationPoint);
 		return variationPoint;
 	}
 	
-	public VariantArtefact createVariantArtefact(String name, EObject[] artifacts, Variant[] origins) {
+	public static VariantArtefact createVariantArtefact(String name, EObject[] artifacts, Variant[] origins) {
 		VariantArtefact variantArtefact = fmFactory.createVariantArtefact();
 		variantArtefact.setName(name);
 		variantArtefact.getArtefacts().addAll(Arrays.asList(artifacts));
@@ -42,14 +41,14 @@ public class FamilyModelBuilder {
 		return variantArtefact;
 	}
 	
-	public VariantArtefact createVariantArtefact(String name, EObject[] artifacts) {
+	public static VariantArtefact createVariantArtefact(String name, EObject[] artifacts) {
 		VariantArtefact variantArtefact = fmFactory.createVariantArtefact();
 		variantArtefact.setName(name);
 		variantArtefact.getArtefacts().addAll(Arrays.asList(artifacts));
 		return variantArtefact;
 	}
 	
-	public Variant createVariant(String identifier, EObject instance) {
+	public static Variant createVariant(String identifier, EObject instance) {
 		Variant variant = fmFactory.createVariant();
 		variant.setIdentifier(identifier);
 		variant.setInstance(instance);

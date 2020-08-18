@@ -37,7 +37,6 @@ public class DefaultFamilyModelIconProvider implements IconProvider {
 			case MANDATORY: 	return new Image(FamilyModelViewFiles.FV_MANDATORY_16);
 			case ALTERNATIVE: 	return new Image(FamilyModelViewFiles.FV_ALTERNATIVE_16);
 			case OPTIONAL:		return new Image(FamilyModelViewFiles.FV_OPTIONAL_16);
-			case UNSET: 		return new Image(FamilyModelViewFiles.FV_SUB_SYSTEM_16);
 			default:			return null;
 		}
 	}

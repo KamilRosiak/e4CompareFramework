@@ -1,11 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.family_model_view.prototype.tests;
 
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -14,20 +15,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.tu_bs.cs.isf.e4cf.core.util.emf.EMFResourceSetManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.GenericFamilyModel;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarExtensionProvider;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.EMFResourceSetManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultFamilyModelExtensionProvider;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
 
 class FamilyModelPersistenceTest {
 
 	private static final String VARIANT1_REL_PATH = "resources/tests/persistence/variant1."+FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION;
 	private static final String VARIANT2_REL_PATH = "resources/tests/persistence/variant2."+FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION;
-	private static final String FM_ROOT_DIR = "resources/tests/persistence/";
-	
-	private static final String FM_PATH = FM_ROOT_DIR+"ExampleFamilyModel."+FamilyModelViewStrings.FM_DEFAULT_FILE_EXT;
+	private static final String FM_PATH = "resources/tests/persistence/genericFamilyModel."+FamilyModelViewStrings.FM_DEFAULT_FILE_EXT;
 	
 	public GenericFamilyModel genericFamilyModel;
 	
@@ -40,7 +37,8 @@ class FamilyModelPersistenceTest {
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		genericFamilyModel = new GenericFamilyModel(new EMFResourceSetManager(new CarExtensionProvider(), new DefaultFamilyModelExtensionProvider()));
+		List<String> extensions = Arrays.asList(FamilyModelViewStrings.FM_DEFAULT_FILE_EXT, FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION);
+		genericFamilyModel = new GenericFamilyModel(new EMFResourceSetManager(extensions));
 		genericFamilyModel.setInternalFamilyModel(CarExampleBuilder.createCarFamilyModel());
 	}
 
@@ -55,10 +53,12 @@ class FamilyModelPersistenceTest {
 	void successfulSaveFamilyModel() {		
 		// manually set the correct variants URIs
 		FamilyModel fm = genericFamilyModel.getInternalFamilyModel();
+		genericFamilyModel.addVariantMapping(fm.getVariants().get(0), URI.createURI(VARIANT1_REL_PATH));
+		genericFamilyModel.addVariantMapping(fm.getVariants().get(1), URI.createURI(VARIANT2_REL_PATH));
 		
 		// save the generic family model --> produces several files 
 		try {
-			genericFamilyModel.save(FM_ROOT_DIR);
+			genericFamilyModel.save(FM_PATH);
 		} catch (IOException e) {
 			fail("IOException was thrown");
 		} catch (RuntimeException e1) {
@@ -86,6 +86,6 @@ class FamilyModelPersistenceTest {
 		}	
 		
 		FamilyModel familyModel = genericFamilyModel.getInternalFamilyModel();
-		assertTrue(EcoreUtil.equals(familyModel, oldFamilyModel), "Both family models are supposed to have the same value after deserialization");
+		assertTrue("Both family models are supposed to have the same value after deserialization", EcoreUtil.equals(familyModel, oldFamilyModel));
 	}
 }

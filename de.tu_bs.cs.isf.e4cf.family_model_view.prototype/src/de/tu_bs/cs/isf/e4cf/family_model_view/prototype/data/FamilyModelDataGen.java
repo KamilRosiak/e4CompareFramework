@@ -11,7 +11,7 @@ import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variat
 
 public class FamilyModelDataGen extends FamilyModelBuilder {
 
-	public FamilyModel createExampleGenericFamilyModel(EObject variant1, EObject variant2, EObject... artefacts) {
+	public static FamilyModel createExampleGenericFamilyModel(EObject variant1, EObject variant2, EObject... artefacts) {
 		assert (artefacts != null && artefacts.length >= 1);
 		
 		int artefactSize = artefacts.length;

@@ -67,11 +67,8 @@ public class GraphNodePart extends AbstractGraphPart<GraphNode, GraphicalNode> i
 
     @Override
     protected void doRefreshVisual(GraphicalNode visual) {
-    	if (getVisual() == visual) {
-    		return;
-    	}
-    	
         // updating the visuals texts and position
+
     	GraphNode node = getContent();
         Rectangle rec = node.getBounds();
 
