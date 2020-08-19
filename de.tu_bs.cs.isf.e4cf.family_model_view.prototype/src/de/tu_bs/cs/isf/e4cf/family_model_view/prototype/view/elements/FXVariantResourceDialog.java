@@ -17,13 +17,12 @@ import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Family
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variant;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 public class FXVariantResourceDialog extends AbstractDialog {
@@ -58,24 +57,10 @@ public class FXVariantResourceDialog extends AbstractDialog {
 		
 		// Create controls for each resource
 		gridPane = new GridPane();
-		for (int i = -1; i < fm.getVariants().size(); i++) {
-			if (i < 0) { // CASE: family model resource
-				String fmResourcePath = getResourcePath(fm);
-				addResourceSelectionRow(0, fm.getName(), fmResourcePath, "Select Family Model Path", fm);
+		// family model resource
+		String fmResourcePath = getResourceDirectory(fm);
+		addResourceSelectionRow(0, fm.getName(), fmResourcePath, "Select Parent Directory Path", fm);
 				
-				// Separate family model from variant resource selection
-				Separator sep = new Separator(Orientation.HORIZONTAL);
-				gridPane.addRow(1, sep);
-				GridPane.setColumnSpan(sep, GridPane.REMAINING);
-				GridPane.setMargin(sep, new Insets(rowHeight / 2.0, 0, rowHeight / 2.0, 0));
-			} else { // CASE: variant resource
-				Variant variant = fm.getVariants().get(i);
-				String instanceResourcePath = getResourcePath(variant.getInstance());
-				
-				addResourceSelectionRow(i+2, variant.getIdentifier(), instanceResourcePath, "Select Variant Path", variant);
-			}
-		}
-		
 		// if the user is done selecting resource paths, collect and organize the input
 		getRightButton().setOnMousePressed(event -> {
 			// check if the resource map is sufficient to store the family model
@@ -96,10 +81,10 @@ public class FXVariantResourceDialog extends AbstractDialog {
 		getStage().showAndWait();
 	}
 
-	private String getResourcePath(EObject eobject) {
+	private String getResourceDirectory(EObject eobject) {
 		Resource res = eobject.eResource();
 		if (res != null) {
-			return res.getURI().toFileString();
+			return res.getURI().trimSegments(1).toFileString();
 		} else {
 			return "";
 		}
@@ -150,12 +135,12 @@ public class FXVariantResourceDialog extends AbstractDialog {
 		button.prefHeight(rowHeight);
 		button.setMaxWidth(Double.MAX_VALUE);
 		button.setOnMousePressed(event -> {
-			FileChooser fc = new FileChooser();
+			DirectoryChooser fc = new DirectoryChooser();
 			
 			File dir = new File(RCPContentProvider.getCurrentWorkspacePath());
 			fc.setInitialDirectory(dir);
 			fc.setTitle("Choose a file");
-			File selectedFile = fc.showSaveDialog(this.getStage());
+			File selectedFile = fc.showDialog(this.getStage());
 			if (selectedFile != null) {
 				resourceTextField.setText(selectedFile.toString());
 				resourceTextField.selectEnd();
@@ -184,12 +169,6 @@ public class FXVariantResourceDialog extends AbstractDialog {
 	private boolean isValidResourceMap() {
 		if (!isResourceValid(fm)) {
 			return false;
-		}
-		
-		for (Variant variant : fm.getVariants()) {
-			if (!isResourceValid(variant)) {
-				return false;
-			}
 		}
 		
 		return true;

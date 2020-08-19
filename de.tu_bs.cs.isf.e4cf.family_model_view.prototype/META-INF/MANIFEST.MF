@@ -6,23 +6,20 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car,
- de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car.impl,
- de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car.util,
- de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel,
- de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.impl,
- de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.util,
+Export-Package: de.tu_bs.cs.isf.e4cf.family_model_view.prototype,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car.impl,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.Car.util,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.impl,
- de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.util
-Require-Bundle: org.eclipse.swt,
+ de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.util,
+ de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable,
+ de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util
+Require-Bundle: org.junit.jupiter.api;bundle-version="5.5.1",
+ org.eclipse.jdt.junit5.runtime;bundle-version="1.0.600",
+ org.eclipse.swt,
  org.eclipse.jface,
  javax.inject,
- org.junit,
- org.junit.jupiter.api,
  org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.emf.ecore.xmi,
