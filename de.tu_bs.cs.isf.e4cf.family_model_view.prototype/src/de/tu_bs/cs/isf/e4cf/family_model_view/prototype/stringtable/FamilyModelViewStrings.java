@@ -17,6 +17,7 @@ public class FamilyModelViewStrings {
 	public static final String FM_LABEL_PROVIDER_ATTR = "labelProvider";
 	public static final String FM_EXTENSION_PROVIDER_ATTR = "extensionProvider";
 	public static final String FM_ICON_PROVIDER_ATTR = "iconProvider";
+	public static final String FM_ARTEFACT_FILTER_ATTR = "filter";
 	
 	public static final String FM_TRANSFORMATION_ELEM = "familyModelTransformation";
 	public static final String FM_TRANSFORMATION_ATTR = "transformation";

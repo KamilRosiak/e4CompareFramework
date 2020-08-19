@@ -27,12 +27,6 @@
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.family_model_properties">
-      <artefactSpecialization
-            extensionProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarExtensionProvider"
-            iconProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarIconProvider"
-            id="car_artefact_specialization"
-            labelProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarLabelProvider">
-      </artefactSpecialization>
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
