@@ -27,6 +27,12 @@
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.family_model_properties">
+      <artefactSpecialization
+            extensionProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarExtensionProvider"
+            iconProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarIconProvider"
+            id="CarArtefactSpecialization"
+            labelProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarLabelProvider">
+      </artefactSpecialization>
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
@@ -34,6 +40,12 @@
             file_extension="fml"
             project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.FamilyModelProjectExplorerExtension">
       </project_explorer_file_attr>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.core.PreferencesPage">
+      <pref_page_attr
+            pref_page_attr="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.contribution.FamilyModelPreferencePage">
+      </pref_page_attr>
    </extension>
 
 </plugin>

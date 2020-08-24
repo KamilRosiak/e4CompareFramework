@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -17,17 +19,17 @@ import org.junit.jupiter.api.Test;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.GenericFamilyModel;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarExtensionProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.EMFResourceSetManager;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.SimpleFMResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultFamilyModelExtensionProvider;
 
 class FamilyModelPersistenceTest {
 
-	private static final String VARIANT1_REL_PATH = "resources/tests/persistence/variant1."+FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION;
-	private static final String VARIANT2_REL_PATH = "resources/tests/persistence/variant2."+FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION;
 	private static final String FM_ROOT_DIR = "resources/tests/persistence/";
 	
-	private static final String FM_PATH = FM_ROOT_DIR+"ExampleFamilyModel."+FamilyModelViewStrings.FM_DEFAULT_FILE_EXT;
+	private static final String VARIANT1_REL_PATH = FM_ROOT_DIR+"variant1."+FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION;
+	private static final String VARIANT2_REL_PATH = FM_ROOT_DIR+"variant2."+FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION;
+	private static final String FM_PATH = 			FM_ROOT_DIR+"ExampleFamilyModel."+FamilyModelViewStrings.FM_DEFAULT_FILE_EXT;
 	
 	public GenericFamilyModel genericFamilyModel;
 	
@@ -40,7 +42,7 @@ class FamilyModelPersistenceTest {
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		genericFamilyModel = new GenericFamilyModel(new EMFResourceSetManager(new CarExtensionProvider(), new DefaultFamilyModelExtensionProvider()));
+		genericFamilyModel = new GenericFamilyModel(new SimpleFMResourceManager(new CarExtensionProvider(), new DefaultFamilyModelExtensionProvider()));
 		genericFamilyModel.setInternalFamilyModel(CarExampleBuilder.createCarFamilyModel());
 	}
 
@@ -58,7 +60,12 @@ class FamilyModelPersistenceTest {
 		
 		// save the generic family model --> produces several files 
 		try {
-			genericFamilyModel.save(FM_ROOT_DIR);
+			Map<EObject, String> resourceMap = new HashMap<>();
+			resourceMap.put(fm, FM_PATH);
+			resourceMap.put(fm.getVariants().get(0).getInstance(), VARIANT1_REL_PATH);
+			resourceMap.put(fm.getVariants().get(1).getInstance(), VARIANT2_REL_PATH);
+			
+			genericFamilyModel.save(resourceMap);
 		} catch (IOException e) {
 			fail("IOException was thrown");
 		} catch (RuntimeException e1) {

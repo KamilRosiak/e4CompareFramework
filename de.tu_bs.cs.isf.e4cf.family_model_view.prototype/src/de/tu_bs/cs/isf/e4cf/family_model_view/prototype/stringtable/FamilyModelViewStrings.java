@@ -30,4 +30,11 @@ public class FamilyModelViewStrings {
 	public static final String TEST_EXT_ID = "car_artefact_specialization";
 	public static final String TEST_CAR_FILE_EXTENSION = "car";
 	public static final String TEST_= "";
+	
+	/**
+	 * PREFERENCE PAGE
+	 */
+	public static final String PREF_FM_SPECIALIZATION_KEY = "pref_fm_specialization_key";
+	public static final String PREF_ARTEFACT_SPECIALIZATION_KEY = "pref_artefact_specialization_key";
+	public static final String PREF_DEFAULT_SPECIALIZATION = "defaultSpecialization";
 }

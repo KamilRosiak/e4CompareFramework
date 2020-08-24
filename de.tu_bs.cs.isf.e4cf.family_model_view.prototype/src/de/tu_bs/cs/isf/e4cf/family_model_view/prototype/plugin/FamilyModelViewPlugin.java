@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.family_model_view.prototype.plugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,9 +38,8 @@ public class FamilyModelViewPlugin {
 	}
 	
 	/**
-	 * Collects all relevant extension entries for the family model properties extension point. 
-	 * Ideally, there's a single extension for artefact specialization and at most one for family model specialization.
-	 * If there's more than one registered extension for a provider, the first one will be used. 
+	 * Collects all relevant extension entries for the family model properties extension point.
+	 * This should be the first method to call to initialize the this class. 
 	 * 
 	 * @return <tt>true</tt>, if there is a valid number of registered extensions 
 	 */
@@ -50,15 +50,9 @@ public class FamilyModelViewPlugin {
 				.filter(config -> config.getName().equals(FamilyModelViewStrings.FM_ARTEFACT_SPECIALIZATION_ELEM))
 				.collect(Collectors.toList());
 		
-		// Not more than one artefact specialization allowed
-		validPluginConfiguration &= artefactSpecializationConfigs.size() <= 1;
-		
 		familyModelSpecializationConfigs = extPoint.getConfigurationElements().stream()
 				.filter(config -> config.getName().equals(FamilyModelViewStrings.FM_FAMILY_MODEL_SPECIALIZATION_ELEM))
 				.collect(Collectors.toList());
-		
-		// Not more than one family model specialization allowed
-		validPluginConfiguration &= familyModelSpecializationConfigs.size() <= 1;
 		
 		transformationConfigs = extPoint.getConfigurationElements().stream()
 				.filter(config -> config.getName().equals(FamilyModelViewStrings.FM_TRANSFORMATION_ELEM))
@@ -67,45 +61,109 @@ public class FamilyModelViewPlugin {
 		return validPluginConfiguration;
 	}
 	
-	public LabelProvider getArtefactLabelProviderFromExtension() {
+	
+	public List<String> getFamilyModelSpecializationIds() {
+		return familyModelSpecializationConfigs
+			.stream()
+			.map((config) -> config.getAttribute(FamilyModelViewStrings.FM_ID_ATTR))
+			.collect(Collectors.toList());
+	}
+
+	public List<String> getArtefactSpecializationIds() {
+		return artefactSpecializationConfigs
+			.stream()
+			.map((config) -> config.getAttribute(FamilyModelViewStrings.FM_ID_ATTR))
+			.collect(Collectors.toList());
+	}
+	
+	public List<LabelProvider> getArtefactLabelProvidersFromExtension() {
 		List<LabelProvider> artefactLabelProviders = createExecutableAttributes(artefactSpecializationConfigs, FamilyModelViewStrings.FM_LABEL_PROVIDER_ATTR);
-		return artefactLabelProviders != null ? artefactLabelProviders.get(0) : null;
+		return artefactLabelProviders != null ? artefactLabelProviders : null;
 	}
 	
-	public ExtensionProvider getArtefactExtensionProviderFromExtension() {
+	public LabelProvider getArtefactLabelProviderFromExtension(String id) {
+		return getExecutableExtensionById(id, artefactSpecializationConfigs, FamilyModelViewStrings.FM_LABEL_PROVIDER_ATTR);
+	}
+	
+	public List<ExtensionProvider> getArtefactExtensionProvidersFromExtension() {
 		List<ExtensionProvider> extensionProviders = createExecutableAttributes(artefactSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
-		return extensionProviders != null ? extensionProviders.get(0) : null;
+		return extensionProviders != null ? extensionProviders : null;
 	}
 	
-	public IconProvider getArtefactIconProviderFromExtension() {
+	public ExtensionProvider getArtefactExtensionProviderFromExtension(String id) {
+		return getExecutableExtensionById(id, artefactSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
+	}
+	
+	public List<IconProvider> getArtefactIconProvidersFromExtension() {
 		List<IconProvider> iconProviders = createExecutableAttributes(artefactSpecializationConfigs, FamilyModelViewStrings.FM_ICON_PROVIDER_ATTR);
-		return iconProviders != null ? iconProviders.get(0) : null;
+		return iconProviders != null ? iconProviders : null;
 	}
 	
-	public ArtefactFilter getArtefactFilterFromExtension() {
+	public IconProvider getArtefactIconProviderFromExtension(String id) {
+		return getExecutableExtensionById(id, artefactSpecializationConfigs, FamilyModelViewStrings.FM_ICON_PROVIDER_ATTR);
+	}
+	
+	public List<ArtefactFilter> getArtefactFiltersFromExtension() {
 		List<ArtefactFilter> filters = createExecutableAttributes(artefactSpecializationConfigs, FamilyModelViewStrings.FM_ARTEFACT_FILTER_ATTR);
-		return filters != null ? filters.get(0) : new DefaultArtefactFilter();
+		return filters != null ? filters : Arrays.asList(new DefaultArtefactFilter());
 	}
 	
-	public LabelProvider getFamilyModelLabelProviderFromExtension() {
+	public ArtefactFilter getArtefactFilterFromExtension(String id) {
+		return getExecutableExtensionById(id, artefactSpecializationConfigs, FamilyModelViewStrings.FM_ARTEFACT_FILTER_ATTR);
+	}
+	
+	public List<LabelProvider> getFamilyModelLabelProvidersFromExtension() {
 		List<LabelProvider> labelProviders = createExecutableAttributes(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_LABEL_PROVIDER_ATTR);
-		return labelProviders != null ? labelProviders.get(0) : new DefaultFamilyModelLabelProvider();
+		return labelProviders != null ? labelProviders : Arrays.asList(new DefaultFamilyModelLabelProvider());
 	}
 	
-	public ExtensionProvider getFamilyModelExtensionProviderFromExtension() {
+	public LabelProvider getFamilyModelLabelProviderFromExtension(String id) {
+		LabelProvider labelProvider = getExecutableExtensionById(id, familyModelSpecializationConfigs, FamilyModelViewStrings.FM_LABEL_PROVIDER_ATTR);
+		return labelProvider != null ? labelProvider : new DefaultFamilyModelLabelProvider();
+	}
+	
+	public List<ExtensionProvider> getFamilyModelExtensionProviderwFromExtension() {
 		List<ExtensionProvider> extensionProviders = createExecutableAttributes(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
-		return extensionProviders != null ? extensionProviders.get(0) : new DefaultFamilyModelExtensionProvider();
+		return extensionProviders != null ? extensionProviders : Arrays.asList(new DefaultFamilyModelExtensionProvider());
 	}
 	
+	public ExtensionProvider getFamilyModelExtensionProviderFromExtension(String id) {
+		ExtensionProvider extensionProvider = getExecutableExtensionById(id, familyModelSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
+		return extensionProvider != null ? extensionProvider : new DefaultFamilyModelExtensionProvider();
+	}
+		
+	public List<IconProvider> getFamilyModelIconProvidersFromExtension() {
+		List<IconProvider> iconProviders = createExecutableAttributes(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_ICON_PROVIDER_ATTR);
+		return iconProviders != null ? iconProviders : Arrays.asList(new DefaultFamilyModelIconProvider());
+	}
+	
+	public IconProvider getFamilyModelIconProviderFromExtension(String id) {
+		IconProvider iconProvider = getExecutableExtensionById(id, familyModelSpecializationConfigs, FamilyModelViewStrings.FM_ICON_PROVIDER_ATTR);
+		return iconProvider != null ? iconProvider : new DefaultFamilyModelIconProvider();
+	}
+
 	public List<FamilyModelTransformation> getTransformationsFromExtension() {
 		return createExecutableAttributes(transformationConfigs, FamilyModelViewStrings.FM_TRANSFORMATION_ATTR);
 	}
 	
-	public IconProvider getFamilyModelIconProviderFromExtension() {
-		List<IconProvider> iconProviders = createExecutableAttributes(familyModelSpecializationConfigs, FamilyModelViewStrings.FM_EXTENSION_PROVIDER_ATTR);
-		return iconProviders != null ? iconProviders.get(0) : new DefaultFamilyModelIconProvider();
+	public FamilyModelTransformation getTransformationFromExtension(String id) {
+		return getExecutableExtensionById(id, transformationConfigs, FamilyModelViewStrings.FM_TRANSFORMATION_ATTR);
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	private <T> T getExecutableExtensionById(String id, List<IConfigurationElement> configs, String attribute) {
+		for (IConfigurationElement config : configs) {
+			if (id.equals(config.getAttribute(FamilyModelViewStrings.FM_ID_ATTR))) {
+				try {
+					return (T) config.createExecutableExtension(attribute);
+				} catch (CoreException e) {
+					// just return null
+				}
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Instantiates a list of configuration elements and returns them.
 	 * 
