@@ -67,10 +67,6 @@ public class GraphNodePart extends AbstractGraphPart<GraphNode, GraphicalNode> i
 
     @Override
     protected void doRefreshVisual(GraphicalNode visual) {
-    	if (getVisual() == visual) {
-    		return;
-    	}
-    	
         // updating the visuals texts and position
     	GraphNode node = getContent();
         Rectangle rec = node.getBounds();
@@ -85,9 +81,6 @@ public class GraphNodePart extends AbstractGraphPart<GraphNode, GraphicalNode> i
         if(visual.getParent() != null)
         	visual.getParent().layout();
 
-        visual.setTranslateX(rec.getX());
-        visual.setTranslateY(rec.getY());
-        
         // add selection handler
         SelectionModel selectionModel = this.getViewer().getAdapter(SelectionModel.class);
         if (nodeSelectionListener == null) {
