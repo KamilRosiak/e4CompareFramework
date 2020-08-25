@@ -23,6 +23,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -31,10 +32,7 @@ import de.tu_bs.cs.isf.e4cf.core.preferences.util.key_value.KeyValueNode;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelFactory;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariabilityCategory;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variant;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariationPoint;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.IResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.SimpleFMResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.plugin.FamilyModelViewPlugin;
@@ -79,12 +77,32 @@ public class FamilyModelViewController {
 		this.part.setDirty(false);
 	}
 	
+	@PostConstruct
+	public void postConstruct(Composite parent) {
+		this.parentComposite = parent;
+		reload(null);
+	}
+	
+	/**
+	 * Reloads the family model view and resets the displayed view to the initial example.
+	 * All the plugin extensions get reloaded from the preferences.
+	 * 
+	 * @param obj not used, can be null
+	 */
+	@Optional
+	@Inject
+	public void reload(@UIEventTopic(FamilyModelViewEvents.EVENT_RELOAD_VIEW) Object obj) {
+		collectProviderExtensions();
+		initializeCarExampleFamilyModel();
+		resetFamilyModelView();
+	}
+
 	private void collectProviderExtensions() {
 		FamilyModelViewPlugin thisPlugin = new FamilyModelViewPlugin(FamilyModelViewStrings.FM_EXT_POINT_ID);
 		
 		// Warn developer of potentially unwanted behaviour 
 		if (!thisPlugin.populate()) {
-			System.out.println("[Family Model View] Warning: There is more than one extension for a provider. Only one of them will be in use.");
+			System.out.println("[Family Model View] Warning: One of the family model view specializations might be incorrect.");
 		}
 		
 		// Collect providers for the pure family model view 
@@ -127,12 +145,19 @@ public class FamilyModelViewController {
 		}
 	}
 	
-	@PostConstruct
-	public void postConstruct(Composite parent) {
-		this.parentComposite = parent;
-		reload(null);
+	private void initializeCarExampleFamilyModel() {
+		IResourceManager resManager = new SimpleFMResourceManager(artefactExtensionProvider, fmvExtensionProvider);
+		GenericFamilyModel genericFamilyModel = new GenericFamilyModel(resManager);
+		FamilyModel fm = CarExampleBuilder.createCarFamilyModel();
+		genericFamilyModel.setInternalFamilyModel(fm);
+		
+		// clear old family model and set the example family model
+		if (familyModelWrapper != null && familyModelWrapper.getInternalFamilyModel() != null) {
+			EcoreUtil.delete(familyModelWrapper.getInternalFamilyModel());
+		}
+		setGenericFamilyModel(genericFamilyModel);
 	}
-
+	
 	public void resetFamilyModelView() {
 		// reset parent
 		for (int i = 0; i < parentComposite.getChildren().length; i++) {
@@ -151,32 +176,6 @@ public class FamilyModelViewController {
 		familyModelView.showFamilyModel(familyModelWrapper);
 		
 		parentComposite.layout();
-	}
-	
-	/**
-	 * Reloads the family model view and resets the displayed view to the initial example.
-	 * All the plugin extensions get reloaded from the preferences.
-	 * 
-	 * @param obj not used, can be null
-	 */
-	@Optional
-	@Inject
-	public void reload(@UIEventTopic(FamilyModelViewEvents.EVENT_RELOAD_VIEW) Object obj) {
-		collectProviderExtensions();
-		initializeCarExampleFamilyModel();
-		resetFamilyModelView();
-	}
-
-	private void initializeCarExampleFamilyModel() {
-		FamilyModel fm = CarExampleBuilder.createCarFamilyModel();
-		GenericFamilyModel genericFamilyModel = new GenericFamilyModel(
-				new SimpleFMResourceManager(
-					(eclass) -> FamilyModelViewStrings.TEST_CAR_FILE_EXTENSION, 
-					(eclass) -> FamilyModelViewStrings.FM_DEFAULT_FILE_EXT
-				)
-			);
-		genericFamilyModel.setInternalFamilyModel(fm);
-		setGenericFamilyModel(genericFamilyModel);
 	}
 	
 	/**
@@ -205,13 +204,6 @@ public class FamilyModelViewController {
 		if (familyModelWrapper == null) {
 			return;
 		}
-		
-		// compose absolute path as suggestion for the save dialog
-//		String filename = familyModelWrapper.getInternalFamilyModel().getName();
-//		String fileExtension = fmvExtensionProvider.getExtension(familyModelWrapper.getInternalFamilyModel().eClass());
-//		String relativePath = String.join("\\", "FamilyModels", filename+"."+fileExtension);
-//		String workspace = RCPContentProvider.getCurrentWorkspacePath();
-//		String absPath = String.join("\\", workspace, relativePath);
 		
 		// Query the user for the storage path for each object
 		FamilyModel fm = familyModelWrapper.getInternalFamilyModel();

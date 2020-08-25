@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variant;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.IResourceManager;
@@ -55,7 +56,8 @@ public class GenericFamilyModel {
 	
 	public void load(String path) throws IOException {
 		URI fmUri = resourceManager.toUri(path);
-		FamilyModel fm = resourceManager.load(fmUri);
+		URI workspaceUri = URI.createFileURI(RCPContentProvider.getCurrentWorkspacePath());
+		FamilyModel fm = resourceManager.load(fmUri, workspaceUri);
 		if (fm != null) {
 			familyModel = fm;
 		} else {

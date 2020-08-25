@@ -25,16 +25,17 @@ import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelV
 
 public class FamilyModelPreferencePage implements IPreferencePage {
 
-	KeyValueNode fmSpecializationNode;
-	String initialFmSpecialization;
+	private KeyValueNode fmSpecializationNode;
+	private String initialFmSpecialization;
 	
-	KeyValueNode artefactSpecializationNode;
-	String initialArtefactSpecialization;
+	private KeyValueNode artefactSpecializationNode;
+	private String initialArtefactSpecialization;
+	
+	private KeyValueNode fmTransformationNode;
+	private String initialFmTransformation;
+	
 	private ServiceContainer services;
 	
-	public FamilyModelPreferencePage() {
-		// TODO Auto-generated constructor stub
-	}
 
 	@Override
 	public void createPage(CTabFolder parent, ServiceContainer services) {
@@ -63,12 +64,17 @@ public class FamilyModelPreferencePage implements IPreferencePage {
 		fmSpecializationNode = loadNode(PREF_FM_SPECIALIZATION_KEY, PREF_DEFAULT_SPECIALIZATION); 
 		initialFmSpecialization = fmSpecializationNode.getStringValue();
 		List<String> fmSpecIds = fmvPlugin.getFamilyModelSpecializationIds();
-		createNodeRow(page, "FM Specs", fmSpecializationNode, fmSpecIds.toArray(new String[0]));
+		createNodeRow(page, "FM Specialization", fmSpecializationNode, fmSpecIds.toArray(new String[0]));
 
 		artefactSpecializationNode = loadNode(PREF_ARTEFACT_SPECIALIZATION_KEY, PREF_DEFAULT_SPECIALIZATION);
 		initialArtefactSpecialization = artefactSpecializationNode.getStringValue();
 		List<String> artefactSpecIds = fmvPlugin.getArtefactSpecializationIds();
-		createNodeRow(page, "Artefact Specs", artefactSpecializationNode, artefactSpecIds.toArray(new String[0]));
+		createNodeRow(page, "Artefact Specialization", artefactSpecializationNode, artefactSpecIds.toArray(new String[0]));
+		
+		fmTransformationNode = loadNode(PREF_FM_TRANSFORMATION_KEY, PREF_DEFAULT_TRANSFORMATION);
+		initialFmTransformation = fmTransformationNode.getStringValue();
+		List<String> fmTransformationIds = fmvPlugin.getTransformationIds();
+		createNodeRow(page, "FM Transformation", fmTransformationNode, fmTransformationIds.toArray(new String[0]));
 	}
 
 	protected void createNodeRow(Composite page, String label, KeyValueNode keyValueNode, String... items) {
@@ -79,9 +85,12 @@ public class FamilyModelPreferencePage implements IPreferencePage {
 		Combo rowCombo = new Combo(page, SWT.READ_ONLY | SWT.DROP_DOWN);
 		rowCombo.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
 		rowCombo.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		rowCombo.setText(keyValueNode.getStringValue());
 		
 		rowCombo.setItems(items);
+		if (items.length > 0) {
+			rowCombo.select(0);
+		}
+		
 		for (int i = 0; i < items.length; i++) {
 			String item = items[i];
 			if (item.equals(keyValueNode.getStringValue())) {

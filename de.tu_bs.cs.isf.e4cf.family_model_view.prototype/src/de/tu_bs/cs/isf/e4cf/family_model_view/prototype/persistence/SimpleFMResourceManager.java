@@ -2,18 +2,24 @@ package de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature.Setting;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.UnresolvedProxyCrossReferencer;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
@@ -101,18 +107,15 @@ public class SimpleFMResourceManager implements IResourceManager {
 		if (fmURI == null) {
 			isSaved = false;
 		}
-		
-//		fmURI = fmURI.appendSegment(familyModel.getName());
-//		fmURI = fmURI.appendFileExtension(fmExtension);
 		resourceSet.createResource(fmURI).getContents().add(familyModel);
 		
 		for (Variant variant : familyModel.getVariants()) {
 			URI variantURI = URIMapping.get(variant);
 			if (variantURI != null) {
-				resourceSet.createResource(variantURI).getContents().add(variant);
+				resourceSet.createResource(variantURI).getContents().add(variant.getInstance());
 			} else {				
 				// try to reuse its resource if there is one
-				if (variant.eResource() != null) {
+				if (variant.getInstance().eResource() != null) {
 					resourceSet.getResources().add(variant.eResource());
 				} else {
 					isSaved = false;
@@ -129,7 +132,7 @@ public class SimpleFMResourceManager implements IResourceManager {
 	}
 
 	@Override
-	public FamilyModel load(URI fmURI, URI... lookupURIs) throws IOException {
+	public FamilyModel load(URI fmURI, URI... lookupUris) throws IOException {
 		if (!fmURI.isFile()) {
 			return null;
 		}
@@ -144,6 +147,27 @@ public class SimpleFMResourceManager implements IResourceManager {
 		EObject eobject = res.getContents().get(0);
 		
 		// TODO: check if all references are resolved
+		
+		FamilyModel fm = (FamilyModel) eobject;
+		
+		// Repair unresolved proxies
+		ProxyResolver movedResResolver = new MovedResourceResolver(lookupUris);
+		for (Entry<EObject, Collection<Setting>> proxyEntry : UnresolvedProxyCrossReferencer.find(fm).entrySet()) {
+			EObject proxy = proxyEntry.getKey();
+			URI proxyUri = EcoreUtil.getURI(proxy);
+			
+			// 1. Try to track the unresolved URIs by using the lookup URIs
+			// - assumption: resource was moved to a different location
+			URI targetUri = movedResResolver.resolve(proxyUri);
+			if (targetUri != null) {
+				((InternalEObject) proxy).eSetProxyURI(targetUri);				
+			}
+			
+			
+			// 2. Ask the user to specify a resource path for the unresolved URIs
+			// - assumption: user renamed (and moved) the files
+			
+		}
 		
 		return (FamilyModel) eobject;	
 	}

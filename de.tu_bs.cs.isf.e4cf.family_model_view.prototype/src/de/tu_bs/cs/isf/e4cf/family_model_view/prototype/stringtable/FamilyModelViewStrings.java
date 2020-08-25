@@ -37,4 +37,7 @@ public class FamilyModelViewStrings {
 	public static final String PREF_FM_SPECIALIZATION_KEY = "pref_fm_specialization_key";
 	public static final String PREF_ARTEFACT_SPECIALIZATION_KEY = "pref_artefact_specialization_key";
 	public static final String PREF_DEFAULT_SPECIALIZATION = "defaultSpecialization";
+	
+	public static final String PREF_FM_TRANSFORMATION_KEY = "pref_fm_transformation_key";
+	public static final String PREF_DEFAULT_TRANSFORMATION = "defaultTransform";
 }

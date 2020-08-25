@@ -150,6 +150,13 @@ public class FamilyModelViewPlugin {
 		return getExecutableExtensionById(id, transformationConfigs, FamilyModelViewStrings.FM_TRANSFORMATION_ATTR);
 	}
 	
+	public List<String> getTransformationIds() {
+		return transformationConfigs
+			.stream()
+			.map((config) -> config.getAttribute(FamilyModelViewStrings.FM_ID_ATTR))
+			.collect(Collectors.toList());
+	}
+	
 	@SuppressWarnings("unchecked")
 	private <T> T getExecutableExtensionById(String id, List<IConfigurationElement> configs, String attribute) {
 		for (IConfigurationElement config : configs) {
