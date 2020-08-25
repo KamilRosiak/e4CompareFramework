@@ -3,9 +3,13 @@ package de.tu_bs.cs.isf.e4cf.family_model_view.prototype;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variant;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.IResourceManager;
@@ -36,18 +40,24 @@ public class GenericFamilyModel {
 	/**
 	 * Assumes variants of the family model to be independent from each other meaning there's no cross-references between them.
 	 * In order to save a family model including its references.
+	 * The <tt>resourcePaths</tt> maps eobject to their desire save locations.
 	 * 
-	 * @param path The path of the directory which will contain the family model and referenced objects
+	 * @param resourcePaths Mapping of the family model and variant instances to their desired save locations.
 	 * @throws IOException 
 	 */
-	public void save(String path) throws IOException {
-		URI fmUri = resourceManager.toUri(path);
-		resourceManager.save(familyModel, fmUri);
+	public void save(Map<EObject, String> resourcePaths) throws IOException {
+		// convert map to fit the resource manager interface
+		Map<EObject, URI> resourceUris = resourcePaths.entrySet()
+			.stream()
+			.collect(Collectors.toMap(Map.Entry::getKey,(entry) -> resourceManager.toUri(entry.getValue())));
+		
+		resourceManager.save(familyModel, resourceUris);
 	}
 	
 	public void load(String path) throws IOException {
 		URI fmUri = resourceManager.toUri(path);
-		FamilyModel fm = resourceManager.load(fmUri);
+		URI workspaceUri = URI.createFileURI(RCPContentProvider.getCurrentWorkspacePath());
+		FamilyModel fm = resourceManager.load(fmUri, workspaceUri);
 		if (fm != null) {
 			familyModel = fm;
 		} else {
