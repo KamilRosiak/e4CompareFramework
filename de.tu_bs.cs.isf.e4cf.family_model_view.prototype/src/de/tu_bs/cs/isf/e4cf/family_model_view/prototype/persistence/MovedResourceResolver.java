@@ -6,12 +6,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.eclipse.emf.common.util.URI;
 
+/**
+ * Proxy resolver that searches a list of lookup directories for a resource with an equal name.
+ * May change the segment of the proxy URI. The fragment part stays the same. 
+ * 
+ * @author Oliver Urbaniak
+ */
 public class MovedResourceResolver implements ProxyResolver {
 
 	private URI[] lookupUris;
@@ -20,11 +25,10 @@ public class MovedResourceResolver implements ProxyResolver {
 	 * Stores the mappings of proxy URIs to their moved locations.
 	 * The cache stores fragment-less URIs as we only need the locations of resources; 
 	 */
-	private Map<URI, URI> uriCache;
+	private Map<URI, URI> uriCache = new HashMap<>();
 	
 	public MovedResourceResolver(URI[] lookupUris) {
 		this.lookupUris = lookupUris;
-		this.uriCache = new HashMap<>();
 	}
 	
 	@Override

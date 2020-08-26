@@ -85,7 +85,7 @@ public class SimpleFMResourceManager implements IResourceManager {
 	 * Only EObjects with an URI are stored. They are either mapped by <tt>URIMapping</tt> or are already contained in a resource.
 	 */
 	@Override
-	public boolean save(FamilyModel familyModel, Map<EObject, URI> URIMapping) throws IOException {
+	public boolean save(FamilyModel familyModel, Map<EObject, URI> UriMapping) throws IOException {
 		boolean isSaved = true;
 		
 		// collect the necessary extensions
@@ -103,30 +103,28 @@ public class SimpleFMResourceManager implements IResourceManager {
 		initializeResourceSet(extensions);
 
 		// add referenced objects as resources
-		URI fmURI = URIMapping.get(familyModel);
-		if (fmURI == null) {
+		URI fmUri = UriMapping.get(familyModel);
+		if (fmUri != null && !fmUri.segmentsList().isEmpty()) {
+			resourceSet.createResource(fmUri).getContents().add(familyModel);			
+		} else {
 			isSaved = false;
 		}
-		resourceSet.createResource(fmURI).getContents().add(familyModel);
 		
 		for (Variant variant : familyModel.getVariants()) {
-			URI variantURI = URIMapping.get(variant);
-			if (variantURI != null) {
-				resourceSet.createResource(variantURI).getContents().add(variant.getInstance());
+			URI variantUri = UriMapping.get(variant);
+			if (variantUri != null && !variantUri.segmentsList().isEmpty()) {
+				resourceSet.createResource(variantUri).getContents().add(variant.getInstance());
 			} else {				
-				// try to reuse its resource if there is one
-				if (variant.getInstance().eResource() != null) {
-					resourceSet.getResources().add(variant.eResource());
-				} else {
-					isSaved = false;
-				}
+				isSaved = false;
 			}
 		}
 				
 		// save resource set under designated URIs
-		for (Resource res : resourceSet.getResources()) {
-			res.save(Collections.emptyMap());
-		}	
+		if (isSaved) {
+			for (Resource res : resourceSet.getResources()) {
+				res.save(Collections.emptyMap());
+			}				
+		}
 		
 		return isSaved;
 	}
@@ -144,29 +142,31 @@ public class SimpleFMResourceManager implements IResourceManager {
 		Resource res = resourceSet.createResource(fmURI);
 		res.load(Collections.emptyMap());
 		
-		EObject eobject = res.getContents().get(0);
-		
-		// TODO: check if all references are resolved
-		
+		EObject eobject = res.getContents().get(0);		
 		FamilyModel fm = (FamilyModel) eobject;
 		
 		// Repair unresolved proxies
 		ProxyResolver movedResResolver = new MovedResourceResolver(lookupUris);
+		ProxyResolver manualResolver = new ManualResolver();
+		
 		for (Entry<EObject, Collection<Setting>> proxyEntry : UnresolvedProxyCrossReferencer.find(fm).entrySet()) {
 			EObject proxy = proxyEntry.getKey();
 			URI proxyUri = EcoreUtil.getURI(proxy);
 			
 			// 1. Try to track the unresolved URIs by using the lookup URIs
 			// - assumption: resource was moved to a different location
-			URI targetUri = movedResResolver.resolve(proxyUri);
-			if (targetUri != null) {
+			URI targetUri = movedResResolver.resolve(proxyUri);			
+			
+			// 2. Ask the user to inspect the resource path for the unresolved URIs
+			// - assumption: user might have renamed (and moved) the files
+			((ManualResolver) manualResolver).setCandidateURI(targetUri);
+			targetUri = manualResolver.resolve(proxyUri);
+			
+			if (targetUri != null && !targetUri.segmentsList().isEmpty()) {
 				((InternalEObject) proxy).eSetProxyURI(targetUri);				
+			} else {
+				return null;
 			}
-			
-			
-			// 2. Ask the user to specify a resource path for the unresolved URIs
-			// - assumption: user renamed (and moved) the files
-			
 		}
 		
 		return (FamilyModel) eobject;	

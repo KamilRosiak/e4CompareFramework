@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence;
+package de.tu_bs.cs.isf.e4cf.family_model_view.prototype.contribution;
 
 import java.util.List;
 

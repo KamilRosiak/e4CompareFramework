@@ -38,7 +38,7 @@
          point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
       <project_explorer_file_attr
             file_extension="fml"
-            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.FamilyModelProjectExplorerExtension">
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.contribution.FamilyModelProjectExplorerExtension">
       </project_explorer_file_attr>
    </extension>
    <extension

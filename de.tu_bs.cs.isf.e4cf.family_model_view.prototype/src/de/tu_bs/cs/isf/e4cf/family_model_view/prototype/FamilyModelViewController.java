@@ -5,8 +5,11 @@ import static de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.Famil
 import static de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings.PREF_ARTEFACT_SPECIALIZATION_KEY;
 import static de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings.PREF_FM_SPECIALIZATION_KEY;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +30,14 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.key_value.KeyValueNode;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelPackage;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variant;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.IResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.SimpleFMResourceManager;
@@ -46,7 +52,10 @@ import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullLabelProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FXTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FamilyModelView;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultArtefactFilter;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXVariantResourceDialog;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.AbstractResourceRowDialog.ResourceEntry;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.LoadFamilyModelDialog;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.SaveFamilyModelDialog;
+import javafx.stage.FileChooser;
 
 public class FamilyModelViewController {
 		
@@ -178,17 +187,6 @@ public class FamilyModelViewController {
 		parentComposite.layout();
 	}
 	
-	/**
-	 * Initialize the resource manager and the generic family model.
-	 * 
-	 * @param familyModel The model for this view.
-	 */
-	private void initializeFamilyModel(FamilyModel familyModel) {
-		IResourceManager resourceManager = new SimpleFMResourceManager(artefactExtensionProvider, fmvExtensionProvider);
-		GenericFamilyModel genericFamilyModel = new GenericFamilyModel(familyModel, resourceManager);
-		setGenericFamilyModel(genericFamilyModel);
-	}
-	
 	@PreDestroy
 	public void preDestroy() {
 		
@@ -205,35 +203,133 @@ public class FamilyModelViewController {
 			return;
 		}
 		
-		// Query the user for the storage path for each object
+		// Create a save dialog and let the user select the correct paths for saving the family model + variants  
 		FamilyModel fm = familyModelWrapper.getInternalFamilyModel();
 		final int dialogWidth = 1024;
-		final int rowHeight = 30;
-		FXVariantResourceDialog dialog = new FXVariantResourceDialog(fm, "Family Model Resources", dialogWidth, rowHeight);
-		dialog.open();
+		final int rowHeight = 40;
+		SaveFamilyModelDialog dialog = new SaveFamilyModelDialog("Family Model Resources", dialogWidth, rowHeight);
 		
-		Map<EObject, String> resourceMap = dialog.getResourceMap();
+		// Family model resource entry
+		ResourceEntry fmEntry = new ResourceEntry();
+		fmEntry.setId(fm.getName());
+		fmEntry.setLabel(fm.getName());
+		fmEntry.setButtonLabel("Select Family Model Resource Path");
+		fmEntry.setResource(dialog.getResourcePath(fm));
+		fmEntry.setResourceSetter(oldEntry -> {
+			FileChooser fc = new FileChooser();
+			
+			File dir = new File(RCPContentProvider.getCurrentWorkspacePath());
+			fc.setInitialDirectory(dir);
+			fc.setTitle("Choose a Family Model File");
+			File selectedFile = fc.showSaveDialog(dialog.getStage());
+			if (selectedFile != null) {	
+				return new Pair<>(fm.getName(), selectedFile.toString());
+			}
+			return null;
+		});
+		
+		// Variant resource entries
+		List<ResourceEntry> variantEntries = new ArrayList<>();
+		for (Variant variant : fm.getVariants()) {
+			ResourceEntry variantEntry = new ResourceEntry();
+			variantEntry.setId(variant.getIdentifier());
+			variantEntry.setLabel(variant.getIdentifier());
+			variantEntry.setButtonLabel("Select Variant Path");
+			variantEntry.setResource(dialog.getResourcePath(variant.getInstance()));
+			variantEntry.setResourceSetter(oldEntry -> {
+				FileChooser fc = new FileChooser();
+				
+				File dir = new File(RCPContentProvider.getCurrentWorkspacePath());
+				fc.setInitialDirectory(dir);
+				fc.setTitle("Choose a Variant File");
+				File selectedFile = fc.showSaveDialog(dialog.getStage());
+				if (selectedFile != null) {	
+					return new Pair<>(variant.getIdentifier(), selectedFile.toString());
+				}
+				return null;
+			});
+			
+			variantEntries.add(variantEntry);
+		}
+		
+		// Build and open dialog
+		dialog.buildDialog()
+			.buildResourceEntry(fmEntry)
+			.buildSeparator()
+			.buildResourceEntry(variantEntries.toArray(new ResourceEntry[0]))
+			.open();
+		
+		// Obtain the resources from the dialog
+		Map<String, String> resourceMap = dialog.getResources();
 		if (resourceMap.isEmpty()) {
-			RCPMessageProvider.errorMessage("Save Family Model", "The resource path could not be initialized correctly. "
-					+ "You haven't choosen a root directory.");
+			RCPMessageProvider.errorMessage("Save Family Model", "The save operation has been aborted.");
 			return;
+		}
+		
+		// Map resources to actual eobjects
+		Map<EObject, String> resourceObjectMap = new HashMap<>();
+		resourceObjectMap.put(fm, resourceMap.get(fm.getName()));
+		for (Variant variant : fm.getVariants()) {
+			resourceObjectMap.put(variant, resourceMap.get(variant.getIdentifier()));
 		}
 		
 		// save the family model along with the referenced variants
 		try {
-			familyModelWrapper.save(resourceMap);
-			part.setDirty(false);
-			System.out.println("Saved the following family model resources:");
-			for (Map.Entry<EObject, String> saveLocation : resourceMap.entrySet()) {
-				if (saveLocation.getKey() instanceof FamilyModel) {
-					System.out.println("\t > Family Model("+((FamilyModel) saveLocation.getKey()).getName()+") \""+saveLocation.getValue()+"\"");					
-				} else if (saveLocation.getKey() instanceof Variant) {
-					System.out.println("\t > Variant("+((Variant) saveLocation.getKey()).getIdentifier()+") \""+saveLocation.getValue()+"\"");
-				}
+			boolean isSaved = familyModelWrapper.save(resourceObjectMap);
+			if (isSaved) {
+				part.setDirty(false);
+				System.out.println("Saved the following family model resources:");
+				for (Map.Entry<EObject, String> saveLocation : resourceObjectMap.entrySet()) {
+					if (saveLocation.getKey() instanceof FamilyModel) {
+						System.out.println("\t > Family Model("+((FamilyModel) saveLocation.getKey()).getName()+") \""+saveLocation.getValue()+"\"");					
+					} else if (saveLocation.getKey() instanceof Variant) {
+						System.out.println("\t > Variant("+((Variant) saveLocation.getKey()).getIdentifier()+") \""+saveLocation.getValue()+"\"");
+					}
+				}				
+			} else {
+				RCPMessageProvider.errorMessage("Save Family Model", "An error occurred while saving. The family model has not been saved.");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void loadFamilyModel() {
+		// Query the user for the storage path for each object
+		final int dialogWidth = 1024;
+		final int rowHeight = 40;
+		LoadFamilyModelDialog dialog = new LoadFamilyModelDialog("Family Model Resources", dialogWidth, rowHeight);
+		
+		String resourceId = "fm";
+		ResourceEntry fmEntry = new ResourceEntry();
+		fmEntry.setId(resourceId);
+		fmEntry.setLabel("Family Model Resource");
+		fmEntry.setButtonLabel("Select Resource");
+		fmEntry.setResource("");
+		fmEntry.setResourceSetter(oldEntry -> {
+			FileChooser fc = new FileChooser();
+			
+			File dir = new File(RCPContentProvider.getCurrentWorkspacePath());
+			fc.setInitialDirectory(dir);
+			fc.setTitle("Choose the Family Model");
+			File selectedFile = fc.showOpenDialog(dialog.getStage());
+			if (selectedFile != null && selectedFile.exists()) {
+				return new Pair<String, String>(fmEntry.getId(), selectedFile.toString());
+			}
+			return null;
+		});
+		
+		dialog.buildDialog().buildResourceEntry(fmEntry).open();
+		
+		// Retrieve the user selected resource
+		String fmPathString = dialog.getResources().get(resourceId);
+		String fmExtension = getExtension(FamilyModelPackage.eINSTANCE.getFamilyModel());
+		if (!fmPathString.endsWith(fmExtension)) {
+			RCPMessageProvider.errorMessage("Load Family Model", "The selected resource does not have a valid file extension.");
+			return;
+		}
+		
+		loadFamilyModel(fmPathString);
 	}
 	
 	@Optional
