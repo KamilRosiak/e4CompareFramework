@@ -74,7 +74,7 @@ public class FamilyModelViewController {
 	public FamilyModelViewController(ServiceContainer services) {
 		setServices(services);
 		this.part = services.partService.getPart(FamilyModelViewStrings.PART_NAME);
-		this.part.setDirty(false);
+//		this.part.setDirty(false);
 	}
 	
 	@PostConstruct
@@ -222,7 +222,7 @@ public class FamilyModelViewController {
 		// save the family model along with the referenced variants
 		try {
 			familyModelWrapper.save(resourceMap);
-			part.setDirty(false);
+//			part.setDirty(false);
 			System.out.println("Saved the following family model resources:");
 			for (Map.Entry<EObject, String> saveLocation : resourceMap.entrySet()) {
 				if (saveLocation.getKey() instanceof FamilyModel) {
@@ -249,7 +249,7 @@ public class FamilyModelViewController {
 			e.printStackTrace();
 		}
  		
-		part.setDirty(false);
+//		part.setDirty(false);
 	}
 	
 	@Optional
@@ -267,7 +267,7 @@ public class FamilyModelViewController {
 		// dirty part if the requested family model has a resource associated with it
 		Resource fmResource = familyModelWrapper.getInternalFamilyModel().eResource();
 		if (fmResource == null || !fmResource.isModified()) {
-			part.setDirty(true);
+//			part.setDirty(true);
 		}
 	}
 	
@@ -314,7 +314,7 @@ public class FamilyModelViewController {
 
 	public void setGenericFamilyModel(GenericFamilyModel familyModelWrapper) {
 		this.familyModelWrapper = familyModelWrapper;
-		this.part.setDirty(this.familyModelWrapper != null);
+//		this.part.setDirty(this.familyModelWrapper != null);
 	}
 	
 	public String getLabel(EObject eobject) {
