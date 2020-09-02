@@ -24,5 +24,13 @@
             class="CrossTreeConstraints.CrossTreeConstraintsPackage"
             genModel="model/feature_configuration.genmodel"/>
    </extension>
+   <extension
+         id="id1"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="configuration.e4xmi">
+      </fragment>
+   </extension>
 
 </plugin>
