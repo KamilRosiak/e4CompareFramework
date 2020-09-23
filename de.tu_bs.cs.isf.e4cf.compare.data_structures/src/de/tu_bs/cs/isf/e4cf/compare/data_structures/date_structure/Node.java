@@ -33,9 +33,15 @@ public interface Node {
 	public Values getValuesForKey(String key);
 	
 	/**
-	 * This method checks if the current node has no children which means it is a leaf node in this structure.
+	 * This method checks if the current node has no parent which means it is the root node in the data structure.
 	 */
 	public boolean isRoot();
+	
+	/**
+	 * This method checks if the current node has no children which means that the current node is a leaf.
+	 * @return
+	 */
+	public boolean isLeaf();
 	
 	/**
 	 * Returns the parent Node of this Node if available else this node is the root node.
@@ -57,4 +63,7 @@ public interface Node {
 	 * This method adds a child node to the current node.
 	 */
 	public void addChild(Node node);
+	
+	public int getChildAmount();
+	
 }

@@ -35,6 +35,15 @@ public abstract class AbstractNode implements Node {
 	}
 	
 	@Override
+	public boolean isLeaf() {
+		if(children.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
 	public Map<String, Values> getValues() {
 		return values;
 	}
@@ -51,6 +60,21 @@ public abstract class AbstractNode implements Node {
 	@Override 
 	public Values getValuesForKey(String key) {
 		return values.get(key);
+	}
+	
+	@Override
+	public int getChildAmount() {
+		int size = 1;
+		
+		if(children.isEmpty()) {
+			return size;
+		} else {
+			for(Node child : children) {
+				size += child.getChildAmount();
+			}
+			return size;
+		}
+
 	}
 	
 	/******************************************************
