@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure.interfaces;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public abstract class AbstractNode implements Node {
 	
 	@Override
 	public boolean isRoot() {
-		if(getParent() == null) {
+		if(parent == null) {
 			return true;
 		} else {
 			return false;
@@ -63,18 +63,17 @@ public abstract class AbstractNode implements Node {
 	}
 	
 	@Override
-	public int getChildAmount() {
+	public int getNumberOfChildren() {
 		int size = 1;
 		
 		if(children.isEmpty()) {
 			return size;
 		} else {
 			for(Node child : children) {
-				size += child.getChildAmount();
+				size += child.getNumberOfChildren();
 			}
 			return size;
 		}
-
 	}
 	
 	/******************************************************

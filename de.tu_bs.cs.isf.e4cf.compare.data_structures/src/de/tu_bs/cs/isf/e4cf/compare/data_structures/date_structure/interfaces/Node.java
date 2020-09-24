@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure.interfaces;
 
 import java.util.List;
 import java.util.Map;
@@ -64,6 +64,9 @@ public interface Node {
 	 */
 	public void addChild(Node node);
 	
-	public int getChildAmount();
+	/**
+	 * Returns the total number of child nodes
+	 */
+	public int getNumberOfChildren();
 	
 }
