@@ -8,3 +8,5 @@
  */
 
 rootProject.name = 'e4CompareFramework'
+
+include 'de.tu_bs.cs.isf.e4cf.core'
