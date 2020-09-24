@@ -9,5 +9,7 @@ Bundle-Localization: plugin
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.compare.data_structures
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport
+ org.eclipse.emf.ecore;visibility:=reexport,
+ de.tu_bs.cs.isf.e4cf.core
 Bundle-ActivationPolicy: lazy
+Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure.interfaces

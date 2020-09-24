@@ -1,8 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure.interfaces;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Tree {
+public interface Tree extends Serializable {
+	
 	
 	/**
 	 * @return the root node of this tree.
