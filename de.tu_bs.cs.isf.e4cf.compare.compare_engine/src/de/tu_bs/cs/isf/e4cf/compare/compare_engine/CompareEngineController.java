@@ -5,7 +5,7 @@ import javax.annotation.PostConstruct;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import de.tu_bs.cs.isf.e4cf.core.compare.parts.compare_engine.view.CompareEngineView;
+import de.tu_bs.cs.isf.e4cf.compare.compare_engine.view.CompareEngineView;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.embed.swt.FXCanvas;
 
