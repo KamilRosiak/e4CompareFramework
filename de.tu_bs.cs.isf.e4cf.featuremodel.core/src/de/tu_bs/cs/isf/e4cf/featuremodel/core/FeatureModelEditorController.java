@@ -44,7 +44,9 @@ public class FeatureModelEditorController {
 	
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, EMenuService menuService) {
+		
 		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
+		menuService.registerContextMenu(canvas, "de.tu_bs.cs.isf.e4cf.featuremodel.core.featureModelMenü");
 		this.services = services;
 		this.view = new FeatureModelEditorView(canvas, services);
 		this.errorListeners = new ArrayList<>();

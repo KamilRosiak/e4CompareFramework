@@ -15,12 +15,19 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 
 public class EMFModelLoader {
 
-	public EMFModelLoader() {
-		//Model initialiaze 
-		//PpuIECScenarioPackageImpl.eINSTANCE.eClass();
+	public static EObject load(String path, String extension) {
+		if(!path.equals("")) {
+	        // Get the resource
+	        Resource resource = loadResource(path, extension);
+	        // Get the first model element and cast it to the right type
+	        EObject object = resource.getContents().get(0);
+	        return object;	
+		} else {
+			return null;
+		}
 	}
 	
-	public static EObject load(String path, String extension) {
+	public static Resource loadResource(String path, String extension) {
 		if(!path.equals("")) {
 			URI pathURI = URI.createFileURI(path);
 			//register the XMI FileExtension add all extensions here 
@@ -29,19 +36,14 @@ public class EMFModelLoader {
 		    m.put(extension, new XMIResourceFactoryImpl());
 		    // Obtain a new resource set
 	        ResourceSet resSet = new ResourceSetImpl();
-	        
 	        // Get the resource
 	        Resource resource = resSet.getResource(pathURI, true);
-	        
-	        // Get the first model element and cast it to the right type, in my
-	        EObject object = resource.getContents().get(0);
-	        
-	        return object;	
+	        return resource;
 		} else {
 			return null;
 		}
-
 	}
+	
 	
 	public static String getExtension(String path) {
 		return path.substring(path.lastIndexOf("\\.")+1, path.length());

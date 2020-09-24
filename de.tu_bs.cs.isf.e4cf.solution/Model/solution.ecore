@@ -9,12 +9,8 @@
     <eOperations name="resetElement" lowerBound="1"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="Similarity" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat" defaultValueLiteral="0.0"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="leftElement">
-      <eGenericType eTypeParameter="#//AbstractSolutionElement/T"/>
-    </eStructuralFeatures>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="rightElement">
-      <eGenericType eTypeParameter="#//AbstractSolutionElement/T"/>
-    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="elements" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractContainer" abstract="true" eSuperTypes="#//AbstractSolutionElement">
     <eTypeParameters name="T">
