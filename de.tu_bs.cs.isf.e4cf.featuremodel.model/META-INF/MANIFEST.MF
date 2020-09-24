@@ -27,3 +27,4 @@ Export-Package: ConstraintGrammar,
  de.tu_bs.cs.isf.e4cf.featuremodel.model.util
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.featuremodel.model
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: de.tu_bs.cs.isf.e4cf.Activator
