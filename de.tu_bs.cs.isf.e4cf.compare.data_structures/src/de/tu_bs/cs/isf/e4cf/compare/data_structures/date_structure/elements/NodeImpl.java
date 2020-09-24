@@ -11,6 +11,11 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure.interfaces.No
 public class NodeImpl extends AbstractNode {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2646668251637650151L;
+
+	/**
 	 * This constructor initializes a node without a parent , e.g, the root node.
 	 * @param nodeType is the type of the node , e.g , statement, method, class
 	 */

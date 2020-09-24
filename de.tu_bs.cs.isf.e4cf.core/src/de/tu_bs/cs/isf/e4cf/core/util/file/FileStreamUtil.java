@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 /**
  * This Utility class contains helper methods that allow to handle files and their input.
- * @author kamil
+ * @author Kamil
  *
  */
 public class FileStreamUtil {

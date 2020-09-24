@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure.interfaces;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure.util.Values;
  * @author Kamil Rosiak
  *
  */
-public interface Node {
+public interface Node extends Serializable {
 	
 	/**
 	 * This method returns the type of the node, e.g., class, method, statement. This type has to be defined during the parsing process where.
@@ -60,7 +61,7 @@ public interface Node {
 	public List<Node> getChildren();
 	
 	/**
-	 * This method adds a child node to the current node.
+	 * This method adds a child node to the current node and sets the parent.
 	 */
 	public void addChild(Node node);
 	

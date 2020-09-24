@@ -102,6 +102,7 @@ public abstract class AbstractNode implements Node {
 	
 	@Override
 	public void addChild(Node child) {
+		child.setParent(this);
 		this.children.add(child);
 	}
 	
