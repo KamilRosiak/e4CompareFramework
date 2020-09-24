@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.core.compare.parts.compare_engine;
+package de.tu_bs.cs.isf.e4cf.compare.compare_engine;
 
 import javax.annotation.PostConstruct;
 
