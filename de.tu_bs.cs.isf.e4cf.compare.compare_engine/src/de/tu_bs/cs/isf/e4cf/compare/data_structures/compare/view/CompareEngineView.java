@@ -1,9 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.compare.view;
 
-
+import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.compare.view.parts.TreeTable;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.collections.FXCollections;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -27,6 +29,11 @@ public class CompareEngineView {
         table = new TreeTable();
         root.getChildren().add(table);
 		return scene;
+	}
+
+	public void showArtifacts(List<Tree> artifacts) {
+		table.getItems().clear();
+		table.setItems(FXCollections.observableArrayList(artifacts));
 	}
 	
 

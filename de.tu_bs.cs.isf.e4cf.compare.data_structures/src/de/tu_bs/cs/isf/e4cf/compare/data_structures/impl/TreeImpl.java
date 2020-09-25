@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.elements;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractTree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;

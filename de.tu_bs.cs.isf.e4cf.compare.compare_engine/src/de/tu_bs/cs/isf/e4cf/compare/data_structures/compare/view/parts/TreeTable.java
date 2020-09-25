@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.compare.view.parts;
 
+
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;

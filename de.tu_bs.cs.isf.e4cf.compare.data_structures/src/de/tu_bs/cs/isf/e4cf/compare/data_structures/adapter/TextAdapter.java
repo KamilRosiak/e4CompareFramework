@@ -2,8 +2,8 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.adapter;
 
 import java.nio.file.Paths;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.elements.NodeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.elements.TreeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
