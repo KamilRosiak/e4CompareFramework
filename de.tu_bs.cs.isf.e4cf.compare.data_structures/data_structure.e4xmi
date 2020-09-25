@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_WsICoP8dEeqFUOOm4OVMGg">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_XPZHwP8dEeqFUOOm4OVMGg" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.left_window">
+    <elements xsi:type="basic:Part" xmi:id="_Zc7WUP8dEeqFUOOm4OVMGg" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures.part.compareengine" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.compare.data_structures/de.tu_bs.cs.isf.e4cf.compare.data_structures.compare.CompareEngineController" label="CompareEngine" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.data_structures/icons/compare_engine_24.png"/>
+  </fragments>
+</fragment:ModelFragments>
