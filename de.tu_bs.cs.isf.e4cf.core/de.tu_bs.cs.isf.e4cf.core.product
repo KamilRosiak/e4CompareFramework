@@ -3,7 +3,6 @@
 
 <product name="de.tu_bs.cs.isf.e4cf.core" uid="de.tu_bs.cs.isf.e4cf.core_1" id="de.tu_bs.cs.isf.e4cf.core.product" application="de.tu_bs.cs.isf.e4cf.core.FrameworkE4Application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -18,7 +17,6 @@
 
    <windowImages/>
 
-
    <launcher>
       <win useIco="true">
          <ico path="/de.tu_bs.cs.isf.e4cf.core/e4cIcon.ico"/>
@@ -26,11 +24,9 @@
       </win>
    </launcher>
 
-
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.google.guava"/>
@@ -42,7 +38,6 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.attribute_manager"/>
-      <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.compare_engine"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.family_model_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller"/>
@@ -146,6 +141,7 @@
       <plugin id="org.eclipse.gef.mvc.fx"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.jdt.annotation" version="2.2.600.v20200408-1511"/>
+      <plugin id="org.eclipse.jdt.junit5.runtime"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.osgi"/>
