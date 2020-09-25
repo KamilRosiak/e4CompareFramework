@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="ArtifactReader" name="ArtifactReader" schema="schema/ArtifactReader.exsd"/>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactReader">
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.adapter.TextAdapter">
+      </artifactReader>
+   </extension>
+
+
+</plugin>
