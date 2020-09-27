@@ -29,6 +29,10 @@ public class DefaultFamilyModelLabelProvider implements LabelProvider {
 			return ((Variant) artefact).getIdentifier();
 		} else if (artefact instanceof VariantArtefact) {
 			String varArtefactName = ((VariantArtefact) artefact).getName();
+			int newlineIndex = varArtefactName.indexOf("\n");
+			if (newlineIndex >= 0) {
+				varArtefactName = varArtefactName.substring(0, newlineIndex);				
+			}
 			String originString = getOriginString((VariantArtefact) artefact);
 			return varArtefactName+" --> "+originString;
 		} else {
