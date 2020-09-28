@@ -4,7 +4,7 @@
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactReader">
       <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.adapter.TextAdapter">
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.reader.TextReader">
       </artifactReader>
    </extension>
 

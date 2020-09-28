@@ -5,13 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.Values;
 
 public abstract class AbstractNode implements Node {
+	private static final long serialVersionUID = 5776489857546412690L;
 	private String nodeType;
 	private List<Node> children;
 	private Node parent;
 	private Map<String,Values> values;
+	private VariabilityClass varClass;
 	
 	public AbstractNode() {
 		initializeNode();
@@ -76,6 +79,17 @@ public abstract class AbstractNode implements Node {
 		}
 	}
 	
+	@Override
+	public List<Node> getChildrenOfType(String nodeType) {
+		List<Node> childrenList = new ArrayList<Node>();
+		for(Node child : getChildren()) {
+			if(child.getNodeType().equals(nodeType)) {
+				childrenList.add(child);
+			}
+		}
+		return childrenList;
+	}
+	
 	/******************************************************
 	 * GETTER AND SETTER 
 	 ******************************************************/
@@ -112,6 +126,16 @@ public abstract class AbstractNode implements Node {
 
 	public void setValues(Map<String,Values> values) {
 		this.values = values;
+	}
+	
+	@Override
+	public VariabilityClass getVariabilityClass() {
+		return varClass;
+	}
+
+	@Override
+	public void setVariabilityClass(VariabilityClass varClass) {
+		this.varClass = varClass;
 	}
 
 }

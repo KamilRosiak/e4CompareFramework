@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.Values;
 
 /**
@@ -31,6 +32,9 @@ public interface Node extends Serializable {
 	 */
 	public void addValue(String key, String variant, String value);
 	
+	/**
+	 * This method returns the value for the given key.
+	 */
 	public Values getValuesForKey(String key);
 	
 	/**
@@ -61,6 +65,11 @@ public interface Node extends Serializable {
 	public List<Node> getChildren();
 	
 	/**
+	 * This method returns all children nodes of the given type.
+	 */
+	public List<Node> getChildrenOfType(String nodeType);
+	
+	/**
 	 * This method adds a child node to the current node and sets the parent.
 	 */
 	public void addChild(Node node);
@@ -69,5 +78,16 @@ public interface Node extends Serializable {
 	 * Returns the total number of child nodes
 	 */
 	public int getNumberOfChildren();
+	
+	/**
+	 * This method returns the variability class of this node.
+	 */
+	public VariabilityClass getVariabilityClass();
+	
+	/**
+	 * This method sets the variability class of this node.
+	 */
+	public void setVariabilityClass(VariabilityClass varClass);
+	
 	
 }

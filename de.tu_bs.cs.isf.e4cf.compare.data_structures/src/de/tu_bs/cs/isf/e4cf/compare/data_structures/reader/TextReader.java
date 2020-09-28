@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.adapter;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.reader;
 
 import java.nio.file.Paths;
 
@@ -14,14 +14,15 @@ import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
  * @author Kamil Rosiak
  *
  */
-public class TextAdapter extends AbstractArtifactReader {
+public class TextReader extends AbstractArtifactReader {
 	public final static String[] SUPPORTED_FILE_ENDINGS = {"txt"};
 	public final static String NODE_TYPE_TREE = "TEXT";
 	public final static String NODE_TYPE_LINE = "LINE";
 	public final static String NODE_TYPE_WORD = "WORD";
+	public final static String VALUE_TYPE_TEXT = "TEXT";
 	
-	public TextAdapter(FileTreeElement element) {
-		super(SUPPORTED_FILE_ENDINGS, element);
+	public TextReader() {
+		super(SUPPORTED_FILE_ENDINGS);
 	}
 
 	@Override
@@ -31,7 +32,10 @@ public class TextAdapter extends AbstractArtifactReader {
 			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
 			//Spiting the input by lines
 			String[] lines = s.split("\n");
-			tree = new TreeImpl(element.getAbsolutePath(),new NodeImpl(NODE_TYPE_TREE));
+			//The name is only the file name
+			String name = element.getAbsolutePath().substring(element.getAbsolutePath().lastIndexOf("\\") + 1);
+			
+			tree = new TreeImpl(name,new NodeImpl(NODE_TYPE_TREE));
 			for(String line :lines) {
 				Node lineNode = new NodeImpl(NODE_TYPE_LINE, tree.getRoot());
 				String[] words = line.split(" ");

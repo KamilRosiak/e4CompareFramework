@@ -36,39 +36,12 @@
 .table-view .table-cell{
     -fx-font-weight:bold;
     -fx-font-size:15px;           
-    -fx-text-fill:orange; 
+    -fx-text-fill:black; 
 
 }
-
-
-/*Style for each < non odd> row of table view*/
-.table-row-cell{
-    -fx-background-color: white;
-    -fx-background-insets: 0.0, 0.0 0.0 1.0 0.0;
-    -fx-padding: 0.0em; 
-}
-
-/*Style for each <odd> row of table view*/
-.table-row-cell:odd{
-    -fx-background-color: orange;
-    -fx-background-insets: 0.0, 0.0 0.0 1.0 0.0;
-    -fx-padding: 0.0em;  
-}
-
 
 /*Style of each entire row in the table view*/
 .table-row-cell:selected {
    -fx-border-color:transparent firebrick transparent firebrick  ;
     -fx-border-width:2.0; 
-}
-
-
-/*Style of each entire row in the table view when is hovered*/
-.table-row-cell:hover {
-    -fx-background-color:orange;
-}
-
-/*Style of each entire row in the table view when is getting focused*/
-.table-row-cell:focused {
-    -fx-background-color:purple;
 }

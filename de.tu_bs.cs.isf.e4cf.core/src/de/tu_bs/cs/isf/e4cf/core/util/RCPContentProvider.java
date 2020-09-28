@@ -36,11 +36,11 @@ public class RCPContentProvider {
 	/**
 	 * This method creates a list of object that are provides by a given extension point.
 	 */
-	public static List<Object> getInstanceFromBundle(String point, String extensionID) {
-		List<Object> objects = new ArrayList<Object>();
+	public static <T>List<T> getInstanceFromBundle(String point, String extensionID) {
+		List<T> objects = new ArrayList<T>();
 	    for (IConfigurationElement config : getIConfigurationElements(point)) {
 			try {
-				objects.add(config.createExecutableExtension(extensionID));
+				objects.add((T)config.createExecutableExtension(extensionID));
 			} catch (CoreException e) {
 				e.printStackTrace();
 				return null;

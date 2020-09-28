@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
@@ -32,5 +33,15 @@ public class NodeImpl extends AbstractNode {
 		setParent(parent);
 		parent.addChild(this);
 	}
+	
+	/**
+	 * This constructor initializes a node with a given type and a given @VariabilityClass. Also, the given parent node is set, and this node is added as a child node.
+	 * @param nodeType is the type of the node , e.g , statement, method, class
+	 */
+	public NodeImpl(String nodeString , Node parent, VariabilityClass varClass) {
+		this(nodeString, parent);
+		setVariabilityClass(varClass);
+	}
+	
 
 }

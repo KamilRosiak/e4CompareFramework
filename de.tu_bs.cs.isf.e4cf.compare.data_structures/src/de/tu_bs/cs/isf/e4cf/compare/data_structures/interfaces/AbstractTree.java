@@ -7,6 +7,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 public class AbstractTree implements Tree {
 	private Node root;
 	private String treeName;
+	private String artifactType;
 	
 	
 	@Override
@@ -56,6 +57,7 @@ public class AbstractTree implements Tree {
 		return root;
 	}
 	public void setRoot(Node root) {
+		setArtifactType(root.getNodeType());
 		this.root = root;
 	}
 	
@@ -65,5 +67,9 @@ public class AbstractTree implements Tree {
 	}
 	public void setTreeName(String treeName) {
 		this.treeName = treeName;
+	}
+
+	public void setArtifactType(String artifactType) {
+		this.artifactType = artifactType;
 	}
 }
