@@ -14,6 +14,7 @@ Export-Package: de.tu_bs.cs.isf.e4cf.family_model_view.prototype,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.impl,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.util,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable,
+ de.tu_bs.cs.isf.e4cf.family_model_view.prototype.transformation,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util
 Require-Bundle: org.junit.jupiter.api;bundle-version="5.5.1",
  org.eclipse.jdt.junit5.runtime;bundle-version="1.0.600",

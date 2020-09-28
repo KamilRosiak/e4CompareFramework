@@ -14,7 +14,7 @@ import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.ExtensionProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.IconProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.LabelProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.FamilyModelTransformation;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.transformation.FamilyModelTransformation;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultArtefactFilter;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultFamilyModelExtensionProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultFamilyModelIconProvider;

@@ -30,6 +30,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view.util.DetailViewStringTable;
+import de.tu_bs.cs.isf.e4cf.core.compare.string_table.E4CompareEventTable;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.key_value.KeyValueNode;
@@ -39,20 +41,22 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelPackage;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variant;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariationPoint;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.IResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.SimpleFMResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.plugin.FamilyModelViewPlugin;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewEvents;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.tests.CarExampleBuilder;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.transformation.FamilyModelTransformation;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.EmptyIconProvider;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.FamilyModelTransformation;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullExtensionProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullLabelProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FXTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FamilyModelView;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultArtefactFilter;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.AbstractResourceRowDialog.ResourceEntry;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXFamilyModelElement;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.LoadFamilyModelDialog;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.SaveFamilyModelDialog;
 import javafx.stage.FileChooser;
@@ -74,6 +78,7 @@ public class FamilyModelViewController {
 	private ArtefactFilter artefactFilter;
 	
 	private List<FamilyModelTransformation> fmTransformations;
+	private Map<VariationPoint, Object> variationPointDataMapping = new HashMap<>();
 
 	private MPart part;
 
@@ -104,6 +109,7 @@ public class FamilyModelViewController {
 		collectProviderExtensions();
 		initializeCarExampleFamilyModel();
 		resetFamilyModelView();
+		variationPointDataMapping.clear();
 	}
 
 	private void collectProviderExtensions() {
@@ -344,7 +350,7 @@ public class FamilyModelViewController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
- 		
+ 		 		
 		part.setDirty(false);
 	}
 	
@@ -372,19 +378,38 @@ public class FamilyModelViewController {
 	public void transformAndShowFamilyModel(@UIEventTopic(FamilyModelViewEvents.EVENT_TRANSFORM_AND_SHOW_FAMILY_MODEL) Object object) {
 		// check if the object actually is transformable, pick the first transformation
 		java.util.Optional<FamilyModelTransformation> fmTransformation = fmTransformations.stream()
-				.filter(transformation -> transformation.canTransform(object)).findFirst();
+				.filter(transformation -> transformation.canTransform(object))
+				.findFirst();
 		if (!fmTransformation.isPresent()) {
 			RCPMessageProvider.errorMessage("Transform Family Model", "There is not suitable transformation for the provided model.");
 		}
 			
-		// apply transformation
+		// apply transformation and reset variation point mapping
 		FamilyModel fm = fmTransformation.get().apply(object);
+		variationPointDataMapping.clear();
+		variationPointDataMapping.putAll(fmTransformation.get().getData());
 		
 		if (fm == null) {
 			RCPMessageProvider.errorMessage("Transform Family Model", "Transformation to family model failed.");
 		}
 		
 		showFamilyModel(fm);
+	}
+	
+	@Optional
+	@Inject
+	public void showDetails(@UIEventTopic(FamilyModelViewEvents.EVENT_SHOW_DETAILS) FXFamilyModelElement fxFmElement) {
+		// check if there's a variation point with a mapping onto the real data object
+		Object targetData = fxFmElement.get();
+		if (targetData instanceof VariationPoint) {
+			Object mappedData = variationPointDataMapping.get(targetData);
+			if (mappedData != null) {
+				targetData = mappedData;
+			}
+		}
+		
+		services.partService.showPart(DetailViewStringTable.FAMILYMODE_DETAIL_VIEW_ID);
+		services.eventBroker.send(E4CompareEventTable.SHOW_DETAIL_EVENT, targetData);
 	}
 
 	/**
@@ -457,5 +482,9 @@ public class FamilyModelViewController {
 	 */
 	public boolean filter(EObject eobject) {
 		return artefactFilter.apply(eobject);
+	}
+
+	public Map<VariationPoint, Object> getVariationPointDataMapping() {
+		return variationPointDataMapping;
 	}
 }
