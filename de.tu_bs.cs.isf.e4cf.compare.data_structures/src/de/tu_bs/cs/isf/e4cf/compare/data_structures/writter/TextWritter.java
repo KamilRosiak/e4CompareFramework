@@ -3,11 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.writter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-<<<<<<< HEAD
-import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-=======
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.reader.TextReader;
->>>>>>> 306de16613b747bdd6dc035c6587bc5ba050e690
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
 public class TextWritter extends AbstractArtifactWriter {
