@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.Values;
@@ -47,12 +48,12 @@ public abstract class AbstractNode implements Node {
 	}
 	
 	@Override
-	public Map<String, Values> getValues() {
+	public Map<String, Values> getAttributes() {
 		return values;
 	}
 	
 	@Override
-	public void addValue(String key, String variant, String value) {
+	public void addAttribute(String key, String variant, String value) {
 		if(values.containsKey(key)) {
 			values.get(key).putValue(variant, value);
 		} else {
@@ -61,7 +62,7 @@ public abstract class AbstractNode implements Node {
 	}
 	
 	@Override 
-	public Values getValuesForKey(String key) {
+	public Values getAttributesForKey(String key) {
 		return values.get(key);
 	}
 	
@@ -137,5 +138,18 @@ public abstract class AbstractNode implements Node {
 	public void setVariabilityClass(VariabilityClass varClass) {
 		this.varClass = varClass;
 	}
+	
+	@Override
+	public String toString() {
+		String nodeName = "NodeType: "+getNodeType() +" \n";
+		
+		for(Entry<String, Values> entrySet : values.entrySet()) {
+			nodeName += "Attrribute Key: "+ entrySet.getKey() + "\n";
+			for(Entry<String,String> values : entrySet.getValue().getValues().entrySet()) {
+				nodeName += "   "+values.getValue();
+			}
+		}
 
+		return nodeName;
+	}
 }
