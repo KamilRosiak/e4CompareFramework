@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.writter;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
