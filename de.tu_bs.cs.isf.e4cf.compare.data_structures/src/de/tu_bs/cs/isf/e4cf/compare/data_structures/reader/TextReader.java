@@ -16,11 +16,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
  */
 public class TextReader extends AbstractArtifactReader {
 	public final static String[] SUPPORTED_FILE_ENDINGS = {"txt"};
-	public final static String NODE_TYPE_TREE = "TEXT";
-	public final static String NODE_TYPE_LINE = "LINE";
-	public final static String NODE_TYPE_WORD = "WORD";
-	public final static String VALUE_TYPE_TEXT = "TEXT";
-	
+
 	public TextReader() {
 		super(SUPPORTED_FILE_ENDINGS);
 	}
@@ -35,13 +31,13 @@ public class TextReader extends AbstractArtifactReader {
 			//The name is only the file name
 			String name = element.getAbsolutePath().substring(element.getAbsolutePath().lastIndexOf("\\") + 1);
 			
-			tree = new TreeImpl(name,new NodeImpl(NODE_TYPE_TREE));
+			tree = new TreeImpl(name,new NodeImpl(TextFileTags.TEXT.toString()));
 			for(String line :lines) {
-				Node lineNode = new NodeImpl(NODE_TYPE_LINE, tree.getRoot());
+				Node lineNode = new NodeImpl(TextFileTags.LINE.toString(), tree.getRoot());
 				String[] words = line.split(" ");
 				for(String word : words) {
-					Node wordNode = new NodeImpl(NODE_TYPE_WORD, lineNode);
-					wordNode.addAttribute(VALUE_TYPE_TEXT, element.getAbsolutePath(), word);
+					Node wordNode = new NodeImpl(TextFileTags.WORD.toString(), lineNode);
+					wordNode.addAttribute(TextFileTags.TEXT.toString(), word);
 				}
 			}	
 		}

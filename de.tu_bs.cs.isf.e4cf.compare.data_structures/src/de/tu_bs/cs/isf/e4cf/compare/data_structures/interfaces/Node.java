@@ -2,10 +2,8 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.Values;
 
 /**
  * This interfaces defines all methods that are needed to realize a node.
@@ -25,17 +23,17 @@ public interface Node extends Serializable {
 	 * This method returns all values that are available for this node, e.g. an assignment has values for the left side and right side such as  a = b. 
 	 * In the Values class you can store values that can be identified by their variant.
 	 */
-	public Map<String,Values> getAttributes();
+	public List<Attribute> getAttributes();
 	
 	/**
 	 * This method adds value for a given key, a variant with a respective values.
 	 */
-	public void addAttribute(String key, String variant, String value);
+	public void addAttribute(String key, String value);
 	
 	/**
 	 * This method returns the value for the given key.
 	 */
-	public Values getAttributesForKey(String key);
+	public Attribute getAttributesForKey(String key);
 	
 	/**
 	 * This method checks if the current node has no parent which means it is the root node in the data structure.

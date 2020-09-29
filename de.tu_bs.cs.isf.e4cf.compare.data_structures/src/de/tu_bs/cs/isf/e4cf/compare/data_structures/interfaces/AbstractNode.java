@@ -1,20 +1,19 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.Values;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 
 public abstract class AbstractNode implements Node {
 	private static final long serialVersionUID = 5776489857546412690L;
 	private String nodeType;
 	private List<Node> children;
 	private Node parent;
-	private Map<String,Values> values;
+	private List<Attribute> attributes;
+
+
 	private VariabilityClass varClass;
 	
 	public AbstractNode() {
@@ -26,7 +25,7 @@ public abstract class AbstractNode implements Node {
 	 */
 	private void initializeNode() {
 		setChildren(new ArrayList<Node>());
-		setValues(new HashMap<String, Values>());
+		setAttributes(new ArrayList<Attribute>());
 	}
 	
 	@Override
@@ -48,22 +47,30 @@ public abstract class AbstractNode implements Node {
 	}
 	
 	@Override
-	public Map<String, Values> getAttributes() {
-		return values;
+	public List<Attribute> getAttributes() {
+		return attributes;
 	}
 	
 	@Override
-	public void addAttribute(String key, String variant, String value) {
-		if(values.containsKey(key)) {
-			values.get(key).putValue(variant, value);
-		} else {
-			values.put(key, new Values(variant,value));	
+	public void addAttribute(String key, String value) {
+		Attribute attribute = null;
+		for(Attribute attr : getAttributes()) {
+			if(attr.getAttributeKey().equals(key)) {
+				attribute = attr;
+				break;
+			}
 		}
+		if(attribute == null) {
+			getAttributes().add(new AttributeImpl(key,value));
+		}
+
 	}
 	
-	@Override 
-	public Values getAttributesForKey(String key) {
-		return values.get(key);
+
+	@Override
+	public Attribute getAttributesForKey(String key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	@Override
@@ -124,10 +131,6 @@ public abstract class AbstractNode implements Node {
 	public void setChildren(List<Node> children) {
 		this.children = children;
 	}
-
-	public void setValues(Map<String,Values> values) {
-		this.values = values;
-	}
 	
 	@Override
 	public VariabilityClass getVariabilityClass() {
@@ -139,17 +142,19 @@ public abstract class AbstractNode implements Node {
 		this.varClass = varClass;
 	}
 	
+	public void setAttributes(List<Attribute> attributes) {
+		this.attributes = attributes;
+	}
+	
 	@Override
 	public String toString() {
 		String nodeName = "NodeType: "+getNodeType() +" \n";
-		
-		for(Entry<String, Values> entrySet : values.entrySet()) {
-			nodeName += "Attrribute Key: "+ entrySet.getKey() + "\n";
-			for(Entry<String,String> values : entrySet.getValue().getValues().entrySet()) {
-				nodeName += "   "+values.getValue();
+		for(Attribute attr : getAttributes()) {
+			nodeName += "Attrribute Key: "+ attr.getAttributeKey() + "\n";
+			for(String value : attr.getAttributeValues()) {
+				nodeName += "        "+value +"\n";
 			}
 		}
-
 		return nodeName;
 	}
 }

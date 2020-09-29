@@ -1,0 +1,23 @@
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
+
+import java.util.List;
+
+public interface Attribute {
+	/**
+	 * Returns the variant of this attribute value returns mandatory as default.
+	 */
+	public String getAttributeKey();
+	
+	/**
+	 * Returns the value of this attributes , e.g., String key or void
+	 */
+	public List<String> getAttributeValues();
+	
+	/**
+	 * Add an value to this attribute
+	 */
+	public void addAttributeValue(String value);
+	
+	
+	
+}
