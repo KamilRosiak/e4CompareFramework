@@ -25,17 +25,17 @@ public interface Node extends Serializable {
 	 * This method returns all values that are available for this node, e.g. an assignment has values for the left side and right side such as  a = b. 
 	 * In the Values class you can store values that can be identified by their variant.
 	 */
-	public Map<String,Values> getValues();
+	public Map<String,Values> getAttributes();
 	
 	/**
 	 * This method adds value for a given key, a variant with a respective values.
 	 */
-	public void addValue(String key, String variant, String value);
+	public void addAttribute(String key, String variant, String value);
 	
 	/**
 	 * This method returns the value for the given key.
 	 */
-	public Values getValuesForKey(String key);
+	public Values getAttributesForKey(String key);
 	
 	/**
 	 * This method checks if the current node has no parent which means it is the root node in the data structure.

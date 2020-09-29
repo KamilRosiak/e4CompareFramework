@@ -41,7 +41,7 @@ public class TextReader extends AbstractArtifactReader {
 				String[] words = line.split(" ");
 				for(String word : words) {
 					Node wordNode = new NodeImpl(NODE_TYPE_WORD, lineNode);
-					wordNode.addValue("TEXT", element.getAbsolutePath(), word);
+					wordNode.addAttribute(VALUE_TYPE_TEXT, element.getAbsolutePath(), word);
 				}
 			}	
 		}
