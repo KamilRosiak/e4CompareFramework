@@ -23,6 +23,4 @@ public class AttributeImpl extends AbstractAttribute {
 		this(attrKey);
 		addAttributeValue(attrValue);
 	}
-	
-	
 }

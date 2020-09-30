@@ -2,7 +2,6 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**

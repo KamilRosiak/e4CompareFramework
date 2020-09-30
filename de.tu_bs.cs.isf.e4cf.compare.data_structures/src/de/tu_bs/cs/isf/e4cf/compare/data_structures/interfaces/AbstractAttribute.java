@@ -11,6 +11,26 @@ public abstract class AbstractAttribute implements Attribute {
 		setAttributeValues(new ArrayList<String>());
 	}
 
+	
+	@Override
+	public float compare(Attribute attr) {
+	    float similarity = 0f;
+	    //checks if the keys are equals
+	    if(attr.getAttributeKey().equals(getAttributeKey())) {
+		similarity += 0.5f;
+	    }
+	    for(String first_value : attr.getAttributeValues()) {
+       		for(String second_value : getAttributeValues()) {
+       		    if(first_value.equals(second_value)) {
+       			similarity += 0.5f;
+       			break;
+       		    }
+		}
+	    }
+
+	    return similarity;
+	}
+	
 	@Override
 	public String getAttributeKey() {
 		return attributeKey;

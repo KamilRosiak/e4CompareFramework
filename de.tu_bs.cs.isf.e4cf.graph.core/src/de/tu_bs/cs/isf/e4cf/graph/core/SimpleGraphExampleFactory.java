@@ -11,9 +11,7 @@ public class SimpleGraphExampleFactory {
 	    private static final double WIDTH = 150;
 	    
 	    public SimpleGraph createGraphFromModel() {
-	    	SimpleGraph simpleGraph = new SimpleGraph();
-
-	    	return simpleGraph;
+	    	return new SimpleGraph();
 	    }
 	    
 	    public SimpleGraph createComplexExample() {

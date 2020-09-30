@@ -18,6 +18,9 @@ public interface Attribute {
 	 */
 	public void addAttributeValue(String value);
 	
-	
+	/**
+	 * This method returns the highest similarity value between the given attribute an this attribute.
+	 */
+	public float compare(Attribute attr);
 	
 }
