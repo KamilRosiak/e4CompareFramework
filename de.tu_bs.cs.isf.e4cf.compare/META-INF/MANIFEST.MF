@@ -1,9 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Compare
-Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: de.tu_bs.cs.isf.e4cf.compare.data_structures,
- de.tu_bs.cs.isf.e4cf.core.compare;bundle-version="1.0.0"
+Require-Bundle: org.eclipse.swt,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures,
+ de.tu_bs.cs.isf.e4cf.core.compare;bundle-version="1.0.0",
+ de.tu_bs.cs.isf.e4cf.core

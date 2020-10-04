@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 
@@ -12,7 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  *
  */
 public interface Node extends Serializable {
-	
+
 	/**
 	 * This method returns the type of the node, e.g., class, method, statement. This type has to be defined during the parsing process where.
 	 * @return
@@ -33,7 +34,7 @@ public interface Node extends Serializable {
 	/**
 	 * This method returns the value for the given key.
 	 */
-	public Attribute getAttributesForKey(String key);
+	public Attribute getAttributeForKey(String key);
 	
 	/**
 	 * This method checks if the current node has no parent which means it is the root node in the data structure.
@@ -87,5 +88,21 @@ public interface Node extends Serializable {
 	 */
 	public void setVariabilityClass(VariabilityClass varClass);
 	
+	/**
+	 * This method returns all node types that are contained in this node. 
+	 * The node type of this node is included as well as the children node types and children's children node types.
+	 * @return
+	 */
+	public List<String> getAllNodeTypes();
+	
+    	/**
+    	 * This method returns the UUID of this node
+    	 * @return
+    	 */
+	public UUID getUUID();
+	/**
+	 * This method sets the UUID of this node.
+	 */
+	public void setUUID(UUID uuid);
 	
 }

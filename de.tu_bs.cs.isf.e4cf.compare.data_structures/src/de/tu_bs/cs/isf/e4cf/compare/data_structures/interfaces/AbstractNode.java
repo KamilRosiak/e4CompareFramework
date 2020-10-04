@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
@@ -12,9 +13,9 @@ public abstract class AbstractNode implements Node {
 	private List<Node> children;
 	private Node parent;
 	private List<Attribute> attributes;
-
-
-	private VariabilityClass varClass;
+	private VariabilityClass varClass = VariabilityClass.MANDATORY;
+	private UUID uuid = UUID.randomUUID();
+	
 	
 	public AbstractNode() {
 		initializeNode();
@@ -53,24 +54,18 @@ public abstract class AbstractNode implements Node {
 	
 	@Override
 	public void addAttribute(String key, String value) {
-		Attribute attribute = null;
-		for(Attribute attr : getAttributes()) {
-			if(attr.getAttributeKey().equals(key)) {
-				attribute = attr;
-				break;
-			}
-		}
+		Attribute attribute = attributes.stream().findAny().filter(e -> e.getAttributeKey().equals(key)).get();
 		if(attribute == null) {
 			getAttributes().add(new AttributeImpl(key,value));
+		} else {
+		    //adds this value as alternative for this attribute.
+		    attribute.addAttributeValue(value);
 		}
-
 	}
-	
 
 	@Override
-	public Attribute getAttributesForKey(String key) {
-		// TODO Auto-generated method stub
-		return null;
+	public Attribute getAttributeForKey(String key) {
+		return attributes.stream().findAny().filter(e -> e.getAttributeKey().equals(key)).get();
 	}
 	
 	@Override
@@ -96,6 +91,16 @@ public abstract class AbstractNode implements Node {
 			}
 		}
 		return childrenList;
+	}
+	
+	@Override
+	public List<String> getAllNodeTypes() {
+	    List<String> nodeTypes = new ArrayList<String>();
+	    nodeTypes.add(getNodeType());
+	    for(Node child : getChildren()) {
+		nodeTypes.addAll(child.getAllNodeTypes());
+	    }
+	    return nodeTypes;
 	}
 	
 	/******************************************************
@@ -156,5 +161,15 @@ public abstract class AbstractNode implements Node {
 			}
 		}
 		return nodeName;
+	}
+	
+	@Override
+	public UUID getUUID() {
+	    return uuid;
+	}
+	
+	@Override
+	public void setUUID(UUID uuid) {
+	    this.uuid = uuid;
 	}
 }

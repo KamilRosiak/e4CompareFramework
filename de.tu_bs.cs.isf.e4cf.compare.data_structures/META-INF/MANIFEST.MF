@@ -5,7 +5,7 @@ Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare.data_structures;singleton:=tru
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.data.structures
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.e4.core.services;bundle-version="2.2.300",
+Require-Bundle: org.eclipse.e4.core.services,
  javax.inject,
  org.eclipse.e4.core.di.annotations,
  de.tu_bs.cs.isf.e4cf.core,
