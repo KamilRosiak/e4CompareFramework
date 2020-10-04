@@ -17,12 +17,14 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -56,9 +58,9 @@ import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FXTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FamilyModelView;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultArtefactFilter;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.AbstractResourceRowDialog.ResourceEntry;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXFamilyModelElement;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.LoadFamilyModelDialog;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.SaveFamilyModelDialog;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXFamilyModelElement;
 import javafx.stage.FileChooser;
 
 public class FamilyModelViewController {
@@ -78,23 +80,27 @@ public class FamilyModelViewController {
 	private ArtefactFilter artefactFilter;
 	
 	private List<FamilyModelTransformation> fmTransformations;
-	private Map<VariationPoint, Object> variationPointDataMapping = new HashMap<>();
 
 	private MPart part;
 
 	private Composite parentComposite;
+
+	private IEclipseContext fmvContext;
 	
 	@Inject
-	public FamilyModelViewController(ServiceContainer services) {
+	public FamilyModelViewController(@Active MPart part, @Active IEclipseContext ctx, ServiceContainer services) {
 		setServices(services);
-		this.part = services.partService.getPart(FamilyModelViewStrings.PART_NAME);
+		this.part = part;
 		this.part.setDirty(false);
+		
+		this.fmvContext = ctx;
 	}
 	
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		this.parentComposite = parent;
 		reload(null);
+		
 	}
 	
 	/**
@@ -109,9 +115,13 @@ public class FamilyModelViewController {
 		collectProviderExtensions();
 		initializeCarExampleFamilyModel();
 		resetFamilyModelView();
-		variationPointDataMapping.clear();
+		
+		// clear the context from a previous content
+		fmvContext.remove(FamilyModelViewStrings.ACTIVE_DATA_SOURCE);
+		fmvContext.remove(FamilyModelViewStrings.ACTIVE_VAR_POINT_MAPPING);
 	}
 
+	@Inject
 	private void collectProviderExtensions() {
 		FamilyModelViewPlugin thisPlugin = new FamilyModelViewPlugin(FamilyModelViewStrings.FM_EXT_POINT_ID);
 		
@@ -373,35 +383,68 @@ public class FamilyModelViewController {
 		}
 	}
 	
+	/**
+	 * Sets a data source for the family model.<br><br>
+	 * 
+	 * The data source is a single object that encapsulates the entire comparison represented in the family model view. 
+	 * If there are parts or components interested in the comparison detail, they can listen for changes in the data source object.<br><br>
+	 * 
+	 * Sends Events:
+	 * <ul>
+	 * 	<li> {@link FamilyModelViewEvents#EVENT_DATA_SOURCE_UPDATED} 
+	 * </ul> 
+	 * 
+	 * @param dataSource encapsulates entire comparison information
+	 */
 	@Optional
 	@Inject
-	public void transformAndShowFamilyModel(@UIEventTopic(FamilyModelViewEvents.EVENT_TRANSFORM_AND_SHOW_FAMILY_MODEL) Object object) {
-		// check if the object actually is transformable, pick the first transformation
-		java.util.Optional<FamilyModelTransformation> fmTransformation = fmTransformations.stream()
-				.filter(transformation -> transformation.canTransform(object))
-				.findFirst();
-		if (!fmTransformation.isPresent()) {
-			RCPMessageProvider.errorMessage("Transform Family Model", "There is not suitable transformation for the provided model.");
+	public void setDataSource(@UIEventTopic(FamilyModelViewEvents.EVENT_SET_DATA_SOURCE) Object dataSource, IEventBroker eventBroker) {
+		if (dataSource != null) {
+			fmvContext.set(FamilyModelViewStrings.ACTIVE_DATA_SOURCE, dataSource);
+			eventBroker.send(FamilyModelViewEvents.EVENT_DATA_SOURCE_UPDATED, dataSource);
 		}
-			
-		// apply transformation and reset variation point mapping
-		FamilyModel fm = fmTransformation.get().apply(object);
-		variationPointDataMapping.clear();
-		variationPointDataMapping.putAll(fmTransformation.get().getData());
-		
-		if (fm == null) {
-			RCPMessageProvider.errorMessage("Transform Family Model", "Transformation to family model failed.");
-		}
-		
-		showFamilyModel(fm);
 	}
 	
+	/**
+	 * Sets a mapping from variation points to corresponding comparison data objects. 
+	 * Internally this is used to provide the detail view with concrete information about every variation points.<br><br>
+	 * 
+	 * Sends Events:
+	 * <ul>
+	 * 	<li> {@link FamilyModelViewEvents#EVENT_VAR_POINT_MAPPING_UPDATED} 
+	 * </ul> 
+	 * 
+	 * @param varPointMapping maps a variation points to an object
+	 */
+	@Optional
+	@Inject
+	public void setVariationPointMapping(@UIEventTopic(FamilyModelViewEvents.EVENT_SET_VAR_POINT_MAPPING) Map<VariationPoint, ?> varPointMapping, IEventBroker eventBroker) {
+		if (varPointMapping != null) {
+			fmvContext.set(FamilyModelViewStrings.ACTIVE_VAR_POINT_MAPPING, varPointMapping);			
+			eventBroker.send(FamilyModelViewEvents.EVENT_VAR_POINT_MAPPING_UPDATED, varPointMapping);
+		}
+	}
+	
+	/**
+	 * Shows family model details for a tree node in the family model tree. <br><br>
+	 * 
+	 * Sends Events:
+	 * <ul>
+	 * 	<li> {@link E4CompareEventTable#SHOW_DETAIL_EVENT} 
+	 * </ul> 
+	 * 
+	 * @param fxFmElement
+	 */
 	@Optional
 	@Inject
 	public void showDetails(@UIEventTopic(FamilyModelViewEvents.EVENT_SHOW_DETAILS) FXFamilyModelElement fxFmElement) {
-		// check if there's a variation point with a mapping onto the real data object
+		// Check if there's a variation point with a mapping onto a comparison data object
 		Object targetData = fxFmElement.get();
-		if (targetData instanceof VariationPoint) {
+		
+		// Query the local context for a mapping that contains the variation point
+		Object activeVarPointMapping = fmvContext.get(FamilyModelViewStrings.ACTIVE_VAR_POINT_MAPPING);
+		if (activeVarPointMapping instanceof Map) {
+			Map<?,?> variationPointDataMapping = (Map<?, ?>) activeVarPointMapping;
 			Object mappedData = variationPointDataMapping.get(targetData);
 			if (mappedData != null) {
 				targetData = mappedData;
@@ -416,9 +459,9 @@ public class FamilyModelViewController {
 	 * Asks the user to save the part if dirty.
 	 */
 	private void requestPartSave() {
-		EPartService ePartService = services.partService.partService;
-		MPart thisPart = ePartService.findPart(FamilyModelViewStrings.PART_NAME);
-		ePartService.savePart(thisPart, true);
+//		EPartService ePartService = services.partService.partService;
+//		MPart thisPart = ePartService.findPart(FamilyModelViewStrings.PART_NAME);
+//		ePartService.savePart(thisPart, true);
 	}
 	
 	public ServiceContainer getServices() {
@@ -482,9 +525,5 @@ public class FamilyModelViewController {
 	 */
 	public boolean filter(EObject eobject) {
 		return artefactFilter.apply(eobject);
-	}
-
-	public Map<VariationPoint, Object> getVariationPointDataMapping() {
-		return variationPointDataMapping;
 	}
 }
