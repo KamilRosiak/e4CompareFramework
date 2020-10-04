@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
@@ -54,12 +55,12 @@ public abstract class AbstractNode implements Node {
 	
 	@Override
 	public void addAttribute(String key, String value) {
-		Attribute attribute = attributes.stream().findAny().filter(e -> e.getAttributeKey().equals(key)).get();
-		if(attribute == null) {
+		Optional<Attribute> attribute = attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny();
+		if(!attribute.isPresent()) {
 			getAttributes().add(new AttributeImpl(key,value));
 		} else {
 		    //adds this value as alternative for this attribute.
-		    attribute.addAttributeValue(value);
+		    attribute.get().addAttributeValue(value);
 		}
 	}
 

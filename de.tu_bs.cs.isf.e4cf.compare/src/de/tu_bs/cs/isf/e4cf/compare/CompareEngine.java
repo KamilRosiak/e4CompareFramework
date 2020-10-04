@@ -15,8 +15,7 @@ import de.tu_bs.cs.isf.e4cf.compare.interfaces.Result;
 
 public class CompareEngine {
 	private Matcher matcher;
-	
-	
+
 	public void compare(Tree firstArtifact, Tree secondArtifact) {
 	    Result result = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
 		

@@ -36,8 +36,8 @@ public class TextReader extends AbstractArtifactReader {
 				Node lineNode = new NodeImpl(TextFileTags.LINE.toString(), tree.getRoot());
 				String[] words = line.split(" ");
 				for(String word : words) {
-					Node wordNode = new NodeImpl(TextFileTags.WORD.toString(), lineNode);
-					wordNode.addAttribute(TextFileTags.TEXT.toString(), word);
+				    Node wordNode = new NodeImpl(TextFileTags.WORD.toString(), lineNode);
+				    wordNode.addAttribute(TextFileTags.TEXT.toString(), word);
 				}
 			}	
 		}

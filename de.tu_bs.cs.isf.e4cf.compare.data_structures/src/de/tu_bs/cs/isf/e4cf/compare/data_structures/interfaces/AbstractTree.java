@@ -5,9 +5,10 @@ import java.util.List;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 
 public class AbstractTree implements Tree {
-	private Node root;
-	private String treeName;
-	private String artifactType;
+    private static final long serialVersionUID = 7659681319811210012L;
+    private Node root;
+    private String treeName;
+    private String artifactType;
 	
 	
 	@Override
