@@ -1,8 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.comparator;
 
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparison;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.NodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.interfaces.Comparison;
-import de.tu_bs.cs.isf.e4cf.compare.interfaces.NodeComparator;
 
 public class StringComparator implements NodeComparator {
 

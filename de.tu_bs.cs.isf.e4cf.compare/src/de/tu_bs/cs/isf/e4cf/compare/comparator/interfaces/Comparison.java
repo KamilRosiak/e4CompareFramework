@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.interfaces;
+package de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces;
 
 /**
  * data structure for the storage of the comparison between two nodes.

@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.interfaces;
+package de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 /**

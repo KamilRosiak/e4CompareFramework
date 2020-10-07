@@ -1,7 +1,9 @@
-package de.tu_bs.cs.isf.e4cf.compare.interfaces;
+package de.tu_bs.cs.isf.e4cf.compare.metric.interfaces;
 
 import java.util.List;
 import java.util.Map;
+
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.NodeComparator;
 
 public interface Metric {
     /**

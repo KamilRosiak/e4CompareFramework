@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.AttrComparison;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.interfaces.Comparison;
-import de.tu_bs.cs.isf.e4cf.compare.interfaces.Matcher;
-import de.tu_bs.cs.isf.e4cf.compare.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.Result;
+import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
+import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 
 public class CompareEngine {
 	private Matcher matcher;
@@ -69,7 +69,12 @@ public class CompareEngine {
 			}	
 		}
 		comparisons = matcher.getMatching(comparisons);
+		
 		return null;
+	}
+	
+	private List<Comparison> getMatching(List<Comparison> comparisons) {
+		return matcher.getMatching(comparisons);
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.comparator;
 
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.AbstractComparsion;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
-import de.tu_bs.cs.isf.e4cf.compare.interfaces.AbstractComparsion;
 
 /**
  * A container for the storage of attribute comparisons
