@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
-import java.util.List;
+import java.util.Set;
 
 public interface Attribute {
 	/**
@@ -11,7 +11,7 @@ public interface Attribute {
 	/**
 	 * Returns the value of this attributes , e.g., String key or void
 	 */
-	public List<String> getAttributeValues();
+	public Set<String> getAttributeValues();
 	
 	/**
 	 * Add an value to this attribute

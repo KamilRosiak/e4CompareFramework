@@ -11,26 +11,23 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.Matcher;
+import de.tu_bs.cs.isf.e4cf.compare.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.Result;
 
 public class CompareEngine {
 	private Matcher matcher;
+	private Metric metric;
 
-	public void compare(Tree firstArtifact, Tree secondArtifact) {
+	public void compare(Tree firstArtifact, Tree secondArtifact, Metric comparisonMetric, Matcher matcher) {
+	    setMetric(comparisonMetric);
+	    setMatcher(matcher);
+	    
 	    Result result = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
-		
+	    
 	}
 	
-	/**
-	 * 
-	 * @param firstNode
-	 * @param secondNode
-	 * @return
-	 */
 	public Result compare(Node firstNode, Node secondNode) {
-	    Set<String> nodeTypes = new HashSet<String>();
-	    nodeTypes.addAll(firstNode.getAllNodeTypes());
-	    nodeTypes.addAll(secondNode.getAllNodeTypes());
+	    Set<String> nodeTypes = getNodeTypes(firstNode, secondNode);
 	    
 	    /**
 	     * Compare only nodes with the same type.
@@ -38,21 +35,40 @@ public class CompareEngine {
 	    for(String nodeType : nodeTypes) {
 		List<Node> firstArtifacts = firstNode.getChildrenOfType(nodeType);
 		List<Node> secondArtifacts = secondNode.getChildrenOfType(nodeType);
-		
+		//Map<String,List<NodeComparator>> comparator = 
+				
+		for(Node leftArtifact : firstArtifacts) {
+		    for(Node rightArtifact : secondArtifacts) {
+			
+			
+			
+		    }   
+		}
+
 	    }
-		return null;
+	    return null;
 	}
-	
+	/**
+	 * This method returns a set that contains all nodes types that are contained in this nodes.
+	 * @return a set of contained node types.
+	 */
+	private Set<String> getNodeTypes(Node... nodes ) {
+	    Set<String> nodeTypes = new HashSet<String>();
+	    for(Node node : nodes) {
+		nodeTypes.addAll(node.getAllNodeTypes());
+	    }
+	    return nodeTypes;
+	}
 
 	private Comparison defaultCompare(Node firstNode, Node secondNode) {
-	    List<AttrComparison> comparisons = new ArrayList<AttrComparison>();
+	    List<Comparison> comparisons = new ArrayList<Comparison>();
 		
 		for(Attribute first_attr : firstNode.getAttributes()) {
 			for(Attribute second_attr : secondNode.getAttributes()) {
 			    comparisons.add(new AttrComparison(first_attr,second_attr, first_attr.compare(second_attr)));	
 			}	
 		}
-		
+		comparisons = matcher.getMatching(comparisons);
 		return null;
 	}
 	
@@ -72,6 +88,20 @@ public class CompareEngine {
 
 	public void setMatcher(Matcher matcher) {
 	    this.matcher = matcher;
+	}
+
+
+
+
+	public Metric getMetric() {
+	    return metric;
+	}
+
+
+
+
+	public void setMetric(Metric metric) {
+	    this.metric = metric;
 	}
 	
 }

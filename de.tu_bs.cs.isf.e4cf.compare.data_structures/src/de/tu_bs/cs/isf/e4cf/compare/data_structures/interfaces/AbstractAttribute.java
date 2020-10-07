@@ -1,33 +1,31 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractAttribute implements Attribute {
 	private String attributeKey;
-	private List<String> attributeValues;
+	private Set<String> attributeValues;
 
 	public AbstractAttribute() {
-		setAttributeValues(new ArrayList<String>());
+		setAttributeValues(new HashSet<String>());
 	}
 
-	
 	@Override
 	public float compare(Attribute attr) {
 	    float similarity = 0f;
 	    //checks if the keys are equals
 	    if(attr.getAttributeKey().equals(getAttributeKey())) {
-		similarity += 0.5f;
+		similarity += 0.25f;
 	    }
 	    for(String first_value : attr.getAttributeValues()) {
        		for(String second_value : getAttributeValues()) {
        		    if(first_value.equals(second_value)) {
-       			similarity += 0.5f;
+       			similarity += 0.75f;
        			break;
        		    }
 		}
 	    }
-
 	    return similarity;
 	}
 	
@@ -37,7 +35,7 @@ public abstract class AbstractAttribute implements Attribute {
 	}
 
 	@Override
-	public List<String> getAttributeValues() {
+	public Set<String> getAttributeValues() {
 		return attributeValues;
 	}
 
@@ -46,7 +44,7 @@ public abstract class AbstractAttribute implements Attribute {
 		attributeValues.add(value);
 	}
 
-	public void setAttributeValues(List<String> attributeValues) {
+	public void setAttributeValues(Set<String> attributeValues) {
 		this.attributeValues = attributeValues;
 	}
 

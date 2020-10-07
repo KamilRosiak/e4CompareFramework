@@ -40,7 +40,7 @@ public class TextWritter extends AbstractArtifactWriter {
 		for(Node lineNode : tree.getRoot().getChildren()) {
 			for(Node wordNode : lineNode.getChildren()) {
 				for(Attribute attr : wordNode.getAttributes()) {
-					fileContent += attr.getAttributeValues().get(0) + " ";
+					fileContent += attr.getAttributeValues().iterator().next() + " ";
 				}
 			}
 			fileContent += "\n";
