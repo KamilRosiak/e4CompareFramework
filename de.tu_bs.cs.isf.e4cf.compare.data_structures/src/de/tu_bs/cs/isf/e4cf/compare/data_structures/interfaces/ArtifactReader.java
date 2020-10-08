@@ -7,15 +7,19 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
  * @author Kamil Rosiak
  */
 public interface ArtifactReader {
-	public Tree readArtifact(FileTreeElement element);
-	public String[] getSupportedFiles();
+    	public Tree readArtifact(FileTreeElement element);
+    	public String[] getSupportedFiles();
 
 	/**
 	 * This method checks if the current fileEnding is supported
 	 */
 	public default boolean isFileSupported(FileTreeElement element) {
+	    return isFileSupported(element.getExtension());
+	}
+	
+	public default boolean isFileSupported(String fileExtension) {
 		for(String fileEnding : getSupportedFiles()) {
-			if(fileEnding.equals(element.getExtension())) {
+			if(fileEnding.equals(fileExtension)) {
 				return true;
 			}
 		}

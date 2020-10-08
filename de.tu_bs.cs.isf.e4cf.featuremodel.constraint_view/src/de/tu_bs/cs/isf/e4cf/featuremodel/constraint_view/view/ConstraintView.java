@@ -29,19 +29,19 @@ public class ConstraintView {
 	private Scene scene;
 	
 	public ConstraintView(ConstraintViewController controller, FXCanvas canvas) {
-		this.controller = controller;
-		initView(canvas);
+	    this.controller = controller;
+	    initView(canvas);
 	}
 
 	/**
 	 * Initialization of the constraint view
 	 */
 	private void initView(FXCanvas canvas) {
-		createTable();
-        root = new StackPane();
-        scene = new Scene(root);
-        root.getChildren().add(table);
-        canvas.setScene(scene);
+	    createTable();
+            root = new StackPane();
+            scene = new Scene(root);
+            root.getChildren().add(table);
+            canvas.setScene(scene);
 	}
 	
 	/**
@@ -64,6 +64,7 @@ public class ConstraintView {
 			editor.editConstraint(table.getSelectionModel().getSelectedItem().getConstraint());
 			}
 		});
+		
 		table.setContextMenu(new ConstraintViewContextMenu(table, controller));
 		table.getColumns().addAll(constraintCol, descriptionCol);
 	}

@@ -40,8 +40,7 @@ public class CompareEngine {
 		for(Node leftArtifact : firstArtifacts) {
 		    for(Node rightArtifact : secondArtifacts) {
 			
-			
-			
+
 		    }   
 		}
 
@@ -85,7 +84,6 @@ public class CompareEngine {
 		return firstNode.getNodeType().equals(secondNode.getNodeType());
 	}
 
-
 	public Matcher getMatcher() {
 	    return matcher;
 	}
@@ -95,15 +93,9 @@ public class CompareEngine {
 	    this.matcher = matcher;
 	}
 
-
-
-
 	public Metric getMetric() {
 	    return metric;
 	}
-
-
-
 
 	public void setMetric(Metric metric) {
 	    this.metric = metric;

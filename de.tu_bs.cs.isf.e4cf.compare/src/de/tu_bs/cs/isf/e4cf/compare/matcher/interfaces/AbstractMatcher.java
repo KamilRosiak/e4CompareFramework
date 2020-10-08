@@ -31,5 +31,10 @@ public abstract class AbstractMatcher implements Matcher {
 	public void setMatcherDescription(String matcherDescription) {
 		this.matcherDescription = matcherDescription;
 	}
+	
+	@Override
+	public String toString() {
+	    return matcherName;
+	}
 
 }
