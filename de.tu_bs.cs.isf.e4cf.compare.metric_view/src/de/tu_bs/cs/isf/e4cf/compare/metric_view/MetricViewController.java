@@ -26,7 +26,7 @@ public class MetricViewController {
         FXMLLoader<MetricView> loader = new FXMLLoader<MetricView>(context, MetricST.BUNDLE_NAME,METRIC_VIEW_FXML);
         //setting the css file
         Scene scene = new Scene(loader.getNode());
-        //scene.getStylesheets().add(METRIC_CSS_LOCATION);
+        scene.getStylesheets().add(METRIC_CSS_LOCATION);
         canvans.setScene(scene);	
     }
 }

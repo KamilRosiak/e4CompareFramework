@@ -1,5 +1,5 @@
-#label_1 {
-	 -fx-background-color:linear-gradient( from 50.0% 0.0% to 50.0% 100.0%, rgb(28,126,171) 0.0, rgb(41,187,255) 50.0, rgb(0,0,0) 100.0);
+#label_1,#label_2,#label_3  {
+	 -fx-background-color:linear-gradient( from 50.0% 0.0% to 50.0% 100.0%, rgb(128,142,159) 0.0, rgb(167,184,207) 30.0, rgb(205,227,255) 50.0, rgb(167,184,206) 70.0, rgb(128,142,159) 100.0);
     -fx-padding: 5 15 5 15;
     -fx-font-family: "Helvetica";
     -fx-font-size: 16px;
@@ -8,25 +8,11 @@
     -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1)
 }
 
-#label_2 {
-	 -fx-background-color:linear-gradient( from 50.0% 0.0% to 50.0% 100.0%, rgb(28,126,171) 0.0, rgb(41,187,255) 50.0, rgb(0,0,0) 100.0);
-    -fx-padding: 5 15 5 15;
-    -fx-font-family: "Helvetica";
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
+.table-view .column-header-background .label{
+    -fx-background-color: linear-gradient( from 50.0% 0.0% to 50.0% 100.0%, rgb(128,142,159) 0.0, rgb(167,184,207) 30.0, rgb(205,227,255) 50.0, rgb(167,184,206) 70.0, rgb(128,142,159) 100.0);
     -fx-text-fill: white;
-    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1)
 }
 
-#label_3 {
-	 -fx-background-color:linear-gradient( from 50.0% 0.0% to 50.0% 100.0%, rgb(28,126,171) 0.0, rgb(41,187,255) 50.0, rgb(0,0,0) 100.0);
-    -fx-padding: 5 15 5 15;
-    -fx-font-family: "Helvetica";
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1)
-}
 #metric_label {
  -fx-background-color: 
         linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
@@ -54,7 +40,10 @@
     -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
+
 .button:hover {
     -fx-background-color: 
         linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%);
 }
+
+
