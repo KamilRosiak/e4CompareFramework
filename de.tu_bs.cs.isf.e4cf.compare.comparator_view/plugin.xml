@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="de.tu_bs.cs.isf.e4cf.compare.comparator_view.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="comparator_view.e4xmi"
+            apply="always">
+      </fragment>
+   </extension>
+
+</plugin>

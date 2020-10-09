@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Comparator_view
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare.comparator_view;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.e4.core.contexts,
+ org.eclipse.swt,
+ de.tu_bs.cs.isf.e4cf.core,
+ org.eclipse.e4.ui.model.workbench;bundle-version="2.1.700.v20200113-1422"
+Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.comparator.view
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

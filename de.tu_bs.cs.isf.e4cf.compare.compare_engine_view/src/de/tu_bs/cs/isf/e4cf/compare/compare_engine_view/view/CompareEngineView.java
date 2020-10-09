@@ -44,7 +44,7 @@ public class CompareEngineView implements Initializable {
     
     @FXML private Button addArtifact;
     @FXML private Button removeArtifact;
-    
+
     @Inject ServiceContainer services;
 
     @Override
