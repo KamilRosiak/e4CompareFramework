@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: GREY;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.view.CompareEngineView">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #B3E5FC" stylesheets="@../../css/compare_engine.css" xmlns="http://javafx.com/javafx/8.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.view.CompareEngineView">
    <top>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_CENTER">
          <children>
@@ -25,12 +25,12 @@
                <children>
                   <Button fx:id="removeArtifact" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Remove Artifact" HBox.hgrow="ALWAYS">
                      <HBox.margin>
-                        <Insets right="5.0" />
+                        <Insets right="5.0" top="5.0" />
                      </HBox.margin>
                   </Button>
                   <Button fx:id="addArtifact" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Add Artifact" HBox.hgrow="ALWAYS">
                      <HBox.margin>
-                        <Insets />
+                        <Insets top="5.0" />
                      </HBox.margin>
                   </Button>
                </children>
@@ -55,7 +55,7 @@
                         </Label>
                         <ComboBox fx:id="matcherCombo" maxWidth="1.7976931348623157E308">
                            <VBox.margin>
-                              <Insets left="5.0" right="5.0" />
+                              <Insets top="5.0" />
                            </VBox.margin>
                         </ComboBox>
                      </children>
@@ -68,9 +68,9 @@
                            </font>
                         </Label>
                         <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
-                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="metric">
+                        <Label fx:id="metric_label" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="metric">
                            <VBox.margin>
-                              <Insets left="5.0" right="5.0" />
+                              <Insets bottom="5.0" />
                            </VBox.margin>
                         </Label>
                         <Button fx:id="selectMetric" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Select Metric">
@@ -82,7 +82,7 @@
                   </VBox>
                </children>
             </VBox>
-            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: GREY;">
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #B3E5FC">
                <children>
                   <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Compare Weighted" HBox.hgrow="ALWAYS">
                      <HBox.margin>
@@ -110,7 +110,7 @@
             </TableView>
          </children>
          <BorderPane.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            <Insets bottom="5.0" top="5.0" />
          </BorderPane.margin>
       </VBox>
    </center>

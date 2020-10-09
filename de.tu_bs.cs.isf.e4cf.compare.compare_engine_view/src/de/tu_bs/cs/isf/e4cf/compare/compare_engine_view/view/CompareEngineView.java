@@ -55,13 +55,10 @@ public class CompareEngineView implements Initializable {
 	initTableControl();
     }
     
-    
- 
-    
     private void initButtons() {
 
-	
     }
+    
     private void initMetricControll() {
 	
     }
@@ -84,7 +81,6 @@ public class CompareEngineView implements Initializable {
 	});
 	//Add a list of artifacts to the list
 	addArtifact.setOnAction(e -> {
-	    //List<File> selectedFiles = JavaFXBuilder.createFileChooser(RCPContentProvider.getCurrentWorkspacePath(), "Select More Artifacts");
 	    List<FileTreeElement> parsedFiles = JavaFXBuilder.createFileChooser(RCPContentProvider.getCurrentWorkspacePath(), "Select More Artifacts").
 		    stream().map(file -> new File(file.getAbsolutePath())).collect(Collectors.toList());
 	    artifactTable.getItems().addAll(ArtifactIOUtil.parseArtifacts(parsedFiles));
@@ -120,10 +116,5 @@ public class CompareEngineView implements Initializable {
 	services.partService.showPart(CompareST.BUNDLE_NAME);
 	artifactTable.getItems().clear();
 	artifactTable.getItems().addAll(artifacts);
-    }
-    
-    
-    
-    
-    
+    }  
 }
