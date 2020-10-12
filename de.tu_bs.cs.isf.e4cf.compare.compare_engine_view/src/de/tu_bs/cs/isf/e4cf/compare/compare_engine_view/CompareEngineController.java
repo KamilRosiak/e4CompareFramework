@@ -35,7 +35,4 @@ public class CompareEngineController {
         scene.getStylesheets().add(COMPARE_ENGINE_CSS_LOCATION);
         canvans.setScene(scene);	
     }
-
-    
-
 }

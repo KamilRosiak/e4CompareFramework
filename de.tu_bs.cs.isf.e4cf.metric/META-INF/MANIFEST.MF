@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Metric
-Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.metric;singleton:=true
-Bundle-Version: 1.0.0.qualifier
-Automatic-Module-Name: de.tu.bs.cs.isf.rcp.e4.metric
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
