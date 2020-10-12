@@ -24,12 +24,14 @@ public abstract class AbstractContainer<ElementType extends EObject, MetricType>
 	private float similarity;
 	private MetricType metric;
 	private boolean isCompared = false;
+	private ArrayList<AbstractOption> options;
 	
 	public AbstractContainer(ElementType first, ElementType second, MetricType metric) {
 		setFirst(first);
 		setSecond(second);
 		setMetric(metric);
 		results = new ArrayList<ResultElement<ElementType>>();
+		setOptions(new ArrayList<AbstractOption>());
 	}
 	
 	public abstract void reset();
@@ -84,6 +86,14 @@ public abstract class AbstractContainer<ElementType extends EObject, MetricType>
 
 	public void setCompared(boolean isCompared) {
 		this.isCompared = isCompared;
+	}
+
+	public ArrayList<AbstractOption> getOptions() {
+		return options;
+	}
+
+	public void setOptions(ArrayList<AbstractOption> options) {
+		this.options = options;
 	}
 	
 	
