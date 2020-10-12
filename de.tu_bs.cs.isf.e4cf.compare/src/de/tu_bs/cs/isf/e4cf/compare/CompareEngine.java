@@ -7,6 +7,7 @@ import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.AttrComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparison;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.NodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -35,7 +36,7 @@ public class CompareEngine {
 	    for(String nodeType : nodeTypes) {
 		List<Node> firstArtifacts = firstNode.getChildrenOfType(nodeType);
 		List<Node> secondArtifacts = secondNode.getChildrenOfType(nodeType);
-		//Map<String,List<NodeComparator>> comparator = 
+		List<NodeComparator> comparator = metric.getComparatorForNodeType(nodeType);
 				
 		for(Node leftArtifact : firstArtifacts) {
 		    for(Node rightArtifact : secondArtifacts) {
