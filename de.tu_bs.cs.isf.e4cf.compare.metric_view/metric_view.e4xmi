@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_zNduMAl7EeuE09L_l6CGrw">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_zuL1oAl7EeuE09L_l6CGrw" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.work_window">
+    <elements xsi:type="basic:Part" xmi:id="_3NsCYAl7EeuE09L_l6CGrw" elementId="de.tu_bs.cs.isf.e4cf.compare.metric_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.compare.metric_view/de.tu_bs.cs.isf.e4cf.compare.metric_view.MetricViewController" label="Metric View" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.metric_view/icons/metrics_24.png"/>
+  </fragments>
+</fragment:ModelFragments>

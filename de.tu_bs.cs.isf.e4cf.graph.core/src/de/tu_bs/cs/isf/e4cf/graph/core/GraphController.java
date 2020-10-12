@@ -35,7 +35,6 @@ public class GraphController {
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services) {
 		this.services = services;
-		
 		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
 		canvas.setScene(start());
 	}

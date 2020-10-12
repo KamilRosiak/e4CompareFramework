@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.0"?>
-
-<!--
--->
-
 <plugin>
    <extension-point id="ArtifactReader" name="ArtifactReader" schema="schema/ArtifactReader.exsd"/>
+   <extension-point id="ArtifactWriter" name="ArtifactWriter" schema="schema/ArtifactWriter.exsd"/>
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactReader">
       <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.date_structure.adapter.TextAdapter">
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader">
       </artifactReader>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactWriter">
+      <artifactWriter
+            artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TextWritter">
+      </artifactWriter>
    </extension>
 
 

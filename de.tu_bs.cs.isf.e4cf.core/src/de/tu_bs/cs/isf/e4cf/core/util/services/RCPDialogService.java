@@ -23,20 +23,21 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 @Creatable
 @Singleton
 public class RCPDialogService {
-	private RCPImageService _imageService;
-	private Shell _shell;
+	private RCPImageService imageService;
+	private Shell shell;
 	
 	@Inject
 	public RCPDialogService(RCPImageService imageService, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
-		_imageService = imageService;
-		_shell = shell;
+		this.imageService = imageService;
+		this.shell = shell;
+	
 	}
 	
 	public WizardDialog constructDialog(String dialogTitle, Point dialogSize, Wizard wizard) {
-		WizardDialog dialog = new WizardDialog(_shell, wizard);
+		WizardDialog dialog = new WizardDialog(shell, wizard);
 		
 		dialog.setTitle(dialogTitle);
-		WizardDialog.setDefaultImage(_imageService.getImage(null, "icons/red_splat_16.png"));
+		WizardDialog.setDefaultImage(imageService.getImage(null, "icons/red_splat_16.png"));
 		dialog.setPageSize(dialogSize);
 		dialog.setMinimumPageSize(dialogSize);
 		return dialog;
@@ -126,4 +127,8 @@ public class RCPDialogService {
 			.map(filename -> fd.getFilterPath()+"\\"+filename)
 			.collect(Collectors.toList());
 	} 
+	
+	public Shell getShell() {
+		return this.shell;
+	}
 }

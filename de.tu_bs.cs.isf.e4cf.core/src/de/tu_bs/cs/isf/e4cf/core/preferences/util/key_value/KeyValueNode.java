@@ -14,7 +14,7 @@ public class KeyValueNode {
 	public KeyValueNode(String key, String node) {
 		setKey(key);
 		setNode(node);
-		intValue();
+		initValue();
 	}
 	
 	public KeyValueNode(String key,String node , String value) {
@@ -32,7 +32,7 @@ public class KeyValueNode {
 		setValue(value);
 	}
 	
-	private void intValue() {
+	private void initValue() {
 		setValue(PreferencesUtil.getValueAsString(node, key));
 	}
 	
