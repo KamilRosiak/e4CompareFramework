@@ -41,7 +41,6 @@ public class CompareEngineView implements Initializable {
     @FXML private TableColumn<Tree, String> typeColumn;
     @FXML private TableView<Tree> artifactTable;
     @FXML private ComboBox<Matcher> matcherCombo;
-    
     @FXML private Button addArtifact;
     @FXML private Button removeArtifact;
 
