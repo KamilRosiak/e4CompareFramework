@@ -39,8 +39,9 @@ public class TextReader extends AbstractArtifactReader {
 				    Node wordNode = new NodeImpl(TextFileTags.WORD.toString(), lineNode);
 				    wordNode.addAttribute(TextFileTags.TEXT.toString(), word);
 				}
-			}	
+			}	 
 		}
+		
 		return tree;	
 	}
 }

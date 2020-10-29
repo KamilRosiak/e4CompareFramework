@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.util;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +11,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 
 /**
- * This class contains utility method to support in and output operratin on artifact trees.
+ * This class contains utility method to support in and output appertain on artifact trees.
  * @author Kamil Rosiak
  *
  */
@@ -35,7 +34,7 @@ public class ArtifactIOUtil {
 	public static List<AbstractArtifactWriter> getAllArtifactWriter() {
 		List<AbstractArtifactWriter> writer = RCPContentProvider.<AbstractArtifactWriter>getInstanceFromBundle(DataStructureST.ARTIFACT_WRITER_SYMBOLIC_NAME, DataStructureST.ARTIFACT_WRITER_EXTENSION);
 		if(writer != null) {
-			return writer;
+		    return writer;
 		}
 		return new ArrayList<AbstractArtifactWriter>();
 	}
@@ -44,10 +43,9 @@ public class ArtifactIOUtil {
 	 * Returns the artifact writer for a given artifact type. The artifact type is the type of the root node.
 	 */
 	public static AbstractArtifactWriter getWriterForType(String artifactType) {
-
 		for(AbstractArtifactWriter writer : getAllArtifactWriter()) {
 			if(writer.getSuppotedNodeType().equals(artifactType)) {
-				return writer;
+			    return writer;
 			}
 		}
 		return null;
