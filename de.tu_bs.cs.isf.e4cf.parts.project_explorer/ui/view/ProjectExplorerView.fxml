@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerView">
-   <children>
-      <CheckBox layoutX="188.0" layoutY="152.0" mnemonicParsing="false" text="CheckBox" />
-   </children>
-</Pane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.view.ProjectExplorerView">
+   <center>
+      <TreeView fx:id="projectTree" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <contextMenu>
+            <ContextMenu>
+              <items>
+                <MenuItem fx:id="ctxNewFolder" mnemonicParsing="false" text="New Folder"/>
+              </items>
+            </ContextMenu>
+         </contextMenu></TreeView>
+   </center>
+</BorderPane>
