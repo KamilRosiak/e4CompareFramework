@@ -89,7 +89,7 @@ public class ProjectExplorerView {
 		}
 	}
 	
-	@PostConstruct
+//	@PostConstruct
 	public void postConstruct(Composite parent, IEclipseContext eclipseContext, WorkspaceFileSystem fileSystem, ServiceContainer container) {
 		//init items from extension points
 		getContributions();
