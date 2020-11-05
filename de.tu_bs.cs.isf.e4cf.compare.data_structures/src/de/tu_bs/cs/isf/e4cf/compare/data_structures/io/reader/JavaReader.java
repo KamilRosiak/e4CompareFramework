@@ -10,6 +10,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
+import com.github.javaparser.ast.CompilationUnit;
+
 /***
  * 
  * @author Serkan Acar
