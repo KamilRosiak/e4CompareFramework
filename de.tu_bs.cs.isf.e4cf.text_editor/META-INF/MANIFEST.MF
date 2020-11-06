@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Text_Editor
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.text_editor;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.1.800.v20200828-0938",
+ org.eclipse.e4.core.contexts,
+ org.eclipse.swt;bundle-version="3.115.0",
+ de.tu_bs.cs.isf.e4cf.core
+Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.text.editor
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
