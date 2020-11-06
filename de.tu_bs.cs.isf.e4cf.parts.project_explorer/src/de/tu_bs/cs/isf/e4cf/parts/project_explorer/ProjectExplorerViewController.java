@@ -41,16 +41,23 @@ public class ProjectExplorerViewController {
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
 		FXMLLoader<ProjectExplorerView> loader = new FXMLLoader<ProjectExplorerView>(context, StringTable.BUNDLE_NAME,
 				PROJECT_EXPLORER_VIEW_FXML);
+		view = loader.getController();
 
-
+		// Structure of Directories representing a Tree
 		FileTreeElement treeRoot = initializeInput(fileSystem);
 		
-		view = loader.getController();
-		TreeItem<FileTreeElement> root = new TreeItem<FileTreeElement>(treeRoot);
-		root.setValue(treeRoot);
+		
+		
+		
+		TreeItem<FileTreeElement> root = buildTree(treeRoot);
+		//root.setValue(treeRoot);
+		
+		
 		view.projectTree.setRoot(root);
+		view.projectTree.setShowRoot(false);
+		
 		// TODO:
-//		view.projectTree.setCellFactory(DefaultTreeCell.<FileTreeElement> forTreeView());
+		//view.projectTree.setCellFactory(DefaultTreeCell.<FileTreeElement> forTreeView());
 		
 		EventHandler<ActionEvent> action = contextHandler();
 		view.ctxNewFolder.setOnAction(action);
@@ -58,6 +65,18 @@ public class ProjectExplorerViewController {
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);
 	}
+    
+    /** Traverses the given directory tree recursively DFS */
+    private TreeItem<FileTreeElement> buildTree(FileTreeElement parentNode) {
+    	TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode);
+    	
+    	for (FileTreeElement child : parentNode.getChildren()) {
+			TreeItem<FileTreeElement> node = buildTree(child);
+			currentNode.getChildren().add(node);
+		}
+    	
+    	return currentNode;
+    }
     
     private FileTreeElement initializeInput(WorkspaceFileSystem fileSystem) {
     	workspaceFileSystem = fileSystem;
