@@ -100,4 +100,9 @@ public abstract class AbstractFileTreeElement implements FileTreeElement {
 	public void setFile(Path file) {
 		_file = file;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getFile().getFileName().toString();
+	}
 }
