@@ -31,6 +31,16 @@ public class JavaReader extends AbstractArtifactReader {
 
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
-		return null;
+		Tree tree = null;
+		
+		if (isFileSupported(element)) {
+			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
+			CompilationUnit cu = StaticJavaParser.parse(s);
+			// do stuff
+			
+			
+		}
+		
+		return tree;
 	}
 }
