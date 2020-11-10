@@ -37,94 +37,97 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 
 public class ProjectExplorerViewController {
-    private static final String PROJECT_EXPLORER_VIEW_FXML = "/ui/view/ProjectExplorerView.fxml";
-    
-    private ProjectExplorerView view;
+	private static final String PROJECT_EXPLORER_VIEW_FXML = "/ui/view/ProjectExplorerView.fxml";
 
-	@Inject ServiceContainer services;
+	private ProjectExplorerView view;
+
+	@Inject
+	ServiceContainer services;
 
 	private WorkspaceFileSystem workspaceFileSystem;
-	private Map<String,IProjectExplorerExtension> fileExtensions;
+	private Map<String, IProjectExplorerExtension> fileExtensions;
 
-    
-    @PostConstruct
-	public void postConstruct(Composite parent, IEclipseContext context, WorkspaceFileSystem fileSystem) throws IOException {
+	@PostConstruct
+	public void postConstruct(Composite parent, IEclipseContext context, WorkspaceFileSystem fileSystem)
+			throws IOException {
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
 		FXMLLoader<ProjectExplorerView> loader = new FXMLLoader<ProjectExplorerView>(context, StringTable.BUNDLE_NAME,
 				PROJECT_EXPLORER_VIEW_FXML);
 		view = loader.getController();
-		
+
 		getContributions();
 
 		// Structure of Directories representing a Tree
 		FileTreeElement treeRoot = initializeInput(fileSystem);
-		
+
 		TreeItem<FileTreeElement> root = buildTree(treeRoot, true);
-		
-		
+
 		view.projectTree.setRoot(root);
 		view.projectTree.setShowRoot(false);
-		
-		
+
 		EventHandler<ActionEvent> action = contextHandler();
 		view.ctxNewFolder.setOnAction(action);
 
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);
 	}
-    
-    /** Traverses the given directory tree recursively DFS */
-    private TreeItem<FileTreeElement> buildTree(FileTreeElement parentNode, boolean isRoot) {
-    	
-    	Node imgNode = isRoot ? null : getImage(parentNode);
-    	
-    	TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
-    	
-    	for (FileTreeElement child : parentNode.getChildren()) {
-    		TreeItem<FileTreeElement> node = buildTree(child, false);
+
+	/** Traverses the given directory tree recursively DFS */
+	private TreeItem<FileTreeElement> buildTree(FileTreeElement parentNode, boolean isRoot) {
+
+		Node imgNode = isRoot ? null : getImage(parentNode);
+
+		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
+
+		for (FileTreeElement child : parentNode.getChildren()) {
+			TreeItem<FileTreeElement> node = buildTree(child, false);
 			currentNode.getChildren().add(node);
 		}
-    	
-    	return currentNode;
-    }
-    
-    public Node getImage(Object element) {
+
+		return currentNode;
+	}
+
+	public Node getImage(Object element) {
 		Image image = null;
-		
+
 		if (element instanceof FileTreeElement) {
 			FileTreeElement fileElement = (FileTreeElement) element;
-			if(workspaceFileSystem.isProject(fileElement)) {
+			if (workspaceFileSystem.isProject(fileElement)) {
 				image = services.imageService.getImage(null, "icons/Explorer_View/items/project16.png");
 			} else if (fileElement.isDirectory()) {
 				image = services.imageService.getImage(null, "icons/Explorer_View/items/folder16.png");
 			} else {
 				String fileExtension = fileElement.getExtension();
-				//load extended file icons 
-				if(fileExtensions.containsKey(fileExtension)) {
+				// load extended file icons
+				if (fileExtensions.containsKey(fileExtension)) {
 					image = fileExtensions.get(fileExtension).getIcon(services.imageService);
 				} else if (fileExtension.equals(E4CStringTable.FILE_ENDING_XML)) {
 					image = services.imageService.getImage(null, "icons/Explorer_View/items/xml16.png");
 				} else {
-					//default file icon
+					// default file icon
 					image = services.imageService.getImage(null, "icons/Explorer_View/items/file16.png");
-				};
+				}
+				;
 			}
 		}
-		
+
 		WritableImage fxImage = SWTFXUtils.toFXImage(image.getImageData(), null);
-		
+
 		return new ImageView(fxImage);
 	}
-    
-    /**
-	 * Gets the file extension and the attribute from the Project explorer extension point.
+
+	/**
+	 * Gets the file extension and the attribute from the Project explorer extension
+	 * point.
 	 */
 	private void getContributions() {
-		IConfigurationElement[] configs = RCPContentProvider.getIConfigurationElements(StringTable.PROJECT_EXPLORER_FILE_EXTENSION_POINT);	
-		fileExtensions = new HashMap<String,IProjectExplorerExtension>();
-		for(IConfigurationElement config : configs) {
+		IConfigurationElement[] configs = RCPContentProvider
+				.getIConfigurationElements(StringTable.PROJECT_EXPLORER_FILE_EXTENSION_POINT);
+		fileExtensions = new HashMap<String, IProjectExplorerExtension>();
+		for (IConfigurationElement config : configs) {
 			try {
-				IProjectExplorerExtension attr = (IProjectExplorerExtension) config.createExecutableExtension(StringTable.FILE_EXT_ATTR);
+				IProjectExplorerExtension attr = (IProjectExplorerExtension) config
+						.createExecutableExtension(StringTable.FILE_EXT_ATTR);
 				String fileExtension = config.getAttribute(StringTable.FILE_EXT);
 				fileExtensions.put(fileExtension, attr);
 			} catch (CoreException e) {
@@ -132,12 +135,12 @@ public class ProjectExplorerViewController {
 			}
 		}
 	}
-    
-    private FileTreeElement initializeInput(WorkspaceFileSystem fileSystem) {
-    	workspaceFileSystem = fileSystem;
-    	workspaceFileSystem.initializeFileTree(RCPContentProvider.getCurrentWorkspacePath());
+
+	private FileTreeElement initializeInput(WorkspaceFileSystem fileSystem) {
+		workspaceFileSystem = fileSystem;
+		workspaceFileSystem.initializeFileTree(RCPContentProvider.getCurrentWorkspacePath());
 		new TreeSynchronization(workspaceFileSystem);
-		
+
 		return workspaceFileSystem.getWorkspaceDirectory();
 	}
 
