@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -52,6 +53,7 @@ public class ProjectExplorerViewController {
 	
 	@Inject private ESelectionService _selectionService;
 	@Inject private IEventBroker _eventBroker;
+	@Inject private EMenuService _menuService;
 
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
@@ -74,8 +76,11 @@ public class ProjectExplorerViewController {
 		view.projectTree.setRoot(root);
 		view.projectTree.setShowRoot(false);
 
-		EventHandler<ActionEvent> action = contextHandler();
-		view.ctxNewFolder.setOnAction(action);
+		// For JavaFX context menu start here
+//		EventHandler<ActionEvent> action = contextHandler();
+//		view.ctxNewFolder.setOnAction(action);
+		
+		_menuService.registerContextMenu(canvans, StringTable.PROJECT_EXPLORER_CONTEXT_MENU_ID);
 
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);
@@ -178,9 +183,9 @@ public class ProjectExplorerViewController {
 	 * Sets up the selection service via a ChangeListener on the projectTree
 	 */
 	private void setupSelectionService() {
-		// Set an initial selection on the root object
+		// Set no initial selection
 		StructuredSelection structuredSelection = new StructuredSelection(services.workspaceFileSystem.getWorkspaceDirectory());
-		_selectionService.setSelection(structuredSelection);
+		_selectionService.setSelection(null);
 		
 		// Add a SelectionListener to tree to propagate the selection that is done in the tree
 		view.projectTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<FileTreeElement>>() {

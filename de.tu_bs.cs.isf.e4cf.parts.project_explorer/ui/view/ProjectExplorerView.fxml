@@ -11,7 +11,7 @@
          <contextMenu>
             <ContextMenu>
               <items>
-                <MenuItem fx:id="ctxNewFolder" mnemonicParsing="false" text="New Folder"/>
+                <!--  MenuItem fx:id="ctxNewFolder" mnemonicParsing="false" text="New Folder"/-->
               </items>
             </ContextMenu>
          </contextMenu></TreeView>
