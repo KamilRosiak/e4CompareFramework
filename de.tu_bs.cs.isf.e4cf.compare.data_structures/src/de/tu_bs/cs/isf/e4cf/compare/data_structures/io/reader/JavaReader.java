@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 
 import com.github.javaparser.ast.CompilationUnit;
 
-
 /***
  * 
  * @author Serkan Acar
@@ -25,28 +24,44 @@ import com.github.javaparser.ast.CompilationUnit;
  */
 
 public class JavaReader extends AbstractArtifactReader {
-	public final static String[] SUPPORTED_FILE_ENDINGS = {"java"};
+	public final static String[] SUPPORTED_FILE_ENDINGS = { "java" };
 
 	private Node recursivelyTreeBuilder(com.github.javaparser.ast.Node node) {
 		// Name newNode by class of node
 		Node newNode = new NodeImpl(String.valueOf(node.getClass()));
-		
-		newNode.addAttribute("columnBegin", String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.column));
-		newNode.addAttribute("columnEnd", String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.column));
-		newNode.addAttribute("lineBegin", String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.line));
-		newNode.addAttribute("lineEnd", String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.line));
-		
-		// fill in attributes
-		
+
+		// Generic Atrributes
+		newNode.addAttribute("columnBegin",
+				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.column));
+		newNode.addAttribute("columnEnd",
+				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.column));
+		newNode.addAttribute("lineBegin",
+				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.line));
+		newNode.addAttribute("lineEnd",
+				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.line));
+
+		// Special Attributes
+		if (node.getClass() == com.github.javaparser.ast.body.ClassOrInterfaceDeclaration.class) {
+			// Class Attributes
+			newNode.addAttribute("name", node.getClass().getName());
+		} else if (node.getClass() == com.github.javaparser.ast.Modifier.class) {
+			// Modifier Attributes
+			newNode.addAttribute("modifier", ((com.github.javaparser.ast.Modifier) node).getKeyword().asString());
+		} else if (node.getClass() == com.github.javaparser.ast.body.FieldDeclaration.class) {
+			// Field Attributes
+			// A field doesn't really have attributes as everything in JavaParser is node
+			// itself.
+		}
+
+		// Recursive depth search behavior
 		for (com.github.javaparser.ast.Node child : node.getChildNodes()) {
-			Node newChildNode = recursivelyTreeBuilder(child); 
+			Node newChildNode = recursivelyTreeBuilder(child);
 			newNode.addChild(newChildNode);
 		}
-		
+
 		return newNode;
 	}
-	
-	
+
 	public JavaReader() {
 		super(SUPPORTED_FILE_ENDINGS);
 	}
@@ -54,21 +69,19 @@ public class JavaReader extends AbstractArtifactReader {
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
 		Tree tree = null;
-		
+
 		if (isFileSupported(element)) {
 			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
 			String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
 			CompilationUnit cu = StaticJavaParser.parse(s);
 			// do stuff
-			
-			String sps = cu.toString();
-			
-			//tree = new TreeImpl("", new NodeImpl(cu.toString()));
-			
-		}
-		
 
-		
+			String sps = cu.toString();
+
+			// tree = new TreeImpl("", new NodeImpl(cu.toString()));
+
+		}
+
 		return tree;
 	}
 }
