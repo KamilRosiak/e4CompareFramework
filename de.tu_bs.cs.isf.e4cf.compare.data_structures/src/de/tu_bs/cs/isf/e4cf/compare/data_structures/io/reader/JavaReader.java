@@ -12,6 +12,9 @@ import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.github.javaparser.ast.CompilationUnit;
+
+
 /***
  * 
  * @author Serkan Acar
@@ -24,7 +27,21 @@ import java.nio.file.Paths;
 public class JavaReader extends AbstractArtifactReader {
 	public final static String[] SUPPORTED_FILE_ENDINGS = {"java"};
 
-
+	private Node recursivelyTreeBuilder(com.github.javaparser.ast.Node node) {
+		
+		Node newNode = null;
+		
+		// fill in attributes
+		
+		for (com.github.javaparser.ast.Node child : node.getChildNodes()) {
+			Node newChildNode = recursivelyTreeBuilder(child); 
+			newNode.addChild(newChildNode);
+		}
+		
+		return newNode;
+	}
+	
+	
 	public JavaReader() {
 		super(SUPPORTED_FILE_ENDINGS);
 	}
@@ -39,8 +56,13 @@ public class JavaReader extends AbstractArtifactReader {
 			CompilationUnit cu = StaticJavaParser.parse(s);
 			// do stuff
 			
+			String sps = cu.toString();
+			
+			//tree = new TreeImpl("", new NodeImpl(cu.toString()));
 			
 		}
+		
+
 		
 		return tree;
 	}

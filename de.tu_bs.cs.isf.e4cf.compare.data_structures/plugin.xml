@@ -7,6 +7,9 @@
       <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader">
       </artifactReader>
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaReader">
+      </artifactReader>
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactWriter">
