@@ -13,6 +13,9 @@
       <artifactWriter
             artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TextWritter">
       </artifactWriter>
+	  <artifactWriter
+            artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter">
+      </artifactWriter>
    </extension>
 
 
