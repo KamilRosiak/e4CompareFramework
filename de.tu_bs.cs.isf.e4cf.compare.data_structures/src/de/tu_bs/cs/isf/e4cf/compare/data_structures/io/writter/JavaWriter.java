@@ -1,7 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactWriter;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
 /**
  * 
@@ -30,7 +32,26 @@ public class JavaWriter extends AbstractArtifactWriter {
 	@Override
 	public void writeArtifact(Tree tree, String path) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Not implemented yet.");
+		if(tree.getArtifactType().equals(NODE_TYPE_TREE)) {
+			FileStreamUtil.writeTextToFile(path +"."+FILE_ENDING, generateFileContent(tree.getRoot()));
+		}
 	}
 
+	private String generateFileContent(Node root) {
+		String fileContent = new String();
+		for(Node node : root.getChildren()) {
+			if(!node.isLeaf()) {
+				fileContent += generateFileContent(node);
+			} else {
+				// Package
+				// Imports
+				// Types
+				// Classes
+				// Interfaces
+				// Enum
+				// etc.
+			}
+		}
+		return fileContent;
+	}
 }
