@@ -8,7 +8,7 @@ public class Test {
 
 	public static void main(String[] args) throws SQLException {
 		// TODO Auto-generated method stub
-		DatabaseFactory.getInstance().createDatabase("", "Test1");
+		DatabaseFactory.getInstance().createDatabase("", "TestDatenbank");
 	}
 
 }
