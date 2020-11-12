@@ -40,16 +40,6 @@ public class JavaWriter extends AbstractArtifactWriter {
 	private String generateFileContent(Node root) {
 		String fileContent = new String();
 		for(Node node : root.getChildren()) {
-			if(!node.isLeaf()) {
-				fileContent += generateFileContent(node);
-			} else {
-				// Package
-				// Imports
-				// Types
-				// Classes
-				// Interfaces
-				// Enum
-				// etc.
 			}
 		}
 		return fileContent;
