@@ -15,5 +15,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jfxswt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.nebula.widgets.opal.rangeslider_1.0.0.201912241810.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/com.google.guava_27.1.0.v20190517-1946.jar"/>
+	<classpathentry kind="lib" path="D:/Workspace_2021/Team-4_e4compareFramework/sqlite-jdbc-3.32.3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
