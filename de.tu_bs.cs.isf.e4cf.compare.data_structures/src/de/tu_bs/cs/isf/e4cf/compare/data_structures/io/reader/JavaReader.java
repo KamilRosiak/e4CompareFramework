@@ -28,8 +28,13 @@ public class JavaReader extends AbstractArtifactReader {
 	public final static String[] SUPPORTED_FILE_ENDINGS = {"java"};
 
 	private Node recursivelyTreeBuilder(com.github.javaparser.ast.Node node) {
+		// Name newNode by class of node
+		Node newNode = new NodeImpl(String.valueOf(node.getClass()));
 		
-		Node newNode = null;
+		newNode.addAttribute("columnBegin", String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.column));
+		newNode.addAttribute("columnEnd", String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.column));
+		newNode.addAttribute("lineBegin", String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.line));
+		newNode.addAttribute("lineEnd", String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.line));
 		
 		// fill in attributes
 		
