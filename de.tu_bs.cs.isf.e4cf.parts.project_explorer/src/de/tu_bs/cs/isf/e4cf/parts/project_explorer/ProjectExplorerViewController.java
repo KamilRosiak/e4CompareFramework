@@ -10,6 +10,9 @@ import javax.inject.Inject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -18,6 +21,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.sync.TreeSynchronization;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -25,6 +29,8 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFolderHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.view.ProjectExplorerView;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
 import javafx.event.ActionEvent;
@@ -43,6 +49,9 @@ public class ProjectExplorerViewController {
 
 	@Inject
 	ServiceContainer services;
+	
+	@Inject private ESelectionService _selectionService;
+	@Inject private IEventBroker _eventBroker;
 
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
@@ -70,6 +79,8 @@ public class ProjectExplorerViewController {
 
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);
+		
+		setupSelectionService();
 	}
 
 	/** Traverses the given directory tree recursively DFS */
@@ -161,5 +172,24 @@ public class ProjectExplorerViewController {
 				}
 			}
 		};
+	}
+	
+	/**
+	 * Sets up the selection service via a ChangeListener on the projectTree
+	 */
+	private void setupSelectionService() {
+		// Set an initial selection on the root object
+		StructuredSelection structuredSelection = new StructuredSelection(services.workspaceFileSystem.getWorkspaceDirectory());
+		_selectionService.setSelection(structuredSelection);
+		
+		// Add a SelectionListener to tree to propagate the selection that is done in the tree
+		view.projectTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<FileTreeElement>>() {
+			@Override
+			public void changed(ObservableValue<? extends TreeItem<FileTreeElement>> observable,
+					TreeItem<FileTreeElement> oldValue, TreeItem<FileTreeElement> newValue) {
+				_selectionService.setSelection(new StructuredSelection(newValue.getValue()));
+				_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
+			}
+		});
 	}
 }
