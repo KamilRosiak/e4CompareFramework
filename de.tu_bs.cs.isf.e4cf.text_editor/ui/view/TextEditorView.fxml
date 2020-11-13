@@ -9,20 +9,20 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor">
   <children>
     <MenuBar prefHeight="0.0" prefWidth="655.0" VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="New" />
-            <MenuItem mnemonicParsing="false" text="Open" />
+            <MenuItem fx:id="newFile" mnemonicParsing="false" text="New" accelerator="Shortcut+N" />
+            <MenuItem fx:id="openFile" mnemonicParsing="false" text="Open" accelerator="Shortcut+O"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem fx:id="saveFile" mnemonicParsing="false" text="Save" accelerator="Shortcut+S" />
+            <MenuItem fx:id="saveFileAs" mnemonicParsing="false" text="Save As" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Save" />
-            <MenuItem mnemonicParsing="false" text="Save As" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Close File" />
-            <MenuItem mnemonicParsing="false" text="Close Editor" />
+            <MenuItem fx:id="closeFile" mnemonicParsing="false" text="Close File" accelerator="Shortcut+C" />
+            <MenuItem fx:id="closeEditor" mnemonicParsing="false" text="Close Editor" accelerator="Shortcut+E"/>
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
