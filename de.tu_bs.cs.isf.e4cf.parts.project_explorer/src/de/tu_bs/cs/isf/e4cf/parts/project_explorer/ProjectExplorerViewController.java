@@ -28,6 +28,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFolderHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.FXProjectExporterKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.view.ProjectExplorerView;
 import javafx.beans.value.ChangeListener;
@@ -75,7 +76,7 @@ public class ProjectExplorerViewController {
 
 		view.projectTree.setRoot(root);
 		view.projectTree.setShowRoot(false);
-
+		
 		// For JavaFX context menu start here
 //		EventHandler<ActionEvent> action = contextHandler();
 //		view.ctxNewFolder.setOnAction(action);
@@ -84,8 +85,12 @@ public class ProjectExplorerViewController {
 
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);
-		
+	
 		setupSelectionService();
+		
+		// key listener
+		scene.setOnKeyPressed(new FXProjectExporterKeyListener(context));
+		
 	}
 
 	/** Traverses the given directory tree recursively DFS */
