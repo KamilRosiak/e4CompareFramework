@@ -15,7 +15,7 @@ public class FileUtils {
 	private FileChooser fileChooser;
 	private Window parent;
 	private File file;
-	private String lastSavedRevision;
+	private int lastSavedRevision;
 	
 	/**
 	 * A Method to initialize fileChooser and the extension that can be choose
@@ -69,7 +69,7 @@ public class FileUtils {
 				text += (char) character;
 			}
 			reader.close();
-			lastSavedRevision = text;
+			lastSavedRevision = text.hashCode();
 			return text;
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
@@ -120,7 +120,7 @@ public class FileUtils {
 			writer = new FileWriter(file.getName(), false);
 			writer.write(content);
 			writer.close();
-			lastSavedRevision = content;
+			lastSavedRevision = content.hashCode();
 			return true;
 		} catch(IOException io) {
 			io.printStackTrace();
@@ -133,7 +133,7 @@ public class FileUtils {
 	 * 
 	 * @author Lukas Cronauer
 	 */
-	public String getLastRevision() {
+	public int getLastRevision() {
 		return lastSavedRevision;
 	}
 }

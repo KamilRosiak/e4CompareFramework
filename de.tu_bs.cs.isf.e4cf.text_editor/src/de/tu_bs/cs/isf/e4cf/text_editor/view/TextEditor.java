@@ -178,7 +178,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void saveChanges() {
 		String content = textArea.getText();
-		if (!content.equals(fileUtils.getLastRevision())) {
+		if (content.hashCode() != fileUtils.getLastRevision()) {
 			fileUtils.save(content);
 		}
 	}
