@@ -27,6 +27,7 @@ public class TextEditorViewController {
         Scene scene = new Scene(loader.getNode());
         //scene.getStylesheets().add(TEXT_EDITOR_CSS_LOCATION);
         canvans.setScene(scene);	
+        System.out.print("This is a push test");
     }
 
 }
