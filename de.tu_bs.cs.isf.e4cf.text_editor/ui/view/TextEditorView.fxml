@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor">
+  <children>
+    <MenuBar prefHeight="0.0" prefWidth="655.0" VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem fx:id="newFile" mnemonicParsing="false" text="New" accelerator="Shortcut+N" />
+            <MenuItem fx:id="openFile" mnemonicParsing="false" text="Open" accelerator="Shortcut+O"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem fx:id="saveFile" mnemonicParsing="false" text="Save" accelerator="Shortcut+S" />
+            <MenuItem fx:id="saveFileAs" mnemonicParsing="false" text="Save As" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="closeFile" mnemonicParsing="false" text="Close File" />
+            <MenuItem fx:id="closeEditor" mnemonicParsing="false" text="Close Editor" accelerator="Shortcut+E"/>
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem fx:id="undo" mnemonicParsing="false" text="Undo" />
+            <MenuItem fx:id="redo" mnemonicParsing="false" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="cutText" mnemonicParsing="false" text="Cut" accelerator="Shortcut+X" />
+            <MenuItem fx:id="copyText" mnemonicParsing="false" text="Copy" accelerator="Shortcut+C" />
+            <MenuItem fx:id="pasteText" mnemonicParsing="false" text="Paste" accelerator="Shortcut+V" />
+            <MenuItem fx:id="deleteText" mnemonicParsing="false" text="Delete" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="selectAllText" mnemonicParsing="false" text="Select All" />
+          </items>
+        </Menu>
+            <Menu mnemonicParsing="false" text="Extra">
+              <items>
+                <MenuItem fx:id="preferences" mnemonicParsing="false" text="Preferences" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem fx:id="about" mnemonicParsing="false" text="About" />
+              </items>
+            </Menu>
+      </menus>
+    </MenuBar>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+         <children>
+            <TextArea fx:id="textArea" layoutX="24.0" layoutY="14.0" prefHeight="287.0" prefWidth="640.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Label layoutX="227.0" layoutY="364.0" text="Anzahl Worte" AnchorPane.bottomAnchor="0.0" />
+            <Label layoutX="70.0" layoutY="364.0" text="Anzahl Zeilen" AnchorPane.bottomAnchor="0.0" />
+         </children>
+    </AnchorPane>
+  </children>
+</VBox>
