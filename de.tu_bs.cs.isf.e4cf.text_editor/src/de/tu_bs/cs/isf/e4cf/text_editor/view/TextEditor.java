@@ -4,11 +4,17 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
 
 
 /**
@@ -40,8 +46,13 @@ public class TextEditor implements Initializable {
 	//Help Menu
 	@FXML private MenuItem about;
 	
+	//Text area set up
+	@FXML private TextArea textArea;
+	Clipboard systemClipboard = Clipboard.getSystemClipboard();
 	
-	@Inject private ServiceContainer services;	
+	@Inject private ServiceContainer services;
+	
+	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -138,8 +149,11 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemCutTextAction() {
 		cutText.setOnAction(e -> {
-			System.out.println("Cut out selected text.");
-		}); //currently a placeholder
+			ClipboardContent text = new ClipboardContent();
+			text.putString(textArea.getSelectedText());	//add selected text to clipboard content
+			systemClipboard.setContent(text);	//add content to clipboard
+			textArea.deleteText(textArea.getSelection());
+		});
 	}
 	
 	/**
@@ -150,20 +164,50 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemCopyTextAction() {
 		copyText.setOnAction(e -> {
-			System.out.println("Copy selected text.");
-		}); //currently a placeholder
+			ClipboardContent text = new ClipboardContent();	//add selected text to clipboard content
+			text.putString(textArea.getSelectedText());	//add content to clipboard
+			systemClipboard.setContent(text);
+		});
 	}
 	
 	/**
 	 * Sets the actions of the Paste item in the Edit menu.
-	 * Pastes text from clipboard into the editor window.
+	 * Pastes text from clipboard into the editor window by reading it from the clipboard and then
+	 * composing a new string around this content.
 	 * 
 	 * @author Cedric Kapalla
 	 */
 	private void initEditMenuItemPasteTextAction() {
 		pasteText.setOnAction(e -> {
-			System.out.println("Paste text on clipboard.");
-		}); //currently a placeholder
+			if( !systemClipboard.hasContent(DataFormat.PLAIN_TEXT) ) {
+			   return;	//does nothing if there is nothing or no text on clipboard
+			}
+			
+			String pasteText = systemClipboard.getString();	//get text from Clipboard
+			IndexRange range = textArea.getSelection();	//finds cursor position and selected text to overwrite
+			
+			//initialisation of variables
+			int endPos = 0;	//defines where the cursor will be after paste action
+			String updatedText = "";
+			String origText = textArea.getText();
+			
+			//Separates the points before and after the inserted text's position
+			String firstPart = StringUtils.substring (origText, 0, range.getStart());
+			String lastPart = StringUtils.substring(origText, range.getEnd(), StringUtils.length(origText));
+			
+			//puts together the new String
+			updatedText = firstPart + pasteText + lastPart;
+			
+			//checks for where to put the cursor after adding text in
+			if (range.getStart() == range.getEnd()) {
+				endPos = range.getEnd() + StringUtils.length(pasteText);
+			} else {
+				endPos = range.getStart() + StringUtils.length(pasteText);
+			}
+			
+			textArea.setText(updatedText);
+			textArea.positionCaret(endPos);
+		}); 
 	}
 	
 	/**
@@ -174,8 +218,8 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemDeleteTextAction() {
 		deleteText.setOnAction(e -> {
-			System.out.println("Delete selected text.");
-		}); //currently a placeholder
+			textArea.deleteText(textArea.getSelection());
+		});
 	}
 	
 	/**
