@@ -21,31 +21,31 @@
             <MenuItem fx:id="saveFile" mnemonicParsing="false" text="Save" accelerator="Shortcut+S" />
             <MenuItem fx:id="saveFileAs" mnemonicParsing="false" text="Save As" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="closeFile" mnemonicParsing="false" text="Close File" accelerator="Shortcut+C" />
+            <MenuItem fx:id="closeFile" mnemonicParsing="false" text="Close File" />
             <MenuItem fx:id="closeEditor" mnemonicParsing="false" text="Close Editor" accelerator="Shortcut+E"/>
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
+            <MenuItem fx:id="undo" mnemonicParsing="false" text="Undo" />
+            <MenuItem fx:id="redo" mnemonicParsing="false" text="Redo" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Cut" />
-            <MenuItem mnemonicParsing="false" text="Copy" />
-            <MenuItem mnemonicParsing="false" text="Paste" />
-            <MenuItem mnemonicParsing="false" text="Delete" />
+            <MenuItem fx:id="cutText" mnemonicParsing="false" text="Cut" accelerator="Shortcut+X" />
+            <MenuItem fx:id="copyText" mnemonicParsing="false" text="Copy" accelerator="Shortcut+C" />
+            <MenuItem fx:id="pasteText" mnemonicParsing="false" text="Paste" accelerator="Shortcut+V" />
+            <MenuItem fx:id="deleteText" mnemonicParsing="false" text="Delete" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Select All" />
+            <MenuItem fx:id="selectAllText" mnemonicParsing="false" text="Select All" />
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Extra">
               <items>
-                <MenuItem mnemonicParsing="false" text="Preferences" />
+                <MenuItem fx:id="preferences" mnemonicParsing="false" text="Preferences" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
               <items>
-                <MenuItem mnemonicParsing="false" text="About" />
+                <MenuItem fx:id="about" mnemonicParsing="false" text="About" />
               </items>
             </Menu>
       </menus>

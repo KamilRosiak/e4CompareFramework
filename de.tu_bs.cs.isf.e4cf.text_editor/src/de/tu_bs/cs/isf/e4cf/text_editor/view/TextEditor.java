@@ -17,6 +17,7 @@ import javafx.scene.control.MenuItem;
  *
  */
 public class TextEditor implements Initializable {
+	//File Menu
 	@FXML private MenuItem newFile;
 	@FXML private MenuItem openFile;
 	@FXML private MenuItem saveFile;
@@ -24,27 +25,39 @@ public class TextEditor implements Initializable {
 	@FXML private MenuItem closeFile;
 	@FXML private MenuItem closeEditor;
 	
-	@Inject private ServiceContainer services;
+	//Edit Menu
+	@FXML private MenuItem undo;
+	@FXML private MenuItem redo;
+	@FXML private MenuItem cutText;
+	@FXML private MenuItem copyText;
+	@FXML private MenuItem pasteText;
+	@FXML private MenuItem deleteText;
+	@FXML private MenuItem selectAllText;
+	
+	//Extra Menu
+	@FXML private MenuItem preferences;
+	
+	//Help Menu
+	@FXML private MenuItem about;
 	
 	
-
-	
+	@Inject private ServiceContainer services;	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		initFileMenuItem();
-		
+		initFileMenuItems();
+		initEditMenuItems();
+		initExtraMenuItems();
+		initHelpMenuItems();
 	}
 	
-	private void initFileMenuItem() {
-		initFileMenuItemNewAction();
+	private void initFileMenuItems() {
+		initFileMenuItemNewAction(); 
 		initFileMenuItemOpenAction();
 		initFileMenuItemSaveAction();
 		initFileMenuItemSaveAsAction();
-		// Closes the current File
-		initFileMenuItemCloseFileAction();
-		//Closes the Editor Window
-		initFileMenuItemCloseEditorAction();
+		initFileMenuItemCloseFileAction(); // Closes the current File
+		initFileMenuItemCloseEditorAction(); //Closes the Editor Window
 		
 	}
 	private void initFileMenuItemNewAction() {
@@ -78,4 +91,78 @@ public class TextEditor implements Initializable {
 		});
 	}
 
+	
+	private void initEditMenuItems() {
+		initEditMenuItemUndoAction(); 
+		initEditMenuItemRedoAction();
+		initEditMenuItemCutTextAction();
+		initEditMenuItemCopyTextAction();
+		initEditMenuItemPasteTextAction();
+		initEditMenuItemDeleteTextAction(); 
+		initEditMenuItemSelectAllAction(); 
+	}
+	
+	private void initEditMenuItemUndoAction() {
+		undo.setOnAction(e -> {
+			System.out.println("Undo text or action.");
+		});
+	}
+
+	private void initEditMenuItemRedoAction() {
+		redo.setOnAction(e -> {
+			System.out.println("Redo text or action once undone.");
+		});
+	}
+	
+	private void initEditMenuItemCutTextAction() {
+		cutText.setOnAction(e -> {
+			System.out.println("Cut out selected text.");
+		});
+	}
+	
+	private void initEditMenuItemCopyTextAction() {
+		copyText.setOnAction(e -> {
+			System.out.println("Copy selected text.");
+		});
+	}
+	
+	private void initEditMenuItemPasteTextAction() {
+		pasteText.setOnAction(e -> {
+			System.out.println("Paste text on clipboard.");
+		});
+	}
+	
+	private void initEditMenuItemDeleteTextAction() {
+		deleteText.setOnAction(e -> {
+			System.out.println("Delete selected text.");
+		});
+	}
+	
+	private void initEditMenuItemSelectAllAction() {
+		selectAllText.setOnAction(e -> {
+			System.out.println("Select all text.");
+		});
+	}
+	
+	
+	private void initExtraMenuItems() {
+		initExtraMenuItemPreferenceAction();  
+	}
+	
+	private void initExtraMenuItemPreferenceAction() {
+		preferences.setOnAction(e -> {
+			System.out.println("Adjust Preferences");
+		});
+	}
+	
+	
+	private void initHelpMenuItems() {
+		initHelpMenuItemAboutAction();  
+	}
+	
+	private void initHelpMenuItemAboutAction() {
+		about.setOnAction(e -> {
+			System.out.println("Placeholder. There is no help for you :(");
+		});
+	}
 }
