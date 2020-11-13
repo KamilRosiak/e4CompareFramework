@@ -15,7 +15,7 @@ import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
 public class TextEditorViewController {
-	private static final String TEXT_EDITOR_VIEW_FXML = "TextEditorView.fxml";
+	private static final String TEXT_EDITOR_VIEW_FXML = "/ui/view/TextEditorView.fxml";
     public static final String TEXT_EDITOR_VIEW_CSS_LOCATION ="css/comparator_view.css";
     
     
