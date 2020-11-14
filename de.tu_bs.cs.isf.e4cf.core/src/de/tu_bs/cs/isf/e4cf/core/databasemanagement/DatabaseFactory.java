@@ -126,7 +126,7 @@ public class DatabaseFactory {
 	 * @param pNewPath String the new directory where the database must be placed
 	 * @throws IOException
 	 */
-	public void moveDatabase(String pDbName, String pOldPath,  String pNewPath) throws IOException {
+	public void moveDatabase(String pDbName, String pOldPath,  String pNewPath) {
 		if (databaseExists(pOldPath, pDbName)) {
 			File startFile = new File(pOldPath+ pDbName);
 			File endDirection=new File(pNewPath);
