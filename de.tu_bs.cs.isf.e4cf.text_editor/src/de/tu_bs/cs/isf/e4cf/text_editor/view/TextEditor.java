@@ -7,8 +7,11 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
@@ -17,9 +20,10 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 
 
+
 /**
  * 
- * @author Sören Christmann, Cedric Kapalla
+ * @author SÃ¶ren Christmann, Cedric Kapalla, Lukas Cronauer, Erwin Wijaya
  *
  */
 public class TextEditor implements Initializable {
@@ -51,6 +55,12 @@ public class TextEditor implements Initializable {
 	Clipboard systemClipboard = Clipboard.getSystemClipboard();
 	
 	@Inject private ServiceContainer services;
+
+	//Utils class to handle file operations
+	FileUtils fileUtils;
+	
+	//Scene of this object
+	Scene scene;
 	
 	
 
@@ -71,39 +81,123 @@ public class TextEditor implements Initializable {
 		initFileMenuItemCloseEditorAction(); //Closes the Editor Window
 		
 	}
+	
+	/**
+	 * Sets the actions of the New item in the File menu.
+	 * Make a new File
+	 * 
+	 * @author Lukas Cronauer, Erwin Wijaya
+	 */
 	private void initFileMenuItemNewAction() {
 		newFile.setOnAction(e -> {
+			textArea.setText(null);
 			System.out.println("New");
 		});
 	}
+	
+	/**
+	 * Sets the actions of the Open item in the File menu.
+	 * Open a File with given extension
+	 * 
+	 * @author Lukas Cronauer, Erwin Wijaya
+	 */
 	private void initFileMenuItemOpenAction() {
 		openFile.setOnAction(e -> {
 			System.out.println("Open");
+			String content = fileUtils.openFile();
+			if (!content.equals("")) {
+			 	textArea.setText(content);
+			}
 		});
 	}
+	
+	/**
+	 * Sets the actions of the Save item in the File menu.
+	 * Saving the text into current File
+	 * 
+	 * @author Lukas Cronauer, Erwin Wijaya
+	 */
 	private void initFileMenuItemSaveAction() {
 		saveFile.setOnAction(e -> {
 			System.out.println("Save");
+			String content = textArea.getText();
+			if (!fileUtils.save(content)) {
+				// show error dialog
+			}
 		});
 	}
+	
+	/**
+	 * Sets the actions of the SaveAs item in the File menu.
+	 * Make a copy of the file in another file directory  
+	 * Or make a copy of the file with another name
+	 * 
+	 * @author Lukas Cronauer, Erwin Wijaya
+	 */
 	private void initFileMenuItemSaveAsAction() {
 		saveFileAs.setOnAction(e -> {
 			System.out.println("Save As");
+			String content = textArea.getText();
+			if (!fileUtils.saveAs(content)) {
+				// show error dialog
+			}
 		});
 	}
+	
+	/**
+	 * Sets the actions of the CloseItem item in the File menu.
+	 * Closing the File that are currently open.
+	 * 
+	 * @author Lukas Cronauer, Erwin Wijaya
+	 */
 	private void initFileMenuItemCloseFileAction() {
 		closeFile.setOnAction(e -> {
 			System.out.println("Close File");
+			saveChanges();
 		});
 	}
+	
+	/**
+	 * Sets the actions of the CloseEditor item in the File menu.
+	 * Closing the whole Editor.
+	 * 
+	 * @author Lukas Cronauer, Erwin Wijaya
+	 */
 	private void initFileMenuItemCloseEditorAction() {
 		closeEditor.setOnAction(e -> {
 			System.out.println("Close Editor");
+			saveChanges();
 		});
 	}
 
 	/**
-	 * Initialises the Edit menu. Includes undo/redo, copy/paste/cut, Delete, and Select All
+	 * Sets the actions of the Undo item in the Edit menu.
+	 * Undoes the most recent actions taken in the editor.
+	 * 
+	 * @author Lukas Cronauer
+	 */
+	private void saveChanges() {
+		String content = textArea.getText();
+		if (content.hashCode() != fileUtils.getLastRevision()) {
+			fileUtils.save(content);
+		}
+	}
+	
+	/**
+	 * Sets the actions of the Undo item in the Edit menu.
+	 * Initialize a method with the scene
+	 * 
+	 * @author Lukas Cronauer
+	 */
+	public void initFileUtils(Scene scene) {
+		 this.scene = scene;
+		 if (scene != null) {
+			fileUtils = new FileUtils(scene.getWindow());
+		 }
+	}
+
+	/**
+	 * Initializes the Edit menu. Includes undo/redo, copy/paste/cut, Delete, and Select All
 	 * 
 	 * @author Cedric Kapalla
 	 */
@@ -235,7 +329,7 @@ public class TextEditor implements Initializable {
 	}
 	
 	/**
-	 * This function initialises the Extra menu. It consists of the 'Preference' item
+	 * This function initializes the Extra menu. It consists of the 'Preference' item
 	 * 
 	 * @author Cedric Kapalla
 	 */
@@ -255,7 +349,7 @@ public class TextEditor implements Initializable {
 	}
 	
 	/**
-	 * This function initialises the Help menu. It consists of the 'Preference' item
+	 * This function initializes the Help menu. It consists of the 'Preference' item
 	 * 
 	 * @author Cedric Kapalla
 	 */
