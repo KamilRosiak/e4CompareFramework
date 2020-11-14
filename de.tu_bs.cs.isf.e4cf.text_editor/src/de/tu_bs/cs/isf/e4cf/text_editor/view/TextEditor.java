@@ -57,10 +57,10 @@ public class TextEditor implements Initializable {
 	@Inject private ServiceContainer services;
 
 	//Utils class to handle file operations
-	FileUtils fileUtils;
+	private FileUtils fileUtils;
 	
 	//Scene of this object
-	Scene scene;
+	private Scene scene;
 	
 	
 
@@ -90,20 +90,20 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemNewAction() {
 		newFile.setOnAction(e -> {
+			//TODO: Ask to save unsaved changes
 			textArea.setText(null);
-			System.out.println("New");
 		});
 	}
 	
 	/**
 	 * Sets the actions of the Open item in the File menu.
-	 * Open a File with given extension
+	 * Open a File with a extension set in @FileUtils fileChooser
+	 * fileExtensions
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private void initFileMenuItemOpenAction() {
 		openFile.setOnAction(e -> {
-			System.out.println("Open");
 			String content = fileUtils.openFile();
 			if (!content.equals("")) {
 			 	textArea.setText(content);
@@ -119,7 +119,6 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemSaveAction() {
 		saveFile.setOnAction(e -> {
-			System.out.println("Save");
 			String content = textArea.getText();
 			if (!fileUtils.save(content)) {
 				// show error dialog
@@ -136,7 +135,6 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemSaveAsAction() {
 		saveFileAs.setOnAction(e -> {
-			System.out.println("Save As");
 			String content = textArea.getText();
 			if (!fileUtils.saveAs(content)) {
 				// show error dialog
@@ -152,8 +150,8 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemCloseFileAction() {
 		closeFile.setOnAction(e -> {
-			System.out.println("Close File");
 			saveChanges();
+			//TODO: most likely futher logic needed to close current file/tab
 		});
 	}
 	
@@ -165,14 +163,14 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemCloseEditorAction() {
 		closeEditor.setOnAction(e -> {
-			System.out.println("Close Editor");
 			saveChanges();
+			//TODO: most likely futher logic needed to close entire text editor if possible
 		});
 	}
 
 	/**
-	 * Sets the actions of the Undo item in the Edit menu.
-	 * Undoes the most recent actions taken in the editor.
+	 * Saves the current content of the textArea to a file
+	 * when there are changes compared to the last saved version
 	 * 
 	 * @author Lukas Cronauer
 	 */
@@ -184,8 +182,10 @@ public class TextEditor implements Initializable {
 	}
 	
 	/**
-	 * Sets the actions of the Undo item in the Edit menu.
-	 * Initialize a method with the scene
+	 * Initializes the FileUtils instance of this object with the window
+	 * obtained from scene
+	 * 
+	 * @param scene The scene that this object is part of
 	 * 
 	 * @author Lukas Cronauer
 	 */
