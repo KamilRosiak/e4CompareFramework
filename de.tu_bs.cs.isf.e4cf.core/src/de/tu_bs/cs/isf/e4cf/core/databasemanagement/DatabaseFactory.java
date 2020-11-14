@@ -92,7 +92,11 @@ public class DatabaseFactory {
 	 */
 	public void deleteDatabase(String pPath, String pDbName) throws SQLException, IOException {		
 		if (databaseExists(pPath, pDbName)) {
-			//hier kommt code. Jessica
+			System.out.println("Deleting database " + pDbName + ".");
+			getDatabase(pPath, pDbName).close();
+			final File file = new File(pPath + pDbName);
+			file.delete();
+			System.out.println("Database deleted.");
 		} else {
 			System.out.println(pDbName + " database does not exist.");
 		}
