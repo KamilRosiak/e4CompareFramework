@@ -128,7 +128,19 @@ public class DatabaseFactory {
 	 */
 	public void moveDatabase(String pDbName, String pOldPath,  String pNewPath) throws IOException {
 		if (databaseExists(pOldPath, pDbName)) {
-			//hier kommt code, bitte den folder testDatabases nutzen XEN
+			File startFile = new File(pOldPath+ pDbName);
+			File endDirection=new File(pNewPath);
+			if(!endDirection.exists()) {
+				   endDirection.mkdirs();
+				}
+			File endFile=new File(endDirection+ File.separator+ startFile.getName());
+			
+				if (startFile.renameTo(endFile)) {
+				   System.out.println("File moved successfully! Target path£º{"+endFile.getAbsolutePath()+"}");
+				} else {
+				   System.out.println("File move failed! Starting path£º{"+startFile.getAbsolutePath()+"}");
+				}			
+						
 		} else {
 			System.out.println(pDbName + " database does not exist.");
 		}
