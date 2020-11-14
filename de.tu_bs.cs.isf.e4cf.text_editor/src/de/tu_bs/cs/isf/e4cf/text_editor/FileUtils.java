@@ -18,7 +18,10 @@ public class FileUtils {
 	private int lastSavedRevision;
 	
 	/**
-	 * A Method to initialize fileChooser and the extension that can be choose
+	 *  Constructor used to initialize the fileChooser instance of this object.
+	 *  Available file extensions are added to the fileChooser.
+	 *  
+	 *  @param parent Window the @TextEditor is part of. Needed to display open/save dialogs
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -27,6 +30,8 @@ public class FileUtils {
 
 		fileChooser = new FileChooser();
 		fileChooser.setTitle("Open a File");
+		
+		//TODO: obtain wanted extensions from collection and add them here
 		fileChooser.getExtensionFilters().addAll(
 			new ExtensionFilter("Text Files", "*.txt"),
 			new ExtensionFilter("Java Files", "*.java"),
@@ -36,7 +41,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * A Method for opening a file
+	 * Opens the file chosen by the open dialog.
 	 * 
 	 * @author Lukas Cronauer
 	 */
@@ -54,7 +59,9 @@ public class FileUtils {
 	}
 	
 	/**
-	 * A Method to read the file and return the string
+	 * Reads the entire content the file and returns it as a string.
+	 * 
+	 * @param file The file to open
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -72,15 +79,18 @@ public class FileUtils {
 			lastSavedRevision = text.hashCode();
 			return text;
 		} catch(FileNotFoundException e) {
+			// error message: file not found
 			e.printStackTrace();
 		} catch (IOException io) {
+			// error message: error reading file
 			io.printStackTrace();
 		}
 		return "";
 	}
 	
 	/**
-	 * A Method to save a file that is currently in use
+	 * Saves the parameter content into the file instance of this object.
+	 * If file is not yet set, saveAs() is called.
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -93,7 +103,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * A Method to save a file in another directory or with another name
+	 * A Method to save a file in another directory or with another name.
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -109,7 +119,8 @@ public class FileUtils {
 	}
 
 	/**
-	 * A Method to write the File and saving it
+	 * Writes the parameter content into the File.
+	 * @param content The String to save
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -129,7 +140,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * A Method to get latest Revision
+	 * Returns the hashCode of the files last saved content as a string.
 	 * 
 	 * @author Lukas Cronauer
 	 */
