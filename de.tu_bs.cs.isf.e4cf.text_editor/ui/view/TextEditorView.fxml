@@ -53,8 +53,8 @@
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
          <children>
             <TextArea fx:id="textArea" layoutX="24.0" layoutY="14.0" prefHeight="287.0" prefWidth="640.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <Label layoutX="227.0" layoutY="364.0" text="Anzahl Worte" AnchorPane.bottomAnchor="0.0" />
-            <Label layoutX="70.0" layoutY="364.0" text="Anzahl Zeilen" AnchorPane.bottomAnchor="0.0" />
+            <Label fx:id="wordCount" layoutX="227.0" layoutY="364.0" text="Wordcount:" AnchorPane.bottomAnchor="0.0" />
+            <Label fx:id="rowCount" layoutX="70.0" layoutY="364.0" text="rowCount:" AnchorPane.bottomAnchor="0.0" />
          </children>
     </AnchorPane>
   </children>
