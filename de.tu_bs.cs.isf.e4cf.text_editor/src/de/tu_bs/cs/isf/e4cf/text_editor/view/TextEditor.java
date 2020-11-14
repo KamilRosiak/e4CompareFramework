@@ -252,14 +252,14 @@ public class TextEditor implements Initializable {
 
 	/**
 	 * Sets the actions of the Undo item in the Edit menu. Undoes the most recent
-	 * actions taken in the editor.
+	 * actions taken in the editor. Currently empties the entire text-Area.
 	 * 
 	 * @author Cedric Kapalla
 	 */
 	private void initEditMenuItemUndoAction() {
 		undo.setOnAction(e -> { // activate once pressed
-			System.out.println("Undo text or action.");
-		}); // currently a placeholder
+			textArea.undo();
+		});
 	}
 
 	/**
@@ -270,8 +270,8 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemRedoAction() {
 		redo.setOnAction(e -> {
-			System.out.println("Redo text or action once undone.");
-		}); // currently a placeholder
+			textArea.redo();
+		});
 	}
 
 	/**
@@ -365,8 +365,7 @@ public class TextEditor implements Initializable {
 		selectAllText.setOnAction(e -> {
 			textArea.requestFocus();
 			textArea.selectAll();
-			System.out.println("Select all text.");
-		}); // currently a placeholder
+		});
 	}
 
 	/**
