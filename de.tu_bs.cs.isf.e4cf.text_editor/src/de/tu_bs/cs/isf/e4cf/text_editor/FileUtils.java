@@ -86,7 +86,7 @@ public class FileUtils {
 	 */
 	public boolean save(String content) {
 		if (file == null) {
-			saveAs(content);
+			return saveAs(content);
 		}
 
 		return writeFile(content);
