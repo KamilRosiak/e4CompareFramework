@@ -1,6 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.core.databasemanagement;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -56,6 +61,72 @@ public class DatabaseFactory {
 		} else {
 			System.out.println("Database " + pDbName + " already exists.");
 			return null;
+		}
+	}
+	
+	/**
+	 * Method to get a database if it exists.
+	 * 
+	 * @param pPath String the path where the database is situated 
+	 * @param pDbName String the name of the database
+	 * @return Connection
+	 * @throws SQLException error while getting database
+	 */
+	public Connection getDatabase(String pPath, String pDbName) throws SQLException {
+		if (databaseExists(pPath, pDbName)) {
+			System.out.println("Getting database " + pDbName + ".");
+			return DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
+		} else {
+			System.out.println(pDbName + " database does not exist.");
+			return null;
+		}
+	}
+	
+	/**
+	 * Method to delete a database if it exists already.
+	 * 
+	 * @param pPath String the path where the database is situated
+	 * @param pDbName String the name of the database
+	 * @throws SQLException error while deleting database
+	 * @throws IOException 
+	 */
+	public void deleteDatabase(String pPath, String pDbName) throws SQLException, IOException {		
+		if (databaseExists(pPath, pDbName)) {
+			//hier kommt code. Jessica
+		} else {
+			System.out.println(pDbName + " database does not exist.");
+		}
+	}
+
+	/**
+	 * Method to change the name of a database.
+	 * 
+	 * @param pPath String the path where the database is situated
+	 * @param pOldDbName pDbName String the old name of the database 
+	 * @param pNewDbName pDbName String the new name of the database
+	 */
+	public void renameDatabase(String pPath, String pOldDbName, String pNewDbName) {
+		if (databaseExists(pPath, pOldDbName)) {
+			//hier kommt code SHUPEI
+		} else {
+			System.out.println(pOldDbName + " database does not exist.");
+		}
+	}
+	
+	
+	/**
+	 * Method to move a database to an other directory.
+	 * 
+	 * @param pDbName String the name of the database 
+	 * @param pOldPath String the path where the database is situated
+	 * @param pNewPath String the new directory where the database must be placed
+	 * @throws IOException
+	 */
+	public void moveDatabase(String pDbName, String pOldPath,  String pNewPath) throws IOException {
+		if (databaseExists(pOldPath, pDbName)) {
+			//hier kommt code, bitte den folder testDatabases nutzen XEN
+		} else {
+			System.out.println(pDbName + " database does not exist.");
 		}
 	}
 	
