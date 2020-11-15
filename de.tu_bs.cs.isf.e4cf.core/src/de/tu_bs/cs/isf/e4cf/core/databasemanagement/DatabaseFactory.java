@@ -103,19 +103,22 @@ public class DatabaseFactory {
 	}
 
 	/**
-	 * Method to change the name of a database.
-	 * 
-	 * @param pPath String the path where the database is situated
-	 * @param pOldDbName pDbName String the old name of the database 
-	 * @param pNewDbName pDbName String the new name of the database
-	 */
-	public void renameDatabase(String pPath, String pOldDbName, String pNewDbName) {
-		if (databaseExists(pPath, pOldDbName)) {
-			//hier kommt code SHUPEI
-		} else {
-			System.out.println(pOldDbName + " database does not exist.");
-		}
-	}
+     * Method to change the name of a database.
+     * 
+     * @param pPath String the path where the database is situated
+     * @param pOldDbName pDbName String the old name of the database 
+     * @param pNewDbName pDbName String the new name of the database
+     */
+    public void renameDatabase(final String pPath, final String pOldDbName, final String pNewDbName) {
+        if (databaseExists(pPath, pOldDbName)) {
+            if (!pOldDbName.equals(pNewDbName)) {
+                new File(pPath + pOldDbName).renameTo(new File(pPath + pNewDbName));
+                System.out.println("Renaming database " + pOldDbName + " to " + pNewDbName);
+            }
+        } else {
+            System.out.println(pOldDbName + " database does not exist.");
+        }
+    }
 	
 	
 	/**
