@@ -2,7 +2,8 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
 import java.util.Set;
 
-import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.body.*;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
@@ -81,6 +82,19 @@ public class JavaWriter extends AbstractArtifactWriter {
 	private void ImportDeclaration(Node node, CompilationUnit cu) {
 		for(Node child : node.getChildren()) {
 			cu.addImport(child.getNodeType());
+		}
+	}
+	
+	private void ClassOrInterfaceDeclaration(Node node, CompilationUnit cu) {
+		ClassOrInterfaceDeclaration coid; 
+		Attribute attr = node.getAttributeForKey(JavaNodeTypes.Type.toString());
+		if (attr.getAttributeValues().iterator().next().equals(JavaNodeTypes.Class.toString())) {
+			coid = cu.addClass(name);
+		} else if (attr.getAttributeValues().iterator().next().equals(JavaNodeTypes.Interface.toString())) {
+			coid = cu.addInterface(name);
+		}
+		for(Node chlild : node.getChildren()) {
+			
 		}
 	}
 }
