@@ -48,9 +48,6 @@ public class JavaReader extends AbstractArtifactReader {
 					((CompilationUnit) node).getPackageDeclaration().orElse(null).getNameAsString());
 		}
 
-		// set Attributes (Type, SimpleName, Modifier)
-		newNode.addAttribute("Type", node.getClass().getSimpleName());
-
 		// Filter the child nodes to a list only containing node of type SimpleName. The
 		// list should contain zero or one element. If the node has a child of type
 		// SimpleName add the name as a attribute to the new node.
