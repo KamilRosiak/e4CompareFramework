@@ -24,7 +24,6 @@ import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 public class JavaWriter extends AbstractArtifactWriter {
 	public final static String FILE_ENDING = "java";
 	public final static String NODE_TYPE_TREE = "JAVA";
-	private CompilationUnit compilationUnit = new CompilationUnit();
 
 	/**
 	 * Initializes a new instance of class JavaWriter.
@@ -59,23 +58,29 @@ public class JavaWriter extends AbstractArtifactWriter {
 	 * @return Contents of a file
 	 */
 	private String generateFileContent(Node root) {
-		String fileContent = new String();
-
+		CompilationUnit cu = new CompilationUnit();
+		
 		for(Attribute attribute : root.getAttributes()) {
 			String key = attribute.getAttributeKey();
 			Set<String> value = attribute.getAttributeValues();
 			if(key.startsWith(JavaNodeTypes.Package.toString())) {
 				// Assumption: If node has key package, it must have the single value of package name
-				compilationUnit.setPackageDeclaration(value.iterator().next());
+				cu.setPackageDeclaration(value.iterator().next());
 			}
 		}
 		
 		// Build the file depth-first
 		// If node is leaf then getChildren returns an empty list and the body of the
 		// for loop is not executed.
-		for (Node node : root.getChildren()) {
-			fileContent += generateFileContent(node);
+		for (Node child : root.getChildren()) {
+			
 		}
-		return fileContent;
+		return cu.toString();
+	}
+	
+	private void ImportDeclaration(Node node, CompilationUnit cu) {
+		for(Node child : node.getChildren()) {
+			cu.addImport(child.getNodeType());
+		}
 	}
 }
