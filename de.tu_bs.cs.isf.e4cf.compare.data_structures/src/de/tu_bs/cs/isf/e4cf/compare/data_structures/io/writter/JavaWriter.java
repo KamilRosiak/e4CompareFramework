@@ -1,6 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
+import java.util.Set;
+
+import com.github.javaparser.ast.CompilationUnit;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactWriter;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
@@ -19,6 +24,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 public class JavaWriter extends AbstractArtifactWriter {
 	public final static String FILE_ENDING = "java";
 	public final static String NODE_TYPE_TREE = "JAVA";
+	private CompilationUnit compilationUnit = new CompilationUnit();
 
 	/**
 	 * Initializes a new instance of class JavaWriter.
@@ -55,6 +61,15 @@ public class JavaWriter extends AbstractArtifactWriter {
 	private String generateFileContent(Node root) {
 		String fileContent = new String();
 
+		for(Attribute attribute : root.getAttributes()) {
+			String key = attribute.getAttributeKey();
+			Set<String> value = attribute.getAttributeValues();
+			if(key.startsWith("package")) {
+				// Assumption: If node has key package, it must have the single value of package name
+				compilationUnit.setPackageDeclaration(value.iterator().next());
+			}
+		}
+		
 		// Build the file depth-first
 		// If node is leaf then getChildren returns an empty list and the body of the
 		// for loop is not executed.
