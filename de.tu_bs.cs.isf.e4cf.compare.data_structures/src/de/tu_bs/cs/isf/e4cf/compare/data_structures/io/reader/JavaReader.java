@@ -69,14 +69,10 @@ public class JavaReader extends AbstractArtifactReader {
 		for (int i = 0; i < node.getChildNodes().size(); i++) {
 			com.github.javaparser.ast.Node child = node.getChildNodes().get(i);
 
-			if (child.getClass().equals(Modifier.class)) {
+			if (child.getClass().equals(Modifier.class) || child.getClass().equals(SimpleName.class)
+					|| child.getClass().equals(PackageDeclaration.class)) {
 				node.remove(child);
-			} else if (child.getClass().equals(SimpleName.class)) {
-				node.remove(child);
-			} else if (child.getClass().equals(PackageDeclaration.class)) {
-				node.remove(child);
-			}
-			else {
+			} else {
 				Node newChildNode = recursivelyTreeBuilder(child);
 				newNode.addChild(newChildNode);
 			}
