@@ -20,6 +20,7 @@ import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 /***
  * 
@@ -39,6 +40,7 @@ public class JavaReader extends AbstractArtifactReader {
 
 		// counters
 		int modifierCtr = 0;
+		int interfaceCtr = 0;
 
 		// If the node is CU and has package declaration add the name of package as a
 		// attribute to the new node
@@ -61,6 +63,9 @@ public class JavaReader extends AbstractArtifactReader {
 			for (Modifier modifier : ((ClassOrInterfaceDeclaration) node).getModifiers()) {
 				newNode.addAttribute(Modifier.class.getSimpleName() + modifierCtr, modifier.toString());
 				modifierCtr++;
+			}
+			for (ClassOrInterfaceType coid : ((ClassOrInterfaceDeclaration) node).getImplementedTypes()) {
+				newNode.addAttribute(JavaNodeTypes.Interface.toString() + interfaceCtr, coid.getNameAsString());
 			}
 		}
 
