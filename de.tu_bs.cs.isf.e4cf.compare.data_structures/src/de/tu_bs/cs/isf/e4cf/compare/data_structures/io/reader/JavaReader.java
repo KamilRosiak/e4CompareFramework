@@ -104,12 +104,8 @@ public class JavaReader extends AbstractArtifactReader {
 			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
 			String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
 			CompilationUnit cu = StaticJavaParser.parse(s);
-			// do stuff
-
-			String sps = cu.toString();
-
-			// tree = new TreeImpl("", new NodeImpl(cu.toString()));
-
+			
+			tree = new TreeImpl(fileName, recursivelyTreeBuilder(cu));
 		}
 
 		return tree;
