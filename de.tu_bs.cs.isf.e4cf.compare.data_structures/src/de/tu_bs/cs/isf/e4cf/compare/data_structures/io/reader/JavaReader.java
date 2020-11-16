@@ -41,6 +41,7 @@ public class JavaReader extends AbstractArtifactReader {
 		// counters
 		int modifierCtr = 0;
 		int interfaceCtr = 0;
+		int superclassCtr = 0;
 
 		// If the node is CU and has package declaration add the name of package as a
 		// attribute to the new node
@@ -66,6 +67,9 @@ public class JavaReader extends AbstractArtifactReader {
 			}
 			for (ClassOrInterfaceType coid : ((ClassOrInterfaceDeclaration) node).getImplementedTypes()) {
 				newNode.addAttribute(JavaNodeTypes.Interface.toString() + interfaceCtr, coid.getNameAsString());
+			}
+			for (ClassOrInterfaceType coid : ((ClassOrInterfaceDeclaration) node).getExtendedTypes()) {
+				newNode.addAttribute(JavaNodeTypes.Superclass.toString() + superclassCtr, coid.getNameAsString());
 			}
 		}
 
