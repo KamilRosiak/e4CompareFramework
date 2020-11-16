@@ -86,8 +86,6 @@ public class JavaReader extends AbstractArtifactReader {
 		newNode.addAttribute("lineEnd",
 				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.line));
 
-		newNode.addAttribute("ModifierCount", Integer.toString(modifierCtr));
-
 		return newNode;
 	}
 
