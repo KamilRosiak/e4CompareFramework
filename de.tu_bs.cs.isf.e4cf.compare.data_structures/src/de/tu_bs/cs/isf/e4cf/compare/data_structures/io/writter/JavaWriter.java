@@ -64,7 +64,7 @@ public class JavaWriter extends AbstractArtifactWriter {
 		for(Attribute attribute : root.getAttributes()) {
 			String key = attribute.getAttributeKey();
 			Set<String> value = attribute.getAttributeValues();
-			if(key.startsWith("package")) {
+			if(key.startsWith(JavaNodeTypes.Package.toString())) {
 				// Assumption: If node has key package, it must have the single value of package name
 				compilationUnit.setPackageDeclaration(value.iterator().next());
 			}
