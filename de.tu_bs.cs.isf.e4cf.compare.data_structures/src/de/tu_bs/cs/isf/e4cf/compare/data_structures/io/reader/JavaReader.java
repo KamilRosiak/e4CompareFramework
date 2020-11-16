@@ -40,10 +40,12 @@ public class JavaReader extends AbstractArtifactReader {
 		// counters
 		int modifierCtr = 0;
 
-		// search for imports, packages (only for compilation unit)
-		if (node.getClass().equals(CompilationUnit.class)) {
-			newNode.addAttribute("" + JavaNodeTypes.Package,
-					((CompilationUnit) node).getPackageDeclaration().toString());
+		// If the node is CU and has package declaration add the name of package as a
+		// attribute to the new node
+		if (node.getClass().equals(CompilationUnit.class)
+				&& ((CompilationUnit) node).getPackageDeclaration().isPresent()) {
+			newNode.addAttribute(JavaNodeTypes.Package.toString(),
+					((CompilationUnit) node).getPackageDeclaration().orElse(null).getNameAsString());
 		}
 
 		// set Attributes (Type, SimpleName, Modifier)
