@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Import_export
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.core.import_export
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.core.import.export
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
