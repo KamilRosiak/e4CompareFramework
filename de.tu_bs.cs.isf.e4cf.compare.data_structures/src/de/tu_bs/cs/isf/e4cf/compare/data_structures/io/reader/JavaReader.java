@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.github.javaparser.ast.CompilationUnit;
-
 /***
  * 
  * @author Serkan Acar
@@ -30,18 +29,10 @@ public class JavaReader extends AbstractArtifactReader {
 		// Name newNode by class of node
 		Node newNode = new NodeImpl(String.valueOf(node.getClass()));
 
-		// Generic Atrributes
-		newNode.addAttribute("columnBegin",
-				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.column));
-		newNode.addAttribute("columnEnd",
-				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.column));
-		newNode.addAttribute("lineBegin",
-				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.line));
-		newNode.addAttribute("lineEnd",
-				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.line));
-
+		// search for imports, packages
+		
 		// Special Attributes
-		if (node.getClass() == com.github.javaparser.ast.body.ClassOrInterfaceDeclaration.class) {
+		/*if (node.getClass() == com.github.javaparser.ast.body.ClassOrInterfaceDeclaration.class) {
 			// Class Attributes
 			newNode.addAttribute("name", node.getClass().getName());
 		} else if (node.getClass() == com.github.javaparser.ast.Modifier.class) {
@@ -51,14 +42,46 @@ public class JavaReader extends AbstractArtifactReader {
 			// Field Attributes
 			// A field doesn't really have attributes as everything in JavaParser is node
 			// itself.
-		}
+		}*/
+		
+		int modifierCtr = 0;
 
 		// Recursive depth search behavior
 		for (com.github.javaparser.ast.Node child : node.getChildNodes()) {
-			Node newChildNode = recursivelyTreeBuilder(child);
-			newNode.addChild(newChildNode);
+			
+			// if-else-construct to find all attributes
+			
+			
+			if (child.getClass().equals(com.github.javaparser.ast.Modifier.class)) {
+				newNode.addAttribute("Modifier" + modifierCtr, child.toString());
+				modifierCtr++;
+			} 
+			else if (child.getClass().equals(com.github.javaparser.ast.expr.SimpleName.class)) {
+				newNode.addAttribute("SimpleName", child.toString());
+			}
+			//else if (child.getClass().equals()) 
+			
+			
+			else {
+				Node newChildNode = recursivelyTreeBuilder(child);
+				newNode.addChild(newChildNode);
+			}
+						
 		}
+		
+		newNode.addAttribute("columnBegin",
+				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.column));
+		newNode.addAttribute("columnEnd",
+				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.column));
+		newNode.addAttribute("lineBegin",
+				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().begin.line));
+		newNode.addAttribute("lineEnd",
+				String.valueOf(node.getTokenRange().get().getBegin().getRange().get().end.line));
 
+		
+		
+		newNode.addAttribute("ModifierCount", "" + modifierCtr);
+		
 		return newNode;
 	}
 
