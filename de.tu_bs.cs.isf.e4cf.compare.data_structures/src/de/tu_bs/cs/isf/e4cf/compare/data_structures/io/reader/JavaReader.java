@@ -55,7 +55,8 @@ public class JavaReader extends AbstractArtifactReader {
 				
 
 		// Recursive depth search behavior
-		for (com.github.javaparser.ast.Node child : node.getChildNodes()) {	
+		for (int i = 0; i < node.getChildNodes().size(); i++) {	
+			com.github.javaparser.ast.Node child = node.getChildNodes().get(i);
 			
 			if (child.getClass().equals(Modifier.class)) {
 				node.remove(child);
