@@ -35,7 +35,7 @@ public class JavaReader extends AbstractArtifactReader {
 
 	private Node recursivelyTreeBuilder(com.github.javaparser.ast.Node node) {
 		// create a node
-		Node newNode = new NodeImpl(String.valueOf(node.getClass()));
+		Node newNode = new NodeImpl(node.getClass().getSimpleName());
 
 		// counters
 		int modifierCtr = 0;
@@ -49,7 +49,7 @@ public class JavaReader extends AbstractArtifactReader {
 		}
 
 		// set Attributes (Type, SimpleName, Modifier)
-		newNode.addAttribute("Type", node.getClass().toString());
+		newNode.addAttribute("Type", node.getClass().getSimpleName());
 
 		// Filter the child nodes to a list only containing node of type SimpleName. The
 		// list should contain zero or one element. If the node has a child of type
@@ -57,12 +57,12 @@ public class JavaReader extends AbstractArtifactReader {
 		List<com.github.javaparser.ast.Node> simpleNameList = node.getChildNodes().stream()
 				.filter(n -> n.getClass().equals(SimpleName.class)).collect(Collectors.toList());
 		if (simpleNameList.size() > 0) {
-			newNode.addAttribute(SimpleName.class.toString(), ((SimpleName) simpleNameList.get(0)).asString());
+			newNode.addAttribute(SimpleName.class.getSimpleName(), ((SimpleName) simpleNameList.get(0)).asString());
 		}
 
 		if (node.getClass().equals(ClassOrInterfaceDeclaration.class)) {
 			for (Modifier modifier : ((ClassOrInterfaceDeclaration) node).getModifiers()) {
-				newNode.addAttribute(Modifier.class.toString() + modifierCtr, modifier.toString());
+				newNode.addAttribute(Modifier.class.getSimpleName() + modifierCtr, modifier.toString());
 				modifierCtr++;
 			}
 		}
