@@ -73,16 +73,9 @@ public class JavaReader extends AbstractArtifactReader {
 				node.remove(child);
 			} else if (child.getClass().equals(SimpleName.class)) {
 				node.remove(child);
+			} else if (child.getClass().equals(PackageDeclaration.class)) {
+				node.remove(child);
 			}
-			/*
-			 * else if (child.getClass().equals()) {
-			 * 
-			 * } else if (child.getClass().equals()) {
-			 * 
-			 * } else if (child.getClass().equals()) {
-			 * 
-			 * }
-			 */
 			else {
 				Node newChildNode = recursivelyTreeBuilder(child);
 				newNode.addChild(newChildNode);
