@@ -104,7 +104,6 @@ public class ProjectExplorerView {
 		//adding KeyListener
 		_treeViewer.getTree().addKeyListener(new ProjectExplorerKeyListener(eclipseContext));
 
-		addOpenFileContext(eclipseContext);
 		setupSelectionService();		
 		new ProjectExplorerDropTarget(_treeViewer.getControl(),fileSystem);
 		 //register the context menu within the menuService
@@ -113,17 +112,6 @@ public class ProjectExplorerView {
 		createWorkspaceFromExtension();
 	}
 
-	/**
-	 * Add double-click listener to the project explorer
-	 * 
-	 * @param eclipseContext
-	 */
-	private void addOpenFileContext(IEclipseContext eclipseContext) {
-		_openFileListener = new OpenFileListener(fileExtensions);
-		ContextInjectionFactory.inject(_openFileListener, eclipseContext);
-		_treeViewer.addDoubleClickListener(_openFileListener);
-	}
-	
 	/**
 	 * Gets the file extension and the attribute from the Project explorer extension point.
 	 */

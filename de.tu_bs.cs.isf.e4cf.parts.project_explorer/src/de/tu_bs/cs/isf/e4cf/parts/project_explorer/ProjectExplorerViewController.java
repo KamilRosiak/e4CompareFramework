@@ -29,6 +29,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFolderHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.FXProjectExporterKeyListener;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.view.ProjectExplorerView;
 import javafx.beans.value.ChangeListener;
@@ -43,6 +44,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 
 public class ProjectExplorerViewController {
 	private static final String PROJECT_EXPLORER_VIEW_FXML = "/ui/view/ProjectExplorerView.fxml";
@@ -90,7 +92,9 @@ public class ProjectExplorerViewController {
 		
 		// key listener
 		scene.setOnKeyPressed(new FXProjectExporterKeyListener(context));
-		
+
+		// double click listener for files
+		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, new OpenFileListener(context, fileExtensions, services));
 	}
 
 	/** Traverses the given directory tree recursively DFS */
