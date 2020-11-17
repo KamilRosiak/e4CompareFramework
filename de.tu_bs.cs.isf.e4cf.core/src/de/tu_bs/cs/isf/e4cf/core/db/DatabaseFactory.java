@@ -1,11 +1,7 @@
-package de.tu_bs.cs.isf.e4cf.core.databasemanagement;
+package de.tu_bs.cs.isf.e4cf.core.db;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,7 +15,7 @@ public class DatabaseFactory {
 
 	private static DatabaseFactory INSTANCE = null;
 	private final String _JDBC_DRIVER = "org.sqlite.JDBC";
-	
+
 	/**
 	 * Constructor
 	 * 
@@ -38,7 +34,7 @@ public class DatabaseFactory {
 	 * 
 	 * @return ConnectionFactory the instance of the class
 	 */
-	public static DatabaseFactory getInstance() {
+	public synchronized static DatabaseFactory getInstance() {
 		if (null == INSTANCE) {
 			INSTANCE = new DatabaseFactory();
 		}
@@ -54,25 +50,24 @@ public class DatabaseFactory {
 	 * @return Connection
 	 * @throws SQLException error while creating database
 	 */
-	public Connection createDatabase(String pPath, String pDbName) throws SQLException {
+	public void createDatabase(final String pPath, final String pDbName) throws SQLException {
 		if (!databaseExists(pPath, pDbName)) {
-			System.out.println("Creating database " + pDbName + ".");
-			return DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
+			DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
+			System.out.println("Database " + pDbName + " created.");
 		} else {
 			System.out.println("Database " + pDbName + " already exists.");
-			return null;
 		}
 	}
-	
+
 	/**
 	 * Method to get a database if it exists.
 	 * 
-	 * @param pPath String the path where the database is situated 
+	 * @param pPath   String the path where the database is situated
 	 * @param pDbName String the name of the database
 	 * @return Connection
 	 * @throws SQLException error while getting database
 	 */
-	public Connection getDatabase(String pPath, String pDbName) throws SQLException {
+	public Connection getDatabase(final String pPath, final String pDbName) throws SQLException {
 		if (databaseExists(pPath, pDbName)) {
 			System.out.println("Getting database " + pDbName + ".");
 			return DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
@@ -81,74 +76,70 @@ public class DatabaseFactory {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Method to delete a database if it exists already.
 	 * 
-	 * @param pPath String the path where the database is situated
+	 * @param pPath   String the path where the database is situated
 	 * @param pDbName String the name of the database
 	 * @throws SQLException error while deleting database
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public void deleteDatabase(String pPath, String pDbName) throws SQLException, IOException {		
+	public void deleteDatabase(final String pPath, final String pDbName) throws SQLException, IOException {
 		if (databaseExists(pPath, pDbName)) {
-			System.out.println("Deleting database " + pDbName + ".");
 			getDatabase(pPath, pDbName).close();
 			final File file = new File(pPath + pDbName);
 			file.delete();
-			System.out.println("Database deleted.");
+			System.out.println("Database " + pDbName + " deleted.");
 		} else {
 			System.out.println(pDbName + " database does not exist.");
 		}
 	}
 
 	/**
-     * Method to change the name of a database.
-     * 
-     * @param pPath String the path where the database is situated
-     * @param pOldDbName pDbName String the old name of the database 
-     * @param pNewDbName pDbName String the new name of the database
-     */
-    public void renameDatabase(final String pPath, final String pOldDbName, final String pNewDbName) {
-        if (databaseExists(pPath, pOldDbName)) {
-            if (!pOldDbName.equals(pNewDbName)) {
-                new File(pPath + pOldDbName).renameTo(new File(pPath + pNewDbName));
-                System.out.println("Renaming database " + pOldDbName + " to " + pNewDbName);
-            }
-        } else {
-            System.out.println(pOldDbName + " database does not exist.");
-        }
-    }
-	
-	
+	 * Method to change the name of a database.
+	 * 
+	 * @param pPath      String the path where the database is situated
+	 * @param pOldDbName pDbName String the old name of the database
+	 * @param pNewDbName pDbName String the new name of the database
+	 */
+	public void renameDatabase(final String pPath, final String pOldDbName, final String pNewDbName) {
+		if (databaseExists(pPath, pOldDbName)) {
+			if (!pOldDbName.equals(pNewDbName)) {
+				new File(pPath + pOldDbName).renameTo(new File(pPath + pNewDbName));
+				System.out.println("Renaming database " + pOldDbName + " to " + pNewDbName);
+			}
+		} else {
+			System.out.println(pOldDbName + " database does not exist.");
+		}
+	}
+
 	/**
 	 * Method to move a database to an other directory.
 	 * 
-	 * @param pDbName String the name of the database 
+	 * @param pDbName  String the name of the database
 	 * @param pOldPath String the path where the database is situated
 	 * @param pNewPath String the new directory where the database must be placed
 	 * @throws IOException
 	 */
-	public void moveDatabase(String pDbName, String pOldPath,  String pNewPath) {
+	public void moveDatabase(final String pDbName, final String pOldPath, final String pNewPath) {
 		if (databaseExists(pOldPath, pDbName)) {
-			File startFile = new File(pOldPath+ pDbName);
-			File endDirection=new File(pNewPath);
-			if(!endDirection.exists()) {
-				   endDirection.mkdirs();
-				}
-			File endFile=new File(endDirection+ File.separator+ startFile.getName());
-			
-				if (startFile.renameTo(endFile)) {
-				   System.out.println("File moved successfully! Target path£º{"+endFile.getAbsolutePath()+"}");
-				} else {
-				   System.out.println("File move failed! Starting path£º{"+startFile.getAbsolutePath()+"}");
-				}			
-						
+			final File startFile = new File(pOldPath + pDbName);
+			final File endDirection = new File(pNewPath);
+			if (!endDirection.exists()) {
+				endDirection.mkdirs();
+			}
+			File endFile = new File(endDirection + File.separator + startFile.getName());
+			if (startFile.renameTo(endFile)) {
+				System.out.println("File moved successfully! Target path£º{" + endFile.getAbsolutePath() + "}");
+			} else {
+				System.out.println("File move failed! Starting path£º{" + startFile.getAbsolutePath() + "}");
+			}
 		} else {
 			System.out.println(pDbName + " database does not exist.");
 		}
 	}
-	
+
 	/**
 	 * Method to check whether a database exists or not.
 	 * 
@@ -156,7 +147,7 @@ public class DatabaseFactory {
 	 * @param pDbName String the name of the database
 	 * @return boolean database exists or not
 	 */
-	private boolean databaseExists(String pPath, String pDbName) {
+	private boolean databaseExists(final String pPath, final String pDbName) {
 		final File file = new File(pPath + pDbName);
 		return file.exists();
 	}
