@@ -4,68 +4,57 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 
 	@Override
 	public void createTable(final String pPath, final String pDbName, final String tableName, final Column... attributs) {
-		// TODO Auto-generated method stub
-
+		// Jessica
 	}
 
 	@Override
 	public void createTable(final String pPath, final String pDbName, final Class<?> cls) {
-		// TODO Auto-generated method stub
-
+		//Rami
 	}
 
 	@Override
 	public void deleteTable(final String pPath, final String pDbName, final String tableName) {
-		// TODO Auto-generated method stub
-
+		//Shupei
 	}
 
 	@Override
 	public void renameTable(final String pPath, final String pDbName, final String tableName) {
-		// TODO Auto-generated method stub
-
+		//Xen
 	}
 
 	@Override
 	public void addColumn(final String pPath, final String pDbName, final String tableName, final Column... attributs) {
-		// TODO Auto-generated method stub
-
+		//Jessica
 	}
 
 	@Override
 	public void deleteColumn(final String pPath, final String pDbName, final String tableName, final String... attributNames) {
-		// TODO Auto-generated method stub
-
+		//Shupei
 	}
 
 	@Override
 	public void makeColumnPrimaryKey(final String pPath, final String pDbName, final String tableName, final String... columnNames) {
-		// TODO Auto-generated method stub
-
+		//Xen
 	}
 
 	@Override
 	public void dropPrimaryKey(final String pPath, final String pDbName, final String tableName, final String... columnNames) {
-		// TODO Auto-generated method stub
-
+		//Jessica
 	}
 
 	@Override
 	public void makeColumnAutoIncrement(final String pPath, final String pDbName, final String tableName, final String columnNames) {
-		// TODO Auto-generated method stub
-
+		//Shupei
 	}
 
 	@Override
 	public void makeColumnUnique(final String pPath, final String pDbName, final String tableName, final String columnNames) {
-		// TODO Auto-generated method stub
-
+		//Xen
 	}
 
 	@Override
 	public void makeColumnNotNull(final String pPath, final String pDbName, final String tableName, final String columnNames) {
-		// TODO Auto-generated method stub
-
+		//Rami
 	}
 
 }
