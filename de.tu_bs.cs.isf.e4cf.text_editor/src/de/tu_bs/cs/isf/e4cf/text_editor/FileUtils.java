@@ -3,6 +3,9 @@ package de.tu_bs.cs.isf.e4cf.text_editor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 
@@ -29,15 +32,14 @@ public class FileUtils {
 		this.parent = parent;
 
 		fileChooser = new FileChooser();
-		fileChooser.setTitle("Open a File");
 		
 		//TODO: obtain wanted extensions from collection and add them here
 		fileChooser.getExtensionFilters().addAll(
-			new ExtensionFilter("Text Files", "*.txt"),
-			new ExtensionFilter("Java Files", "*.java"),
-			new ExtensionFilter("XML Files", "*.xml")
+			new ExtensionFilter("Text File (.txt)", "*.txt"),
+			new ExtensionFilter("Java File (.java)", "*.java"),
+			new ExtensionFilter("XML File (.xml)", "*.xml")
 		);
-		fileChooser.setInitialDirectory(new File("."));
+		fileChooser.setInitialDirectory(new File(RCPContentProvider.getCurrentWorkspacePath()));
 	}
 
 	/**
@@ -46,6 +48,7 @@ public class FileUtils {
 	 * @author Lukas Cronauer
 	 */
 	public String openFile() {
+		fileChooser.setTitle("Open...");
 		File f = fileChooser.showOpenDialog(parent);
 		if (f == null) {
 			return "";
@@ -108,6 +111,7 @@ public class FileUtils {
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	public boolean saveAs(String content) {
+		fileChooser.setTitle("Save...");
 		File f = fileChooser.showSaveDialog(parent);
 		if (f == null) {
 			return false;
@@ -125,7 +129,6 @@ public class FileUtils {
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private boolean writeFile(String content) {
-		fileChooser.setTitle("Save a File");
 		FileWriter writer;
 		try {
 			writer = new FileWriter(file.getName(), false);
