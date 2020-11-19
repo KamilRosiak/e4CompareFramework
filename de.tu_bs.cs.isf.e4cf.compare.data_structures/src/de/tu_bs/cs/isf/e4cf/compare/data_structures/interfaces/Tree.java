@@ -3,7 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 import java.io.Serializable;
 import java.util.List;
 
-public interface Tree extends Serializable {
+public interface Tree {
 	
 	
 	/**
