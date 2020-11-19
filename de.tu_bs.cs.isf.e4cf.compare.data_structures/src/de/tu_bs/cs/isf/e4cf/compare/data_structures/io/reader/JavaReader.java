@@ -69,11 +69,13 @@ public class JavaReader extends AbstractArtifactReader {
 			}
 			for (ClassOrInterfaceType coid : ((ClassOrInterfaceDeclaration) node).getImplementedTypes()) {
 				newNode.addAttribute(JavaNodeTypes.Interface.toString() + interfaceCtr, coid.getNameAsString());
+				interfaceCtr++;
 			}
 			for (ClassOrInterfaceType coid : ((ClassOrInterfaceDeclaration) node).getExtendedTypes()) {
 				newNode.addAttribute(JavaNodeTypes.Superclass.toString() + superclassCtr, coid.getNameAsString());
 				
 				coid.remove();
+				superclassCtr++;
 			}
 		}
 
