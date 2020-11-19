@@ -9,7 +9,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.*;
@@ -71,12 +71,14 @@ public class JavaReader extends AbstractArtifactReader {
 				newNode.addAttribute(JavaNodeTypes.Interface.toString() + interfaceCtr, coid.getNameAsString());
 				interfaceCtr++;
 			}
+			
+			List<com.github.javaparser.ast.Node> extendedTypes = new ArrayList<com.github.javaparser.ast.Node>();
 			for (ClassOrInterfaceType coid : ((ClassOrInterfaceDeclaration) node).getExtendedTypes()) {
 				newNode.addAttribute(JavaNodeTypes.Superclass.toString() + superclassCtr, coid.getNameAsString());
-				
-				coid.remove();
 				superclassCtr++;
+				extendedTypes.add(coid);
 			}
+			extendedTypes.forEach(n -> n.remove());
 		}
 
 		// Recursive depth search behavior
