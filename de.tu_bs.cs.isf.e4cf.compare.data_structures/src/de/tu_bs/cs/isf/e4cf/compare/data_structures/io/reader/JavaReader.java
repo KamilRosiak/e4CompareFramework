@@ -80,7 +80,20 @@ public class JavaReader extends AbstractArtifactReader {
 			}
 			extendedTypes.forEach(n -> n.remove());
 		}
-
+		
+		
+		else if (node.getClass().equals(FieldDeclaration.class)) {
+			for (Modifier modifier : ((FieldDeclaration) node).getModifiers()) {
+				newNode.addAttribute(Modifier.class.getSimpleName() + modifierCtr,  modifier.toString());
+				modifierCtr++;
+			}
+		}
+		
+		else if (node.getClass().equals(VariableDeclarator.class)) {
+			newNode.addAttribute(JavaNodeTypes.Type.toString(), ((VariableDeclarator) node).getType().toString());
+		}
+		
+		
 		// Recursive depth search behavior
 		for (int i = 0; i < node.getChildNodes().size(); i++) {
 			com.github.javaparser.ast.Node child = node.getChildNodes().get(i);
