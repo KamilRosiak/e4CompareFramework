@@ -4,7 +4,16 @@ import java.sql.SQLException;
 
 public interface ITableService {
 
-	void createTable(String pPath, String pDbName, String tableName, Column... attributs);
+	/**
+	 * Method to create a table from a given String tableName and the attributes from the class Column
+	 * 
+	 * @param pPath			String the path of the database
+	 * @param pDbName		String the name of the database
+	 * @param tableName		String the name of the table
+	 * @param attributes	Class which contains the attributes and their data types	
+	 * @throws SQLException
+	 */
+	void createTable(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException;
 
 	/**
 	 * Method to create a table from a java-class in a generic way.
