@@ -1,7 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
@@ -14,13 +12,11 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.*;
+import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.type.*;
 
 /***
  * 
@@ -54,10 +50,16 @@ public class JavaReader extends AbstractArtifactReader {
 		// Filter the child nodes to a list only containing node of type SimpleName. The
 		// list should contain zero or one element. If the node has a child of type
 		// SimpleName add the name as a attribute to the new node.
-		List<com.github.javaparser.ast.Node> simpleNameList = node.getChildNodes().stream()
-				.filter(n -> n.getClass().equals(SimpleName.class)).collect(Collectors.toList());
-		if (simpleNameList.size() > 0) {
-			newNode.addAttribute(SimpleName.class.getSimpleName(), ((SimpleName) simpleNameList.get(0)).asString());
+		List<com.github.javaparser.ast.Node> nameList = node.getChildNodes().stream()
+				.filter(n -> n.getClass().equals(SimpleName.class) || n.getClass().equals(Name.class))
+				.collect(Collectors.toList());
+		if (nameList.size() > 0) {
+			com.github.javaparser.ast.Node name = nameList.get(0);
+			if (name.getClass().equals(SimpleName.class)) {
+				newNode.addAttribute(SimpleName.class.getSimpleName(), ((SimpleName) name).asString());
+			} else if (name.getClass().equals(Name.class)) {
+				newNode.addAttribute(Name.class.getSimpleName(), ((Name) name).asString());
+			}
 		}
 
 		if (node.getClass().equals(ClassOrInterfaceDeclaration.class)) {
@@ -78,7 +80,7 @@ public class JavaReader extends AbstractArtifactReader {
 			com.github.javaparser.ast.Node child = node.getChildNodes().get(i);
 
 			if (!child.getClass().equals(Modifier.class) && !child.getClass().equals(SimpleName.class)
-					&& !child.getClass().equals(PackageDeclaration.class)) {
+					&& !child.getClass().equals(Name.class) && !child.getClass().equals(PackageDeclaration.class)) {
 				Node newChildNode = recursivelyTreeBuilder(child);
 				newNode.addChild(newChildNode);
 			}
