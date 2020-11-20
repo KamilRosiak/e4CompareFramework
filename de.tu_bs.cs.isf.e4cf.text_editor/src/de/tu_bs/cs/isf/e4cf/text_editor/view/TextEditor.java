@@ -456,7 +456,8 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Count Char and Words
+	 * Counts the Words and Rows in the Textfield when a key is pressed.
+	 * If the Textfield is empty there is 0 Words and 0 Rows.
 	 * 
 	 * @author Sören Christmann, Cedric Kapalla
 	 */
@@ -470,13 +471,16 @@ public class TextEditor implements Initializable {
 			} else {
 				StringBuffer bufferText = new StringBuffer(text);
 				int newLineCounter = 1;
+				// trims the Newlines out of the Text and Counts them 
 				for (int i = 0; i < bufferText.length(); i++) {
 					if (bufferText.charAt(i) == '\n') {
+						// Number of New Lines = Number of Rows
 						newLineCounter++;
 						bufferText.replace(i, i + 1, " ");
 					}
 				}
-
+				// trims the additional Spaces
+				// Every Space is a new Word
 				for (int i = 0; i < bufferText.length(); i++) {
 					if (bufferText.charAt(i) == ' ') {
 						if (bufferText.charAt(i + 1) == ' ') {
@@ -485,7 +489,8 @@ public class TextEditor implements Initializable {
 						}
 					}
 				}
-
+				// Counts Spaces 
+				//Number of Spaces = Number of Word
 				long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
 				wordCount.setText("Words: " + countWord);
 				rowCount.setText("Rows: " + newLineCounter);
