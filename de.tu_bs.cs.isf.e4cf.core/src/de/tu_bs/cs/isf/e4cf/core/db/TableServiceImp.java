@@ -68,10 +68,27 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		}
 		con.close();
 	}
-
+	
+	/**
+	 * Method to delete a table.
+	 * @param pPath pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName String the name of the table
+	 * @throws SQLException
+	 */
 	@Override
-	public void deleteTable(final String pPath, final String pDbName, final String tableName) {
-		//Shupei
+	public void deleteTable(final String pPath, final String pDbName, final String tableName) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement s = con.createStatement();
+		if(tableExists(pPath,pDbName,tableName)) {
+			String sqlStatement = "DROP TABLE" + tableName +";";
+			s.execute(sqlStatement);
+			System.out.println("Table " + tableName + " deleted.");
+			
+		}else {			
+			System.out.println("Table " + tableName + " does not exist.");
+		}		
+		con.close();
 	}
 
 	@Override
@@ -129,7 +146,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 
 	@Override
 	public void deleteColumn(final String pPath, final String pDbName, final String tableName, final String... attributNames) {
-		//Shupei
+		
 	}
 
 	@Override

@@ -24,8 +24,14 @@ public interface ITableService {
 	 * @throws SQLException 
 	 */
 	void createTable(String pPath, String pDbName, Class<?> cls) throws SQLException;
-
-	void deleteTable(String pPath, String pDbName, String tableName);
+	/**
+	 * Method to delete a table.
+	 * @param pPath pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName String the name of the table
+	 * @throws SQLException
+	 */
+	void deleteTable(String pPath, String pDbName, String tableName) throws SQLException;
 	/**
 	 * Method to rename a table name.
 	 * @param pPath String the path of the database
