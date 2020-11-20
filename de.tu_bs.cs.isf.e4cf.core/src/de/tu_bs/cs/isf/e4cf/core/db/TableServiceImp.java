@@ -9,7 +9,7 @@ import java.sql.Statement;
 public class TableServiceImp extends TableUtilities implements ITableService {
 
 	/**
-	 * Method to create a table from a given String tableName and the attributes from the class Column
+	 * Method to create a table from a given String tableName and the attributes from the class Column.
 	 * 
 	 * @param pPath			String the path of the database
 	 * @param pDbName		String the name of the database
@@ -30,7 +30,6 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			// remove the last comma
 			sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
 			sqlStatement += ");";
-			System.out.println(sqlStatement);
 			stmt.execute(sqlStatement);
 			System.out.println("Table " + tableName + " created.");
 		} else {
@@ -80,9 +79,32 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		//Xen
 	}
 
+	/**
+	 * Method to add columns to an existing table.
+	 * 
+	 * @param pPath			String the path of the database
+	 * @param pDbName		String the name of the database
+	 * @param tableName		String the name of the table
+	 * @param attributes	Class with the name and data type of the columns which should be added
+	 * @throws SQLException
+	 */
 	@Override
-	public void addColumn(final String pPath, final String pDbName, final String tableName, final Column... attributs) {
-		//Jessica
+	public void addColumn(final String pPath, final String pDbName, final String tableName, final Column... attributes) throws SQLException{
+		System.out.println("Add column to table: " + tableName);
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement stmt = con.createStatement();
+		if (tableExists(pPath, pDbName, tableName)) {
+			for (Column c : attributes) {
+				if (!columnExists(pPath, pDbName, tableName, c.getName())) {
+					String sqlStatement = "ALTER TABLE " + tableName + " ADD " + c.getName() + " " + c.getType() + ";";
+					stmt.execute(sqlStatement);
+				} else {
+					System.out.println("Column " + c.getName() + " already exists.");
+				}
+			}	
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 public interface ITableService {
 
 	/**
-	 * Method to create a table from a given String tableName and the attributes from the class Column
+	 * Method to create a table from a given String tableName and the attributes from the class Column.
 	 * 
 	 * @param pPath			String the path of the database
 	 * @param pDbName		String the name of the database
@@ -29,7 +29,16 @@ public interface ITableService {
 
 	void renameTable(String pPath, String pDbName, String tableName);
 
-	void addColumn(String pPath, String pDbName, String tableName, Column... attributs);
+	/**
+	 * Method to add columns to an existing table.
+	 * 
+	 * @param pPath			String the path of the database
+	 * @param pDbName		String the name of the database
+	 * @param tableName		String the name of the table
+	 * @param attributes	Class with the name and data type of the columns which should be added
+	 * @throws SQLException
+	 */
+	void addColumn(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException;
 
 	void deleteColumn(String pPath, String pDbName, String tableName, String... attributNames);
 

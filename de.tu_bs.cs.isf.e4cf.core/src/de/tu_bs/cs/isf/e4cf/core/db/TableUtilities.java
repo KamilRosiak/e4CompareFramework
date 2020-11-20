@@ -3,7 +3,6 @@ package de.tu_bs.cs.isf.e4cf.core.db;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,20 +53,24 @@ public class TableUtilities {
 	/**
 	 * Method to check whether a column is part of table or not.
 	 * 
-	 * @param pPath   String the path where to create the database
-	 * @param pDbName String the name of the database
-	 * @param tableName String name of the table
-	 * @param columnName String name of the column
+	 * @param pPath   		String the path of the database
+	 * @param pDbName 		String the name of the database
+	 * @param tableName 	String name of the table
+	 * @param columnName 	String name of the column
 	 * @return boolean
 	 * @throws SQLException
 	 */
 	public boolean columnExists(final String pPath, final String pDbName, final String tableName,
 			final String columnName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		final Statement s = con.createStatement();
 		if (tableExists(pPath, pDbName, tableName)) {
-			//zu implementieren
-			con.close();
+			final ResultSet rs = con.getMetaData().getColumns(null, null, null, null);
+			while (rs.next()) {
+				if (columnName.equals(rs.getString("COLUMN_NAME"))) {
+					con.close();
+					return true;
+				}
+			}			
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
