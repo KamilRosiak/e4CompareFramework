@@ -265,7 +265,7 @@ public class TextEditor implements Initializable {
 	 * Initializes the Edit menu. Includes undo/redo, copy/paste/cut, Delete, and
 	 * Select All.
 	 * 
-	 * @author Cedric Kapalla
+	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	private void initEditMenuItems() {
 		initEditMenuItemUndoAction(); // undo
@@ -281,7 +281,7 @@ public class TextEditor implements Initializable {
 	 * Sets the actions of the Undo item in the Edit menu. Undoes the most recent
 	 * actions taken in the editor. Currently empties the entire text-Area.
 	 * 
-	 * @author Cedric Kapalla
+	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	private void initEditMenuItemUndoAction() {
 		undo.setOnAction(e -> { // activate once pressed
@@ -293,7 +293,7 @@ public class TextEditor implements Initializable {
 	 * Sets the actions of the Redo item in the Edit menu. Redoes an action
 	 * previously undone.
 	 * 
-	 * @author Cedric Kapalla
+	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	private void initEditMenuItemRedoAction() {
 		redo.setOnAction(e -> {
@@ -305,7 +305,7 @@ public class TextEditor implements Initializable {
 	 * Sets the actions of the Cut item in the Edit menu. Cuts out the selected text
 	 * from the editor window.
 	 * 
-	 * @author Cedric Kapalla
+	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	private void initEditMenuItemCutTextAction() {
 		cutText.setOnAction(e -> {
@@ -374,7 +374,7 @@ public class TextEditor implements Initializable {
 	 * Sets the actions of the Delete item in the Edit menu. Deletes the selected
 	 * text in the editor window.
 	 * 
-	 * @author Cedric Kapalla
+	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	private void initEditMenuItemDeleteTextAction() {
 		deleteText.setOnAction(e -> {
@@ -399,7 +399,7 @@ public class TextEditor implements Initializable {
 	 * This function initializes the Extra menu. It consists of the 'Preference'
 	 * item
 	 * 
-	 * @author Cedric Kapalla
+	 * @author Cedric Kapalla, Soeren Christmann
 	 */
 	private void initExtraMenuItems() {
 		initExtraMenuItemPreferenceAction(); // preferences
@@ -410,7 +410,7 @@ public class TextEditor implements Initializable {
 	 * placeholder until it is determined what Preferences are needed, or that the
 	 * Item is unnecessary.
 	 * 
-	 * @author Cedric Kapalla
+	 * @author Cedric Kapalla, Soeren Christmann
 	 */
 	private void initExtraMenuItemPreferenceAction() {
 		preferences.setOnAction(e -> {
@@ -436,7 +436,7 @@ public class TextEditor implements Initializable {
 	 * Sets the actions of the About item in the Help menu. 
 	 * Currently displays creators and project information.
 	 * 
-	 * @author Cedric Kapalla
+	 * @author Cedric Kapalla, Soeren Christmann
 	 */
 	private void initHelpMenuItemAboutAction() {
 		about.setOnAction(e -> {
@@ -459,7 +459,7 @@ public class TextEditor implements Initializable {
 	 * Counts the Words and Rows in the Textfield when a key is pressed.
 	 * If the Textfield is empty there is 0 Words and 0 Rows.
 	 * 
-	 * @author Sören Christmann, Cedric Kapalla
+	 * @author Soeren Christmann, Cedric Kapalla
 	 */
 	private void initCountLabelItemAction() {
 		textArea.setOnKeyReleased(e -> {
