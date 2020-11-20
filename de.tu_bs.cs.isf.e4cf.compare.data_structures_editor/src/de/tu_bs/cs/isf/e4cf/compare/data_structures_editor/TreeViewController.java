@@ -14,8 +14,11 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 public class TreeViewController {
+		private ServiceContainer services;
+		
 
 	 	@FXML
 	    private MenuItem properties;
@@ -25,9 +28,11 @@ public class TreeViewController {
 
 	    @FXML
 	    private Label testLabel;
-
+	    
+		
 	    @FXML
 	    void openProperties(ActionEvent event) throws IOException {
+	    	/**
 	    	Parent root;
 	    
 		    Stage stage = new Stage();
@@ -36,6 +41,12 @@ public class TreeViewController {
 		    stage.setTitle("Properties");
 		    stage.show(); 
 		    System.out.println();
+		    */
+	    	services = DataStructureEditorController.get_services();
+	    	System.out.println("Test1");
+	    	System.out.println(services);
+	    	services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
+	    	System.out.println("Test2");
 	    }
 	    	
  }
