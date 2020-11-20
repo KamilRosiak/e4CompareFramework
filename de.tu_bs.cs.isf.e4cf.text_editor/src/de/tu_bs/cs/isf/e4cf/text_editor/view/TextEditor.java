@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -22,6 +21,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
+
 //import javafx.scene.input.KeyEvent;
 
 /**
@@ -176,12 +176,7 @@ public class TextEditor implements Initializable {
 		saveFileAs.setOnAction(e -> {
 			System.out.println("Save As");
 			String content = textArea.getText();
-			if (!fileUtils.saveAs(content)) {
-				alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Error while saving file");
-				alert.setHeaderText("Looks like there's and error, file can't be saved");
-				alert.showAndWait();
-			}
+			fileUtils.saveAs(content);
 		});
 	}
 
@@ -227,8 +222,7 @@ public class TextEditor implements Initializable {
 					} // no if for CANCEL necessary; it just does not save
 				});
 			}
-
-			System.out.println("Close Editor");
+			
 			// TODO: most likely futher logic needed to close entire text editor if possible
 		});
 	}

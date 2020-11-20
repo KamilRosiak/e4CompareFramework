@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
+   <extension
+         id="de.tu-bs.cs.isf.e4cf.text_editor.project_explorer_file_extension"
+         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+      <project_explorer_file_attr
+            file_extension="java"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.JavaFileExtension">
+      </project_explorer_file_attr>
+      <project_explorer_file_attr
+            file_extension="xml"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.XMLFileExtension">
+      </project_explorer_file_attr>
+      <project_explorer_file_attr
+            file_extension="txt"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.TextFileExtension">
+      </project_explorer_file_attr>
+   </extension>
 
    <extension
          id="de.tu-bs.cs.isf.e4cf.text_editor.fragment"

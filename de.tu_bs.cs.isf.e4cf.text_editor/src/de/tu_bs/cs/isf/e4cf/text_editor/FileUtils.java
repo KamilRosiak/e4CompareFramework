@@ -13,6 +13,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Window;
 
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
+
 
 public class FileUtils {
 	private FileChooser fileChooser;
@@ -117,9 +119,14 @@ public class FileUtils {
 			return false;
 		} else {
 			file = f;
+		} 
+
+		boolean result = writeFile(content);
+		if (!result) {
+			RCPMessageProvider.errorMessage("Looks like there's and error, file can't be saved", "Error while saving file");
 		}
 
-		return writeFile(content);
+		return result;
 	}
 
 	/**

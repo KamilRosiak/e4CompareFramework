@@ -30,4 +30,5 @@ public class TextEditorViewController {
         //scene.getStylesheets().add(TEXT_EDITOR_CSS_LOCATION);
         canvans.setScene(scene);
     }
+
 }
