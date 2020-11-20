@@ -440,7 +440,6 @@ public class TextEditor implements Initializable {
 	 */
 	private void initHelpMenuItemAboutAction() {
 		about.setOnAction(e -> {
-			System.out.println("Placeholder. There is no help for you :(");
 			alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("About");
 			alert.setHeaderText("Text Editor");
