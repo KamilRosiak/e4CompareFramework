@@ -87,7 +87,7 @@ public class TextEditor implements Initializable {
 
 	// Scene of this object
 	private Scene scene;
-	
+
 	Alert alert;
 
 	@Override
@@ -417,20 +417,25 @@ public class TextEditor implements Initializable {
 	// chars count count new Lines
 	/**
 	 * Count Char and Words
+	 * 
 	 * @author Sören Christmann, Cedric Kapalla
 	 */
 	private void initCountLabelItemAction() {
 		textArea.setOnKeyReleased(e -> {
 			String text = textArea.getText();
-			StringBuffer bufferText = new StringBuffer(text);
-			int newLineCounter = 0;
-			for (int i = 0; i < bufferText.length(); i++) {
-				if (bufferText.charAt(i) == '\n') {
-					newLineCounter++;
-					bufferText.replace(i, i + 1, " ");
+			// check whether there is any text to begin with
+			if (text.length() == 0) {
+				wordCount.setText("Words: 0");
+				rowCount.setText("Rows: 0");
+			} else {
+				StringBuffer bufferText = new StringBuffer(text);
+				int newLineCounter = 1;
+				for (int i = 0; i < bufferText.length(); i++) {
+					if (bufferText.charAt(i) == '\n') {
+						newLineCounter++;
+						bufferText.replace(i, i + 1, " ");
+					}
 				}
-				
-			}
 
 				for (int i = 0; i < bufferText.length(); i++) {
 					if (bufferText.charAt(i) == ' ') {
@@ -441,16 +446,10 @@ public class TextEditor implements Initializable {
 					}
 				}
 
-
-			long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
-			wordCount.setText("Words: " + countWord);
-
-//			String charCount = text.trim();
-//			int count = charCount.length();
-
-			rowCount.setText("Rows: " + newLineCounter);
-
+				long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
+				wordCount.setText("Words: " + countWord);
+				rowCount.setText("Rows: " + newLineCounter);
+			}
 		});
-
 	}
 }
