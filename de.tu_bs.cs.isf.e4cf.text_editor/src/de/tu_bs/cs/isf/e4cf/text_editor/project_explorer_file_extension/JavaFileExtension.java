@@ -16,7 +16,7 @@ public class JavaFileExtension implements IProjectExplorerExtension {
 	@Override
 	public void execute(ServiceContainer container) {
 		// TODO Auto-generated method stub
-        System.out.println("Hello World");
+        System.out.println("Java File");
 		
 	}
     
