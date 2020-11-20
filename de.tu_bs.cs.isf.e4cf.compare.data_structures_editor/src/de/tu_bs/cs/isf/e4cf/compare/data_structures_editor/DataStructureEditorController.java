@@ -59,7 +59,7 @@ public class DataStructureEditorController {
 
 	}
 	
-	public static ServiceContainer get_services( ) {
+	public static ServiceContainer getServices() {
 		return services;
 	}
 

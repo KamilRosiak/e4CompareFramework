@@ -42,11 +42,9 @@ public class TreeViewController {
 		    stage.show(); 
 		    System.out.println();
 		    */
-	    	services = DataStructureEditorController.get_services();
-	    	System.out.println("Test1");
-	    	System.out.println(services);
+	    	services = DataStructureEditorController.getServices();
 	    	services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
-	    	System.out.println("Test2");
+	    	
 	    }
 	    	
  }
