@@ -26,8 +26,17 @@ public interface ITableService {
 	void createTable(String pPath, String pDbName, Class<?> cls) throws SQLException;
 
 	void deleteTable(String pPath, String pDbName, String tableName);
+	/**
+	 * 
+	 * @param pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName String the old name of the table
+	 * @param NewtableName String the old name of the table
+	 * @throws SQLException
+	 */
+	
+	void renameTable(String pPath, String pDbName, String tableName,String NewtableName) throws SQLException;
 
-	void renameTable(String pPath, String pDbName, String tableName);
 
 	/**
 	 * Method to add columns to an existing table.

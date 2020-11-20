@@ -75,8 +75,28 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	}
 
 	@Override
-	public void renameTable(final String pPath, final String pDbName, final String tableName) {
-		//Xen
+	/**
+	 * 
+	 * @param pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName String the old name of the table
+	 * @param NewtableName String the old name of the table
+	 * @throws SQLException
+	 */
+	
+	public void renameTable(final String pPath, final String pDbName, final String tableName,final String NewtableName) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement s = con.createStatement();
+		if(tableExists(pPath,pDbName,tableName)) {
+			if(!tableName.equals(NewtableName)) {
+				String sqlStatement = "ALTER TABLE " + tableName + " " + "RENAME TO " + NewtableName + ";";
+				s.execute(sqlStatement);	
+				System.out.println("Renaming tablename " + tableName + " to " + NewtableName);
+			}				
+		} else {			
+			System.out.println("Table " + tableName + " does not exist.");
+		}		
+		con.close();
 	}
 
 	/**
