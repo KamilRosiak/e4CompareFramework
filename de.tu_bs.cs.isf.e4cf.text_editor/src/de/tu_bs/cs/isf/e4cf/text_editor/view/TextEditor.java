@@ -107,7 +107,6 @@ public class TextEditor implements Initializable {
 		initFileMenuItemSaveAsAction();
 		initFileMenuItemCloseFileAction(); // Closes the current File
 		initFileMenuItemCloseEditorAction(); // Closes the Editor Window
-
 	}
 
 	/**
@@ -124,7 +123,7 @@ public class TextEditor implements Initializable {
 				alert.showAndWait().ifPresent(response -> {
 					if (response == ButtonType.OK) {
 						saveChanges();
-					} //no if for CANCEL necessary; it just does not save
+					} // no if for CANCEL necessary; it just does not save
 				});
 			}
 			textArea.setText(null);
@@ -201,10 +200,10 @@ public class TextEditor implements Initializable {
 				alert.showAndWait().ifPresent(response -> {
 					if (response == ButtonType.OK) {
 						saveChanges();
-					} //no if for CANCEL necessary; it just does not save
+					} // no if for CANCEL necessary; it just does not save
 				});
 			}
-			
+
 			System.out.println("Close File");
 			// TODO: most likely futher logic needed to close current file/tab
 		});
@@ -225,10 +224,10 @@ public class TextEditor implements Initializable {
 				alert.showAndWait().ifPresent(response -> {
 					if (response == ButtonType.OK) {
 						saveChanges();
-					} //no if for CANCEL necessary; it just does not save
+					} // no if for CANCEL necessary; it just does not save
 				});
 			}
-			
+
 			System.out.println("Close Editor");
 			// TODO: most likely futher logic needed to close entire text editor if possible
 		});
@@ -407,15 +406,21 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Sets the actions of the Preferences item in the Extra menu.
+	 * Sets the actions of the Preferences item in the Extra menu. Currently just a
+	 * placeholder until it is determined what Preferences are needed, or that the
+	 * Item is unnecessary.
 	 * 
 	 * @author Cedric Kapalla
 	 */
 	private void initExtraMenuItemPreferenceAction() {
 		preferences.setOnAction(e -> {
-			System.out.println("Adjust Preferences");
-			// TODO: Placeholder window
-		}); // currently a placeholder
+			alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Preferences");
+			alert.setHeaderText("Placeholder");
+			alert.setContentText(
+					"You would be able to adjust preferences here, but this is just a placeholder for now.");
+			alert.showAndWait();
+		});
 	}
 
 	/**
@@ -428,15 +433,23 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Sets the actions of the About item in the Help menu.
+	 * Sets the actions of the About item in the Help menu. 
+	 * Currently displays creators and project information.
 	 * 
 	 * @author Cedric Kapalla
 	 */
 	private void initHelpMenuItemAboutAction() {
 		about.setOnAction(e -> {
 			System.out.println("Placeholder. There is no help for you :(");
-			// TODO: About-Window (programmers, date, project)
-		}); // currently a placeholder
+			alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("About");
+			alert.setHeaderText("Text Editor");
+			alert.setContentText(
+					"This is a text editor plug-in for the e4compare framework, created by "
+					+ "Lukas Cronauer, Soeren Christmann, Cedric Kapalla, and Erwin Wijaya.\n\n"
+					+ "It can do all the things one would expect from such an editor.");
+			alert.showAndWait();
+		});
 	}
 
 	private void initCountLabelItems() {
