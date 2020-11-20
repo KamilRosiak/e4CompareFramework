@@ -19,6 +19,8 @@ import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
 public class DataStructureEditorController {
+	
+	public static ServiceContainer services;
 
 	private static final String TREE_VIEW_FXML = "ui/view/TreeView.fxml";
 	public static final String COMPARATOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
@@ -26,6 +28,7 @@ public class DataStructureEditorController {
 	
 	@Inject
 	public DataStructureEditorController(Composite parent, ServiceContainer services, IEclipseContext context) {
+		this.services = services;
 		postConstruct(parent, services, context);
 	}
 	@PostConstruct
@@ -33,10 +36,11 @@ public class DataStructureEditorController {
 		System.out.println("Ich funktioniere.");
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
 		FXMLLoader<TreeView> loader = new FXMLLoader<TreeView>(context, BUNDLE_NAME, TREE_VIEW_FXML);
-
+		
 		Scene scene = new Scene(loader.getNode());
 //        scene.getStylesheets().add(COMPARATOR_VIEW_CSS_LOCATION);
 		canvans.setScene(scene);
+		
 
 	}
 
@@ -53,6 +57,10 @@ public class DataStructureEditorController {
 	@Persist
 	public void save() {
 
+	}
+	
+	public static ServiceContainer getServices() {
+		return services;
 	}
 
 }
