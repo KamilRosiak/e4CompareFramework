@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -112,12 +113,20 @@ public class TextEditor implements Initializable {
 	/**
 	 * Sets the actions of the New item in the File menu. Make a new File
 	 * 
-	 * @author Lukas Cronauer, Erwin Wijaya
+	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
 	private void initFileMenuItemNewAction() {
 		newFile.setOnAction(e -> {
-			// TODO: Ask to save unsaved changes
-
+			if (textArea.getText() != null) {
+				alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Save?");
+				alert.setHeaderText("Would you like to save progress?");
+				alert.showAndWait().ifPresent(response -> {
+					if (response == ButtonType.OK) {
+						saveChanges();
+					} //no if for CANCEL necessary; it just does not save
+				});
+			}
 			textArea.setText(null);
 			System.out.println("New");
 		});
@@ -181,12 +190,22 @@ public class TextEditor implements Initializable {
 	 * Sets the actions of the CloseItem item in the File menu. Closing the File
 	 * that are currently open.
 	 * 
-	 * @author Lukas Cronauer, Erwin Wijaya
+	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
 	private void initFileMenuItemCloseFileAction() {
 		closeFile.setOnAction(e -> {
+			if (textArea.getText() != null) {
+				alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Save?");
+				alert.setHeaderText("Would you like to save progress?");
+				alert.showAndWait().ifPresent(response -> {
+					if (response == ButtonType.OK) {
+						saveChanges();
+					} //no if for CANCEL necessary; it just does not save
+				});
+			}
+			
 			System.out.println("Close File");
-			saveChanges();
 			// TODO: most likely futher logic needed to close current file/tab
 		});
 	}
@@ -195,14 +214,23 @@ public class TextEditor implements Initializable {
 	 * Sets the actions of the CloseEditor item in the File menu. Closing the whole
 	 * Editor.
 	 * 
-	 * @author Lukas Cronauer, Erwin Wijaya
+	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
 	private void initFileMenuItemCloseEditorAction() {
 		closeEditor.setOnAction(e -> {
+			if (textArea.getText() != null) {
+				alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Save?");
+				alert.setHeaderText("Would you like to save progress?");
+				alert.showAndWait().ifPresent(response -> {
+					if (response == ButtonType.OK) {
+						saveChanges();
+					} //no if for CANCEL necessary; it just does not save
+				});
+			}
+			
 			System.out.println("Close Editor");
-			saveChanges();
 			// TODO: most likely futher logic needed to close entire text editor if possible
-
 		});
 	}
 
@@ -386,6 +414,7 @@ public class TextEditor implements Initializable {
 	private void initExtraMenuItemPreferenceAction() {
 		preferences.setOnAction(e -> {
 			System.out.println("Adjust Preferences");
+			// TODO: Placeholder window
 		}); // currently a placeholder
 	}
 
@@ -406,6 +435,7 @@ public class TextEditor implements Initializable {
 	private void initHelpMenuItemAboutAction() {
 		about.setOnAction(e -> {
 			System.out.println("Placeholder. There is no help for you :(");
+			// TODO: About-Window (programmers, date, project)
 		}); // currently a placeholder
 	}
 
@@ -413,8 +443,6 @@ public class TextEditor implements Initializable {
 		initCountLabelItemAction();
 	}
 
-	// work in progress
-	// chars count count new Lines
 	/**
 	 * Count Char and Words
 	 * 
