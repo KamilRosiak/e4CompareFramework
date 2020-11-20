@@ -27,4 +27,15 @@ public class TreeView {
 	
 	}
 	*/
+	public void test() {
+		return;
+	}
+	
+	protected void test2() {
+		return;
+	}
+	
+	private void test3() {
+		return;
+	}
 }
