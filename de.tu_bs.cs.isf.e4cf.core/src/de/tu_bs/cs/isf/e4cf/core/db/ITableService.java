@@ -27,11 +27,11 @@ public interface ITableService {
 
 	void deleteTable(String pPath, String pDbName, String tableName);
 	/**
-	 * 
+	 * Method to rename a table name.
 	 * @param pPath String the path of the database
 	 * @param pDbName String the name of the database
 	 * @param tableName String the old name of the table
-	 * @param NewtableName String the old name of the table
+	 * @param NewtableName String the new name of the table
 	 * @throws SQLException
 	 */
 	
@@ -51,13 +51,29 @@ public interface ITableService {
 
 	void deleteColumn(String pPath, String pDbName, String tableName, String... attributNames);
 
-	void makeColumnPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames);
+	/**
+	 * Method to add primary key constraints to an existing table.
+	 * @param pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName  String the name of the table
+	 * @param columnNames String the name of the columns to which the primary key will be added
+	 * @throws SQLException
+	 */
+	void makeColumnPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
 
 	void dropPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames);
 
 	void makeColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnNames);
 
-	void makeColumnUnique(String pPath, String pDbName, String tableName, String columnNames);
+	/**
+	 * Method to add unique constraints to an existing table.
+	 * @param pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName  String the name of the table
+	 * @param columnNames String the name of the column to which the unique constraints will be added
+	 * @throws SQLException
+	 */
+	void makeColumnUnique(String pPath, String pDbName, String tableName, String columnNames) throws SQLException;
 
 	void makeColumnNotNull(String pPath, String pDbName, String tableName, String columnNames);
 

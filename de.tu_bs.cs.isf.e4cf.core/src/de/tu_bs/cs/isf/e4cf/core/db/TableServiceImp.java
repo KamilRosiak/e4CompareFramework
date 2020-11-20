@@ -80,7 +80,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	 * @param pPath String the path of the database
 	 * @param pDbName String the name of the database
 	 * @param tableName String the old name of the table
-	 * @param NewtableName String the old name of the table
+	 * @param NewtableName String the new name of the table
 	 * @throws SQLException
 	 */
 	
@@ -133,8 +133,33 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	}
 
 	@Override
-	public void makeColumnPrimaryKey(final String pPath, final String pDbName, final String tableName, final String... columnNames) {
-		//Xen
+	/**
+	 * Method to add primary key constraints to an existing table.
+	 * @param pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName  String the name of the table
+	 * @param columnNames String the name of the columns to which the primary key will be added
+	 * @throws SQLException
+	 */
+	public void makeColumnPrimaryKey(final String pPath, final String pDbName, final String tableName, final String... columnNames) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement s = con.createStatement();
+	    String sqlStatement = "ALTER TABLE " + tableName + " ADD PRIMARY KEY ( " ;
+		if (tableExists(pPath, pDbName, tableName)) {
+			for (String cn : columnNames) {
+				if(columnExists(pPath,pDbName,tableName,cn)) {
+					 sqlStatement += cn + ", "; 					
+				} else {
+					System.out.println("Column " + cn + " does not exist.");
+				}
+			}
+			sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
+			sqlStatement += ");";
+			s.execute(sqlStatement);			
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
+		con.close();
 	}
 
 	@Override
@@ -148,8 +173,28 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	}
 
 	@Override
-	public void makeColumnUnique(final String pPath, final String pDbName, final String tableName, final String columnNames) {
-		//Xen
+	/**
+	 * Method to add unique constraints to an existing table.
+	 * @param pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName  String the name of the table
+	 * @param columnNames String the name of the column to which the unique constraints will be added
+	 * @throws SQLException
+	 */
+	public void makeColumnUnique(final String pPath, final String pDbName, final String tableName, final String columnNames) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement s = con.createStatement();
+		if (tableExists(pPath, pDbName, tableName)) {
+				if(columnExists(pPath,pDbName,tableName,columnNames)) {
+					String sqlStatement = "ALTER TABLE " + tableName + " ADD UNIQUE ( " + columnNames + ");";
+					s.execute(sqlStatement);			
+				} else {
+					System.out.println("Column " + columnNames + " does not exist.");
+				}
+				
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
 	}
 
 	@Override
