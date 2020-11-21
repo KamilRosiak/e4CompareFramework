@@ -142,6 +142,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
+		con.close();
 	}
 
 	@Override
