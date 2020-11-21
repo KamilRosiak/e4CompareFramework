@@ -104,7 +104,12 @@ public class FileUtils {
 			return saveAs(content);
 		}
 
-		return writeFile(content);
+		boolean result = writeFile(content);
+		if (!result) {
+			RCPMessageProvider.errorMessage("Looks like there's and error, file can't be saved", "Error while saving file");
+		}
+
+		return result;
 	}
 
 	/**

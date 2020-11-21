@@ -157,12 +157,7 @@ public class TextEditor implements Initializable {
 		saveFile.setOnAction(e -> {
 			System.out.println("Save");
 			String content = textArea.getText();
-			if (!fileUtils.save(content)) {
-				alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Error while saving file");
-				alert.setHeaderText("Looks like there's and error, file can't be saved");
-				alert.showAndWait();
-			}
+			fileUtils.save(content);
 		});
 	}
 
