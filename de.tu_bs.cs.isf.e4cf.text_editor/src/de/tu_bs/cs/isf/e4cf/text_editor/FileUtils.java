@@ -174,6 +174,7 @@ public class FileUtils {
 			return true;
 		} catch(IOException io) {
 			io.printStackTrace();
+			RCPMessageProvider.errorMessage("Error while saving file", "Looks like there's and error, file can't be saved");
 			return false;
 		}
 	}
