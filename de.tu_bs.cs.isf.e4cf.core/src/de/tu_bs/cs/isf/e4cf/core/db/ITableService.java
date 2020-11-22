@@ -54,8 +54,16 @@ public interface ITableService {
 	 * @throws SQLException
 	 */
 	void addColumn(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException;
-
-	void deleteColumn(String pPath, String pDbName, String tableName, String... attributNames);
+	/**
+	 * Method to delete column form an existing table.
+	 * 
+	 * @param pPath 		String the path of the database
+	 * @param pDbName 		String the name of the database
+	 * @param tableName		String the name of the table
+	 * @param attributes	Class with the name and data type of the columns which should be deleted
+	 * @throws SQLException
+	 */
+	void deleteColumn(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException;
 
 	/**
 	 * Method to add primary key constraints to an existing table.

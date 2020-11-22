@@ -144,12 +144,37 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		}
 		con.close();
 	}
-
+	/**
+	 * Method to delete column form an existing table.
+	 * 
+	 * @param pPath 		String the path of the database
+	 * @param pDbName 		String the name of the database
+	 * @param tableName		String the name of the table
+	 * @param attributes	Class with the name and data type of the columns which should be deleted
+	 * @throws SQLException
+	 */
+	
 	@Override
-	public void deleteColumn(final String pPath, final String pDbName, final String tableName, final String... attributNames) {
+	public void deleteColumn(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException {
+		System.out.println("Delete column form table: " + tableName);
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement stmt = con.createStatement();
+		if (tableExists(pPath, pDbName, tableName)) {
+			for (Column c : attributes) {
+				if (columnExists(pPath, pDbName, tableName, c.getName())) {
+					String sqlStatement = "ALTER TABLE " + tableName + " DROP COLUMN " + c.getName() + ";";
+					stmt.execute(sqlStatement);
+				} else {
+					System.out.println("Column " + c.getName() + " is not exists.");
+				}
+			}	
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
+		con.close();
 		
 	}
-
+	
 	@Override
 	/**
 	 * Method to add primary key constraints to an existing table.
@@ -203,5 +228,9 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	public void makeColumnNotNull(final String pPath, final String pDbName, final String tableName, final String columnNames) {
 		//Rami
 	}
+
+	
+
+	
 
 }
