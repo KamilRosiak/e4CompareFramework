@@ -29,6 +29,7 @@ import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerDagOverListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.view.ProjectExplorerView;
@@ -87,6 +88,8 @@ public class ProjectExplorerViewController {
 		
 		// listeners
 		scene.setOnKeyPressed(new ProjectExplorerKeyListener(context));
+		scene.setOnDragDropped(new ProjectExplorerDropTarget(context, services, workspaceFileSystem));
+		scene.setOnDragOver(new ProjectExplorerDagOverListener());
 		
 	}
 
