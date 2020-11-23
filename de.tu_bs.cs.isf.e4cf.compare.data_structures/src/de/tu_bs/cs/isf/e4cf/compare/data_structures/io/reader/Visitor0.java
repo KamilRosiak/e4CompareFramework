@@ -10,16 +10,25 @@ import com.github.javaparser.ast.*;
 public class Visitor0 extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(CompilationUnit cu, Node n) {
+<<<<<<< HEAD
 		
 		Node child = new NodeImpl("CompilationUnit");
 		n.addChild(child);
+=======
+		Node child = new NodeImpl("CompilationUnit");
+		child.setParent(n);
+>>>>>>> branch 'feature/reader' of https://github.com/Hassan-smaoui/e4CompareFramework-team3.git
 		super.visit(cu, child);
 	}
 	
 	@Override
 	public void visit(MethodDeclaration md, Node n) {
 		Node child = new NodeImpl(md.getNameAsString());
+<<<<<<< HEAD
 		n.addChild(child);
+=======
+		child.setParent(n);
+>>>>>>> branch 'feature/reader' of https://github.com/Hassan-smaoui/e4CompareFramework-team3.git
 		super.visit(md, child);
 	}
 	
@@ -36,7 +45,11 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(ClassOrInterfaceDeclaration ci, Node n) {
 		Node child = new NodeImpl(ci.getNameAsString());
+<<<<<<< HEAD
 		n.addChild(child);
+=======
+		child.setParent(n);
+>>>>>>> branch 'feature/reader' of https://github.com/Hassan-smaoui/e4CompareFramework-team3.git
 		super.visit(ci, child);
 		n.addAttribute("IsInterface", String.valueOf(ci.isInterface()));
 		int extendedTypeCtr = 0;
@@ -62,7 +75,11 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	@Override // needed?
 	public void visit(ArrayAccessExpr u, Node n) {
 		Node child = new NodeImpl(u.getName().toString());
+<<<<<<< HEAD
 		n.addChild(child);
+=======
+		child.setParent(n);
+>>>>>>> branch 'feature/reader' of https://github.com/Hassan-smaoui/e4CompareFramework-team3.git
 		super.visit(u, child);
 		n.addAttribute("Expression", u.toString());
 	}
