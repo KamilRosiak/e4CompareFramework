@@ -63,6 +63,8 @@ public class JavaReader extends AbstractArtifactReader {
 		}
 
 		if (node.getClass().equals(ClassOrInterfaceDeclaration.class)) {
+			newNode.addAttribute(JavaNodeTypes.Interface.toString(), String.valueOf(((ClassOrInterfaceDeclaration) node).isInterface()));
+			
 			for (Modifier modifier : ((ClassOrInterfaceDeclaration) node).getModifiers()) {
 				newNode.addAttribute(Modifier.class.getSimpleName() + modifierCtr, modifier.toString());
 				modifierCtr++;
