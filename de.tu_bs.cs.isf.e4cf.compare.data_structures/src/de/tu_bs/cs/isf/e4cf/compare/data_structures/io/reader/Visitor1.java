@@ -1,13 +1,25 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.body.AnnotationDeclaration;
+import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.ArrayAccessExpr;
+import com.github.javaparser.ast.expr.ArrayCreationExpr;
+import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import com.github.javaparser.ast.visitor.*;
-import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.*;
 
-public class Visitor0 extends VoidVisitorAdapter<Node> {
+//Hassan
+public class Visitor1 extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(CompilationUnit cu, Node n) {
 		
@@ -86,7 +98,4 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	public void visit(FieldDeclaration u, Node n) {
 		n.addAttribute("Declaration", u.toString());
 	}
-	
-	//////////////////////////////////////////////////
-		
 }
