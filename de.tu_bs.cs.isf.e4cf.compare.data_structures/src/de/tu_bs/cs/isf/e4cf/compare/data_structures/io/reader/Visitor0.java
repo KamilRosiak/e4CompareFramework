@@ -9,8 +9,16 @@ import com.github.javaparser.ast.*;
 
 public class Visitor0 extends VoidVisitorAdapter<Node> {
 	@Override
+	public void visit(CompilationUnit cu, Node n) {
+		Node child = new NodeImpl("CompilationUnit");
+		child.setParent(n);
+		super.visit(cu, child);
+	}
+	
+	@Override
 	public void visit(MethodDeclaration md, Node n) {
 		Node child = new NodeImpl(md.getNameAsString());
+		child.setParent(n);
 		super.visit(md, child);
 	}
 	
@@ -27,6 +35,7 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(ClassOrInterfaceDeclaration ci, Node n) {
 		Node child = new NodeImpl(ci.getNameAsString());
+		child.setParent(n);
 		super.visit(ci, child);
 		n.addAttribute("IsInterface", String.valueOf(ci.isInterface()));
 		int extendedTypeCtr = 0;
@@ -52,13 +61,14 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	@Override // needed?
 	public void visit(ArrayAccessExpr u, Node n) {
 		Node child = new NodeImpl(u.getName().toString());
+		child.setParent(n);
 		super.visit(u, child);
 		n.addAttribute("Expression", u.toString());
 	}
 	
 	@Override
 	public void visit(ArrayCreationExpr u, Node n) {
-		// 
+		//
 	}
 	
 	@Override
