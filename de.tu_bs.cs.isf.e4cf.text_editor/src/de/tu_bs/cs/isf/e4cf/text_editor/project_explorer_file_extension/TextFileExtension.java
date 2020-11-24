@@ -6,7 +6,8 @@ import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 
 public class TextFileExtension implements IProjectExplorerExtension {
-
+	public static final String TXT_FILE_OPENED = "OPEN_TXT_THNKS";
+	
 	@Override
 	public Image getIcon(RCPImageService imageService) {
 		// TODO Auto-generated method stub
@@ -15,9 +16,9 @@ public class TextFileExtension implements IProjectExplorerExtension {
 
 	@Override
 	public void execute(ServiceContainer container) {
-		System.out.println("Vorher");
-		container.eventBroker.send("TOPIC", "hao");
-		System.out.println("Nachher");
+		System.out.println("Vorher TXT");	//placeholder
+		container.eventBroker.send(TXT_FILE_OPENED, container.rcpSelectionService.getCurrentSelectionFromExplorer());
+		System.out.println("Nachher TXT"); 	//placeholder
 
 	}
 

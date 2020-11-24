@@ -11,6 +11,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor;
@@ -18,25 +19,40 @@ import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
-
 public class TextEditorViewController {
 	private static final String TEXT_EDITOR_VIEW_FXML = "/ui/view/TextEditorView.fxml";
-    public static final String TEXT_EDITOR_VIEW_CSS_LOCATION ="css/comparator_view.css";
-    
-    @PostConstruct
-    public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
-        FXCanvas canvans = new FXCanvas(parent, SWT.None);
-        FXMLLoader<TextEditor> loader = new FXMLLoader<TextEditor>(context, "de.tu_bs.cs.isf.e4cf.text_editor",TEXT_EDITOR_VIEW_FXML);
-        
-        Scene scene = new Scene(loader.getNode());
-        loader.getController().initFileUtils(scene);
-        //scene.getStylesheets().add(TEXT_EDITOR_CSS_LOCATION);
-        canvans.setScene(scene);
-    }
-    @Optional
-	@Inject 
-	public void test(@UIEventTopic("TOPIC") String testTopic) {
-		System.out.println(testTopic);		
+	public static final String TEXT_EDITOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
+	public static final String TXT_FILE_OPENED = "OPEN_TXT_THNKS";
+	public static final String JAVA_FILE_OPENED = "OPEN_JAVA_THNKS";
+	public static final String XML_FILE_OPENED = "OPEN_XML_THNKS";
+
+	@PostConstruct
+	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
+		FXCanvas canvans = new FXCanvas(parent, SWT.None);
+		FXMLLoader<TextEditor> loader = new FXMLLoader<TextEditor>(context, "de.tu_bs.cs.isf.e4cf.text_editor",
+				TEXT_EDITOR_VIEW_FXML);
+
+		Scene scene = new Scene(loader.getNode());
+		loader.getController().initFileUtils(scene);
+		// scene.getStylesheets().add(TEXT_EDITOR_CSS_LOCATION);
+		canvans.setScene(scene);
 	}
 
+	@Optional
+	@Inject
+	public void openTxtFile(@UIEventTopic(TXT_FILE_OPENED) FileTreeElement element) {
+		System.out.println(element); // placeholder
+	}
+
+	@Optional
+	@Inject
+	public void openJavaFile(@UIEventTopic(JAVA_FILE_OPENED) FileTreeElement element) {
+		System.out.println(element); // placeholder
+	}
+
+	@Optional
+	@Inject
+	public void openXmlFile(@UIEventTopic(XML_FILE_OPENED) FileTreeElement element) {
+		System.out.println(element); // placeholder
+	}
 }
