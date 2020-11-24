@@ -15,9 +15,10 @@ public class TextFileExtension implements IProjectExplorerExtension {
 
 	@Override
 	public void execute(ServiceContainer container) {
-		// TODO Auto-generated method stub
-        System.out.println("Text File");
-		
+		System.out.println("Vorher");
+		container.eventBroker.send("TOPIC", "hao");
+		System.out.println("Nachher");
+
 	}
-    
+
 }

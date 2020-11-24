@@ -3,8 +3,11 @@ package de.tu_bs.cs.isf.e4cf.text_editor;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -30,5 +33,10 @@ public class TextEditorViewController {
         //scene.getStylesheets().add(TEXT_EDITOR_CSS_LOCATION);
         canvans.setScene(scene);
     }
+    @Optional
+	@Inject 
+	public void test(@UIEventTopic("TOPIC") String testTopic) {
+		System.out.println(testTopic);		
+	}
 
 }
