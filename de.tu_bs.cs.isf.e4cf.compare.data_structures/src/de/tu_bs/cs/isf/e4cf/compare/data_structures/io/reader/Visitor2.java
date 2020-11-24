@@ -1,101 +1,180 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.AnnotationDeclaration;
-import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.ArrayAccessExpr;
-import com.github.javaparser.ast.expr.ArrayCreationExpr;
-import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.type.*;
+import com.github.javaparser.ast.visitor.*;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
-//Paulo
+/**
+ * Part of the custom visitor class. 
+ * This class extends VoidVisitorAdapter (https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/visitor/VoidVisitorAdapter.html).
+ * 
+ * @author Paulo Haas
+ *
+ */
 public class Visitor2 extends VoidVisitorAdapter<Node> {
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/SwitchEntry.html
+	 */
 	@Override
-	public void visit(CompilationUnit cu, Node n) {
-		
-		Node child = new NodeImpl("CompilationUnit");
-		n.addChild(child);
-		super.visit(cu, child);
-	}
-	
-	@Override
-	public void visit(MethodDeclaration md, Node n) {
-		Node child = new NodeImpl(md.getNameAsString());
-		n.addChild(child);
-		super.visit(md, child);
-	}
-	
-	@Override
-	public void visit(Modifier mod, Node n) {
-		n.getParent().addAttribute("Modifier", mod.toString());
-	}
-	
-	@Override
-	public void visit(SimpleName sn, Node n) {
-		n.getParent().addAttribute("SimpleName", sn.toString());
-	}
-	
-	@Override
-	public void visit(ClassOrInterfaceDeclaration ci, Node n) {
-		Node child = new NodeImpl(ci.getNameAsString());
-		n.addChild(child);
-		super.visit(ci, child);
-		n.addAttribute("IsInterface", String.valueOf(ci.isInterface()));
-		int extendedTypeCtr = 0;
-		for (ClassOrInterfaceType cit : ci.getExtendedTypes()) {
-			n.addAttribute("Extended" + extendedTypeCtr, cit.getNameAsString());
-		}
-		int implementedTypeCtr = 0;
-		for (ClassOrInterfaceType cit : ci.getImplementedTypes()) {
-			n.addAttribute("Implemented" + implementedTypeCtr, cit.getNameAsString());
-		}
+	public void visit(SwitchEntry n, Node arg) {
+		// TODO
 	}
 
-	@Override // check it
-	public void visit(AnnotationDeclaration u, Node n) {
-		n.getParent().addAttribute("AnnotationDeclaration", u.toString());
-	}
-	
-	@Override // check it
-	public void visit(AnnotationMemberDeclaration u, Node n) {
-		n.getParent().addAttribute("AnnotationMemberDeclaration", u.toString());
-	}
-	
-	@Override // needed?
-	public void visit(ArrayAccessExpr u, Node n) {
-		Node child = new NodeImpl(u.getName().toString());
-		n.addChild(child);
-		super.visit(u, child);
-		n.addAttribute("Expression", u.toString());
-	}
-	
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/SwitchExpr.html
+	 */
 	@Override
-	public void visit(ArrayCreationExpr u, Node n) {
-		//
+	public void visit(SwitchExpr n, Node arg) {
+		// TODO
 	}
-	
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/SwitchStmt.html
+	 */
 	@Override
-	public void visit(PackageDeclaration u, Node n) {
-		n.addAttribute("Package", u.toString());
+	public void visit(SwitchStmt n, Node arg) {
+		// TODO
 	}
-	
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/SynchronizedStmt.html
+	 */
 	@Override
-	public void visit(ImportDeclaration u, Node n) {
-		n.addAttribute("Import", u.toString());
+	public void visit(SynchronizedStmt n, Node arg) {
+		// TODO
 	}
-	
-	@Override // super call?
-	public void visit(FieldDeclaration u, Node n) {
-		n.addAttribute("Declaration", u.toString());
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/TextBlockLiteralExpr.html 
+	 */
+	@Override
+	public void visit(TextBlockLiteralExpr n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/ThisExpr.html
+	 */
+	@Override
+	public void visit(ThisExpr n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/ThrowStmt.html
+	 */
+	@Override
+	public void visit(ThrowStmt n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/TryStmt.html
+	 */
+	@Override
+	public void visit(TryStmt n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/TypeExpr.html
+	 */
+	@Override
+	public void visit(TypeExpr n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/TypeParameter.html
+	 */
+	@Override
+	public void visit(TypeParameter n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/UnaryExpr.html
+	 */
+	@Override
+	public void visit(UnaryExpr n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/UnionType.html
+	 */
+	@Override
+	public void visit(UnionType n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/UnknownType.html
+	 */
+	@Override
+	public void visit(UnknownType n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/UnparsableStmt.html
+	 */
+	@Override
+	public void visit(UnparsableStmt n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/VariableDeclarationExpr.html
+	 */
+	@Override
+	public void visit(VariableDeclarationExpr n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/VarType.html
+	 */
+	@Override
+	public void visit(VarType n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/VoidType.html
+	 */
+	@Override
+	public void visit(VoidType n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/WhileStmt.html
+	 */
+	@Override
+	public void visit(WhileStmt n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/WildcardType.html
+	 */
+	@Override
+	public void visit(WildcardType n, Node arg) {
+		// TODO
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/YieldStmt.html
+	 */
+	@Override
+	public void visit(YieldStmt n, Node arg) {
+		// TODO
 	}
 }
