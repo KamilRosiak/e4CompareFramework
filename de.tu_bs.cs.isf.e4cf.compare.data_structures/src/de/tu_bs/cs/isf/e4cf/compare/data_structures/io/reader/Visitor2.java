@@ -11,8 +11,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
- * Part of the custom visitor class. 
- * This class extends VoidVisitorAdapter (https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/visitor/VoidVisitorAdapter.html).
+ * Part of the custom visitor class. This class extends VoidVisitorAdapter
+ * (https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/visitor/VoidVisitorAdapter.html).
  * 
  * @author Paulo Haas
  *
@@ -23,7 +23,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchEntry n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
 	}
 
 	/**
@@ -31,7 +32,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchExpr n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Expression.toString(), n.toString());
 	}
 
 	/**
@@ -39,7 +41,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchStmt n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
 	}
 
 	/**
@@ -47,15 +50,16 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SynchronizedStmt n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
 	}
 
 	/**
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/TextBlockLiteralExpr.html 
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/TextBlockLiteralExpr.html
 	 */
 	@Override
 	public void visit(TextBlockLiteralExpr n, Node arg) {
-		// TODO
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
 	}
 
 	/**
@@ -63,7 +67,7 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ThisExpr n, Node arg) {
-		// TODO
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
 	}
 
 	/**
@@ -71,7 +75,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ThrowStmt n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Statement.toString(), n.toString());
 	}
 
 	/**
@@ -79,7 +84,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TryStmt n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
 	}
 
 	/**
@@ -87,7 +93,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TypeExpr n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Expression.toString(), n.toString());
 	}
 
 	/**
@@ -95,7 +102,7 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TypeParameter n, Node arg) {
-		// TODO
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
 	}
 
 	/**
@@ -103,7 +110,7 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnaryExpr n, Node arg) {
-		// TODO
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
 	}
 
 	/**
@@ -111,7 +118,10 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnionType n, Node arg) {
-		// TODO
+		// TODO is union type of example "IOException | NullPointerException ex" or only
+		// partially?
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Type.toString(), n.toString());
 	}
 
 	/**
@@ -119,7 +129,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnknownType n, Node arg) {
-		// TODO
+		// TODO this depends on whetever lambdas are atomic or not...
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
 	}
 
 	/**
@@ -127,7 +138,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnparsableStmt n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Statement.toString(), n.toString());
 	}
 
 	/**
@@ -135,7 +147,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(VariableDeclarationExpr n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Type.toString(), n.toString());
 	}
 
 	/**
@@ -143,7 +156,7 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(VarType n, Node arg) {
-		// TODO
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
 	}
 
 	/**
@@ -151,7 +164,7 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(VoidType n, Node arg) {
-		// TODO
+		arg.addAttribute(JavaNodeTypes.Type.toString(), n.toString());
 	}
 
 	/**
@@ -159,7 +172,8 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(WhileStmt n, Node arg) {
-		// TODO
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
 	}
 
 	/**
@@ -167,7 +181,7 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(WildcardType n, Node arg) {
-		// TODO
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
 	}
 
 	/**
@@ -175,6 +189,15 @@ public class Visitor2 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(YieldStmt n, Node arg) {
-		// TODO
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * Just for debugging purposes
+	 * 
+	 * @param s
+	 */
+	private void debugOut(String s) {
+		System.err.println(String.format("%s: %s", Visitor2.class.getSimpleName(), s));
 	}
 }
