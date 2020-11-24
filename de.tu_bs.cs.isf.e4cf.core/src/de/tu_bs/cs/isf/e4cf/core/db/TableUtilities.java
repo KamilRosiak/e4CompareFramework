@@ -2,7 +2,9 @@ package de.tu_bs.cs.isf.e4cf.core.db;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,5 +78,38 @@ public class TableUtilities {
 		}
 		con.close();
 		return false;
+	}
+	
+	/**
+	 *Method to get column metadata 
+	 * @param pPath String the path of the database
+	 * @param pDbName String the name of the database
+	 * @param tableName String name of the table
+	 * @return List<String> list of the column metadata in the database
+	 * @throws SQLException
+	 */
+	
+	List<String> TableColumns(String pPath, String pDbName, String tableName) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		List<String> columns = new ArrayList<>();
+	    String sql = "select * from " + tableName + " LIMIT 0";
+	    Statement statement = con.createStatement();
+	    ResultSet rs = statement.executeQuery(sql);
+	    ResultSetMetaData mrs = rs.getMetaData();
+	    String isNull = " "; 
+	    String  isAutoincrement = " ";
+	    for(int i = 1; i <= mrs.getColumnCount(); i++) {
+	    	if (mrs.isNullable(i) == 1) {
+	    	 isNull = " NOT NULL";
+	    	}
+	    	if(mrs.isAutoIncrement(i)) {
+	    		isAutoincrement =" AUTO_INCREMENT ";
+	    	} 
+	        columns.add(mrs.getColumnLabel(i) + " " + mrs.getColumnTypeName(i) + isNull);
+	      
+	    }
+	    return columns;
+	  
+	  
 	}
 }

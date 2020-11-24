@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 
 public class TableServiceImp extends TableUtilities implements ITableService {
@@ -185,7 +186,35 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	 * @throws SQLException
 	 */
 	public void makeColumnPrimaryKey(final String pPath, final String pDbName, final String tableName, final String... columnNames) throws SQLException {
-	
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement s = con.createStatement();
+		final List<String> columns = TableColumns(pPath, pDbName, tableName);
+		if(tableExists(pPath,pDbName,tableName)) {
+		final String renamesql = "ALTER TABLE " + tableName + " " + "RENAME TO altetable;";
+		s.execute(renamesql);
+		} else {			
+			System.out.println("Table " + tableName + " does not exist.");
+		}	
+		String sqlStatement = "CREATE TABLE " + tableName + " ( ";
+		  for(int i = 0; i < columns.size(); i++) {
+			sqlStatement += columns.get(i) + ", ";
+		}
+	    String sql = "PRIMARY KEY ( " ;	
+			for (String cn : columnNames) {
+				if(columnExists(pPath,pDbName,"altetable",cn)) {
+					 sql += cn + ", "; 					
+				} else {
+					System.out.println("Column " + cn + " does not exist.");
+				}
+			}	
+			sql = sql.substring(0, sql.length() - 2);
+			sql = sql + ")";
+			sqlStatement = sqlStatement + sql;
+			sqlStatement += ");"; 		
+			s.execute(sqlStatement);	
+			System.out.println("Create a primary key on the table  " + tableName );
+			deleteTable(pPath,pDbName,"altetable");
+		con.close();
 	}
 
 	@Override
