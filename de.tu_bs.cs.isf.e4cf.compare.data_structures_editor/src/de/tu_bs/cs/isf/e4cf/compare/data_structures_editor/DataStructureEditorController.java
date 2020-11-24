@@ -20,7 +20,7 @@ import javafx.scene.Scene;
 
 public class DataStructureEditorController {
 	
-	public static ServiceContainer services;
+	public ServiceContainer services;
 
 	private static final String TREE_VIEW_FXML = "ui/view/TreeView.fxml";
 	public static final String COMPARATOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
@@ -59,8 +59,4 @@ public class DataStructureEditorController {
 
 	}
 	
-	public static ServiceContainer getServices() {
-		return services;
-	}
-
 }

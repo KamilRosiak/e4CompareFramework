@@ -19,10 +19,13 @@ import javafx.stage.StageStyle;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import java.lang.reflect.Method;
 import java.lang.reflect.*;
+
+import javax.inject.Inject;
 import javax.swing.JFileChooser;
 
 public class TreeViewController {
 
+	@Inject
 	private ServiceContainer services;
 
 	@FXML
@@ -43,7 +46,6 @@ public class TreeViewController {
 		 * stage.initStyle(StageStyle.UNDECORATED); stage.setTitle("Properties");
 		 * stage.show(); System.out.println();
 		 */
-		services = DataStructureEditorController.getServices();
 		services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
 		listingMethods(convertFileIntoClass());
 	}
