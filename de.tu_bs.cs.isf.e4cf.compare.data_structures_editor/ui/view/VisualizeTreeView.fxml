@@ -12,7 +12,7 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.TreeViewController">
+<VBox fx:id="background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.TreeViewController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -53,12 +53,12 @@
         </Menu>
       </menus>
     </MenuBar>
-      <TreeView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+      <TreeView fx:id="hirarchy" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <contextMenu>
             <ContextMenu>
               <items>
-		<MenuItem mnemonicParsing="false" text="Create Child" />
-		<MenuItem mnemonicParsing="false" text="Copy" />
+		<MenuItem mnemonicParsing="false" text="add Attribute" />
+		<MenuItem mnemonicParsing="false" text="Add Child" />
                 <MenuItem mnemonicParsing="false" text="Rename" />
                 <MenuItem mnemonicParsing="false" text="Cut" />
 		<MenuItem mnemonicParsing="false" text="Extract to file" />
@@ -70,7 +70,7 @@
       <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
             <TextField alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" />
-          <Button fx:id="search" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Search" />
+          <Button fx:id="search" alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#createTree" text="Search" />
             <Label fx:id="testLabel" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="17.0" prefWidth="391.0" text="TestLabel" />
         </items>
       </ToolBar>
