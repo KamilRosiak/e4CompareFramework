@@ -200,8 +200,8 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Sets the actions of the CloseEditor item in the File menu. Closing the whole
-	 * Editor.
+	 * Sets the actions of the CloseEditor item in the File menu. Closes the whole
+	 * Editor after asking to save progress, then writes a closing message on the command line.
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
@@ -214,11 +214,11 @@ public class TextEditor implements Initializable {
 				alert.showAndWait().ifPresent(response -> {
 					if (response == ButtonType.OK) {
 						saveChanges();
-					} // no if for CANCEL necessary; it just does not save
+					} // no 'if' for CANCEL necessary; it just does not save
 				});
 			}
-			
-			// TODO: most likely futher logic needed to close entire text editor if possible
+			services.partService.setPartToBeRendered("de.tu-bs.cs.isf.e4cf.text_editor.part.view", false);
+			System.out.println("Text Editor Closed.");
 		});
 	}
 
