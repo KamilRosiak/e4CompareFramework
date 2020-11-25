@@ -5,11 +5,13 @@ public class Column {
 	private String name;
 	private String type;
 	private boolean primaryKey;
+	private boolean unique;
 
-	public Column(final String pName, final String pType, final Boolean pPrimaryKey) {
+	public Column(final String pName, final String pType, final Boolean pPrimaryKey,final Boolean pUnique) {
 		name = pName;
 		type = pType;
 		primaryKey = pPrimaryKey;
+		unique = pUnique;
 	}
 
 	public String getName() {
@@ -34,6 +36,14 @@ public class Column {
 
 	public void setPrimaryKey(final boolean primaryKey) {
 		this.primaryKey = primaryKey;
+	}
+	
+	public Boolean isUnique() {
+		return unique;
+	}
+	
+	public void setUnique(final boolean unique) {
+		this.unique = unique;
 	}
 
 	@Override

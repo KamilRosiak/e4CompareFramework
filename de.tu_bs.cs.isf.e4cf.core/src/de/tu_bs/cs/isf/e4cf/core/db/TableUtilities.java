@@ -91,26 +91,41 @@ public class TableUtilities {
 	 */
 	
 	List<Column> getColumnsTable(String pPath, String pDbName, String tableName) throws SQLException {
-		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		List<Column> columns = new ArrayList<>();
-	    String sql = "select * from " + tableName + " LIMIT 0";
-	    Statement statement = con.createStatement();
-	    ResultSet rs = statement.executeQuery(sql);
-	    ResultSetMetaData mrs = rs.getMetaData();
-	    String isNull = " "; 
-	    String  isAutoincrement = " ";
-	    for(int i = 1; i <= mrs.getColumnCount(); i++) {
-	    	if (mrs.isNullable(i) == 1) {
-	    	 isNull = " NOT NULL";
-	    	}
-	    	if(mrs.isAutoIncrement(i)) {
-	    		isAutoincrement =" AUTO_INCREMENT ";
-	    	} 
-	    	Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i) + isNull, false);
-	        columns.add(c);
-	    }
-	    return columns;
+			final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+			List<Column> columns = new ArrayList<>();
+		    String sql = "select * from " + tableName + " LIMIT 0";
+		    Statement statement = con.createStatement();
+		    ResultSet rs = statement.executeQuery(sql);
+			ResultSetMetaData mrs = rs.getMetaData();
+		    ResultSet pkInfo = con.getMetaData().getPrimaryKeys(null, null, tableName);
+		    boolean isPrimaryKey = false;
+		    String isNull = " "; 
+		    String  isAutoincrement = " ";
+		    String pk = null;
+		    
+		   while (pkInfo.next()) {
+		    	 pk = pkInfo.getString("COLUMN_NAME");
+
+		    }
+		   
+		    for(int i = 1; i <= mrs.getColumnCount(); i++) {	
+		    	if(mrs.getColumnLabel(i).equals(pk)) {
+		    		isPrimaryKey = true;
+		    		pkInfo.close();
+		    	}  	
+		    	if (mrs.isNullable(i) == 1) {
+		    	 isNull = " NOT NULL";
+		    	}
+		    	
+		    	if(mrs.isAutoIncrement(i)) {
+		    		isAutoincrement =" AUTO_INCREMENT ";
+		    	}
+		   
+		    	Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, false);  
+		    	columns.add(c);        
+		    }
+		    return columns;
+		   
+		}
 	  
-	  
-	}
 }
