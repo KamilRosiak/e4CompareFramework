@@ -1,7 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -23,12 +26,16 @@ import org.eclipse.swt.widgets.Composite;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.sync.TreeSynchronization;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileEventLog;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.WorkspaceStructureTemplate;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
@@ -90,7 +97,8 @@ public class ProjectExplorerViewController {
 		canvas.setScene(scene);
 	
 		setupSelectionService();
-		
+		// setup initial workspace structure
+		createWorkspaceFromExtension();
 		// Adding listeners to the scene
 		scene.setOnKeyPressed(new ProjectExplorerKeyListener(context));
 		
@@ -242,4 +250,35 @@ public class ProjectExplorerViewController {
 		
 		view.projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
 	}
+	
+	
+	/**
+	 * This method creates the workspace based on the PROJECT_EXPLORER_WORKSPACE_STRUCUTRE extension. If not available, no directories are added initially.
+	 */
+	private void createWorkspaceFromExtension() {
+		List<WorkspaceStructureTemplate> workspaceExtension = ExtensionAttrUtil.getAttrsFromExtension(StringTable.PROJECT_EXPLORER_WORKSPACE_STRUCUTRE, StringTable.WORKSPACE_STR_ATTR);
+		FileTreeElement root = workspaceFileSystem.getWorkspaceDirectory();
+		Path rootPath = FileHandlingUtility.getPath(root);
+		Path projectPath = rootPath.resolve("");
+		
+		for(WorkspaceStructureTemplate extension : workspaceExtension) {
+			for(String directory : extension.getDirectories()) {
+				try {
+					if(!Files.exists(projectPath.resolve(directory))) {
+						FileEventLog.getInstance().insertEvent("Create Directory", projectPath.resolve(directory));
+						Files.createDirectory(projectPath.resolve(directory));
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					try {
+						FileHandlingUtility.delete(projectPath);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		}
+		refresh(null);
+	}
+	
 }
