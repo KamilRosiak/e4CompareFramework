@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
-
 
 public class TableServiceImp extends TableUtilities implements ITableService {
 
@@ -25,11 +25,23 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		final Statement stmt = con.createStatement();
 		if (!tableExists(pPath, pDbName, tableName)) {
 			String sqlStatement = "CREATE TABLE " + tableName + "(";
+			String sqlStatementPkey = "CONSTRAINT " + tableName + "_pl PRIMARY KEY (";
+			boolean primaryKey = false;
 			for (Column c : attributes) {
 				sqlStatement += c.getName() + " " + c.getType() + ", ";
+				if (c.isPrimaryKey() == true) {
+					sqlStatementPkey += c.getName() + ", ";
+					primaryKey = true;
+				}
 			}
-			// remove the last comma
-			sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
+			if (primaryKey == true) {
+				sqlStatementPkey = sqlStatementPkey.substring(0, sqlStatementPkey.length() - 2);
+				sqlStatementPkey += ")";
+				sqlStatement += sqlStatementPkey;
+			} else {
+				// remove the last comma
+				sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
+			}
 			sqlStatement += ");";
 			stmt.execute(sqlStatement);
 			System.out.println("Table " + tableName + " created.");
@@ -82,7 +94,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		final Statement s = con.createStatement();
 		if(tableExists(pPath,pDbName,tableName)) {
-			String sqlStatement = "DROP TABLE" + tableName +";";
+			String sqlStatement = "DROP TABLE " + tableName +";";
 			s.execute(sqlStatement);
 			System.out.println("Table " + tableName + " deleted.");
 			
@@ -179,6 +191,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	@Override
 	/**
 	 * Method to add primary key constraints to an existing table.
+	 * 
 	 * @param pPath String the path of the database
 	 * @param pDbName String the name of the database
 	 * @param tableName  String the name of the table
@@ -187,39 +200,68 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	 */
 	public void makeColumnPrimaryKey(final String pPath, final String pDbName, final String tableName, final String... columnNames) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		final Statement s = con.createStatement();
-		final List<String> columns = TableColumns(pPath, pDbName, tableName);
-		if(tableExists(pPath,pDbName,tableName)) {
-		final String renamesql = "ALTER TABLE " + tableName + " " + "RENAME TO altetable;";
-		s.execute(renamesql);
-		} else {			
-			System.out.println("Table " + tableName + " does not exist.");
-		}	
-		String sqlStatement = "CREATE TABLE " + tableName + " ( ";
-		  for(int i = 0; i < columns.size(); i++) {
-			sqlStatement += columns.get(i) + ", ";
-		}
-	    String sql = "PRIMARY KEY ( " ;	
-			for (String cn : columnNames) {
-				if(columnExists(pPath,pDbName,"altetable",cn)) {
-					 sql += cn + ", "; 					
-				} else {
-					System.out.println("Column " + cn + " does not exist.");
+		renameTable(pPath, pDbName, tableName, "old_" + tableName);
+		final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+		List<Column> removeList = new ArrayList<Column>();
+		List<Column> addList = new ArrayList<Column>();
+		if (tableExists(pPath, pDbName, "old_" + tableName)) {
+			for (Column c : columns) {
+				for(int i = 0; i < columnNames.length; i++) {
+					if(c.getName().equals(columnNames[i])) {
+						removeList.add(c);
+						c.setPrimaryKey(true);
+						addList.add(c);
+					}
 				}
-			}	
-			sql = sql.substring(0, sql.length() - 2);
-			sql = sql + ")";
-			sqlStatement = sqlStatement + sql;
-			sqlStatement += ");"; 		
-			s.execute(sqlStatement);	
-			System.out.println("Create a primary key on the table  " + tableName );
-			deleteTable(pPath,pDbName,"altetable");
+			}
+			columns.removeAll(removeList);
+			columns.addAll(addList);
+			Column[] col = new Column[columns.size()]; 
+			col = columns.toArray(col);
+			createTable(pPath, pDbName, tableName, col);
+			deleteTable(pPath, pDbName, "old_" + tableName);
+		} else {
+			System.out.println("Table " + "old_" + tableName + " does not exist.");
+		}
 		con.close();
 	}
 
+	/**
+	 * Method to drop primary key constraints of an existing table.
+	 * 
+	 * @param pPath 		String the path of the database
+	 * @param pDbName 		String the name of the database
+	 * @param tableName 	String the name of the table
+	 * @param columnNames 	String the name of the columns of which the primary key will be dropped
+	 * @throws SQLException
+	 */
 	@Override
-	public void dropPrimaryKey(final String pPath, final String pDbName, final String tableName, final String... columnNames) {
-		//Jessica
+	public void dropPrimaryKey(final String pPath, final String pDbName, final String tableName, final String... columnNames) throws SQLException{
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		renameTable(pPath, pDbName, tableName, "old_" + tableName);
+		final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+		List<Column> removeList = new ArrayList<Column>();
+		List<Column> addList = new ArrayList<Column>();
+		if (tableExists(pPath, pDbName, "old_" + tableName)) {
+			for (Column c : columns) {
+				for(int i = 0; i < columnNames.length; i++) {
+					if(c.getName().equals(columnNames[i])) {
+						removeList.add(c);
+						c.setPrimaryKey(false);
+						addList.add(c);
+					}
+				}
+			}
+			columns.removeAll(removeList);
+			columns.addAll(addList);
+			Column[] col = new Column[columns.size()]; 
+			col = columns.toArray(col);
+			createTable(pPath, pDbName, tableName, col);
+			deleteTable(pPath, pDbName, "old_" + tableName);
+		} else {
+			System.out.println("Table " + "old_" + tableName + " does not exist.");
+		}
+		con.close();
 	}
 
 	@Override

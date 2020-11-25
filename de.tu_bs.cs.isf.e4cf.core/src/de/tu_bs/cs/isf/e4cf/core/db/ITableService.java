@@ -26,6 +26,7 @@ public interface ITableService {
 	void createTable(String pPath, String pDbName, Class<?> cls) throws SQLException;
 	/**
 	 * Method to delete a table.
+	 * 
 	 * @param pPath pPath String the path of the database
 	 * @param pDbName String the name of the database
 	 * @param tableName String the name of the table
@@ -34,6 +35,7 @@ public interface ITableService {
 	void deleteTable(String pPath, String pDbName, String tableName) throws SQLException;
 	/**
 	 * Method to rename a table name.
+	 * 
 	 * @param pPath String the path of the database
 	 * @param pDbName String the name of the database
 	 * @param tableName String the old name of the table
@@ -67,6 +69,7 @@ public interface ITableService {
 
 	/**
 	 * Method to add primary key constraints to an existing table.
+	 * 
 	 * @param pPath String the path of the database
 	 * @param pDbName String the name of the database
 	 * @param tableName  String the name of the table
@@ -75,12 +78,22 @@ public interface ITableService {
 	 */
 	void makeColumnPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
 
-	void dropPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames);
+	/**
+	 * Method to drop primary key constraints of an existing table.
+	 * 
+	 * @param pPath 		String the path of the database
+	 * @param pDbName 		String the name of the database
+	 * @param tableName 	String the name of the table
+	 * @param columnNames 	String the name of the columns of which the primary key will be dropped
+	 * @throws SQLException
+	 */
+	void dropPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
 
 	void makeColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnNames);
 
 	/**
 	 * Method to add unique constraints to an existing table.
+	 * 
 	 * @param pPath String the path of the database
 	 * @param pDbName String the name of the database
 	 * @param tableName  String the name of the table

@@ -4,10 +4,12 @@ public class Column {
 
 	private String name;
 	private String type;
+	private boolean primaryKey;
 
-	public Column(final String pName, final String pType) {
+	public Column(final String pName, final String pType, final Boolean pPrimaryKey) {
 		name = pName;
 		type = pType;
+		primaryKey = pPrimaryKey;
 	}
 
 	public String getName() {
@@ -24,6 +26,14 @@ public class Column {
 
 	public void setType(final String type) {
 		this.type = type;
+	}
+	
+	public Boolean isPrimaryKey() {
+		return primaryKey;
+	}
+
+	public void setPrimaryKey(final boolean primaryKey) {
+		this.primaryKey = primaryKey;
 	}
 
 	@Override

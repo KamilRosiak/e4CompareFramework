@@ -82,6 +82,7 @@ public class TableUtilities {
 	
 	/**
 	 *Method to get column metadata 
+	 *
 	 * @param pPath String the path of the database
 	 * @param pDbName String the name of the database
 	 * @param tableName String name of the table
@@ -89,9 +90,9 @@ public class TableUtilities {
 	 * @throws SQLException
 	 */
 	
-	List<String> TableColumns(String pPath, String pDbName, String tableName) throws SQLException {
+	List<Column> getColumnsTable(String pPath, String pDbName, String tableName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		List<String> columns = new ArrayList<>();
+		List<Column> columns = new ArrayList<>();
 	    String sql = "select * from " + tableName + " LIMIT 0";
 	    Statement statement = con.createStatement();
 	    ResultSet rs = statement.executeQuery(sql);
@@ -105,8 +106,8 @@ public class TableUtilities {
 	    	if(mrs.isAutoIncrement(i)) {
 	    		isAutoincrement =" AUTO_INCREMENT ";
 	    	} 
-	        columns.add(mrs.getColumnLabel(i) + " " + mrs.getColumnTypeName(i) + isNull);
-	      
+	    	Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i) + isNull, false);
+	        columns.add(c);
 	    }
 	    return columns;
 	  
