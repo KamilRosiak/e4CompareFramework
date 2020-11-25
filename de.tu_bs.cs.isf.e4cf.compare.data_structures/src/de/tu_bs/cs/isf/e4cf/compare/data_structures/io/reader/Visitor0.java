@@ -5,6 +5,8 @@ import com.github.javaparser.ast.visitor.*;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.*;
 
 public class Visitor0 extends VoidVisitorAdapter<Node> {
@@ -89,4 +91,79 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	
 	//////////////////////////////////////////////////
 		
+	@Override
+	public void visit(LambdaExpr u, Node n) {
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(LocalClassDeclarationStmt u, Node n) {
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(LongLiteralExpr u, Node n) {
+		n.addAttribute("Value", u.getValue().toString());
+	}
+	
+	@Override
+	public void visit(MarkerAnnotationExpr u, Node n) {
+		// no attribute needed: it is always '@Override'
+	}
+	
+	@Override
+	public void visit(MemberValuePair u, Node n) {
+		n.addAttribute("Name", u.getName().asString());
+		n.addAttribute("Value", u.getValue().toString());
+	}
+	
+	@Override
+	public void visit(MethodCallExpr u, Node n) {
+		n.addAttribute("Name", u.getName().asString());
+		n.addAttribute("Scope", u.getScope().toString());
+		int argCtr = 0;
+		for (Expression ex : u.getArguments()) {
+			n.addAttribute("Attribute" + argCtr, ex.toString());
+			argCtr++;
+		}
+		int typeCtr = 0;
+		for (Type ty : u.getTypeArguments().get()) {
+			n.addAttribute("TypeArgument" + typeCtr, ty.toString());
+			typeCtr++;
+		}
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(MethodReferenceExpr u, Node n) {
+		n.addAttribute("Identifier", u.getIdentifier());
+		n.addAttribute("Scope", u.getScope().toString());
+		
+		int typeCtr = 0;
+		for (Type ty : u.getTypeArguments().get()) {
+			n.addAttribute("TypeArgument" + typeCtr, ty.toString());
+			typeCtr++;
+		}
+		
+		// needed?
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(NameExpr u, Node n) {
+		n.addAttribute("Name", u.getNameAsString());
+	}
+	
+	// I don't think that visit to the Type NodeList should get changed
+	
+	
+	
 }
