@@ -30,6 +30,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.view.ProjectExplorerView;
 import javafx.beans.value.ChangeListener;
@@ -42,8 +43,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 
+/**
+ * View Controller for the ProjectExplorerView
+ */
 public class ProjectExplorerViewController {
-	private static final String PROJECT_EXPLORER_VIEW_FXML = "/ui/view/ProjectExplorerView.fxml";
 
 	private ProjectExplorerView view;
 
@@ -63,9 +66,10 @@ public class ProjectExplorerViewController {
 	public void postConstruct(Composite parent, IEclipseContext context, WorkspaceFileSystem fileSystem)
 			throws IOException {
 		
+		// Create a JavaFX canvas on the SWT Composite parent
 		FXCanvas canvas = new FXCanvas(parent, SWT.None);
 		FXMLLoader<ProjectExplorerView> loader = new FXMLLoader<ProjectExplorerView>(context, StringTable.BUNDLE_NAME,
-				PROJECT_EXPLORER_VIEW_FXML);
+				FileTable.PROJECT_EXPLORER_VIEW_FXML);
 		view = loader.getController();
 
 		getContributions();
@@ -78,14 +82,16 @@ public class ProjectExplorerViewController {
 		view.projectTree.setRoot(root);
 		view.projectTree.setShowRoot(false);
 		
+		// Register the SWT Context menu on the canvas
 		_menuService.registerContextMenu(canvas, StringTable.PROJECT_EXPLORER_CONTEXT_MENU_ID);
 
+		// Add the scene of the view to the canvas
 		Scene scene = new Scene(loader.getNode());
 		canvas.setScene(scene);
 	
 		setupSelectionService();
 		
-		// listeners
+		// Adding listeners to the scene
 		scene.setOnKeyPressed(new ProjectExplorerKeyListener(context));
 		
 	}
@@ -102,10 +108,8 @@ public class ProjectExplorerViewController {
 		Node imgNode = isRoot ? null : getImage(parentNode);
 
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
-		if (state != null) {
-			if (state.containsKey(currentNode.getValue().getAbsolutePath()))  {
-				currentNode.setExpanded(state.get(currentNode.getValue().getAbsolutePath()));
-			}
+		if (state != null && state.containsKey(currentNode.getValue().getAbsolutePath()))  {
+			currentNode.setExpanded(state.get(currentNode.getValue().getAbsolutePath()));
 		}
 
 		for (FileTreeElement child : parentNode.getChildren()) {
@@ -127,21 +131,20 @@ public class ProjectExplorerViewController {
 		if (element instanceof FileTreeElement) {
 			FileTreeElement fileElement = (FileTreeElement) element;
 			if (workspaceFileSystem.isProject(fileElement)) {
-				image = services.imageService.getImage(null, "icons/Explorer_View/items/project16.png");
+				image = services.imageService.getImage(null, FileTable.PROJECT_PNG);
 			} else if (fileElement.isDirectory()) {
-				image = services.imageService.getImage(null, "icons/Explorer_View/items/folder16.png");
+				image = services.imageService.getImage(null, FileTable.FOLDER_PNG);
 			} else {
 				String fileExtension = fileElement.getExtension();
 				// load extended file icons
 				if (fileExtensions.containsKey(fileExtension)) {
 					image = fileExtensions.get(fileExtension).getIcon(services.imageService);
 				} else if (fileExtension.equals(E4CStringTable.FILE_ENDING_XML)) {
-					image = services.imageService.getImage(null, "icons/Explorer_View/items/xml16.png");
+					image = services.imageService.getImage(null, FileTable.XML_PNG);
 				} else {
 					// default file icon
-					image = services.imageService.getImage(null, "icons/Explorer_View/items/file16.png");
+					image = services.imageService.getImage(null, FileTable.FILE_PNG);
 				}
-				;
 			}
 		}
 
@@ -185,7 +188,6 @@ public class ProjectExplorerViewController {
 	
 	/**
 	 * Rebuild the project explorer and update it's view.
-	 * 
 	 */
 	@Inject
 	@Optional

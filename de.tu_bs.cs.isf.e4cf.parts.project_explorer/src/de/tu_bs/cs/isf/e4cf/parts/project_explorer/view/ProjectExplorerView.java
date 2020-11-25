@@ -5,6 +5,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeView;
 
+/**
+ * Class representing the JavaFX view of the project explorer
+ * Fields are dependency injected from the ProjectExplorerView.fxml
+ */
 public class ProjectExplorerView {
 	
 	@FXML public TreeView<FileTreeElement> projectTree;

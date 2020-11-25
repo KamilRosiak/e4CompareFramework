@@ -16,8 +16,10 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 
+/**
+ * Listens for key events on the Project Explorer
+ */
 public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
-
 	
 	// Eclipse context for commands
 	IEclipseContext eclipseContext;
@@ -28,11 +30,9 @@ public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
 	// Define key combinations here
 	KeyCombination kcRename = new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN);	
 	
-	
 	public ProjectExplorerKeyListener(IEclipseContext  eclipseContext) {
 		this.eclipseContext = eclipseContext;
 	}
-	
 	
 	@Override
 	public void handle(KeyEvent event) {
@@ -60,7 +60,9 @@ public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
 		}
 	}
 	
-	
+	/**
+	 * Invokes the RenameFileWizard
+	 */
 	private void renameFile() {
 		RenameHandler renameHandler = new RenameHandler();
 		renameHandler = ContextInjectionFactory.make(RenameHandler.class, eclipseContext);
