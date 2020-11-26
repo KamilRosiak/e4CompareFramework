@@ -4,7 +4,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import com.github.javaparser.ast.visitor.*;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.*;
@@ -13,6 +12,7 @@ import com.github.javaparser.ast.*;
  * Part of the custom visitor class. This class extends VoidVisitorAdapter
  * (https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/visitor/VoidVisitorAdapter.html).
  * 
+ * @author Paulo Haas
  * @author Pascal Blum
  *
  */
@@ -44,7 +44,7 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(Modifier n, Node arg) {
-		arg.getParent().addAttribute("Modifier", n.toString());
+		arg.addAttribute("Modifier", n.toString());
 	}
 	
 	/**
@@ -52,7 +52,7 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SimpleName n, Node arg) {
-		arg.getParent().addAttribute("SimpleName", n.toString());
+		arg.addAttribute("SimpleName", n.toString());
 	}
 	
 	/**
@@ -60,17 +60,17 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
-		Node child = new NodeImpl(n.getNameAsString());
+		Node child = new NodeImpl(n.getClass().getSimpleName());
 		arg.addChild(child);
 		super.visit(n, child);
-		arg.addAttribute("IsInterface", String.valueOf(n.isInterface()));
+		child.addAttribute("IsInterface", String.valueOf(n.isInterface()));
 		int extendedTypeCtr = 0;
 		for (ClassOrInterfaceType cit : n.getExtendedTypes()) {
-			arg.addAttribute("Extended" + extendedTypeCtr, cit.getNameAsString());
+			child.addAttribute("Extended" + extendedTypeCtr, cit.getNameAsString());
 		}
 		int implementedTypeCtr = 0;
 		for (ClassOrInterfaceType cit : n.getImplementedTypes()) {
-			arg.addAttribute("Implemented" + implementedTypeCtr, cit.getNameAsString());
+			child.addAttribute("Implemented" + implementedTypeCtr, cit.getNameAsString());
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override // check it
 	public void visit(AnnotationDeclaration n, Node arg) {
-		arg.getParent().addAttribute("AnnotationDeclaration", n.toString());
+		arg.addAttribute("AnnotationDeclaration", n.toString());
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override // check it
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
-		arg.getParent().addAttribute("AnnotationMemberDeclaration", n.toString());
+		arg.addAttribute("AnnotationMemberDeclaration", n.toString());
 	}
 	
 	/**
@@ -97,8 +97,8 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	public void visit(ArrayAccessExpr n, Node arg) {
 		Node child = new NodeImpl(n.getName().toString());
 		arg.addChild(child);
+		child.addAttribute("Expression", n.toString());
 		super.visit(n, child);
-		arg.addAttribute("Expression", n.toString());
 	}
 	
 	/**
@@ -114,7 +114,9 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(PackageDeclaration n, Node arg) {
-		arg.addAttribute("Package", n.toString());
+		Node child = new NodeImpl(n.toString());
+		arg.addChild(child);
+		super.visit(n, child);
 	}
 	
 	/**
@@ -122,7 +124,9 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ImportDeclaration n, Node arg) {
-		arg.addAttribute("Import", n.toString());
+		Node child = new NodeImpl(n.toString());
+		arg.addChild(child);
+		super.visit(n, child);
 	}
 	
 	/**
@@ -130,10 +134,13 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	 */
 	@Override // super call?
 	public void visit(FieldDeclaration n, Node arg) {
-		arg.addAttribute("Declaration", n.toString());
+		Node child = new NodeImpl(n.toString());
+		arg.addChild(child);
+		super.visit(n, child);
 	}
 	
 	//////////////////////////////////////////////////
+	// Pascal
 		
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/LambdaExpr.html
@@ -272,10 +279,6 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 		arg.addAttribute("Scope", n.getScope().toString());
 		
 		int typeCtr = 0;
-		for (Type ty : n.getTypeArguments().get()) {
-			arg.addAttribute("TypeArgument" + typeCtr, ty.toString());
-			typeCtr++;
-		}
 		
 		int argsCtr = 0;
 		for (Expression ex : n.getArguments()) {
@@ -363,4 +366,193 @@ public class Visitor0 extends VoidVisitorAdapter<Node> {
 	public void visit(SuperExpr n, Node arg) {
 		arg.addAttribute("TypeName", n.getTypeName().toString());
 	}
+	
+	
+	/////////////////////////////////////////////////////////////////////////
+	// Paulo
+	
+	
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/SwitchEntry.html
+	 */
+	@Override
+	public void visit(SwitchEntry n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/SwitchExpr.html
+	 */
+	@Override
+	public void visit(SwitchExpr n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Expression.toString(), n.toString());
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/SwitchStmt.html
+	 */
+	@Override
+	public void visit(SwitchStmt n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/SynchronizedStmt.html
+	 */
+	@Override
+	public void visit(SynchronizedStmt n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/TextBlockLiteralExpr.html
+	 */
+	@Override
+	public void visit(TextBlockLiteralExpr n, Node arg) {
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/ThisExpr.html
+	 */
+	@Override
+	public void visit(ThisExpr n, Node arg) {
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/ThrowStmt.html
+	 */
+	@Override
+	public void visit(ThrowStmt n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Statement.toString(), n.toString());
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/TryStmt.html
+	 */
+	@Override
+	public void visit(TryStmt n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/TypeExpr.html
+	 */
+	@Override
+	public void visit(TypeExpr n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Expression.toString(), n.toString());
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/TypeParameter.html
+	 */
+	@Override
+	public void visit(TypeParameter n, Node arg) {
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/UnaryExpr.html
+	 */
+	@Override
+	public void visit(UnaryExpr n, Node arg) {
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/UnionType.html
+	 */
+	@Override
+	public void visit(UnionType n, Node arg) {
+		// TODO is union type of example "IOException | NullPointerException ex" or only
+		// partially?
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Type.toString(), n.toString());
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/UnknownType.html
+	 */
+	@Override
+	public void visit(UnknownType n, Node arg) {
+		// TODO this depends on whetever lambdas are atomic or not...
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/UnparsableStmt.html
+	 */
+	@Override
+	public void visit(UnparsableStmt n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Statement.toString(), n.toString());
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/VariableDeclarationExpr.html
+	 */
+	@Override
+	public void visit(VariableDeclarationExpr n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Type.toString(), n.toString());
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/VarType.html
+	 */
+	@Override
+	public void visit(VarType n, Node arg) {
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/VoidType.html
+	 */
+	@Override
+	public void visit(VoidType n, Node arg) {
+		arg.addAttribute(JavaNodeTypes.Type.toString(), n.toString());
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/WhileStmt.html
+	 */
+	@Override
+	public void visit(WhileStmt n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		super.visit(n, c);
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/WildcardType.html
+	 */
+	@Override
+	public void visit(WildcardType n, Node arg) {
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/YieldStmt.html
+	 */
+	@Override
+	public void visit(YieldStmt n, Node arg) {
+		debugOut(n.getClass().getSimpleName() + " should be unreachable.");
+	}
+
+	/**
+	 * Just for debugging purposes
+	 * 
+	 * @param s
+	 */
+	private void debugOut(String s) {
+		System.err.println(String.format("%s: %s", Visitor2.class.getSimpleName(), s));
+	}
+
 }
