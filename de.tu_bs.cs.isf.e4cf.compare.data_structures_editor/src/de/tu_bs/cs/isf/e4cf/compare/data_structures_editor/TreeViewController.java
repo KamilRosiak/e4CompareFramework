@@ -7,7 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
-
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.view.VisualizeTreeView;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,6 +21,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
