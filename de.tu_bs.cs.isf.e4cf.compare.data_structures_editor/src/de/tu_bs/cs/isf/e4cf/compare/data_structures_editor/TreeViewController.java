@@ -32,6 +32,7 @@ import javax.inject.Inject;
 
 public class TreeViewController {
 	
+	
 
 	@Inject
 	private ServiceContainer services;
@@ -50,6 +51,11 @@ public class TreeViewController {
 	
 	@FXML 
 	private TreeView<?> hirarchy;
+	
+	@FXML
+	public void initialize() {
+		createTree();
+	}
 
 	@FXML
 	void openProperties(ActionEvent event) throws IOException {
@@ -63,9 +69,15 @@ public class TreeViewController {
 		services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");		
 		
 	}
-	@FXML
-	void createTree(ActionEvent event) throws IOException {
-		
+	
+	
+	void createTree() {
+		//Datei wird eingelesen, aber nicht verarbeitet
+		FileChooser chooser = new FileChooser();
+		File selectedFile = chooser.showOpenDialog(new Stage());
+		TextReader reader = new TextReader();
+		chooser.setTitle("Open Resource File");
+		System.out.println(chooser.getTitle());
 		TreeItem<String> rootItem = new TreeItem<String> ("class");
 		rootItem.setExpanded(true);
 		 for (int i = 1; i < 6; i++) {
@@ -84,7 +96,23 @@ public class TreeViewController {
 //		TreeImpl tree2 = new TreeImpl("testTree", node);
 //		System.out.println(node.toString());
 //		hirarchy = new TreeView<?>;
+
 	}
 
+	public TreeView<?> getHirarchy() {
+		return this.hirarchy;
+	}
+	
+	public void setHirarchy(TreeView<?> hirarchy) {
+		this.hirarchy = hirarchy;
+	}
+	
+	public VBox getBackground() {
+		return background;
+	}
+	public void setBackground(VBox background) {
+		this.background = background;
+	}
+	
 	
 }
