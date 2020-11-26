@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_O29doCWzEeuQwOiyKUBDCA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_QqhF8CWzEeuQwOiyKUBDCA" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.work_window">
+    <elements xsi:type="basic:Part" xmi:id="_bwsJICWzEeuQwOiyKUBDCA" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.compare.data_structures_editor/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.DataStructureEditorController" label="Tree View" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor/icons/tree_view_icon.png"/>
+  </fragments>
+</fragment:ModelFragments>
