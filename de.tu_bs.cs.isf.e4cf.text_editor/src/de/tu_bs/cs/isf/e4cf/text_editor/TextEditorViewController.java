@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor;
 
 import javafx.embed.swt.FXCanvas;
@@ -21,10 +22,7 @@ import javafx.scene.Scene;
 
 public class TextEditorViewController {
 	private static final String TEXT_EDITOR_VIEW_FXML = "/ui/view/TextEditorView.fxml";
-	public static final String TEXT_EDITOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
-	public static final String TXT_FILE_OPENED = "OPEN_TXT_THNKS";
-	public static final String JAVA_FILE_OPENED = "OPEN_JAVA_THNKS";
-	public static final String XML_FILE_OPENED = "OPEN_XML_THNKS";
+	
 
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
@@ -46,7 +44,7 @@ public class TextEditorViewController {
 	 */
 	@Optional
 	@Inject
-	public void openTxtFile(@UIEventTopic(TXT_FILE_OPENED) FileTreeElement element) {
+	public void openTxtFile(@UIEventTopic(EditorST.TXT_FILE_OPENED) FileTreeElement element) {
 		System.out.println(element); // placeholder
 	}
 
@@ -58,7 +56,7 @@ public class TextEditorViewController {
 	 */
 	@Optional
 	@Inject
-	public void openJavaFile(@UIEventTopic(JAVA_FILE_OPENED) FileTreeElement element) {
+	public void openJavaFile(@UIEventTopic(EditorST.JAVA_FILE_OPENED) FileTreeElement element) {
 		System.out.println(element); // placeholder
 	}
 
@@ -70,7 +68,7 @@ public class TextEditorViewController {
 	 */
 	@Optional
 	@Inject
-	public void openXmlFile(@UIEventTopic(XML_FILE_OPENED) FileTreeElement element) {
+	public void openXmlFile(@UIEventTopic(EditorST.XML_FILE_OPENED) FileTreeElement element) {
 		System.out.println(element); // placeholder
 	}
 }
