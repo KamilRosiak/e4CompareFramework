@@ -203,7 +203,8 @@ public class TextEditor implements Initializable {
 
 	/**
 	 * Sets the actions of the CloseEditor item in the File menu. Closes the whole
-	 * Editor after asking to save progress, then writes a closing message on the command line.
+	 * Editor after asking to save progress, then writes a closing message on the
+	 * command line.
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
@@ -396,8 +397,8 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Sets the actions of the About item in the Help menu. 
-	 * Currently displays creators and project information.
+	 * Sets the actions of the About item in the Help menu. Currently displays
+	 * creators and project information.
 	 * 
 	 * @author Cedric Kapalla, Soeren Christmann
 	 */
@@ -406,8 +407,7 @@ public class TextEditor implements Initializable {
 			alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("About");
 			alert.setHeaderText("Text Editor");
-			alert.setContentText(
-					"This is a text editor plug-in for the e4compare framework, created by "
+			alert.setContentText("This is a text editor plug-in for the e4compare framework, created by "
 					+ "Lukas Cronauer, Soeren Christmann, Cedric Kapalla, and Erwin Wijaya.\n\n"
 					+ "It can do all the things one would expect from such an editor.");
 			alert.showAndWait();
@@ -419,22 +419,38 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Counts the Words and Rows in the Textfield when a key is pressed.
-	 * If the Textfield is empty there is 0 Words and 0 Rows.
+	 * Counts the Words and Rows in the Textfield when a key is pressed. If the
+	 * Textfield is empty there is 0 Words and 0 Rows.
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
 	private void initCountLabelItemAction() {
 		textArea.setOnKeyReleased(e -> {
 			String text = textArea.getText();
+			StringBuffer bufferText = new StringBuffer(text);
+			int newLineCounter = 1;
 			// check whether there is any text to begin with
+			char first = bufferText.charAt(0);
+			if (first == ' '||first == '\t') {
+				bufferText.replace(0, 1, "");
+			}
+			if (first == '\n') {
+				bufferText.replace(0, 1, "");
+				newLineCounter++;
+			}
 			if (text.length() == 0) {
 				wordCount.setText("Words: 0");
 				rowCount.setText("Rows: 0");
 			} else {
-				StringBuffer bufferText = new StringBuffer(text);
-				int newLineCounter = 1;
-				// trims the Newlines out of the Text and Counts them 
+				
+				
+				// Trims the Tabs.
+				for (int i = 0; i < bufferText.length(); i++) {
+					if (bufferText.charAt(i) == '\t') {
+						bufferText.replace(i, i + 1, " ");
+					}
+				}
+				// trims the Newlines out of the Text and Counts them
 				for (int i = 0; i < bufferText.length(); i++) {
 					if (bufferText.charAt(i) == '\n') {
 						// Number of New Lines = Number of Rows
@@ -452,17 +468,17 @@ public class TextEditor implements Initializable {
 						}
 					}
 				}
-				// Counts Spaces 
-				//Number of Spaces = Number of Word
+				// Counts Spaces
+				// Number of Spaces = Number of Word
 				long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
 				wordCount.setText("Words: " + countWord);
 				rowCount.setText("Rows: " + newLineCounter);
 			}
 		});
 	}
-	
-	//supporting functions start here
-	
+
+	// supporting functions start here
+
 	/**
 	 * Saves the current content of the textArea to a file when there are changes
 	 * compared to the last saved version.
