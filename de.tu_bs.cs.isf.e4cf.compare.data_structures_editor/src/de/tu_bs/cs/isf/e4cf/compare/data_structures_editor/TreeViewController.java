@@ -7,7 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader;
+//import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.view.VisualizeTreeView;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import javafx.scene.Parent;
@@ -76,7 +76,7 @@ public class TreeViewController {
 		//Datei wird eingelesen, aber nicht verarbeitet
 		FileChooser chooser = new FileChooser();
 		File selectedFile = chooser.showOpenDialog(new Stage());
-		TextReader reader = new TextReader();
+		//TextReader reader = new TextReader();
 		chooser.setTitle("Open Resource File");
 		System.out.println(chooser.getTitle());
 		TreeItem<String> rootItem = new TreeItem<String> ("class");

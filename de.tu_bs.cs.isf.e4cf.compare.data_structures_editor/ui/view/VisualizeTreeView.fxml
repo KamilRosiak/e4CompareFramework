@@ -70,7 +70,7 @@
       <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
             <TextField alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" />
-          <Button fx:id="search" alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#createTree" text="Search" />
+          <Button fx:id="search" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="Search" />
             <Label fx:id="testLabel" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="17.0" prefWidth="391.0" text="TestLabel" />
         </items>
       </ToolBar>
