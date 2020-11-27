@@ -7,9 +7,12 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
+import com.sun.corba.se.impl.orbutil.graph.Node;
+
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
+import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -19,6 +22,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -77,10 +82,13 @@ public class TextEditor implements Initializable {
 	// Count Label
 	@FXML
 	private Label wordCount;
-	@FXML
+	@FXML 
 	private Label rowCount;
 	// Public ?
 	Clipboard systemClipboard = Clipboard.getSystemClipboard();
+	@FXML
+	private TabPane tabPane;
+	
 
 	@Inject
 	private ServiceContainer services;
@@ -143,7 +151,7 @@ public class TextEditor implements Initializable {
 		openFile.setOnAction(e -> {
 			System.out.println("Open");
 			String content = fileUtils.openFile();
-			if (!content.equals("")) {
+			if (!(content.isEmpty())) {
 				textArea.setText(content);
 			}
 		});
@@ -505,5 +513,8 @@ public class TextEditor implements Initializable {
 		if (scene != null) {
 			fileUtils = new FileUtils(scene.getWindow());
 		}
+	}
+	public TextArea getTextarea() {
+		return textArea;
 	}
 }

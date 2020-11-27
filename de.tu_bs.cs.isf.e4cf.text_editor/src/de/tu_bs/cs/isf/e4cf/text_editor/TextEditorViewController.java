@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.text_editor;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -19,9 +20,12 @@ import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor;
 
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 
 public class TextEditorViewController {
 	private static final String TEXT_EDITOR_VIEW_FXML = "/ui/view/TextEditorView.fxml";
+	private TextEditor textEditor;
+	private FileUtils fileUtils = new FileUtils();
 	
 
 	@PostConstruct
@@ -32,6 +36,7 @@ public class TextEditorViewController {
 
 		Scene scene = new Scene(loader.getNode());
 		loader.getController().initFileUtils(scene);
+		textEditor = loader.getController();
 		// scene.getStylesheets().add(TEXT_EDITOR_CSS_LOCATION);
 		canvans.setScene(scene);
 	}
@@ -45,9 +50,14 @@ public class TextEditorViewController {
 	@Optional
 	@Inject
 	public void openTxtFile(@UIEventTopic(EditorST.TXT_FILE_OPENED) FileTreeElement element) {
-		System.out.println(element); // placeholder
-	}
-
+		TextArea textField = textEditor.getTextarea();
+		System.out.println(element.getAbsolutePath());	
+		File file = new File(element.getAbsolutePath());
+	        String content = fileUtils.readFile(file);
+	        if (!content.isEmpty()) {
+	            textField.setText(content);
+	        }
+	    }
 	/**
 	 * Receives an event call from JavaFileExtension to open a given file.
 	 * 

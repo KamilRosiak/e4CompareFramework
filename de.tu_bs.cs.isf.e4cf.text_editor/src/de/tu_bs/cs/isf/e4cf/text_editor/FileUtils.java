@@ -44,6 +44,18 @@ public class FileUtils {
 		fileChooser.setInitialDirectory(new File(RCPContentProvider.getCurrentWorkspacePath()));
 	}
 
+	public FileUtils() {
+		fileChooser = new FileChooser();
+		
+		//TODO: obtain wanted extensions from collection and add them here
+		fileChooser.getExtensionFilters().addAll(
+			new ExtensionFilter("Text File (.txt)", "*.txt"),
+			new ExtensionFilter("Java File (.java)", "*.java"),
+			new ExtensionFilter("XML File (.xml)", "*.xml")
+		);
+		fileChooser.setInitialDirectory(new File(RCPContentProvider.getCurrentWorkspacePath()));
+	}
+
 	/**
 	 * Opens the file chosen by the open dialog.
 	 * 
@@ -70,7 +82,7 @@ public class FileUtils {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	public String readFile(File file) {
+	public  String readFile(File file) {
 		FileReader reader;
 		try {
 			reader = new FileReader(file);
