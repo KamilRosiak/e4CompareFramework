@@ -1,14 +1,18 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
-import java.io.File;
+
 import java.io.IOException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
-//import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TextWritter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.view.VisualizeTreeView;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -51,7 +55,7 @@ public class TreeViewController {
 	private Label testLabel;
 	
 	@FXML 
-	private TreeView<?> hirarchy;
+	private TreeView<?> hirarchy= new TreeView<String>();		
 	
 	@FXML
 	public void initialize() {
@@ -73,22 +77,26 @@ public class TreeViewController {
 	
 	
 	void createTree() {
-		//Datei wird eingelesen, aber nicht verarbeitet
+		//Datei wird eingelesen und als TreeView ausgegeben
 		FileChooser chooser = new FileChooser();
-		File selectedFile = chooser.showOpenDialog(new Stage());
-		//TextReader reader = new TextReader();
+		File selectedFile = new File (chooser.showOpenDialog(new Stage()).getPath());
+		TextReader reader = new TextReader();
+		Tree tr = reader.readArtifact(selectedFile);
 		chooser.setTitle("Open Resource File");
 		System.out.println(chooser.getTitle());
-		TreeItem<String> rootItem = new TreeItem<String> ("class");
+		// tw.writeArtifact(tr,selectedFile.getAbsolutePath());
+	    TreeItem<String> rootItem = new TreeItem<String> (tr.getTreeName());
 		rootItem.setExpanded(true);
-		 for (int i = 1; i < 6; i++) {
-	            TreeItem<String> item = new TreeItem<String> ("Message" + i);            
+		System.out.println(tr.getLeaves());
+		for (Node node: tr.getLeaves()) {
+	            TreeItem<String> item = new TreeItem<String> (node.toString());            
 	            rootItem.getChildren().add(item);
+			System.out.println(node.toString());
 	        }    
 		
-		hirarchy = new TreeView<String> (rootItem);
+		hirarchy.setShowRoot(true);
+		hirarchy= new TreeView(rootItem);
 		background.getChildren().add(hirarchy);
-		
 		
 		System.out.println(rootItem.getValue());
 		System.out.println(background.getHeight());
