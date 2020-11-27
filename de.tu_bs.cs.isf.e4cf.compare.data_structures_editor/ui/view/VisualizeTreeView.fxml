@@ -53,7 +53,7 @@
         </Menu>
       </menus>
     </MenuBar>
-      <TreeView fx:id="hirarchy" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <TreeView fx:id="hirarchy" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <contextMenu>
             <ContextMenu>
               <items>
@@ -66,7 +66,7 @@
 		<MenuItem fx:id="properties" mnemonicParsing="false" onAction="#openProperties" text="Properties" />
               </items>
             </ContextMenu>
-         </contextMenu></TreeView>
+         </contextMenu></TreeView> 
       <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
             <TextField alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" />
