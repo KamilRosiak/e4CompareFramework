@@ -16,10 +16,7 @@ public class TextFileExtension implements IProjectExplorerExtension {
 
 	@Override
 	public void execute(ServiceContainer container) {
-		System.out.println("Vorher TXT");	//placeholder
 		container.eventBroker.send(EditorST.TXT_FILE_OPENED, container.rcpSelectionService.getCurrentSelectionFromExplorer());
-		System.out.println("Nachher TXT"); 	//placeholder
-
 	}
 
 }

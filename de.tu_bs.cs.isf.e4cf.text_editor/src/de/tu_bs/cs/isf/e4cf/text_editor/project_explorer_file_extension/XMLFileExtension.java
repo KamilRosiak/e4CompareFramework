@@ -16,10 +16,7 @@ public class XMLFileExtension implements IProjectExplorerExtension {
 
 	@Override
 	public void execute(ServiceContainer container) {
-		// TODO Auto-generated method stub
-        System.out.println("Vorher XML");	//placeholder
 		container.eventBroker.send(EditorST.XML_FILE_OPENED, container.rcpSelectionService.getCurrentSelectionFromExplorer());
-		System.out.println("Nachher XML"); 	//placeholder
 	}
     
 }

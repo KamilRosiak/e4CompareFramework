@@ -29,6 +29,9 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 
+import org.fxmisc.richtext.CodeArea;
+import javafx.scene.control.Tab;
+
 //import javafx.scene.input.KeyEvent;
 
 /**
@@ -75,10 +78,6 @@ public class TextEditor implements Initializable {
 	@FXML
 	private MenuItem about;
 
-	// Text area set up
-	@FXML
-	private TextArea textArea;
-
 	// Count Label
 	@FXML
 	private Label wordCount;
@@ -108,6 +107,7 @@ public class TextEditor implements Initializable {
 		initExtraMenuItems();
 		initHelpMenuItems();
 		initCountLabelItems();
+		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 	}
 
 	private void initFileMenuItems() {
@@ -126,7 +126,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemNewAction() {
 		newFile.setOnAction(e -> {
-			if (textArea.getText() != null) {
+			if (getCurrentText().hashCode() != fileUtils.getLastRevision()) {
 				alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("Save?");
 				alert.setHeaderText("Would you like to save progress?");
@@ -136,8 +136,7 @@ public class TextEditor implements Initializable {
 					} // no if for CANCEL necessary; it just does not save
 				});
 			}
-			textArea.setText(null);
-			System.out.println("New");
+			loadTab("untitled", "");
 		});
 	}
 
@@ -149,11 +148,10 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemOpenAction() {
 		openFile.setOnAction(e -> {
-			System.out.println("Open");
-			String content = fileUtils.openFile();
-			if (!(content.isEmpty())) {
-				textArea.setText(content);
-			}
+			String[] fileInfo = fileUtils.openFile();
+			if (!(fileInfo[1].isEmpty())) {
+				loadTab(fileInfo[0], fileInfo[1]);
+			} 
 		});
 	}
 
@@ -165,9 +163,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemSaveAction() {
 		saveFile.setOnAction(e -> {
-			System.out.println("Save");
-			String content = textArea.getText();
-			fileUtils.save(content);
+			fileUtils.save(getCurrentTab().getText(), getCurrentText());
 		});
 	}
 
@@ -179,9 +175,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemSaveAsAction() {
 		saveFileAs.setOnAction(e -> {
-			System.out.println("Save As");
-			String content = textArea.getText();
-			fileUtils.saveAs(content);
+			fileUtils.saveAs(getCurrentText());
 		});
 	}
 
@@ -193,7 +187,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemCloseFileAction() {
 		closeFile.setOnAction(e -> {
-			if (textArea.getText() != null) {
+			if (getCurrentText().hashCode() != fileUtils.getLastRevision()) {
 				alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("Save?");
 				alert.setHeaderText("Would you like to save progress?");
@@ -218,7 +212,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemCloseEditorAction() {
 		closeEditor.setOnAction(e -> {
-			if (textArea.getText() != null) {
+			if (getCurrentText().hashCode() != fileUtils.getLastRevision()) {
 				alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("Save?");
 				alert.setHeaderText("Would you like to save progress?");
@@ -228,7 +222,7 @@ public class TextEditor implements Initializable {
 					} // no 'if' for CANCEL necessary; it just does not save
 				});
 			}
-			services.partService.setPartToBeRendered("de.tu-bs.cs.isf.e4cf.text_editor.part.view", false);
+			services.partService.setPartToBeRendered(EditorST.BUNDLE_NAME, false);
 			System.out.println("Text Editor Closed.");
 		});
 	}
@@ -257,6 +251,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemUndoAction() {
 		undo.setOnAction(e -> { // activate once pressed
+			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
 			textArea.undo();
 		});
 	}
@@ -269,6 +264,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemRedoAction() {
 		redo.setOnAction(e -> {
+			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
 			textArea.redo();
 		});
 	}
@@ -281,6 +277,8 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemCutTextAction() {
 		cutText.setOnAction(e -> {
+			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+
 			ClipboardContent text = new ClipboardContent();
 			text.putString(textArea.getSelectedText()); // add selected text to clipboard content
 			systemClipboard.setContent(text); // add content to clipboard
@@ -296,6 +294,8 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemCopyTextAction() {
 		copyText.setOnAction(e -> {
+			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+
 			ClipboardContent text = new ClipboardContent(); // add selected text to clipboard content
 			text.putString(textArea.getSelectedText()); // add content to clipboard
 			systemClipboard.setContent(text);
@@ -311,6 +311,8 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemPasteTextAction() {
 		pasteText.setOnAction(e -> {
+			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+
 			if (!systemClipboard.hasContent(DataFormat.PLAIN_TEXT)) {
 				return; // does nothing if there is nothing or no text on clipboard
 			}
@@ -337,8 +339,9 @@ public class TextEditor implements Initializable {
 				endPos = range.getStart() + StringUtils.length(pasteText);
 			}
 
-			textArea.setText(updatedText);
-			textArea.positionCaret(endPos);
+			textArea.replaceText(updatedText);
+			textArea.displaceCaret(endPos);
+			//textArea.positionCaret(endPos);
 		});
 	}
 
@@ -350,6 +353,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemDeleteTextAction() {
 		deleteText.setOnAction(e -> {
+			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
 			textArea.deleteText(textArea.getSelection());
 		});
 	}
@@ -362,6 +366,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemSelectAllAction() {
 		selectAllText.setOnAction(e -> {
+			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
 			textArea.requestFocus();
 			textArea.selectAll();
 		});
@@ -433,56 +438,60 @@ public class TextEditor implements Initializable {
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
 	private void initCountLabelItemAction() {
-		textArea.setOnKeyReleased(e -> {
-			String text = textArea.getText();
-			StringBuffer bufferText = new StringBuffer(text);
-			int newLineCounter = 1;
-			// check whether there is any text to begin with
-			char first = bufferText.charAt(0);
-			if (first == ' '||first == '\t') {
-				bufferText.replace(0, 1, "");
-			}
-			if (first == '\n') {
-				bufferText.replace(0, 1, "");
-				newLineCounter++;
-			}
-			if (text.length() == 0) {
-				wordCount.setText("Words: 0");
-				rowCount.setText("Rows: 0");
-			} else {
-				
-				
-				// Trims the Tabs.
-				for (int i = 0; i < bufferText.length(); i++) {
-					if (bufferText.charAt(i) == '\t') {
-						bufferText.replace(i, i + 1, " ");
-					}
+		for (Tab tab : tabPane.getTabs()) {
+			CodeArea textArea = (CodeArea) tab.getContent();
+
+			textArea.setOnKeyReleased(e -> {
+				String text = textArea.getText();
+				StringBuffer bufferText = new StringBuffer(text);
+				int newLineCounter = 1;
+				// check whether there is any text to begin with
+				char first = bufferText.charAt(0);
+				if (first == ' '||first == '\t') {
+					bufferText.replace(0, 1, "");
 				}
-				// trims the Newlines out of the Text and Counts them
-				for (int i = 0; i < bufferText.length(); i++) {
-					if (bufferText.charAt(i) == '\n') {
-						// Number of New Lines = Number of Rows
-						newLineCounter++;
-						bufferText.replace(i, i + 1, " ");
-					}
+				if (first == '\n') {
+					bufferText.replace(0, 1, "");
+					newLineCounter++;
 				}
-				// trims the additional Spaces
-				// Every Space is a new Word
-				for (int i = 0; i < bufferText.length(); i++) {
-					if (bufferText.charAt(i) == ' ') {
-						if (bufferText.charAt(i + 1) == ' ') {
-							// Placeholder so only one Space is counted for a new word
-							bufferText.replace(i, i + 1, "a");
+				if (text.length() == 0) {
+					wordCount.setText("Words: 0");
+					rowCount.setText("Rows: 0");
+				} else {
+					
+					
+					// Trims the Tabs.
+					for (int i = 0; i < bufferText.length(); i++) {
+						if (bufferText.charAt(i) == '\t') {
+							bufferText.replace(i, i + 1, " ");
 						}
 					}
+					// trims the Newlines out of the Text and Counts them
+					for (int i = 0; i < bufferText.length(); i++) {
+						if (bufferText.charAt(i) == '\n') {
+							// Number of New Lines = Number of Rows
+							newLineCounter++;
+							bufferText.replace(i, i + 1, " ");
+						}
+					}
+					// trims the additional Spaces
+					// Every Space is a new Word
+					for (int i = 0; i < bufferText.length(); i++) {
+						if (bufferText.charAt(i) == ' ') {
+							if (bufferText.charAt(i + 1) == ' ') {
+								// Placeholder so only one Space is counted for a new word
+								bufferText.replace(i, i + 1, "a");
+							}
+						}
+					}
+					// Counts Spaces
+					// Number of Spaces = Number of Word
+					long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
+					wordCount.setText("Words: " + countWord);
+					rowCount.setText("Rows: " + newLineCounter);
 				}
-				// Counts Spaces
-				// Number of Spaces = Number of Word
-				long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
-				wordCount.setText("Words: " + countWord);
-				rowCount.setText("Rows: " + newLineCounter);
-			}
-		});
+			});
+		}
 	}
 
 	// supporting functions start here
@@ -494,9 +503,9 @@ public class TextEditor implements Initializable {
 	 * @author Lukas Cronauer
 	 */
 	private void saveChanges() {
-		String content = textArea.getText();
+		String content = getCurrentText();
 		if (!content.equals(fileUtils.getLastRevision())) {
-			fileUtils.save(content);
+			fileUtils.save(getCurrentTab().getText(), content);
 		}
 	}
 
@@ -514,7 +523,30 @@ public class TextEditor implements Initializable {
 			fileUtils = new FileUtils(scene.getWindow());
 		}
 	}
-	public TextArea getTextarea() {
-		return textArea;
+
+	/**
+	 * Getter for the currently selected tab in the tabPane
+	 *
+	 * @author Lukas Cronauer
+	 */
+	private Tab getCurrentTab() {
+		return tabPane.getSelectionModel().getSelectedItem();
+	}
+
+	private String getCurrentText() {
+		return ((CodeArea) getCurrentTab().getContent()).getText();
+	}
+
+	public void loadTab(String fileName, String content) {
+		if (getCurrentText().isEmpty()) {
+			Tab currentTab = getCurrentTab();
+			currentTab.setText(fileName);
+			((CodeArea) currentTab.getContent()).replaceText(content);
+		} else {
+			Tab newTab = new Tab(fileName, new CodeArea(content));
+			tabPane.getTabs().add(newTab);
+			tabPane.getSelectionModel().select(newTab);
+			initCountLabelItems();
+		}
 	}
 }

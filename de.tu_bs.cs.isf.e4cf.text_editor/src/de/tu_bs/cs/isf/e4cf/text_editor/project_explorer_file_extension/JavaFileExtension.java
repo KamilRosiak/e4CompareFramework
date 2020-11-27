@@ -16,9 +16,6 @@ public class JavaFileExtension implements IProjectExplorerExtension {
 
 	@Override
 	public void execute(ServiceContainer container) {
-		// TODO Auto-generated method stub
-		System.out.println("Vorher JAVA");	//placeholder
 		container.eventBroker.send(EditorST.JAVA_FILE_OPENED, container.rcpSelectionService.getCurrentSelectionFromExplorer());
-		System.out.println("Nachher JAVA"); 	//placeholder
 	}
 }

@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.text_editor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 
@@ -21,6 +22,7 @@ public class FileUtils {
 	private Window parent;
 	private File file;
 	private int lastSavedRevision;
+	private HashMap<String, String> filePaths = new HashMap<>();
 	
 	/**
 	 *  Constructor used to initialize the fileChooser instance of this object.
@@ -58,21 +60,26 @@ public class FileUtils {
 
 	/**
 	 * Opens the file chosen by the open dialog.
+	 *
+	 * @return String[2] with fileName at index 0 and file-content at index 2
 	 * 
 	 * @author Lukas Cronauer
 	 */
-	public String openFile() {
+	public String[] openFile() {
 		fileChooser.setTitle("Open...");
+		String[] returnValue = new String[2];
 		File f = fileChooser.showOpenDialog(parent);
 		if (f == null) {
-			return "";
+			return returnValue;
 		} else if (!f.exists()) {
 			// show error dialog
-			return "";
+			return returnValue;
 		}
 
-		file = f;
-		return readFile(file);	
+		filePaths.put(f.getName(), f.getAbsolutePath());
+		returnValue[0] = f.getName();
+		returnValue[1] = readFile(f);
+		return returnValue;	
 	}
 	
 	/**
@@ -83,6 +90,10 @@ public class FileUtils {
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	public  String readFile(File file) {
+		if (file == null) {
+			throw new NullPointerException("File is null");
+		}
+
 		FileReader reader;
 		try {
 			reader = new FileReader(file);
@@ -94,6 +105,7 @@ public class FileUtils {
 			}
 			reader.close();
 			lastSavedRevision = text.hashCode();
+			filePaths.put(file.getName(), file.getAbsolutePath());
 			return text;
 		} catch(FileNotFoundException e) {
 			// error message: file not found
@@ -111,12 +123,12 @@ public class FileUtils {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	public boolean save(String content) {
-		if (file == null) {
+	public boolean save(String fileName, String content) {
+		if (!filePaths.containsKey(fileName)) {
 			return saveAs(content);
 		}
 
-		boolean result = writeFile(content);
+		boolean result = writeFile(fileName, content);
 		if (!result) {
 			RCPMessageProvider.errorMessage("Looks like there's and error, file can't be saved", "Error while saving file");
 		}
@@ -135,10 +147,10 @@ public class FileUtils {
 		if (f == null) {
 			return false;
 		} else {
-			file = f;
+			filePaths.put(f.getName(), f.getAbsolutePath());
 		} 
 
-		boolean result = writeFile(content);
+		boolean result = writeFile(f.getName(), content);
 		if (!result) {
 			RCPMessageProvider.errorMessage("Looks like there's and error, file can't be saved", "Error while saving file");
 		}
@@ -152,10 +164,10 @@ public class FileUtils {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	private boolean writeFile(String content) {
+	private boolean writeFile(String fileName, String content) {
 		FileWriter writer;
 		try {
-			writer = new FileWriter(file.getName(), false);
+			writer = new FileWriter(new File(filePaths.get(fileName)));
 			writer.write(content);
 			writer.close();
 			lastSavedRevision = content.hashCode();

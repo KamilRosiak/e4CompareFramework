@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
+<?import org.fxmisc.richtext.CodeArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -58,9 +59,9 @@
             <Label fx:id="rowCount" layoutX="70.0" layoutY="364.0" text="Rows: 0" AnchorPane.bottomAnchor="0.0" />
             <TabPane fx:id="tabPane" layoutX="193.0" prefHeight="25.0" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <tabs>
-                <Tab text="Datei öffnen">
+                <Tab text="untitled">
                      <content>
-                        <TextArea fx:id="textArea" prefHeight="0.0" prefWidth="640.0" />
+                        <CodeArea fx:id="textArea" prefHeight="0.0" prefWidth="640.0" />
                      </content></Tab>
               </tabs>
             </TabPane>

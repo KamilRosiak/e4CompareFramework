@@ -23,7 +23,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 
 public class TextEditorViewController {
-	private static final String TEXT_EDITOR_VIEW_FXML = "/ui/view/TextEditorView.fxml";
 	private TextEditor textEditor;
 	private FileUtils fileUtils = new FileUtils();
 	
@@ -31,8 +30,8 @@ public class TextEditorViewController {
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
-		FXMLLoader<TextEditor> loader = new FXMLLoader<TextEditor>(context, "de.tu_bs.cs.isf.e4cf.text_editor",
-				TEXT_EDITOR_VIEW_FXML);
+		FXMLLoader<TextEditor> loader = new FXMLLoader<TextEditor>(context, EditorST.BUNDLE_NAME,
+				EditorST.TEXT_EDITOR_VIEW_FXML);
 
 		Scene scene = new Scene(loader.getNode());
 		loader.getController().initFileUtils(scene);
@@ -45,40 +44,47 @@ public class TextEditorViewController {
 	 * Receives an event call from TextFileExtension to open a given file.
 	 * 
 	 * @param element path of the element to be opened
-	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer
+	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
 	 */
 	@Optional
 	@Inject
 	public void openTxtFile(@UIEventTopic(EditorST.TXT_FILE_OPENED) FileTreeElement element) {
-		TextArea textField = textEditor.getTextarea();
-		System.out.println(element.getAbsolutePath());	
 		File file = new File(element.getAbsolutePath());
-	        String content = fileUtils.readFile(file);
-	        if (!content.isEmpty()) {
-	            textField.setText(content);
-	        }
+	    String content = fileUtils.readFile(file);
+	    if (!content.isEmpty()) {
+	        textEditor.loadTab(file.getName(), content);
 	    }
+	}
+	
 	/**
 	 * Receives an event call from JavaFileExtension to open a given file.
 	 * 
 	 * @param element path of the element to be opened
-	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer
+	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
 	 */
 	@Optional
 	@Inject
 	public void openJavaFile(@UIEventTopic(EditorST.JAVA_FILE_OPENED) FileTreeElement element) {
-		System.out.println(element); // placeholder
+		File file = new File(element.getAbsolutePath());
+        String content = fileUtils.readFile(file);
+        if (!content.isEmpty()) {
+            textEditor.loadTab(file.getName(), content);
+        }
 	}
 
 	/**
 	 * Receives an event call from XMLFileExtension to open a given file.
 	 * 
 	 * @param element path of the element to be opened
-	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer
+	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
 	 */
 	@Optional
 	@Inject
 	public void openXmlFile(@UIEventTopic(EditorST.XML_FILE_OPENED) FileTreeElement element) {
-		System.out.println(element); // placeholder
+		File file = new File(element.getAbsolutePath());
+        String content = fileUtils.readFile(file);
+        if (!content.isEmpty()) {
+            textEditor.loadTab(file.getName(), content);
+        }
 	}
 }
