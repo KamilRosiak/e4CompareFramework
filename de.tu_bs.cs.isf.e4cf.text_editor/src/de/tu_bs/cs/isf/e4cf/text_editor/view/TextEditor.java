@@ -1,11 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
 import javafx.fxml.FXML;
@@ -220,34 +222,6 @@ public class TextEditor implements Initializable {
 			services.partService.setPartToBeRendered("de.tu-bs.cs.isf.e4cf.text_editor.part.view", false);
 			System.out.println("Text Editor Closed.");
 		});
-	}
-
-	/**
-	 * Saves the current content of the textArea to a file when there are changes
-	 * compared to the last saved version.
-	 * 
-	 * @author Lukas Cronauer
-	 */
-	private void saveChanges() {
-		String content = textArea.getText();
-		if (!content.equals(fileUtils.getLastRevision())) {
-			fileUtils.save(content);
-		}
-	}
-
-	/**
-	 * Initializes the FileUtils instance of this object with the window obtained
-	 * from scene.
-	 * 
-	 * @param scene The scene that this object is part of
-	 * 
-	 * @author Lukas Cronauer
-	 */
-	public void initFileUtils(Scene scene) {
-		this.scene = scene;
-		if (scene != null) {
-			fileUtils = new FileUtils(scene.getWindow());
-		}
 	}
 
 	/**
@@ -485,5 +459,35 @@ public class TextEditor implements Initializable {
 				rowCount.setText("Rows: " + newLineCounter);
 			}
 		});
+	}
+	
+	//supporting functions start here
+	
+	/**
+	 * Saves the current content of the textArea to a file when there are changes
+	 * compared to the last saved version.
+	 * 
+	 * @author Lukas Cronauer
+	 */
+	private void saveChanges() {
+		String content = textArea.getText();
+		if (!content.equals(fileUtils.getLastRevision())) {
+			fileUtils.save(content);
+		}
+	}
+
+	/**
+	 * Initializes the FileUtils instance of this object with the window obtained
+	 * from scene.
+	 * 
+	 * @param scene The scene that this object is part of
+	 * 
+	 * @author Lukas Cronauer
+	 */
+	public void initFileUtils(Scene scene) {
+		this.scene = scene;
+		if (scene != null) {
+			fileUtils = new FileUtils(scene.getWindow());
+		}
 	}
 }

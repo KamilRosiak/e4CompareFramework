@@ -38,18 +38,36 @@ public class TextEditorViewController {
 		canvans.setScene(scene);
 	}
 
+	/**
+	 * Receives an event call from TextFileExtension to open a given file.
+	 * 
+	 * @param element path of the element to be opened
+	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer
+	 */
 	@Optional
 	@Inject
 	public void openTxtFile(@UIEventTopic(TXT_FILE_OPENED) FileTreeElement element) {
 		System.out.println(element); // placeholder
 	}
 
+	/**
+	 * Receives an event call from JavaFileExtension to open a given file.
+	 * 
+	 * @param element path of the element to be opened
+	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer
+	 */
 	@Optional
 	@Inject
 	public void openJavaFile(@UIEventTopic(JAVA_FILE_OPENED) FileTreeElement element) {
 		System.out.println(element); // placeholder
 	}
 
+	/**
+	 * Receives an event call from XMLFileExtension to open a given file.
+	 * 
+	 * @param element path of the element to be opened
+	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer
+	 */
 	@Optional
 	@Inject
 	public void openXmlFile(@UIEventTopic(XML_FILE_OPENED) FileTreeElement element) {
