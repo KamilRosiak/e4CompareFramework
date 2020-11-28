@@ -8,4 +8,7 @@ public enum JavaNodeTypes {
 	Type,
 	Expression,
 	Statement,
+	isInterface,
+	Value,
+	Key,
 }
