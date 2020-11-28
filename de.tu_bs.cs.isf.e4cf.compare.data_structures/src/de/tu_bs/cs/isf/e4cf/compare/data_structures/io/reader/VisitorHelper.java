@@ -4,7 +4,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
- * This class provides default methods for @see Visitor to remove redundancy.
+ * This class provides default methods for @see Visitor to remove redundancy and enforce standards.
  * 
  * @author Paulo Haas
  *
@@ -17,9 +17,10 @@ public class VisitorHelper {
 	 * @param n JavaParser Node
 	 * @param arg Parent Node
 	 */
-	public static void Leaf(com.github.javaparser.ast.Node n, Node arg) {
+	public static Node Leaf(com.github.javaparser.ast.Node n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		c.addAttribute(JavaNodeTypes.Value.name(), n.toString());
+		return c;
 	}
 	
 	public static Node Parent(com.github.javaparser.ast.Node n, Node arg) {

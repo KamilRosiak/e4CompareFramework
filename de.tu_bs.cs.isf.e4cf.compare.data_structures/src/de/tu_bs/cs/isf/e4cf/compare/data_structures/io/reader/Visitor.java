@@ -24,8 +24,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(CompilationUnit n, Node arg) {
-		Node child = new NodeImpl(n.getClass().getSimpleName(), arg);
-		super.visit(n, child);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 
 	/**
@@ -33,8 +32,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MethodDeclaration n, Node arg) {
-		Node child = new NodeImpl(n.getClass().getSimpleName(), arg);
-		super.visit(n, child);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 
 	/**
@@ -42,7 +40,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(Modifier n, Node arg) {
-		arg.addAttribute(n.getClass().getSimpleName(), n.toString());
+		VisitorHelper.Leaf(n, arg);
 	}
 
 	/**
@@ -50,7 +48,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SimpleName n, Node arg) {
-		arg.addAttribute(n.getClass().getSimpleName(), n.toString());
+		VisitorHelper.Leaf(n, arg);
 	}
 
 	/**
@@ -58,7 +56,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
-		Node child = new NodeImpl(n.getClass().getSimpleName(), arg);
+		Node child = VisitorHelper.Parent(n, arg);
 		super.visit(n, child);
 		child.addAttribute(JavaNodeTypes.isInterface.name(), String.valueOf(n.isInterface()));
 		if (n.getExtendedTypes().size() > 0) {
@@ -83,27 +81,25 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/body/AnnotationDeclaration.html
 	 */
-	@Override // check it
+	@Override
 	public void visit(AnnotationDeclaration n, Node arg) {
-		arg.addAttribute(n.getClass().getSimpleName(), n.toString());
+		VisitorHelper.Leaf(n, arg); // TODO check this
 	}
 
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/body/AnnotationMemberDeclaration.html
 	 */
-	@Override // check it
+	@Override
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
-		arg.addAttribute(n.getClass().getSimpleName(), n.toString());
+		VisitorHelper.Leaf(n, arg); // TODO check this
 	}
 
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ArrayAccessExpr.html
 	 */
-	@Override // needed?
+	@Override
 	public void visit(ArrayAccessExpr n, Node arg) {
-		Node child = new NodeImpl(n.getName().toString(), arg);
-		child.addAttribute(n.getClass().getSimpleName(), n.toString());
-		super.visit(n, child);
+		super.visit(n, VisitorHelper.Leaf(n, arg)); // TODO check this, is this needed
 	}
 
 	/**
@@ -111,7 +107,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayCreationExpr n, Node arg) {
-		arg.addAttribute(n.getClass().getSimpleName(), n.toString()); // TODO
+		VisitorHelper.Leaf(n, arg);
 	}
 
 	/**
@@ -119,8 +115,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(PackageDeclaration n, Node arg) {
-		Node child = new NodeImpl(n.getClass().toString(), arg);
-		super.visit(n, child);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 
 	/**
@@ -128,17 +123,15 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ImportDeclaration n, Node arg) {
-		Node child = new NodeImpl(n..getClass().getSimpleName(), arg);
-		super.visit(n, child);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/body/FieldDeclaration.html
 	 */
-	@Override // super call?
+	@Override
 	public void visit(FieldDeclaration n, Node arg) {
-		Node child = new NodeImpl(n.getClass().getSimpleName(), arg);
-		super.visit(n, child);
+		super.visit(n, VisitorHelper.Parent(n, arg)); // TODO super call?
 	}
 
 	//////////////////////////////////////////////////
@@ -149,9 +142,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(LambdaExpr n, Node arg) {
-		// arg.addAttribute("Type", n.getClass().toString()); // for everything?
-		Node child = new NodeImpl(n.getClass().getSimpleName(), arg);
-		super.visit(n, child);
+		// arg.addAttribute("Type", n.getClass().toString()); // TODO for everything?
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 
 	/**
@@ -159,8 +151,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(LocalClassDeclarationStmt n, Node arg) {
-		Node child = new NodeImpl(n.getClass().getSimpleName(), arg);
-		super.visit(n, child);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 
 	/**
@@ -168,7 +159,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(LongLiteralExpr n, Node arg) {
-		arg.addAttribute(JavaNodeTypes.Value.name(), n.getValue().toString());
+		VisitorHelper.Leaf(n, arg);
 	}
 
 	/**
@@ -176,7 +167,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MarkerAnnotationExpr n, Node arg) {
-		arg.addAttribute(n.getClass().getSimpleName(), n.toString());
+		VisitorHelper.Leaf(n, arg);
 	}
 
 	/**
@@ -267,7 +258,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(NullLiteralExpr n, Node arg) {
 		// no attribute needed: it is always 'null'
-		// TODO überprüfen
+		// TODO check this
 	}
 
 	/**
@@ -354,7 +345,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(StringLiteralExpr n, Node arg) {
-		arg.addAttribute(JavaNodeTypes.Value.name(), n.toString());
+		VisitorHelper.Leaf(n, arg);
 	}
 
 	/**
