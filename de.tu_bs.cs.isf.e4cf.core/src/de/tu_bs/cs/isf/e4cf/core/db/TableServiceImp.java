@@ -229,7 +229,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			createTable(pPath, pDbName, tableName, col);
 			deleteTable(pPath, pDbName, "old_" + tableName);
 		} else {
-			System.out.println("Table " + "old_" + tableName + " does not exist.");
+			System.out.println("Table " + tableName + " does not exist.");
 		}
 		con.close();
 	}
@@ -267,7 +267,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			createTable(pPath, pDbName, tableName, col);
 			deleteTable(pPath, pDbName, "old_" + tableName);
 		} else {
-			System.out.println("Table " + "old_" + tableName + " does not exist.");
+			System.out.println("Table " + tableName + " does not exist.");
 		}
 		con.close();
 	}
@@ -307,7 +307,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			createTable(pPath, pDbName, tableName, col);
 			deleteTable(pPath, pDbName, "old_" + tableName);
 		} else {
-			System.out.println("Table " + "old_" + tableName + " does not exist.");
+			System.out.println("Table " + tableName + " does not exist.");
 		}
 		con.close();
 	}
