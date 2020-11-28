@@ -17,7 +17,7 @@ import com.github.javaparser.ast.*;
  * @author Pascal Blum
  *
  */
-public class Visitor0 extends VoidVisitorAdapter<Node> {
+public class Visitor extends VoidVisitorAdapter<Node> {
 
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/CompilationUnit.html
