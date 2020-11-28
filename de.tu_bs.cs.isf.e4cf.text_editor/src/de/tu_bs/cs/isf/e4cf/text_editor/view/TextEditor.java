@@ -13,9 +13,11 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.IndexRange;
@@ -26,7 +28,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
-
 import org.fxmisc.richtext.CodeArea;
 
 /**
@@ -94,6 +95,8 @@ public class TextEditor implements Initializable {
 
 	Alert alert;
 
+	int untiltedCount = 0;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initFileMenuItems();
@@ -103,6 +106,7 @@ public class TextEditor implements Initializable {
 		initCountLabelItems();
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 		getCurrentTab().setUserData(EditorST.NEW_TAB_TITLE);
+
 	}
 
 	private void initFileMenuItems() {
@@ -121,8 +125,13 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemNewAction() {
 		newFile.setOnAction(e -> {
+			for (Tab t : tabPane.getTabs()) {
+				if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE)) {
+					untiltedCount++;
+				}
+			}
 			saveChanges();
-			loadTab("untitled", "");
+			loadTab(EditorST.NEW_TAB_TITLE + untiltedCount, "");
 		});
 	}
 
@@ -406,58 +415,17 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
+	//Work in Progress
 	private void initCountLabelItemAction() {
 		for (Tab tab : tabPane.getTabs()) {
 			CodeArea textArea = (CodeArea) tab.getContent();
-
+			tab.selectedProperty().addListener((ov, oldvalue, newvalue) -> {
+				if (newvalue) {
+					count(textArea);
+				}
+			});
 			textArea.setOnKeyReleased(e -> {
-				String text = textArea.getText();
-				StringBuffer bufferText = new StringBuffer(text);
-				int newLineCounter = 1;
-				// check whether there is any text to begin with
-				char first = bufferText.charAt(0);
-				if (first == ' ' || first == '\t') {
-					bufferText.replace(0, 1, "");
-				}
-				if (first == '\n') {
-					bufferText.replace(0, 1, "");
-					newLineCounter++;
-				}
-				if (text.length() == 0) {
-					wordCount.setText("Words: 0");
-					rowCount.setText("Rows: 0");
-				} else {
-
-					// Trims the Tabs.
-					for (int i = 0; i < bufferText.length(); i++) {
-						if (bufferText.charAt(i) == '\t') {
-							bufferText.replace(i, i + 1, " ");
-						}
-					}
-					// trims the Newlines out of the Text and Counts them
-					for (int i = 0; i < bufferText.length(); i++) {
-						if (bufferText.charAt(i) == '\n') {
-							// Number of New Lines = Number of Rows
-							newLineCounter++;
-							bufferText.replace(i, i + 1, " ");
-						}
-					}
-					// trims the additional Spaces
-					// Every Space is a new Word
-					for (int i = 0; i < bufferText.length(); i++) {
-						if (bufferText.charAt(i) == ' ') {
-							if (bufferText.charAt(i + 1) == ' ') {
-								// Placeholder so only one Space is counted for a new word
-								bufferText.replace(i, i + 1, "a");
-							}
-						}
-					}
-					// Counts Spaces
-					// Number of Spaces = Number of Word
-					long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
-					wordCount.setText("Words: " + countWord);
-					rowCount.setText("Rows: " + newLineCounter);
-				}
+				count(textArea);
 			});
 		}
 	}
@@ -503,7 +471,7 @@ public class TextEditor implements Initializable {
 	 */
 	private Tab getCurrentTab() {
 		Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
-		if(currentTab == null) {
+		if (currentTab == null) {
 			currentTab = new Tab(EditorST.NEW_TAB_TITLE, new CodeArea());
 			currentTab.setUserData(EditorST.NEW_TAB_TITLE);
 			tabPane.getTabs().add(currentTab);
@@ -511,6 +479,7 @@ public class TextEditor implements Initializable {
 			initCountLabelItems();
 		}
 		return currentTab;
+
 	}
 
 	/**
@@ -521,7 +490,7 @@ public class TextEditor implements Initializable {
 	 * @author Lukas Cronauer
 	 */
 	private CodeArea getCurrentTextArea() {
-		return 	(CodeArea) getCurrentTab().getContent();
+		return (CodeArea) getCurrentTab().getContent();
 	}
 
 	/**
@@ -549,17 +518,19 @@ public class TextEditor implements Initializable {
 	 */
 	public void loadTab(String filePath, String content) {
 		String fileName = parseFileNameFromPath(filePath);
-		for (Tab t:tabPane.getTabs()) {
-			if(t.getUserData().equals(filePath)) {
+		for (Tab t : tabPane.getTabs()) {
+			if (t.getUserData().equals(filePath)) {
 				tabPane.getSelectionModel().select(t);
 				return;
 			}
 		}
+		// Work in Progress
 		if (getCurrentText().isEmpty()) {
 			Tab currentTab = getCurrentTab();
 			currentTab.setText(fileName);
 			currentTab.setUserData(filePath);
 			getCurrentTextArea().replaceText(content);
+			//((Node) getCurrentTextArea()).focusedProperty().setFocused(true);
 
 		} else {
 			Tab newTab = new Tab(fileName, new CodeArea(content));
@@ -580,7 +551,7 @@ public class TextEditor implements Initializable {
 	private static String parseFileNameFromPath(String path) {
 		String fileName = path;
 		String[] splittedPath;
-		if (!path.equals(EditorST.NEW_TAB_TITLE)) {
+		if (!path.startsWith(EditorST.NEW_TAB_TITLE)) {
 			if (System.getProperty("os.name").startsWith("Windows")) {
 				splittedPath = path.split("\\\\");
 			} else {
@@ -588,7 +559,7 @@ public class TextEditor implements Initializable {
 			}
 
 			try {
-				if (splittedPath[splittedPath.length -1].matches(EditorST.FILE_REGEX)) {
+				if (splittedPath[splittedPath.length - 1].matches(EditorST.FILE_REGEX)) {
 					fileName = splittedPath[splittedPath.length - 1];
 				} else {
 					throw new ArrayIndexOutOfBoundsException("Invalid filename");
@@ -615,5 +586,59 @@ public class TextEditor implements Initializable {
 	public void setCurrentTabUserData(@UIEventTopic(EditorST.FILE_NAME_CHOSEN) String path) {
 		getCurrentTab().setUserData(path);
 		getCurrentTab().setText(parseFileNameFromPath(path));
+	}
+
+	public void count(CodeArea textArea) {
+
+		String text = textArea.getText();
+		StringBuffer bufferText = new StringBuffer(text);
+		int newLineCounter = 1;
+		if (text.length() == 0) {
+			wordCount.setText("Words: 0");
+			rowCount.setText("Rows: 0");
+			return;
+		}
+		// check whether there is any text to begin with
+		char first = bufferText.charAt(0);
+		if (first == ' ' || first == '\t') {
+			bufferText.replace(0, 1, "");
+		}
+		if (first == '\n') {
+			bufferText.replace(0, 1, "");
+			newLineCounter++;
+		}
+
+		// Trims the Tabs.
+		for (int i = 0; i < bufferText.length(); i++) {
+			if (bufferText.charAt(i) == '\t') {
+				bufferText.replace(i, i + 1, " ");
+			}
+		}
+		// trims the Newlines out of the Text and Counts them
+		for (int i = 0; i < bufferText.length(); i++) {
+			if (bufferText.charAt(i) == '\n') {
+				// Number of New Lines = Number of Rows
+				newLineCounter++;
+				bufferText.replace(i, i + 1, " ");
+			}
+		}
+		String tmp = bufferText.toString();
+		tmp = tmp.trim();
+		bufferText = new StringBuffer(tmp);
+		// trims the additional Spaces
+		// Every Space is a new Word
+		for (int i = 0; i < bufferText.length(); i++) {
+			if (bufferText.charAt(i) == ' ') {
+				if (bufferText.charAt(i + 1) == ' ') {
+					// Placeholder so only one Space is counted for a new word
+					bufferText.replace(i, i + 1, "a");
+				}
+			}
+		}
+		// Counts Spaces
+		// Number of Spaces = Number of Word
+		long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
+		wordCount.setText("Words: " + countWord);
+		rowCount.setText("Rows: " + newLineCounter);
 	}
 }
