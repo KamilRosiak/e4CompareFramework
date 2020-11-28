@@ -10,7 +10,7 @@ public class EditorST {
 	public static final String NEW_TAB_TITLE = "untitled";
 	
 	public static final String[] FILE_FORMATS = {"java", "txt", "xml"};
-	public static final String FILE_REGEX = ".+\\\\.\\\\w*";
+	public static final String FILE_REGEX = ".+\\.\\w*";
 	public static final String FILE_NAME_CHOSEN = "NEW_FILE_NAME";
 
 }

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.swt.internal.win32.OS;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -75,13 +76,12 @@ public class TextEditor implements Initializable {
 	// Count Label
 	@FXML
 	private Label wordCount;
-	@FXML 
+	@FXML
 	private Label rowCount;
 	// Public ?
 	Clipboard systemClipboard = Clipboard.getSystemClipboard();
 	@FXML
 	private TabPane tabPane;
-	
 
 	@Inject
 	private ServiceContainer services;
@@ -102,6 +102,7 @@ public class TextEditor implements Initializable {
 		initHelpMenuItems();
 		initCountLabelItems();
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+		getCurrentTab().setUserData(EditorST.NEW_TAB_TITLE);
 	}
 
 	private void initFileMenuItems() {
@@ -128,6 +129,7 @@ public class TextEditor implements Initializable {
 	/**
 	 * Sets the actions of the Open item in the File menu. Open a File with a
 	 * extension set in @FileUtils fileChooser fileExtensions
+	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private void initFileMenuItemOpenAction() {
@@ -135,13 +137,14 @@ public class TextEditor implements Initializable {
 			String[] fileInfo = fileUtils.openFile();
 			if (!(fileInfo[1].isEmpty())) {
 				loadTab(fileInfo[0], fileInfo[1]);
-			} 
+			}
 		});
 	}
 
 	/**
 	 * Sets the actions of the Save item in the File menu. Saving the text into
 	 * current File
+	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private void initFileMenuItemSaveAction() {
@@ -158,6 +161,7 @@ public class TextEditor implements Initializable {
 	/**
 	 * Sets the actions of the SaveAs item in the File menu. Make a copy of the file
 	 * in another file directory Or make a copy of the file with another name
+	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private void initFileMenuItemSaveAsAction() {
@@ -169,6 +173,7 @@ public class TextEditor implements Initializable {
 	/**
 	 * Sets the actions of the CloseItem item in the File menu. Closing the File
 	 * that are currently open.
+	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
 	private void initFileMenuItemCloseFileAction() {
@@ -411,7 +416,7 @@ public class TextEditor implements Initializable {
 				int newLineCounter = 1;
 				// check whether there is any text to begin with
 				char first = bufferText.charAt(0);
-				if (first == ' '||first == '\t') {
+				if (first == ' ' || first == '\t') {
 					bufferText.replace(0, 1, "");
 				}
 				if (first == '\n') {
@@ -422,8 +427,7 @@ public class TextEditor implements Initializable {
 					wordCount.setText("Words: 0");
 					rowCount.setText("Rows: 0");
 				} else {
-					
-					
+
 					// Trims the Tabs.
 					for (int i = 0; i < bufferText.length(); i++) {
 						if (bufferText.charAt(i) == '\t') {
@@ -498,19 +502,28 @@ public class TextEditor implements Initializable {
 	 * @author Lukas Cronauer
 	 */
 	private Tab getCurrentTab() {
-		return tabPane.getSelectionModel().getSelectedItem();
+		Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
+		if(currentTab == null) {
+			currentTab = new Tab(EditorST.NEW_TAB_TITLE, new CodeArea());
+			currentTab.setUserData(EditorST.NEW_TAB_TITLE);
+			tabPane.getTabs().add(currentTab);
+			tabPane.getSelectionModel().select(currentTab);
+			initCountLabelItems();
+		}
+		return currentTab;
 	}
-	
+
 	/**
 	 * Getter for the currently visible CodeArea in the tabPane
+	 * 
 	 * @return Currently visible CodeArea
 	 * 
 	 * @author Lukas Cronauer
 	 */
 	private CodeArea getCurrentTextArea() {
-		return (CodeArea) getCurrentTab().getContent();
+		return 	(CodeArea) getCurrentTab().getContent();
 	}
-	
+
 	/**
 	 * Getter for the text in the CodeArea of the currently selected Tab
 	 * 
@@ -521,28 +534,33 @@ public class TextEditor implements Initializable {
 	private String getCurrentText() {
 		return getCurrentTextArea().getText();
 	}
-	
+
 	/**
-	 * Loads content into a Tab titled fileName. If the currently selected tab in the tabPane
-	 * is empty it is inserted into the existing tab. If the currently selected Tab is not empty a new
-	 * tab containing the data gets created.
-	 * The userData of the tab is set to the (absolute) filepath if there is one. Otherwise the userData is
-	 * equals {@link EditorST.NEW_TAB_TITLE}.
+	 * Loads content into a Tab titled fileName. If the currently selected tab in
+	 * the tabPane is empty it is inserted into the existing tab. If the currently
+	 * selected Tab is not empty a new tab containing the data gets created. The
+	 * userData of the tab is set to the (absolute) filepath if there is one.
+	 * Otherwise the userData is equals {@link EditorST.NEW_TAB_TITLE}.
 	 * 
 	 * @param filePath The path to the loaded file
-	 * @param content The text for the TextArea in the tab
+	 * @param content  The text for the TextArea in the tab
 	 * 
 	 * @author Lukas Cronauer
 	 */
 	public void loadTab(String filePath, String content) {
 		String fileName = parseFileNameFromPath(filePath);
-		
+		for (Tab t:tabPane.getTabs()) {
+			if(t.getUserData().equals(filePath)) {
+				tabPane.getSelectionModel().select(t);
+				return;
+			}
+		}
 		if (getCurrentText().isEmpty()) {
 			Tab currentTab = getCurrentTab();
 			currentTab.setText(fileName);
 			currentTab.setUserData(filePath);
 			getCurrentTextArea().replaceText(content);
-			
+
 		} else {
 			Tab newTab = new Tab(fileName, new CodeArea(content));
 			newTab.setUserData(filePath);
@@ -551,18 +569,24 @@ public class TextEditor implements Initializable {
 			initCountLabelItems();
 		}
 	}
-	
+
 	/**
 	 * Extracts the fileName from a string containing a file path
+	 * 
 	 * @param path A filePath ending in a file
 	 * @return The fileName with extension (e.g. name.extension)
 	 * @author Lukas Cronauer
 	 */
 	private static String parseFileNameFromPath(String path) {
 		String fileName = path;
-		
+		String[] splittedPath;
 		if (!path.equals(EditorST.NEW_TAB_TITLE)) {
-			String[] splittedPath = path.split("/");
+			if (System.getProperty("os.name").startsWith("Windows")) {
+				splittedPath = path.split("\\\\");
+			} else {
+				splittedPath = path.split("/");
+			}
+
 			try {
 				if (splittedPath[splittedPath.length -1].matches(EditorST.FILE_REGEX)) {
 					fileName = splittedPath[splittedPath.length - 1];
@@ -574,17 +598,20 @@ public class TextEditor implements Initializable {
 				fileName = EditorST.NEW_TAB_TITLE;
 			}
 		}
-		
+
 		return fileName;
 	}
-	
+
 	/**
 	 * Sets the userData and the title of the currently selected tab in the tabPane
 	 * by extracting the fileName from the filePath.
-	 * @param path The filepath to a file opened in one of the tabs which did not have a title previously
+	 * 
+	 * @param path The filepath to a file opened in one of the tabs which did not
+	 *             have a title previously
 	 * @author Lukas Cronauer
 	 */
-	@Optional @Inject
+	@Optional
+	@Inject
 	public void setCurrentTabUserData(@UIEventTopic(EditorST.FILE_NAME_CHOSEN) String path) {
 		getCurrentTab().setUserData(path);
 		getCurrentTab().setText(parseFileNameFromPath(path));
