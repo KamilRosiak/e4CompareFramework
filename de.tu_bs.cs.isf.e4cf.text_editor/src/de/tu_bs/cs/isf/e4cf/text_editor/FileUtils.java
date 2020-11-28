@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
+import javax.inject.Inject;
+
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 
 import java.io.FileReader;
@@ -15,14 +17,18 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Window;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 
 
 public class FileUtils {
 	private FileChooser fileChooser;
 	private Window parent;
-	private File file;
 	private int lastSavedRevision;
 	private HashMap<String, String> filePaths = new HashMap<>();
+	
+	@Inject
+	private ServiceContainer services;
 	
 	/**
 	 *  Constructor used to initialize the fileChooser instance of this object.
@@ -37,31 +43,19 @@ public class FileUtils {
 
 		fileChooser = new FileChooser();
 		
-		//TODO: obtain wanted extensions from collection and add them here
-		fileChooser.getExtensionFilters().addAll(
-			new ExtensionFilter("Text File (.txt)", "*.txt"),
-			new ExtensionFilter("Java File (.java)", "*.java"),
-			new ExtensionFilter("XML File (.xml)", "*.xml")
-		);
-		fileChooser.setInitialDirectory(new File(RCPContentProvider.getCurrentWorkspacePath()));
-	}
-
-	public FileUtils() {
-		fileChooser = new FileChooser();
+		for (String extension : EditorST.FILE_FORMATS) {
+			String displayName = extension.substring(0, 1).toUpperCase() + extension.substring(1) + " File (." + extension + ")";
+			String extensionFormat = "*." + extension;
+			fileChooser.getExtensionFilters().add(new ExtensionFilter(displayName, extensionFormat));
+		}
 		
-		//TODO: obtain wanted extensions from collection and add them here
-		fileChooser.getExtensionFilters().addAll(
-			new ExtensionFilter("Text File (.txt)", "*.txt"),
-			new ExtensionFilter("Java File (.java)", "*.java"),
-			new ExtensionFilter("XML File (.xml)", "*.xml")
-		);
 		fileChooser.setInitialDirectory(new File(RCPContentProvider.getCurrentWorkspacePath()));
 	}
 
 	/**
 	 * Opens the file chosen by the open dialog.
 	 *
-	 * @return String[2] with fileName at index 0 and file-content at index 2
+	 * @return String[] of length 2 with (absolute) filePath at index 0 and file-content at index 2
 	 * 
 	 * @author Lukas Cronauer
 	 */
@@ -77,7 +71,7 @@ public class FileUtils {
 		}
 
 		filePaths.put(f.getName(), f.getAbsolutePath());
-		returnValue[0] = f.getName();
+		returnValue[0] = f.getAbsolutePath();
 		returnValue[1] = readFile(f);
 		return returnValue;	
 	}
@@ -124,13 +118,9 @@ public class FileUtils {
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	public boolean save(String fileName, String content) {
-		if (!filePaths.containsKey(fileName)) {
-			return saveAs(content);
-		}
-
 		boolean result = writeFile(fileName, content);
 		if (!result) {
-			RCPMessageProvider.errorMessage("Looks like there's and error, file can't be saved", "Error while saving file");
+			RCPMessageProvider.errorMessage("Error while saving file", "Looks like there's and error, file can't be saved");
 		}
 
 		return result;
@@ -147,12 +137,12 @@ public class FileUtils {
 		if (f == null) {
 			return false;
 		} else {
-			filePaths.put(f.getName(), f.getAbsolutePath());
-		} 
+			services.eventBroker.send(EditorST.FILE_NAME_CHOSEN, f.getAbsolutePath());
+		}
 
 		boolean result = writeFile(f.getName(), content);
 		if (!result) {
-			RCPMessageProvider.errorMessage("Looks like there's and error, file can't be saved", "Error while saving file");
+			RCPMessageProvider.errorMessage("Error while saving file", "Looks like there's and error, file can't be saved");
 		}
 
 		return result;
@@ -160,6 +150,8 @@ public class FileUtils {
 
 	/**
 	 * Writes the parameter content into the File.
+	 * 
+	 * @param fileName the Name of the file to write
 	 * @param content The String to save
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya

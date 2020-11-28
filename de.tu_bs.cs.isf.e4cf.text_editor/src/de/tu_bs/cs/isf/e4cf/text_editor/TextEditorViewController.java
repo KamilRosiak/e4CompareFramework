@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.text_editor;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -20,11 +19,11 @@ import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor;
 
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
-import javafx.scene.control.TextArea;
+import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
+import java.nio.file.Paths;
 
 public class TextEditorViewController {
 	private TextEditor textEditor;
-	private FileUtils fileUtils = new FileUtils();
 	
 
 	@PostConstruct
@@ -49,11 +48,8 @@ public class TextEditorViewController {
 	@Optional
 	@Inject
 	public void openTxtFile(@UIEventTopic(EditorST.TXT_FILE_OPENED) FileTreeElement element) {
-		File file = new File(element.getAbsolutePath());
-	    String content = fileUtils.readFile(file);
-	    if (!content.isEmpty()) {
-	        textEditor.loadTab(file.getName(), content);
-	    }
+	    String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
+	    textEditor.loadTab(element.getAbsolutePath(), content);
 	}
 	
 	/**
@@ -65,11 +61,8 @@ public class TextEditorViewController {
 	@Optional
 	@Inject
 	public void openJavaFile(@UIEventTopic(EditorST.JAVA_FILE_OPENED) FileTreeElement element) {
-		File file = new File(element.getAbsolutePath());
-        String content = fileUtils.readFile(file);
-        if (!content.isEmpty()) {
-            textEditor.loadTab(file.getName(), content);
-        }
+		String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
+        textEditor.loadTab(element.getAbsolutePath(), content);
 	}
 
 	/**
@@ -81,10 +74,7 @@ public class TextEditorViewController {
 	@Optional
 	@Inject
 	public void openXmlFile(@UIEventTopic(EditorST.XML_FILE_OPENED) FileTreeElement element) {
-		File file = new File(element.getAbsolutePath());
-        String content = fileUtils.readFile(file);
-        if (!content.isEmpty()) {
-            textEditor.loadTab(file.getName(), content);
-        }
+        String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
+        textEditor.loadTab(element.getAbsolutePath(), content);
 	}
 }

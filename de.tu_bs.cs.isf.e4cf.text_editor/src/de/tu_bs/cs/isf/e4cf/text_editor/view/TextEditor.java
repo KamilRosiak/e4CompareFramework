@@ -1,15 +1,14 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 
-import com.sun.corba.se.impl.orbutil.graph.Node;
-
-import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
@@ -18,21 +17,16 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 
 import org.fxmisc.richtext.CodeArea;
-import javafx.scene.control.Tab;
-
-//import javafx.scene.input.KeyEvent;
 
 /**
  * 
@@ -115,8 +109,8 @@ public class TextEditor implements Initializable {
 		initFileMenuItemOpenAction();
 		initFileMenuItemSaveAction();
 		initFileMenuItemSaveAsAction();
-		initFileMenuItemCloseFileAction(); // Closes the current File
-		initFileMenuItemCloseEditorAction(); // Closes the Editor Window
+		initFileMenuItemCloseFileAction();
+		initFileMenuItemCloseEditorAction();
 	}
 
 	/**
@@ -126,16 +120,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemNewAction() {
 		newFile.setOnAction(e -> {
-			if (getCurrentText().hashCode() != fileUtils.getLastRevision()) {
-				alert = new Alert(AlertType.CONFIRMATION);
-				alert.setTitle("Save?");
-				alert.setHeaderText("Would you like to save progress?");
-				alert.showAndWait().ifPresent(response -> {
-					if (response == ButtonType.OK) {
-						saveChanges();
-					} // no if for CANCEL necessary; it just does not save
-				});
-			}
+			saveChanges();
 			loadTab("untitled", "");
 		});
 	}
@@ -143,7 +128,6 @@ public class TextEditor implements Initializable {
 	/**
 	 * Sets the actions of the Open item in the File menu. Open a File with a
 	 * extension set in @FileUtils fileChooser fileExtensions
-	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private void initFileMenuItemOpenAction() {
@@ -158,19 +142,22 @@ public class TextEditor implements Initializable {
 	/**
 	 * Sets the actions of the Save item in the File menu. Saving the text into
 	 * current File
-	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private void initFileMenuItemSaveAction() {
 		saveFile.setOnAction(e -> {
-			fileUtils.save(getCurrentTab().getText(), getCurrentText());
+			String fileName = (String) getCurrentTab().getUserData();
+			if (fileName.equals(EditorST.NEW_TAB_TITLE)) {
+				fileUtils.saveAs(getCurrentText());
+			} else {
+				fileUtils.save((String) getCurrentTab().getUserData(), getCurrentText());
+			}
 		});
 	}
 
 	/**
 	 * Sets the actions of the SaveAs item in the File menu. Make a copy of the file
 	 * in another file directory Or make a copy of the file with another name
-	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private void initFileMenuItemSaveAsAction() {
@@ -182,24 +169,12 @@ public class TextEditor implements Initializable {
 	/**
 	 * Sets the actions of the CloseItem item in the File menu. Closing the File
 	 * that are currently open.
-	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
 	private void initFileMenuItemCloseFileAction() {
 		closeFile.setOnAction(e -> {
-			if (getCurrentText().hashCode() != fileUtils.getLastRevision()) {
-				alert = new Alert(AlertType.CONFIRMATION);
-				alert.setTitle("Save?");
-				alert.setHeaderText("Would you like to save progress?");
-				alert.showAndWait().ifPresent(response -> {
-					if (response == ButtonType.OK) {
-						saveChanges();
-					} // no if for CANCEL necessary; it just does not save
-				});
-			}
-
-			System.out.println("Close File");
-			// TODO: most likely futher logic needed to close current file/tab
+			saveChanges();
+			tabPane.getTabs().remove(getCurrentTab());
 		});
 	}
 
@@ -212,18 +187,8 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemCloseEditorAction() {
 		closeEditor.setOnAction(e -> {
-			if (getCurrentText().hashCode() != fileUtils.getLastRevision()) {
-				alert = new Alert(AlertType.CONFIRMATION);
-				alert.setTitle("Save?");
-				alert.setHeaderText("Would you like to save progress?");
-				alert.showAndWait().ifPresent(response -> {
-					if (response == ButtonType.OK) {
-						saveChanges();
-					} // no 'if' for CANCEL necessary; it just does not save
-				});
-			}
+			saveChanges();
 			services.partService.setPartToBeRendered(EditorST.BUNDLE_NAME, false);
-			System.out.println("Text Editor Closed.");
 		});
 	}
 
@@ -251,7 +216,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemUndoAction() {
 		undo.setOnAction(e -> { // activate once pressed
-			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+			CodeArea textArea = getCurrentTextArea();
 			textArea.undo();
 		});
 	}
@@ -264,7 +229,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemRedoAction() {
 		redo.setOnAction(e -> {
-			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+			CodeArea textArea = getCurrentTextArea();
 			textArea.redo();
 		});
 	}
@@ -277,7 +242,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemCutTextAction() {
 		cutText.setOnAction(e -> {
-			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+			CodeArea textArea = getCurrentTextArea();
 
 			ClipboardContent text = new ClipboardContent();
 			text.putString(textArea.getSelectedText()); // add selected text to clipboard content
@@ -294,7 +259,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemCopyTextAction() {
 		copyText.setOnAction(e -> {
-			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+			CodeArea textArea = getCurrentTextArea();
 
 			ClipboardContent text = new ClipboardContent(); // add selected text to clipboard content
 			text.putString(textArea.getSelectedText()); // add content to clipboard
@@ -311,7 +276,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemPasteTextAction() {
 		pasteText.setOnAction(e -> {
-			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+			CodeArea textArea = getCurrentTextArea();
 
 			if (!systemClipboard.hasContent(DataFormat.PLAIN_TEXT)) {
 				return; // does nothing if there is nothing or no text on clipboard
@@ -341,7 +306,6 @@ public class TextEditor implements Initializable {
 
 			textArea.replaceText(updatedText);
 			textArea.displaceCaret(endPos);
-			//textArea.positionCaret(endPos);
 		});
 	}
 
@@ -353,7 +317,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemDeleteTextAction() {
 		deleteText.setOnAction(e -> {
-			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+			CodeArea textArea = getCurrentTextArea();
 			textArea.deleteText(textArea.getSelection());
 		});
 	}
@@ -366,7 +330,7 @@ public class TextEditor implements Initializable {
 	 */
 	private void initEditMenuItemSelectAllAction() {
 		selectAllText.setOnAction(e -> {
-			CodeArea textArea = (CodeArea) getCurrentTab().getContent();
+			CodeArea textArea = getCurrentTextArea();
 			textArea.requestFocus();
 			textArea.selectAll();
 		});
@@ -504,8 +468,10 @@ public class TextEditor implements Initializable {
 	 */
 	private void saveChanges() {
 		String content = getCurrentText();
-		if (!content.equals(fileUtils.getLastRevision())) {
-			fileUtils.save(getCurrentTab().getText(), content);
+		if (content.hashCode() != fileUtils.getLastRevision()) {
+			if (RCPMessageProvider.questionMessage("Save...", "Would you like to save the changes in this file?")) {
+				fileUtils.save((String) getCurrentTab().getUserData(), content);
+			}
 		}
 	}
 
@@ -526,27 +492,101 @@ public class TextEditor implements Initializable {
 
 	/**
 	 * Getter for the currently selected tab in the tabPane
+	 * 
+	 * @return Currently selected Tab in the tabPane
 	 *
 	 * @author Lukas Cronauer
 	 */
 	private Tab getCurrentTab() {
 		return tabPane.getSelectionModel().getSelectedItem();
 	}
-
-	private String getCurrentText() {
-		return ((CodeArea) getCurrentTab().getContent()).getText();
+	
+	/**
+	 * Getter for the currently visible CodeArea in the tabPane
+	 * @return Currently visible CodeArea
+	 * 
+	 * @author Lukas Cronauer
+	 */
+	private CodeArea getCurrentTextArea() {
+		return (CodeArea) getCurrentTab().getContent();
 	}
-
-	public void loadTab(String fileName, String content) {
+	
+	/**
+	 * Getter for the text in the CodeArea of the currently selected Tab
+	 * 
+	 * @return Text of currently visible CodeArea
+	 * 
+	 * @author Lukas Cronauer
+	 */
+	private String getCurrentText() {
+		return getCurrentTextArea().getText();
+	}
+	
+	/**
+	 * Loads content into a Tab titled fileName. If the currently selected tab in the tabPane
+	 * is empty it is inserted into the existing tab. If the currently selected Tab is not empty a new
+	 * tab containing the data gets created.
+	 * The userData of the tab is set to the (absolute) filepath if there is one. Otherwise the userData is
+	 * equals {@link EditorST.NEW_TAB_TITLE}.
+	 * 
+	 * @param filePath The path to the loaded file
+	 * @param content The text for the TextArea in the tab
+	 * 
+	 * @author Lukas Cronauer
+	 */
+	public void loadTab(String filePath, String content) {
+		String fileName = parseFileNameFromPath(filePath);
+		
 		if (getCurrentText().isEmpty()) {
 			Tab currentTab = getCurrentTab();
 			currentTab.setText(fileName);
-			((CodeArea) currentTab.getContent()).replaceText(content);
+			currentTab.setUserData(filePath);
+			getCurrentTextArea().replaceText(content);
+			
 		} else {
 			Tab newTab = new Tab(fileName, new CodeArea(content));
+			newTab.setUserData(filePath);
 			tabPane.getTabs().add(newTab);
 			tabPane.getSelectionModel().select(newTab);
 			initCountLabelItems();
 		}
+	}
+	
+	/**
+	 * Extracts the fileName from a string containing a file path
+	 * @param path A filePath ending in a file
+	 * @return The fileName with extension (e.g. name.extension)
+	 * @author Lukas Cronauer
+	 */
+	private static String parseFileNameFromPath(String path) {
+		String fileName = path;
+		
+		if (!path.equals(EditorST.NEW_TAB_TITLE)) {
+			String[] splittedPath = path.split("/");
+			try {
+				if (splittedPath[splittedPath.length -1].matches(EditorST.FILE_REGEX)) {
+					fileName = splittedPath[splittedPath.length - 1];
+				} else {
+					throw new ArrayIndexOutOfBoundsException("Invalid filename");
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.out.println(e.getMessage());
+				fileName = EditorST.NEW_TAB_TITLE;
+			}
+		}
+		
+		return fileName;
+	}
+	
+	/**
+	 * Sets the userData and the title of the currently selected tab in the tabPane
+	 * by extracting the fileName from the filePath.
+	 * @param path The filepath to a file opened in one of the tabs which did not have a title previously
+	 * @author Lukas Cronauer
+	 */
+	@Optional @Inject
+	public void setCurrentTabUserData(@UIEventTopic(EditorST.FILE_NAME_CHOSEN) String path) {
+		getCurrentTab().setUserData(path);
+		getCurrentTab().setText(parseFileNameFromPath(path));
 	}
 }
