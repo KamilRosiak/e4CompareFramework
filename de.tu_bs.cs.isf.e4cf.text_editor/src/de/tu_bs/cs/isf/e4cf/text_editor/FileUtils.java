@@ -25,7 +25,6 @@ public class FileUtils {
 	private FileChooser fileChooser;
 	private Window parent;
 	private int lastSavedRevision;
-	private HashMap<String, String> filePaths = new HashMap<>();
 	
 	@Inject
 	private ServiceContainer services;
@@ -70,7 +69,6 @@ public class FileUtils {
 			return returnValue;
 		}
 
-		filePaths.put(f.getName(), f.getAbsolutePath());
 		returnValue[0] = f.getAbsolutePath();
 		returnValue[1] = readFile(f);
 		return returnValue;	
@@ -83,7 +81,7 @@ public class FileUtils {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	public  String readFile(File file) {
+	public String readFile(File file) {
 		if (file == null) {
 			throw new NullPointerException("File is null");
 		}
@@ -99,7 +97,6 @@ public class FileUtils {
 			}
 			reader.close();
 			lastSavedRevision = text.hashCode();
-			filePaths.put(file.getName(), file.getAbsolutePath());
 			return text;
 		} catch(FileNotFoundException e) {
 			// error message: file not found
@@ -117,13 +114,8 @@ public class FileUtils {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	public boolean save(String fileName, String content) {
-		boolean result = writeFile(fileName, content);
-		if (!result) {
-			RCPMessageProvider.errorMessage("Error while saving file", "Looks like there's and error, file can't be saved");
-		}
-
-		return result;
+	public boolean save(String filepath, String content) {
+		return writeFile(filepath, content);
 	}
 
 	/**
@@ -140,12 +132,7 @@ public class FileUtils {
 			services.eventBroker.send(EditorST.FILE_NAME_CHOSEN, f.getAbsolutePath());
 		}
 
-		boolean result = writeFile(f.getName(), content);
-		if (!result) {
-			RCPMessageProvider.errorMessage("Error while saving file", "Looks like there's and error, file can't be saved");
-		}
-
-		return result;
+		return writeFile(f.getAbsolutePath(), content);
 	}
 
 	/**
@@ -156,17 +143,21 @@ public class FileUtils {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	private boolean writeFile(String fileName, String content) {
+	private boolean writeFile(String filepath, String content) {
 		FileWriter writer;
 		try {
-			writer = new FileWriter(new File(filePaths.get(fileName)));
+			writer = new FileWriter(new File(filepath));
 			writer.write(content);
 			writer.close();
 			lastSavedRevision = content.hashCode();
 			return true;
 		} catch(IOException io) {
 			io.printStackTrace();
-			RCPMessageProvider.errorMessage("Error while saving file", "Looks like there's and error, file can't be saved");
+			RCPMessageProvider.errorMessage("Error while saving file", io.getMessage());
+			return false;
+		} catch (NullPointerException n) {
+			n.printStackTrace();
+			RCPMessageProvider.errorMessage("Error while saving file", n.getMessage());
 			return false;
 		}
 	}

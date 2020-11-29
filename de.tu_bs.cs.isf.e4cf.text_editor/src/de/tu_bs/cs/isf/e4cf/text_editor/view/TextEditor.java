@@ -161,7 +161,7 @@ public class TextEditor implements Initializable {
 	private void initFileMenuItemSaveAction() {
 		saveFile.setOnAction(e -> {
 			String fileName = (String) getCurrentTab().getUserData();
-			if (fileName.equals(EditorST.NEW_TAB_TITLE)) {
+			if (fileName.startsWith(EditorST.NEW_TAB_TITLE)) {
 				fileUtils.saveAs(getCurrentText());
 			} else {
 				fileUtils.save((String) getCurrentTab().getUserData(), getCurrentText());
@@ -204,7 +204,7 @@ public class TextEditor implements Initializable {
 	private void initFileMenuItemCloseEditorAction() {
 		closeEditor.setOnAction(e -> {
 			saveChanges();
-			services.partService.setPartToBeRendered(EditorST.BUNDLE_NAME, false);
+			services.partService.setPartToBeRendered(EditorST.TEXT_EDITOR_FXML_ID, false);
 		});
 	}
 
@@ -474,7 +474,7 @@ public class TextEditor implements Initializable {
 	private Tab getCurrentTab() {
 		Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
 		if (currentTab == null) {
-			currentTab = new Tab(EditorST.NEW_TAB_TITLE, new CodeArea());
+			currentTab = new Tab(EditorST.NEW_TAB_TITLE, createCodeArea(""));
 			currentTab.setUserData(EditorST.NEW_TAB_TITLE);
 			tabPane.getTabs().add(currentTab);
 			tabPane.getSelectionModel().select(currentTab);
@@ -526,8 +526,6 @@ public class TextEditor implements Initializable {
 				return;
 			}
 		}
-		// Work in Progress
-		
 		
 		Tab newTab = new Tab(fileName, createCodeArea(content));
 		newTab.setUserData(filePath);
