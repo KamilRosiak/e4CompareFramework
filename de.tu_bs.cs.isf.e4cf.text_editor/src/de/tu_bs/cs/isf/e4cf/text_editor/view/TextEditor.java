@@ -29,6 +29,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
 
 /**
  * 
@@ -106,6 +107,7 @@ public class TextEditor implements Initializable {
 		initCountLabelItems();
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 		getCurrentTab().setUserData(EditorST.NEW_TAB_TITLE);
+		getCurrentTab().setContent(createCodeArea(""));
 
 	}
 
@@ -463,7 +465,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Getter for the currently selected tab in the tabPane
+	 * Gets the currently selected tab in the tabPane
 	 * 
 	 * @return Currently selected Tab in the tabPane
 	 *
@@ -483,7 +485,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Getter for the currently visible CodeArea in the tabPane
+	 * Gets the currently visible CodeArea in the tabPane
 	 * 
 	 * @return Currently visible CodeArea
 	 * 
@@ -494,7 +496,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Getter for the text in the CodeArea of the currently selected Tab
+	 * Gets the text in the CodeArea of the currently selected Tab
 	 * 
 	 * @return Text of currently visible CodeArea
 	 * 
@@ -525,20 +527,13 @@ public class TextEditor implements Initializable {
 			}
 		}
 		// Work in Progress
-		if (getCurrentText().isEmpty()) {
-			Tab currentTab = getCurrentTab();
-			currentTab.setText(fileName);
-			currentTab.setUserData(filePath);
-			getCurrentTextArea().replaceText(content);
-			//((Node) getCurrentTextArea()).focusedProperty().setFocused(true);
-
-		} else {
-			Tab newTab = new Tab(fileName, new CodeArea(content));
-			newTab.setUserData(filePath);
-			tabPane.getTabs().add(newTab);
-			tabPane.getSelectionModel().select(newTab);
-			initCountLabelItems();
-		}
+		
+		
+		Tab newTab = new Tab(fileName, createCodeArea(content));
+		newTab.setUserData(filePath);
+		tabPane.getTabs().add(newTab);
+		tabPane.getSelectionModel().select(newTab);
+		initCountLabelItems();
 	}
 
 	/**
@@ -640,5 +635,11 @@ public class TextEditor implements Initializable {
 		long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
 		wordCount.setText("Words: " + countWord);
 		rowCount.setText("Rows: " + newLineCounter);
+	}
+	
+	private CodeArea createCodeArea(String content) {
+		CodeArea codeArea = new CodeArea(content);
+		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+		return codeArea;
 	}
 }
