@@ -4,16 +4,24 @@ public class Column {
 
 	private String name;
 	private String type;
-	private boolean primaryKey;
-	private boolean unique;
-	private boolean Increment;
+	private boolean primaryKey = false;
+	private boolean unique = false;
+	private boolean autoIncrement = false;
+	private boolean notNull = false;
 
-	public Column(final String pName, final String pType, final Boolean pPrimaryKey,final Boolean pUnique,final Boolean pIncrement) {
+	public Column(final String pName, final String pType, final Boolean pPrimaryKey, final Boolean pUnique,
+			final Boolean pIncrement, final Boolean pNotNull) {
 		name = pName;
 		type = pType;
 		primaryKey = pPrimaryKey;
 		unique = pUnique;
-		Increment = pIncrement;
+		autoIncrement = pIncrement;
+		notNull = pNotNull;
+	}
+	
+	public Column(final String pName, final String pType) {
+		name = pName;
+		type = pType;
 	}
 
 	public String getName() {
@@ -31,7 +39,7 @@ public class Column {
 	public void setType(final String type) {
 		this.type = type;
 	}
-	
+
 	public Boolean isPrimaryKey() {
 		return primaryKey;
 	}
@@ -39,27 +47,34 @@ public class Column {
 	public void setPrimaryKey(final boolean primaryKey) {
 		this.primaryKey = primaryKey;
 	}
-	
+
 	public Boolean isUnique() {
 		return unique;
 	}
-	
+
 	public void setUnique(final boolean unique) {
 		this.unique = unique;
 	}
-	
-	public void setIncrement(final boolean Increment) {
-		this.Increment = Increment;
+
+	public boolean isAutoIncrement() {
+		return autoIncrement;
 	}
-	
-	public Boolean isIncrement() {
-		return Increment;
+
+	public void setAutoIncrement(final boolean autoIncrement) {
+		this.autoIncrement = autoIncrement;
+	}
+
+	public boolean isNotNull() {
+		return notNull;
+	}
+
+	public void setNotNull(boolean notNull) {
+		this.notNull = notNull;
 	}
 
 	@Override
 	public String toString() {
 		return "Attribut [name=" + name + ", type=" + type + "]";
 	}
-	
 
 }

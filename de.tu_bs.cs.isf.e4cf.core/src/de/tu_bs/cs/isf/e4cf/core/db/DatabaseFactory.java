@@ -69,7 +69,6 @@ public class DatabaseFactory {
 	 */
 	public Connection getDatabase(final String pPath, final String pDbName) throws SQLException {
 		if (databaseExists(pPath, pDbName)) {
-			System.out.println("Getting database " + pDbName + ".");
 			return DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
 		} else {
 			System.out.println(pDbName + " database does not exist.");

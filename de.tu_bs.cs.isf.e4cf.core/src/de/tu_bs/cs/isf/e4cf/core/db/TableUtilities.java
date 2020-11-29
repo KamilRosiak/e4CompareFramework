@@ -14,8 +14,8 @@ public class TableUtilities {
 	/**
 	 * Method to check if a table in a database exists or not.
 	 * 
-	 * @param pPath   String the path where to create the database
-	 * @param pDbName String the name of the database
+	 * @param pPath     String the path where to create the database
+	 * @param pDbName   String the name of the database
 	 * @param tableName String name of the table
 	 * @return boolean
 	 * @throws SQLException
@@ -55,10 +55,10 @@ public class TableUtilities {
 	/**
 	 * Method to check whether a column is part of table or not.
 	 * 
-	 * @param pPath   		String the path of the database
-	 * @param pDbName 		String the name of the database
-	 * @param tableName 	String name of the table
-	 * @param columnName 	String name of the column
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
 	 * @return boolean
 	 * @throws SQLException
 	 */
@@ -72,60 +72,60 @@ public class TableUtilities {
 					con.close();
 					return true;
 				}
-			}			
+			}
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
 		con.close();
 		return false;
 	}
-	
+
 	/**
-	 *Method to get column metadata 
+	 * Method to get column metadata
 	 *
-	 * @param pPath String the path of the database
-	 * @param pDbName String the name of the database
+	 * @param pPath     String the path of the database
+	 * @param pDbName   String the name of the database
 	 * @param tableName String name of the table
 	 * @return List<String> list of the column metadata in the database
 	 * @throws SQLException
 	 */
-	
-	List<Column> getColumnsTable(String pPath, String pDbName, String tableName) throws SQLException {
-			final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-			List<Column> columns = new ArrayList<>();
-		    String sql = "select * from " + tableName + " LIMIT 0";
-		    Statement statement = con.createStatement();
-		    ResultSet rs = statement.executeQuery(sql);
-			ResultSetMetaData mrs = rs.getMetaData();
-		    ResultSet pkInfo = con.getMetaData().getPrimaryKeys(null, null, tableName);
-		    boolean isPrimaryKey = false;
-		    String isNull = " "; 
-		    String  isAutoincrement = " ";
-		    String pk = null;
-		    
-		   while (pkInfo.next()) {
-		    	 pk = pkInfo.getString("COLUMN_NAME");
 
-		    }
-		   
-		    for(int i = 1; i <= mrs.getColumnCount(); i++) {	
-		    	if(mrs.getColumnLabel(i).equals(pk)) {
-		    		isPrimaryKey = true;
-		    		pkInfo.close();
-		    	}  	
-		    	if (mrs.isNullable(i) == 1) {
-		    	 isNull = " NOT NULL";
-		    	}
-		    	
-		    	if(mrs.isAutoIncrement(i)) {
-		    		isAutoincrement =" AUTO_INCREMENT ";
-		    	}
-		   
-		    	Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, false, false);  
-		    	columns.add(c);        
-		    }
-		    return columns;
-		   
+	List<Column> getColumnsTable(String pPath, String pDbName, String tableName) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		List<Column> columns = new ArrayList<>();
+		String sql = "select * from " + tableName + " LIMIT 0";
+		Statement statement = con.createStatement();
+		ResultSet rs = statement.executeQuery(sql);
+		ResultSetMetaData mrs = rs.getMetaData();
+		ResultSet pkInfo = con.getMetaData().getPrimaryKeys(null, null, tableName);
+		boolean isPrimaryKey = false;
+		String isNull = " ";
+		String isAutoincrement = " ";
+		String pk = null;
+
+		while (pkInfo.next()) {
+			pk = pkInfo.getString("COLUMN_NAME");
+
 		}
-	  
+
+		for (int i = 1; i <= mrs.getColumnCount(); i++) {
+			if (mrs.getColumnLabel(i).equals(pk)) {
+				isPrimaryKey = true;
+				pkInfo.close();
+			}
+			if (mrs.isNullable(i) == 1) {
+				isNull = " NOT NULL";
+			}
+
+			if (mrs.isAutoIncrement(i)) {
+				isAutoincrement = " AUTO_INCREMENT ";
+			}
+
+			Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, false, false, false);
+			columns.add(c);
+		}
+		return columns;
+
+	}
+
 }
