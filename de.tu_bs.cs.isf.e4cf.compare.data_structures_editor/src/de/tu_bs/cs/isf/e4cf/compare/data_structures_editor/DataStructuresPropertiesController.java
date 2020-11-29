@@ -31,12 +31,10 @@ public class DataStructuresPropertiesController {
 	}
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {
-		System.out.println("Ich funktioniere Properties View.");
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
 		FXMLLoader<PropertiesView> loader = new FXMLLoader<PropertiesView>(context, BUNDLE_NAME, PROPERTIES_VIEW_FXML);
 
 		Scene scene = new Scene(loader.getNode());
-//        scene.getStylesheets().add(COMPARATOR_VIEW_CSS_LOCATION);
 		canvans.setScene(scene);
 
 	}

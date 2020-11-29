@@ -19,7 +19,7 @@
         <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem mnemonicParsing="false" text="New" />
-            <MenuItem mnemonicParsing="false" text="Open…" />
+            <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open…" />
             <Menu mnemonicParsing="false" text="Open Recent" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Close" />
@@ -63,7 +63,7 @@
                 <MenuItem mnemonicParsing="false" text="Cut" />
 		<MenuItem mnemonicParsing="false" text="Extract to file" />
                 <MenuItem mnemonicParsing="false" text="Delete" />
-		<MenuItem fx:id="properties" mnemonicParsing="false" onAction="#openProperties" text="Properties" />
+		<MenuItem fx:id="properties" mnemonicParsing="false" text="Properties" />
               </items>
             </ContextMenu>
          </contextMenu></TreeView> 

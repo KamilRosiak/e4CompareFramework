@@ -1,103 +1,92 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
+import javax.inject.Inject;
 
-import java.io.IOException;
-
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TextWritter;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.view.VisualizeTreeView;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
-import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import java.lang.reflect.Method;
-import java.lang.reflect.*;
-
-import javax.inject.Inject;
 
 public class TreeViewController {
-	
-	
 
 	@Inject
 	private ServiceContainer services;
 
 	@FXML
 	private MenuItem properties;
-	
+
 	@FXML
-    private VBox background;
+	private VBox background;
 
 	@FXML
 	private Button search;
 
 	@FXML
 	private Label testLabel;
-	
-	@FXML 
-	private TreeView<?> hirarchy= new TreeView<String>();		
-	
+
 	@FXML
-	public void initialize() {
-		createTree();
+	private TreeView<?> hirarchy;
+
+	private Tree tr;
+	private TreeItem<String> rootItem;
+
+//	@FXML
+//	public void initialize() {
+//		createTree();
+//	}
+
+	void openProperties() {
+		services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
 	}
 
 	@FXML
-	void openProperties(ActionEvent event) throws IOException {
-		/**
-		 * Parent root;
-		 * 
-		 * Stage stage = new Stage(); stage.initModality(Modality.APPLICATION_MODAL);
-		 * stage.initStyle(StageStyle.UNDECORATED); stage.setTitle("Properties");
-		 * stage.show(); System.out.println();
-		 */
-		services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");		
-		
-	}
-	
-	
-	void createTree() {
-		//Datei wird eingelesen und als TreeView ausgegeben
+	void openFile() {
 		FileChooser chooser = new FileChooser();
-		File selectedFile = new File (chooser.showOpenDialog(new Stage()).getPath());
+		File selectedFile = new File(chooser.showOpenDialog(new Stage()).getPath());
 		TextReader reader = new TextReader();
-		Tree tr = reader.readArtifact(selectedFile);
+		tr = reader.readArtifact(selectedFile);
 		chooser.setTitle("Open Resource File");
 		System.out.println(chooser.getTitle());
-		// tw.writeArtifact(tr,selectedFile.getAbsolutePath());
-	    TreeItem<String> rootItem = new TreeItem<String> (tr.getTreeName());
+		rootItem = new TreeItem<String>(tr.getTreeName());
 		rootItem.setExpanded(true);
-		System.out.println(tr.getLeaves());
-		for (Node node: tr.getLeaves()) {
-	            TreeItem<String> item = new TreeItem<String> (node.toString());            
-	            rootItem.getChildren().add(item);
+
+		try {
+			createTree();
+		} catch (Exception e) {
+			System.out.println("Beim einlesen der Datei ist ein Fehler aufgetreten.");
+		}
+	}
+
+	void createTree() {
+//		 Datei wird eingelesen und als TreeView ausgegeben
+
+//		System.out.println(tr.getLeaves());
+		for (Node node : tr.getLeaves()) {
+			TreeItem<String> item = new TreeItem<String>(node.toString());
+			rootItem.getChildren().add(item);
 			System.out.println(node.toString());
-	        }    
-		
+		}
+
+		hirarchy = new TreeView<String>(rootItem);
 		hirarchy.setShowRoot(true);
-		hirarchy= new TreeView(rootItem);
+
+		hirarchy.getSelectionModel().selectedItemProperty()
+				.addListener((observable, oldValue, newValue) -> openProperties());
+
+//		hirarchy.setRoot(rootItem);
+//		hirarchy= new TreeView(rootItem);
 		background.getChildren().add(hirarchy);
-		
+
 		System.out.println(rootItem.getValue());
 		System.out.println(background.getHeight());
 		System.out.println(hirarchy.getHeight());
@@ -111,17 +100,17 @@ public class TreeViewController {
 	public TreeView<?> getHirarchy() {
 		return this.hirarchy;
 	}
-	
-	public void setHirarchy(TreeView<?> hirarchy) {
+
+	public void setHirarchy(TreeView<String> hirarchy) {
 		this.hirarchy = hirarchy;
 	}
-	
+
 	public VBox getBackground() {
 		return background;
 	}
+
 	public void setBackground(VBox background) {
 		this.background = background;
 	}
-	
-	
+
 }
