@@ -30,15 +30,15 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem fx:id="undo" mnemonicParsing="false" text="Undo" />
-            <MenuItem fx:id="redo" mnemonicParsing="false" text="Redo" />
+            <MenuItem fx:id="undo" accelerator="Shortcut+Z" mnemonicParsing="false" text="Undo" />
+            <MenuItem fx:id="redo" accelerator="Shortcut+Y" mnemonicParsing="false" text="Redo" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="cutText" accelerator="Shortcut+X" mnemonicParsing="false" text="Cut" />
             <MenuItem fx:id="copyText" accelerator="Shortcut+C" mnemonicParsing="false" text="Copy" />
             <MenuItem fx:id="pasteText" accelerator="Shortcut+V" mnemonicParsing="false" text="Paste" />
             <MenuItem fx:id="deleteText" mnemonicParsing="false" text="Delete" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="selectAllText" mnemonicParsing="false" text="Select All" />
+            <MenuItem fx:id="selectAllText" accelerator="Shortcut+A" mnemonicParsing="false" text="Select All" />
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Extra">
