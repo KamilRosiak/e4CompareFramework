@@ -6,12 +6,14 @@ public class Column {
 	private String type;
 	private boolean primaryKey;
 	private boolean unique;
+	private boolean Increment;
 
-	public Column(final String pName, final String pType, final Boolean pPrimaryKey,final Boolean pUnique) {
+	public Column(final String pName, final String pType, final Boolean pPrimaryKey,final Boolean pUnique,final Boolean pIncrement) {
 		name = pName;
 		type = pType;
 		primaryKey = pPrimaryKey;
 		unique = pUnique;
+		Increment = pIncrement;
 	}
 
 	public String getName() {
@@ -45,10 +47,19 @@ public class Column {
 	public void setUnique(final boolean unique) {
 		this.unique = unique;
 	}
+	
+	public void setIncrement(final boolean Increment) {
+		this.Increment = Increment;
+	}
+	
+	public Boolean isIncrement() {
+		return Increment;
+	}
 
 	@Override
 	public String toString() {
 		return "Attribut [name=" + name + ", type=" + type + "]";
 	}
+	
 
 }

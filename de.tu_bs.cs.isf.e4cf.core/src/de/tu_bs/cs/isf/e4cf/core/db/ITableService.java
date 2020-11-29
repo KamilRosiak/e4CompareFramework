@@ -89,7 +89,16 @@ public interface ITableService {
 	 */
 	void dropPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
 
-	void makeColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnNames);
+	/**
+	 * Method to make a Column Autoincrement of an existing table
+	 * 
+	 * @param pPath			String the path of the database
+	 * @param pDbName 		String the name of the database
+	 * @param tableName 	String the name of the table
+	 * @param columnNames	String the name of the columns of which the primary key will be dropped
+	 * @throws SQLException
+	 */
+	void makeColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnNames) throws SQLException;
 
 	/**
 	 * Method to add unique constraints to an existing table.

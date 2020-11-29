@@ -28,6 +28,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			String sqlStatementPkey = "CONSTRAINT " + tableName + "_pl PRIMARY KEY (";
 			boolean primaryKey = false;
 			boolean unique = false;
+			boolean Increment = false;
 			for (Column c : attributes) {
 				sqlStatement += c.getName() + " " + c.getType() + ", ";
 				
@@ -40,6 +41,11 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 				if (c.isPrimaryKey() == true) {
 					sqlStatementPkey += c.getName() + ", ";
 					primaryKey = true;
+				}
+				if(c.isIncrement() == true) {
+					sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
+					sqlStatement += "AUTOINCREMENT" + ",";
+					Increment = true;
 				}
 			}
 			if (primaryKey == true) {
@@ -179,16 +185,31 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	public void deleteColumn(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException {
 		System.out.println("Delete column form table: " + tableName);
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		final Statement stmt = con.createStatement();
-		if (tableExists(pPath, pDbName, tableName)) {
-			for (Column c : attributes) {
-				if (columnExists(pPath, pDbName, tableName, c.getName())) {
-					String sqlStatement = "ALTER TABLE " + tableName + " DROP COLUMN " + c.getName() + ";";
-					stmt.execute(sqlStatement);
-				} else {
-					System.out.println("Column " + c.getName() + " is not exists.");
+		renameTable(pPath, pDbName, tableName, "old_" + tableName);
+		final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+		List<Column> removeList = new ArrayList<Column>();
+		
+		if (tableExists(pPath, pDbName, "old_" + tableName)) {
+			for (Column c : columns) {
+				for(int i = 0; i < attributes.length; i++) {
+					if(c.getName().equals(attributes[i])) {
+						removeList.add(c);
+					}
 				}
-			}	
+			}
+			if(removeList.isEmpty()) {
+				for(Column c : attributes) {
+					System.out.print("Column" + c.getName() + " does not exist.");
+				}
+				
+			}
+			columns.removeAll(removeList);
+			Column[] col = new Column[columns.size()]; 
+			col = columns.toArray(col);
+			createTable(pPath, pDbName, tableName, col);
+			deleteTable(pPath, pDbName, "old_" + tableName);
+			System.out.print("Column(s) deleted." );
+				
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
@@ -272,9 +293,40 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		con.close();
 	}
 
+	/**
+	 * Method to make a Column Autoincrement of an existing table
+	 * 
+	 * @param pPath			String the path of the database
+	 * @param pDbName 		String the name of the database
+	 * @param tableName 	String the name of the table
+	 * @param columnNames	String the name of the columns of which the primary key will be dropped
+	 * @throws SQLException
+	 */
 	@Override
-	public void makeColumnAutoIncrement(final String pPath, final String pDbName, final String tableName, final String columnNames) {
-		//Shupei
+	public void makeColumnAutoIncrement(final String pPath, final String pDbName, final String tableName, final String columnNames) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		renameTable(pPath, pDbName, tableName, "old_" + tableName);
+		final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+		List<Column> removeList = new ArrayList<Column>();
+		List<Column> addList = new ArrayList<Column>();
+		if (tableExists(pPath, pDbName, "old_" + tableName)) {
+			for (Column c : columns) {				
+					if(c.getName().equals(columnNames)) {
+						removeList.add(c);
+						c.setIncrement(true);
+						addList.add(c);
+					}				
+			}
+			columns.removeAll(removeList);
+			columns.addAll(addList);
+			Column[] col = new Column[columns.size()]; 
+			col = columns.toArray(col);
+			createTable(pPath, pDbName, tableName, col);
+			deleteTable(pPath, pDbName, "old_" + tableName);
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
+		con.close();
 	}
 
 	@Override

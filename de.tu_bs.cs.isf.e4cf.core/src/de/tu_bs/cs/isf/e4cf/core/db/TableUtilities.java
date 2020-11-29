@@ -121,7 +121,7 @@ public class TableUtilities {
 		    		isAutoincrement =" AUTO_INCREMENT ";
 		    	}
 		   
-		    	Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, false);  
+		    	Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, false, false);  
 		    	columns.add(c);        
 		    }
 		    return columns;
