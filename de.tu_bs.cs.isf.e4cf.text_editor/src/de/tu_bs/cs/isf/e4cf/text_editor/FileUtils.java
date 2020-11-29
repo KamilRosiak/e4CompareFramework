@@ -123,16 +123,14 @@ public class FileUtils {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	public boolean saveAs(String content) {
+	public String saveAs(String content) {
 		fileChooser.setTitle("Save...");
 		File f = fileChooser.showSaveDialog(parent);
-		if (f == null) {
-			return false;
+		if (f != null && writeFile(f.getAbsolutePath(), content)) {
+			return f.getAbsolutePath();
 		} else {
-			services.eventBroker.send(EditorST.FILE_NAME_CHOSEN, f.getAbsolutePath());
+			return "";
 		}
-
-		return writeFile(f.getAbsolutePath(), content);
 	}
 
 	/**

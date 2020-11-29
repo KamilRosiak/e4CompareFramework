@@ -162,7 +162,8 @@ public class TextEditor implements Initializable {
 		saveFile.setOnAction(e -> {
 			String fileName = (String) getCurrentTab().getUserData();
 			if (fileName.startsWith(EditorST.NEW_TAB_TITLE)) {
-				fileUtils.saveAs(getCurrentText());
+				String newpath = fileUtils.saveAs(getCurrentText());
+				setCurrentTabUserData(newpath);
 			} else {
 				fileUtils.save((String) getCurrentTab().getUserData(), getCurrentText());
 			}
@@ -177,7 +178,8 @@ public class TextEditor implements Initializable {
 	 */
 	private void initFileMenuItemSaveAsAction() {
 		saveFileAs.setOnAction(e -> {
-			fileUtils.saveAs(getCurrentText());
+			String newpath = fileUtils.saveAs(getCurrentText());
+			setCurrentTabUserData(newpath);
 		});
 	}
 
@@ -574,9 +576,7 @@ public class TextEditor implements Initializable {
 	 *             have a title previously
 	 * @author Lukas Cronauer
 	 */
-	@Optional
-	@Inject
-	public void setCurrentTabUserData(@UIEventTopic(EditorST.FILE_NAME_CHOSEN) String path) {
+	private void setCurrentTabUserData(String path) {
 		getCurrentTab().setUserData(path);
 		getCurrentTab().setText(parseFileNameFromPath(path));
 	}
