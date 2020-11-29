@@ -30,12 +30,10 @@ public class DataStructureEditorController {
 	}
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {
-		System.out.println("Ich funktioniere TreeView.");
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
 		FXMLLoader<VisualizeTreeView> loader = new FXMLLoader<VisualizeTreeView>(context, BUNDLE_NAME, TREE_VIEW_FXML);
 
 		Scene scene = new Scene(loader.getNode());
-//        scene.getStylesheets().add(COMPARATOR_VIEW_CSS_LOCATION);
 		canvans.setScene(scene);
 
 	}
