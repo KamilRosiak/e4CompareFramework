@@ -41,7 +41,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(Modifier n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		arg.addAttribute(n.getClass().getSimpleName(), n.toString());
 	}
 
 	/**
