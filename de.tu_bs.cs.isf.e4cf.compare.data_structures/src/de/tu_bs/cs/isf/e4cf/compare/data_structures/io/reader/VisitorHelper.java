@@ -23,6 +23,13 @@ public class VisitorHelper {
 		return c;
 	}
 	
+	/**
+	 * Creates a new node which should get leaves
+	 * 
+	 * @param n JavaParser Node
+	 * @param arg Parent Node of the new node
+	 * @return New Node
+	 */
 	public static Node Parent(com.github.javaparser.ast.Node n, Node arg) {
 		return new NodeImpl(n.getClass().getSimpleName(), arg);
 	}
