@@ -27,36 +27,24 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		if (attributes.length > 0) {
 			if (!tableExists(pPath, pDbName, tableName)) {
 				String sqlStatement = "CREATE TABLE " + tableName + "(";
-				String sqlStatementPkey = "CONSTRAINT " + tableName + "_pl PRIMARY KEY (";
-				boolean primaryKey = false;
 				for (final Column c : attributes) {
-					sqlStatement += c.getName() + " " + c.getType() + ", ";
+					sqlStatement += c.getName() + " " + c.getType();
 					if (c.isUnique()) {
-						sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-						sqlStatement += " UNIQUE, ";
+						sqlStatement += " UNIQUE";
 					}
 					if (c.isPrimaryKey()) {
-						sqlStatementPkey += c.getName() + ", ";
-						primaryKey = true;
+						sqlStatement += " PRIMARY KEY";
 					}
 					if (c.isAutoIncrement()) {
-						sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-						sqlStatement += "AUTOINCREMENT, ";
+						sqlStatement += " AUTOINCREMENT";
 					}
 					if (c.isNotNull()) {
-						sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-						sqlStatement += "NOTNULL, ";
+						sqlStatement += " NOT NULL";
 					}
+					sqlStatement += ", ";
 				}
-				if (primaryKey == true) {
-					sqlStatementPkey = sqlStatementPkey.substring(0, sqlStatementPkey.length() - 2);
-					sqlStatementPkey += ")";
-					sqlStatement += sqlStatementPkey;
-				} else {
-					sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-				}
+				sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
 				sqlStatement += ");";
-				// System.out.println("SQLSTATEMENT: " + sqlStatement);
 				stmt.execute(sqlStatement);
 				System.out.println("Table " + tableName + " created.");
 			} else {
@@ -169,11 +157,47 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		if (tableExists(pPath, pDbName, tableName)) {
 			for (Column c : attributes) {
 				if (!columnExists(pPath, pDbName, tableName, c.getName())) {
-					String sqlStatement = "ALTER TABLE " + tableName + " ADD " + c.getName() + " " + c.getType() + ";";
+					String sqlStatement = "ALTER TABLE " + tableName + " ADD " + c.getName() + " " + c.getType();
+					if (c.isNotNull() == true) {
+						sqlStatement += " NOT NULL, ";
+						sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
+					}
+					sqlStatement += ";";
+					System.out.println(sqlStatement);
 					stmt.execute(sqlStatement);
 					System.out.println("Column " + c.getName() + " added to table: " + tableName);
 				} else {
 					System.out.println("Column " + c.getName() + " already exists.");
+				}
+			}
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
+		con.close();
+	}
+	
+	/**
+	 *  Method to rename a column.
+	 * 
+	 * @param pPath			String the path of the database
+	 * @param pDbName		String the name of the database
+	 * @param tableName		String the name of the table
+	 * @param columnName	String the old name of the column
+	 * @param newColumnName	String the new name of the column
+	 * @throws SQLException
+	 */
+	@Override
+	public void renameColumn(final String pPath, final String pDbName, final String tableName, final String columnName, final String newColumnName)
+			throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement s = con.createStatement();
+		if (tableExists(pPath, pDbName, tableName)) {
+			final List<Column> columns = getColumnsTable(pPath, pDbName, tableName);
+			for (Column c : columns) {
+				if(c.getName().equals(columnName)) {
+					String sqlStatement = "ALTER TABLE " + tableName + " RENAME COLUMN " + columnName + " TO " + newColumnName + ";";
+					s.execute(sqlStatement);
+					System.out.println("Renaming column " + columnName + " to " + newColumnName);
 				}
 			}
 		} else {
