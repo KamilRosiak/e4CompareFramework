@@ -597,115 +597,134 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 
 	/**
 	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/ConstructorDeclaration.html
-	 * 
+
 	 */
 	@Override
-	public void visit(ConstructorDeclaration u, Node n) {
-		Node child = new NodeImpl(u.getClass().getSimpleName());
-		n.addChild(child);
-		super.visit(u, child);
+	public void visit(ConstructorDeclaration n, Node arg) {
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
-
+	 /**
+	  * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ContinueStmt.html
+	  */
+	@Override
+	public void visit(ContinueStmt n, Node arg) {
+		VisitorUtil.Leaf(n, arg);
+	}
+	
 	/**
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ContinueStmt.html
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/DoStmt.html
 	 */
 	@Override
-	public void visit(ContinueStmt u, Node n) {
-		n.addAttribute("Label", u.getLabel().toString());
+	public void visit(DoStmt n, Node arg) {
+		VisitorUtil.Leaf(n, VisitorUtil.Parent(n, arg));
+		
 	}
-
+	
 	/**
-	 * 
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/EmptyStmt.html
 	 */
 	@Override
-	public void visit(DoStmt u, Node n) {
-
-		n.addAttribute("Condition", u.getCondition().toString());
-		Node child = new NodeImpl(u.getClass().getSimpleName());
-		n.addChild(child);
-		super.visit(u, child);
+	public void visit(EmptyStmt n, Node arg) {
+		VisitorUtil.Leaf(n, arg);
 	}
-
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/DoubleLiteralExpr.html
+	 */
 	@Override
-	public void visit(EmptyStmt u, Node n) {
-		// TODO
+	public void visit(DoubleLiteralExpr n, Node arg) {
+		VisitorUtil.Leaf(n, arg);
+		
 	}
-
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/EnclosedExpr.html
+	 */
+	
 	@Override
-	public void visit(DoubleLiteralExpr u, Node n) {
-		// TODO
-		// n.addAttribute("value", );
+	public void visit(EnclosedExpr n, Node arg) {
+		VisitorUtil.Leaf(n, arg);
 	}
-
+	
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumConstantDeclaration.html
+	 */
+	
 	@Override
-	public void visit(EnclosedExpr u, Node n) {
-		n.addAttribute("Expression", n.toString());
-	}
+	public void visit(EnumConstantDeclaration n, Node arg) {
+		
+		super.visit(n, VisitorUtil.Parent(n, arg));
 
+	} 
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumDeclaration.html
+	 */
 	@Override
-	public void visit(EnumConstantDeclaration u, Node n) {
-		Node child = new NodeImpl(u.toString());
-		n.addChild(child);
-		super.visit(u, child);
+	public void visit(EnumDeclaration n, Node arg) {
+		
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
-
-	@Override
-	public void visit(EnumDeclaration u, Node n) {
-
-		Node child = new NodeImpl(u.toString());
-		n.addChild(child);
-		super.visit(u, child);
-	}
-
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ExplicitConstructorInvocationStmt.html
+	 */
+	
 	@Override
 	public void visit(ExplicitConstructorInvocationStmt u, Node n) {
-		// TODO
+		//TODO
+		
 	}
-
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ForEachStmt.html
+	 */
 	@Override
-	public void visit(ForEachStmt u, Node n) {
-		Node child = new NodeImpl(u.toString());
-		n.addChild(child);
-		super.visit(u, child);
+	public void visit(ForEachStmt n, Node arg) {
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
-
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ForStmt.html
+	 */
 	@Override
-	public void visit(ForStmt u, Node n) {
-		Node child = new NodeImpl(u.toString());
-		n.addChild(child);
-		super.visit(u, child);
+	public void visit(ForStmt n, Node arg) {
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
-
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/IfStmt.html
+	 */
 	@Override
-	public void visit(IfStmt u, Node n) {
-		Node child = new NodeImpl(u.toString());
-		n.addChild(child);
-		super.visit(u, child);
+	public void visit(IfStmt n, Node arg) {
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
-
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/body/InitializerDeclaration.html
+	 */
 	@Override
-	public void visit(InitializerDeclaration u, Node n) {
-		Node child = new NodeImpl(u.toString());
-		n.addChild(child);
-		super.visit(u, child);
+	public void visit(InitializerDeclaration n,Node arg) {
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
-
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/InstanceOfExpr.html/
+	 */
 	@Override
-	public void visit(InstanceOfExpr u, Node n) {
-		n.addAttribute("expression", u.getExpression().toString());
-		n.addAttribute("type", u.getType().toString());
+	public void visit(InstanceOfExpr n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Type.toString(), n.getType().toString());
+		c.addAttribute(JavaNodeTypes.Expression.toString(), n.getExpression().toString());
 	}
-
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/IntegerLiteralExpr.html
+	 */
 	@Override
-	public void visit(IntegerLiteralExpr u, Node n) {
-		n.addAttribute("expression", u.toString());
-		n.addAttribute("value", u.asNumber().toString());
+	public void visit(IntegerLiteralExpr n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaNodeTypes.Expression.toString(), n.toString());
+		c.addAttribute(JavaNodeTypes.Value.toString(), n.asNumber().toString());
+		
 	}
-
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/type/IntersectionType.html
+	 */
 	@Override
-	public void visit(IntersectionType u, Node n) {
-		Node child = new NodeImpl(u.toString());
-		n.addChild(child);
-		super.visit(u, child);
+	public void visit(IntersectionType n, Node arg) {
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
 }
