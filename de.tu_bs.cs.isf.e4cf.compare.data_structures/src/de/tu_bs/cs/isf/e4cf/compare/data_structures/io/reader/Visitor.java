@@ -86,7 +86,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AnnotationDeclaration n, Node arg) {
-		super.visit(n, VisitorHelper.Leaf(n, arg));
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
   
 	/**
@@ -120,7 +120,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayCreationLevel n, Node arg) {
-		VisitorHelper.Leaf(n, arg);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 	
 	/**
@@ -136,7 +136,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayType n, Node arg) {
-		VisitorHelper.Leaf(n, arg);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 	
 	/**
@@ -144,7 +144,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AssertStmt n, Node arg) {
-		VisitorHelper.Leaf(n, arg);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 	
 	/**
@@ -152,7 +152,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AssignExpr n, Node arg) {
-		VisitorHelper.Leaf(n, arg);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 	
 	/**
