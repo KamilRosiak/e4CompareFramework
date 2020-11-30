@@ -11,4 +11,5 @@ public enum JavaNodeTypes {
 	isInterface,
 	Value,
 	Key,
+	Scope,
 }
