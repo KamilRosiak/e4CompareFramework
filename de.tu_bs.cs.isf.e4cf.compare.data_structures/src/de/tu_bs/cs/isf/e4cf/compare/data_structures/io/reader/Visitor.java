@@ -57,9 +57,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
-		Node child = VisitorUtil.Parent(n, arg);
+		Node child = new NodeImpl(n.isInterface() ? JavaNodeTypes.Interface.toString() : JavaNodeTypes.Class.toString(), arg);
 		super.visit(n, child);
-		child.addAttribute(JavaNodeTypes.isInterface.name(), String.valueOf(n.isInterface()));
 		if (n.getExtendedTypes().size() > 0) {
 			// Only a single class can be inherited!
 			child.addAttribute(JavaNodeTypes.Superclass.name(), n.getExtendedTypes().get(0).getNameAsString());
