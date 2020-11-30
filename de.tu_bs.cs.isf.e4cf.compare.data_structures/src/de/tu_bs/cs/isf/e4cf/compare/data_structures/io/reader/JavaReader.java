@@ -5,6 +5,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeConverter;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 import java.nio.file.Paths;
@@ -45,6 +46,8 @@ public class JavaReader extends AbstractArtifactReader {
 			tree = new TreeImpl(fileName, rootNode);
 		}
 
+		System.out.print(TreeConverter.treeToDot(tree));
+		
 		return tree;
 	}
 }
