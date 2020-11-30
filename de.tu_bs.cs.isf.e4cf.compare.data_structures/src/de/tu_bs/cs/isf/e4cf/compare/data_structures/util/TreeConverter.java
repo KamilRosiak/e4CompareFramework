@@ -35,9 +35,9 @@ public class TreeConverter {
 			s += dotBuilder(c);
 			s += n.hashCode() + " -> " + c.hashCode() + ";\n";
 		}
-		s += n.hashCode() + "[label=\"" + n.getNodeType().replace("\r\n", " \\n ");
+		s += n.hashCode() + "[label=\"<B>" + n.getNodeType().replace("\r\n", " \\n ") + "</B>";
 		for (Attribute a : n.getAttributes()) {
-			s += "\\nAttribute: " + a.getAttributeKey().replace("\r\n", " \\n ");
+			s += "\\nAttribute: " + a.getAttributeKey().replace("\r\n", " \\n ") + " --- " + a.getAttributeValues().toString().replace("\"", "\\\"");
 		}
 		s += "\"];\n";
 		return s;
