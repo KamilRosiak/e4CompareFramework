@@ -13,9 +13,10 @@ import com.github.javaparser.ast.*;
  * Part of the custom visitor class. This class extends VoidVisitorAdapter
  * (https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/visitor/VoidVisitorAdapter.html).
  * 
- * @author Paulo Haas
- * @author Pascal Blum
  * @author Serkan Acar
+ * @author Pascal Blum
+ * @author Paulo Haas
+ * @author Hassan Smaoui
  *
  */
 public class Visitor extends VoidVisitorAdapter<Node> {
@@ -69,7 +70,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			child.addAttribute(JavaNodeTypes.Interface.name() + implementedTypeCtr, cit.getNameAsString());
 		}
 	}
-	
+
 	/////////////////////////////
 	// Serkan
 
@@ -88,7 +89,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(AnnotationDeclaration n, Node arg) {
 		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
-  
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/body/AnnotationMemberDeclaration.html
 	 */
@@ -96,15 +97,15 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
 		super.visit(n, VisitorHelper.Leaf(n, arg));
 	}
-  
-  /**
+
+	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ArrayAccessExpr.html
 	 */
 	@Override
 	public void visit(ArrayAccessExpr n, Node arg) {
 		super.visit(n, VisitorHelper.Leaf(n, arg));
 	}
-  
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ArrayCreationExpr.html
 	 */
@@ -114,7 +115,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		super.visit(n, c);
 		c.addAttribute(JavaNodeTypes.Type.toString(), n.getElementType().toString());
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/ArrayCreationLevel.html
 	 */
@@ -122,7 +123,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ArrayCreationLevel n, Node arg) {
 		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ArrayInitializerExpr.html
 	 */
@@ -130,7 +131,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ArrayInitializerExpr n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/type/ArrayType.html
 	 */
@@ -138,7 +139,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ArrayType n, Node arg) {
 		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/AssertStmt.html
 	 */
@@ -146,7 +147,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(AssertStmt n, Node arg) {
 		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/AssignExpr.html
 	 */
@@ -154,7 +155,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(AssignExpr n, Node arg) {
 		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/BinaryExpr.html
 	 */
@@ -162,7 +163,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(BinaryExpr n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/BlockStmt.html
 	 */
@@ -170,7 +171,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(BlockStmt n, Node arg) {
 		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/BooleanLiteralExpr.html
 	 */
@@ -178,7 +179,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(BooleanLiteralExpr n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/BreakStmt.html
 	 */
@@ -186,7 +187,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(BreakStmt n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/CastExpr.html
 	 */
@@ -194,7 +195,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(CastExpr n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/CatchClause.html
 	 */
@@ -202,7 +203,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(CatchClause n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/CharLiteralExpr.html
 	 */
@@ -210,7 +211,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(CharLiteralExpr n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ClassExpr.html
 	 */
@@ -218,7 +219,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ClassExpr n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ConditionalExpr.html
 	 */
@@ -226,8 +227,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ConditionalExpr n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
-	
+
 	/////////////////////////////
 
 	/**
@@ -235,8 +235,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(PackageDeclaration n, Node arg) {
-    super.visit(n, VisitorHelper.Parent(n, arg));
-  }
+		super.visit(n, VisitorHelper.Parent(n, arg));
+	}
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/ImportDeclaration.html
 	 */
@@ -255,7 +256,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 
 	//////////////////////////////////////////////////
 	// Pascal
-  
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/LambdaExpr.html
 	 */
@@ -263,7 +264,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(LambdaExpr n, Node arg) {
 		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
-  
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/LocalClassDeclarationStmt.html
 	 */
@@ -306,7 +307,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().toString());
 		super.visit(n, c);
 	}
-  
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/MethodReferenceExpr.html
 	 */
@@ -314,7 +315,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(MethodReferenceExpr n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		c.addAttribute("Identifier", n.getIdentifier());
-		c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().toString());		
+		c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().toString());
 		super.visit(n, c);
 	}
 
@@ -324,7 +325,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(Name n, Node arg) {
 		arg.addAttribute("Name", n.asString());
-	}	
+	}
 
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/NameExpr.html
@@ -428,7 +429,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		c.addAttribute("TypeName", n.getTypeName().toString());
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////////
 	// Paulo
 
@@ -591,14 +592,13 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(YieldStmt n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
-	
-	
+
 	/////////////////////////
 	// Hassan
-	
+
 	/**
 	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/ConstructorDeclaration.html
-
+	 * 
 	 */
 	@Override
 	public void visit(ConstructorDeclaration u, Node n) {
@@ -606,104 +606,103 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		n.addChild(child);
 		super.visit(u, child);
 	}
-	 /**
-	  * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ContinueStmt.html
-	  */
+
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ContinueStmt.html
+	 */
 	@Override
 	public void visit(ContinueStmt u, Node n) {
 		n.addAttribute("Label", u.getLabel().toString());
 	}
-	
+
 	/**
 	 * 
 	 */
 	@Override
 	public void visit(DoStmt u, Node n) {
-		
+
 		n.addAttribute("Condition", u.getCondition().toString());
 		Node child = new NodeImpl(u.getClass().getSimpleName());
 		n.addChild(child);
 		super.visit(u, child);
 	}
-	
+
 	@Override
 	public void visit(EmptyStmt u, Node n) {
-		//TODO
+		// TODO
 	}
-	
+
 	@Override
 	public void visit(DoubleLiteralExpr u, Node n) {
-		//TODO
-		//n.addAttribute("value", );
+		// TODO
+		// n.addAttribute("value", );
 	}
-	
+
 	@Override
 	public void visit(EnclosedExpr u, Node n) {
 		n.addAttribute("Expression", n.toString());
 	}
-	
-	
+
 	@Override
 	public void visit(EnumConstantDeclaration u, Node n) {
 		Node child = new NodeImpl(u.toString());
 		n.addChild(child);
 		super.visit(u, child);
-	} 
-	
+	}
+
 	@Override
 	public void visit(EnumDeclaration u, Node n) {
-		
+
 		Node child = new NodeImpl(u.toString());
 		n.addChild(child);
 		super.visit(u, child);
 	}
-	
+
 	@Override
 	public void visit(ExplicitConstructorInvocationStmt u, Node n) {
-		//TODO
+		// TODO
 	}
-	
-	
+
 	@Override
 	public void visit(ForEachStmt u, Node n) {
 		Node child = new NodeImpl(u.toString());
 		n.addChild(child);
 		super.visit(u, child);
 	}
-	
+
 	@Override
 	public void visit(ForStmt u, Node n) {
 		Node child = new NodeImpl(u.toString());
 		n.addChild(child);
 		super.visit(u, child);
 	}
-	
+
 	@Override
 	public void visit(IfStmt u, Node n) {
 		Node child = new NodeImpl(u.toString());
 		n.addChild(child);
 		super.visit(u, child);
 	}
-	
+
 	@Override
-	public void visit(InitializerDeclaration u,Node n) {
+	public void visit(InitializerDeclaration u, Node n) {
 		Node child = new NodeImpl(u.toString());
 		n.addChild(child);
 		super.visit(u, child);
 	}
-	
+
 	@Override
 	public void visit(InstanceOfExpr u, Node n) {
 		n.addAttribute("expression", u.getExpression().toString());
 		n.addAttribute("type", u.getType().toString());
 	}
-	
+
 	@Override
 	public void visit(IntegerLiteralExpr u, Node n) {
 		n.addAttribute("expression", u.toString());
 		n.addAttribute("value", u.asNumber().toString());
 	}
-	
+
 	@Override
 	public void visit(IntersectionType u, Node n) {
 		Node child = new NodeImpl(u.toString());
