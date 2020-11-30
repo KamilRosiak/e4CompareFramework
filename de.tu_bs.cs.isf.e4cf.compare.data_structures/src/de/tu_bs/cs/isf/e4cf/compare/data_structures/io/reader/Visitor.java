@@ -15,6 +15,7 @@ import com.github.javaparser.ast.*;
  * 
  * @author Paulo Haas
  * @author Pascal Blum
+ * @author Serkan Acar
  *
  */
 public class Visitor extends VoidVisitorAdapter<Node> {
@@ -69,6 +70,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			child.addAttribute(JavaNodeTypes.Interface.name() + implementedTypeCtr, cit.getNameAsString());
 		}
 	}
+	
+	/////////////////////////////
+	// Serkan
 
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/type/ClassOrInterfaceType.html
@@ -83,7 +87,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AnnotationDeclaration n, Node arg) {
-		VisitorHelper.Leaf(n, arg); // TODO check this
+		VisitorHelper.Leaf(n, arg);
 	}
 
 	/**
@@ -91,7 +95,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
-		VisitorHelper.Leaf(n, arg); // TODO check this
+		VisitorHelper.Leaf(n, arg);
 	}
 
 	/**
@@ -99,7 +103,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayAccessExpr n, Node arg) {
-		super.visit(n, VisitorHelper.Leaf(n, arg)); // TODO check this, is this needed
+		super.visit(n, VisitorHelper.Leaf(n, arg));
 	}
 
 	/**
@@ -109,6 +113,121 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ArrayCreationExpr n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
 	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/ArrayCreationLevel.html
+	 */
+	@Override
+	public void visit(ArrayCreationLevel n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ArrayInitializerExpr.html
+	 */
+	@Override
+	public void visit(ArrayInitializerExpr n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/type/ArrayType.html
+	 */
+	@Override
+	public void visit(ArrayType n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/AssertStmt.html
+	 */
+	@Override
+	public void visit(AssertStmt n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/AssignExpr.html
+	 */
+	@Override
+	public void visit(AssignExpr n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/BinaryExpr.html
+	 */
+	@Override
+	public void visit(BinaryExpr n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/BlockStmt.html
+	 */
+	@Override
+	public void visit(BlockStmt n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/BooleanLiteralExpr.html
+	 */
+	@Override
+	public void visit(BooleanLiteralExpr n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/BreakStmt.html
+	 */
+	@Override
+	public void visit(BreakStmt n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/CastExpr.html
+	 */
+	@Override
+	public void visit(CastExpr n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/CatchClause.html
+	 */
+	@Override
+	public void visit(CatchClause n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/CharLiteralExpr.html
+	 */
+	@Override
+	public void visit(CharLiteralExpr n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ClassExpr.html
+	 */
+	@Override
+	public void visit(ClassExpr n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/ConditionalExpr.html
+	 */
+	@Override
+	public void visit(ConditionalExpr n, Node arg) {
+		VisitorHelper.Leaf(n, arg);
+	}
+	
+	
+	/////////////////////////////
 
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/PackageDeclaration.html
