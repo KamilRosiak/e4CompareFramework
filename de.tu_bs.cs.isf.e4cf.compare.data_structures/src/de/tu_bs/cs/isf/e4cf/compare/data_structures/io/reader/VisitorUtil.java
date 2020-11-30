@@ -10,7 +10,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
  *
  */
 
-public class VisitorHelper {
+public class VisitorUtil {
 	/**
 	 * Creates a leaf node
 	 * 
