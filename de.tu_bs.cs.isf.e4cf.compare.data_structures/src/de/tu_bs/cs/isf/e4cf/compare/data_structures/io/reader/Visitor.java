@@ -168,7 +168,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BlockStmt n, Node arg) {
-		VisitorHelper.Leaf(n, arg);
+		super.visit(n, VisitorHelper.Parent(n, arg));
 	}
 	
 	/**
@@ -235,7 +235,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(PackageDeclaration n, Node arg) {
-    super.visit(n, VisitorHelper.Leaf(n, arg));
+    super.visit(n, VisitorHelper.Parent(n, arg));
   }
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/ImportDeclaration.html
@@ -590,5 +590,124 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(YieldStmt n, Node arg) {
 		VisitorHelper.Leaf(n, arg);
+	}
+	
+	
+	/////////////////////////
+	// Hassan
+	
+	/**
+	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/ConstructorDeclaration.html
+
+	 */
+	@Override
+	public void visit(ConstructorDeclaration u, Node n) {
+		Node child = new NodeImpl(u.getClass().getSimpleName());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	 /**
+	  * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ContinueStmt.html
+	  */
+	@Override
+	public void visit(ContinueStmt u, Node n) {
+		n.addAttribute("Label", u.getLabel().toString());
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public void visit(DoStmt u, Node n) {
+		
+		n.addAttribute("Condition", u.getCondition().toString());
+		Node child = new NodeImpl(u.getClass().getSimpleName());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(EmptyStmt u, Node n) {
+		//TODO
+	}
+	
+	@Override
+	public void visit(DoubleLiteralExpr u, Node n) {
+		//TODO
+		//n.addAttribute("value", );
+	}
+	
+	@Override
+	public void visit(EnclosedExpr u, Node n) {
+		n.addAttribute("Expression", n.toString());
+	}
+	
+	
+	@Override
+	public void visit(EnumConstantDeclaration u, Node n) {
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	} 
+	
+	@Override
+	public void visit(EnumDeclaration u, Node n) {
+		
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(ExplicitConstructorInvocationStmt u, Node n) {
+		//TODO
+	}
+	
+	
+	@Override
+	public void visit(ForEachStmt u, Node n) {
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(ForStmt u, Node n) {
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(IfStmt u, Node n) {
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(InitializerDeclaration u,Node n) {
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
+	}
+	
+	@Override
+	public void visit(InstanceOfExpr u, Node n) {
+		n.addAttribute("expression", u.getExpression().toString());
+		n.addAttribute("type", u.getType().toString());
+	}
+	
+	@Override
+	public void visit(IntegerLiteralExpr u, Node n) {
+		n.addAttribute("expression", u.toString());
+		n.addAttribute("value", u.asNumber().toString());
+	}
+	
+	@Override
+	public void visit(IntersectionType u, Node n) {
+		Node child = new NodeImpl(u.toString());
+		n.addChild(child);
+		super.visit(u, child);
 	}
 }
