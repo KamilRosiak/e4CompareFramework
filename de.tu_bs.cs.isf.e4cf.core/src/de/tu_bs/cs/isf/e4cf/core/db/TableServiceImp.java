@@ -226,7 +226,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		if (tableExists(pPath, pDbName, "old_" + tableName)) {
 			for (Column c : columns) {
 				for (int i = 0; i < attributes.length; i++) {
-					if (c.getName().equals(attributes[i])) {
+					if (c.getName().equals(attributes[i].getName())) {
 						removeList.add(c);
 					}
 				}
