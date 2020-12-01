@@ -13,4 +13,5 @@ public enum JavaNodeTypes {
 	Value,
 	Key,
 	Scope,
+	Name,
 }
