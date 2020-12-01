@@ -5,7 +5,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 
 /**
- * Converts a Tree to Dot (graph description language) for visualization.
+ * Converts a Tree to Dot (graph description language) for visualization.  Use can paste the generated to e.g. http://www.webgraphviz.com/.
  * 
  * @author Paulo Haas
  *
@@ -35,9 +35,9 @@ public class TreeConverter {
 			s += dotBuilder(c);
 			s += n.hashCode() + " -> " + c.hashCode() + ";\n";
 		}
-		s += n.hashCode() + "[label=\"<B>" + n.getNodeType().replace("\r\n", " \\n ") + "</B>";
+		s += n.hashCode() + "[label=\"" + n.getNodeType().replace("\r\n", " \\n ");
 		for (Attribute a : n.getAttributes()) {
-			s += "\\nAttribute: " + a.getAttributeKey().replace("\r\n", " \\n ") + " --- " + a.getAttributeValues().toString().replace("\"", "\\\"");
+			s += "\\nAttribute: " + a.getAttributeKey().replace("\r\n", " \\n ") + " --- " + a.getAttributeValues().toString().replace("\"", "\\\"").replace("\r\n", " \\n ");
 		}
 		s += "\"];\n";
 		return s;
