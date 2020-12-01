@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -7,10 +10,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
@@ -51,6 +56,11 @@ public class TreeViewController {
 
 	@FXML
 	void openFile() {
+		//check for opened files and close them
+		if(hirarchy.getRoot() != null) {
+			//TODO: check if user really wants to close the file
+			closeFile();
+		}
 		FileChooser chooser = new FileChooser();
 		File selectedFile = new File(chooser.showOpenDialog(new Stage()).getPath());
 		TextReader reader = new TextReader();
@@ -65,6 +75,39 @@ public class TreeViewController {
 		} catch (Exception e) {
 			System.out.println("Beim einlesen der Datei ist ein Fehler aufgetreten.");
 		}
+	}
+	
+	/**
+	 * A method to close a file
+	 */
+	@FXML
+	void closeFile() {
+		//set treeview and its values to null, then remove it from the background
+		hirarchy.setRoot(null);
+		hirarchy.setBackground(null);
+		rootItem = null;
+		tr = null;
+		background.getChildren().remove(hirarchy);
+	}
+	
+	/**
+	 * Selects all elements in the treeview
+	 */
+	@FXML
+	void selectAll() {
+		hirarchy.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		hirarchy.getSelectionModel().selectAll();
+		//System.err.println("selected: " + hirarchy.getSelectionModel().getSelectedItems());
+	}
+	
+	/**
+	 * Unselects all elements in the treeview
+	 */
+	@FXML
+	void unselectAll() {
+		//hirarchy.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		//nullpointer exception occurs
+		hirarchy.getSelectionModel().clearSelection();
 	}
 
 //	@Optional
