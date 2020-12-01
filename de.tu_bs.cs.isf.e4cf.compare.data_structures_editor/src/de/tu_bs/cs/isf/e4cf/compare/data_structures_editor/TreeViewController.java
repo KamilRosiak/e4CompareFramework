@@ -38,7 +38,7 @@ public class TreeViewController {
 	private TreeView<?> hirarchy;
 
 	private Tree tr;
-	private TreeItem<String> rootItem;
+	private TreeItem<NodeUsage> rootItem;
 
 //	@FXML
 //	public void initialize() {
@@ -57,7 +57,10 @@ public class TreeViewController {
 		tr = reader.readArtifact(selectedFile);
 		chooser.setTitle("Open Resource File");
 		System.out.println(chooser.getTitle());
-		rootItem = new TreeItem<String>(tr.getTreeName());
+
+		NodeUsage rootNodeUsage = new NodeUsage(tr.getRoot());
+
+		rootItem = new TreeItem<NodeUsage>(rootNodeUsage);
 		rootItem.setExpanded(true);
 
 		try {
@@ -67,36 +70,27 @@ public class TreeViewController {
 		}
 	}
 
-//	@Optional
-//	@Inject
-//	public void showConstraints(@UIEventTopic("SHOW_CONSTRAINT_EVENT") String event) {
-//		updateView();
-//	}
-//	
-//	@Focus
-//	public void updateView() {
-//		try {
-//			DataStructureEditorController dsec = ContextInjectionFactory.make(DataStructureEditorController.class,
-//					EclipseContextFactory.create());
-//			currentModel = dsec.getCurrentFeatureDiagram();
-//			view.showConstraints(fmec.getCurrentFeatureDiagram().getConstraints());
-//		} catch (Exception e) {
-//			RCPMessageProvider.errorMessage("Error", "No FeatureModel Loaded");
-//		}
-//
-//	}
+	public Tree getTree() {
+		return this.tr;
+	}
+
+	public TreeView<?> getCurrentView() {
+		return this.hirarchy;
+	}
 
 	void createTree() {
 //		Datei wird eingelesen und als TreeView ausgegeben
 
 //		System.out.println(tr.getLeaves());
 		for (Node node : tr.getLeaves()) {
-			TreeItem<String> item = new TreeItem<String>(node.toString());
+			NodeUsage nodeTest = new NodeUsage(node);
+			TreeItem<NodeUsage> item = new TreeItem<NodeUsage>(nodeTest);
 			rootItem.getChildren().add(item);
-			System.out.println(node.toString());
+
+			// System.out.println(node.toString());
 		}
 
-		hirarchy = new TreeView<String>(rootItem);
+		hirarchy = new TreeView<NodeUsage>(rootItem);
 		hirarchy.setShowRoot(true);
 
 		hirarchy.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
