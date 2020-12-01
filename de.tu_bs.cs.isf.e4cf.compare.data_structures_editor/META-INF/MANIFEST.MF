@@ -10,6 +10,9 @@ Require-Bundle: org.eclipse.e4.ui.di,
  javax.inject;bundle-version="1.0.0",
  org.eclipse.e4.ui.model.workbench;bundle-version="2.1.800.v20200828-0938",
  de.tu_bs.cs.isf.e4cf.compare.data_structures,
+ org.eclipse.e4.core.services;bundle-version="2.2.400",
+ org.eclipse.e4.core.di.annotations;bundle-version="1.6.600",
+ org.eclipse.e4.ui.workbench,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.graph.model
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.data.structures.editor.singleton.true

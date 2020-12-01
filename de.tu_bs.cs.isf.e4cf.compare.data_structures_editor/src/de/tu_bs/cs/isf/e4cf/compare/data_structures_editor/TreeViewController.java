@@ -67,8 +67,27 @@ public class TreeViewController {
 		}
 	}
 
+//	@Optional
+//	@Inject
+//	public void showConstraints(@UIEventTopic("SHOW_CONSTRAINT_EVENT") String event) {
+//		updateView();
+//	}
+//	
+//	@Focus
+//	public void updateView() {
+//		try {
+//			DataStructureEditorController dsec = ContextInjectionFactory.make(DataStructureEditorController.class,
+//					EclipseContextFactory.create());
+//			currentModel = dsec.getCurrentFeatureDiagram();
+//			view.showConstraints(fmec.getCurrentFeatureDiagram().getConstraints());
+//		} catch (Exception e) {
+//			RCPMessageProvider.errorMessage("Error", "No FeatureModel Loaded");
+//		}
+//
+//	}
+
 	void createTree() {
-//		 Datei wird eingelesen und als TreeView ausgegeben
+//		Datei wird eingelesen und als TreeView ausgegeben
 
 //		System.out.println(tr.getLeaves());
 		for (Node node : tr.getLeaves()) {
@@ -80,16 +99,16 @@ public class TreeViewController {
 		hirarchy = new TreeView<String>(rootItem);
 		hirarchy.setShowRoot(true);
 
-		hirarchy.getSelectionModel().selectedItemProperty()
-				.addListener((observable, oldValue, newValue) -> openProperties());
+		hirarchy.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			openProperties();
+			services.eventBroker.send("nodePropertiesEvent", hirarchy.getSelectionModel().getSelectedItem().getValue());
+		});
 
 //		hirarchy.setRoot(rootItem);
 //		hirarchy= new TreeView(rootItem);
 		background.getChildren().add(hirarchy);
 
 		System.out.println(rootItem.getValue());
-		System.out.println(background.getHeight());
-		System.out.println(hirarchy.getHeight());
 //		NodeImpl node = new NodeImpl("class");
 //		TreeImpl tree2 = new TreeImpl("testTree", node);
 //		System.out.println(node.toString());
