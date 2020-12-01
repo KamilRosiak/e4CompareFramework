@@ -99,33 +99,94 @@ public class TableUtilities {
 		ResultSetMetaData mrs = rs.getMetaData();
 		ResultSet pkInfo = con.getMetaData().getPrimaryKeys(null, null, tableName);
 		boolean isPrimaryKey = false;
-		String isNull = " ";
-		String isAutoincrement = " ";
+		boolean isNull = false;
+		boolean isAutoIncrement = false;
 		String pk = null;
 
 		while (pkInfo.next()) {
 			pk = pkInfo.getString("COLUMN_NAME");
-
 		}
-
 		for (int i = 1; i <= mrs.getColumnCount(); i++) {
 			if (mrs.getColumnLabel(i).equals(pk)) {
 				isPrimaryKey = true;
 				pkInfo.close();
 			}
 			if (mrs.isNullable(i) == 1) {
-				isNull = " NOT NULL";
+				isNull = true;
 			}
-
 			if (mrs.isAutoIncrement(i)) {
-				isAutoincrement = " AUTO_INCREMENT ";
+				isAutoIncrement = true;
 			}
-
-			Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, false, false, false);
+			Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, isNull,
+					isAutoIncrement, isNull);
 			columns.add(c);
 		}
 		return columns;
+	}
 
+	/**
+	 * Method to get a column in a given ta.
+	 * 
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
+	 * @return boolean
+	 * @throws SQLException
+	 */
+	public Column getColumn(final String pPath, final String pDbName, final String tableName, final String columnName)
+			throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		if (tableExists(pPath, pDbName, tableName)) {
+			for (Column c : getColumnsTable(pPath, pDbName, tableName)) {
+				if (columnName.equals(c.getName())) {
+					return c;
+				}
+			}
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
+		con.close();
+		return null;
+	}
+
+	/**
+	 * Method to get a column in a given ta.
+	 * 
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
+	 * @return boolean
+	 * @throws SQLException
+	 */
+	public Column getColumn(final List<Column> columnList, final String columnName) throws SQLException {
+		for (Column c : columnList) {
+			if (columnName.equals(c.getName())) {
+				return c;
+			}
+		}
+		return null;
+	}
+
+	public boolean isColumnPrimaryKey(final String pPath, final String pDbName, final String tableName,
+			final String columnName) {
+		return false;
+	}
+
+	public boolean isColumnUnique(final String pPath, final String pDbName, final String tableName,
+			final String columnName) {
+		return false;
+	}
+
+	public boolean isColumnNotNull(final String pPath, final String pDbName, final String tableName,
+			final String columnName) {
+		return false;
+	}
+
+	public boolean isColumnAutoIncrement(final String pPath, final String pDbName, final String tableName,
+			final String columnName) {
+		return false;
 	}
 
 }

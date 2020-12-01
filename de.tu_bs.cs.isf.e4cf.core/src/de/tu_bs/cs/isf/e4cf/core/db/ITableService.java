@@ -78,11 +78,10 @@ public interface ITableService {
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
 	 * @param tableName  String the name of the table
-	 * @param attributes Class with the name and data type of the columns which
-	 *                   should be deleted
+	 * @param columns  	 Columns to delete
 	 * @throws SQLException
 	 */
-	void deleteColumn(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException;
+	void deleteColumn(String pPath, String pDbName, String tableName, String... columns) throws SQLException;
 
 	/**
 	 * Method to add primary key constraints to an existing table.
@@ -110,7 +109,7 @@ public interface ITableService {
 	void dropPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
 
 	/**
-	 * Method to make a Column Autoincrement of an existing table
+	 * Method to make a Column Autoincrement of an existing table.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
@@ -121,6 +120,31 @@ public interface ITableService {
 	 */
 	void makeColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnNames)
 			throws SQLException;
+	
+	/**
+	 * Method to drop Autoincrement of column.
+	 * 
+	 * @param pPath       String the path of the database
+	 * @param pDbName     String the name of the database
+	 * @param tableName   String the name of the table
+	 * @param columnNames String the name of the columns of which the primary key
+	 *                    will be dropped
+	 * @throws SQLException
+	 */
+	void dropColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnName)
+			throws SQLException;
+
+	/**
+	 * Method to drop unique constraints of a column.
+	 * 
+	 * @param pPath       String the path of the database
+	 * @param pDbName     String the name of the database
+	 * @param tableName   String the name of the table
+	 * @param columnNames String the name of the column to which the unique
+	 *                    constraints will be added
+	 * @throws SQLException
+	 */
+	void dropColumnUnique(String pPath, String pDbName, String tableName, String columnNames) throws SQLException;
 
 	/**
 	 * Method to add unique constraints to an existing table.
@@ -133,7 +157,7 @@ public interface ITableService {
 	 * @throws SQLException
 	 */
 	void makeColumnUnique(String pPath, String pDbName, String tableName, String columnNames) throws SQLException;
-
+	
 	/**
 	 * Method to make a column not nullable.
 	 * 
@@ -144,5 +168,16 @@ public interface ITableService {
 	 * @throws SQLException
 	 */
 	void makeColumnNotNull(String pPath, String pDbName, String tableName, String... columnName) throws SQLException;
+	
+	/**
+	 * Method to make a column nullable.
+	 * 
+	 * @param pPath       String the path of the database
+	 * @param pDbName     String the name of the database
+	 * @param tableName   String the name of the table
+	 * @param columnNames the name of the column to which the NOTNULL will be added
+	 * @throws SQLException
+	 */
+	void dropColumnNotNull(String pPath, String pDbName, String tableName, String... columnName) throws SQLException;
 
 }

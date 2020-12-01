@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TableServiceImp extends TableUtilities implements ITableService {
@@ -45,6 +46,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 				}
 				sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
 				sqlStatement += ");";
+				System.out.println("Test STMT: " + sqlStatement);
 				stmt.execute(sqlStatement);
 				System.out.println("Table " + tableName + " created.");
 			} else {
@@ -175,27 +177,28 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		}
 		con.close();
 	}
-	
+
 	/**
-	 *  Method to rename a column.
+	 * Method to rename a column.
 	 * 
-	 * @param pPath			String the path of the database
-	 * @param pDbName		String the name of the database
-	 * @param tableName		String the name of the table
-	 * @param columnName	String the old name of the column
-	 * @param newColumnName	String the new name of the column
+	 * @param pPath         String the path of the database
+	 * @param pDbName       String the name of the database
+	 * @param tableName     String the name of the table
+	 * @param columnName    String the old name of the column
+	 * @param newColumnName String the new name of the column
 	 * @throws SQLException
 	 */
 	@Override
-	public void renameColumn(final String pPath, final String pDbName, final String tableName, final String columnName, final String newColumnName)
-			throws SQLException {
+	public void renameColumn(final String pPath, final String pDbName, final String tableName, final String columnName,
+			final String newColumnName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		final Statement s = con.createStatement();
 		if (tableExists(pPath, pDbName, tableName)) {
 			final List<Column> columns = getColumnsTable(pPath, pDbName, tableName);
 			for (Column c : columns) {
-				if(c.getName().equals(columnName)) {
-					String sqlStatement = "ALTER TABLE " + tableName + " RENAME COLUMN " + columnName + " TO " + newColumnName + ";";
+				if (c.getName().equals(columnName)) {
+					String sqlStatement = "ALTER TABLE " + tableName + " RENAME COLUMN " + columnName + " TO "
+							+ newColumnName + ";";
 					s.execute(sqlStatement);
 					System.out.println("Renaming column " + columnName + " to " + newColumnName);
 				}
@@ -217,39 +220,24 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	 * @throws SQLException
 	 */
 	@Override
-	public void deleteColumn(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException {
-		System.out.println("Delete column form table: " + tableName);
+	public void deleteColumn(String pPath, String pDbName, String tableName, String... columns) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		renameTable(pPath, pDbName, tableName, "old_" + tableName);
-		final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-		List<Column> removeList = new ArrayList<Column>();
-		if (tableExists(pPath, pDbName, "old_" + tableName)) {
-			for (Column c : columns) {
-				for (int i = 0; i < attributes.length; i++) {
-					if (c.getName().equals(attributes[i])) {
-						removeList.add(c);
-					}
-				}
+		if (tableExists(pPath, pDbName, tableName)) {
+			renameTable(pPath, pDbName, tableName, "old_" + tableName);
+			final List<Column> cols = getColumnsTable(pPath, pDbName, "old_" + tableName);
+			for (String c : columns) {
+				cols.remove(getColumn(cols, c));
 			}
-			if (removeList.isEmpty()) {
-				for (Column c : attributes) {
-					System.out.print("Column" + c.getName() + " does not exist.");
-				}
-			}
-			columns.removeAll(removeList);
-			Column[] col = new Column[columns.size()];
-			col = columns.toArray(col);
-			createTable(pPath, pDbName, tableName, col);
+			Column[] col = new Column[cols.size()];
+			col = cols.toArray(col);
+			createTable(pPath, pDbName, tableName, /* columns.stream().toArray(Column[]::new) */col);
 			deleteTable(pPath, pDbName, "old_" + tableName);
-			System.out.print("Column(s) deleted.");
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
 		con.close();
-
 	}
 
-	@Override
 	/**
 	 * Method to add primary key constraints to an existing table.
 	 * 
@@ -260,28 +248,19 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	 *                    will be added
 	 * @throws SQLException
 	 */
+	@Override
 	public void makeColumnPrimaryKey(final String pPath, final String pDbName, final String tableName,
 			final String... columnNames) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, tableName)) {
 			renameTable(pPath, pDbName, tableName, "old_" + tableName);
 			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-			List<Column> removeList = new ArrayList<Column>();
-			List<Column> addList = new ArrayList<Column>();
-			for (final Column c : columns) {
-				for (int i = 0; i < columnNames.length; i++) {
-					if (c.getName().equals(columnNames[i])) {
-						removeList.add(c);
-						c.setPrimaryKey(true);
-						addList.add(c);
-					}
-				}
+			for (final String c : columnNames) {
+				getColumn(columns, c).setPrimaryKey(true);
 			}
-			columns.removeAll(removeList);
-			columns.addAll(addList);
 			Column[] col = new Column[columns.size()];
 			col = columns.toArray(col);
-			createTable(pPath, pDbName, tableName, col);
+			createTable(pPath, pDbName, tableName, /* columns.stream().toArray(Column[]::new) */col);
 			deleteTable(pPath, pDbName, "old_" + tableName);
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
@@ -306,19 +285,9 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		if (tableExists(pPath, pDbName, tableName)) {
 			renameTable(pPath, pDbName, tableName, "old_" + tableName);
 			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-			List<Column> removeList = new ArrayList<Column>();
-			List<Column> addList = new ArrayList<Column>();
-			for (Column c : columns) {
-				for (int i = 0; i < columnNames.length; i++) {
-					if (c.getName().equals(columnNames[i])) {
-						removeList.add(c);
-						c.setPrimaryKey(false);
-						addList.add(c);
-					}
-				}
+			for (final String c : columnNames) {
+				getColumn(columns, c).setPrimaryKey(false);
 			}
-			columns.removeAll(removeList);
-			columns.addAll(addList);
 			Column[] col = new Column[columns.size()];
 			col = columns.toArray(col);
 			createTable(pPath, pDbName, tableName, col);
@@ -341,22 +310,12 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	 */
 	@Override
 	public void makeColumnAutoIncrement(final String pPath, final String pDbName, final String tableName,
-			final String columnNames) throws SQLException {
+			final String columnName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		renameTable(pPath, pDbName, tableName, "old_" + tableName);
-		final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-		List<Column> removeList = new ArrayList<Column>();
-		List<Column> addList = new ArrayList<Column>();
-		if (tableExists(pPath, pDbName, "old_" + tableName)) {
-			for (Column c : columns) {
-				if (c.getName().equals(columnNames)) {
-					removeList.add(c);
-					c.setAutoIncrement(true);
-					addList.add(c);
-				}
-			}
-			columns.removeAll(removeList);
-			columns.addAll(addList);
+		if (tableExists(pPath, pDbName, tableName)) {
+			renameTable(pPath, pDbName, tableName, "old_" + tableName);
+			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+			getColumn(columns, columnName).setAutoIncrement(true);
 			Column[] col = new Column[columns.size()];
 			col = columns.toArray(col);
 			createTable(pPath, pDbName, tableName, col);
@@ -365,6 +324,13 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
 		con.close();
+	}
+
+	@Override
+	public void dropColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnName)
+			throws SQLException {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -379,22 +345,12 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	 * @throws SQLException
 	 */
 	public void makeColumnUnique(final String pPath, final String pDbName, final String tableName,
-			final String columnNames) throws SQLException {
+			final String columnName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		renameTable(pPath, pDbName, tableName, "old_" + tableName);
-		final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-		List<Column> removeList = new ArrayList<Column>();
-		List<Column> addList = new ArrayList<Column>();
-		if (tableExists(pPath, pDbName, "old_" + tableName)) {
-			for (Column c : columns) {
-				if (c.getName().equals(columnNames)) {
-					removeList.add(c);
-					c.setUnique(true);
-					addList.add(c);
-				}
-			}
-			columns.removeAll(removeList);
-			columns.addAll(addList);
+		if (tableExists(pPath, pDbName, tableName)) {
+			renameTable(pPath, pDbName, tableName, "old_" + tableName);
+			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+			getColumn(columns, columnName).setUnique(true);
 			Column[] col = new Column[columns.size()];
 			col = columns.toArray(col);
 			createTable(pPath, pDbName, tableName, col);
@@ -405,6 +361,13 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		con.close();
 	}
 
+	@Override
+	public void dropColumnUnique(String pPath, String pDbName, String tableName, String columnNames)
+			throws SQLException {
+		// TODO Auto-generated method stub
+
+	}
+
 	/**
 	 * Method to make a column not nullable.
 	 * 
@@ -412,7 +375,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
 	 * @param columnNames the name of the column to which the NOTNULL will be added
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	@Override
 	public void makeColumnNotNull(final String pPath, final String pDbName, final String tableName,
@@ -421,19 +384,9 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		if (tableExists(pPath, pDbName, tableName)) {
 			renameTable(pPath, pDbName, tableName, "old_" + tableName);
 			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-			List<Column> removeList = new ArrayList<Column>();
-			List<Column> addList = new ArrayList<Column>();
 			for (final Column c : columns) {
-				for (int i = 0; i < columnNames.length; i++) {
-					if (c.getName().equals(columnNames[i])) {
-						removeList.add(c);
-						c.setNotNull(true);
-						addList.add(c);
-					}
-				}
+				getColumn(columns, c.getName()).setNotNull(true);
 			}
-			columns.removeAll(removeList);
-			columns.addAll(addList);
 			Column[] col = new Column[columns.size()];
 			col = columns.toArray(col);
 			createTable(pPath, pDbName, tableName, col);
@@ -442,6 +395,13 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
 		con.close();
+	}
+
+	@Override
+	public void dropColumnNotNull(String pPath, String pDbName, String tableName, String... columnName)
+			throws SQLException {
+		// TODO Auto-generated method stub
+
 	}
 
 }
