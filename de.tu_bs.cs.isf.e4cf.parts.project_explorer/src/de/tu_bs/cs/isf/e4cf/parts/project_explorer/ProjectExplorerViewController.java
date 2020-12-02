@@ -46,9 +46,12 @@ import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.util.Callback;
 
 /**
  * View Controller for the ProjectExplorerView
@@ -59,11 +62,14 @@ public class ProjectExplorerViewController {
 
 	@Inject
 	ServiceContainer services;
-	
-	@Inject private ESelectionService _selectionService;
-	@Inject private IEventBroker _eventBroker;
-	@Inject private EMenuService _menuService;
-	
+
+	@Inject
+	private ESelectionService _selectionService;
+	@Inject
+	private IEventBroker _eventBroker;
+	@Inject
+	private EMenuService _menuService;
+
 	private ChangeListener<TreeItem<FileTreeElement>> changeListener;
 
 	private WorkspaceFileSystem workspaceFileSystem;
@@ -102,16 +108,27 @@ public class ProjectExplorerViewController {
 		// Adding listeners to the scene
 		scene.setOnKeyPressed(new ProjectExplorerKeyListener(context));
 		
+		// cell factory for custom tree cells
+		view.projectTree.setCellFactory(new Callback<TreeView<FileTreeElement>, TreeCell<FileTreeElement>>() {
+			@Override
+			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
+				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem);
+				return treeCell;
+			}
+		});
+
 	}
 
 	/**
 	 * Traverse the filesystem tree via dfs to generate a javafx treeview
+	 * 
 	 * @param parentNode The parent node
-	 * @param isRoot true if a given node is a root node
-	 * @param state maps the expanded status for each node in the tree
+	 * @param isRoot     true if a given node is a root node
+	 * @param state      maps the expanded status for each node in the tree
 	 * @return a new tree item
 	 */
-	private TreeItem<FileTreeElement> buildTree(FileTreeElement parentNode, boolean isRoot, HashMap<String, Boolean> state) {
+	private TreeItem<FileTreeElement> buildTree(FileTreeElement parentNode, boolean isRoot,
+			HashMap<String, Boolean> state) {
 
 		Node imgNode = isRoot ? null : getImage(parentNode);
 
@@ -130,6 +147,7 @@ public class ProjectExplorerViewController {
 
 	/**
 	 * Returns an appropriate image for a given tree element
+	 * 
 	 * @param element tree element
 	 * @return an image
 	 */
@@ -183,6 +201,7 @@ public class ProjectExplorerViewController {
 
 	/**
 	 * Initializes the file tree and creates tree sync.
+	 * 
 	 * @param fileSystem the filesystem
 	 * @return the root of the filesystem
 	 */
@@ -196,6 +215,7 @@ public class ProjectExplorerViewController {
 	
 	/**
 	 * Rebuild the project explorer and update it's view.
+	 * 
 	 */
 	@Inject
 	@Optional
@@ -213,8 +233,9 @@ public class ProjectExplorerViewController {
 	
 	/**
 	 * Traverse the filesystem tree via dfs to save the old state of each node
+	 * 
 	 * @param parentNode The parent node
-	 * @param state maps the expanded status for each node in the tree
+	 * @param state      maps the expanded status for each node in the tree
 	 */
 	private void traverseTree(TreeItem<FileTreeElement> parentNode, HashMap<String, Boolean> state) {
 	
@@ -234,11 +255,13 @@ public class ProjectExplorerViewController {
 	 */
 	private void setupSelectionService() {
 		// Set no initial selection
-		StructuredSelection structuredSelection = new StructuredSelection(services.workspaceFileSystem.getWorkspaceDirectory());
+		StructuredSelection structuredSelection = new StructuredSelection(
+				services.workspaceFileSystem.getWorkspaceDirectory());
 		_selectionService.setSelection(null);
-		
-		// Add a SelectionListener to tree to propagate the selection that is done in the tree
-		
+
+		// Add a SelectionListener to tree to propagate the selection that is done in
+		// the tree
+
 		changeListener = new ChangeListener<TreeItem<FileTreeElement>>() {
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<FileTreeElement>> observable,
@@ -247,7 +270,7 @@ public class ProjectExplorerViewController {
 				_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
 			}
 		};
-		
+
 		view.projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
 	}
 	
