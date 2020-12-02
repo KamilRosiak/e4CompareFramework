@@ -38,6 +38,7 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerEx
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.WorkspaceStructureTemplate;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.view.ProjectExplorerView;
 import javafx.beans.value.ChangeListener;
@@ -51,6 +52,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
 /**
@@ -105,10 +107,12 @@ public class ProjectExplorerViewController {
 		setupSelectionService();
 		// setup initial workspace structure
 		createWorkspaceFromExtension();
+		
 		// Adding listeners to the scene
 		scene.setOnKeyPressed(new ProjectExplorerKeyListener(context));
+		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, new OpenFileListener(context, fileExtensions, services));
 		
-		// cell factory for custom tree cells
+		// Cell factory for custom tree cells
 		view.projectTree.setCellFactory(new Callback<TreeView<FileTreeElement>, TreeCell<FileTreeElement>>() {
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
