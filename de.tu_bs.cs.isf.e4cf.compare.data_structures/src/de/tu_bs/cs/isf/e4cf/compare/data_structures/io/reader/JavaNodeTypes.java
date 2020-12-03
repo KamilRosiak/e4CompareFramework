@@ -14,4 +14,9 @@ public enum JavaNodeTypes {
 	Key,
 	Scope,
 	Name,
+	Annotation,
+	Condition,
+	Then,
+	Else,
+	Field,
 }
