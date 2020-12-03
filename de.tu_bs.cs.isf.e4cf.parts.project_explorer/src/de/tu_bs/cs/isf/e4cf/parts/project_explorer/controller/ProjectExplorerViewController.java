@@ -104,10 +104,13 @@ public class ProjectExplorerViewController {
 				new OpenFileListener(context, fileExtensions, services));
 
 		// Cell factory for custom tree cells
+		projectTree.setEditable(true);
+
 		projectTree.setCellFactory(new Callback<TreeView<FileTreeElement>, TreeCell<FileTreeElement>>() {
+
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
-				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem);
+				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, services, fileExtensions);
 				return treeCell;
 			}
 		});
@@ -225,6 +228,17 @@ public class ProjectExplorerViewController {
 		projectTree.setShowRoot(false);
 		projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
 	}
+	
+	/**
+	 * Trigger Rename
+	 */
+	@Inject
+	@Optional
+	public void rename(@UIEventTopic(E4CEventTable.EVENT_RENAME_PROJECT_EXPLORER_ITEM) Object o) {
+		projectTree.edit(projectTree.getSelectionModel().getSelectedItem());
+	}
+
+
 
 	/**
 	 * Traverse the filesystem tree via dfs to save the old state of each node
