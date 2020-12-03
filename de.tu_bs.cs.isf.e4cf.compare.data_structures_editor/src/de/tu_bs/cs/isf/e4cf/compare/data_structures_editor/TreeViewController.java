@@ -59,6 +59,7 @@ public class TreeViewController {
 		System.out.println(chooser.getTitle());
 
 		NodeUsage rootNodeUsage = new NodeUsage(tr.getRoot());
+		System.out.println(rootNodeUsage);
 
 		rootItem = new TreeItem<NodeUsage>(rootNodeUsage);
 		rootItem.setExpanded(true);
@@ -89,7 +90,7 @@ public class TreeViewController {
 
 			// System.out.println(node.toString());
 		}
-
+		//System.out.println(rootItem);
 		hirarchy = new TreeView<NodeUsage>(rootItem);
 		hirarchy.setShowRoot(true);
 
