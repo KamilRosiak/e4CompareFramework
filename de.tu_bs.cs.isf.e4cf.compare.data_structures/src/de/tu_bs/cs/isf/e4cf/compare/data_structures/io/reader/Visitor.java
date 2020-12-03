@@ -2,11 +2,16 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import javafx.scene.effect.Lighting;
+
 import com.github.javaparser.ast.visitor.*;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
+
+import java.util.Arrays;
+
 import com.github.javaparser.ast.*;
 
 /**
@@ -175,7 +180,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BooleanLiteralExpr n, Node arg) {
-		arg.addAttribute(JavaNodeTypes.Condition.toString(), n.toString());
+		arg.addAttribute(JavaNodeTypes.Value.toString(), n.toString());
 	}
 
 	/**
@@ -517,7 +522,19 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TypeParameter n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		Node p = VisitorUtil.Parent(n, arg);
+		super.visit(n, p);
+		for(ClassOrInterfaceType coit : n.findAll(ClassOrInterfaceType.class)) {
+			// Does Coit have more attributes than just a name?
+			if (coit.getChildNodes().size() > 1) {
+				// YES! Visit them.
+				Node coitNode = new NodeImpl(JavaNodeTypes.Superclass.name(), p);
+				super.visit(coit, coitNode);
+			} else {
+				// NO! 
+				p.addAttribute(JavaNodeTypes.Superclass.name(), coit.asString());
+			}
+		}
 	}
 
 	/**
@@ -708,6 +725,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(IfStmt n, Node arg) {
 		Node p = VisitorUtil.Parent(n, arg);
 		super.visit((BinaryExpr) n.getCondition(), p);
+		p.addAttribute(JavaNodeTypes.Condition.name(), n.getCondition().toString());
 		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), p);
 		super.visit((BlockStmt) n.getThenStmt(), thenNode);
 		if (n.getElseStmt().isPresent()) {
