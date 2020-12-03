@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.parts.project_explorer.view;
+package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,16 +18,13 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.sync.TreeSynchronization;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileEventLog;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
-import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
@@ -46,8 +43,6 @@ import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -57,15 +52,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
 /**
- * Class representing the JavaFX view of the project explorer
- * Fields are dependency injected from the ProjectExplorerView.fxml
+ * Class representing the JavaFX ViewController of the project explorer
  */
 public class ProjectExplorerViewController {
-	
-	// View Bindings
-	@FXML public TreeView<FileTreeElement> projectTree;
-	@FXML public MenuItem ctxNewFolder;
-	
+
+	// Fields dependency injected from the ProjectExplorerView.fxml
+	@FXML
+	public TreeView<FileTreeElement> projectTree;
 
 	// E4 Injections
 	@Inject
@@ -77,48 +70,41 @@ public class ProjectExplorerViewController {
 	@Inject
 	private EMenuService _menuService;
 
-	// ViewController fields
+	// Controller fields
 	private ChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
-	private ProjectExplorerViewController view;
 
+	/**
+	 * This method is equivalent to the previous postContruct(), in that it sets up
+	 * the project explorer component.
+	 */
+	public void initializeView(IEclipseContext context, WorkspaceFileSystem fileSystem, FXCanvas canvas) {
 
-	public void initializeView(IEclipseContext context, WorkspaceFileSystem fileSystem, FXCanvas canvas, FXMLLoader<ProjectExplorerViewController> loader)
-			throws IOException {
-		
-		view = loader.getController();
-
-		
 		getContributions();
-		
+
 		// Structure of Directories representing a Tree
 		FileTreeElement treeRoot = initializeInput(fileSystem);
 
 		TreeItem<FileTreeElement> root = buildTree(treeRoot, true, null);
 
-		view.projectTree.setRoot(root);
-		view.projectTree.setShowRoot(false);
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
-		
+
 		// Register the SWT Context menu on the canvas
 		_menuService.registerContextMenu(canvas, StringTable.PROJECT_EXPLORER_CONTEXT_MENU_ID);
 
-		// Add the scene of the view to the canvas
-		Scene scene = new Scene(loader.getNode());
-		canvas.setScene(scene);
-	
 		setupSelectionService();
 		// setup initial workspace structure
 		createWorkspaceFromExtension();
-		
+
 		// Adding listeners to the scene
-		scene.setOnKeyPressed(new ProjectExplorerKeyListener(context));
-		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, new OpenFileListener(context, fileExtensions, services));
-		
+		canvas.getScene().setOnKeyPressed(new ProjectExplorerKeyListener(context));
+		canvas.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
+				new OpenFileListener(context, fileExtensions, services));
+
 		// Cell factory for custom tree cells
-		view.projectTree.setCellFactory(new Callback<TreeView<FileTreeElement>, TreeCell<FileTreeElement>>() {
+		projectTree.setCellFactory(new Callback<TreeView<FileTreeElement>, TreeCell<FileTreeElement>>() {
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
 				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem);
@@ -142,7 +128,7 @@ public class ProjectExplorerViewController {
 		Node imgNode = isRoot ? null : getImage(parentNode);
 
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
-		if (state != null && state.containsKey(currentNode.getValue().getAbsolutePath()))  {
+		if (state != null && state.containsKey(currentNode.getValue().getAbsolutePath())) {
 			currentNode.setExpanded(state.get(currentNode.getValue().getAbsolutePath()));
 		}
 
@@ -221,7 +207,7 @@ public class ProjectExplorerViewController {
 
 		return workspaceFileSystem.getWorkspaceDirectory();
 	}
-	
+
 	/**
 	 * Rebuild the project explorer and update it's view.
 	 * 
@@ -230,16 +216,16 @@ public class ProjectExplorerViewController {
 	@Optional
 	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Object o) {
 		HashMap<String, Boolean> oldTreeState = new HashMap<String, Boolean>();
-		traverseTree(view.projectTree.getRoot(), oldTreeState);
-		
-		view.projectTree.getSelectionModel().selectedItemProperty().removeListener(changeListener);
-		TreeItem<FileTreeElement> root = buildTree(view.projectTree.getRoot().getValue(), true, oldTreeState);
+		traverseTree(projectTree.getRoot(), oldTreeState);
 
-		view.projectTree.setRoot(root);
-		view.projectTree.setShowRoot(false);
-		view.projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
+		projectTree.getSelectionModel().selectedItemProperty().removeListener(changeListener);
+		TreeItem<FileTreeElement> root = buildTree(projectTree.getRoot().getValue(), true, oldTreeState);
+
+		projectTree.setRoot(root);
+		projectTree.setShowRoot(false);
+		projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
 	}
-	
+
 	/**
 	 * Traverse the filesystem tree via dfs to save the old state of each node
 	 * 
@@ -247,7 +233,7 @@ public class ProjectExplorerViewController {
 	 * @param state      maps the expanded status for each node in the tree
 	 */
 	private void traverseTree(TreeItem<FileTreeElement> parentNode, HashMap<String, Boolean> state) {
-	
+
 		/*
 		 * put current element in hashmap with state
 		 */
@@ -258,7 +244,6 @@ public class ProjectExplorerViewController {
 		}
 	}
 
-	
 	/**
 	 * Sets up the selection service via a ChangeListener on the projectTree
 	 */
@@ -280,23 +265,25 @@ public class ProjectExplorerViewController {
 			}
 		};
 
-		view.projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
+		projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
 	}
-	
-	
+
 	/**
-	 * This method creates the workspace based on the PROJECT_EXPLORER_WORKSPACE_STRUCUTRE extension. If not available, no directories are added initially.
+	 * This method creates the workspace based on the
+	 * PROJECT_EXPLORER_WORKSPACE_STRUCUTRE extension. If not available, no
+	 * directories are added initially.
 	 */
 	private void createWorkspaceFromExtension() {
-		List<WorkspaceStructureTemplate> workspaceExtension = ExtensionAttrUtil.getAttrsFromExtension(StringTable.PROJECT_EXPLORER_WORKSPACE_STRUCUTRE, StringTable.WORKSPACE_STR_ATTR);
+		List<WorkspaceStructureTemplate> workspaceExtension = ExtensionAttrUtil.getAttrsFromExtension(
+				StringTable.PROJECT_EXPLORER_WORKSPACE_STRUCUTRE, StringTable.WORKSPACE_STR_ATTR);
 		FileTreeElement root = workspaceFileSystem.getWorkspaceDirectory();
 		Path rootPath = FileHandlingUtility.getPath(root);
 		Path projectPath = rootPath.resolve("");
-		
-		for(WorkspaceStructureTemplate extension : workspaceExtension) {
-			for(String directory : extension.getDirectories()) {
+
+		for (WorkspaceStructureTemplate extension : workspaceExtension) {
+			for (String directory : extension.getDirectories()) {
 				try {
-					if(!Files.exists(projectPath.resolve(directory))) {
+					if (!Files.exists(projectPath.resolve(directory))) {
 						FileEventLog.getInstance().insertEvent("Create Directory", projectPath.resolve(directory));
 						Files.createDirectory(projectPath.resolve(directory));
 					}

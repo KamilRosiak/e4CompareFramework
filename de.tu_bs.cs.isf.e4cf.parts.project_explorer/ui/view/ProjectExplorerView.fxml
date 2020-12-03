@@ -5,15 +5,8 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.view.ProjectExplorerViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.ProjectExplorerViewController">
    <center>
-      <TreeView fx:id="projectTree" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <contextMenu>
-            <ContextMenu>
-              <items>
-                <!--  MenuItem fx:id="ctxNewFolder" mnemonicParsing="false" text="New Folder"/-->
-              </items>
-            </ContextMenu>
-         </contextMenu></TreeView>
+      <TreeView fx:id="projectTree" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
    </center>
 </BorderPane>
