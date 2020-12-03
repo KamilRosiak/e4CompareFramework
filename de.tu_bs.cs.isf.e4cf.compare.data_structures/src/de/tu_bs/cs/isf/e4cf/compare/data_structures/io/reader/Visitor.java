@@ -160,7 +160,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BinaryExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		arg.addAttribute(JavaNodeTypes.Value.toString(), n.toString());
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BooleanLiteralExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		arg.addAttribute(JavaNodeTypes.Value.toString(), n.toString());
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(CharLiteralExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		arg.addAttribute(JavaNodeTypes.Value.toString(), n.toString());
 	}
 
 	/**
@@ -415,7 +415,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(StringLiteralExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		arg.addAttribute(JavaNodeTypes.Value.toString(), n.toString());
 	}
 
 	/**
@@ -563,7 +563,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(VoidType n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		arg.addAttribute(JavaNodeTypes.Value.toString(), n.toString());
 	}
 
 	/**
@@ -713,8 +713,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(IntegerLiteralExpr n, Node arg) {
-		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		c.addAttribute(JavaNodeTypes.Expression.toString(), n.toString());
 		c.addAttribute(JavaNodeTypes.Value.toString(), n.asNumber().toString());
 		
 	}
