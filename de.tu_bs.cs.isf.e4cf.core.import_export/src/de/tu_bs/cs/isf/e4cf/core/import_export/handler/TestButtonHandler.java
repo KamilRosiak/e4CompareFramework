@@ -1,4 +1,4 @@
-package testpackage;
+package de.tu_bs.cs.isf.e4cf.core.import_export.handler;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractTree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import util.TreeInstanceCreator;
+import de.tu_bs.cs.isf.e4cf.core.import_export.services.adapter.TreeInstanceCreator;
 
 
 
@@ -35,7 +35,6 @@ public class TestButtonHandler {
 	
 	@Execute
 	public void execute() {
-		System.out.println("ayyyy");
 		 GsonBuilder gsonBuilder = new GsonBuilder();
 	        gsonBuilder.registerTypeAdapter(Tree.class, new TreeInstanceCreator());
 
@@ -58,7 +57,7 @@ public class TestButtonHandler {
 	        tree.setRoot(root);
 
 	        System.out.println(createJSON(tree, gsonBuilder));
-
+	        
 	        TreeImpl treeResult = (TreeImpl) readJSON(createJSON(tree, gsonBuilder), gsonBuilder);
 
 	        reconstructTree(treeResult.getRoot());
@@ -85,7 +84,7 @@ public class TestButtonHandler {
 	        Gson gson = builder.create();
 	        return gson.fromJson(jsonString, Tree.class);
 	    }
-	
+
 	
 		
 }
