@@ -25,27 +25,42 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			final Column... attributes) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		final Statement stmt = con.createStatement();
+		boolean primaryKey = false;
 		if (attributes.length > 0) {
 			if (!tableExists(pPath, pDbName, tableName)) {
 				String sqlStatement = "CREATE TABLE " + tableName + "(";
+				String sqlprimarykey = " PRIMARY KEY ( " ;
 				for (final Column c : attributes) {
 					sqlStatement += c.getName() + " " + c.getType();
 					if (c.isUnique()) {
 						sqlStatement += " UNIQUE";
 					}
-					if (c.isPrimaryKey()) {
-						sqlStatement += " PRIMARY KEY";
-					}
+				
 					if (c.isAutoIncrement()) {
 						sqlStatement += " AUTOINCREMENT";
 					}
+					
 					if (c.isNotNull()) {
 						sqlStatement += " NOT NULL";
 					}
+					
+					if (c.isPrimaryKey()) {
+						sqlprimarykey += c.getName() + ", ";
+						 primaryKey = true;
+					}
+					
 					sqlStatement += ", ";
 				}
-				sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-				sqlStatement += ");";
+				
+				if(primaryKey) {
+					sqlprimarykey = sqlprimarykey.substring(0, sqlprimarykey.length() - 2);
+					sqlprimarykey += ") ";
+					sqlStatement += sqlprimarykey + ");";
+				} else {
+					sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
+					sqlStatement += ");";
+				}
+				
 				System.out.println("Test STMT: " + sqlStatement);
 				stmt.execute(sqlStatement);
 				System.out.println("Table " + tableName + " created.");
@@ -364,7 +379,19 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	@Override
 	public void dropColumnUnique(String pPath, String pDbName, String tableName, String columnNames)
 			throws SQLException {
-		// TODO Auto-generated method stub
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		if (tableExists(pPath, pDbName, tableName)) {
+			renameTable(pPath, pDbName, tableName, "old_" + tableName);
+			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+			getColumn(columns, columnNames).setUnique(false);
+			Column[] col = new Column[columns.size()];
+			col = columns.toArray(col);
+			createTable(pPath, pDbName, tableName, col);
+			deleteTable(pPath, pDbName, "old_" + tableName);
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
+		con.close();
 
 	}
 
