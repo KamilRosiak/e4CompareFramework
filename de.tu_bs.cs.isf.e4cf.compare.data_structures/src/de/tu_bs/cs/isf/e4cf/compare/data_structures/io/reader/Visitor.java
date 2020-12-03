@@ -713,7 +713,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(IntegerLiteralExpr n, Node arg) {
-		c.addAttribute(JavaNodeTypes.Value.toString(), n.asNumber().toString());
+		arg.addAttribute(JavaNodeTypes.Value.toString(), n.asNumber().toString());
 		
 	}
 	/**
