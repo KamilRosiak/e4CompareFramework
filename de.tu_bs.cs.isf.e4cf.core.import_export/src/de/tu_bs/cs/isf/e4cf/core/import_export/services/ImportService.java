@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.core.import_export.services;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.google.gson.Gson;
