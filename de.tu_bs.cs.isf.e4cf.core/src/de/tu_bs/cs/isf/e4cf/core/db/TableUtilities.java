@@ -271,8 +271,13 @@ public class TableUtilities {
 	}
 
 	public boolean isColumnAutoIncrement(final String pPath, final String pDbName, final String tableName,
-			final String columnName) {
-		return false;
+			final String columnName) throws SQLException {
+		Column c = getColumn(pPath, pDbName, tableName, columnName);
+		if (c.isAutoIncrement() == true) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

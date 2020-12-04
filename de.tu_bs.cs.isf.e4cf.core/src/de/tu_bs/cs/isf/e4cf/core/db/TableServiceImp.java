@@ -342,7 +342,19 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	@Override
 	public void dropColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnName)
 			throws SQLException {
-		// TODO Auto-generated method stub
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		if (tableExists(pPath, pDbName, tableName)) {
+			renameTable(pPath, pDbName, tableName, "old_" + tableName);
+			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+			getColumn(columns, columnName).setAutoIncrement(false);
+			Column[] col = new Column[columns.size()];
+			col = columns.toArray(col);
+			createTable(pPath, pDbName, tableName, col);
+			deleteTable(pPath, pDbName, "old_" + tableName);
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
+		con.close();
 
 	}
 
