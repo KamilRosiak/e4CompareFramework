@@ -44,9 +44,10 @@ public class TextEditorViewController {
 	}
 
 	/**
-	 * Receives an event call from TextFileExtension to open a given file. 
-	 * This is a custom function because .txt-files containing umlauts can not be opened
-	 * by FileStreamUtil; it is the same function, but with ISO_8859_1-encoding instead of UTF_8. 
+	 * Receives an event call from FileExtension to open a given file. This got a
+	 * custom function because .txt-files containing umlauts can not be opened by
+	 * FileStreamUtil; it is the same function, but with ISO_8859_1-encoding instead
+	 * of UTF_8.
 	 * 
 	 * 
 	 * @param element path of the element to be opened
@@ -54,43 +55,25 @@ public class TextEditorViewController {
 	 */
 	@Optional
 	@Inject
-	public void openTxtFile(@UIEventTopic(EditorST.TXT_FILE_OPENED) FileTreeElement element) {
+	public void openFile(@UIEventTopic(EditorST.FILE_OPENED) FileTreeElement element) {
 		Path filePath = Paths.get(element.getAbsolutePath());
-		StringBuilder contentBuilder = new StringBuilder();
+		// Special Case for .txt Files
+		if (filePath.endsWith(".txt")) {
+			StringBuilder contentBuilder = new StringBuilder();
+			try (Stream<String> stream = Files.lines(Paths.get(filePath.toUri()), StandardCharsets.ISO_8859_1)) {
+				stream.forEach(s -> contentBuilder.append(s).append("\n"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
-		try (Stream<String> stream = Files.lines(Paths.get(filePath.toUri()), StandardCharsets.ISO_8859_1)) {			  
-			  stream.forEach(s -> contentBuilder.append(s).append("\n"));
-		} catch (IOException e) {
-			e.printStackTrace();
+			String content = contentBuilder.toString();
+			textEditor.loadTab(element.getAbsolutePath(), content);
+		} else {
+			String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
+			textEditor.loadTab(element.getAbsolutePath(), content);
+
 		}
 
-		String content = contentBuilder.toString();
-		textEditor.loadTab(element.getAbsolutePath(), content);
 	}
 
-	/**
-	 * Receives an event call from JavaFileExtension to open a given file.
-	 * 
-	 * @param element path of the element to be opened
-	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
-	 */
-	@Optional
-	@Inject
-	public void openJavaFile(@UIEventTopic(EditorST.JAVA_FILE_OPENED) FileTreeElement element) {
-		String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-		textEditor.loadTab(element.getAbsolutePath(), content);
-	}
-
-	/**
-	 * Receives an event call from XMLFileExtension to open a given file.
-	 * 
-	 * @param element path of the element to be opened
-	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
-	 */
-	@Optional
-	@Inject
-	public void openXmlFile(@UIEventTopic(EditorST.XML_FILE_OPENED) FileTreeElement element) {
-		String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-		textEditor.loadTab(element.getAbsolutePath(), content);
-	}
 }

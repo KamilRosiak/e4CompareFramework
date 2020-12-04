@@ -5,15 +5,15 @@
          point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
       <project_explorer_file_attr
             file_extension="java"
-            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.project_explorer_file_extension.JavaFileExtension">
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.extensions.ProjectExplorerFileExtension">
       </project_explorer_file_attr>
       <project_explorer_file_attr
             file_extension="xml"
-            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.project_explorer_file_extension.XMLFileExtension">
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.extensions.ProjectExplorerFileExtension">
       </project_explorer_file_attr>
       <project_explorer_file_attr
             file_extension="txt"
-            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.project_explorer_file_extension.TextFileExtension">
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.extensions.ProjectExplorerFileExtension">
       </project_explorer_file_attr>
    </extension>
 

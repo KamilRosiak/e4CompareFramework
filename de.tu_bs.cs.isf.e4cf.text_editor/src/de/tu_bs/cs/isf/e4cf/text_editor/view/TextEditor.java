@@ -123,7 +123,7 @@ public class TextEditor implements Initializable {
 	private void initFileMenuItemNewAction() {
 		newFile.setOnAction(e -> {
 			for (Tab t : tabPane.getTabs()) {
-				if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE)) {
+				if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE+untitledCount)) {
 					untitledCount++;
 				}
 			}
