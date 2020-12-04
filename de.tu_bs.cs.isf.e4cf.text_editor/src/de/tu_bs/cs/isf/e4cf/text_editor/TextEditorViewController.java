@@ -20,11 +20,15 @@ import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 public class TextEditorViewController {
 	private TextEditor textEditor;
-	
 
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
@@ -40,7 +44,10 @@ public class TextEditorViewController {
 	}
 
 	/**
-	 * Receives an event call from TextFileExtension to open a given file.
+	 * Receives an event call from TextFileExtension to open a given file. 
+	 * This is a custom function because .txt-files containing umlauts can not be opened
+	 * by FileStreamUtil; it is the same function, but with ISO_8859_1-encoding instead of UTF_8. 
+	 * 
 	 * 
 	 * @param element path of the element to be opened
 	 * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
@@ -48,10 +55,19 @@ public class TextEditorViewController {
 	@Optional
 	@Inject
 	public void openTxtFile(@UIEventTopic(EditorST.TXT_FILE_OPENED) FileTreeElement element) {
-	    String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-	    textEditor.loadTab(element.getAbsolutePath(), content);
+		Path filePath = Paths.get(element.getAbsolutePath());
+		StringBuilder contentBuilder = new StringBuilder();
+
+		try (Stream<String> stream = Files.lines(Paths.get(filePath.toUri()), StandardCharsets.ISO_8859_1)) {			  
+			  stream.forEach(s -> contentBuilder.append(s).append("\n"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		String content = contentBuilder.toString();
+		textEditor.loadTab(element.getAbsolutePath(), content);
 	}
-	
+
 	/**
 	 * Receives an event call from JavaFileExtension to open a given file.
 	 * 
@@ -62,7 +78,7 @@ public class TextEditorViewController {
 	@Inject
 	public void openJavaFile(@UIEventTopic(EditorST.JAVA_FILE_OPENED) FileTreeElement element) {
 		String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-        textEditor.loadTab(element.getAbsolutePath(), content);
+		textEditor.loadTab(element.getAbsolutePath(), content);
 	}
 
 	/**
@@ -74,7 +90,7 @@ public class TextEditorViewController {
 	@Optional
 	@Inject
 	public void openXmlFile(@UIEventTopic(EditorST.XML_FILE_OPENED) FileTreeElement element) {
-        String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-        textEditor.loadTab(element.getAbsolutePath(), content);
+		String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
+		textEditor.loadTab(element.getAbsolutePath(), content);
 	}
 }

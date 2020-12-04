@@ -3,7 +3,6 @@ package de.tu_bs.cs.isf.e4cf.text_editor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 
 import javax.inject.Inject;
 
@@ -20,20 +19,20 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 
-
 public class FileUtils {
 	private FileChooser fileChooser;
 	private Window parent;
 	private int lastSavedRevision;
-	
+
 	@Inject
 	private ServiceContainer services;
-	
+
 	/**
-	 *  Constructor used to initialize the fileChooser instance of this object.
-	 *  Available file extensions are added to the fileChooser.
-	 *  
-	 *  @param parent Window the @TextEditor is part of. Needed to display open/save dialogs
+	 * Constructor used to initialize the fileChooser instance of this object.
+	 * Available file extensions are added to the fileChooser.
+	 * 
+	 * @param parent Window the @TextEditor is part of. Needed to display open/save
+	 *               dialogs
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -41,20 +40,54 @@ public class FileUtils {
 		this.parent = parent;
 
 		fileChooser = new FileChooser();
-		
+
 		for (String extension : EditorST.FILE_FORMATS) {
-			String displayName = extension.substring(0, 1).toUpperCase() + extension.substring(1) + " File (." + extension + ")";
+			String displayName = extension.substring(0, 1).toUpperCase() + extension.substring(1) + " File (."
+					+ extension + ")";
 			String extensionFormat = "*." + extension;
 			fileChooser.getExtensionFilters().add(new ExtensionFilter(displayName, extensionFormat));
 		}
-		
+
 		fileChooser.setInitialDirectory(new File(RCPContentProvider.getCurrentWorkspacePath()));
+	}
+
+	/**
+	 * Extracts the fileName from a string containing a file path
+	 * 
+	 * @param path A filePath ending in a file
+	 * @return The fileName with extension (e.g. name.extension)
+	 * @author Lukas Cronauer
+	 */
+	public static String parseFileNameFromPath(String path) {
+		String fileName = path;
+		String[] splittedPath;
+		if (!path.startsWith(EditorST.NEW_TAB_TITLE)) {
+			if (System.getProperty("os.name").startsWith("Windows")) {
+				splittedPath = path.split("\\\\");
+			} else {
+				splittedPath = path.split("/");
+			}
+
+			try {
+				if (splittedPath[splittedPath.length - 1].matches(EditorST.FILE_REGEX)) {
+					fileName = splittedPath[splittedPath.length - 1];
+				} else {
+					throw new ArrayIndexOutOfBoundsException("Invalid filename");
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.out.println(e.getMessage());
+				fileName = EditorST.NEW_TAB_TITLE;
+			}
+		}
+
+		return fileName;
 	}
 
 	/**
 	 * Opens the file chosen by the open dialog.
 	 *
-	 * @return String[] of length 2 with (absolute) filePath at index 0 and file-content at index 2
+	 * @return String[] of length 2 with (absolute) filePath at index 0 and
+	 *         file-content at index 2
 	 * 
 	 * @author Lukas Cronauer
 	 */
@@ -71,9 +104,9 @@ public class FileUtils {
 
 		returnValue[0] = f.getAbsolutePath();
 		returnValue[1] = readFile(f);
-		return returnValue;	
+		return returnValue;
 	}
-	
+
 	/**
 	 * Reads the entire content the file and returns it as a string.
 	 * 
@@ -90,15 +123,15 @@ public class FileUtils {
 		try {
 			reader = new FileReader(file);
 			int character;
-			String text="";
-			
-			while((character = reader.read()) != -1) {
+			String text = "";
+
+			while ((character = reader.read()) != -1) {
 				text += (char) character;
 			}
 			reader.close();
 			lastSavedRevision = text.hashCode();
 			return text;
-		} catch(FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			// error message: file not found
 			e.printStackTrace();
 		} catch (IOException io) {
@@ -107,10 +140,10 @@ public class FileUtils {
 		}
 		return "";
 	}
-	
+
 	/**
-	 * Saves the parameter content into the file instance of this object.
-	 * If file is not yet set, saveAs() is called.
+	 * Saves the parameter content into the file instance of this object. If file is
+	 * not yet set, saveAs() is called.
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -137,7 +170,7 @@ public class FileUtils {
 	 * Writes the parameter content into the File.
 	 * 
 	 * @param fileName the Name of the file to write
-	 * @param content The String to save
+	 * @param content  The String to save
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -149,7 +182,7 @@ public class FileUtils {
 			writer.close();
 			lastSavedRevision = content.hashCode();
 			return true;
-		} catch(IOException io) {
+		} catch (IOException io) {
 			io.printStackTrace();
 			RCPMessageProvider.errorMessage("Error while saving file", io.getMessage());
 			return false;
@@ -169,5 +202,3 @@ public class FileUtils {
 		return lastSavedRevision;
 	}
 }
-	
-

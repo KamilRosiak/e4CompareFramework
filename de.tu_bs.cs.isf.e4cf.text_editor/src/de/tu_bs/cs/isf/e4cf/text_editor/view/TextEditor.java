@@ -5,19 +5,14 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.swt.internal.win32.OS;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.IndexRange;
@@ -96,7 +91,7 @@ public class TextEditor implements Initializable {
 
 	Alert alert;
 
-	int untiltedCount = 0;
+	int untitledCount = 0;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -129,11 +124,11 @@ public class TextEditor implements Initializable {
 		newFile.setOnAction(e -> {
 			for (Tab t : tabPane.getTabs()) {
 				if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE)) {
-					untiltedCount++;
+					untitledCount++;
 				}
 			}
 			saveChanges();
-			loadTab(EditorST.NEW_TAB_TITLE + untiltedCount, "");
+			loadTab(EditorST.NEW_TAB_TITLE + untitledCount, "");
 		});
 	}
 
@@ -419,7 +414,7 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
-	//Work in Progress
+	// Work in Progress
 	private void initCountLabelItemAction() {
 		for (Tab tab : tabPane.getTabs()) {
 			CodeArea textArea = (CodeArea) tab.getContent();
@@ -435,6 +430,60 @@ public class TextEditor implements Initializable {
 	}
 
 	// supporting functions start here
+
+	public void count(CodeArea textArea) {
+
+		String text = textArea.getText();
+		StringBuffer bufferText = new StringBuffer(text);
+		int newLineCounter = 1;
+		if (text.length() == 0) {
+			wordCount.setText("Words: 0");
+			rowCount.setText("Rows: 0");
+			return;
+		}
+		// check whether there is any text to begin with
+		char first = bufferText.charAt(0);
+		if (first == ' ' || first == '\t') {
+			bufferText.replace(0, 1, "");
+		}
+		if (first == '\n') {
+			bufferText.replace(0, 1, "");
+			newLineCounter++;
+		}
+
+		// Trims the Tabs.
+		for (int i = 0; i < bufferText.length(); i++) {
+			if (bufferText.charAt(i) == '\t') {
+				bufferText.replace(i, i + 1, " ");
+			}
+		}
+		// trims the Newlines out of the Text and Counts them
+		for (int i = 0; i < bufferText.length(); i++) {
+			if (bufferText.charAt(i) == '\n') {
+				// Number of New Lines = Number of Rows
+				newLineCounter++;
+				bufferText.replace(i, i + 1, " ");
+			}
+		}
+		String tmp = bufferText.toString();
+		tmp = tmp.trim();
+		bufferText = new StringBuffer(tmp);
+		// trims the additional Spaces
+		// Every Space is a new Word
+		for (int i = 0; i < bufferText.length(); i++) {
+			if (bufferText.charAt(i) == ' ') {
+				if (bufferText.charAt(i + 1) == ' ') {
+					// Placeholder so only one Space is counted for a new word
+					bufferText.replace(i, i + 1, "a");
+				}
+			}
+		}
+		// Counts Spaces
+		// Number of Spaces = Number of Word
+		long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
+		wordCount.setText("Words: " + countWord);
+		rowCount.setText("Rows: " + newLineCounter);
+	}
 
 	/**
 	 * Saves the current content of the textArea to a file when there are changes
@@ -521,51 +570,19 @@ public class TextEditor implements Initializable {
 	 * @author Lukas Cronauer
 	 */
 	public void loadTab(String filePath, String content) {
-		String fileName = parseFileNameFromPath(filePath);
+		String fileName = fileUtils.parseFileNameFromPath(filePath);
 		for (Tab t : tabPane.getTabs()) {
 			if (t.getUserData().equals(filePath)) {
 				tabPane.getSelectionModel().select(t);
 				return;
 			}
 		}
-		
+
 		Tab newTab = new Tab(fileName, createCodeArea(content));
 		newTab.setUserData(filePath);
 		tabPane.getTabs().add(newTab);
 		tabPane.getSelectionModel().select(newTab);
 		initCountLabelItems();
-	}
-
-	/**
-	 * Extracts the fileName from a string containing a file path
-	 * 
-	 * @param path A filePath ending in a file
-	 * @return The fileName with extension (e.g. name.extension)
-	 * @author Lukas Cronauer
-	 */
-	private static String parseFileNameFromPath(String path) {
-		String fileName = path;
-		String[] splittedPath;
-		if (!path.startsWith(EditorST.NEW_TAB_TITLE)) {
-			if (System.getProperty("os.name").startsWith("Windows")) {
-				splittedPath = path.split("\\\\");
-			} else {
-				splittedPath = path.split("/");
-			}
-
-			try {
-				if (splittedPath[splittedPath.length - 1].matches(EditorST.FILE_REGEX)) {
-					fileName = splittedPath[splittedPath.length - 1];
-				} else {
-					throw new ArrayIndexOutOfBoundsException("Invalid filename");
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				System.out.println(e.getMessage());
-				fileName = EditorST.NEW_TAB_TITLE;
-			}
-		}
-
-		return fileName;
 	}
 
 	/**
@@ -578,63 +595,17 @@ public class TextEditor implements Initializable {
 	 */
 	private void setCurrentTabUserData(String path) {
 		getCurrentTab().setUserData(path);
-		getCurrentTab().setText(parseFileNameFromPath(path));
+		getCurrentTab().setText(fileUtils.parseFileNameFromPath(path));
 	}
 
-	public void count(CodeArea textArea) {
-
-		String text = textArea.getText();
-		StringBuffer bufferText = new StringBuffer(text);
-		int newLineCounter = 1;
-		if (text.length() == 0) {
-			wordCount.setText("Words: 0");
-			rowCount.setText("Rows: 0");
-			return;
-		}
-		// check whether there is any text to begin with
-		char first = bufferText.charAt(0);
-		if (first == ' ' || first == '\t') {
-			bufferText.replace(0, 1, "");
-		}
-		if (first == '\n') {
-			bufferText.replace(0, 1, "");
-			newLineCounter++;
-		}
-
-		// Trims the Tabs.
-		for (int i = 0; i < bufferText.length(); i++) {
-			if (bufferText.charAt(i) == '\t') {
-				bufferText.replace(i, i + 1, " ");
-			}
-		}
-		// trims the Newlines out of the Text and Counts them
-		for (int i = 0; i < bufferText.length(); i++) {
-			if (bufferText.charAt(i) == '\n') {
-				// Number of New Lines = Number of Rows
-				newLineCounter++;
-				bufferText.replace(i, i + 1, " ");
-			}
-		}
-		String tmp = bufferText.toString();
-		tmp = tmp.trim();
-		bufferText = new StringBuffer(tmp);
-		// trims the additional Spaces
-		// Every Space is a new Word
-		for (int i = 0; i < bufferText.length(); i++) {
-			if (bufferText.charAt(i) == ' ') {
-				if (bufferText.charAt(i + 1) == ' ') {
-					// Placeholder so only one Space is counted for a new word
-					bufferText.replace(i, i + 1, "a");
-				}
-			}
-		}
-		// Counts Spaces
-		// Number of Spaces = Number of Word
-		long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
-		wordCount.setText("Words: " + countWord);
-		rowCount.setText("Rows: " + newLineCounter);
-	}
-	
+	/**
+	 * Creates a new CodeArea and adds text to it, if any is given.
+	 * 
+	 * @param content contains any text that was parsed from an existing file, or an
+	 *                empty String
+	 * @return newly created CodeArea
+	 * @author Lukas Cronauer
+	 */
 	private CodeArea createCodeArea(String content) {
 		CodeArea codeArea = new CodeArea(content);
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
