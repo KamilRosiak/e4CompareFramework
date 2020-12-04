@@ -8,7 +8,7 @@
    <children>
       <TableView fx:id="propertiesTable" VBox.vgrow="ALWAYS">
         <columns>
-          <TableColumn fx:id="attribute" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="295.0" text="Attribute" />
+          <TableColumn fx:id="Properties" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="295.0" text="Properties" />
           <TableColumn fx:id="value" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="304.0" text="Value" />
         </columns>
       </TableView>
