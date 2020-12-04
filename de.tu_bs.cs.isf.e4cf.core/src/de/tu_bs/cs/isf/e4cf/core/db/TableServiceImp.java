@@ -27,7 +27,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		if (attributes.length > 0) {
 			if (!tableExists(pPath, pDbName, tableName)) {
 				String sqlStatement = "CREATE TABLE " + tableName + "(";
-				String sqlprimarykey = " PRIMARY KEY ( " ;
+				String sqlprimarykey =  "CONSTRAINT " + tableName + "_pl PRIMARY KEY (" ;
 				for (final Column c : attributes) {
 					sqlStatement += c.getName() + " " + c.getType();
 					if (c.isUnique()) {

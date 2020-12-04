@@ -81,6 +81,50 @@ public class TableUtilities {
 	}
 
 	/**
+	 *  Method to get the primary key of a Table
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
+	 * @return List<String> list of the primary key in the Table
+	 * @throws SQLException
+	 */
+	public List<String> getTablePrimaryKey(final String pPath, final String pDbName, final String tableName) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		ResultSet pkInfo = con.getMetaData().getPrimaryKeys(null, null, tableName);
+		List<String> primarykeyset = new ArrayList<>();
+		while(pkInfo.next()) {
+			String primarykey = pkInfo.getString("COLUMN_NAME");
+			primarykeyset.add(primarykey);
+			
+		}
+		return primarykeyset;
+		
+	}
+	
+	/**
+	 *  Method to get the unique constraints of a Table
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
+	 * @return List<String> list of the unique keys in the Table
+	 * @throws SQLException
+	 */
+	
+	public List<String> getTableUniqueKey(final String pPath, final String pDbName, final String tableName) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		ResultSet IndexInfo = con.getMetaData().getIndexInfo(null, null, tableName, true, false);
+		List<String> uniqueset = new ArrayList<>();
+		while (IndexInfo.next()) {
+			String Unique = IndexInfo.getString("COLUMN_NAME");
+				uniqueset.add(Unique);
+			}
+		return uniqueset;
+		
+	}
+	
+	/**
 	 * Method to get column metadata
 	 *
 	 * @param pPath     String the path of the database
@@ -97,27 +141,26 @@ public class TableUtilities {
 		Statement statement = con.createStatement();
 		ResultSet rs = statement.executeQuery(sql);
 		ResultSetMetaData mrs = rs.getMetaData();
-		ResultSet pkInfo = con.getMetaData().getPrimaryKeys(null, null, tableName);
+		List<String> PrimaryKeySet = getTablePrimaryKey(pPath, pDbName, tableName);
+		List<String> UniqueKeySet = getTableUniqueKey(pPath, pDbName, tableName);
 		boolean isPrimaryKey = false;
-		boolean isNull = true;
+		boolean isNull = false;
 		boolean isAutoIncrement = false;
-		String pk = null;
-
-		while (pkInfo.next()) {
-			pk = pkInfo.getString("COLUMN_NAME");
-		}
+		boolean isUnique = false;
 		for (int i = 1; i <= mrs.getColumnCount(); i++) {
-			if (mrs.getColumnLabel(i).equals(pk)) {
-				isPrimaryKey = true;
-				pkInfo.close();
-			}
+			isPrimaryKey = PrimaryKeySet.contains(mrs.getColumnLabel(i));
+			
+			isAutoIncrement = mrs.isAutoIncrement(i);
+			
+		    if(!PrimaryKeySet.contains(mrs.getColumnLabel(i))) {
+			  isUnique = UniqueKeySet.contains(mrs.getColumnLabel(i));
+		    }
+		    
 			if (mrs.isNullable(i) == ResultSetMetaData.columnNoNulls) {
 				isNull = false;
 			}
-			if (mrs.isAutoIncrement(i)) {
-				isAutoIncrement = true;
-			}
-			Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, isNull,
+			
+			Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, isUnique,
 					isAutoIncrement, isNull);
 			columns.add(c);
 		}
@@ -169,16 +212,54 @@ public class TableUtilities {
 		return null;
 	}
 
+	/**
+	 * Method to check whether a column is primary key or not.
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
+	 * @return boolean
+	 * @throws SQLException
+	 */
 	public boolean isColumnPrimaryKey(final String pPath, final String pDbName, final String tableName,
-			final String columnName) {
-		return false;
+			final String columnName) throws SQLException {
+		Column c = getColumn(pPath, pDbName, tableName, columnName);
+		if (c.isPrimaryKey()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
+	/**
+	 * Method to check whether a column is unique or not.
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
+	 * @return boolean
+	 * @throws SQLException
+	 */
 	public boolean isColumnUnique(final String pPath, final String pDbName, final String tableName,
-			final String columnName) {
-		return false;
+			final String columnName) throws SQLException {
+        Column c = getColumn(pPath, pDbName, tableName, columnName);
+		if (c.isUnique()) {
+			return true;
+		} else {
+			return false;
+		}
+	
 	}
 
+	/**
+	 * Method to check whether a column allows Null values.
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
+	 * @return boolean
+	 * @throws SQLException
+	 */
 	public boolean isColumnNotNull(final String pPath, final String pDbName, final String tableName,
 			final String columnName) throws SQLException {
 		Column c = getColumn(pPath, pDbName, tableName, columnName);
