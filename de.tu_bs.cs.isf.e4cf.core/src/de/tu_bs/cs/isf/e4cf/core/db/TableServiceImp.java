@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class TableServiceImp extends TableUtilities implements ITableService {
@@ -412,7 +410,13 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			renameTable(pPath, pDbName, tableName, "old_" + tableName);
 			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
 			for (final Column c : columns) {
-				getColumn(columns, c.getName()).setNotNull(true);
+				if(isColumnNotNull(pPath, pDbName, "old_" + tableName, c.getName()) == false) {
+					for(int i = 0; i < columnNames.length; i++) {
+						if(columnNames[i].equals(c.getName())) {
+							getColumn(columns, c.getName()).setNotNull(true);
+						}
+					}
+				}
 			}
 			Column[] col = new Column[columns.size()];
 			col = columns.toArray(col);
@@ -424,11 +428,38 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		con.close();
 	}
 
+	/**
+	 * Method to make a column nullable.
+	 * 
+	 * @param pPath       String the path of the database
+	 * @param pDbName     String the name of the database
+	 * @param tableName   String the name of the table
+	 * @param columnNames the name of the column to which the NOTNULL will be added
+	 * @throws SQLException
+	 */
 	@Override
-	public void dropColumnNotNull(String pPath, String pDbName, String tableName, String... columnName)
+	public void dropColumnNotNull(String pPath, String pDbName, String tableName, String... columnNames)
 			throws SQLException {
-		// TODO Auto-generated method stub
-
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		if (tableExists(pPath, pDbName, tableName)) {
+			renameTable(pPath, pDbName, tableName, "old_" + tableName);
+			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
+			for (final Column c : columns) {
+				if(isColumnNotNull(pPath, pDbName, "old_" + tableName, c.getName()) == true) {
+					for(int i = 0; i < columnNames.length; i++) {
+						if(columnNames[i].equals(c.getName())) {
+							getColumn(columns, c.getName()).setNotNull(false);
+						}
+					}
+				}
+			}
+			Column[] col = new Column[columns.size()];
+			col = columns.toArray(col);
+			createTable(pPath, pDbName, tableName, col);
+			deleteTable(pPath, pDbName, "old_" + tableName);
+		} else {
+			System.out.println("Table " + tableName + " does not exist.");
+		}
+		con.close();
 	}
-
 }

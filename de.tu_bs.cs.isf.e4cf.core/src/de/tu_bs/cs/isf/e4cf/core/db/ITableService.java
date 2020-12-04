@@ -167,7 +167,7 @@ public interface ITableService {
 	 * @param columnNames the name of the column to which the NOTNULL will be added
 	 * @throws SQLException
 	 */
-	void makeColumnNotNull(String pPath, String pDbName, String tableName, String... columnName) throws SQLException;
+	void makeColumnNotNull(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
 	
 	/**
 	 * Method to make a column nullable.
@@ -178,6 +178,6 @@ public interface ITableService {
 	 * @param columnNames the name of the column to which the NOTNULL will be added
 	 * @throws SQLException
 	 */
-	void dropColumnNotNull(String pPath, String pDbName, String tableName, String... columnName) throws SQLException;
+	void dropColumnNotNull(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
 
 }

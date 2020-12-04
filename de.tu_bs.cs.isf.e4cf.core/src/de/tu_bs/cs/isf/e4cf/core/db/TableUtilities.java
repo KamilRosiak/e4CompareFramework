@@ -99,7 +99,7 @@ public class TableUtilities {
 		ResultSetMetaData mrs = rs.getMetaData();
 		ResultSet pkInfo = con.getMetaData().getPrimaryKeys(null, null, tableName);
 		boolean isPrimaryKey = false;
-		boolean isNull = false;
+		boolean isNull = true;
 		boolean isAutoIncrement = false;
 		String pk = null;
 
@@ -111,8 +111,8 @@ public class TableUtilities {
 				isPrimaryKey = true;
 				pkInfo.close();
 			}
-			if (mrs.isNullable(i) == 1) {
-				isNull = true;
+			if (mrs.isNullable(i) == ResultSetMetaData.columnNoNulls) {
+				isNull = false;
 			}
 			if (mrs.isAutoIncrement(i)) {
 				isAutoIncrement = true;
@@ -125,7 +125,7 @@ public class TableUtilities {
 	}
 
 	/**
-	 * Method to get a column in a given ta.
+	 * Method to get a column in a given table.
 	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
@@ -151,7 +151,7 @@ public class TableUtilities {
 	}
 
 	/**
-	 * Method to get a column in a given ta.
+	 * Method to get a column in a given table.
 	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
@@ -180,8 +180,13 @@ public class TableUtilities {
 	}
 
 	public boolean isColumnNotNull(final String pPath, final String pDbName, final String tableName,
-			final String columnName) {
-		return false;
+			final String columnName) throws SQLException {
+		Column c = getColumn(pPath, pDbName, tableName, columnName);
+		if (c.isNotNull() == true) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean isColumnAutoIncrement(final String pPath, final String pDbName, final String tableName,
