@@ -17,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -34,7 +35,7 @@ import org.fxmisc.richtext.LineNumberFactory;
 public class TextEditor implements Initializable {
 	// File Menu
 	@FXML
-	private MenuItem newFile;
+	private Menu newFile;
 	@FXML
 	private MenuItem openFile;
 	@FXML
@@ -95,6 +96,7 @@ public class TextEditor implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
 		initFileMenuItems();
 		initEditMenuItems();
 		initExtraMenuItems();
@@ -107,30 +109,33 @@ public class TextEditor implements Initializable {
 	}
 
 	private void initFileMenuItems() {
-		initFileMenuItemNewAction();
+
+//		initFileMenuItemNewAction();
+		createNewFileItems();
 		initFileMenuItemOpenAction();
 		initFileMenuItemSaveAction();
 		initFileMenuItemSaveAsAction();
 		initFileMenuItemCloseFileAction();
 		initFileMenuItemCloseEditorAction();
+
 	}
 
-	/**
-	 * Sets the actions of the New item in the File menu. Make a new File
-	 * 
-	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
-	 */
-	private void initFileMenuItemNewAction() {
-		newFile.setOnAction(e -> {
-			for (Tab t : tabPane.getTabs()) {
-				if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE+untitledCount)) {
-					untitledCount++;
-				}
-			}
-			saveChanges();
-			loadTab(EditorST.NEW_TAB_TITLE + untitledCount, "");
-		});
-	}
+//	/**
+//	 * Sets the actions of the New item in the File menu. Make a new File
+//	 * 
+//	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
+//	 */
+//	private void initFileMenuItemNewAction() {
+//		newFile.setOnAction(e -> {
+//			for (Tab t : tabPane.getTabs()) {
+//				if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE+untitledCount)) {
+//					untitledCount++;
+//				}
+//			}
+//			saveChanges();
+//			loadTab(EditorST.NEW_TAB_TITLE + untitledCount, "");
+//		});
+//	}
 
 	/**
 	 * Sets the actions of the Open item in the File menu. Open a File with a
@@ -610,5 +615,21 @@ public class TextEditor implements Initializable {
 		CodeArea codeArea = new CodeArea(content);
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 		return codeArea;
+	}
+
+	public void createNewFileItems() {
+		for (String FileType : EditorST.FILE_FORMATS) {
+			MenuItem menu = new MenuItem(FileType + "-File");
+			menu.setOnAction(e -> {
+				for (Tab t : tabPane.getTabs()) {
+					if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE + untitledCount)) {
+						untitledCount++;
+					}
+				}
+				saveChanges();
+				loadTab(EditorST.NEW_TAB_TITLE + untitledCount+"."+FileType, "");
+			});
+			newFile.getItems().addAll(menu);
+		}
 	}
 }
