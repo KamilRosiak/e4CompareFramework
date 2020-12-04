@@ -22,22 +22,60 @@ public class TreeViewController {
 
 	@Inject
 	private ServiceContainer services;
+
 	@FXML
 	private MenuItem properties;
+
 	@FXML
 	private VBox background;
+
 	@FXML
 	private Button search;
+
 	@FXML
 	private Label testLabel;
+
 	@FXML
-	private TreeView<String> hirarchy;
+	private TreeView<NodeUsage> hirarchy;
+
+	private TreeItem<NodeUsage> rootItem;
+
 	@FXML
 	private TextField searchTextField;
-	private TreeItem<String> rootItem;
 
-	void openProperties() {
-		services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
+	void switchToPart(String path) {
+		services.partService.showPart(path);
+	}
+
+	public TreeView<?> getCurrentView() {
+		return this.hirarchy;
+	}
+
+	void createTree(Tree tr) {
+		NodeUsage rootNodeUsage = new NodeUsage(tr.getRoot());
+		rootItem = new TreeItem<NodeUsage>(rootNodeUsage);
+		rootItem.setExpanded(true);
+		for (Node node : tr.getLeaves()) {
+			NodeUsage nodeTest = new NodeUsage(node);
+			TreeItem<NodeUsage> item = new TreeItem<NodeUsage>(nodeTest);
+			rootItem.getChildren().add(item);
+		}
+		hirarchy.setRoot(rootItem);
+		hirarchy.setShowRoot(true);
+
+		hirarchy.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			switchToPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
+			services.eventBroker.send("nodePropertiesEvent", hirarchy.getSelectionModel().getSelectedItem().getValue());
+		});
+
+	}
+
+	@Optional
+	@Inject
+	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
+		switchToPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view");
+		createTree(tree);
+		System.out.println(tree.getTreeName());
 	}
 
 	/**
@@ -68,7 +106,6 @@ public class TreeViewController {
 
 	@FXML
 	void searchField() {
-		// System.out.println(searchTextField.getText());
 		String searchFieldTextToRead = searchTextField.getText();
 		// TDOD: Field must compare to treeItem
 	}
@@ -81,29 +118,20 @@ public class TreeViewController {
 		searchField();
 	}
 
-	void createTree(Tree tr) {
-//		Datei wird eingelesen und als TreeView ausgegeben
-		rootItem = new TreeItem<String>(tr.getTreeName());
-		rootItem.setExpanded(true);
-		for (Node node : tr.getLeaves()) {
-			TreeItem<String> item = new TreeItem<String>(node.toString());
-			rootItem.getChildren().add(item);
-			System.out.println(node.toString());
-		}
-		hirarchy.setRoot(rootItem);
-		hirarchy.setShowRoot(true);
-
-		hirarchy.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			openProperties();
-			services.eventBroker.send("nodePropertiesEvent", hirarchy.getSelectionModel().getSelectedItem().getValue());
-		});
-		System.out.println(rootItem.getValue());
+	public TreeView<?> getHirarchy() {
+		return this.hirarchy;
 	}
 
-	@Optional
-	@Inject
-	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
-		createTree(tree);
-		System.out.println(tree.getTreeName());
+	public void setHirarchy(TreeView<NodeUsage> hirarchy) {
+		this.hirarchy = hirarchy;
 	}
+
+	public VBox getBackground() {
+		return background;
+	}
+
+	public void setBackground(VBox background) {
+		this.background = background;
+	}
+
 }
