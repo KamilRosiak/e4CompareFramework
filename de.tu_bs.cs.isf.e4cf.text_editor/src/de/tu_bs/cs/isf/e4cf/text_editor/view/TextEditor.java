@@ -1,7 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
 import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Matcher;
 
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +15,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -26,6 +32,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 /**
  * 
@@ -105,7 +113,7 @@ public class TextEditor implements Initializable {
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 		getCurrentTab().setUserData(EditorST.NEW_TAB_TITLE);
 		getCurrentTab().setContent(createCodeArea(""));
-
+		
 	}
 
 	private void initFileMenuItems() {
