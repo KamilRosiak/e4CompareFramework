@@ -35,7 +35,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 					}
 				
 					if (c.isAutoIncrement()) {
-						sqlStatement += " AUTOINCREMENT";
+						sqlStatement += " PRIMARY KEY AUTOINCREMENT";
 					}
 					
 					if (c.isNotNull()) {
@@ -329,6 +329,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			renameTable(pPath, pDbName, tableName, "old_" + tableName);
 			final List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
 			getColumn(columns, columnName).setAutoIncrement(true);
+			System.out.print("sus!");
 			Column[] col = new Column[columns.size()];
 			col = columns.toArray(col);
 			createTable(pPath, pDbName, tableName, col);
