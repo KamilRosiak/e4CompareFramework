@@ -1,5 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.stringtable;
 
+/**
+ * StringTable for the TextEditor plugin
+ *
+ * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
+ *
+ */
 public class EditorST {
 	public static final String FILE_OPENED = "OPEN_FILE";
 

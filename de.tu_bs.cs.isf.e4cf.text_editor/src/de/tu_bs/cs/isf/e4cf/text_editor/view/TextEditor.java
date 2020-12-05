@@ -417,13 +417,18 @@ public class TextEditor implements Initializable {
 		});
 	}
 
+	/**
+	 * Sets up the wordcount
+	 * 
+	 * @author Soeren Christmann
+	 * 
+	 */
 	private void initCountLabelItems() {
 		initCountLabelItemAction();
 	}
 
 	/**
-	 * Counts the Words and Rows in the Textfield when a key is pressed. If the
-	 * Textfield is empty there is 0 Words and 0 Rows.
+	 * Initialises counting of words and lines
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
@@ -444,6 +449,12 @@ public class TextEditor implements Initializable {
 
 	// supporting functions start here
 
+	/**
+	 * Counts the Words and Rows in the Textfield when a key is pressed. If the
+	 * Textfield is empty there is 0 Words and 0 Rows.
+	 * 
+	 * @author Soeren Christmann, Cedric Kapalla
+	 */
 	public void count(CodeArea textArea) {
 
 		String text = textArea.getText();
@@ -580,21 +591,35 @@ public class TextEditor implements Initializable {
 	 * @param filePath The path to the loaded file
 	 * @param content  The text for the TextArea in the tab
 	 * 
-	 * @author Lukas Cronauer
+	 * @author Lukas Cronauer, Cedric Kapalla, Soeren Christmann, Erwin Wijaya
 	 */
 	public void loadTab(String filePath, String content) {
 		String fileName = fileUtils.parseFileNameFromPath(filePath);
+		String fileEnding = "";
 		for (Tab t : tabPane.getTabs()) {
 			if (t.getUserData().equals(filePath)) {
 				tabPane.getSelectionModel().select(t);
 				return;
 			}
 		}
-
-		Tab newTab = new Tab(fileName, createCodeArea(content));
+		//find out which type the given file has
+		for (String fileType: EditorST.FILE_FORMATS) {
+			if (fileName.endsWith(fileType)) {
+				fileEnding = fileType;
+			}
+		}
+		//check whether the file actually has a supported type
+		if (fileEnding.equals("")) { 
+			//need to find correct error type
+			throw new IllegalAccessError();
+			//potentially as an alert with return
+		}
+		
+		EditorTab newTab = new EditorTab(fileName, fileEnding, createCodeArea(content));
 		newTab.setUserData(filePath);
 		tabPane.getTabs().add(newTab);
 		tabPane.getSelectionModel().select(newTab);
+		getCurrentTab().getContent().requestFocus();
 		initCountLabelItems();
 	}
 
@@ -625,6 +650,12 @@ public class TextEditor implements Initializable {
 		return codeArea;
 	}
 
+	/**
+	 * Is called upon creating a new file and adds submenu-items to the "New"-menu item.
+	 * 
+	 * @author Soeren Christmann, Lukas Cronauer
+	 * 
+	 */
 	public void createNewFileItems() {
 		for (String FileType : EditorST.FILE_FORMATS) {
 			MenuItem menu = new MenuItem(FileType + "-File");
@@ -636,6 +667,7 @@ public class TextEditor implements Initializable {
 				}
 				saveChanges();
 				loadTab(EditorST.NEW_TAB_TITLE + untitledCount+"."+FileType, "");
+				getCurrentTab().getContent().requestFocus();
 			});
 			newFile.getItems().addAll(menu);
 		}
