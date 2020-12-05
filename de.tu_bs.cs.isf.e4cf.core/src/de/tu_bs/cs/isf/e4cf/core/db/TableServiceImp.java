@@ -312,7 +312,8 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 	}
 
 	/**
-	 * Method to make a Column Autoincrement of an existing table
+	 * Method to make a Column Autoincrement of an existing table, 
+	 * the Prerequisite is that we have not Primary key.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
