@@ -1,0 +1,12 @@
+.xml-keyword {
+    -fx-fill: purple;
+    -fx-font-weight: bold;
+}
+.xml-less-than {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.xml-more-than {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}

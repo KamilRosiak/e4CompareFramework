@@ -11,8 +11,12 @@
 <?import org.fxmisc.richtext.CodeArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
 
 <VBox fx:id="textEditorView" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.271" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor">
+  <stylesheets>
+        <URL value="@./main.css"/>
+  </stylesheets>
   <children>
     <MenuBar prefHeight="0.0" prefWidth="655.0" VBox.vgrow="NEVER">
       <menus>

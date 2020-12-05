@@ -18,7 +18,7 @@ public class XmlST {
                     + "|(?<XMLMORETHAN>" + MORE_THAN_PATTERN + ")"
     );
 
-    public static String getStyleClass(String text) {
+   public static String getStyleClass(String text) {
 		Matcher matcher = PATTERN.matcher(text);
 		 final String styleClass =
 		            matcher.group("XMLKEYWORD") != null ? "xml-keyword" :

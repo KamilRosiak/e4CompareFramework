@@ -4,9 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaST {
-	/*
-	 * Syntax Highlighting
-	 */
+	
 	 public static final String[] KEYWORDS = new String[] {
 	            "abstract", "assert", "boolean", "break", "byte",
 	            "case", "catch", "char", "class", "const",
@@ -39,7 +37,7 @@ public class JavaST {
 
 		public static String getStyleClass(String text) {
 			Matcher matcher = PATTERN.matcher(text);
-			final String styleClass =
+			String styleClass =
 				matcher.group("JAVAKEYWORD") != null ? "java-keyword" :
 				matcher.group("JAVAPAREN") != null ? "java-paren" :
 				matcher.group("JAVABRACE") != null ? "java-brace" :
@@ -48,6 +46,7 @@ public class JavaST {
 				matcher.group("JAVASTRING") != null ? "java-string" :
 				matcher.group("JAVACOMMENT") != null ? "java-comment" :
 				null;
+			assert styleClass != null;
 			return styleClass;
 		}
 }

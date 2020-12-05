@@ -112,7 +112,7 @@ public class TextEditor implements Initializable {
 		initCountLabelItems();
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 		getCurrentTab().setUserData(EditorST.NEW_TAB_TITLE);
-		getCurrentTab().setContent(createCodeArea(""));
+		getCurrentTab().setContent(EditorTab.createCodeArea(""));
 		
 	}
 
@@ -549,7 +549,7 @@ public class TextEditor implements Initializable {
 	private Tab getCurrentTab() {
 		Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
 		if (currentTab == null) {
-			currentTab = new Tab(EditorST.NEW_TAB_TITLE, createCodeArea(""));
+			currentTab = new EditorTab(EditorST.NEW_TAB_TITLE, "", "");
 			currentTab.setUserData(EditorST.NEW_TAB_TITLE);
 			tabPane.getTabs().add(currentTab);
 			tabPane.getSelectionModel().select(currentTab);
@@ -615,7 +615,7 @@ public class TextEditor implements Initializable {
 			//potentially as an alert with return
 		}
 		
-		EditorTab newTab = new EditorTab(fileName, fileEnding, createCodeArea(content));
+		EditorTab newTab = new EditorTab(fileName, fileEnding, content);
 		newTab.setUserData(filePath);
 		tabPane.getTabs().add(newTab);
 		tabPane.getSelectionModel().select(newTab);
@@ -634,20 +634,6 @@ public class TextEditor implements Initializable {
 	private void setCurrentTabUserData(String path) {
 		getCurrentTab().setUserData(path);
 		getCurrentTab().setText(fileUtils.parseFileNameFromPath(path));
-	}
-
-	/**
-	 * Creates a new CodeArea and adds text to it, if any is given.
-	 * 
-	 * @param content contains any text that was parsed from an existing file, or an
-	 *                empty String
-	 * @return newly created CodeArea
-	 * @author Lukas Cronauer
-	 */
-	private CodeArea createCodeArea(String content) {
-		CodeArea codeArea = new CodeArea(content);
-		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-		return codeArea;
 	}
 
 	/**

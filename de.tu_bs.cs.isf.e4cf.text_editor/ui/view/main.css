@@ -1,0 +1,14 @@
+@import "java-keyword.css";
+@import "xml-keyword.css";
+
+.blue-color{
+    -fx-fill: blue;
+}
+
+.red-color{
+    -fx-fill: red;
+}
+
+.green-color{
+    -fx-fill: green;
+}
