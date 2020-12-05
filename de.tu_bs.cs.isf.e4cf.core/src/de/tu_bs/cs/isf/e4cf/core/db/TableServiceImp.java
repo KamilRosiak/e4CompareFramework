@@ -339,6 +339,16 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		con.close();
 	}
 
+	/**
+	 * Method to drop Autoincrement of column.
+	 * 
+	 * @param pPath       String the path of the database
+	 * @param pDbName     String the name of the database
+	 * @param tableName   String the name of the table
+	 * @param columnNames String the name of the columns of which the primary key
+	 *                    will be dropped
+	 * @throws SQLException
+	 */
 	@Override
 	public void dropColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnName)
 			throws SQLException {
@@ -386,6 +396,16 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		con.close();
 	}
 
+	/**
+	 * Method to drop unique constraints of a column.
+	 * 
+	 * @param pPath       String the path of the database
+	 * @param pDbName     String the name of the database
+	 * @param tableName   String the name of the table
+	 * @param columnNames String the name of the column to which the unique
+	 *                    constraints will be added
+	 * @throws SQLException
+	 */
 	@Override
 	public void dropColumnUnique(String pPath, String pDbName, String tableName, String columnNames)
 			throws SQLException {

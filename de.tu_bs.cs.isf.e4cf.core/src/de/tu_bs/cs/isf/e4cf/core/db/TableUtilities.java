@@ -270,6 +270,15 @@ public class TableUtilities {
 		}
 	}
 
+	/**
+	 * Method to check whether a column is autoincrement.
+	 * @param pPath      String the path of the database
+	 * @param pDbName    String the name of the database
+	 * @param tableName  String name of the table
+	 * @param columnName String name of the column
+	 * @return boolean
+	 * @throws SQLException
+	 */
 	public boolean isColumnAutoIncrement(final String pPath, final String pDbName, final String tableName,
 			final String columnName) throws SQLException {
 		Column c = getColumn(pPath, pDbName, tableName, columnName);
