@@ -21,9 +21,9 @@ public class EditorTab extends Tab {
 	private SyntaxHighlighter highlighter;
 
 	public EditorTab(String text, String fileEnding, String content) {
+		this.fileEnding = fileEnding;
 		CodeArea codeArea = createCodeArea(content);
 		setText(text);
-		this.fileEnding = fileEnding;
 		highlighter = new SyntaxHighlighter(fileEnding, codeArea);
 		setContent(codeArea);
 	}
