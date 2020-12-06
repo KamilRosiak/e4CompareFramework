@@ -1,12 +1,17 @@
-package de.tu_bs.cs.isf.e4cf.text_editor.file_types;
+package de.tu_bs.cs.isf.e4cf.text_editor.highlighter;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JavaFileType {
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+
+public class JavaHighlighting {
 	
 	/**
-	 * All keywords that should be highlighted for this fileType
+	 * All words that should be specially highlighted for this fileType
 	 */
 	public static final String[] KEYWORDS = new String[] {
 		"abstract", "assert", "boolean", "break", "byte",
@@ -41,27 +46,27 @@ public class JavaFileType {
             + "|(?<STRING>" + STRING_PATTERN + ")"
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
-	
-    /**
-     * Returns the corresponding css class for a pattern token from this
-     * file-types' pattern. Css classes have to be defined in a separate css-file
-     * in the ui/view/style folder. Additionally the css-file has to be imported
-     * into "main.css"
-     * 
-     * @param matcher 
-     * @return css class for this pattern token
-     */
-	public static String getStyleClass(Matcher matcher) {
-		String styleClass =
-			matcher.group("KEYWORD") != null ? "java-keyword" :
-			matcher.group("PAREN") != null ? "java-paren" :
-			matcher.group("BRACE") != null ? "java-brace" :
-			matcher.group("BRACKET") != null ? "java-bracket" :
-			matcher.group("SEMICOLON") != null ? "java-semicolon" :
-			matcher.group("STRING") != null ? "java-string" :
-			matcher.group("COMMENT") != null ? "java-comment" :
-			null;
-		assert styleClass != null;
-		return styleClass;
+    
+	public static StyleSpans<Collection<String>> computeHighlighting(String text) {
+		Matcher matcher = PATTERN.matcher(text);
+		int lastKwEnd = 0;
+		StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+		while(matcher.find()) {
+			String styleClass = 
+					matcher.group("KEYWORD") != null ? "java-keyword" :
+					matcher.group("PAREN") != null ? "java-paren" :
+					matcher.group("BRACE") != null ? "java-brace" :
+					matcher.group("BRACKET") != null ? "java-bracket" :
+					matcher.group("SEMICOLON") != null ? "java-semicolon" :
+					matcher.group("STRING") != null ? "java-string" :
+					matcher.group("COMMENT") != null ? "java-comment" :
+					null;
+			
+		    spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+		    spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+		    lastKwEnd = matcher.end();
+		}
+		spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+		return spansBuilder.create();
 	}
 }

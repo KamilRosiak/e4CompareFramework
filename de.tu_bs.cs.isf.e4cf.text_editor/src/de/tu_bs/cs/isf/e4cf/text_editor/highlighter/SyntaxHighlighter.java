@@ -1,12 +1,10 @@
-package de.tu_bs.cs.isf.e4cf.text_editor;
+package de.tu_bs.cs.isf.e4cf.text_editor.highlighter;
 
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
 
-import de.tu_bs.cs.isf.e4cf.text_editor.file_types.JavaFileType;
-import de.tu_bs.cs.isf.e4cf.text_editor.file_types.XmlFileType;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
@@ -24,8 +22,7 @@ import java.util.function.Function;
 
 public class SyntaxHighlighter {
     private CodeArea codeArea;
-    private Pattern pattern;
-    private Function<Matcher, String> styleClass;
+    private Function<String, StyleSpans<Collection<String>>> highlightingFunction;
     private ExecutorService executor;
     private Timer timer;
     
@@ -42,32 +39,16 @@ public class SyntaxHighlighter {
 	private void initHighlightingData(String fileType) {
 	    switch (fileType) {
 	        case "java":
-	            pattern = JavaFileType.PATTERN;
-	            styleClass = JavaFileType::getStyleClass;
+	            highlightingFunction = JavaHighlighting::computeHighlighting;
 	            break;
 	        
 	        case "xml":
-	            pattern = XmlFileType.PATTERN;
-	            styleClass = XmlFileType::getStyleClass;
+	            highlightingFunction = XMLHighlighting::computeHighlighting;
 	            break;
 	
 	        default:
-	            pattern = Pattern.compile("a^");
+	        	return;
 	    }
-	}
-    
-	private StyleSpans<Collection<String>> computeHighlighting(String text) {
-		Matcher matcher = pattern.matcher(text);
-		int lastKwEnd = 0;
-		StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-		while(matcher.find()) {
-			String styleClass = this.styleClass.apply(matcher);
-		    spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-		    spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
-		    lastKwEnd = matcher.end();
-		}
-		spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-		return spansBuilder.create();
 	}
 
     private void scheduleHighlighting(CodeArea codeArea) {
@@ -95,7 +76,7 @@ public class SyntaxHighlighter {
                     @Override
                     public void run(){
                         String text = codeArea.getText();
-                        StyleSpans<Collection<String>> styleSpans = computeHighlighting(text);
+                        StyleSpans<Collection<String>> styleSpans = highlightingFunction.apply(text);
                         codeArea.setStyleSpans(0, styleSpans);
                     }
                 });
@@ -116,7 +97,7 @@ public class SyntaxHighlighter {
         Task<StyleSpans<Collection<String>>> task = new Task<StyleSpans<Collection<String>>>() {
             @Override
             protected StyleSpans<Collection<String>> call() throws Exception {
-                return computeHighlighting(text);
+                return highlightingFunction.apply(text);
             }
         };
         executor.execute(task);

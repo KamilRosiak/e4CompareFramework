@@ -3,7 +3,7 @@ package de.tu_bs.cs.isf.e4cf.text_editor.view;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
-import de.tu_bs.cs.isf.e4cf.text_editor.SyntaxHighlighter;
+import de.tu_bs.cs.isf.e4cf.text_editor.highlighter.SyntaxHighlighter;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 
