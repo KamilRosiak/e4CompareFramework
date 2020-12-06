@@ -17,7 +17,7 @@ public class Test {
 		final String DATABASENAME = "TestDatenbank";
 		final String TABLEENAME = "testTabelle";
 
-		Column c1 = new Column("id", "integer");
+		Column c1 = new Column("id", "integer", true, false, true, true);
 		Column c2 = new Column("age", "integer");
 		Column c3 = new Column("testID", "integer", false, false, false, false);
 
@@ -25,8 +25,41 @@ public class Test {
 
 		DatabaseFactory.getInstance().createDatabase(DATABASEPATH, DATABASENAME);
 
-		c.createTable(DATABASEPATH, DATABASENAME, TABLEENAME, c1, c2, c3);
+		//c.renameColumn(DATABASEPATH, DATABASENAME, TABLEENAME, c3.getName()+"renamed", c3.getName());
 
+		 c.createTable(DATABASEPATH, DATABASENAME, TABLEENAME, c1, c2, c3);
+		 
+		 //c.makeColumnPrimaryKey(DATABASEPATH, DATABASENAME, TABLEENAME, c3.getName());
+		 
+		 c.getColumnsTable(DATABASEPATH, DATABASENAME, TABLEENAME);
+		 
+		 c.deleteTable(DATABASEPATH, DATABASENAME, TABLEENAME);
+		 
+		 /*System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c1.getName()));
+
+		 c.dropColumnPrimaryKey(DATABASEPATH, DATABASENAME, TABLEENAME, c1.getName());
+		 
+		 System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c1.getName()));
+		 
+		 System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c2.getName()));
+		 
+		 System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c3.getName()));
+		*/
+		/*
+		 * System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,
+		 * TABLEENAME, c1.getName()));
+		 * 
+		 * System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,
+		 * TABLEENAME, c2.getName()));
+		 * 
+		 * System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,
+		 * TABLEENAME, c3.getName()));
+		 */
+
+		// c.makeColumnPrimaryKey(DATABASEPATH, DATABASENAME, TABLEENAME, c2.getName());
+
+		// System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,
+		// TABLEENAME, c2.getName()));
 		// hier kommen noch die anderen features
 
 	}

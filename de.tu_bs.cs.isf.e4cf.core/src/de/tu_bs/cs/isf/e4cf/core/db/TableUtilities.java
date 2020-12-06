@@ -81,7 +81,8 @@ public class TableUtilities {
 	}
 
 	/**
-	 *  Method to get the primary key of a Table
+	 * Method to get the primary key of a Table
+	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
 	 * @param tableName  String name of the table
@@ -89,21 +90,21 @@ public class TableUtilities {
 	 * @return List<String> list of the primary key in the Table
 	 * @throws SQLException
 	 */
-	public List<String> getTablePrimaryKey(final String pPath, final String pDbName, final String tableName) throws SQLException {
+	public List<String> getPrimaryKeyTable(final String pPath, final String pDbName, final String tableName)
+			throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		ResultSet pkInfo = con.getMetaData().getPrimaryKeys(null, null, tableName);
-		List<String> primarykeyset = new ArrayList<>();
-		while(pkInfo.next()) {
-			String primarykey = pkInfo.getString("COLUMN_NAME");
-			primarykeyset.add(primarykey);
-			
+		final ResultSet rs = con.getMetaData().getPrimaryKeys(null, null, tableName);
+		List<String> primarykeyList = new ArrayList<>();
+		while (rs.next()) {
+			String primarykey = rs.getString("COLUMN_NAME");
+			primarykeyList.add(primarykey);
 		}
-		return primarykeyset;
-		
+		return Collections.unmodifiableList(primarykeyList);
 	}
-	
+
 	/**
-	 *  Method to get the unique constraints of a Table
+	 * Method to get the unique constraints of a Table
+	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
 	 * @param tableName  String name of the table
@@ -111,19 +112,18 @@ public class TableUtilities {
 	 * @return List<String> list of the unique keys in the Table
 	 * @throws SQLException
 	 */
-	
-	public List<String> getTableUniqueKey(final String pPath, final String pDbName, final String tableName) throws SQLException {
+	public List<String> getUniqueKeyTable(final String pPath, final String pDbName, final String tableName)
+			throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		ResultSet IndexInfo = con.getMetaData().getIndexInfo(null, null, tableName, true, false);
-		List<String> uniqueset = new ArrayList<>();
-		while (IndexInfo.next()) {
-			String Unique = IndexInfo.getString("COLUMN_NAME");
-				uniqueset.add(Unique);
-			}
-		return uniqueset;
-		
+		final ResultSet rs = con.getMetaData().getIndexInfo(null, null, tableName, true, false);
+		List<String> uniquekeyList = new ArrayList<>();
+		while (rs.next()) {
+			String Unique = rs.getString("COLUMN_NAME");
+			uniquekeyList.add(Unique);
+		}
+		return Collections.unmodifiableList(uniquekeyList);
 	}
-	
+
 	/**
 	 * Method to get column metadata
 	 *
@@ -133,38 +133,26 @@ public class TableUtilities {
 	 * @return List<String> list of the column metadata in the database
 	 * @throws SQLException
 	 */
-
-	List<Column> getColumnsTable(String pPath, String pDbName, String tableName) throws SQLException {
+	public List<Column> getColumnsTable(final String pPath, final String pDbName, final String tableName)
+			throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		List<Column> columns = new ArrayList<>();
-		String sql = "select * from " + tableName + " LIMIT 0";
-		Statement statement = con.createStatement();
-		ResultSet rs = statement.executeQuery(sql);
-		ResultSetMetaData mrs = rs.getMetaData();
-		List<String> PrimaryKeySet = getTablePrimaryKey(pPath, pDbName, tableName);
-		List<String> UniqueKeySet = getTableUniqueKey(pPath, pDbName, tableName);
-		boolean isPrimaryKey = false;
-		boolean isNull = false;
-		boolean isAutoIncrement = false;
-		boolean isUnique = false;
+		final String sql = "select * from " + tableName + " LIMIT 0";
+		final Statement statement = con.createStatement();
+		final ResultSet rs = statement.executeQuery(sql);
+		final ResultSetMetaData mrs = rs.getMetaData();
+		final List<String> primaryKeySet = getPrimaryKeyTable(pPath, pDbName, tableName);
+		final List<String> uniqueKeySet = getUniqueKeyTable(pPath, pDbName, tableName);
 		for (int i = 1; i <= mrs.getColumnCount(); i++) {
-			isPrimaryKey = PrimaryKeySet.contains(mrs.getColumnLabel(i));
-			
-			isAutoIncrement = mrs.isAutoIncrement(i);
-			
-		    if(!PrimaryKeySet.contains(mrs.getColumnLabel(i))) {
-			  isUnique = UniqueKeySet.contains(mrs.getColumnLabel(i));
-		    }
-		    
-			if (mrs.isNullable(i) == ResultSetMetaData.columnNoNulls) {
-				isNull = false;
-			}
-			
-			Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i), isPrimaryKey, isUnique,
-					isAutoIncrement, isNull);
+			Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i));
+			c.setPrimaryKey(primaryKeySet.contains(mrs.getColumnLabel(i)));
+			c.setUnique(uniqueKeySet.contains(mrs.getColumnLabel(i)));
+			c.setAutoIncrement(mrs.isAutoIncrement(i));
+			c.setNotNull(mrs.isNullable(i) == 0 ? true : false);
 			columns.add(c);
+			//System.out.println(c.isPrimaryKey()+", "+c.isUnique()+", "+c.isNotNull());
 		}
-		return columns;
+		return Collections.unmodifiableList(columns);
 	}
 
 	/**
@@ -186,6 +174,7 @@ public class TableUtilities {
 					return c;
 				}
 			}
+			System.out.println("Column " + columnName + " does not exist.");
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
@@ -214,6 +203,7 @@ public class TableUtilities {
 
 	/**
 	 * Method to check whether a column is primary key or not.
+	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
 	 * @param tableName  String name of the table
@@ -223,16 +213,12 @@ public class TableUtilities {
 	 */
 	public boolean isColumnPrimaryKey(final String pPath, final String pDbName, final String tableName,
 			final String columnName) throws SQLException {
-		Column c = getColumn(pPath, pDbName, tableName, columnName);
-		if (c.isPrimaryKey()) {
-			return true;
-		} else {
-			return false;
-		}
+		return getColumn(pPath, pDbName, tableName, columnName).isPrimaryKey();
 	}
 
 	/**
 	 * Method to check whether a column is unique or not.
+	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
 	 * @param tableName  String name of the table
@@ -242,17 +228,12 @@ public class TableUtilities {
 	 */
 	public boolean isColumnUnique(final String pPath, final String pDbName, final String tableName,
 			final String columnName) throws SQLException {
-        Column c = getColumn(pPath, pDbName, tableName, columnName);
-		if (c.isUnique()) {
-			return true;
-		} else {
-			return false;
-		}
-	
+		return getColumn(pPath, pDbName, tableName, columnName).isUnique();
 	}
 
 	/**
 	 * Method to check whether a column allows Null values.
+	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
 	 * @param tableName  String name of the table
@@ -262,16 +243,12 @@ public class TableUtilities {
 	 */
 	public boolean isColumnNotNull(final String pPath, final String pDbName, final String tableName,
 			final String columnName) throws SQLException {
-		Column c = getColumn(pPath, pDbName, tableName, columnName);
-		if (c.isNotNull() == true) {
-			return true;
-		} else {
-			return false;
-		}
+		return getColumn(pPath, pDbName, tableName, columnName).isNotNull();
 	}
 
 	/**
 	 * Method to check whether a column is autoincrement.
+	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
 	 * @param tableName  String name of the table
@@ -281,12 +258,7 @@ public class TableUtilities {
 	 */
 	public boolean isColumnAutoIncrement(final String pPath, final String pDbName, final String tableName,
 			final String columnName) throws SQLException {
-		Column c = getColumn(pPath, pDbName, tableName, columnName);
-		if (c.isAutoIncrement() == true) {
-			return true;
-		} else {
-			return false;
-		}
+		return getColumn(pPath, pDbName, tableName, columnName).isAutoIncrement();
 	}
 
 }

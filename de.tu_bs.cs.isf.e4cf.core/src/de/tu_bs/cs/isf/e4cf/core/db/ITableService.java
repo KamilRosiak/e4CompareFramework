@@ -106,7 +106,7 @@ public interface ITableService {
 	 *                    will be dropped
 	 * @throws SQLException
 	 */
-	void dropPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
+	void dropColumnPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
 
 	/**
 	 * Method to make a Column Autoincrement of an existing table.
