@@ -20,4 +20,5 @@ public enum JavaNodeTypes {
 	Else,
 	Field,
 	Argument,
+	ReturnType,
 }

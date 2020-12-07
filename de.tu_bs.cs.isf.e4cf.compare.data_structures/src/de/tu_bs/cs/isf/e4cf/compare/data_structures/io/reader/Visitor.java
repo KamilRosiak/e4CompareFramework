@@ -30,6 +30,11 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(CompilationUnit n, Node arg) {
+		Node imports = new NodeImpl(ImportDeclaration.class.getSimpleName(), arg);
+		for(ImportDeclaration c : n.getImports()) {
+			super.visit(c, imports);
+		}
+		
 		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
 
@@ -241,7 +246,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(PackageDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		arg.addAttribute(JavaNodeTypes.Package.name(), n.toString());
 	}
 
 	/**
@@ -249,7 +254,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ImportDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		Node p = new NodeImpl(JavaNodeTypes.Import.name(), arg);
+		p.addAttribute(JavaNodeTypes.Name.name(), n.toString());
 	}
 	
 	/**
@@ -428,7 +434,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(SingleMemberAnnotationExpr n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		c.addAttribute("Name", n.getNameAsString()); // TODO auflösen
+		c.addAttribute("Name", n.getNameAsString()); // TODO aufloesen
 		c.addAttribute(JavaNodeTypes.Value.toString(), n.getMemberValue().toString());
 	}
 
@@ -735,10 +741,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), p);
 		super.visit((BlockStmt) n.getThenStmt(), thenNode);
 		n.remove(n.getThenStmt());
-		n.remove(n.getCondition());
 		if (n.getElseStmt().isPresent()) {
 			Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), p);
-			//Statement elseStmt = n.getElseStmt().get();
+			Statement elseStmt = n.getElseStmt().get();
 			super.visit(n, elseNode);
 		}
 	}
