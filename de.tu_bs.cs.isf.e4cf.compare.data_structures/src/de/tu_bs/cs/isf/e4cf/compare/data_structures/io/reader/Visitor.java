@@ -734,14 +734,12 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		p.addAttribute(JavaNodeTypes.Condition.name(), n.getCondition().toString());
 		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), p);
 		super.visit((BlockStmt) n.getThenStmt(), thenNode);
+		n.remove(n.getThenStmt());
+		n.remove(n.getCondition());
 		if (n.getElseStmt().isPresent()) {
 			Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), p);
-			Statement elseStmt = n.getElseStmt().get();
-			if(n.hasCascadingIfStmt()) {
-				super.visit((IfStmt) elseStmt, elseNode);
-			} else {
-				super.visit((BlockStmt) elseStmt, elseNode);
-			}
+			//Statement elseStmt = n.getElseStmt().get();
+			super.visit(n, elseNode);
 		}
 	}
 
