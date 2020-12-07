@@ -26,7 +26,7 @@
             <MenuItem fx:id="openFile" accelerator="Shortcut+O" mnemonicParsing="false" text="Open" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="saveFile" accelerator="Shortcut+S" mnemonicParsing="false" text="Save" />
-            <MenuItem fx:id="saveFileAs" mnemonicParsing="false" text="Save As" />
+            <MenuItem fx:id="saveFileAs" mnemonicParsing="false" text="Save As" onAction="#initSaveAsAction" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="closeFile" mnemonicParsing="false" text="Close File" />
             <MenuItem fx:id="closeEditor" accelerator="Shortcut+E" mnemonicParsing="false" text="Close Editor" />

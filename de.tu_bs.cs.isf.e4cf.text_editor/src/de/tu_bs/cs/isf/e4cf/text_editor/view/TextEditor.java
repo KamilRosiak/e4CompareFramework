@@ -117,33 +117,14 @@ public class TextEditor implements Initializable {
 	}
 
 	private void initFileMenuItems() {
-
-//		initFileMenuItemNewAction();
 		createNewFileItems();
 		initFileMenuItemOpenAction();
 		initFileMenuItemSaveAction();
-		initFileMenuItemSaveAsAction();
+		//initFileMenuItemSaveAsAction();
 		initFileMenuItemCloseFileAction();
 		initFileMenuItemCloseEditorAction();
 
 	}
-
-//	/**
-//	 * Sets the actions of the New item in the File menu. Make a new File
-//	 * 
-//	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
-//	 */
-//	private void initFileMenuItemNewAction() {
-//		newFile.setOnAction(e -> {
-//			for (Tab t : tabPane.getTabs()) {
-//				if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE+untitledCount)) {
-//					untitledCount++;
-//				}
-//			}
-//			saveChanges();
-//			loadTab(EditorST.NEW_TAB_TITLE + untitledCount, "");
-//		});
-//	}
 
 	/**
 	 * Sets the actions of the Open item in the File menu. Open a File with a
@@ -184,11 +165,10 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	private void initFileMenuItemSaveAsAction() {
-		saveFileAs.setOnAction(e -> {
-			String newpath = fileUtils.saveAs(getCurrentText());
-			setCurrentTabUserData(newpath);
-		});
+	@FXML
+	private void initSaveAsAction() {
+		String newpath = fileUtils.saveAs(getCurrentText());
+		setCurrentTabUserData(newpath);
 	}
 
 	/**
