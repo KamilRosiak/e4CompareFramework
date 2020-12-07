@@ -10,6 +10,9 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
 
+/*
+ * A handler that passes on a renaming event to the event broker.
+ */
 public class RenameHandler {
 
 	@Execute
