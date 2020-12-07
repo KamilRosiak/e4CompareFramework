@@ -140,7 +140,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 					System.out.println("Renaming tablename " + tableName + " to " + newTableName);
 				}
 			} else {
-				System.out.println("Con not Rename tablename " + tableName + " to existing name " + newTableName);
+				System.out.println("Can not Rename tablename " + tableName + " to existing name " + newTableName);
 			}
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
@@ -174,6 +174,15 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 					sqlStatement += ";";
 					System.out.println(sqlStatement);
 					stmt.execute(sqlStatement);
+					if(c.isPrimaryKey()) {
+						makeColumnPrimaryKey(pPath, pDbName, tableName, c.getName());
+					}
+					if(c.isUnique()) {
+						makeColumnUnique(pPath, pDbName, tableName, c.getName());
+					}
+					if(c.isAutoIncrement()) {
+						makeColumnAutoIncrement(pPath, pDbName, tableName, c.getName());
+					}
 					System.out.println("Column " + c.getName() + " added to table: " + tableName);
 				} else {
 					System.out.println("Column " + c.getName() + " already exists.");
@@ -374,7 +383,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, tableName)) {
-			setColumnUnique(pPath, pDbName, tableName, true, columnName);
+			setColumnUnique(pPath, pDbName, tableName, false, columnName);
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
 		}
