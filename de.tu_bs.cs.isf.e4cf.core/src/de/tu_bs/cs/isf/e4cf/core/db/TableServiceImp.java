@@ -33,9 +33,9 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 					if (c.isUnique()) {
 						sqlStatement += " UNIQUE";
 					}
-					/*if (c.isAutoIncrement()) {
-						sqlStatement += "PRIMARYKEY AUTOINCREMENT";
-					}*/
+					if (c.isAutoIncrement()) {
+						sqlStatement += " PRIMARY KEY AUTOINCREMENT";
+					}
 					if (c.isNotNull()) {
 						sqlStatement += " NOT NULL";
 					}

@@ -17,13 +17,15 @@ public class Test {
 		final String DATABASENAME = "TestDatenbank";
 		final String TABLEENAME = "testTabelle";
 
-		Column c1 = new Column("id", "integer", true, false, true, true);
+		Column c1 = new Column("id", "integer", false, false, true, true);
 		Column c2 = new Column("age", "integer");
 		Column c3 = new Column("testID", "integer", false, false, false, false);
 
 		TableServiceImp c = new TableServiceImp();
 
 		DatabaseFactory.getInstance().createDatabase(DATABASEPATH, DATABASENAME);
+		
+		//DatabaseFactory.getInstance().deleteDatabase(DATABASEPATH, DATABASENAME);
 
 		//c.renameColumn(DATABASEPATH, DATABASENAME, TABLEENAME, c3.getName()+"renamed", c3.getName());
 
@@ -31,9 +33,9 @@ public class Test {
 		 
 		 //c.makeColumnPrimaryKey(DATABASEPATH, DATABASENAME, TABLEENAME, c3.getName());
 		 
-		 c.getColumnsTable(DATABASEPATH, DATABASENAME, TABLEENAME);
+		 //c.getColumnsTable(DATABASEPATH, DATABASENAME, TABLEENAME);
 		 
-		 c.deleteTable(DATABASEPATH, DATABASENAME, TABLEENAME);
+		 //c.deleteTable(DATABASEPATH, DATABASENAME, TABLEENAME);
 		 
 		 /*System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c1.getName()));
 
