@@ -24,18 +24,21 @@ import com.github.javaparser.ast.*;
  * @author Hassan Smaoui
  *
  */
-public class Visitor extends VoidVisitorAdapter<Node> {
+public class Visitor extends VoidVisitorAdapter<Node> {	
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/CompilationUnit.html
 	 */
 	@Override
 	public void visit(CompilationUnit n, Node arg) {
-		Node imports = new NodeImpl(ImportDeclaration.class.getSimpleName(), arg);
-		for(ImportDeclaration c : n.getImports()) {
-			super.visit(c, imports);
+		Node cu = VisitorUtil.Parent(n, arg);
+		Node imports = new NodeImpl(ImportDeclaration.class.getSimpleName(), cu);
+		int importSize = n.getImports().size();
+		for(int i = 0; i < importSize; i++) {
+			ImportDeclaration c = n.getImport(0);
+			visit(c, imports);
+			c.removeForced();
 		}
-		
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, cu);
 	}
 
 	/**
@@ -67,18 +70,23 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
-		Node child = new NodeImpl(n.isInterface() ? JavaNodeTypes.Interface.toString() : JavaNodeTypes.Class.toString(),
-				arg);
-		super.visit(n, child);
+		arg.addAttribute((n.isInterface() ? JavaNodeTypes.Interface.toString() : JavaNodeTypes.Class.toString()), n.getNameAsString());
 		if (n.getExtendedTypes().size() > 0) {
 			// Only a single class can be inherited!
-			child.addAttribute(JavaNodeTypes.Superclass.name(), n.getExtendedTypes().get(0).getNameAsString());
+			ClassOrInterfaceType superclass = n.getExtendedTypes(0);
+			arg.addAttribute(JavaNodeTypes.Superclass.name(), superclass.getNameAsString());
+			superclass.removeForced();
+			
 		}
-		int implementedTypeCtr = 0;
-		for (ClassOrInterfaceType cit : n.getImplementedTypes()) {
+		int interfaceSize = n.getImplementedTypes().size();
+		for (int i = 0; i < interfaceSize; i++) {
 			// Multiple classes can be implemented
-			child.addAttribute(JavaNodeTypes.Interface.name() + implementedTypeCtr, cit.getNameAsString());
+			ClassOrInterfaceType cit = n.getImplementedTypes(0);
+			arg.addAttribute(JavaNodeTypes.Interface.name(), cit.getNameAsString());
+			cit.removeForced();
 		}
+		// TODO remove name child
+		super.visit(n, arg);
 	}
 
 	/////////////////////////////
@@ -246,7 +254,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(PackageDeclaration n, Node arg) {
-		arg.addAttribute(JavaNodeTypes.Package.name(), n.toString());
+		arg.addAttribute(JavaNodeTypes.Package.name(), n.getNameAsString());
 	}
 
 	/**
@@ -254,8 +262,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ImportDeclaration n, Node arg) {
-		Node p = new NodeImpl(JavaNodeTypes.Import.name(), arg);
-		p.addAttribute(JavaNodeTypes.Name.name(), n.toString());
+		Node leaf = new NodeImpl(JavaNodeTypes.Import.name(), arg);
+		leaf.addAttribute(JavaNodeTypes.Asterisks.name(), String.valueOf(n.isAsterisk()));
+		leaf.addAttribute(JavaNodeTypes.Static.name(), String.valueOf(n.isStatic()));
+		leaf.addAttribute(JavaNodeTypes.Name.name(), String.valueOf(n.getName()));
 	}
 	
 	/**

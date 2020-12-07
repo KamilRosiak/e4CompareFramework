@@ -21,4 +21,6 @@ public enum JavaNodeTypes {
 	Field,
 	Argument,
 	ReturnType,
+	Asterisks,
+	Static,
 }

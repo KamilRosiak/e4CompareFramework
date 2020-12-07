@@ -23,6 +23,7 @@ import com.github.javaparser.ast.*;
 
 public class JavaReader extends AbstractArtifactReader {
 	public final static String[] SUPPORTED_FILE_ENDINGS = { "java" };
+	private static int TESTLAUF = 0;
 
 	public JavaReader() {
 		super(SUPPORTED_FILE_ENDINGS);
@@ -46,7 +47,8 @@ public class JavaReader extends AbstractArtifactReader {
 			tree = new TreeImpl(fileName, rootNode);
 		}
 
-		System.out.print(TreeConverter.treeToDot(tree));
+		System.out.println(TreeConverter.treeToDot(tree));
+		System.out.println(TESTLAUF);
 		
 		return tree;
 	}
