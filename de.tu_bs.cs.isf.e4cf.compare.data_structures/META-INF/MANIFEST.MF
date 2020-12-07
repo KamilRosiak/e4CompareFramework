@@ -12,3 +12,6 @@ Require-Bundle: org.eclipse.e4.core.services,
  de.tu_bs.cs.isf.e4cf.core.compare
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.util
+Bundle-ClassPath: .,
+ lib/javaparser-core-3.16.3.jar
+
