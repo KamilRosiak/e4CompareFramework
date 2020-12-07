@@ -375,6 +375,13 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		c.addAttribute(JavaNodeTypes.Type.toString(), n.getType().toString());
 		c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().toString());
+		/*
+		int argCounter = 0;
+		for(Expression expr : n.getArguments()) {
+			Node x = new NodeImpl(JavaNodeTypes.Argument.name(), arg);
+			x.addAttribute(JavaNodeTypes.Value.name() + argCounter, expr.toString());
+		}
+		*/
 		super.visit(n, c);
 	}
 
@@ -729,8 +736,12 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		super.visit((BlockStmt) n.getThenStmt(), thenNode);
 		if (n.getElseStmt().isPresent()) {
 			Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), p);
-			BlockStmt elseStmt = (BlockStmt) n.getElseStmt().get();
-			super.visit(elseStmt, elseNode);
+			Statement elseStmt = n.getElseStmt().get();
+			if(n.hasCascadingIfStmt()) {
+				super.visit((IfStmt) elseStmt, elseNode);
+			} else {
+				super.visit((BlockStmt) elseStmt, elseNode);
+			}
 		}
 	}
 

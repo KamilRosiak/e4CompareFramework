@@ -19,4 +19,5 @@ public enum JavaNodeTypes {
 	Then,
 	Else,
 	Field,
+	Argument,
 }
