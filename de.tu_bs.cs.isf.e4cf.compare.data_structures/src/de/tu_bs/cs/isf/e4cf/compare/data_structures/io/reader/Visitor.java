@@ -664,7 +664,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(DoStmt n, Node arg) {
-		VisitorUtil.Leaf(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, VisitorUtil.Parent(n, arg));
 
 	}
 
