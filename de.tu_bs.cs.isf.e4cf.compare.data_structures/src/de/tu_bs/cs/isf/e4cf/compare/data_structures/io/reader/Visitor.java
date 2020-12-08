@@ -707,7 +707,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(DoStmt n, Node arg) {
-		VisitorUtil.Leaf(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, VisitorUtil.Parent(n, arg));
 
 	}
 
@@ -772,7 +772,11 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ForEachStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		//super.visit(n, VisitorUtil.Parent(n, arg));
+		Node p = VisitorUtil.Parent(n, arg);
+		p.addAttribute("Iterable", n.getIterable().toString());
+		super.visit(n, p);
+
 	}
 
 	/**
@@ -780,7 +784,24 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ForStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		//super.visit(n, VisitorUtil.Parent(n, arg));
+		Node p = VisitorUtil.Parent(n, arg);
+		p.addAttribute("Compare", n.getCompare().toString());		
+		n.removeCompare();
+		
+		Node m = new NodeImpl("initializations", p);
+		for (int i=0; i< n.getInitialization().size();i++) {
+			Node k= new NodeImpl("initialization"+i,m);
+			k.addAttribute("initialization"+i, n.getInitialization().get(i).toString());
+			n.getInitialization().get(i).removeForced();
+		}
+		Node z = new NodeImpl("Updates",p);
+		for (int i=0; i< n.getUpdate().size();i++) {
+			Node k= new NodeImpl("Update"+i,z);
+			k.addAttribute("Update"+i, n.getUpdate().get(i).toString());
+			n.getUpdate().get(i).removeForced();
+		}
+		super.visit(n, p);
 	}
 
 	/**
