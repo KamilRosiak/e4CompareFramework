@@ -5,10 +5,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader;
-import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,11 +17,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+<<<<<<< HEAD
+=======
+import javafx.scene.control.TextField;
+>>>>>>> dca6141e12c99bd71eabaa7e17329e32483abdeb
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 public class TreeViewController {
 
@@ -40,20 +43,18 @@ public class TreeViewController {
 	private Label testLabel;
 
 	@FXML
-	private TreeView<?> hirarchy;
+	private TreeView<NodeUsage> hirarchy;
 
-	private Tree tr;
-	private TreeItem<String> rootItem;
+	private TreeItem<NodeUsage> rootItem;
 
-//	@FXML
-//	public void initialize() {
-//		createTree();
-//	}
+	@FXML
+	private TextField searchTextField;
 
-	void openProperties() {
-		services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
+	void switchToPart(String path) {
+		services.partService.showPart(path);
 	}
 
+<<<<<<< HEAD
 	@FXML
 	void openFile() {
 		//check for opened files and close them
@@ -75,6 +76,10 @@ public class TreeViewController {
 		} catch (Exception e) {
 			System.out.println("Beim einlesen der Datei ist ein Fehler aufgetreten.");
 		}
+=======
+	public TreeView<?> getCurrentView() {
+		return this.hirarchy;
+>>>>>>> dca6141e12c99bd71eabaa7e17329e32483abdeb
 	}
 	
 	/**
@@ -110,60 +115,78 @@ public class TreeViewController {
 		hirarchy.getSelectionModel().clearSelection();
 	}
 
-//	@Optional
-//	@Inject
-//	public void showConstraints(@UIEventTopic("SHOW_CONSTRAINT_EVENT") String event) {
-//		updateView();
-//	}
-//	
-//	@Focus
-//	public void updateView() {
-//		try {
-//			DataStructureEditorController dsec = ContextInjectionFactory.make(DataStructureEditorController.class,
-//					EclipseContextFactory.create());
-//			currentModel = dsec.getCurrentFeatureDiagram();
-//			view.showConstraints(fmec.getCurrentFeatureDiagram().getConstraints());
-//		} catch (Exception e) {
-//			RCPMessageProvider.errorMessage("Error", "No FeatureModel Loaded");
-//		}
-//
-//	}
-
-	void createTree() {
-//		Datei wird eingelesen und als TreeView ausgegeben
-
-//		System.out.println(tr.getLeaves());
+	void createTree(Tree tr) {
+		NodeUsage rootNodeUsage = new NodeUsage(tr.getRoot());
+		rootItem = new TreeItem<NodeUsage>(rootNodeUsage);
+		rootItem.setExpanded(true);
 		for (Node node : tr.getLeaves()) {
-			TreeItem<String> item = new TreeItem<String>(node.toString());
+			NodeUsage nodeTest = new NodeUsage(node);
+			TreeItem<NodeUsage> item = new TreeItem<NodeUsage>(nodeTest);
 			rootItem.getChildren().add(item);
-			System.out.println(node.toString());
 		}
-
-		hirarchy = new TreeView<String>(rootItem);
+		hirarchy.setRoot(rootItem);
 		hirarchy.setShowRoot(true);
 
 		hirarchy.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			openProperties();
+			switchToPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
 			services.eventBroker.send("nodePropertiesEvent", hirarchy.getSelectionModel().getSelectedItem().getValue());
 		});
 
-//		hirarchy.setRoot(rootItem);
-//		hirarchy= new TreeView(rootItem);
-		background.getChildren().add(hirarchy);
+	}
 
-		System.out.println(rootItem.getValue());
-//		NodeImpl node = new NodeImpl("class");
-//		TreeImpl tree2 = new TreeImpl("testTree", node);
-//		System.out.println(node.toString());
-//		hirarchy = new TreeView<?>;
+	@Optional
+	@Inject
+	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
+		switchToPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view");
+		createTree(tree);
+		System.out.println(tree.getTreeName());
+	}
 
+	/**
+	 * A method to close a file
+	 */
+	@FXML
+	void closeFile() {
+		// set treeview and its values to null, then remove it from the background
+		hirarchy.setRoot(null);
+	}
+
+	/**
+	 * Selects all elements in the treeview
+	 */
+	@FXML
+	void selectAll() {
+		hirarchy.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		hirarchy.getSelectionModel().selectAll();
+	}
+
+	/**
+	 * Unselects all elements in the treeview
+	 */
+	@FXML
+	void unselectAll() {
+		hirarchy.getSelectionModel().clearSelection();
+	}
+
+	@FXML
+	void searchField() {
+		String searchFieldTextToRead = searchTextField.getText();
+		// TDOD: Field must compare to treeItem
+	}
+
+	/**
+	 * searchButton to search what is typed in searchField
+	 */
+	@FXML
+	void searchButton() {
+		searchField();
 	}
 
 	public TreeView<?> getHirarchy() {
 		return this.hirarchy;
 	}
 
-	public void setHirarchy(TreeView<String> hirarchy) {
+	public void setHirarchy(TreeView<NodeUsage> hirarchy) {
 		this.hirarchy = hirarchy;
 	}
 
