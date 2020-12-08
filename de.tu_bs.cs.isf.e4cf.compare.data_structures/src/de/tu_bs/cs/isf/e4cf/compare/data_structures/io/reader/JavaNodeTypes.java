@@ -27,4 +27,8 @@ public enum JavaNodeTypes {
 	Children,
 	Assignment,
 	Target,
+	Iterator,
+	Comparison,
+	Initilization,
+	Update,
 }

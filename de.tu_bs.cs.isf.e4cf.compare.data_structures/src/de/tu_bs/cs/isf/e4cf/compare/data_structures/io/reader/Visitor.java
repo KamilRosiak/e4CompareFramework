@@ -65,7 +65,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			argNode.addAttribute(JavaNodeTypes.Type.name(), concreteParameter.getNameAsString());
 			concreteParameter.removeForced();
 		}
-		
+
 		super.visit(n, p);
 	}
 
@@ -204,13 +204,13 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		Node assignment = new NodeImpl(JavaNodeTypes.Assignment.name(), arg);
 		Expression target = n.getTarget();
 		Expression value = n.getValue();
-		if(target.getChildNodes().size() <= 1) {
+		if (target.getChildNodes().size() <= 1) {
 			// It is a simple target, e.g. 'x'
 			assignment.addAttribute(JavaNodeTypes.Target.name(), target.toString());
 		} else {
 			target.accept(this, assignment);
 		}
-		if(value.getChildNodes().size() <= 1) {
+		if (value.getChildNodes().size() <= 1) {
 			// It is a simple value, e.g. '1'
 			assignment.addAttribute(JavaNodeTypes.Value.name(), value.toString());
 		} else {
@@ -772,9 +772,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ForEachStmt n, Node arg) {
-		//super.visit(n, VisitorUtil.Parent(n, arg));
+		// super.visit(n, VisitorUtil.Parent(n, arg));
 		Node p = VisitorUtil.Parent(n, arg);
-		p.addAttribute("Iterable", n.getIterable().toString());
+		p.addAttribute(JavaNodeTypes.Iterator.name(), n.getIterable().toString());
 		super.visit(n, p);
 
 	}
@@ -784,21 +784,21 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ForStmt n, Node arg) {
-		//super.visit(n, VisitorUtil.Parent(n, arg));
+		// super.visit(n, VisitorUtil.Parent(n, arg));
 		Node p = VisitorUtil.Parent(n, arg);
-		p.addAttribute("Compare", n.getCompare().toString());		
+		p.addAttribute(JavaNodeTypes.Comparison.name(), n.getCompare().toString());
 		n.removeCompare();
-		
-		Node m = new NodeImpl("initializations", p);
-		for (int i=0; i< n.getInitialization().size();i++) {
-			Node k= new NodeImpl("initialization"+i,m);
-			k.addAttribute("initialization"+i, n.getInitialization().get(i).toString());
+
+		Node m = new NodeImpl(JavaNodeTypes.Initilization.name(), p);
+		for (int i = 0; i < n.getInitialization().size(); i++) {
+			Node k = new NodeImpl(JavaNodeTypes.Initilization.name() + i, m);
+			k.addAttribute(JavaNodeTypes.Initilization.name() + i, n.getInitialization().get(i).toString());
 			n.getInitialization().get(i).removeForced();
 		}
-		Node z = new NodeImpl("Updates",p);
-		for (int i=0; i< n.getUpdate().size();i++) {
-			Node k= new NodeImpl("Update"+i,z);
-			k.addAttribute("Update"+i, n.getUpdate().get(i).toString());
+		Node z = new NodeImpl(JavaNodeTypes.Update.name(), p);
+		for (int i = 0; i < n.getUpdate().size(); i++) {
+			Node k = new NodeImpl(JavaNodeTypes.Update.name() + i, z);
+			k.addAttribute(JavaNodeTypes.Update.name() + i, n.getUpdate().get(i).toString());
 			n.getUpdate().get(i).removeForced();
 		}
 		super.visit(n, p);
@@ -812,11 +812,11 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		Node p = VisitorUtil.Parent(n, arg);
 		this.visitIfStmt(n, p);
 	}
-	
+
 	/**
 	 * Util to generate multiple 'Then' cases
 	 * 
-	 * @param n If Statement
+	 * @param n   If Statement
 	 * @param arg Parent Node
 	 */
 	private void visitIfStmt(IfStmt n, Node arg) {
@@ -826,7 +826,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		thenNode.addAttribute(JavaNodeTypes.Condition.name(), n.getCondition().toString());
 		super.visit((BlockStmt) thenStmt, thenNode);
 		n.remove(thenStmt);
-		
+
 		// Block
 		if (n.hasElseBlock()) {
 			Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), arg);
