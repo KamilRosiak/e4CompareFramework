@@ -5,8 +5,8 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -18,6 +18,12 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 
+/**
+ * Controller for VisualizeTreeView.fxml
+ * 
+ * @author Team05
+ *
+ */
 public class TreeViewController {
 
 	@Inject
@@ -36,46 +42,24 @@ public class TreeViewController {
 	private Label testLabel;
 
 	@FXML
-	private TreeView<NodeUsage> hirarchy;
+	private TreeView<NodeUsage> treeView;
 
 	private TreeItem<NodeUsage> rootItem;
 
 	@FXML
 	private TextField searchTextField;
 
-	void switchToPart(String path) {
-		services.partService.showPart(path);
-	}
-
-	public TreeView<?> getCurrentView() {
-		return this.hirarchy;
-	}
-
-	void createTree(Tree tr) {
-		NodeUsage rootNodeUsage = new NodeUsage(tr.getRoot());
-		rootItem = new TreeItem<NodeUsage>(rootNodeUsage);
-		rootItem.setExpanded(true);
-		for (Node node : tr.getLeaves()) {
-			NodeUsage nodeTest = new NodeUsage(node);
-			TreeItem<NodeUsage> item = new TreeItem<NodeUsage>(nodeTest);
-			rootItem.getChildren().add(item);
-		}
-		hirarchy.setRoot(rootItem);
-		hirarchy.setShowRoot(true);
-
-		hirarchy.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			switchToPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view");
-			services.eventBroker.send("nodePropertiesEvent", hirarchy.getSelectionModel().getSelectedItem().getValue());
-		});
-
-	}
-
+	/**
+	 * switching View to TreeView if a .txt file is selected from the explorer
+	 * 
+	 * @param tree data structure of type tree
+	 */
 	@Optional
 	@Inject
 	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
-		switchToPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view");
-		createTree(tree);
-		System.out.println(tree.getTreeName());
+		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
+		treeView = TreeViewUtilities.initTree(tree, this.treeView, rootItem, services);
+
 	}
 
 	/**
@@ -84,7 +68,7 @@ public class TreeViewController {
 	@FXML
 	void closeFile() {
 		// set treeview and its values to null, then remove it from the background
-		hirarchy.setRoot(null);
+		treeView.setRoot(null);
 	}
 
 	/**
@@ -92,8 +76,8 @@ public class TreeViewController {
 	 */
 	@FXML
 	void selectAll() {
-		hirarchy.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		hirarchy.getSelectionModel().selectAll();
+		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		treeView.getSelectionModel().selectAll();
 	}
 
 	/**
@@ -101,7 +85,7 @@ public class TreeViewController {
 	 */
 	@FXML
 	void unselectAll() {
-		hirarchy.getSelectionModel().clearSelection();
+		treeView.getSelectionModel().clearSelection();
 	}
 
 	@FXML
@@ -114,24 +98,8 @@ public class TreeViewController {
 	 * searchButton to search what is typed in searchField
 	 */
 	@FXML
-	void searchButton() {
+	void search() {
 		searchField();
-	}
-
-	public TreeView<?> getHirarchy() {
-		return this.hirarchy;
-	}
-
-	public void setHirarchy(TreeView<NodeUsage> hirarchy) {
-		this.hirarchy = hirarchy;
-	}
-
-	public VBox getBackground() {
-		return background;
-	}
-
-	public void setBackground(VBox background) {
-		this.background = background;
 	}
 
 }

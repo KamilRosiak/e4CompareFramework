@@ -13,7 +13,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class PropertiesController {
@@ -31,8 +30,11 @@ public class PropertiesController {
 	ServiceContainer container;
 
 	@FXML
-	void initialize() {
-		System.out.println("initialize propertiesView");
+
+	/**
+	 * initializes propertiesView
+	 */
+	void initPropertiesView() {
 		properties = new TableColumn<Node, String>("nodeType");
 		properties.setCellValueFactory(new PropertyValueFactory("nodeType"));
 		value = new TableColumn<Node, String>("attributeKey");
@@ -43,14 +45,12 @@ public class PropertiesController {
 	}
 
 	ObservableList<Node> createRow() {
-		System.out.println("Erstelle Row");
 		ObservableList<Node> nodes = FXCollections.observableArrayList();
 		nodes.add(new NodeImpl("text"));
 		return nodes;
 	}
-	
+
 	ObservableList<Node> createRow(Node node) {
-		System.out.println("Erstelle Row");
 		ObservableList<Node> nodes = FXCollections.observableArrayList();
 		nodes.add(node);
 		return nodes;
@@ -59,7 +59,6 @@ public class PropertiesController {
 	@Optional
 	@Inject
 	public void showProperties(@UIEventTopic("nodePropertiesEvent") Node node) {
-		System.out.println(node.getAttributes());
 		String nodeType = node.getNodeType();
 		createRow(node);
 	}

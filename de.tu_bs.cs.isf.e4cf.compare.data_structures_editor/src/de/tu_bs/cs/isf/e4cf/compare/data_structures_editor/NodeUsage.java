@@ -1,7 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
-import java.util.List;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
@@ -27,12 +25,12 @@ public class NodeUsage extends AbstractNode {
 	public String toString() {
 		String s1 = "";
 		// Condition must be revised so that not every node without attributes is root
-		if(this.getAttributes().isEmpty()) {
+		if (this.getAttributes().isEmpty()) {
 			return s1 + "Root";
 		}
 //		String returnString = getAttributeForKey("text").toString();
-		for(Attribute attribut : this.getAttributes()) {
-			for(String s : attribut.getAttributeValues()) {
+		for (Attribute attribut : this.getAttributes()) {
+			for (String s : attribut.getAttributeValues()) {
 				s1 = s;
 			}
 		}
@@ -55,5 +53,5 @@ public class NodeUsage extends AbstractNode {
 		this(nodeString, parent);
 		setVariabilityClass(varClass);
 	}
-	
+
 }
