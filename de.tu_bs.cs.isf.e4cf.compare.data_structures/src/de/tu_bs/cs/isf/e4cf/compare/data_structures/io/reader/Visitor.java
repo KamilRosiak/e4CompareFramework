@@ -121,9 +121,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		super.visit(n, arg);
 	}
 
-	/////////////////////////////
-	// Serkan
-
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/type/ClassOrInterfaceType.html
 	 */
@@ -503,9 +500,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		arg.addAttribute(n.getClass().getSimpleName(), n.toString());
 	}
 
-	/////////////////////////////////////////////////////////////////////////
-	// Paulo
-
 	/**
 	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/SwitchEntry.html
 	 */
@@ -681,9 +675,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(YieldStmt n, Node arg) {
 		VisitorUtil.Leaf(n, arg);
 	}
-
-	/////////////////////////
-	// Hassan
 
 	/**
 	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/ConstructorDeclaration.html
