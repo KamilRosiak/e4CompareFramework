@@ -31,4 +31,5 @@ public enum JavaNodeTypes {
 	Comparison,
 	Initilization,
 	Update,
+	Body,
 }

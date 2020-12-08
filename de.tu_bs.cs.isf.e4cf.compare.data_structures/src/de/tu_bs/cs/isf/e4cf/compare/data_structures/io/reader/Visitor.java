@@ -12,6 +12,7 @@ import com.github.javaparser.ast.type.*;
 
 import java.util.Arrays;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.*;
 
 /**
@@ -31,6 +32,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(CompilationUnit n, Node arg) {
 		Node cu = VisitorUtil.Parent(n, arg);
+
+		// Imports
 		Node imports = new NodeImpl(ImportDeclaration.class.getSimpleName(), cu);
 		int importSize = n.getImports().size();
 		imports.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(importSize));
@@ -39,6 +42,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			visit(c, imports);
 			c.removeForced();
 		}
+
 		super.visit(n, cu);
 	}
 
@@ -48,12 +52,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(MethodDeclaration n, Node arg) {
 		Node p = VisitorUtil.Parent(n, arg);
-
-		// Return Type
-		Type returnType = n.getType();
-		p.addAttribute(JavaNodeTypes.ReturnType.name(), returnType.toString());
-		// n.remove(returnType); // Type is unremovable...
-
+		
 		// Arguments
 		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), p);
 		int argList = n.getParameters().size();
@@ -62,7 +61,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			Parameter concreteParameter = n.getParameter(0);
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
 			argNode.addAttribute(JavaNodeTypes.Type.name(), concreteParameter.getTypeAsString());
-			argNode.addAttribute(JavaNodeTypes.Type.name(), concreteParameter.getNameAsString());
+			argNode.addAttribute(JavaNodeTypes.Name.name(), concreteParameter.getNameAsString());
 			concreteParameter.removeForced();
 		}
 
@@ -126,7 +125,19 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceType n, Node arg) {
-		// Do nothing
+		if (n.getParentNode().isPresent()) {
+			String type = JavaNodeTypes.Value.name();
+			com.github.javaparser.ast.Node parent = n.getParentNode().get();
+			if (parent instanceof MethodDeclaration) {
+				type = JavaNodeTypes.ReturnType.name();
+			} else /* if (parent instanceof FieldDeclaration) */ {
+				type = JavaNodeTypes.Type.name();
+			} /*
+				 * else { type = n.getClass().getSimpleName(); // TODO if this occurs, add case
+				 * }
+				 */
+			arg.addAttribute(type, n.toString());
+		}
 	}
 
 	/**
@@ -228,7 +239,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BlockStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, new NodeImpl(JavaNodeTypes.Body.name(), arg));
 	}
 
 	/**
@@ -373,10 +384,31 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(MethodCallExpr n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		if(n.getScope().isPresent()) {
+		
+		// Scope
+		if (n.getScope().isPresent()) {
 			c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().get().toString());
 		}
-		super.visit(n, c);
+		
+		// TypeArguments
+		if(n.getTypeArguments().isPresent()) {
+			for(Type typeArgumentExpr : n.getTypeArguments().get()) {
+				c.addAttribute(JavaNodeTypes.Type.name() + JavaNodeTypes.Argument.name(), typeArgumentExpr.toString());
+			}
+		}
+		
+		// Name
+		c.addAttribute(JavaNodeTypes.Name.name(), n.getNameAsString());
+		
+		// Arguments
+		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), c);
+		int argSize = n.getArguments().size(); 
+		args.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(argSize));
+		for (int i = 0; i < argSize; i++) {
+			Expression argumentExpr = n.getArgument(0);
+			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
+			argumentExpr.accept(this, argNode);
+		}
 	}
 
 	/**
@@ -429,16 +461,23 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(ObjectCreationExpr n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		c.addAttribute(JavaNodeTypes.Type.toString(), n.getType().toString());
-		if(n.getScope().isPresent()) {
-			c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().get().toString());
+
+		// Type
+		c.addAttribute(JavaNodeTypes.Type.name(), n.getTypeAsString());
+
+		// Arguments
+		Node arguments = new NodeImpl(JavaNodeTypes.Argument.name(), c);
+		arguments.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(n.getArguments().size()));
+		for (int i = 0; i < n.getArguments().size(); i++) {
+			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, arguments);
+			n.getArgument(i).accept(this, argNode);
 		}
-		/*
-		 * int argCounter = 0; for(Expression expr : n.getArguments()) { Node x = new
-		 * NodeImpl(JavaNodeTypes.Argument.name(), arg);
-		 * x.addAttribute(JavaNodeTypes.Value.name() + argCounter, expr.toString()); }
-		 */
-		super.visit(n, c);
+
+		// Anonymous Class Body
+		if (n.getAnonymousClassBody().isPresent()) {
+			Node anonClassBody = new NodeImpl(JavaNodeTypes.Body.name(), c);
+			n.getAnonymousClassBody().get().forEach(decl -> decl.accept(this, anonClassBody));
+		}
 	}
 
 	/**
@@ -767,10 +806,17 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ForEachStmt n, Node arg) {
-		// super.visit(n, VisitorUtil.Parent(n, arg));
 		Node p = VisitorUtil.Parent(n, arg);
+		
+		// Iterator
 		p.addAttribute(JavaNodeTypes.Iterator.name(), n.getIterable().toString());
-		super.visit(n, p);
+		
+		// Initilization
+		Node initialization = new NodeImpl(JavaNodeTypes.Initilization.name(), p);
+		n.getVariableDeclarator().accept(this, initialization);
+		
+		// Block
+		n.getBody().accept(this, p);
 
 	}
 
@@ -779,25 +825,36 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ForStmt n, Node arg) {
-		// super.visit(n, VisitorUtil.Parent(n, arg));
 		Node p = VisitorUtil.Parent(n, arg);
-		if(n.getCompare().isPresent()) {
+
+		// Comparison
+		if (n.getCompare().isPresent()) {
 			p.addAttribute(JavaNodeTypes.Comparison.name(), n.getCompare().get().toString());
 		}
-		n.removeCompare();
+		n.removeCompare(); // rm bc visited
 
-		Node m = new NodeImpl(JavaNodeTypes.Initilization.name(), p);
+		// Initializations
+		Node inizialitions = new NodeImpl(JavaNodeTypes.Initilization.name(), p);
+		inizialitions.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(n.getInitialization().size()));
 		for (int i = 0; i < n.getInitialization().size(); i++) {
-			Node k = new NodeImpl(JavaNodeTypes.Initilization.name() + i, m);
-			k.addAttribute(JavaNodeTypes.Initilization.name() + i, n.getInitialization().get(i).toString());
-			n.getInitialization().get(i).removeForced();
+			Expression initExpr = n.getInitialization().get(0);
+			Node initNode = new NodeImpl(JavaNodeTypes.Initilization.name() + i, inizialitions);
+			initNode.addAttribute(JavaNodeTypes.Value.name(), initExpr.toString());
+			initExpr.removeForced();
 		}
-		Node z = new NodeImpl(JavaNodeTypes.Update.name(), p);
-		for (int i = 0; i < n.getUpdate().size(); i++) {
-			Node k = new NodeImpl(JavaNodeTypes.Update.name() + i, z);
-			k.addAttribute(JavaNodeTypes.Update.name() + i, n.getUpdate().get(i).toString());
-			n.getUpdate().get(i).removeForced();
+
+		// Updates
+		Node updates = new NodeImpl(JavaNodeTypes.Update.name(), p);
+		int updateSize = n.getUpdate().size();
+		updates.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(updateSize));
+		for (int i = 0; i < updateSize; i++) {
+			Expression updateExpr = n.getUpdate().get(0);
+			Node updateNode = new NodeImpl(JavaNodeTypes.Update.name() + i, updates);
+			updateNode.addAttribute(JavaNodeTypes.Value.name(), updateExpr.toString());
+			updateExpr.removeForced();
 		}
+
+		// Leftovers
 		super.visit(n, p);
 	}
 
