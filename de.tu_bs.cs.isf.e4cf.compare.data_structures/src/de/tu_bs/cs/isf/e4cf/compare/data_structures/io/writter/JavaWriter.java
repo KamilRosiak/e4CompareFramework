@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
 import java.util.Set;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.WriterUtil;
 
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
@@ -48,7 +49,7 @@ public class JavaWriter extends AbstractArtifactWriter {
 	public void writeArtifact(Tree tree, String path) {
 		// TODO Auto-generated method stub
 		if (tree.getArtifactType().equals(NODE_TYPE_TREE)) {
-			FileStreamUtil.writeTextToFile(path + "." + FILE_ENDING, generateFileContent(tree.getRoot()));
+			FileStreamUtil.writeTextToFile(path + "." + FILE_ENDING, createFileContent(tree.getRoot()));
 		}
 	}
 
@@ -58,8 +59,11 @@ public class JavaWriter extends AbstractArtifactWriter {
 	 * @param root Node of the syntax tree.
 	 * @return Contents of a file
 	 */
-	private String generateFileContent(Node root) {
-		CompilationUnit cu = new CompilationUnit();
+	private String createFileContent(Node root) {
+		
+		return WriterUtil.visitWriter(root);
+		
+		/*CompilationUnit cu = new CompilationUnit();
 		
 		for(Attribute attribute : root.getAttributes()) {
 			String key = attribute.getAttributeKey();
@@ -76,9 +80,9 @@ public class JavaWriter extends AbstractArtifactWriter {
 		for (Node child : root.getChildren()) {
 			
 		}
-		return cu.toString();
+		return cu.toString();*/
 	}
-	
+	/*
 	private void ImportDeclaration(Node node, CompilationUnit cu) {
 		for(Node child : node.getChildren()) {
 			cu.addImport(child.getNodeType());
@@ -96,5 +100,5 @@ public class JavaWriter extends AbstractArtifactWriter {
 		for(Node chlild : node.getChildren()) {
 			
 		}
-	}
+	}*/
 }
