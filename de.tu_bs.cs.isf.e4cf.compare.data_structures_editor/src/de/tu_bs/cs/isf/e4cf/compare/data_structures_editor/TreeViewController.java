@@ -69,6 +69,7 @@ public class TreeViewController {
 	void closeFile() {
 		// set treeview and its values to null, then remove it from the background
 		treeView.setRoot(null);
+		
 	}
 
 	/**

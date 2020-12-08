@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.PropertiesController">
    <children>
-      <TableView fx:id="propertiesTable" VBox.vgrow="ALWAYS">
-        <columns>
-          <TableColumn fx:id="Properties" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="295.0" text="Properties" />
-          <TableColumn fx:id="value" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="304.0" text="Value" />
-        </columns>
-      </TableView>
+      <TableView fx:id="propertiesTable" VBox.vgrow="ALWAYS" />
    </children>
 </VBox>
