@@ -373,7 +373,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(MethodCallExpr n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().toString());
+		if(n.getScope().isPresent()) {
+			c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().get().toString());
+		}
 		super.visit(n, c);
 	}
 
@@ -428,7 +430,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ObjectCreationExpr n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		c.addAttribute(JavaNodeTypes.Type.toString(), n.getType().toString());
-		c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().toString());
+		if(n.getScope().isPresent()) {
+			c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().get().toString());
+		}
 		/*
 		 * int argCounter = 0; for(Expression expr : n.getArguments()) { Node x = new
 		 * NodeImpl(JavaNodeTypes.Argument.name(), arg);
@@ -777,7 +781,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ForStmt n, Node arg) {
 		// super.visit(n, VisitorUtil.Parent(n, arg));
 		Node p = VisitorUtil.Parent(n, arg);
-		p.addAttribute(JavaNodeTypes.Comparison.name(), n.getCompare().toString());
+		if(n.getCompare().isPresent()) {
+			p.addAttribute(JavaNodeTypes.Comparison.name(), n.getCompare().get().toString());
+		}
 		n.removeCompare();
 
 		Node m = new NodeImpl(JavaNodeTypes.Initilization.name(), p);
