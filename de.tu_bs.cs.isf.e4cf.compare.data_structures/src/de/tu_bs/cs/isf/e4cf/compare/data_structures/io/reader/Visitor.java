@@ -24,7 +24,7 @@ import com.github.javaparser.ast.*;
  * @author Hassan Smaoui
  *
  */
-public class Visitor extends VoidVisitorAdapter<Node> {	
+public class Visitor extends VoidVisitorAdapter<Node> {
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/CompilationUnit.html
 	 */
@@ -33,7 +33,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		Node cu = VisitorUtil.Parent(n, arg);
 		Node imports = new NodeImpl(ImportDeclaration.class.getSimpleName(), cu);
 		int importSize = n.getImports().size();
-		for(int i = 0; i < importSize; i++) {
+		imports.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(importSize));
+		for (int i = 0; i < importSize; i++) {
 			ImportDeclaration c = n.getImport(0);
 			visit(c, imports);
 			c.removeForced();
@@ -46,7 +47,26 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MethodDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		Node p = VisitorUtil.Parent(n, arg);
+
+		// Return Type
+		Type returnType = n.getType();
+		p.addAttribute(JavaNodeTypes.ReturnType.name(), returnType.toString());
+		// n.remove(returnType); // Type is unremovable...
+
+		// Arguments
+		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), p);
+		int argList = n.getParameters().size();
+		args.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(argList));
+		for (int i = 0; i < argList; i++) {
+			Parameter concreteParameter = n.getParameter(0);
+			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
+			argNode.addAttribute(JavaNodeTypes.Type.name(), concreteParameter.getTypeAsString());
+			argNode.addAttribute(JavaNodeTypes.Type.name(), concreteParameter.getNameAsString());
+			concreteParameter.removeForced();
+		}
+		
+		super.visit(n, p);
 	}
 
 	/**
@@ -62,7 +82,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SimpleName n, Node arg) {
-		arg.addAttribute(JavaNodeTypes.Name.name(), n.toString());
+		if (!(n.getParentNode().get() instanceof ClassOrInterfaceDeclaration)) {
+			arg.addAttribute(JavaNodeTypes.Name.name(), n.toString());
+		}
 	}
 
 	/**
@@ -70,22 +92,32 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
-		arg.addAttribute((n.isInterface() ? JavaNodeTypes.Interface.toString() : JavaNodeTypes.Class.toString()), n.getNameAsString());
+		// Class or Interface?
+		String type = (n.isInterface() ? JavaNodeTypes.Interface.name() : JavaNodeTypes.Class.name());
+		arg.addAttribute(JavaNodeTypes.Type.name(), type);
+
+		// Name
+		SimpleName simpleName = n.getName();
+		arg.addAttribute(type, simpleName.asString());
+		// simpleName.removeForced(); // SimpleName is unremovable -> Solution cf.
+		// visit(SimpleName,Node)
+
+		// Superclass
 		if (n.getExtendedTypes().size() > 0) {
 			// Only a single class can be inherited!
 			ClassOrInterfaceType superclass = n.getExtendedTypes(0);
 			arg.addAttribute(JavaNodeTypes.Superclass.name(), superclass.getNameAsString());
 			superclass.removeForced();
-			
 		}
+
+		// Interfaces
 		int interfaceSize = n.getImplementedTypes().size();
 		for (int i = 0; i < interfaceSize; i++) {
 			// Multiple classes can be implemented
-			ClassOrInterfaceType cit = n.getImplementedTypes(0);
-			arg.addAttribute(JavaNodeTypes.Interface.name(), cit.getNameAsString());
-			cit.removeForced();
+			ClassOrInterfaceType implemented = n.getImplementedTypes(0);
+			arg.addAttribute(JavaNodeTypes.Interface.name(), implemented.getNameAsString());
+			implemented.removeForced();
 		}
-		// TODO remove name child
 		super.visit(n, arg);
 	}
 
@@ -169,7 +201,21 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AssignExpr n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		Node assignment = new NodeImpl(JavaNodeTypes.Assignment.name(), arg);
+		Expression target = n.getTarget();
+		Expression value = n.getValue();
+		if(target.getChildNodes().size() <= 1) {
+			// It is a simple target, e.g. 'x'
+			assignment.addAttribute(JavaNodeTypes.Target.name(), target.toString());
+		} else {
+			target.accept(this, assignment);
+		}
+		if(value.getChildNodes().size() <= 1) {
+			// It is a simple value, e.g. '1'
+			assignment.addAttribute(JavaNodeTypes.Value.name(), value.toString());
+		} else {
+			value.accept(this, assignment);
+		}
 	}
 
 	/**
@@ -247,8 +293,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		p.addAttribute(JavaNodeTypes.Else.name(), n.getElseExpr().toString());
 	}
 
-	/////////////////////////////
-
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/PackageDeclaration.html
 	 */
@@ -267,7 +311,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		leaf.addAttribute(JavaNodeTypes.Static.name(), String.valueOf(n.isStatic()));
 		leaf.addAttribute(JavaNodeTypes.Name.name(), String.valueOf(n.getName()));
 	}
-	
+
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/FieldAccessExpr.html
 	 */
@@ -283,9 +327,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(FieldDeclaration n, Node arg) {
 		super.visit(n, VisitorUtil.Parent(n, arg)); // TODO super call?
 	}
-
-	//////////////////////////////////////////////////
-	// Pascal
 
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/LambdaExpr.html
@@ -392,12 +433,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		c.addAttribute(JavaNodeTypes.Type.toString(), n.getType().toString());
 		c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().toString());
 		/*
-		int argCounter = 0;
-		for(Expression expr : n.getArguments()) {
-			Node x = new NodeImpl(JavaNodeTypes.Argument.name(), arg);
-			x.addAttribute(JavaNodeTypes.Value.name() + argCounter, expr.toString());
-		}
-		*/
+		 * int argCounter = 0; for(Expression expr : n.getArguments()) { Node x = new
+		 * NodeImpl(JavaNodeTypes.Argument.name(), arg);
+		 * x.addAttribute(JavaNodeTypes.Value.name() + argCounter, expr.toString()); }
+		 */
 		super.visit(n, c);
 	}
 
@@ -546,14 +585,14 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(TypeParameter n, Node arg) {
 		Node p = VisitorUtil.Parent(n, arg);
 		super.visit(n, p);
-		for(ClassOrInterfaceType coit : n.findAll(ClassOrInterfaceType.class)) {
+		for (ClassOrInterfaceType coit : n.findAll(ClassOrInterfaceType.class)) {
 			// Does Coit have more attributes than just a name?
 			if (coit.getChildNodes().size() > 1) {
 				// YES! Visit them.
 				Node coitNode = new NodeImpl(JavaNodeTypes.Superclass.name(), p);
 				super.visit(coit, coitNode);
 			} else {
-				// NO! 
+				// NO!
 				p.addAttribute(JavaNodeTypes.Superclass.name(), coit.asString());
 			}
 		}
@@ -612,7 +651,11 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(VoidType n, Node arg) {
-		arg.addAttribute(JavaNodeTypes.Value.toString(), n.toString());
+		JavaNodeTypes type = JavaNodeTypes.Value;
+		if (n.getParentNode().get() instanceof MethodDeclaration) {
+			arg.addAttribute(JavaNodeTypes.ReturnType.name(), n.toString());
+		}
+		arg.addAttribute(type.name(), n.toString());
 	}
 
 	/**
@@ -746,15 +789,30 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(IfStmt n, Node arg) {
 		Node p = VisitorUtil.Parent(n, arg);
-		super.visit((BinaryExpr) n.getCondition(), p);
-		p.addAttribute(JavaNodeTypes.Condition.name(), n.getCondition().toString());
-		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), p);
-		super.visit((BlockStmt) n.getThenStmt(), thenNode);
-		n.remove(n.getThenStmt());
-		if (n.getElseStmt().isPresent()) {
-			Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), p);
+		this.visitIfStmt(n, p);
+	}
+	
+	/**
+	 * Util to generate multiple 'Then' cases
+	 * 
+	 * @param n If Statement
+	 * @param arg Parent Node
+	 */
+	private void visitIfStmt(IfStmt n, Node arg) {
+		// Fall through
+		Statement thenStmt = n.getThenStmt();
+		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), arg);
+		thenNode.addAttribute(JavaNodeTypes.Condition.name(), n.getCondition().toString());
+		super.visit((BlockStmt) thenStmt, thenNode);
+		n.remove(thenStmt);
+		
+		// Block
+		if (n.hasElseBlock()) {
+			Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), arg);
 			Statement elseStmt = n.getElseStmt().get();
-			super.visit(n, elseNode);
+			elseStmt.accept(this, elseNode);
+		} else if (n.hasElseBranch()) {
+			this.visitIfStmt((IfStmt) n.getElseStmt().get(), arg);
 		}
 	}
 

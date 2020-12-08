@@ -24,4 +24,7 @@ public enum JavaNodeTypes {
 	Asterisks,
 	Static, 
 	Modifier,
+	Children,
+	Assignment,
+	Target,
 }
