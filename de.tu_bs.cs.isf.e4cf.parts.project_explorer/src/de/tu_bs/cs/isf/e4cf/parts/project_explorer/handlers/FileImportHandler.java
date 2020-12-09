@@ -23,7 +23,6 @@ import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.FileImportWizard;
 
-
 /**
  * A handler that copies files into a selected directory.
  * 
@@ -33,10 +32,11 @@ public class FileImportHandler {
 	private static final String WINDOW_TITLE = "Import Files";
 	private static final Point WINDOW_SIZE = new Point(800, 600);
 	private static final String FILE_ICON_PATH = "icons/Explorer_View/items/file32.png";
-	
+
 	@Execute
-	public void execute(RCPImageService imageService, RCPDialogService dialogService, RCPSelectionService selectionService,
-			@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, WorkspaceFileSystem fileSystem) {
+	public void execute(RCPImageService imageService, RCPDialogService dialogService,
+			RCPSelectionService selectionService, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+			WorkspaceFileSystem fileSystem) {
 		try {
 			Path target = getTargetPath(selectionService);
 			FileImportWizard wizard = buildFileImportWizard(shell, imageService);
@@ -44,10 +44,10 @@ public class FileImportHandler {
 			copyFiles(target, wizard.getSourceFiles(), fileSystem);
 		} catch (IOException e) {
 			RCPMessageProvider.errorMessage(WINDOW_TITLE, e.getMessage());
-		} catch (NullPointerException e ) {
+		} catch (NullPointerException e) {
 			RCPMessageProvider.errorMessage(WINDOW_TITLE, e.getMessage());
 		}
-		
+
 	}
 
 	private void copyFiles(Path target, List<Path> selectedFiles, WorkspaceFileSystem fileSystem) throws IOException {
@@ -78,7 +78,6 @@ public class FileImportHandler {
 		return wizard;
 	}
 
-	
 	@CanExecute
 	public boolean canExecute(RCPSelectionService selectionService) {
 		try {
@@ -89,5 +88,5 @@ public class FileImportHandler {
 			return false;
 		}
 	}
-		
+
 }

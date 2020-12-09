@@ -14,21 +14,26 @@ import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.NewProjectWizard;
 
 /**
- * This command opens a wizard that allows a user to creates a new project in the current workspace. 
+ * This command opens a wizard that allows a user to creates a new project in
+ * the current workspace.
+ * 
  * @author {Kamil Rosiak}
  */
 public class NewProjectHandler {
-	@Inject @Named(IServiceConstants.ACTIVE_SHELL) private Shell _shell;
-    @Inject IEventBroker _eventBroker;
-    @Inject RCPImageService _imageService;
+	@Inject
+	@Named(IServiceConstants.ACTIVE_SHELL)
+	private Shell _shell;
+	@Inject
+	IEventBroker _eventBroker;
+	@Inject
+	RCPImageService _imageService;
 
-    
 	@Execute
 	public void execute() {
-		NewProjectWizard wizard = new NewProjectWizard(_eventBroker, _imageService); 
+		NewProjectWizard wizard = new NewProjectWizard(_eventBroker, _imageService);
 		WizardDialog dialog = new WizardDialog(_shell, wizard);
 		Window.setDefaultImage(_imageService.getImage(null, "icons/Explorer_View/items/project24.png"));
 		dialog.open();
 	}
-		
+
 }

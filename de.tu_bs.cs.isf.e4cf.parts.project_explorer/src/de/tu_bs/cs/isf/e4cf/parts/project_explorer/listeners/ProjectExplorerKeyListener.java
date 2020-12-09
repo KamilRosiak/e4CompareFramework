@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners;
 
-
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
@@ -20,46 +19,46 @@ import javafx.scene.input.KeyEvent;
  * Listens for key events on the Project Explorer
  */
 public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
-	
+
 	// Eclipse context for commands
 	IEclipseContext eclipseContext;
-	
+
 	@Inject
 	ServiceContainer services;
-	
+
 	// Define key combinations here
-	KeyCombination kcRename = new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN);	
-	
-	public ProjectExplorerKeyListener(IEclipseContext  eclipseContext) {
+	KeyCombination kcRename = new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN);
+
+	public ProjectExplorerKeyListener(IEclipseContext eclipseContext) {
 		this.eclipseContext = eclipseContext;
 	}
-	
+
 	@Override
 	public void handle(KeyEvent event) {
-		
+
 		// Handle defined Key Combos, otherwise single key events
 		if (kcRename.match(event)) {
 			// Rename combo
 			renameFile();
 		} else {
-			
+
 			// Handle single Key Events in switch case
 			KeyCode keyCode = event.getCode();
 			switch (keyCode) {
-				case DELETE:
-					removeFile();
-					break;
-					
-				case F2:
-					renameFile();
-					break;
-					
-				default:
-					// do nothing
+			case DELETE:
+				removeFile();
+				break;
+
+			case F2:
+				renameFile();
+				break;
+
+			default:
+				// do nothing
 			}
 		}
 	}
-	
+
 	/**
 	 * Invokes the RenameFileWizard
 	 */
@@ -70,7 +69,7 @@ public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
 	}
 
 	/**
-	 * This method removes a file from explorer 
+	 * This method removes a file from explorer
 	 */
 	private void removeFile() {
 		RemoveFileCommand removeFileCommand = new RemoveFileCommand();

@@ -9,7 +9,6 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
-import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.DragEvent;
@@ -24,40 +23,31 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem) {
 		super();
 
-		setOnDragOver(new EventHandler<DragEvent>() {
-			@Override
-			public void handle(DragEvent event) {
-				event.acceptTransferModes(TransferMode.COPY);
-			}
-		});
+		setOnDragOver((DragEvent event) -> event.acceptTransferModes(TransferMode.COPY));
 
-		setOnDragDropped(new EventHandler<DragEvent>() {
+		setOnDragDropped((DragEvent event) -> {
+			TreeItem<FileTreeElement> currentItem = getTreeItem();
+			Directory directory = (Directory) currentItem.getValue();
 
-			@Override
-			public void handle(DragEvent event) {
-				TreeItem<FileTreeElement> currentItem = getTreeItem();
-				Directory directory = (Directory) currentItem.getValue();
-
-				final Dragboard db = event.getDragboard();
-				boolean success = false;
-				if (db.hasFiles()) {
-					List<java.io.File> files = db.getFiles();
-					for (java.io.File file : files) {
-						try {
-							workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
-									Paths.get(directory.getAbsolutePath()));
-							success = true;
-						} catch (FileAlreadyExistsException e) {
-							RCPMessageProvider.errorMessage("File already exsits.",
-									"A file with the name " + file + " exists.");
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+			final Dragboard db = event.getDragboard();
+			boolean success = false;
+			if (db.hasFiles()) {
+				List<java.io.File> files = db.getFiles();
+				for (java.io.File file : files) {
+					try {
+						workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
+								Paths.get(directory.getAbsolutePath()));
+						success = true;
+					} catch (FileAlreadyExistsException e) {
+						RCPMessageProvider.errorMessage("File already exsits.",
+								"A file with the name " + file + " exists.");
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
-				event.setDropCompleted(success);
-				event.consume();
 			}
+			event.setDropCompleted(success);
+			event.consume();
 		});
 	}
 }

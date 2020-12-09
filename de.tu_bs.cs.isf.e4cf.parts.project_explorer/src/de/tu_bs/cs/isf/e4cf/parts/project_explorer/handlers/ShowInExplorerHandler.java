@@ -1,4 +1,4 @@
- 
+
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers;
 
 import java.awt.Desktop;
@@ -15,12 +15,12 @@ public class ShowInExplorerHandler {
 	@Execute
 	public void execute(RCPSelectionService selectionService) {
 		FileTreeElement directoryToOpen = selectionService.getCurrentSelectionFromExplorer();
-		
+
 		// If we omit this, we can open files with the OS directly.
 		if (!directoryToOpen.isDirectory()) {
 			directoryToOpen = directoryToOpen.getParent();
 		}
-		
+
 		java.io.File directoryAsFile = FileHandlingUtility.getPath(directoryToOpen).toFile();
 		try {
 			Desktop.getDesktop().open(directoryAsFile);
@@ -29,7 +29,7 @@ public class ShowInExplorerHandler {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@CanExecute
 	public boolean canExecute(RCPSelectionService selectionService) {
 		FileTreeElement element = selectionService.getCurrentSelectionFromExplorer();

@@ -1,4 +1,4 @@
- 
+
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers;
 
 import java.nio.file.Path;
@@ -18,30 +18,29 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.NewFolderPage;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.NewFolderWizard;
 
 public class NewFolderHandler {
-	
+
 	@Execute
-	public void execute(Shell shell, RCPDialogService dialogService, RCPSelectionService selectionService, 
+	public void execute(Shell shell, RCPDialogService dialogService, RCPSelectionService selectionService,
 			RCPImageService imageService, WorkspaceFileSystem fileSystem) {
 		FileTreeElement selectedElement = selectionService.getCurrentSelectionFromExplorer();
-		
-		NewFolderPage page = new NewFolderPage(
-				"NewFolder", "Choose a Folder Name", 
-				imageService.getImageDescriptor(null, "icons/Explorer_View/items/project32.png")
-		);
-		
-		// create selected directory when selected element available, else create new project
+
+		NewFolderPage page = new NewFolderPage("NewFolder", "Choose a Folder Name",
+				imageService.getImageDescriptor(null, "icons/Explorer_View/items/project32.png"));
+
+		// create selected directory when selected element available, else create new
+		// project
 		Path directory;
 		if (selectedElement != null) {
 			directory = FileHandlingUtility.getPath(selectedElement);
 		} else {
 			directory = FileHandlingUtility.getPath(fileSystem.getWorkspaceDirectory());
 		}
-		
+
 		NewFolderWizard folderWizard = new NewFolderWizard(directory, page);
 		folderWizard.addPage(page);
 		dialogService.constructDialog("Create a new Folder", new Point(600, 200), folderWizard).open();
 	}
-		
+
 	@CanExecute
 	public boolean canExecute(RCPSelectionService selectionService) {
 		FileTreeElement element = selectionService.getCurrentSelectionFromExplorer();
