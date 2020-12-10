@@ -98,12 +98,17 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
+		Node classOrInterfaceDeclarationNode = arg;
+		if (!n.getParentNode().isPresent() || !(n.getParentNode().get() instanceof CompilationUnit)) {
+			classOrInterfaceDeclarationNode = new NodeImpl(n.isInterface() ? JavaNodeTypes.Interface.name() : JavaNodeTypes.Class.name(), arg);
+		}
+		
 		// Class or Interface?
-		arg.addAttribute(JavaNodeTypes.isInterface.name(), String.valueOf(n.isInterface()));
+			classOrInterfaceDeclarationNode.addAttribute(JavaNodeTypes.isInterface.name(), String.valueOf(n.isInterface()));
 
 		// Name
 		SimpleName simpleName = n.getName();
-		arg.addAttribute(JavaNodeTypes.Name.name(), simpleName.asString());
+		classOrInterfaceDeclarationNode.addAttribute(JavaNodeTypes.Name.name(), simpleName.asString());
 		// simpleName.removeForced(); // SimpleName is unremovable -> Solution cf.
 		// visit(SimpleName,Node)
 
@@ -111,7 +116,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		if (n.getExtendedTypes().size() > 0) {
 			// Only a single class can be inherited!
 			ClassOrInterfaceType superclass = n.getExtendedTypes(0);
-			arg.addAttribute(JavaNodeTypes.Superclass.name(), superclass.getNameAsString());
+			classOrInterfaceDeclarationNode.addAttribute(JavaNodeTypes.Superclass.name(), superclass.getNameAsString());
 			superclass.removeForced();
 		}
 
@@ -120,10 +125,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		for (int i = 0; i < interfaceSize; i++) {
 			// Multiple classes can be implemented
 			ClassOrInterfaceType implemented = n.getImplementedTypes(0);
-			arg.addAttribute(JavaNodeTypes.Interface.name(), implemented.getNameAsString());
+			classOrInterfaceDeclarationNode.addAttribute(JavaNodeTypes.Interface.name(), implemented.getNameAsString());
 			implemented.removeForced();
 		}
-		super.visit(n, arg);
+		super.visit(n, classOrInterfaceDeclarationNode);
 	}
 
 	/**
