@@ -33,4 +33,6 @@ public enum JavaNodeTypes {
 	Update,
 	Body,
 	Cast,
+	Check,
+	Message,
 }

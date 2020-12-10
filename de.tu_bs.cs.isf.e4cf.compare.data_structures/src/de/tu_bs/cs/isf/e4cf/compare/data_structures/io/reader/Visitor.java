@@ -201,7 +201,13 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AssertStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		Node parent = VisitorUtil.Parent(n, arg);
+		Node check = new NodeImpl(JavaNodeTypes.Check.name(), parent);	
+		Node message = new NodeImpl(JavaNodeTypes.Message.name(), parent);
+		n.getCheck().accept(this, check);
+		if(n.getMessage().isPresent()) {
+			n.getMessage().get().accept(this, message);
+		}
 	}
 
 	/**
