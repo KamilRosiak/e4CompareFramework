@@ -425,9 +425,18 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(MethodReferenceExpr n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		c.addAttribute("Identifier", n.getIdentifier());
-		c.addAttribute(JavaNodeTypes.Scope.toString(), n.getScope().toString());
-		super.visit(n, c);
+		
+		// Identifier
+		c.addAttribute(JavaNodeTypes.Identifier.name(), n.getIdentifier());
+		
+		// Scope
+		c.addAttribute(JavaNodeTypes.Scope.name(), n.getScope().toString());
+		
+		// Type
+		if (n.getTypeArguments().isPresent()) {
+			n.getTypeArguments().get().forEach(typeArg -> c.addAttribute(JavaNodeTypes.Type.name(), typeArg.toString()));
+		}
+		
 	}
 
 	/**

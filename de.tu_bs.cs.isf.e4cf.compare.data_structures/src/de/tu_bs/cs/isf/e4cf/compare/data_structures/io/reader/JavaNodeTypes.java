@@ -39,4 +39,5 @@ public enum JavaNodeTypes {
 	Bound,
 	Selector,
 	Default,
+	Identifier,
 }
