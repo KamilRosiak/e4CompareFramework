@@ -333,7 +333,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(FieldAccessExpr n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		arg.addAttribute(JavaNodeTypes.Scope.name(), n.getScope().toString());
+		arg.addAttribute(JavaNodeTypes.Name.name(), n.getNameAsString());
 	}
 
 	/**
