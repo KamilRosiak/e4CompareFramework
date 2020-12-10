@@ -377,7 +377,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(MemberValuePair n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		c.addAttribute(JavaNodeTypes.Key.toString(), n.getValue().toString());
+		c.addAttribute(JavaNodeTypes.Key.toString(), n.getNameAsString());
 		c.addAttribute(JavaNodeTypes.Value.toString(), n.getValue().toString());
 	}
 
