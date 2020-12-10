@@ -669,7 +669,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnionType n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		Node unionTypeNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		n.getElements().forEach(elem -> unionTypeNode.addAttribute(JavaNodeTypes.Type.name(), elem.toString()));
 	}
 
 	/**
