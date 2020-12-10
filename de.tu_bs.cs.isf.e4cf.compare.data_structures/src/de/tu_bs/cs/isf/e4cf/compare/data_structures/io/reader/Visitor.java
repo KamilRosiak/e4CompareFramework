@@ -700,6 +700,23 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			n.getChildNodes().get(childNodeCounter).accept(this, childNode);
 		}
 	}
+	
+	/**
+	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/index.html?com/github/javaparser/ast/expr/MemberValuePair.html
+	 */
+	@Override
+	public void visit(VariableDeclarator n, Node arg) {
+		// Type
+		arg.addAttribute(JavaNodeTypes.Type.name(), n.getTypeAsString());
+		
+		// Name
+		arg.addAttribute(JavaNodeTypes.Name.name(), n.getNameAsString());
+		
+		// Initializer
+		if (n.getInitializer().isPresent()) {
+			n.getInitializer().get().accept(this, arg);
+		}
+	}
 
 	/**
 	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/VarType.html
