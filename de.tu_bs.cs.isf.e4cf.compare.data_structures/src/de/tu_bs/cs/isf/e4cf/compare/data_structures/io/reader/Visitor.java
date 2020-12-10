@@ -551,7 +551,19 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchEntry n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		Node parent = VisitorUtil.Parent(n, arg);
+		
+		// Label
+		n.getLabels().forEach(label -> parent.addAttribute(JavaNodeTypes.Condition.name(), label.toString()));
+		if(n.getLabels().size() == 0) {
+			parent.addAttribute(JavaNodeTypes.Default.name(), String.valueOf(true));
+		}
+		
+		// Type
+		parent.addAttribute(JavaNodeTypes.Type.name(), n.getType().name());
+		
+		// Statements
+		n.getStatements().forEach(stmt -> stmt.accept(this, parent));
 	}
 
 	/**
@@ -567,7 +579,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		Node parent = VisitorUtil.Parent(n, arg);
+		parent.addAttribute(JavaNodeTypes.Selector.name(), n.getSelector().toString());
+		n.getEntries().forEach(entry -> entry.accept(this, parent));
 	}
 
 	/**

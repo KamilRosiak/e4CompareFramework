@@ -37,4 +37,6 @@ public enum JavaNodeTypes {
 	Message,
 	Throws,
 	Bound,
+	Selector,
+	Default,
 }
