@@ -48,7 +48,7 @@ public class JavaReader extends AbstractArtifactReader {
 		}
 
 		System.out.println(TreeConverter.treeToDot(tree));
-		System.out.println(TESTLAUF);
+		System.out.println(TESTLAUF++);
 		
 		return tree;
 	}
