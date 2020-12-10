@@ -39,9 +39,9 @@ public class TextEditorViewController {
 	/**
 	 * Puts together the Text Editor from the given .fxml-file.
 	 * 
-	 * @param parent anchors the canvas into the program
+	 * @param parent   anchors the canvas into the program
 	 * @param services
-	 * @param context is needed to load the .fxml
+	 * @param context  is needed to load the .fxml
 	 * @throws IOException
 	 */
 	@PostConstruct

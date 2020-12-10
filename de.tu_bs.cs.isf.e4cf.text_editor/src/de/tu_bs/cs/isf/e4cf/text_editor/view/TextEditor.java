@@ -1,12 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.regex.Matcher;
 
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +10,6 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -31,9 +25,6 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 /**
  * 
@@ -104,26 +95,35 @@ public class TextEditor implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
-		initFileMenuItems();
-		initEditMenuItems();
-		initExtraMenuItems();
-		initHelpMenuItems();
+		createNewFileItems();
 		initCountLabelItems();
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
 		getCurrentTab().setUserData(EditorST.NEW_TAB_TITLE);
 		getCurrentTab().setContent(EditorTab.createCodeArea(""));
-		
 	}
 
-	private void initFileMenuItems() {
-		createNewFileItems();
-		initFileMenuItemOpenAction();
-		initFileMenuItemSaveAction();
-		//initFileMenuItemSaveAsAction();
-		initFileMenuItemCloseFileAction();
-		initFileMenuItemCloseEditorAction();
-
+	/**
+	 * Is called upon creating a new file and adds submenu-items to the "New"-menu
+	 * item.
+	 * 
+	 * @author Soeren Christmann, Lukas Cronauer
+	 * 
+	 */
+	public void createNewFileItems() {
+		for (String FileType : EditorST.FILE_FORMATS) {
+			MenuItem menu = new MenuItem(FileType + "-File");
+			menu.setOnAction(e -> {
+				for (Tab t : tabPane.getTabs()) {
+					if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE + untitledCount)) {
+						untitledCount++;
+					}
+				}
+				saveChanges();
+				loadTab(EditorST.NEW_TAB_TITLE + untitledCount + "." + FileType, "");
+				getCurrentTab().getContent().requestFocus();
+			});
+			newFile.getItems().addAll(menu);
+		}
 	}
 
 	/**
@@ -132,13 +132,12 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	private void initFileMenuItemOpenAction() {
-		openFile.setOnAction(e -> {
-			String[] fileInfo = fileUtils.openFile();
-			if (!(fileInfo[1].isEmpty())) {
-				loadTab(fileInfo[0], fileInfo[1]);
-			}
-		});
+	@FXML
+	private void initOpenFileAction() {
+		String[] fileInfo = fileUtils.openFile();
+		if (!(fileInfo[1].isEmpty())) {
+			loadTab(fileInfo[0], fileInfo[1]);
+		}
 	}
 
 	/**
@@ -147,16 +146,15 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
-	private void initFileMenuItemSaveAction() {
-		saveFile.setOnAction(e -> {
-			String fileName = (String) getCurrentTab().getUserData();
-			if (fileName.startsWith(EditorST.NEW_TAB_TITLE)) {
-				String newpath = fileUtils.saveAs(getCurrentText());
-				setCurrentTabUserData(newpath);
-			} else {
-				fileUtils.save((String) getCurrentTab().getUserData(), getCurrentText());
-			}
-		});
+	@FXML
+	private void initSaveAction() {
+		String fileName = (String) getCurrentTab().getUserData();
+		if (fileName.startsWith(EditorST.NEW_TAB_TITLE)) {
+			String newpath = fileUtils.saveAs(getCurrentText());
+			setCurrentTabUserData(newpath);
+		} else {
+			fileUtils.save((String) getCurrentTab().getUserData(), getCurrentText());
+		}
 	}
 
 	/**
@@ -177,11 +175,10 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
-	private void initFileMenuItemCloseFileAction() {
-		closeFile.setOnAction(e -> {
-			saveChanges();
-			tabPane.getTabs().remove(getCurrentTab());
-		});
+	@FXML
+	private void initCloseFileAction() {
+		saveChanges();
+		tabPane.getTabs().remove(getCurrentTab());
 	}
 
 	/**
@@ -191,27 +188,10 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
-	private void initFileMenuItemCloseEditorAction() {
-		closeEditor.setOnAction(e -> {
-			saveChanges();
-			services.partService.setPartToBeRendered(EditorST.TEXT_EDITOR_FXML_ID, false);
-		});
-	}
-
-	/**
-	 * Initializes the Edit menu. Includes undo/redo, copy/paste/cut, Delete, and
-	 * Select All.
-	 * 
-	 * @author Cedric Kapalla,Soeren Christmann
-	 */
-	private void initEditMenuItems() {
-		initEditMenuItemUndoAction(); // undo
-		initEditMenuItemRedoAction(); // redo
-		initEditMenuItemCutTextAction(); // cut
-		initEditMenuItemCopyTextAction(); // copy
-		initEditMenuItemPasteTextAction(); // paste
-		initEditMenuItemDeleteTextAction(); // delete
-		initEditMenuItemSelectAllAction(); // select all
+	@FXML
+	private void initCloseEditorAction() {
+		saveChanges();
+		services.partService.setPartToBeRendered(EditorST.TEXT_EDITOR_FXML_ID, false);
 	}
 
 	/**
@@ -220,11 +200,10 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla,Soeren Christmann
 	 */
-	private void initEditMenuItemUndoAction() {
-		undo.setOnAction(e -> { // activate once pressed
-			CodeArea textArea = getCurrentTextArea();
-			textArea.undo();
-		});
+	@FXML
+	private void initUndoAction() {
+		CodeArea codeArea = getCurrentCodeArea();
+		codeArea.undo();
 	}
 
 	/**
@@ -233,11 +212,10 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla,Soeren Christmann
 	 */
-	private void initEditMenuItemRedoAction() {
-		redo.setOnAction(e -> {
-			CodeArea textArea = getCurrentTextArea();
-			textArea.redo();
-		});
+	@FXML
+	private void initRedoAction() {
+		CodeArea codeArea = getCurrentCodeArea();
+		codeArea.redo();
 	}
 
 	/**
@@ -246,15 +224,14 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla,Soeren Christmann
 	 */
-	private void initEditMenuItemCutTextAction() {
-		cutText.setOnAction(e -> {
-			CodeArea textArea = getCurrentTextArea();
+	@FXML
+	private void initCutAction() {
+		CodeArea codeArea = getCurrentCodeArea();
 
-			ClipboardContent text = new ClipboardContent();
-			text.putString(textArea.getSelectedText()); // add selected text to clipboard content
-			systemClipboard.setContent(text); // add content to clipboard
-			textArea.deleteText(textArea.getSelection());
-		});
+		ClipboardContent text = new ClipboardContent();
+		text.putString(codeArea.getSelectedText()); // add selected text to clipboard content
+		systemClipboard.setContent(text); // add content to clipboard
+		codeArea.deleteText(codeArea.getSelection());
 	}
 
 	/**
@@ -263,14 +240,13 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla
 	 */
-	private void initEditMenuItemCopyTextAction() {
-		copyText.setOnAction(e -> {
-			CodeArea textArea = getCurrentTextArea();
+	@FXML
+	private void initCopyAction() {
+		CodeArea codeArea = getCurrentCodeArea();
 
-			ClipboardContent text = new ClipboardContent(); // add selected text to clipboard content
-			text.putString(textArea.getSelectedText()); // add content to clipboard
-			systemClipboard.setContent(text);
-		});
+		ClipboardContent text = new ClipboardContent(); // add selected text to clipboard content
+		text.putString(codeArea.getSelectedText()); // add content to clipboard
+		systemClipboard.setContent(text);
 	}
 
 	/**
@@ -280,39 +256,37 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla
 	 */
-	private void initEditMenuItemPasteTextAction() {
-		pasteText.setOnAction(e -> {
-			CodeArea textArea = getCurrentTextArea();
+	@FXML
+	private void initPasteAction() {
+		CodeArea codeArea = getCurrentCodeArea();
 
-			if (!systemClipboard.hasContent(DataFormat.PLAIN_TEXT)) {
-				return; // does nothing if there is nothing or no text on clipboard
-			}
+		if (!systemClipboard.hasContent(DataFormat.PLAIN_TEXT)) {
+			return; // does nothing if there is nothing or no text on clipboard
+		}
+		String pasteText = systemClipboard.getString(); // get text from Clipboard
+		IndexRange range = codeArea.getSelection(); // finds cursor position and selected text to overwrite
 
-			String pasteText = systemClipboard.getString(); // get text from Clipboard
-			IndexRange range = textArea.getSelection(); // finds cursor position and selected text to overwrite
+		// initialisation of variables
+		int endPos = 0; // defines where the cursor will be after paste action
+		String updatedText = "";
+		String origText = codeArea.getText();
 
-			// initialisation of variables
-			int endPos = 0; // defines where the cursor will be after paste action
-			String updatedText = "";
-			String origText = textArea.getText();
+		// Separates the points before and after the inserted text's position
+		String firstPart = StringUtils.substring(origText, 0, range.getStart());
+		String lastPart = StringUtils.substring(origText, range.getEnd(), StringUtils.length(origText));
 
-			// Separates the points before and after the inserted text's position
-			String firstPart = StringUtils.substring(origText, 0, range.getStart());
-			String lastPart = StringUtils.substring(origText, range.getEnd(), StringUtils.length(origText));
+		// puts together the new String
+		updatedText = firstPart + pasteText + lastPart;
 
-			// puts together the new String
-			updatedText = firstPart + pasteText + lastPart;
+		// checks for where to put the cursor after adding text in
+		if (range.getStart() == range.getEnd()) {
+			endPos = range.getEnd() + StringUtils.length(pasteText);
+		} else {
+			endPos = range.getStart() + StringUtils.length(pasteText);
+		}
 
-			// checks for where to put the cursor after adding text in
-			if (range.getStart() == range.getEnd()) {
-				endPos = range.getEnd() + StringUtils.length(pasteText);
-			} else {
-				endPos = range.getStart() + StringUtils.length(pasteText);
-			}
-
-			textArea.replaceText(updatedText);
-			textArea.displaceCaret(endPos);
-		});
+		codeArea.replaceText(updatedText);
+		codeArea.displaceCaret(endPos);
 	}
 
 	/**
@@ -321,11 +295,10 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla,Soeren Christmann
 	 */
-	private void initEditMenuItemDeleteTextAction() {
-		deleteText.setOnAction(e -> {
-			CodeArea textArea = getCurrentTextArea();
-			textArea.deleteText(textArea.getSelection());
-		});
+	@FXML
+	private void initDeleteAction() {
+		CodeArea codeArea = getCurrentCodeArea();
+		codeArea.deleteText(codeArea.getSelection());
 	}
 
 	/**
@@ -334,22 +307,11 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla, Erwin Wijaya
 	 */
-	private void initEditMenuItemSelectAllAction() {
-		selectAllText.setOnAction(e -> {
-			CodeArea textArea = getCurrentTextArea();
-			textArea.requestFocus();
-			textArea.selectAll();
-		});
-	}
-
-	/**
-	 * This function initializes the Extra menu. It consists of the 'Preference'
-	 * item
-	 * 
-	 * @author Cedric Kapalla, Soeren Christmann
-	 */
-	private void initExtraMenuItems() {
-		initExtraMenuItemPreferenceAction(); // preferences
+	@FXML
+	private void initSelectAllAction() {
+		CodeArea codeArea = getCurrentCodeArea();
+		codeArea.requestFocus();
+		codeArea.selectAll();
 	}
 
 	/**
@@ -359,24 +321,13 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla, Soeren Christmann
 	 */
-	private void initExtraMenuItemPreferenceAction() {
-		preferences.setOnAction(e -> {
-			alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Preferences");
-			alert.setHeaderText("Placeholder");
-			alert.setContentText(
-					"You would be able to adjust preferences here, but this is just a placeholder for now.");
-			alert.showAndWait();
-		});
-	}
-
-	/**
-	 * This function initializes the Help menu. It consists of the 'Preference' item
-	 * 
-	 * @author Cedric Kapalla
-	 */
-	private void initHelpMenuItems() {
-		initHelpMenuItemAboutAction(); // about
+	@FXML
+	private void initPreferencesAction() {
+		alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Preferences");
+		alert.setHeaderText("Placeholder");
+		alert.setContentText("You would be able to adjust preferences here, but this is just a placeholder for now.");
+		alert.showAndWait();
 	}
 
 	/**
@@ -385,16 +336,15 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Cedric Kapalla, Soeren Christmann
 	 */
-	private void initHelpMenuItemAboutAction() {
-		about.setOnAction(e -> {
-			alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("About");
-			alert.setHeaderText("Text Editor");
-			alert.setContentText("This is a text editor plug-in for the e4compare framework, created by "
-					+ "Lukas Cronauer, Soeren Christmann, Cedric Kapalla, and Erwin Wijaya.\n\n"
-					+ "It can do all the things one would expect from such an editor.");
-			alert.showAndWait();
-		});
+	@FXML
+	private void initAboutAction() {
+		alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("About");
+		alert.setHeaderText("Text Editor");
+		alert.setContentText("This is a text editor plug-in for the e4compare framework, created by "
+				+ "Lukas Cronauer, Soeren Christmann, Cedric Kapalla, and Erwin Wijaya.\n\n"
+				+ "It can do all the things one would expect from such an editor.");
+		alert.showAndWait();
 	}
 
 	/**
@@ -415,14 +365,14 @@ public class TextEditor implements Initializable {
 	// Work in Progress
 	private void initCountLabelItemAction() {
 		for (Tab tab : tabPane.getTabs()) {
-			CodeArea textArea = (CodeArea) tab.getContent();
+			CodeArea codeArea = (CodeArea) tab.getContent();
 			tab.selectedProperty().addListener((ov, oldvalue, newvalue) -> {
 				if (newvalue) {
-					count(textArea);
+					count(codeArea);
 				}
 			});
-			textArea.setOnKeyReleased(e -> {
-				count(textArea);
+			codeArea.setOnKeyReleased(e -> {
+				count(codeArea);
 			});
 		}
 	}
@@ -435,9 +385,9 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
-	public void count(CodeArea textArea) {
+	public void count(CodeArea codeArea) {
 
-		String text = textArea.getText();
+		String text = codeArea.getText();
 		StringBuffer bufferText = new StringBuffer(text);
 		int newLineCounter = 1;
 		if (text.length() == 0) {
@@ -490,7 +440,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Saves the current content of the textArea to a file when there are changes
+	 * Saves the current content of the codeArea to a file when there are changes
 	 * compared to the last saved version.
 	 * 
 	 * @author Lukas Cronauer
@@ -536,7 +486,6 @@ public class TextEditor implements Initializable {
 			initCountLabelItems();
 		}
 		return currentTab;
-
 	}
 
 	/**
@@ -546,7 +495,7 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Lukas Cronauer
 	 */
-	private CodeArea getCurrentTextArea() {
+	private CodeArea getCurrentCodeArea() {
 		return (CodeArea) getCurrentTab().getContent();
 	}
 
@@ -558,7 +507,7 @@ public class TextEditor implements Initializable {
 	 * @author Lukas Cronauer
 	 */
 	private String getCurrentText() {
-		return getCurrentTextArea().getText();
+		return getCurrentCodeArea().getText();
 	}
 
 	/**
@@ -569,7 +518,7 @@ public class TextEditor implements Initializable {
 	 * Otherwise the userData is equals {@link EditorST.NEW_TAB_TITLE}.
 	 * 
 	 * @param filePath The path to the loaded file
-	 * @param content  The text for the TextArea in the tab
+	 * @param content  The text for the codeArea in the tab
 	 * 
 	 * @author Lukas Cronauer, Cedric Kapalla, Soeren Christmann, Erwin Wijaya
 	 */
@@ -582,19 +531,19 @@ public class TextEditor implements Initializable {
 				return;
 			}
 		}
-		//find out which type the given file has
-		for (String fileType: EditorST.FILE_FORMATS) {
+		// find out which type the given file has
+		for (String fileType : EditorST.FILE_FORMATS) {
 			if (fileName.endsWith(fileType)) {
 				fileEnding = fileType;
 			}
 		}
-		//check whether the file actually has a supported type
-		if (fileEnding.equals("")) { 
-			//need to find correct error type
+		// check whether the file actually has a supported type
+		if (fileEnding.equals("")) {
+			// need to find correct error type
 			throw new IllegalAccessError();
-			//potentially as an alert with return
+			// potentially as an alert with return
 		}
-		
+
 		EditorTab newTab = new EditorTab(fileName, fileEnding, content);
 		newTab.setUserData(filePath);
 		tabPane.getTabs().add(newTab);
@@ -614,28 +563,5 @@ public class TextEditor implements Initializable {
 	private void setCurrentTabUserData(String path) {
 		getCurrentTab().setUserData(path);
 		getCurrentTab().setText(fileUtils.parseFileNameFromPath(path));
-	}
-
-	/**
-	 * Is called upon creating a new file and adds submenu-items to the "New"-menu item.
-	 * 
-	 * @author Soeren Christmann, Lukas Cronauer
-	 * 
-	 */
-	public void createNewFileItems() {
-		for (String FileType : EditorST.FILE_FORMATS) {
-			MenuItem menu = new MenuItem(FileType + "-File");
-			menu.setOnAction(e -> {
-				for (Tab t : tabPane.getTabs()) {
-					if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE + untitledCount)) {
-						untitledCount++;
-					}
-				}
-				saveChanges();
-				loadTab(EditorST.NEW_TAB_TITLE + untitledCount+"."+FileType, "");
-				getCurrentTab().getContent().requestFocus();
-			});
-			newFile.getItems().addAll(menu);
-		}
 	}
 }
