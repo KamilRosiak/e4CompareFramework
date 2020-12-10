@@ -672,7 +672,11 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(VariableDeclarationExpr n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		for(int childNodeCounter = 0; childNodeCounter < n.getChildNodes().size(); childNodeCounter++) {
+			com.github.javaparser.ast.Node child = n.getChildNodes().get(childNodeCounter); 
+			Node childNode = new NodeImpl(child.getClass().getSimpleName(), arg);
+			n.getChildNodes().get(childNodeCounter).accept(this, childNode);
+		}
 	}
 
 	/**
@@ -839,7 +843,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		for (int i = 0; i < n.getInitialization().size(); i++) {
 			Expression initExpr = n.getInitialization().get(0);
 			Node initNode = new NodeImpl(JavaNodeTypes.Initilization.name() + i, inizialitions);
-			initNode.addAttribute(JavaNodeTypes.Value.name(), initExpr.toString());
+			initExpr.accept(this, initNode);
 			initExpr.removeForced();
 		}
 
@@ -850,7 +854,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		for (int i = 0; i < updateSize; i++) {
 			Expression updateExpr = n.getUpdate().get(0);
 			Node updateNode = new NodeImpl(JavaNodeTypes.Update.name() + i, updates);
-			updateNode.addAttribute(JavaNodeTypes.Value.name(), updateExpr.toString());
+			updateExpr.accept(this, updateNode);
 			updateExpr.removeForced();
 		}
 
