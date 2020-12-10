@@ -8,6 +8,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeConverter;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
+
+import java.io.IOException;
 import java.nio.file.Paths;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
@@ -47,6 +49,7 @@ public class JavaReader extends AbstractArtifactReader {
 			tree = new TreeImpl(fileName, rootNode);
 		}
 
+		// Remove these lines after debug
 		System.out.println(TreeConverter.treeToDot(tree));
 		System.out.println(TESTLAUF++);
 		

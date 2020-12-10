@@ -882,16 +882,18 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		Statement thenStmt = n.getThenStmt();
 		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), arg);
 		thenNode.addAttribute(JavaNodeTypes.Condition.name(), n.getCondition().toString());
-		super.visit((BlockStmt) thenStmt, thenNode);
+		thenStmt.accept(this, thenNode);
 		n.remove(thenStmt);
 
 		// Block
-		if (n.hasElseBlock()) {
-			Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), arg);
+		if (n.getElseStmt().isPresent()) {
 			Statement elseStmt = n.getElseStmt().get();
-			elseStmt.accept(this, elseNode);
-		} else if (n.hasElseBranch()) {
-			this.visitIfStmt((IfStmt) n.getElseStmt().get(), arg);
+			if(elseStmt instanceof IfStmt) {
+				visitIfStmt((IfStmt) elseStmt, arg);
+			} else {
+				Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), arg);
+				elseStmt.accept(this, elseNode);
+			}
 		}
 	}
 
