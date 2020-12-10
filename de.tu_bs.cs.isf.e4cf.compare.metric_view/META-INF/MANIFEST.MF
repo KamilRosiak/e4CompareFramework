@@ -7,7 +7,7 @@ Require-Bundle: org.eclipse.swt,
  org.eclipse.e4.core.contexts,
  javax.inject,
  de.tu_bs.cs.isf.e4cf.core,
- org.eclipse.e4.ui.model.workbench;bundle-version="2.1.700.v20200113-1422",
+ org.eclipse.e4.ui.model.workbench;bundle-version="2.1.500",
  de.tu_bs.cs.isf.e4cf.compare
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.metric.view
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
