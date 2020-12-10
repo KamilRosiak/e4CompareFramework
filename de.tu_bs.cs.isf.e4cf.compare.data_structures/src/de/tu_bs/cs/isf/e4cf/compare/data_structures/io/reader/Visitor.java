@@ -263,7 +263,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(CastExpr n, Node arg) {
-		arg.addAttribute(JavaNodeTypes.Value.name(), n.toString());
+		Node node = new NodeImpl(JavaNodeTypes.Cast.name(), arg);
+		node.addAttribute(JavaNodeTypes.Type.name(), n.getTypeAsString());
+		n.getExpression().accept(this, node);
 	}
 
 	/**
@@ -325,7 +327,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(FieldAccessExpr n, Node arg) {
-		arg.addAttribute(JavaNodeTypes.Field.name(), n.toString());
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -772,7 +774,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 
 	@Override
 	public void visit(EnclosedExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
 
 	/**

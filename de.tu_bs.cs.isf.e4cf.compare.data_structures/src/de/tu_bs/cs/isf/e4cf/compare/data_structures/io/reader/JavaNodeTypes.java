@@ -32,4 +32,5 @@ public enum JavaNodeTypes {
 	Initilization,
 	Update,
 	Body,
+	Cast,
 }
