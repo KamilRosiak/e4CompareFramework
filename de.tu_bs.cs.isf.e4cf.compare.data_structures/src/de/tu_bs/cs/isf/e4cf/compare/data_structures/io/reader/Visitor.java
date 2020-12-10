@@ -53,6 +53,13 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(MethodDeclaration n, Node arg) {
 		Node p = VisitorUtil.Parent(n, arg);
 		
+		// Throws
+		for(int i = n.getThrownExceptions().size(); i > 0; i--) {
+			ReferenceType referenceType = n.getThrownException(0);
+			p.addAttribute(JavaNodeTypes.Throws.name(), referenceType.asString());
+			referenceType.removeForced();
+		}
+		
 		// Arguments
 		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), p);
 		int argList = n.getParameters().size();
@@ -73,7 +80,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(Modifier n, Node arg) {
-		arg.addAttribute(n.getClass().getSimpleName(), n.toString());
+		arg.addAttribute(n.getClass().getSimpleName(), n.getKeyword().name());
 	}
 
 	/**

@@ -35,4 +35,5 @@ public enum JavaNodeTypes {
 	Cast,
 	Check,
 	Message,
+	Throws,
 }
