@@ -7,49 +7,124 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
 
+import com.github.javaparser.ast.visitor.*;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.type.*;
+import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.Modifier.Keyword;
+
+/**
+ * 
+ * @author Serkan Acar
+ * @author Pascal Blum
+ *
+ */
+
 public class WriterUtil {
 	
-	public static String visitWriter(List<Node> l) {
-		return "";
-	}
-	
-	public static String visitWriter(Node n) {
-		String code = new String();
+	public static com.github.javaparser.ast.Node visitWriter(Node n) {
+		com.github.javaparser.ast.Node jpNode = null;
 		
-		// What are you, node?
-		code += n.getNodeType() + "\n";
+		// find all attributes
+		String name = "";
+		NodeList<Modifier> modifiers = new NodeList<Modifier>();
 		
-		if (n.getNodeType() == "Class") {
-			for (Attribute a : n.getAttributes()) {
-				if (a.getAttributeKey() == JavaNodeTypes.Modifier.toString()) {
-					for (String s : a.getAttributeValues()) {
-						// look for right sorting!
-						code += s + " ";
-					}
+		// fill name
+		for (Attribute a : n.getAttributes()) {
+			if (a.getAttributeKey() == JavaNodeTypes.Name.name()) {
+				List<String> tmpList = new ArrayList<>(a.getAttributeValues());
+				name = tmpList.get(0); // to get the name, which is an attribute with one value
+			}
+		}
+		
+		// fill modifiers 
+		for (Attribute a : n.getAttributes()) {
+			if (a.getAttributeKey() == JavaNodeTypes.Modifier.name()) {
+				for (String s : a.getAttributeValues()) {
+					Modifier tmpModifier = new Modifier(Modifier.Keyword.valueOf(s.toUpperCase()));
+					modifiers.add(tmpModifier);
 				}
 			}
-			code += "class ";
+		}
+		
+		if (n.getNodeType() == "CompilationUnit") {
+			boolean isInterface;
 			for (Attribute a : n.getAttributes()) {
-				if (a.getAttributeKey() == JavaNodeTypes.Name.toString()) {
+				if (a.getAttributeKey() == JavaNodeTypes.isInterface.name()) {
 					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					code += tmpList.get(0); // to get the name, which is an attribute with one value
+					isInterface = Boolean.parseBoolean(tmpList.get(0));
 				}
 			}
+			jpNode = new ClassOrInterfaceDeclaration(modifiers, isInterface, name);
 			
-			// here extends
-			// then implements
+		} else if (n.getNodeType() == "AnnotationDeclaration") {
+			jpNode = new AnnotationDeclaration(modifiers, name);
 			
-			code += "{\n";
+		} else if (n.getNodeType() == "AnnotationMemberDeclaration") {
+			AnnotationMemberDeclaration tmpAMD = new AnnotationMemberDeclaration();
+			tmpAMD.setModifiers(modifiers);
+			tmpAMD.setName(name);
+			jpNode = tmpAMD;
 			
-			// work along block content
-			// maybe indentation level must be given to the next recursive step
+		} else if (n.getNodeType() == "ArrayAccessExpr") {
+			jpNode = new ArrayAccessExpr();	
 			
-			code += "}\n";
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
+		} else if (n.getNodeType() == ) {
+			
 		}
 		
 		
 		
+		// fill parameters
+		for (Node nod0 : n.getChildren()) {
+			if (nod0.getNodeType() == JavaNodeTypes.Argument.name()) {
+				for (Node nod1 : nod0.getChildren()) {
+					if (jpNode != null) {
+						visitWriter(nod1).setParentNode(jpNode);
+					}
+				}
+			}
+		}
 		
-		return code;
+		// set jpNode as parent to all the nodes, that are generated from the 
+		// children
+		for (com.github.javaparser.ast.Node jpN : visitWriter(n.getChildren())) {
+			jpN.setParentNode(jpNode);
+		}
+		
+		return jpNode;
 	}
+	
+	public static NodeList<com.github.javaparser.ast.Node> visitWriter(List<Node> n) {
+		NodeList<com.github.javaparser.ast.Node> nodeList = new NodeList<>();
+		
+		// go through all children and call visitWriter for every Node, 
+		// 		then add the returned nodes to nodeList
+		
+		return nodeList;
+	}
+	
+	
 }
