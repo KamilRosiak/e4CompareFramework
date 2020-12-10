@@ -738,7 +738,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(VoidType n, Node arg) {
 		JavaNodeTypes type = JavaNodeTypes.Value;
 		if (n.getParentNode().get() instanceof MethodDeclaration) {
-			arg.addAttribute(JavaNodeTypes.ReturnType.name(), n.toString());
+			type = JavaNodeTypes.ReturnType;
 		}
 		arg.addAttribute(type.name(), n.toString());
 	}
