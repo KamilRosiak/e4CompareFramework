@@ -92,12 +92,11 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
 		// Class or Interface?
-		String type = (n.isInterface() ? JavaNodeTypes.Interface.name() : JavaNodeTypes.Class.name());
-		arg.addAttribute(JavaNodeTypes.Type.name(), type);
+		arg.addAttribute(JavaNodeTypes.isInterface.name(), String.valueOf(n.isInterface()));
 
 		// Name
 		SimpleName simpleName = n.getName();
-		arg.addAttribute(type, simpleName.asString());
+		arg.addAttribute(JavaNodeTypes.Name.name(), simpleName.asString());
 		// simpleName.removeForced(); // SimpleName is unremovable -> Solution cf.
 		// visit(SimpleName,Node)
 
