@@ -131,19 +131,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceType n, Node arg) {
-		if (n.getParentNode().isPresent()) {
-			String type = JavaNodeTypes.Value.name();
-			com.github.javaparser.ast.Node parent = n.getParentNode().get();
-			if (parent instanceof MethodDeclaration) {
-				type = JavaNodeTypes.ReturnType.name();
-			} else /* if (parent instanceof FieldDeclaration) */ {
-				type = JavaNodeTypes.Type.name();
-			} /*
-				 * else { type = n.getClass().getSimpleName(); // TODO if this occurs, add case
-				 * }
-				 */
-			arg.addAttribute(type, n.toString());
-		}
+		super.visit(n, arg);
 	}
 
 	/**
@@ -636,18 +624,22 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(TypeParameter n, Node arg) {
 		Node p = VisitorUtil.Parent(n, arg);
-		super.visit(n, p);
-		for (ClassOrInterfaceType coit : n.findAll(ClassOrInterfaceType.class)) {
-			// Does Coit have more attributes than just a name?
-			if (coit.getChildNodes().size() > 1) {
-				// YES! Visit them.
-				Node coitNode = new NodeImpl(JavaNodeTypes.Superclass.name(), p);
-				super.visit(coit, coitNode);
-			} else {
-				// NO!
-				p.addAttribute(JavaNodeTypes.Superclass.name(), coit.asString());
-			}
+		
+		// Name
+		p.addAttribute(JavaNodeTypes.Name.name(), n.getNameAsString());
+		
+		// Annotations
+		for(AnnotationExpr annotationExpr : n.getAnnotations()) {
+			p.addAttribute(JavaNodeTypes.Annotation.name(), annotationExpr.getNameAsString());
 		}
+		
+		// Bounds
+		int boundCounter = 0;
+		for(ClassOrInterfaceType bound : n.getTypeBound()) {
+			Node boundNode = new NodeImpl(JavaNodeTypes.Bound.name() + boundCounter++, p);
+			bound.accept(this, boundNode);
+		}
+		p.addAttribute(JavaNodeTypes.Bound.name(), String.valueOf(n.getTypeBound().size()));
 	}
 
 	/**

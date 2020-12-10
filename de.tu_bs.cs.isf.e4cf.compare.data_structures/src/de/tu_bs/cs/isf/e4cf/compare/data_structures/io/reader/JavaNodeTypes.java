@@ -36,4 +36,5 @@ public enum JavaNodeTypes {
 	Check,
 	Message,
 	Throws,
+	Bound,
 }
