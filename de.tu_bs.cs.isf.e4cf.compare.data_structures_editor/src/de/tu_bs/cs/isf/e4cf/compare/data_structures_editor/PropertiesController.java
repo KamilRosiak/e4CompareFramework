@@ -5,62 +5,55 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class PropertiesController {
 
 	@FXML
-	private TableView<Node> propertiesTable;
+	private TableView<Attribute> propertiesTable;
 
-	@FXML
-	private TableColumn<?, ?> properties;
+	/**
+	 * 
+	 * @param node
+	 */
+	void initPropertiesView(NodeUsage node) {
+//		System.out.println("properties");
+		ObservableList<Attribute> data = FXCollections.observableArrayList(node.getAttributes());
 
-	@FXML
-	private TableColumn<?, ?> value;
+		TableColumn<Attribute, String> property = new TableColumn<Attribute, String>("Property");
+		property.setCellValueFactory(new PropertyValueFactory<>("attributeKey"));
 
-	@Inject
-	ServiceContainer container;
+		TableColumn<Attribute, String> value = new TableColumn<Attribute, String>("Value");
+		value.setCellValueFactory(new PropertyValueFactory<>("attributeValues"));
 
-	@FXML
-	void initialize() {
-		System.out.println("initialize propertiesView");
-		properties = new TableColumn<Node, String>("nodeType");
-		properties.setCellValueFactory(new PropertyValueFactory("nodeType"));
-		value = new TableColumn<Node, String>("attributeKey");
-		propertiesTable = new TableView<Node>();
-		propertiesTable.setItems(createRow());
-//		propertiesTable.getColumns().addAll(attribute);
-
+		propertiesTable.setItems(data);
+		propertiesTable.getColumns().addAll(property, value);
+		propertiesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 
-	ObservableList<Node> createRow() {
-		System.out.println("Erstelle Row");
-		ObservableList<Node> nodes = FXCollections.observableArrayList();
-		nodes.add(new NodeImpl("text"));
-		return nodes;
-	}
-	
-	ObservableList<Node> createRow(Node node) {
-		System.out.println("Erstelle Row");
-		ObservableList<Node> nodes = FXCollections.observableArrayList();
-		nodes.add(node);
-		return nodes;
-	}
+//	ObservableList<NodeUsage> createRow() {
+//		ObservableList<NodeUsage> nodes = FXCollections.observableArrayList();
+//		nodes.add(new NodeUsage("text"));
+//		return nodes;
+//	}
+
+//	ObservableList<NodeUsage> createRow(NodeUsage node) {
+//		ObservableList<NodeUsage> nodes = FXCollections.observableArrayList();
+//		nodes.add(node);
+//		return nodes;
+//	}
 
 	@Optional
 	@Inject
-	public void showProperties(@UIEventTopic("nodePropertiesEvent") Node node) {
-		System.out.println(node.getAttributes());
-		String nodeType = node.getNodeType();
-		createRow(node);
+	public void showProperties(@UIEventTopic("nodePropertiesEvent") NodeUsage node) {
+		propertiesTable.getColumns().clear();
+		initPropertiesView(node);
 	}
 }
