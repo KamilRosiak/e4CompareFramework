@@ -118,8 +118,8 @@ public class TableUtilities {
 		final ResultSet rs = con.getMetaData().getIndexInfo(null, null, tableName, true, false);
 		List<String> uniquekeyList = new ArrayList<>();
 		while (rs.next()) {
-			String Unique = rs.getString("COLUMN_NAME");
-			uniquekeyList.add(Unique);
+			String unique = rs.getString("COLUMN_NAME");
+			uniquekeyList.add(unique);
 		}
 		return Collections.unmodifiableList(uniquekeyList);
 	}
@@ -148,7 +148,8 @@ public class TableUtilities {
 			c.setPrimaryKey(primaryKeySet.contains(mrs.getColumnLabel(i)));
 			c.setUnique(uniqueKeySet.contains(mrs.getColumnLabel(i)));
 			c.setAutoIncrement(mrs.isAutoIncrement(i));
-			c.setNotNull(mrs.isNullable(i) == 0 ? true : false);
+			System.out.println("Test "+mrs.getColumnLabel(i)+", "+mrs.isNullable(i));
+			c.setNotNull(mrs.isNullable(i) == 1 ? true : false);
 			columns.add(c);
 			//System.out.println(c.isPrimaryKey()+", "+c.isUnique()+", "+c.isNotNull());
 		}
@@ -232,7 +233,7 @@ public class TableUtilities {
 	}
 
 	/**
-	 * Method to check whether a column allows Null values.
+	 * Method to check whether a column allows null values.
 	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
