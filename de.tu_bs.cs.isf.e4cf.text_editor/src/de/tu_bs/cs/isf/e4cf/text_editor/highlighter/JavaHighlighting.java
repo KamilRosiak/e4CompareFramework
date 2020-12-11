@@ -36,6 +36,7 @@ public class JavaHighlighting {
     private static final String SEMICOLON_PATTERN = "\\;";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
+    private static final String ANNOTATION_PATTERN = "@"+"([^\s]+)";
     
     public static final Pattern PATTERN = Pattern.compile(
                "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
@@ -45,6 +46,7 @@ public class JavaHighlighting {
             + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
             + "|(?<STRING>" + STRING_PATTERN + ")"
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+            + "|(?<ANNOTATION>" + ANNOTATION_PATTERN + ")"
     );
     
 	public static StyleSpans<Collection<String>> computeHighlighting(String text) {
@@ -60,6 +62,7 @@ public class JavaHighlighting {
 					matcher.group("SEMICOLON") != null ? "java-semicolon" :
 					matcher.group("STRING") != null ? "java-string" :
 					matcher.group("COMMENT") != null ? "java-comment" :
+					matcher.group("ANNOTATION") != null ? "java-annotation" :
 					null;
 			
 		    spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);

@@ -28,3 +28,7 @@
 .java-method {
     -fx-fill: #ffbe00;
 }
+
+.java-annotation{
+	-fx-fill : orange;
+}
