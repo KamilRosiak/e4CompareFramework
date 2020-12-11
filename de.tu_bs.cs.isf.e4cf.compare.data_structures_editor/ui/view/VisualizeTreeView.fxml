@@ -68,7 +68,7 @@
          </contextMenu></TreeView> 
       <ToolBar fx:id="toolBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
-            <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" onAction="#searchField" />
+            <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" />
           <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#search" text="Search" />
         </items>
       </ToolBar>
