@@ -27,6 +27,9 @@ import javafx.scene.input.DataFormat;
 import org.fxmisc.richtext.CodeArea;
 
 /**
+ * View class containing all user interface items of our plugin.
+ * Used to intialize the menu structure. Additionally several methods 
+ * to interact with the tabPane are provided.
  * 
  * @author Soeren Christmann, Cedric Kapalla, Lukas Cronauer, Erwin Wijaya
  *
@@ -70,13 +73,14 @@ public class TextEditor implements Initializable {
 	@FXML
 	private MenuItem about;
 
-	// Count Label
+	// word and row counter labels
 	@FXML
 	private Label wordCount;
 	@FXML
 	private Label rowCount;
 	// Public ?
 	Clipboard systemClipboard = Clipboard.getSystemClipboard();
+
 	@FXML
 	private TabPane tabPane;
 
@@ -91,6 +95,7 @@ public class TextEditor implements Initializable {
 
 	Alert alert;
 
+	// number of new files for which the filename is not set (yet)
 	int untitledCount = 0;
 
 	@Override

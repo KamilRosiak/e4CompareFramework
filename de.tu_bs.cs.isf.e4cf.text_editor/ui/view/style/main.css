@@ -1,4 +1,8 @@
-/* Import the stylesheets for all file-types */
+/* 
+ * Import the stylesheets for all file-types 
+ * Make sure that all imported css-classes 
+ * have globally unique names
+ */
 @import "java-keyword.css";
 @import "xml-keyword.css";
 

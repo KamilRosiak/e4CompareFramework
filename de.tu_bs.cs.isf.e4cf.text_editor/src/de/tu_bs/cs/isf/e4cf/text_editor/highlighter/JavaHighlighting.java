@@ -8,12 +8,21 @@ import java.util.regex.Pattern;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
+/**
+ * Provides the highlighting computation for java-files.
+ * To achieve that, this class contains the regular expressions
+ * of all language elements that should be highlighted. These 
+ * regular expressions are then used to compile a Pattern.
+ *
+ * @author Erwin Wijaya, Lukas Cronauer
+ *
+ */
 public class JavaHighlighting {
 	
 	/**
 	 * All words that should be specially highlighted for this fileType
 	 */
-	public static final String[] KEYWORDS = new String[] {
+	private static final String[] KEYWORDS = new String[] {
 		"abstract", "assert", "boolean", "break", "byte",
 		"case", "catch", "char", "class", "const",
 		"continue", "default", "do", "double", "else",
@@ -38,7 +47,11 @@ public class JavaHighlighting {
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
     private static final String ANNOTATION_PATTERN = "@"+"([^\n\s]*)";
     
-    public static final Pattern PATTERN = Pattern.compile(
+    
+    /**
+     * Compiling the pattern to be checked with Matcher later
+     */
+    private static final Pattern PATTERN = Pattern.compile(
                "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
             + "|(?<PAREN>" + PAREN_PATTERN + ")"
             + "|(?<BRACE>" + BRACE_PATTERN + ")"
@@ -49,6 +62,14 @@ public class JavaHighlighting {
             + "|(?<ANNOTATION>" + ANNOTATION_PATTERN + ")"
     );
     
+    /**
+     * A Method to check if the current user input is a match with either of our pattern or our keyword for given fileType
+     * after successfully check and find which word should be highlighted, it will then call the css
+     * 
+     * @param text content on codeArea that will be checked
+     * @return the collection of word that will be highlighted
+	 * @author Erwin Wijaya, Lukas Cronauer (from richttextfx-demo)
+     */
 	public static StyleSpans<Collection<String>> computeHighlighting(String text) {
 		Matcher matcher = PATTERN.matcher(text);
 		int lastKwEnd = 0;
@@ -63,8 +84,7 @@ public class JavaHighlighting {
 					matcher.group("STRING") != null ? "java-string" :
 					matcher.group("COMMENT") != null ? "java-comment" :
 					matcher.group("ANNOTATION") != null ? "java-annotation" :
-					null;
-			
+					null;	
 		    spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
 		    spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
 		    lastKwEnd = matcher.end();

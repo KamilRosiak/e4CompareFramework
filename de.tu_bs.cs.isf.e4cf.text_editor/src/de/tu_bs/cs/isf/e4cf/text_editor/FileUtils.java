@@ -2,37 +2,31 @@ package de.tu_bs.cs.isf.e4cf.text_editor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.inject.Inject;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
-
-import java.io.FileReader;
-import java.io.FileWriter;
-
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Window;
-
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Window;
 
 public class FileUtils {
 	private FileChooser fileChooser;
 	private Window parent;
 	private int lastSavedRevision;
 
-	@Inject
-	private ServiceContainer services;
-
 	/**
 	 * Constructor used to initialize the fileChooser instance of this object.
 	 * Available file extensions are added to the fileChooser.
 	 * 
-	 * @param parent Window the @TextEditor is part of. Needed to display open/save
-	 *               dialogs
+	 * @param parent Window the @TextEditor is part of. This will be needed to display open/save
+	 * 		  dialogs
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -52,7 +46,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * Extracts the fileName from a string containing a file path
+	 * Extracts the fileName from a string containing a file path.
 	 * 
 	 * @param path A filePath ending in a file
 	 * @return The fileName with extension (e.g. name.extension)
@@ -84,11 +78,10 @@ public class FileUtils {
 	}
 
 	/**
-	 * Opens the file chosen by the open dialog.
+	 * Opens the file, which will be chosen by the open dialog.
 	 *
 	 * @return String[] of length 2 with (absolute) filePath at index 0 and
 	 *         file-content at index 2
-	 * 
 	 * @author Lukas Cronauer
 	 */
 	public String[] openFile() {
@@ -108,10 +101,10 @@ public class FileUtils {
 	}
 
 	/**
-	 * Reads the entire content the file and returns it as a string.
+	 * Reads the entire content of the file and returns it as a string.
 	 * 
 	 * @param file The file to open
-	 * 
+	 * @return String the text from the file
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	public String readFile(File file) {
@@ -143,8 +136,11 @@ public class FileUtils {
 
 	/**
 	 * Saves the parameter content into the file instance of this object. If file is
-	 * not yet set, saveAs() is called.
+	 * not yet set, saveAs() is called instead.
 	 * 
+	 * @param filepath the Name of the file to write
+	 * @param content The String to save
+	 * @return a method that will be called to write the file on the given path
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	public boolean save(String filepath, String content) {
@@ -154,6 +150,8 @@ public class FileUtils {
 	/**
 	 * A Method to save a file in another directory or with another name.
 	 * 
+	 * @param content The String to save
+	 * @return the location of file, if file has been saved before, or new path
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	public String saveAs(String content) {
@@ -169,9 +167,9 @@ public class FileUtils {
 	/**
 	 * Writes the parameter content into the File.
 	 * 
-	 * @param fileName the Name of the file to write
+	 * @param filepath the Name of the file to write
 	 * @param content  The String to save
-	 * 
+	 * @return boolean to show if the file has been successfully saved
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	private boolean writeFile(String filepath, String content) {
@@ -194,8 +192,9 @@ public class FileUtils {
 	}
 
 	/**
-	 * Returns the hashCode of the files last saved content as a string.
+	 * A Method to get the latest revision of a file.
 	 * 
+	 * @return the hashCode of the files last saved content as a string.
 	 * @author Lukas Cronauer
 	 */
 	public int getLastRevision() {

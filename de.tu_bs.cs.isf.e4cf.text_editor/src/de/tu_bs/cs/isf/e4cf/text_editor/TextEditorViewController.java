@@ -37,12 +37,13 @@ public class TextEditorViewController {
 	private TextEditor textEditor;
 
 	/**
-	 * Puts together the Text Editor from the given .fxml-file.
+	 * Creates the Text Editor from the given .fxml-file.
 	 * 
 	 * @param parent   anchors the canvas into the program
 	 * @param services
 	 * @param context  is needed to load the .fxml
 	 * @throws IOException
+	 * @author Soeren Christmann, Cedric Kapalla, Lukas Cronauer, Erwin Wijaya
 	 */
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {

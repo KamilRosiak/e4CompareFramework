@@ -8,6 +8,14 @@ import java.util.regex.Pattern;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
+/**
+ * Provides the highlighting computation for xml-files.
+ * To achieve that, this class contains the regular expressions
+ * of all language elements that should be highlighted. These 
+ * regular expressions are then used to compile a Pattern.
+ *
+ * @author Erwin Wijaya, Lukas Cronauer
+ */
 public class XMLHighlighting {
 	
 	/**
@@ -17,6 +25,7 @@ public class XMLHighlighting {
 	private static final String COMMENT_PATTERN = "<!--[^<>]+-->";
 	private static final String ATTRIBUTE_PATTERN = "(\\w+\\h*)(=)(\\h*\"[^\"]+\")";
 	
+	// indices of regex group used to get the specified element
 	private static final int GROUP_OPEN_BRACKET = 2;
     private static final int GROUP_ELEMENT_NAME = 3;
     private static final int GROUP_ATTRIBUTES_SECTION = 4;
@@ -25,15 +34,25 @@ public class XMLHighlighting {
     private static final int GROUP_EQUAL_SYMBOL = 2;
     private static final int GROUP_ATTRIBUTE_VALUE = 3;
 	
-	/**
-	 * 
-	 */
-    public static final Pattern XML_TAG = Pattern.compile(
+    /**
+     * Compiling the pattern to be checked with Matcher later
+     */
+    private static final Pattern XML_TAG = Pattern.compile(
               	"(?<ELEMENT>" + ELEMENT_PATTERN + ")"
               + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
     );
     private static final Pattern ATTRIBUTES = Pattern.compile(ATTRIBUTE_PATTERN);
 	
+    /**
+     * Checks if the current user input is a match with either our pattern or our keyword for given a fileType
+     * after successfully checking and finding which word should be highlighted, the coresponding css-class will be applied
+	 * to the specified region.
+     * 
+     * @param text content on codeArea that will be checked
+     * @return the collection of word that will be highlighted
+	 *
+	 * @author Lukas Cronauer (from richtextfx-demo)
+     */
 	public static StyleSpans<Collection<String>> computeHighlighting(String text) {
     	
         Matcher matcher = XML_TAG.matcher(text);
