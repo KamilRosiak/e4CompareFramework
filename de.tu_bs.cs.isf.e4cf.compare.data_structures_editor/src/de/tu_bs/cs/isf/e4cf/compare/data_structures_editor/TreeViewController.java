@@ -54,7 +54,6 @@ public class TreeViewController {
 	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		treeView = TreeViewUtilities.initTree(tree, this.treeView, rootItem, services);
-		System.out.println(tree.getTreeName());
 	}
 
 	/**
@@ -64,6 +63,7 @@ public class TreeViewController {
 	void closeFile() {
 		// set treeview and its values to null, then remove it from the background
 		treeView.setRoot(null);
+		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
 
 	/**
