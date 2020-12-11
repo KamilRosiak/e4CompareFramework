@@ -16,7 +16,7 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor;
-
+import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditorMenu;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  *
  */
 public class TextEditorViewController {
-	private TextEditor textEditor;
+	private TextEditorMenu textEditor;
 
 	/**
 	 * Creates the Text Editor from the given .fxml-file.
@@ -48,11 +48,11 @@ public class TextEditorViewController {
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
-		FXMLLoader<TextEditor> loader = new FXMLLoader<TextEditor>(context, EditorST.BUNDLE_NAME,
-				EditorST.TEXT_EDITOR_VIEW_FXML);
+		FXMLLoader<TextEditorMenu> loader = new FXMLLoader<TextEditorMenu>(context, EditorST.BUNDLE_NAME,
+				EditorST.TEXT_EDITOR_MENU_VIEW_FXML);
 
 		Scene scene = new Scene(loader.getNode());
-		loader.getController().initFileUtils(scene);
+		loader.getController().setScene(scene);
 		textEditor = loader.getController();
 		// scene.getStylesheets().add(TEXT_EDITOR_CSS_LOCATION);
 		canvans.setScene(scene);
@@ -82,10 +82,10 @@ public class TextEditorViewController {
 			}
 
 			String content = contentBuilder.toString();
-			textEditor.loadTab(element.getAbsolutePath(), content);
+			textEditor.textEditorViewController.loadTab(element.getAbsolutePath(), content);
 		} else {
 			String content = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-			textEditor.loadTab(element.getAbsolutePath(), content);
+			textEditor.textEditorViewController.loadTab(element.getAbsolutePath(), content);
 		}
 	}
 }

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import org.fxmisc.richtext.CodeArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+
+<VBox fx:id="textEditorMenuView" prefHeight="4000.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/8.0.271" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditorMenu">
+    <stylesheets>
+        <URL value="@./style/main.css"/>
+    </stylesheets>
+    <children>
+        <MenuBar prefHeight="0.0" prefWidth="655.0" VBox.vgrow="NEVER">
+            <menus>
+            <Menu mnemonicParsing="false" text="File">
+                <items>
+                <Menu fx:id="newFile" accelerator="Shortcut+N" mnemonicParsing="false" text="New" />
+                <MenuItem fx:id="openFile" accelerator="Shortcut+O" mnemonicParsing="false" text="Open" onAction="#initOpenFileAction" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="saveFile" accelerator="Shortcut+S" mnemonicParsing="false" text="Save" onAction="#initSaveAction" />
+                <MenuItem fx:id="saveFileAs" mnemonicParsing="false" text="Save As" onAction="#initSaveAsAction" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="closeFile" mnemonicParsing="false" text="Close File" onAction="#initCloseFileAction" />
+                <MenuItem fx:id="closeEditor" accelerator="Shortcut+E" mnemonicParsing="false" text="Close Editor" onAction="#initCloseEditorAction" />
+                </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+                <items>
+                <MenuItem fx:id="undo" accelerator="Shortcut+Z" mnemonicParsing="false" text="Undo" onAction="#initUndoAction" />
+                <MenuItem fx:id="redo" accelerator="Shortcut+Y" mnemonicParsing="false" text="Redo" onAction="#initRedoAction" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="cutText" accelerator="Shortcut+X" mnemonicParsing="false" text="Cut" onAction="#initCutAction" />
+                <MenuItem fx:id="copyText" accelerator="Shortcut+C" mnemonicParsing="false" text="Copy" onAction="#initCopyAction" />
+                <MenuItem fx:id="pasteText" accelerator="Shortcut+V" mnemonicParsing="false" text="Paste" onAction="#initPasteAction"/>
+                <MenuItem fx:id="deleteText" mnemonicParsing="false" text="Delete" onAction="#initDeleteAction" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem fx:id="selectAllText" accelerator="Shortcut+A" mnemonicParsing="false" text="Select All" onAction="#initSelectAllAction" />
+                </items>
+            </Menu>
+                <Menu mnemonicParsing="false" text="Extra">
+                    <items>
+                    <MenuItem fx:id="preferences" mnemonicParsing="false" text="Preferences" onAction="#initPreferencesAction" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                    <MenuItem fx:id="about" mnemonicParsing="false" text="About" onAction="#initAboutAction" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <fx:include fx:id="textEditorView" source="TextEditorView.fxml" />
+    </children>
+</VBox>

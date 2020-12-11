@@ -111,8 +111,13 @@ public class SyntaxHighlighter {
                     @Override
                     public void run(){
                         String text = codeArea.getText();
-                        StyleSpans<Collection<String>> styleSpans = highlightingFunction.apply(text);
-                        codeArea.setStyleSpans(0, styleSpans);
+                        StyleSpans<Collection<String>> styleSpans;
+                        try {
+                            styleSpans = highlightingFunction.apply(text);
+                            codeArea.setStyleSpans(0, styleSpans);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
