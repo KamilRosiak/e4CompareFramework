@@ -54,6 +54,7 @@ public class TreeViewController {
 	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		treeView = TreeViewUtilities.initTree(tree, this.treeView, rootItem, services);
+
 	}
 
 	/**
@@ -73,6 +74,7 @@ public class TreeViewController {
 	void selectAll() {
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		treeView.getSelectionModel().selectAll();
+		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
 
 	/**
@@ -81,6 +83,7 @@ public class TreeViewController {
 	@FXML
 	void unselectAll() {
 		treeView.getSelectionModel().clearSelection();
+		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
 	
 	@FXML

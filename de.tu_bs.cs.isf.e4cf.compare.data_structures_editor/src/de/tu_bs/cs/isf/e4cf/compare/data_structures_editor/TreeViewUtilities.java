@@ -32,8 +32,11 @@ public final class TreeViewUtilities {
 		hirarchy.setShowRoot(true);
 
 		hirarchy.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
-			services.eventBroker.send("nodePropertiesEvent", hirarchy.getSelectionModel().getSelectedItem().getValue());
+			if(hirarchy.getSelectionModel().getSelectedIndices().size() == 1) {
+				switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
+				services.eventBroker.send("nodePropertiesEvent",
+							hirarchy.getSelectionModel().getSelectedItem().getValue());
+			}
 		});
 		return hirarchy;
 	}
