@@ -36,7 +36,7 @@ public class JavaHighlighting {
     private static final String SEMICOLON_PATTERN = "\\;";
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-    private static final String ANNOTATION_PATTERN = "@"+"([^\s]+)";
+    private static final String ANNOTATION_PATTERN = "@"+"([^\n\s]*)";
     
     public static final Pattern PATTERN = Pattern.compile(
                "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
