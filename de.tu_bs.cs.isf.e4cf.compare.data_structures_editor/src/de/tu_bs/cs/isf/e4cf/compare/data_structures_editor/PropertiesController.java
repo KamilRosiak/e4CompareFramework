@@ -52,6 +52,12 @@ public class PropertiesController {
 
 	@Optional
 	@Inject
+	public void emptyPropertiesTable(@UIEventTopic("EmptyPropertiesTableEvent") boolean bool) {
+		propertiesTable.getItems().clear();
+	}
+
+	@Optional
+	@Inject
 	public void showProperties(@UIEventTopic("nodePropertiesEvent") NodeUsage node) {
 		propertiesTable.getColumns().clear();
 		initPropertiesView(node);
