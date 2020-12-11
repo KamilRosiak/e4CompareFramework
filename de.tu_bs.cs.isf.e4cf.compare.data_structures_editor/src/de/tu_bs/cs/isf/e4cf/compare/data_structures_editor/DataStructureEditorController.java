@@ -11,7 +11,6 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.view.VisualizeTreeView;
 //import de.tu_bs.cs.isf.e4cf.compare.data_structures.editor.src.view.TreeViewController;
@@ -19,12 +18,13 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
-import javafx.scene.control.TreeView;
 
+/**
+ * 
+ * @author Team05
+ *
+ */
 public class DataStructureEditorController {
-
-	private Tree currentTree;
-	private TreeView<?> view;
 
 	@Inject
 	public DataStructureEditorController(Composite parent, ServiceContainer services, IEclipseContext context) {
