@@ -49,7 +49,7 @@ public class PropertiesController {
 //		nodes.add(node);
 //		return nodes;
 //	}
-
+	
 	@Optional
 	@Inject
 	public void emptyPropertiesTable(@UIEventTopic("EmptyPropertiesTableEvent") boolean bool) {
@@ -62,4 +62,6 @@ public class PropertiesController {
 		propertiesTable.getColumns().clear();
 		initPropertiesView(node);
 	}
+	
+	
 }
