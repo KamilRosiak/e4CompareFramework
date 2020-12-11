@@ -46,6 +46,7 @@ public class JavaHighlighting {
     private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
     private static final String ANNOTATION_PATTERN = "@"+"([^\n\s]*)";
+    private static final String INSTANCE_PATTERN = "(?<=\\s)\\w+(?=\\s\\=\\snew\\s\\w+\\(\\)\\;)|\\w+(?=\\.\\w+\\(\\)\\;)";
     
     
     /**
@@ -60,6 +61,7 @@ public class JavaHighlighting {
             + "|(?<STRING>" + STRING_PATTERN + ")"
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
             + "|(?<ANNOTATION>" + ANNOTATION_PATTERN + ")"
+            + "|(?<INSTANCE>" + INSTANCE_PATTERN + ")"
     );
     
     /**
@@ -84,6 +86,7 @@ public class JavaHighlighting {
 					matcher.group("STRING") != null ? "java-string" :
 					matcher.group("COMMENT") != null ? "java-comment" :
 					matcher.group("ANNOTATION") != null ? "java-annotation" :
+					matcher.group("INSTANCE") != null ? "java-instance" :
 					null;	
 		    spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
 		    spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());

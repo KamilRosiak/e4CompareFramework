@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
+import de.tu_bs.cs.isf.e4cf.text_editor.WordCountUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -373,76 +374,20 @@ public class TextEditor implements Initializable {
 			CodeArea codeArea = (CodeArea) tab.getContent();
 			tab.selectedProperty().addListener((ov, oldvalue, newvalue) -> {
 				if (newvalue) {
-					count(codeArea);
+					int[] labels = WordCountUtils.count(codeArea.getText());
+					wordCount.setText("Words: " + labels[0]);
+					rowCount.setText("Rows: " + labels[1]);
 				}
 			});
 			codeArea.setOnKeyReleased(e -> {
-				count(codeArea);
+				int[] labels = WordCountUtils.count(codeArea.getText());
+				wordCount.setText("Words: " + labels[0]);
+				rowCount.setText("Rows: " + labels[1]);
 			});
 		}
 	}
 
 	// supporting functions start here
-
-	/**
-	 * Counts the Words and Rows in the Textfield when a key is pressed. If the
-	 * Textfield is empty there is 0 Words and 0 Rows.
-	 * 
-	 * @author Soeren Christmann, Cedric Kapalla
-	 */
-	public void count(CodeArea codeArea) {
-
-		String text = codeArea.getText();
-		StringBuffer bufferText = new StringBuffer(text);
-		int newLineCounter = 1;
-		if (text.length() == 0) {
-			wordCount.setText("Words: 0");
-			rowCount.setText("Rows: 0");
-			return;
-		}
-		// check whether there is any text to begin with
-		char first = bufferText.charAt(0);
-		if (first == ' ' || first == '\t') {
-			bufferText.replace(0, 1, "");
-		}
-		if (first == '\n') {
-			bufferText.replace(0, 1, "");
-			newLineCounter++;
-		}
-
-		// Trims the Tabs.
-		for (int i = 0; i < bufferText.length(); i++) {
-			if (bufferText.charAt(i) == '\t') {
-				bufferText.replace(i, i + 1, " ");
-			}
-		}
-		// trims the Newlines out of the Text and Counts them
-		for (int i = 0; i < bufferText.length(); i++) {
-			if (bufferText.charAt(i) == '\n') {
-				// Number of New Lines = Number of Rows
-				newLineCounter++;
-				bufferText.replace(i, i + 1, " ");
-			}
-		}
-		String tmp = bufferText.toString();
-		tmp = tmp.trim();
-		bufferText = new StringBuffer(tmp);
-		// trims the additional Spaces
-		// Every Space is a new Word
-		for (int i = 0; i < bufferText.length(); i++) {
-			if (bufferText.charAt(i) == ' ') {
-				if (bufferText.charAt(i + 1) == ' ') {
-					// Placeholder so only one Space is counted for a new word
-					bufferText.replace(i, i + 1, "a");
-				}
-			}
-		}
-		// Counts Spaces
-		// Number of Spaces = Number of Word
-		long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
-		wordCount.setText("Words: " + countWord);
-		rowCount.setText("Rows: " + newLineCounter);
-	}
 
 	/**
 	 * Saves the current content of the codeArea to a file when there are changes
