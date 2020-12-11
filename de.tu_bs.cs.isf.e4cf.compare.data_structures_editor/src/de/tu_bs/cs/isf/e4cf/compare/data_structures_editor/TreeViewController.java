@@ -91,10 +91,23 @@ public class TreeViewController {
 		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
 
-	@FXML
-	void searchField() {
-		String searchFieldTextToRead = searchTextField.getText();
-		// TDOD: Field must compare to treeItem
+	TreeItem<NodeUsage> searchTreeItem(TreeItem<NodeUsage> item, String name) {
+
+		if (item.getValue().toString().equals(name)) {
+			return item; // hit!
+		}
+		// continue on the children:
+		TreeItem<NodeUsage> result = null;
+		for (TreeItem<NodeUsage> child : item.getChildren()) {
+			result = searchTreeItem(child, name);
+			if (result != null) {
+				return result; // hit!
+			}
+		}
+
+		// no hit:
+//		System.out.println("Search ended");
+		return null;
 	}
 
 	/**
@@ -102,7 +115,8 @@ public class TreeViewController {
 	 */
 	@FXML
 	void search() {
-		searchField();
+		String searchFieldTextToRead = searchTextField.getText();
+		treeView.getSelectionModel().select(searchTreeItem(treeView.getRoot(), searchFieldTextToRead));
 	}
 
 }
