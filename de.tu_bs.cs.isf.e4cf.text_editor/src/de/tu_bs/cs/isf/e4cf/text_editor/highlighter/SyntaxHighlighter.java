@@ -116,7 +116,7 @@ public class SyntaxHighlighter {
                             styleSpans = highlightingFunction.apply(text);
                             codeArea.setStyleSpans(0, styleSpans);
                         } catch (NullPointerException e) {
-                            e.printStackTrace();
+                            e.printStackTrace();                           
                         }
                     }
                 });

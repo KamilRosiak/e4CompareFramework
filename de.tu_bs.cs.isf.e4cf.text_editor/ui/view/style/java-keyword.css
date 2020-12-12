@@ -37,3 +37,12 @@
 	-fx-fill : tan;
 }
 
+.java-param{
+	-fx-fill : tan;
+}
+
+.java-error{
+	-fx-fill : red;
+}
+
+
