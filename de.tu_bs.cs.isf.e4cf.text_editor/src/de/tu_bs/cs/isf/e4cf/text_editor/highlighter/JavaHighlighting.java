@@ -51,7 +51,7 @@ public class JavaHighlighting {
     private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
     private static final String ANNOTATION_PATTERN = "@"+"([^\n\s]*)";
     private static final String INSTANCE_PATTERN = "(?<=\\s)\\w+(?=\\s\\=\\snew\\s\\w+\\([A-Za-z1-9_,\\s]*\\)\\;)";
-    private static final String INSTANCE_CALL_PATTERN = "\\w+(?=\\.\\w+\\([A-Za-z1-9_,\\s]*\\)\\;)";
+    private static final String INSTANCE_CALL_PATTERN = ".+(?=\\.\\w+\\([A-Za-z1-9_,\\s]*\\)\\;)";
     public static final String JAVA_CLASS_PATTERN = "(?<=\\s)\\w+(?=\\s\\w+\\s\\=\\snew)";
     public static final String JAVA_PARAMETER_PATTERN = "(?<=\\()[A-Za-z1-9_,\\s]+(?=\\);)";
     
@@ -145,13 +145,17 @@ public class JavaHighlighting {
 
 	        Matcher callMatcher = Pattern.compile(INSTANCE_CALL_PATTERN).matcher(text);
 	        while(callMatcher.find()){
-	            String instanceCall = callMatcher.group();
-	            if(!instances.contains(instanceCall)){
-	                Highlight highlight = new Highlight("java-error", callMatcher.start(), callMatcher.end());
-	                highlights.add(highlight);
-	            }else{
-	                Highlight highlight = new Highlight("java-instance", callMatcher.start(), callMatcher.end());
-	                highlights.add(highlight);
+	            String instanceCall = callMatcher.group().trim();
+	            if(!instanceCall.contains(".")) {
+	            	if(!instances.contains(instanceCall)){
+		                Highlight highlight = new Highlight("java-error", callMatcher.start(), callMatcher.end());
+		                highlights.add(highlight);
+		            }else{
+		            	if(!instanceCall.startsWith(".")){
+		            		Highlight highlight = new Highlight("java-instance", callMatcher.start(), callMatcher.end());
+		            		highlights.add(highlight);
+		            	}
+		            }            
 	            }
 	        }
 	        return highlights;
