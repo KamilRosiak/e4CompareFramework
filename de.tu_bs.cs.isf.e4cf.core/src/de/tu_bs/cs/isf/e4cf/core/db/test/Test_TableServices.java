@@ -73,6 +73,99 @@ class Test_TableServices {
 		assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableNN", c1.getName()));
 		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableNN", c2.getName()));
 	}
+	
+	@Test
+	void testRenameTable() throws SQLException {
+		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("age", "integer");
+		Column c3 = new Column("name","String");
+		ts.createTable(_PATHTESTDATABASES, "testDB", "old_testRenameTable", c1, c2,c3);
+		ts.renameTable(_PATHTESTDATABASES, "testDB", "old_testRenameTable", "new_testRenameTable");
+		assertTrue(ts.tableExists(_PATHTESTDATABASES, "testDB", "new_testRenameTable"));
+		assertFalse(ts.tableExists(_PATHTESTDATABASES, "testDB", "old_testRenameTable"));
+	//	ts.deleteTable(_PATHTESTDATABASES, "testDB", "new_testRenameTable");
+	}
+	
+	@Test
+	void testmakeColumnPrimaryKey() throws SQLException {
+		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("age", "integer");
+		Column c3 = new Column("name","String");
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1, c2,c3);
+		ts.makeColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName(),c2.getName());
+		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
+		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));
+	}
+	
+	
+	@Test
+	void testdropColumnPrimaryKey() throws SQLException {
+		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("age", "integer");
+		Column c3 = new Column("name","String");
+		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName());
+		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
+		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));
+		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName());
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
+		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));
+		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName(),c2.getName());
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));
+			
+	}
+	@Test
+	void testmakeColumnUnique() throws SQLException {
+		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("age", "integer");
+		Column c3 = new Column("name","String");
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1, c2,c3);
+		ts.makeColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName());
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
+		ts.makeColumnUnique(_PATHTESTDATABASES, "testDB","testTableColumnUnique", c2.getName());
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
+		
+	}
+	
+	
+	@Test
+	void testdropColumnUnique() throws SQLException {
+		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("age", "integer");
+		Column c3 = new Column("name","String");
+		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName());
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
+		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName());
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
+        assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
+		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique",c2.getName());
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
+		
+		
+	}
 
 	/**
 	 * 
