@@ -33,6 +33,16 @@ class Test_DatabaseFactory {
 		DatabaseFactory.getInstance().deleteDatabase(_PATHTESTDATABASES, "testCreation2");
 		assertTrue(!databaseExists(_PATHTESTDATABASES, "testCreation2"));
 	}
+	
+	@Test
+	void testRenameDatabase() throws SQLException, IOException {
+		DatabaseFactory.getInstance().renameDatabase(_PATHTESTDATABASES, "testCreation1", "testCreation3");
+		assertTrue(!databaseExists(_PATHTESTDATABASES, "testCreation1") && databaseExists(_PATHTESTDATABASES, "testCreation3"));
+		DatabaseFactory.getInstance().renameDatabase(_PATHTESTDATABASES, "testCreation3", "testCreation1");
+		assertTrue(!databaseExists(_PATHTESTDATABASES, "testCreation3") && databaseExists(_PATHTESTDATABASES, "testCreation1"));
+		DatabaseFactory.getInstance().renameDatabase(_PATHTESTDATABASES, "testCreation1", "testCreation1");
+		assertTrue(databaseExists(_PATHTESTDATABASES, "testCreation1"));
+	}
 
 	/**
 	 * Method to check whether a database exists or not.

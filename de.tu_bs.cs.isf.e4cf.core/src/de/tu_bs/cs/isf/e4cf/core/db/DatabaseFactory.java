@@ -52,7 +52,8 @@ public class DatabaseFactory {
 	 */
 	public void createDatabase(final String pPath, final String pDbName) throws SQLException {
 		if (!databaseExists(pPath, pDbName)) {
-			DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
+			final Connection con = DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
+			con.close();
 			System.out.println("Database " + pDbName + " created.");
 		} else {
 			System.out.println("Database " + pDbName + " already exists.");
