@@ -77,6 +77,7 @@ public class SyntaxHighlighter {
 	            break;
 	
 	        default:
+	        	highlightingFunction = NoHighlighting::computeHighlighting;
 	        	return;
 	    }
 	}
