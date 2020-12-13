@@ -1,5 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -69,7 +77,7 @@ public class TreeViewController {
 	void closeFile() {
 		// set treeview and its values to null, then remove it from the background
 		treeView.setRoot(null);
-		
+
 	}
 
 	/**
@@ -101,6 +109,41 @@ public class TreeViewController {
 	@FXML
 	void search() {
 		searchField();
+	}
+
+	@FXML
+	void renameNode() {
+		System.out.println("Ahh");
+	}
+
+	@FXML
+	void deleteNode() throws FileNotFoundException {
+		treeView.getSelectionModel().getSelectedItem().setValue(null);
+		treeView.getSelectionModel().getSelectedItem().setGraphic(null);
+
+		berechnen("basti.txt");
+
+	}
+
+	public void berechnen(String choosenFile) throws FileNotFoundException {
+
+		// Datei lesen
+		File filename = new File(choosenFile);
+		FileReader eingabe = new FileReader(filename);
+		BufferedReader pInFile = new BufferedReader(eingabe);
+		try (FileWriter writer = new FileWriter(choosenFile);
+	             BufferedWriter bw = new BufferedWriter(writer)) {
+
+	            bw.write("TEST");
+	            // Hier ist es noch nicht nrichtig drinne weil es eine neue datei dann gibt mit dem namen und man ja nur die Node löschen moechte
+	            //dazu ist das problem das wenn man einmal die TreeView oeffnet dann nicht mehr der project explorer richtig klappt 
+	            // dazu noch muss man schauen wie man die datei im explorer dann aendert und nicht nur lokal auf seinem Geraet
+
+	        } catch (IOException e) {
+	            System.err.format("IOException: %s%n", e);
+	        }
+
+
 	}
 
 }
