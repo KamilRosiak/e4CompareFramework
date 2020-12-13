@@ -14,14 +14,22 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 
 /**
  * A tree cell that supports dragging
@@ -34,7 +42,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider) {
 		this.fileImageProvider = fileImageProvider;
 
-		setOnDragOver((DragEvent event) -> event.acceptTransferModes(TransferMode.COPY));
+		setOnDragOver((DragEvent event) -> event.acceptTransferModes(TransferMode.COPY, TransferMode.MOVE));
 
 		setOnDragDropped((DragEvent event) -> {
 			TreeItem<FileTreeElement> currentItem = getTreeItem();
@@ -42,6 +50,25 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 
 			final Dragboard db = event.getDragboard();
 			boolean success = false;
+
+			// For drops in the tree we just get a String of the sources absolute path
+			if (db.hasString()) {
+				String path = db.getString();
+
+				// Ignore drop on the same element that is displayed
+				if (path == currentItem.getValue().getAbsolutePath()) {
+					event.setDropCompleted(success);
+					event.consume();
+					return;
+				}
+
+				Path source = Paths.get(path);
+				Path target = Paths.get(directory.getAbsolutePath()).resolve(source.getFileName());
+				moveFileOrDirectory(source, target);
+				
+				success = true;
+			}
+
 			if (db.hasFiles()) {
 				List<java.io.File> files = db.getFiles();
 				for (java.io.File file : files) {
@@ -59,6 +86,48 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			}
 			event.setDropCompleted(success);
 			event.consume();
+		});
+
+		setOnDragDetected((MouseEvent event) -> {
+			System.out.println("test");
+			TreeItem<FileTreeElement> currentItem = getTreeItem();
+			Dragboard db = startDragAndDrop(TransferMode.MOVE);
+
+			ClipboardContent content = new ClipboardContent();
+			content.putString(currentItem.getValue().getAbsolutePath());
+			db.setContent(content);
+
+			event.consume();
+		});
+
+		setOnDragEntered(new EventHandler<DragEvent>() {
+			public void handle(DragEvent event) {
+				Background background = new Background(
+						new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY));
+
+				System.out.println("onDragEntered");
+				if (event.getDragboard().hasString()) {
+					if (event.getGestureSource() instanceof CustomTreeCell) {
+						CustomTreeCell source = (CustomTreeCell) event.getGestureSource();
+						// Don't color if we are the source
+						if (!source.getTreeItem().equals(getTreeItem())) {
+							setBackground(background);
+						}
+					} else {
+						setBackground(background);
+					}
+				}
+
+				event.consume();
+			}
+		});
+
+		setOnDragExited(new EventHandler<DragEvent>() {
+			public void handle(DragEvent event) {
+				setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+				setTextFill(Color.BLACK);
+				event.consume();
+			}
 		});
 	}
 
@@ -97,18 +166,14 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		}
 	}
 
-	private void renameItem() {
-		String newText = editTextField.getText();
-		Path source = FileHandlingUtility.getPath(getItem());
-		Path target = source.getParent().resolve(newText);
-
+	private void moveFileOrDirectory(Path source, Path target) {
 		File sourceFile = source.toFile();
 
 		if (!sourceFile.isDirectory() || (sourceFile.isDirectory() && sourceFile.list().length == 0)) {
 			try {
 				Files.move(source, target);
 			} catch (IOException e) {
-				RCPMessageProvider.errorMessage("Rename File", e.getMessage());
+				RCPMessageProvider.errorMessage("Error when moving a file or directory", e.getMessage());
 			}
 		} else {
 			// Traverse the file tree and copy each file/directory.
@@ -129,6 +194,14 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void renameItem() {
+		String newText = editTextField.getText();
+		Path source = FileHandlingUtility.getPath(getItem());
+		Path target = source.getParent().resolve(newText);
+
+		moveFileOrDirectory(source, target);
 	}
 
 	private void setupEditTextField() {
