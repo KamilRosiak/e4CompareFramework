@@ -22,7 +22,7 @@ public class EditorTab extends Tab {
 
 	public EditorTab(String text, String fileEnding, String content) {
 		this.fileEnding = fileEnding;
-		CodeArea codeArea = createCodeArea(content);
+		CodeArea codeArea = CodeAreaFactory.createCodeArea(content);
 		setText(text);
 		highlighter = new SyntaxHighlighter(fileEnding, codeArea);
 		setContent(codeArea);
@@ -30,20 +30,5 @@ public class EditorTab extends Tab {
 
 	public String getFileEnding() {
 		return fileEnding;
-	}
-
-	/**
-	 * Creates a new CodeArea and adds text to it, if any is given.
-	 * Automatically applies line numbers to the codeArea
-	 * 
-	 * @param content contains any text that was parsed from an existing file, or an
-	 *                empty String
-	 * @return newly created CodeArea
-	 * @author Lukas Cronauer
-	 */
-	public static CodeArea createCodeArea(String content) {
-		CodeArea codeArea = new CodeArea(content);
-		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-		return codeArea;
 	}
 }

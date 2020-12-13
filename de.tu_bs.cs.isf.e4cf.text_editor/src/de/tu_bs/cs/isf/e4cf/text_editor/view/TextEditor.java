@@ -65,7 +65,7 @@ public class TextEditor implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		initCountLabelItems();
 		getCurrentTab().setUserData(EditorST.NEW_TAB_TITLE);
-		getCurrentTab().setContent(EditorTab.createCodeArea(""));
+		getCurrentTab().setContent(CodeAreaFactory.createCodeArea(""));
 	}
 
 	/**
