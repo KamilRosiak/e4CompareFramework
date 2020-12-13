@@ -148,7 +148,7 @@ public class TableUtilities {
 			c.setPrimaryKey(primaryKeySet.contains(mrs.getColumnLabel(i)));
 			c.setUnique(uniqueKeySet.contains(mrs.getColumnLabel(i)));
 			c.setAutoIncrement(mrs.isAutoIncrement(i));
-			System.out.println("Test "+mrs.getColumnLabel(i)+", "+mrs.isNullable(i));
+			//System.out.println("Test "+mrs.getColumnLabel(i)+", "+mrs.isNullable(i));
 			c.setNotNull(mrs.isNullable(i) == 1 ? true : false);
 			columns.add(c);
 			//System.out.println(c.isPrimaryKey()+", "+c.isUnique()+", "+c.isNotNull());

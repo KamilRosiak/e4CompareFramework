@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class TableServiceImp extends TableUtilities implements ITableService {
@@ -243,13 +245,19 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, tableName)) {
 			renameTable(pPath, pDbName, tableName, "old_" + tableName);
-			final List<Column> cols = getColumnsTable(pPath, pDbName, "old_" + tableName);
-			for (final String c : columns) {
+			List<Column> cols = getColumnsTable(pPath, pDbName, "old_" + tableName);
+			cols = new ArrayList<Column>(cols);
+			for ( String c : columns) {
 				cols.remove(getColumn(cols, c));
+				System.out.println(c + " has been deleted;");
 			}
 			Column[] col = new Column[cols.size()];
 			col = cols.toArray(col);
+			for(Column c : col) {
+				System.out.println(c.getName());
+			}
 			createTable(pPath, pDbName, tableName, /* columns.stream().toArray(Column[]::new) */col);
+			
 			deleteTable(pPath, pDbName, "old_" + tableName);
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");

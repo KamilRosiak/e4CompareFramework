@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.core.db.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -26,9 +27,20 @@ class Test_TableServices {
 		assertTrue(ts.tableExists(_PATHTESTDATABASES, "testDB", "testTable"), "Error by creating table.");
 		assertFalse(ts.tableExists(_PATHTESTDATABASES, "testDB", "tt"));
 	}
+	@Test
+	void testDeleteTable_normal() throws SQLException, IOException {
+		//DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("age", "integer");
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testTable", c1, c2);
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testTable");
+		assertTrue(!ts.tableExists(_PATHTESTDATABASES, "testDB", "testTable"));
+		assertFalse(ts.tableExists(_PATHTESTDATABASES, "testDB", "testTable"));
+	}
 
 	@Test
-	void testCreateTable_columnPrimaryKey() throws SQLException {
+	void testCreateTable_columnPrimaryKey() throws SQLException, IOException {
 		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
 		TableServiceImp ts = new TableServiceImp();
 		Column c1 = new Column("id", "integer", true, false, false, false);
@@ -84,11 +96,11 @@ class Test_TableServices {
 		ts.renameTable(_PATHTESTDATABASES, "testDB", "old_testRenameTable", "new_testRenameTable");
 		assertTrue(ts.tableExists(_PATHTESTDATABASES, "testDB", "new_testRenameTable"));
 		assertFalse(ts.tableExists(_PATHTESTDATABASES, "testDB", "old_testRenameTable"));
-	//	ts.deleteTable(_PATHTESTDATABASES, "testDB", "new_testRenameTable");
+//		ts.deleteTable(_PATHTESTDATABASES, "testDB", "new_testRenameTable");
 	}
 	
 	@Test
-	void testAddColumn_normal() throws SQLException {
+	void testAddColumn_normal() throws SQLException, IOException {
 		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
 		TableServiceImp ts = new TableServiceImp();
 		Column c1 = new Column("id", "integer");
@@ -99,6 +111,27 @@ class Test_TableServices {
 		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC", c2.getName()));
 		ts.addColumn(_PATHTESTDATABASES, "testDB", "testAC", c3);
 		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC", c3.getName()));
+	}
+	@Test
+	void testDeleteColumn_normal() throws SQLException, IOException {
+		//DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("age", "integer");
+		Column c3 = new Column("name","String");
+		Column c4 = new Column("t1", "integer");
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testCn", c1,c2,c3,c4);
+		ts.deleteColumn(_PATHTESTDATABASES, "testDB", "testCn", c1.getName(),c2.getName(),c3.getName());
+		/*List <Column> co1 = ts.getColumnsTable(_PATHTESTDATABASES, "testDB", "testCn");
+		for(Column c : co1) {
+			System.out.println(c.getName());
+		}*/
+		System.out.print("Test: "+ ts.columnExists(_PATHTESTDATABASES, "testDB", "testCn", c1.getName()));
+		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB","testCn", c4.getName()));
+		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB","testCn", c1.getName()));
+		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB","testCn", c2.getName()));
+		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB","testCn", c3.getName()));
+		
 	}
 	
 	@Test
@@ -201,6 +234,32 @@ class Test_TableServices {
 		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
 		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
 		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));		
+	}
+	@Test
+	void testmakeColumnAutoIncrement() throws SQLException {
+		//DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("age", "integer");
+		Column c3 = new Column("name","String");
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testmakeColumnAI", c1, c2,c3);
+		ts.makeColumnAutoIncrement(_PATHTESTDATABASES,  "testDB", "testmakeColumnAI", c1.getName());
+		assertTrue(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testmakeColumnAI", c1.getName()));
+		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testmakeColumnAI", c2.getName()));
+		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testmakeColumnAI", c3.getName()));
+	}
+	
+	@Test
+	void testdropColumnAutoIncrement() throws SQLException {
+		TableServiceImp ts = new TableServiceImp();
+		Column c1 = new Column("id", "integer",false,false,true,false);
+		Column c2 = new Column("age", "integer");
+		Column c3 = new Column("name","String");
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testdropColumnAI", c1, c2,c3);
+		ts.dropColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c1.getName());
+		assertTrue(!ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c1.getName()));
+		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c2.getName()));
+		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c3.getName()));
 	}
 	
 	@Test
