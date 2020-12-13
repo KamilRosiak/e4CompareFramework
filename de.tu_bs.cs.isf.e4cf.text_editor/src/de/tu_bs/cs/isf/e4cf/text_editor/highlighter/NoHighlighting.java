@@ -6,7 +6,8 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 /**
- * Definition of highlighting function for file types that should not get highlighted
+ * Definition of highlighting function for file types that should not get
+ * highlighted
  * 
  * @author Lukas Cronauer
  *

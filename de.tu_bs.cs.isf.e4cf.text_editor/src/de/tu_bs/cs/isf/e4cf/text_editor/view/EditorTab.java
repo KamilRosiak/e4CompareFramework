@@ -10,8 +10,8 @@ import javafx.scene.control.Tab;
 /**
  * Extension of Tab class. This class adds a constructor containing the type of
  * a given file that is opened, as it is meant to hold different instances of a
- * text editor. It also has the function of highlighting its syntax, depending on 
- * file extension (For now we have implemented highlighting for java and xml)
+ * text editor. It also has the function of highlighting its syntax, depending
+ * on file extension (For now we have implemented highlighting for java and xml)
  * 
  * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
  * 

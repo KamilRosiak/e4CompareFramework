@@ -16,6 +16,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Window;
 
+/**
+ * Contains methods for common file interactions such as opening and closing
+ * 
+ * @author Erwin Wijaya, Lukas Cronauer, Soeren Christmann, Cedric Kapalla
+ *
+ */
 public class FileUtils {
 	private FileChooser fileChooser;
 	private Window parent;
@@ -25,8 +31,8 @@ public class FileUtils {
 	 * Constructor used to initialize the fileChooser instance of this object.
 	 * Available file extensions are added to the fileChooser.
 	 * 
-	 * @param parent Window the @TextEditor is part of. This will be needed to display open/save
-	 * 		  dialogs
+	 * @param parent Window the @TextEditor is part of. This will be needed to
+	 *               display open/save dialogs
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -81,7 +87,7 @@ public class FileUtils {
 	 * Opens the file, which will be chosen by the open dialog.
 	 *
 	 * @return String[] of length 2 with (absolute) filePath at index 0 and
-	 *         file-content at index 2
+	 *         file-content at index 1
 	 * @author Lukas Cronauer
 	 */
 	public String[] openFile() {
@@ -109,7 +115,7 @@ public class FileUtils {
 	 */
 	public String readFile(File file) {
 		if (file == null) {
-			throw new NullPointerException("File is null");
+			return "";
 		}
 
 		FileReader reader;
@@ -139,7 +145,7 @@ public class FileUtils {
 	 * not yet set, saveAs() is called instead.
 	 * 
 	 * @param filepath the Name of the file to write
-	 * @param content The String to save
+	 * @param content  The String to save
 	 * @return a method that will be called to write the file on the given path
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -151,7 +157,8 @@ public class FileUtils {
 	 * A Method to save a file in another directory or with another name.
 	 * 
 	 * @param content The String to save
-	 * @return the location of file, if file has been saved before, or new path
+	 * @return (absolute) path of the file, if file has been saved. Otherwise an
+	 *         empty String
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	public String saveAs(String content) {
@@ -160,6 +167,7 @@ public class FileUtils {
 		if (f != null && writeFile(f.getAbsolutePath(), content)) {
 			return f.getAbsolutePath();
 		} else {
+			// no file selected or error while saving
 			return "";
 		}
 	}

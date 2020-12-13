@@ -5,14 +5,15 @@ import org.fxmisc.richtext.LineNumberFactory;
 
 /**
  * Factory class for CodeArea with line numbers applied to it
+ * 
  * @author Lukas Cronauer
  *
  */
 public class CodeAreaFactory {
-	
+
 	/**
-	 * Creates a new CodeArea and adds text to it, if any is given.
-	 * Automatically applies line numbers to the codeArea
+	 * Creates a new CodeArea and adds text to it, if any is given. Automatically
+	 * applies line numbers to the codeArea
 	 * 
 	 * @param content contains any text that was parsed from an existing file, or an
 	 *                empty String

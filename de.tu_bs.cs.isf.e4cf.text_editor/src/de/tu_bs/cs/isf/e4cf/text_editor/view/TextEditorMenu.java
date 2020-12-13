@@ -29,7 +29,7 @@ import javafx.scene.input.DataFormat;
 import org.fxmisc.richtext.CodeArea;
 
 public class TextEditorMenu implements Initializable {
-    // File Menu
+	// File Menu
 	@FXML
 	private Menu newFile;
 	@FXML
@@ -67,8 +67,8 @@ public class TextEditorMenu implements Initializable {
 	@FXML
 	private MenuItem about;
 
-    @FXML
-    public TextEditor textEditorViewController;
+	@FXML
+	public TextEditor textEditorViewController;
 
 	public Scene scene;
 
@@ -94,12 +94,14 @@ public class TextEditorMenu implements Initializable {
 			MenuItem menu = new MenuItem(FileType + "-File");
 			menu.setOnAction(e -> {
 				for (Tab t : textEditorViewController.tabPane.getTabs()) {
-					if (t.getUserData().toString().startsWith(EditorST.NEW_TAB_TITLE + textEditorViewController.untitledCount)) {
+					if (t.getUserData().toString()
+							.startsWith(EditorST.NEW_TAB_TITLE + textEditorViewController.untitledCount)) {
 						textEditorViewController.untitledCount++;
 					}
 				}
 				textEditorViewController.saveChanges();
-				textEditorViewController.loadTab(EditorST.NEW_TAB_TITLE + textEditorViewController.untitledCount + "." + FileType, "");
+				textEditorViewController
+						.loadTab(EditorST.NEW_TAB_TITLE + textEditorViewController.untitledCount + "." + FileType, "");
 				textEditorViewController.getCurrentTab().getContent().requestFocus();
 			});
 			newFile.getItems().addAll(menu);
@@ -133,7 +135,8 @@ public class TextEditorMenu implements Initializable {
 			String newpath = textEditorViewController.fileUtils.saveAs(textEditorViewController.getCurrentText());
 			textEditorViewController.setCurrentTabUserData(newpath);
 		} else {
-			textEditorViewController.fileUtils.save((String) textEditorViewController.getCurrentTab().getUserData(), textEditorViewController.getCurrentText());
+			textEditorViewController.fileUtils.save((String) textEditorViewController.getCurrentTab().getUserData(),
+					textEditorViewController.getCurrentText());
 		}
 	}
 
@@ -306,7 +309,8 @@ public class TextEditorMenu implements Initializable {
 		textEditorViewController.alert = new Alert(AlertType.INFORMATION);
 		textEditorViewController.alert.setTitle("Preferences");
 		textEditorViewController.alert.setHeaderText("Placeholder");
-		textEditorViewController.alert.setContentText("You would be able to adjust preferences here, but this is just a placeholder for now.");
+		textEditorViewController.alert.setContentText(
+				"You would be able to adjust preferences here, but this is just a placeholder for now.");
 		textEditorViewController.alert.showAndWait();
 	}
 
@@ -321,9 +325,10 @@ public class TextEditorMenu implements Initializable {
 		textEditorViewController.alert = new Alert(AlertType.INFORMATION);
 		textEditorViewController.alert.setTitle("About");
 		textEditorViewController.alert.setHeaderText("Text Editor");
-		textEditorViewController.alert.setContentText("This is a text editor plug-in for the e4compare framework, created by "
-				+ "Lukas Cronauer, Soeren Christmann, Cedric Kapalla, and Erwin Wijaya.\n\n"
-				+ "It can do all the things one would expect from such an editor.");
+		textEditorViewController.alert
+				.setContentText("This is a text editor plug-in for the e4compare framework, created by "
+						+ "Lukas Cronauer, Soeren Christmann, Cedric Kapalla, and Erwin Wijaya.\n\n"
+						+ "It can do all the things one would expect from such an editor.");
 		textEditorViewController.alert.showAndWait();
 	}
 

@@ -7,8 +7,9 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerEx
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 
 /**
- * FileExtension which checks for whenever a file is opened in the
- * ProjectExplorer.
+ * Implements IProjectExplorerExtension to be receive information about files
+ * selected in the ProjectExplorer. Currently used to open files with an
+ * extension specified in the plugin.xml extension-tab.
  * 
  * @author Lukas Cronauer, Erwin Wijaya
  *

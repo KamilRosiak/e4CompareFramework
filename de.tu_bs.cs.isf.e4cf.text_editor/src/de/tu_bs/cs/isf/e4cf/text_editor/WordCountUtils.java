@@ -1,16 +1,18 @@
 package de.tu_bs.cs.isf.e4cf.text_editor;
 
 /**
- *
+ * Util class to hold a function to count the number of words and lines inside a
+ * string
+ * 
  * @author Erwin Wijaya, Lukas Cronauer
  */
 public class WordCountUtils {
 
-    /**
+	/**
 	 * Counts the Words and Rows in the Textfield when a key is pressed. If the
 	 * Textfield is empty there are 0 Words and 0 Rows.
-     *
-     * @return int[] Number of words at index 0, number of rows at index 1
+	 *
+	 * @return int[] Number of words at index 0, number of rows at index 1
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla, Lukas Cronauer
 	 */
@@ -18,7 +20,7 @@ public class WordCountUtils {
 		StringBuffer bufferText = new StringBuffer(text);
 		int newLineCounter = 1;
 		if (text.length() == 0) {
-			return new int[]{0, 0};
+			return new int[] { 0, 0 };
 		}
 		// check whether there is any text to begin with
 		char first = bufferText.charAt(0);
@@ -60,7 +62,7 @@ public class WordCountUtils {
 		// Counts Spaces
 		// Number of Spaces = Number of Word
 		long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
-        return new int[]{(int)countWord, newLineCounter};
+		return new int[] { (int) countWord, newLineCounter };
 	}
 
 }

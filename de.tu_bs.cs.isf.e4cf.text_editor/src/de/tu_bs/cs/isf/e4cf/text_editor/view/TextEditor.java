@@ -28,9 +28,9 @@ import javafx.scene.input.DataFormat;
 import org.fxmisc.richtext.CodeArea;
 
 /**
- * View class containing all user interface items of our plugin.
- * Used to intialize the menu structure. Additionally several methods 
- * to interact with the tabPane are provided.
+ * View class containing all user interface items of our plugin. Used to
+ * intialize the menu structure. Additionally several methods to interact with
+ * the tabPane are provided.
  * 
  * @author Soeren Christmann, Cedric Kapalla, Lukas Cronauer, Erwin Wijaya
  *
