@@ -44,12 +44,10 @@ public class ProjectExplorerLabelProvider implements ILabelProvider {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public boolean isLabelProperty(Object element, String property) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -83,8 +81,7 @@ public class ProjectExplorerLabelProvider implements ILabelProvider {
 				} else {
 					// default file icon
 					image = imageService.getImage(null, "icons/Explorer_View/items/file16.png");
-				}
-				;
+				};
 			}
 		}
 		return image;
