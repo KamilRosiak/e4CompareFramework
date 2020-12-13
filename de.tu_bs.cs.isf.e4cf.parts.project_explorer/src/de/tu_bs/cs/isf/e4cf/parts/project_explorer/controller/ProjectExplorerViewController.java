@@ -31,6 +31,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.CustomTreeCell;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.FileImageProvider;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.WorkspaceStructureTemplate;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
@@ -103,11 +104,16 @@ public class ProjectExplorerViewController {
 		canvas.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
 				new OpenFileListener(context, fileExtensions, services));
 
+		FileImageProvider fileImageProvider = new FileImageProvider(services, fileExtensions);
+
 		// Cell factory for custom tree cells
+		projectTree.setEditable(true);
+
 		projectTree.setCellFactory(new Callback<TreeView<FileTreeElement>, TreeCell<FileTreeElement>>() {
+
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
-				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem);
+				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider);
 				return treeCell;
 			}
 		});
@@ -224,6 +230,15 @@ public class ProjectExplorerViewController {
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
 		projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
+	}
+
+	/**
+	 * Subscribing on the rename event
+	 */
+	@Inject
+	@Optional
+	public void rename(@UIEventTopic(E4CEventTable.EVENT_RENAME_PROJECT_EXPLORER_ITEM) Object o) {
+		projectTree.edit(projectTree.getSelectionModel().getSelectedItem());
 	}
 
 	/**
