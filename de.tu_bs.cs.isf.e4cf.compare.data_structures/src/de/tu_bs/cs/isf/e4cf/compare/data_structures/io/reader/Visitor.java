@@ -863,8 +863,27 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 
 	@Override
-	public void visit(ExplicitConstructorInvocationStmt u, Node n) {
-		// TODO
+	public void visit(ExplicitConstructorInvocationStmt n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		
+		
+		// TypeArguments
+		if(n.getTypeArguments().isPresent()) {
+			for(Type typeArgumentExpr : n.getTypeArguments().get()) {
+				c.addAttribute(JavaNodeTypes.Type.name() + JavaNodeTypes.Argument.name(), typeArgumentExpr.toString());
+			}
+		}
+		
+		
+		// Arguments
+		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), c);
+		int argSize = n.getArguments().size(); 
+		args.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(argSize));
+		for (int i = 0; i < argSize; i++) {
+			Expression argumentExpr = n.getArgument(0);
+			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
+			argumentExpr.accept(this, argNode);
+		}
 
 	}
 
