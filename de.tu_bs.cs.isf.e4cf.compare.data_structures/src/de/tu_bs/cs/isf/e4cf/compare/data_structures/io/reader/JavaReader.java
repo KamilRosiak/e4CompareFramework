@@ -8,6 +8,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeConverter;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
+
+import java.io.IOException;
 import java.nio.file.Paths;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
@@ -23,7 +25,6 @@ import com.github.javaparser.ast.*;
 
 public class JavaReader extends AbstractArtifactReader {
 	public final static String[] SUPPORTED_FILE_ENDINGS = { "java" };
-	private static int TESTLAUF = 0;
 
 	public JavaReader() {
 		super(SUPPORTED_FILE_ENDINGS);
@@ -45,10 +46,16 @@ public class JavaReader extends AbstractArtifactReader {
 			visitor.visit(cu, rootNode);
 			
 			tree = new TreeImpl(fileName, rootNode);
+
+			// Remove these lines after debug
+			System.out.print("\n\n--- JAVA PARSER AST BEGIN ---\n\n");
+			System.out.print(TreeConverter.javaParserNodeToDot(cu));
+			System.out.print("\n\n--- JAVA PARSER AST END ---\n\n");
+			System.out.print("\n\n--- FRAMEWORK TREE BEGIN ---\n\n");
+			System.out.println(TreeConverter.treeToDot(tree));
+			System.out.print("\n\n--- FRAMEWORK TREE END ---\n\n");
 		}
 
-		System.out.println(TreeConverter.treeToDot(tree));
-		System.out.println(TESTLAUF++);
 		
 		return tree;
 	}

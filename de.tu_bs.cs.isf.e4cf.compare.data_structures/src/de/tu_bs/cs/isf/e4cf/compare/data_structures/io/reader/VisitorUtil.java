@@ -33,4 +33,15 @@ public class VisitorUtil {
 	public static Node Parent(com.github.javaparser.ast.Node n, Node arg) {
 		return new NodeImpl(n.getClass().getSimpleName(), arg);
 	}
+	
+	/**
+	 * Creates a new node which should get leaves
+	 * 
+	 * @param type Type of the new Node
+	 * @param arg Parent Node of the new node
+	 * @return New Node
+	 */
+	public static Node Parent(String type, Node arg) {
+		return new NodeImpl(type, arg);
+	}
 }
