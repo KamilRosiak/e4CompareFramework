@@ -98,6 +98,12 @@ public class XMLHighlighting {
 			lastKwEnd = matcher.end();
 		}
 		spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-		return spansBuilder.create();
+		try {
+			return spansBuilder.create();
+		} catch (IllegalStateException e) {
+			// add style span with no effect to entire length of text
+			spansBuilder.add(Collections.singleton("no-style"), text.length());
+			return spansBuilder.create();
+		}
 	}
 }

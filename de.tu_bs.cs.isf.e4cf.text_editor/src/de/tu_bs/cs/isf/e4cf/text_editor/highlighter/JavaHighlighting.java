@@ -110,7 +110,13 @@ public class JavaHighlighting {
 						secondHighlight.getStartIndex() - firstHighlight.getEndIndex());
 			}
 		}
-		return spansBuilder.create();
+		try {
+			return spansBuilder.create();
+		} catch (IllegalStateException e) {
+			// add style span with no effect to entire length of text
+			spansBuilder.add(Collections.singleton("no-style"), text.length());
+			return spansBuilder.create();
+		}
 	}
 
 	/**

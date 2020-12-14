@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.highlighter;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -20,6 +21,8 @@ public class NoHighlighting {
 	 * @return An empty StyleSpans-object
 	 */
 	public static StyleSpans<Collection<String>> computeHighlighting(String text) {
-		return new StyleSpansBuilder<Collection<String>>().create();
+		StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+		spansBuilder.add(Collections.singleton("no-style"), text.length());
+		return spansBuilder.create();
 	}
 }
