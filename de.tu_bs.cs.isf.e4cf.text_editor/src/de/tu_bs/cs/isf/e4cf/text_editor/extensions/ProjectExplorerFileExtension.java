@@ -19,7 +19,7 @@ public class ProjectExplorerFileExtension implements IProjectExplorerExtension {
 	@Override
 	public Image getIcon(RCPImageService imageService) {
 		// TODO Auto-generated method stub
-		return null;
+		return imageService.getImage(EditorST.BUNDLE_NAME, "icons/TextEditorIcon.png");
 	}
 
 	@Override

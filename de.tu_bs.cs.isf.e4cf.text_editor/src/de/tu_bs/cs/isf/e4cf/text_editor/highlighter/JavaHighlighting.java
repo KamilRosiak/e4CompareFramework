@@ -73,7 +73,6 @@ public class JavaHighlighting {
 		// computing the Highlighting if it has different class name on initialization
 		highlights.addAll(errorClassHighlighting(text));
 		Matcher matcher = PATTERN.matcher(text);
-		int lastKwEnd = 0;
 		StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
 		while (matcher.find()) {
 			String styleClass = matcher.group("KEYWORD") != null ? "java-keyword"
