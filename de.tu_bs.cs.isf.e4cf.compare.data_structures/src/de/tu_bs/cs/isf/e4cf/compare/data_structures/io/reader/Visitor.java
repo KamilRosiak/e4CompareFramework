@@ -202,7 +202,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(AssertStmt n, Node arg) {
 		Node parent = VisitorUtil.Parent(n, arg);
 		parent.addAttribute(JavaNodeTypes.Check.name(), n.getCheck().toString());
-		n.getCheck().accept(this, check);
 		if(n.getMessage().isPresent()) {
 			parent.addAttribute(JavaNodeTypes.Message.name(), n.getMessage().get().toString());
 		}
@@ -914,23 +913,16 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		n.removeCompare(); // rm bc visited
 
 		// Initializations
-		Node inizialitions = new NodeImpl(JavaNodeTypes.Initilization.name(), p);
-		inizialitions.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(n.getInitialization().size()));
 		for (int i = 0; i < n.getInitialization().size(); i++) {
 			Expression initExpr = n.getInitialization().get(0);
-			Node initNode = new NodeImpl(JavaNodeTypes.Initilization.name() + i, inizialitions);
-			initExpr.accept(this, initNode);
+			p.addAttribute(JavaNodeTypes.Initilization.name(), initExpr.toString());
 			initExpr.removeForced();
 		}
 
 		// Updates
-		Node updates = new NodeImpl(JavaNodeTypes.Update.name(), p);
-		int updateSize = n.getUpdate().size();
-		updates.addAttribute(JavaNodeTypes.Children.name(), String.valueOf(updateSize));
-		for (int i = 0; i < updateSize; i++) {
+		for (int i = 0; i < n.getUpdate().size(); i++) {
 			Expression updateExpr = n.getUpdate().get(0);
-			Node updateNode = new NodeImpl(JavaNodeTypes.Update.name() + i, updates);
-			updateExpr.accept(this, updateNode);
+			p.addAttribute(JavaNodeTypes.Update.name(), updateExpr.toString());
 			updateExpr.removeForced();
 		}
 
