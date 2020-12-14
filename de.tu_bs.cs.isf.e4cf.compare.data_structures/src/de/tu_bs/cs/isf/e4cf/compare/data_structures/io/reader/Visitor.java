@@ -260,7 +260,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BreakStmt n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		Node breakNode = new NodeImpl(JavaNodeTypes.Break.name(), arg);
+		if(n.getLabel().isPresent()) {
+			breakNode.addAttribute(JavaNodeTypes.Target.name(), n.getLabel().get().toString());
+		}
 	}
 
 	/**
@@ -585,7 +588,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		Node parent = VisitorUtil.Parent(n, arg);
+		parent.addAttribute(JavaNodeTypes.Selector.name(), n.getSelector().toString());
+		n.getEntries().forEach(entry -> entry.accept(this, parent));
 	}
 
 	/**
@@ -603,7 +608,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SynchronizedStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		Node sync = new NodeImpl(JavaNodeTypes.Synchronized.name(), arg);
+		sync.addAttribute(JavaNodeTypes.Expression.name(), n.getExpression().toString());
+		n.getBody().accept(this, sync);
 	}
 
 	/**
@@ -773,7 +780,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(YieldStmt n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		super.visit(n, VisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -790,7 +797,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ContinueStmt n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		Node continueNode = new NodeImpl(JavaNodeTypes.Continue.name(), arg);
+		if(n.getLabel().isPresent()) {
+			continueNode.addAttribute(JavaNodeTypes.Target.name(), n.getLabel().get().toString());
+		}
 	}
 
 	/**
