@@ -29,14 +29,14 @@ class Test_TableServices {
 	}
 	@Test
 	void testDeleteTable_normal() throws SQLException, IOException {
-		//DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
 		TableServiceImp ts = new TableServiceImp();
 		Column c1 = new Column("id", "integer");
 		Column c2 = new Column("age", "integer");
-		ts.createTable(_PATHTESTDATABASES, "testDB", "testTable", c1, c2);
-		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testTable");
-		assertTrue(!ts.tableExists(_PATHTESTDATABASES, "testDB", "testTable"));
-		assertFalse(ts.tableExists(_PATHTESTDATABASES, "testDB", "testTable"));
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testDeletedTable", c1, c2);
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testDeletedTable");
+		assertTrue(!ts.tableExists(_PATHTESTDATABASES, "testDB", "testDeletedTable"));
+		assertFalse(ts.tableExists(_PATHTESTDATABASES, "testDB", "testDeletedTable"));
 	}
 
 	@Test
@@ -114,7 +114,7 @@ class Test_TableServices {
 	}
 	@Test
 	void testDeleteColumn_normal() throws SQLException, IOException {
-		//DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
 		TableServiceImp ts = new TableServiceImp();
 		Column c1 = new Column("id", "integer");
 		Column c2 = new Column("age", "integer");
@@ -122,11 +122,8 @@ class Test_TableServices {
 		Column c4 = new Column("t1", "integer");
 		ts.createTable(_PATHTESTDATABASES, "testDB", "testCn", c1,c2,c3,c4);
 		ts.deleteColumn(_PATHTESTDATABASES, "testDB", "testCn", c1.getName(),c2.getName(),c3.getName());
-		/*List <Column> co1 = ts.getColumnsTable(_PATHTESTDATABASES, "testDB", "testCn");
-		for(Column c : co1) {
-			System.out.println(c.getName());
-		}*/
-		System.out.print("Test: "+ ts.columnExists(_PATHTESTDATABASES, "testDB", "testCn", c1.getName()));
+	
+		//System.out.print("Test: "+ ts.columnExists(_PATHTESTDATABASES, "testDB", "testCn", c1.getName()));
 		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB","testCn", c4.getName()));
 		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB","testCn", c1.getName()));
 		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB","testCn", c2.getName()));
@@ -237,7 +234,7 @@ class Test_TableServices {
 	}
 	@Test
 	void testmakeColumnAutoIncrement() throws SQLException {
-		//DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
+		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
 		TableServiceImp ts = new TableServiceImp();
 		Column c1 = new Column("id", "integer");
 		Column c2 = new Column("age", "integer");
@@ -256,6 +253,7 @@ class Test_TableServices {
 		Column c2 = new Column("age", "integer");
 		Column c3 = new Column("name","String");
 		ts.createTable(_PATHTESTDATABASES, "testDB", "testdropColumnAI", c1, c2,c3);
+		assertTrue(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c1.getName()));
 		ts.dropColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c1.getName());
 		assertTrue(!ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c1.getName()));
 		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c2.getName()));

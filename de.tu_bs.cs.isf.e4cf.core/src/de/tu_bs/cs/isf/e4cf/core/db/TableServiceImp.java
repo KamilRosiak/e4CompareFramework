@@ -253,9 +253,9 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			}
 			Column[] col = new Column[cols.size()];
 			col = cols.toArray(col);
-			for(Column c : col) {
+			/*for(Column c : col) {
 				System.out.println(c.getName());
-			}
+			}*/
 			createTable(pPath, pDbName, tableName, /* columns.stream().toArray(Column[]::new) */col);
 			
 			deleteTable(pPath, pDbName, "old_" + tableName);
