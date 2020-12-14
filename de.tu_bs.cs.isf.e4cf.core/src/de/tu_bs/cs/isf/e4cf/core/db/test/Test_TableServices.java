@@ -154,8 +154,8 @@ class Test_TableServices {
 		Column c3 = new Column("name","String", false, false, false, false);
 		ts.createTable(_PATHTESTDATABASES, "testDB", "testAC_Unique", c1);
 		ts.addColumn(_PATHTESTDATABASES, "testDB", "testAC_Unique", c2, c3);
-		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableAC_Unique", c2.getName()) && ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testAC_Unique", c2.getName()));
-		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableAC_Unique", c3.getName()) && ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testAC_Unique", c3.getName()));
+		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC_Unique", c2.getName()) && ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testAC_Unique", c2.getName()));
+		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC_Unique", c3.getName()) && ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testAC_Unique", c3.getName()));
 	}
 	
 	@Test
@@ -167,8 +167,8 @@ class Test_TableServices {
 		Column c3 = new Column("name","String", false, false, false, false);
 		ts.createTable(_PATHTESTDATABASES, "testDB", "testAC_AI", c1);
 		ts.addColumn(_PATHTESTDATABASES, "testDB", "testAC_AI", c2, c3);
-		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableAC_AI", c2.getName()) && ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testAC_AI", c2.getName()));
-		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableAC_AI", c3.getName()) && ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testAC_AI", c3.getName()));
+		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC_AI", c2.getName()) && ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testAC_AI", c2.getName()));
+		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC_AI", c3.getName()) && ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testAC_AI", c3.getName()));
 	}
 	
 	@Test
@@ -180,8 +180,8 @@ class Test_TableServices {
 		Column c3 = new Column("name","String", false, false, false, false);
 		ts.createTable(_PATHTESTDATABASES, "testDB", "testAC_NN", c1);
 		ts.addColumn(_PATHTESTDATABASES, "testDB", "testAC_NN", c2, c3);
-		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableAC_NN", c2.getName()) && ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testAC_NN", c2.getName()));
-		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableAC_NN", c3.getName()) && ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testAC_NN", c3.getName()));
+		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC_NN", c2.getName()) && ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testAC_NN", c2.getName()));
+		assertFalse(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC_NN", c3.getName()) && ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testAC_NN", c3.getName()));
 	}
 	
 	@Test
@@ -211,28 +211,32 @@ class Test_TableServices {
 		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
 		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
 		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testTableColumnPK");
 	}
 	
 	@Test
 	void testdropColumnPrimaryKey() throws SQLException {
 		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
 		TableServiceImp ts = new TableServiceImp();
-		Column c1 = new Column("id", "integer");
-		Column c2 = new Column("age", "integer");
+		Column c1 = new Column("id", "integer",true,false,false,false);
+		Column c2 = new Column("age","integer",true,false,false,false);
 		Column c3 = new Column("name","String");
-		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName());
-		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
-		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
-		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));
-		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName());
-		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
-		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
-		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));
-		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName(),c2.getName());
-		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c1.getName()));
-		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c2.getName()));
-		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testTableColumnPK", c3.getName()));		
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c1, c2,c3);
+		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c3.getName());
+		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c1.getName()));
+		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c2.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c3.getName()));
+		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c1.getName());
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c1.getName()));
+		assertTrue(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c2.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c3.getName()));
+		ts.dropColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK",c2.getName());
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c1.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c2.getName()));
+		assertFalse(ts.isColumnPrimaryKey(_PATHTESTDATABASES, "testDB", "testDropColumnPK", c3.getName()));
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testDropColumnPK");
 	}
+	
 	@Test
 	void testmakeColumnAutoIncrement() throws SQLException {
 		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
@@ -245,6 +249,7 @@ class Test_TableServices {
 		assertTrue(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testmakeColumnAI", c1.getName()));
 		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testmakeColumnAI", c2.getName()));
 		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testmakeColumnAI", c3.getName()));
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testmakeColumnAI");
 	}
 	
 	@Test
@@ -259,6 +264,7 @@ class Test_TableServices {
 		assertTrue(!ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c1.getName()));
 		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c2.getName()));
 		assertFalse(ts.isColumnAutoIncrement(_PATHTESTDATABASES, "testDB", "testdropColumnAI",c3.getName()));
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testdropColumnAI");
 	}
 	
 	@Test
@@ -268,36 +274,41 @@ class Test_TableServices {
 		Column c1 = new Column("id", "integer");
 		Column c2 = new Column("age", "integer");
 		Column c3 = new Column("name","String");
-		ts.createTable(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1, c2,c3);
-		ts.makeColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName());
-		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
-		ts.makeColumnUnique(_PATHTESTDATABASES, "testDB","testTableColumnUnique", c2.getName());
-		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
-		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique", c1, c2,c3);
+		ts.makeColumnUnique(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique", c1.getName());
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique", c1.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique", c3.getName()));
+		ts.makeColumnUnique(_PATHTESTDATABASES, "testDB","testMakeColumnUnique", c2.getName());
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique", c1.getName()));
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique", c3.getName()));
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testMakeColumnUnique");
+		
 	}
 	
 	@Test
 	void testdropColumnUnique() throws SQLException {
 		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
 		TableServiceImp ts = new TableServiceImp();
-		Column c1 = new Column("id", "integer");
-		Column c2 = new Column("age", "integer");
+		Column c1 = new Column("id", "integer",false,true,false,false);
+		Column c2 = new Column("age", "integer",false,true,false,false);
 		Column c3 = new Column("name","String");
-		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName());
-		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
-		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
-		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName());
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
-        assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
-		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique",c2.getName());
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c1.getName()));
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c2.getName()));
-		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testTableColumnUnique", c3.getName()));
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c1, c2,c3);
+		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c3.getName());
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c1.getName()));
+		assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c3.getName()));
+		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c1.getName());
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c1.getName()));
+        assertTrue(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c3.getName()));
+		ts.dropColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique",c2.getName());
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c1.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c2.getName()));
+		assertFalse(ts.isColumnUnique(_PATHTESTDATABASES, "testDB", "testDropColumnUnique", c3.getName()));
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testDropColumnUnique");
+		
 	}
 	
 	@Test
