@@ -18,6 +18,8 @@ import javafx.scene.control.Tab;
  */
 public class EditorTab extends Tab {
 	private String fileEnding;
+	
+	// Highlighter of this Tab's CodeArea
 	private SyntaxHighlighter highlighter;
 
 	public EditorTab(String text, String fileEnding, String content) {

@@ -22,6 +22,7 @@ public class NoHighlighting {
 	 */
 	public static StyleSpans<Collection<String>> computeHighlighting(String text) {
 		StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+		// add span with no highlighting to entire text as an empty StyleSpansBuilder throws an IllegalStateException
 		spansBuilder.add(Collections.singleton("no-style"), text.length());
 		return spansBuilder.create();
 	}

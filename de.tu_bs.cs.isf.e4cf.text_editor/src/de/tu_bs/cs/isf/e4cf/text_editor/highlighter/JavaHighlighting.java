@@ -113,7 +113,7 @@ public class JavaHighlighting {
 		try {
 			return spansBuilder.create();
 		} catch (IllegalStateException e) {
-			// add style span with no effect to entire length of text
+			// add style span with no effect to entire length of text when no spans were added
 			spansBuilder.add(Collections.singleton("no-style"), text.length());
 			return spansBuilder.create();
 		}
