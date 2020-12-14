@@ -505,7 +505,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(Parameter n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		c.addAttribute(JavaNodeTypes.Type.toString(), n.getTypeAsString());
-		super.visit(n, c);
+		c.addAttribute(JavaNodeTypes.Name.toString(), n.getNameAsString());
 	}
 
 	/**
