@@ -201,11 +201,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(AssertStmt n, Node arg) {
 		Node parent = VisitorUtil.Parent(n, arg);
-		Node check = new NodeImpl(JavaNodeTypes.Check.name(), parent);	
-		Node message = new NodeImpl(JavaNodeTypes.Message.name(), parent);
+		parent.addAttribute(JavaNodeTypes.Check.name(), n.getCheck().toString());
 		n.getCheck().accept(this, check);
 		if(n.getMessage().isPresent()) {
-			n.getMessage().get().accept(this, message);
+			parent.addAttribute(JavaNodeTypes.Message.name(), n.getMessage().get().toString());
 		}
 	}
 
@@ -844,9 +843,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 
 	@Override
 	public void visit(EnumConstantDeclaration n, Node arg) {
-
 		super.visit(n, VisitorUtil.Parent(n, arg));
-
 	}
 
 	/**
@@ -866,14 +863,12 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ExplicitConstructorInvocationStmt n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		
-		
 		// TypeArguments
 		if(n.getTypeArguments().isPresent()) {
 			for(Type typeArgumentExpr : n.getTypeArguments().get()) {
 				c.addAttribute(JavaNodeTypes.Type.name() + JavaNodeTypes.Argument.name(), typeArgumentExpr.toString());
 			}
 		}
-		
 		
 		// Arguments
 		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), c);
@@ -884,7 +879,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
 			argumentExpr.accept(this, argNode);
 		}
-
 	}
 
 	/**
