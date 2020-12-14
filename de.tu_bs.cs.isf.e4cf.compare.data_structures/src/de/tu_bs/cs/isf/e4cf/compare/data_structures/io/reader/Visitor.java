@@ -891,8 +891,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		p.addAttribute(JavaNodeTypes.Iterator.name(), n.getIterable().toString());
 		
 		// Initilization
-		Node initialization = new NodeImpl(JavaNodeTypes.Initilization.name(), p);
-		n.getVariableDeclarator().accept(this, initialization);
+		p.addAttribute(JavaNodeTypes.Initilization.name(), n.getVariableDeclarator().toString());
 		
 		// Block
 		n.getBody().accept(this, p);
