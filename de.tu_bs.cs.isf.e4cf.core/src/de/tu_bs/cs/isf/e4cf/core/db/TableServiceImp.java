@@ -325,9 +325,9 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			final String columnName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, tableName)) {
-			if(isColumnAutoIncrement(pPath, pDbName, tableName, columnName)) {
+			//if(isColumnAutoIncrement(pPath, pDbName, tableName, columnName)) {
 				setColumnAutoIncrement(pPath, pDbName, tableName, true, columnName);
-			}
+			//}
 			
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
