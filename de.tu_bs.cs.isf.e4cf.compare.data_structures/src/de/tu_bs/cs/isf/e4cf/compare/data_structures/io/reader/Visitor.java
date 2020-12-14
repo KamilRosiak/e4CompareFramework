@@ -733,7 +733,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		
 		// Initializer
 		if (n.getInitializer().isPresent()) {
-			n.getInitializer().get().accept(this, arg);
+			arg.addAttribute(JavaNodeTypes.Initilization.name(), n.getInitializer().get().toString());
 		}
 	}
 
