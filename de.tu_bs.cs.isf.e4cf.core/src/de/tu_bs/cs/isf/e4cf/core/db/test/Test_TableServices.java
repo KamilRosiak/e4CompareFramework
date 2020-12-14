@@ -96,7 +96,7 @@ class Test_TableServices {
 		ts.renameTable(_PATHTESTDATABASES, "testDB", "old_testRenameTable", "new_testRenameTable");
 		assertTrue(ts.tableExists(_PATHTESTDATABASES, "testDB", "new_testRenameTable"));
 		assertFalse(ts.tableExists(_PATHTESTDATABASES, "testDB", "old_testRenameTable"));
-//		ts.deleteTable(_PATHTESTDATABASES, "testDB", "new_testRenameTable");
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "new_testRenameTable");
 	}
 	
 	@Test
@@ -112,6 +112,7 @@ class Test_TableServices {
 		ts.addColumn(_PATHTESTDATABASES, "testDB", "testAC", c3);
 		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testAC", c3.getName()));
 	}
+	
 	@Test
 	void testDeleteColumn_normal() throws SQLException, IOException {
 		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
@@ -354,7 +355,7 @@ class Test_TableServices {
 		ts.createTable(_PATHTESTDATABASES, "testDB", "t1", c1);
 		ts.createTable(_PATHTESTDATABASES, "testDB", "t2", c1);
 		ts.createTable(_PATHTESTDATABASES, "testDB", "t3", c1);
-		assertEquals(true, ts.getTables(_PATHTESTDATABASES, "testDB").contains(listTables));
+		assertEquals(true, ts.getTables(_PATHTESTDATABASES, "testDB").containsAll(listTables));
 	}
 	
 }

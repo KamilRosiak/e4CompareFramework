@@ -66,7 +66,7 @@ public class TableUtilities {
 			final String columnName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, tableName)) {
-			final ResultSet rs = con.getMetaData().getColumns(null, null, null, null);
+			final ResultSet rs = con.getMetaData().getColumns(null, null, tableName, null);
 			while (rs.next()) {
 				if (columnName.equals(rs.getString("COLUMN_NAME"))) {
 					con.close();
