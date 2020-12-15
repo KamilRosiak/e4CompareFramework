@@ -65,7 +65,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				Path source = Paths.get(path);
 				Path target = Paths.get(directory.getAbsolutePath()).resolve(source.getFileName());
 				moveFileOrDirectory(source, target);
-				
+
 				success = true;
 			}
 
@@ -89,7 +89,6 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		});
 
 		setOnDragDetected((MouseEvent event) -> {
-			System.out.println("test");
 			TreeItem<FileTreeElement> currentItem = getTreeItem();
 			Dragboard db = startDragAndDrop(TransferMode.MOVE);
 
@@ -105,7 +104,6 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				Background background = new Background(
 						new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY));
 
-				System.out.println("onDragEntered");
 				if (event.getDragboard().hasString()) {
 					if (event.getGestureSource() instanceof CustomTreeCell) {
 						CustomTreeCell source = (CustomTreeCell) event.getGestureSource();
