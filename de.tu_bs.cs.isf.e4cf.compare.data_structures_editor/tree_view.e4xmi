@@ -4,6 +4,6 @@
     <elements xsi:type="basic:Part" xmi:id="_bwsJICWzEeuQwOiyKUBDCA" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.compare.data_structures_editor/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.DataStructureEditorController" label="Tree View" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor/icons/tree_view_icon.png"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9sFxgDYjEeuyNqzD07HHhw" featurename="children" parentElementId="de.tu_bs.cs.isf.e4cf.parts.project_explorer.context_menu">
-    <elements xsi:type="menu:DirectMenuItem" xmi:id="_JEJ18DYkEeuyNqzD07HHhw" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.openTreeViewButton" label="Open in TreeView" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor/icons/tree_view_icon.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.compare.data_structures_editor/handler.OpenInTreeViewHandler"/>
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_JEJ18DYkEeuyNqzD07HHhw" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.openTreeViewButton" label="Open in TreeView" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor/icons/tree_view_icon.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.compare.data_structures_editor/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.handler.OpenInTreeViewHandler"/>
   </fragments>
 </fragment:ModelFragments>
