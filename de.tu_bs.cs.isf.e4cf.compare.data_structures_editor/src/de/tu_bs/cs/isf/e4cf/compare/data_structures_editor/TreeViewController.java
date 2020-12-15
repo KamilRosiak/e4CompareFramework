@@ -11,6 +11,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -19,7 +20,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 
@@ -43,8 +43,6 @@ public class TreeViewController {
 	@FXML
 	private TreeView<NodeUsage> treeView;
 
-	private TreeItem<NodeUsage> rootItem;
-
 	@FXML
 	private TextField searchTextField;
 
@@ -53,8 +51,8 @@ public class TreeViewController {
 	@Inject
 	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
-		treeView = TreeViewUtilities.initTree(tree, this.treeView, rootItem, services);
-
+		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView);
+		treeView = TreeViewUtilities.addListener(treeView, services);
 	}
 
 	/**
@@ -85,25 +83,6 @@ public class TreeViewController {
 		treeView.getSelectionModel().clearSelection();
 		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
-	
-	TreeItem<NodeUsage> searchTreeItem(TreeItem<NodeUsage> item, String name) {
-
-		if (item.getValue().toString().equals(name)) {
-			return item; // hit!
-		}
-		// continue on the children:
-		TreeItem<NodeUsage> result = null;
-		for (TreeItem<NodeUsage> child : item.getChildren()) {
-			result = searchTreeItem(child, name);
-			if (result != null) {
-				return result; // hit!
-			}
-		}
-
-		// no hit:
-//		System.out.println("Search ended");
-		return null;
-	}
 
 	/**
 	 * searchButton to search what is typed in searchField
@@ -111,7 +90,8 @@ public class TreeViewController {
 	@FXML
 	void search() {
 		String searchFieldTextToRead = searchTextField.getText();
-		treeView.getSelectionModel().select(searchTreeItem(treeView.getRoot(), searchFieldTextToRead));
+		treeView.getSelectionModel()
+				.select(TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead));
 	}
 
 }
