@@ -58,7 +58,7 @@
               <items>
 		<MenuItem mnemonicParsing="false" text="add Attribute" />
 		<MenuItem mnemonicParsing="false" text="Add Child" />
-                <MenuItem mnemonicParsing="false" text="Rename" />
+                <MenuItem mnemonicParsing="false"  text="Rename" />
                 <MenuItem mnemonicParsing="false" text="Cut" />
 		<MenuItem mnemonicParsing="false" text="Extract to file" />
                 <MenuItem mnemonicParsing="false" text="Delete" />
@@ -66,7 +66,7 @@
               </items>
             </ContextMenu>
          </contextMenu></TreeView> 
-      <ToolBar fx:id="toolBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
             <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" />
           <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#search" text="Search" />

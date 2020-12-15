@@ -14,11 +14,5 @@
             matcher="de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher">
       </matcher>
    </extension>
-   <extension
-         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerWorkspaceStructure">
-      <workspace_structure_attr
-            workspace_structure_attr="de.tu_bs.cs.isf.e4cf.compare.extensions.workspace.CompareWorkspace">
-      </workspace_structure_attr>
-   </extension>
 
 </plugin>
