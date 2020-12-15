@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeUsage;
@@ -64,18 +67,19 @@ public final class TreeViewUtilities {
 	 * @param name
 	 * @return
 	 */
-	public static TreeItem<NodeUsage> searchTreeItem(TreeItem<NodeUsage> item, String name) {
+	public static List<TreeItem<NodeUsage>> searchTreeItem(TreeItem<NodeUsage> item, String name) {
+		List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
 		if (item.getValue().toString().equals(name)) {
-			return item;
+			searchList.add(item);
 		}
-		TreeItem<NodeUsage> result = null;
+		List<TreeItem<NodeUsage>> result = new ArrayList<TreeItem<NodeUsage>>();
 		for (TreeItem<NodeUsage> child : item.getChildren()) {
-			result = searchTreeItem(child, name);
+			result.addAll(searchTreeItem(child, name));
 			if (result != null) {
-				return result;
+				searchList.addAll(result);
 			}
 		}
-		return null;
+		return searchList;
 	}
 
 }
