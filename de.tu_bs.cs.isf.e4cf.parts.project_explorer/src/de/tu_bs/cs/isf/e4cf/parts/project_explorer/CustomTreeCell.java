@@ -14,7 +14,6 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
@@ -99,33 +98,29 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			event.consume();
 		});
 
-		setOnDragEntered(new EventHandler<DragEvent>() {
-			public void handle(DragEvent event) {
-				Background background = new Background(
-						new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY));
+		setOnDragEntered((DragEvent event) -> {
+			Background background = new Background(
+					new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY));
 
-				if (event.getDragboard().hasString()) {
-					if (event.getGestureSource() instanceof CustomTreeCell) {
-						CustomTreeCell source = (CustomTreeCell) event.getGestureSource();
-						// Don't color if we are the source
-						if (!source.getTreeItem().equals(getTreeItem())) {
-							setBackground(background);
-						}
-					} else {
+			if (event.getDragboard().hasString()) {
+				if (event.getGestureSource() instanceof CustomTreeCell) {
+					CustomTreeCell source = (CustomTreeCell) event.getGestureSource();
+					// Don't color if we are the source
+					if (!source.getTreeItem().equals(getTreeItem())) {
 						setBackground(background);
 					}
+				} else {
+					setBackground(background);
 				}
-
-				event.consume();
 			}
+
+			event.consume();
 		});
 
-		setOnDragExited(new EventHandler<DragEvent>() {
-			public void handle(DragEvent event) {
-				setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-				setTextFill(Color.BLACK);
-				event.consume();
-			}
+		setOnDragExited((DragEvent event) -> {
+			setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+			setTextFill(Color.BLACK);
+			event.consume();
 		});
 	}
 
