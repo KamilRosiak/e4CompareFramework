@@ -9,6 +9,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -100,10 +101,16 @@ public class TreeViewController {
 		for (TreeItem<NodeUsage> t : TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead)) {
 			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			treeView.getSelectionModel().select(t);
+			treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
 		}
 		if (treeView.getSelectionModel().getSelectedItems().size() > 1) {
 			services.eventBroker.send("EmptyPropertiesTableEvent", true);
-		}
+		}		
 	}
+	
+    @FXML
+    void onEnter(ActionEvent event) {
+    		search();
+    }
 
 }
