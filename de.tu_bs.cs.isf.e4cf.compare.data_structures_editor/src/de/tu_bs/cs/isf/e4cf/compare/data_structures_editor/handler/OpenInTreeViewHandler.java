@@ -17,13 +17,10 @@ public class OpenInTreeViewHandler {
 	@Execute
 	public void execute(ServiceContainer services) {
 		FileTreeElement element = services.rcpSelectionService.getCurrentSelectionFromExplorer();
-		
 		if (element.getExtension().equals("txt")) {
 			TextReader reader = new TextReader();
-			
-			services.eventBroker.send("OpenTreeEvent", reader.readArtifact(element));
 			services.partService.showPart(DataStructuresEditorST.TREE_VIEW_ID);
-
+			services.eventBroker.send("OpenTreeEvent", reader.readArtifact(element));
 		}
 	}
 }
