@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
 
@@ -94,9 +95,15 @@ public class TreeViewController {
 	 */
 	@FXML
 	void search() {
+		treeView.getSelectionModel().clearSelection();
 		String searchFieldTextToRead = searchTextField.getText();
-		treeView.getSelectionModel()
-				.select(TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead));
+		for (TreeItem<NodeUsage> t : TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead)) {
+			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+			treeView.getSelectionModel().select(t);
+		}
+		if (treeView.getSelectionModel().getSelectedItems().size() > 1) {
+			services.eventBroker.send("EmptyPropertiesTableEvent", true);
+		}
 	}
 
 }
