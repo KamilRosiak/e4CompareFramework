@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,12 +76,15 @@ public class ProjectExplorerViewController {
 	private ChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
+	private Boolean isFlatView;
 
 	/**
 	 * This method is equivalent to the previous postContruct(), in that it sets up
 	 * the project explorer component.
 	 */
 	public void initializeView(IEclipseContext context, WorkspaceFileSystem fileSystem, FXCanvas canvas) {
+
+		isFlatView = true;
 
 		getContributions();
 
@@ -120,27 +124,71 @@ public class ProjectExplorerViewController {
 
 	}
 
+	private TreeItem<FileTreeElement> buildTree(FileTreeElement node, boolean isRoot, HashMap<String, Boolean> state) {
+
+		TreeItem<FileTreeElement> rootNode = null;
+
+		if (isFlatView) {
+			rootNode = buildFlatTree(node, true, null);
+			rootNode.getChildren().sort(Comparator.comparing(t -> t.toString()));
+		} else {
+			rootNode = buildHierachialTree(node, true, state);
+		}
+
+		return rootNode;
+	}
+
 	/**
-	 * Traverse the filesystem tree via dfs to generate a javafx treeview
+	 * Traverse the filesystem tree via dfs to generate a javafx hirachial treeview
 	 * 
 	 * @param parentNode The parent node
 	 * @param isRoot     true if a given node is a root node
 	 * @param state      maps the expanded status for each node in the tree
 	 * @return a new tree item
 	 */
-	private TreeItem<FileTreeElement> buildTree(FileTreeElement parentNode, boolean isRoot,
+	private TreeItem<FileTreeElement> buildHierachialTree(FileTreeElement parentNode, boolean isRoot,
 			HashMap<String, Boolean> state) {
 
 		Node imgNode = isRoot ? null : getImage(parentNode);
 
+		parentNode.setDisplayLongPath(false);
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
+
 		if (state != null && state.containsKey(currentNode.getValue().getAbsolutePath())) {
 			currentNode.setExpanded(state.get(currentNode.getValue().getAbsolutePath()));
 		}
 
 		for (FileTreeElement child : parentNode.getChildren()) {
-			TreeItem<FileTreeElement> node = buildTree(child, false, state);
+			TreeItem<FileTreeElement> node = buildHierachialTree(child, false, state);
 			currentNode.getChildren().add(node);
+		}
+
+		return currentNode;
+	}
+
+	/**
+	 * Traverse the filesystem tree via dfs to generate a javafx flat treeview
+	 * 
+	 * @param parentNode The parent node
+	 * @param isRoot     true if a given node is a root node
+	 * @param rootNode   the root node that holds all the children
+	 * @return a new tree item
+	 */
+	private TreeItem<FileTreeElement> buildFlatTree(FileTreeElement parentNode, boolean isRoot,
+			TreeItem<FileTreeElement> rootNode) {
+
+		Node imgNode = isRoot ? null : getImage(parentNode);
+
+		parentNode.setDisplayLongPath(true);
+		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
+
+		if (isRoot) {
+			rootNode = currentNode;
+		}
+
+		for (FileTreeElement child : parentNode.getChildren()) {
+			TreeItem<FileTreeElement> node = buildFlatTree(child, false, rootNode);
+			rootNode.getChildren().add(node);
 		}
 
 		return currentNode;
@@ -221,8 +269,13 @@ public class ProjectExplorerViewController {
 	@Inject
 	@Optional
 	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Object o) {
-		HashMap<String, Boolean> oldTreeState = new HashMap<String, Boolean>();
-		traverseTree(projectTree.getRoot(), oldTreeState);
+
+		HashMap<String, Boolean> oldTreeState = null;
+
+		if (!isFlatView) {
+			oldTreeState = new HashMap<String, Boolean>();
+			traverseTree(projectTree.getRoot(), oldTreeState);
+		}
 
 		projectTree.getSelectionModel().selectedItemProperty().removeListener(changeListener);
 		TreeItem<FileTreeElement> root = buildTree(projectTree.getRoot().getValue(), true, oldTreeState);
