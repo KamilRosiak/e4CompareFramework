@@ -51,7 +51,7 @@ public class JavaWriterAttributeCollector {
 	private Expression _then = null;
 	private Type _throws = null;
 	private Type _type = null;
-	private Type _typeargument = null;
+	private TypeParameter _typeargument = null;
 	private Expression _update = null;
 	private Expression _value = null;
 
@@ -137,7 +137,7 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.Type.name())) {
 				_type = StaticJavaParser.parseType(singleVal);
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
-				_typeargument = StaticJavaParser.parseType(singleVal);
+				_typeargument = StaticJavaParser.parseTypeParameter(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Update.name())) {
 				_update = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Value.name())) {
@@ -284,7 +284,7 @@ public class JavaWriterAttributeCollector {
 		return _type;
 	}
 
-	public Type getTypeArgument() {
+	public TypeParameter getTypeArgument() {
 		return _typeargument;
 	}
 
