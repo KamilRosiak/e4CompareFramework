@@ -13,12 +13,12 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.*;
+import com.github.javaparser.*;
 import com.github.javaparser.ast.Modifier.Keyword;
 
 /**
  * 
- * @author Serkan Acar
- * @author Pascal Blum
+
  *
  */
 
@@ -26,6 +26,12 @@ public class WriterUtil {
 	
 	public static com.github.javaparser.ast.Node visitWriter(Node n) {
 		com.github.javaparser.ast.Node jpNode = null;
+		
+		// set jpNode as parent to all the nodes, that are generated from the 
+		// children
+		for (com.github.javaparser.ast.Node jpN : visitWriter(n.getChildren())) {
+			jpN.setParentNode(jpNode);
+		}		
 		
 		// find all attributes
 		String name = "";
@@ -50,7 +56,7 @@ public class WriterUtil {
 		}
 		
 		if (n.getNodeType() == "CompilationUnit") {
-			boolean isInterface;
+			boolean isInterface = false;
 			for (Attribute a : n.getAttributes()) {
 				if (a.getAttributeKey() == JavaNodeTypes.isInterface.name()) {
 					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
@@ -71,27 +77,117 @@ public class WriterUtil {
 		} else if (n.getNodeType() == "ArrayAccessExpr") {
 			jpNode = new ArrayAccessExpr();	
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "ArrayCreationExpr") {
+			// need closer look
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "ArrayCreationLevel") {
+			jpNode = new ArrayCreationLevel();
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "ArrayInitializerExpr") {
+			// need closer look
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "ArrayType") {
+			// need closer look
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "AssertStmt") {
+			jpNode = new AssertStmt();
+
+		} else if (n.getNodeType() == "Check") {
+			/*for (Attribute a : n.getAttributes()) {
+				if (a.getAttributeKey() == JavaNodeTypes.Check.name()) {
+					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
+					//
+				}
+			}
+			((AssertStmt) parentNode).setCheck())*/
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "Message") {
+			// to do
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == JavaNodeTypes.Assignment.name()) {
+			// AssignExpr
+			jpNode = new AssignExpr();
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "BinaryExpr") {
+			// need closer look
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "BlockStmt") {
+			jpNode = new BlockStmt();
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "BooleanLiteralExpr") {
+			// need closer look
 			
-		} else if (n.getNodeType() == ) {
+		} else if (n.getNodeType() == "BreakStmt") {
+			String target = "";
+			for (Attribute a : n.getAttributes()) {
+				if (a.getAttributeKey() == JavaNodeTypes.Target.name()) {
+					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
+					target = tmpList.get(0); 
+				}
+			}
+			//SimpleName tmpName = new SimpleName(target);
+			jpNode = new BreakStmt(target);
+			
+		} else if (n.getNodeType() == "CastExpr") {
+			String type = "";
+			for (Attribute a : n.getAttributes()) {
+				if (a.getAttributeKey() == JavaNodeTypes.Type.name()) {
+					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
+					type = tmpList.get(0); 
+				}
+			}
+			jpNode = new CastExpr();
+			((CastExpr) jpNode).setType(type);
+			
+		} else if (n.getNodeType() == "CatchClause") {
+			jpNode = new CatchClause();
+			
+		} else if (n.getNodeType() == "CharLiteralExpression") {
+			// need closer look
+			
+		} else if (n.getNodeType() == "ClassExpr") {
+			jpNode = new ClassExpr();
+			
+		} else if (n.getNodeType() == "ConditionalExpr") {
+			Expression condition = null;
+			Expression then = null;
+			Expression else_ = null;
+			for (Attribute a : n.getAttributes()) {
+				if (a.getAttributeKey() == JavaNodeTypes.Condition.name()) {
+					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
+					condition = StaticJavaParser.parseExpression(tmpList.get(0)); 
+				}
+				
+				if (a.getAttributeKey() == JavaNodeTypes.Then.name()) {
+					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
+					then = StaticJavaParser.parseExpression(tmpList.get(0)); 
+				}
+				
+				if (a.getAttributeKey() == JavaNodeTypes.Else.name()) {
+					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
+					else_ = StaticJavaParser.parseExpression(tmpList.get(0)); 
+				}
+			}
+			jpNode = new ConditionalExpr(condition, then, else_);
+			
+		} else if (n.getNodeType() == "ConstructorDeclaration") {
+			jpNode = new ConstructorDeclaration();
+			
+		} else if (n.getNodeType() == "ContinueStmt") {
+			String target = "";
+			for (Attribute a : n.getAttributes()) {
+				if (a.getAttributeKey() == JavaNodeTypes.Target.name()) {
+					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
+					target = tmpList.get(0); 
+				}
+			}
+			jpNode = new ContinueStmt(target);
+			
+		} else if (n.getNodeType() == "DoStmt") {
+			jpNode = new DoStmt();
+			
+		} else if (n.getNodeType() == "DoubleLiteralExpr") {
+			// need closer look
 			
 		}
 		
@@ -108,12 +204,6 @@ public class WriterUtil {
 			}
 		}
 		
-		// set jpNode as parent to all the nodes, that are generated from the 
-		// children
-		for (com.github.javaparser.ast.Node jpN : visitWriter(n.getChildren())) {
-			jpN.setParentNode(jpNode);
-		}
-		
 		return jpNode;
 	}
 	
@@ -122,6 +212,9 @@ public class WriterUtil {
 		
 		// go through all children and call visitWriter for every Node, 
 		// 		then add the returned nodes to nodeList
+		for (Node node : n) {
+			nodeList.add(visitWriter(node));
+		}
 		
 		return nodeList;
 	}
