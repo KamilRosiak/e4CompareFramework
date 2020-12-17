@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaAttributesType
  *
  */
 public class JavaWriterAttributeCollector {
-	private NodeList<Expression> _annotation = new NodeList<Expression>();
+	private NodeList<AnnotationExpr> _annotation = new NodeList<AnnotationExpr>();
 	private Statement _assignment = null;
 	private boolean _asteriks = false;
 	private NodeList<ClassOrInterfaceType> _bound = new NodeList<ClassOrInterfaceType>();
@@ -67,7 +67,7 @@ public class JavaWriterAttributeCollector {
 			String singleVal = attribute.getAttributeValues().iterator().next();
 
 			if (key.equals(JavaAttributesTypes.Annotation.name())) {
-				attribute.getAttributeValues().forEach(val -> _annotation.add(StaticJavaParser.parseExpression(val)));
+				attribute.getAttributeValues().forEach(val -> _annotation.add(StaticJavaParser.parseAnnotation(val)));
 			} else if (key.equals(JavaAttributesTypes.Assignment.name())) {
 				_assignment = StaticJavaParser.parseStatement(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Asterisks.name())) {
@@ -148,7 +148,7 @@ public class JavaWriterAttributeCollector {
 		}
 	}
 
-	public NodeList<Expression> getAnnotation() {
+	public NodeList<AnnotationExpr> getAnnotation() {
 		return _annotation;
 	}
 
