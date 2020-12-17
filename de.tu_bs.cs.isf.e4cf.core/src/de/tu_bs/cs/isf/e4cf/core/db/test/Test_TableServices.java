@@ -191,12 +191,12 @@ class Test_TableServices {
 		Column c1 = new Column("id", "integer");
 		Column c2 = new Column("age", "integer");
 		ts.createTable(_PATHTESTDATABASES, "testDB", "testTableRC", c1, c2);
-		ts.renameColumn(_PATHTESTDATABASES, "testDB", "testTableRC", c2.getName(), "new_name");
-		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "new_name") && !ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "name"));
-		ts.renameColumn(_PATHTESTDATABASES, "testDB", "testTableRC", c2.getName(), "name");
-		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "name") && !ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "new_name"));
-		ts.renameColumn(_PATHTESTDATABASES, "testDB", "testTableRC", c2.getName(), "name");
-		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "name"));
+		ts.renameColumn(_PATHTESTDATABASES, "testDB", "testTableRC", c2.getName(), "age_new");
+		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "age_new") && !ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "age"));
+		ts.renameColumn(_PATHTESTDATABASES, "testDB", "testTableRC", "age_new", "age");
+		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "age") && !ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "age_new"));
+		ts.renameColumn(_PATHTESTDATABASES, "testDB", "testTableRC", "age", "age");
+		assertTrue(ts.columnExists(_PATHTESTDATABASES, "testDB", "testTableRC", "age"));
 	}
 	
 	@Test
@@ -318,36 +318,35 @@ class Test_TableServices {
 		Column c1 = new Column("id", "integer");
 		Column c2 = new Column("age", "integer");
 		Column c3 = new Column("name","String");
-		ts.createTable(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1, c2,c3);
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1, c2, c3);
 		ts.makeColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1.getName());
 		assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1.getName()));
 		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c2.getName()));
 		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c3.getName()));
-		ts.makeColumnNotNull(_PATHTESTDATABASES, "testDB","testTableColumnNotNull", c2.getName());
+		ts.makeColumnNotNull(_PATHTESTDATABASES, "testDB","testTableColumnNotNull", c3.getName());
 		assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1.getName()));
-		assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c2.getName()));
-		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c3.getName()));
+		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c2.getName()));
+		assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c3.getName()));
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull");
 	}
 	
 	@Test
 	void testDropColumnNotNull() throws SQLException {
 		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
 		TableServiceImp ts = new TableServiceImp();
-		Column c1 = new Column("id", "integer");
+		Column c1 = new Column("id", "integer", false, false, false, true);
 		Column c2 = new Column("age", "integer");
-		Column c3 = new Column("name","String");
-		ts.dropColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c3.getName());
-		assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1.getName()));
-		assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c2.getName()));
-		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c3.getName()));
-		ts.dropColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1.getName());
-		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1.getName()));
-        assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c2.getName()));
-		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c3.getName()));
-		ts.dropColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull",c2.getName());
-		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c1.getName()));
-		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c2.getName()));
-		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testTableColumnNotNull", c3.getName()));
+		Column c3 = new Column("name","String", false, false, false, true);
+		ts.createTable(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c1, c2, c3);
+		ts.dropColumnNotNull(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c3.getName());
+		assertTrue(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c1.getName()));
+		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c2.getName()));
+		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c3.getName()));
+		ts.dropColumnNotNull(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c1.getName());
+		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c1.getName()));
+        assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c2.getName()));
+		assertFalse(ts.isColumnNotNull(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull", c3.getName()));
+		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull");
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.core.db;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -143,16 +144,32 @@ public class TableUtilities {
 		final ResultSetMetaData mrs = rs.getMetaData();
 		final List<String> primaryKeySet = getPrimaryKeyTable(pPath, pDbName, tableName);
 		final List<String> uniqueKeySet = getUniqueKeyTable(pPath, pDbName, tableName);
+		
 		for (int i = 1; i <= mrs.getColumnCount(); i++) {
 			Column c = new Column(mrs.getColumnLabel(i), mrs.getColumnTypeName(i));
 			c.setPrimaryKey(primaryKeySet.contains(mrs.getColumnLabel(i)));
 			c.setUnique(uniqueKeySet.contains(mrs.getColumnLabel(i)));
 			c.setAutoIncrement(mrs.isAutoIncrement(i));
-			//System.out.println("Test "+mrs.getColumnLabel(i)+", "+mrs.isNullable(i));
-			c.setNotNull(mrs.isNullable(i) == 1 ? true : false);
 			columns.add(c);
-			//System.out.println(c.isPrimaryKey()+", "+c.isUnique()+", "+c.isNotNull());
 		}
+		
+		DatabaseMetaData meta = con.getMetaData();               
+	    ResultSet rs_columns = meta.getColumns(null, null, tableName, null);                    
+	    while(rs_columns.next()) {
+	        String columnName = rs_columns.getString(4);
+	        String nullable = rs_columns.getString(18);
+	        int colSize = columns.size();
+	        for(int i = 0; i < colSize; i++) {
+	        	Column col = columns.get(i);
+	        	if(col.getName().equals(columnName)) {
+	        		if(nullable.equals("YES")) {
+	        			getColumn(columns, col.getName()).setNotNull(false);
+	        		} else if (nullable.equals("NO")) {
+	        			getColumn(columns, col.getName()).setNotNull(true);
+	        		}
+	        	}
+	        }
+	    }
 		return Collections.unmodifiableList(columns);
 	}
 
