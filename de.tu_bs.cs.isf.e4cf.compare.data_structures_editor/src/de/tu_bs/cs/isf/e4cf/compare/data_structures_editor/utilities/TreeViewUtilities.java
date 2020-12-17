@@ -69,7 +69,7 @@ public final class TreeViewUtilities {
 	 */
 	public static List<TreeItem<NodeUsage>> searchTreeItem(TreeItem<NodeUsage> item, String name) {
 		List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
-		if (item.getValue().toString().equals(name)) {
+		if (item.getValue().toString().contains(name)) {
 			searchList.add(item);
 		}
 		List<TreeItem<NodeUsage>> result = new ArrayList<TreeItem<NodeUsage>>();
