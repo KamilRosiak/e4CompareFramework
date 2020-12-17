@@ -47,7 +47,7 @@ public class JavaWriterAttributeCollector {
 	private boolean _static = false;
 	private String _superclass = new String();
 	private Expression _superexpr = null;
-	private String _target = new String();
+	private Expression _target = null;
 	private Expression _then = null;
 	private Type _throws = null;
 	private Type _type = null;
@@ -129,7 +129,7 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.SuperExpr.name())) {
 				_superexpr = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Target.name())) {
-				_target = singleVal;
+				_target = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Then.name())) {
 				_then = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Throws.name())) {
@@ -268,7 +268,7 @@ public class JavaWriterAttributeCollector {
 		return _superexpr;
 	}
 
-	public String getTarget() {
+	public Expression getTarget() {
 		return _target;
 	}
 
