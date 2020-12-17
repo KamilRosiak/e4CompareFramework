@@ -14,7 +14,6 @@ public enum JavaAttributesTypes {
 	Default,
 	Else,
 	Expression,
-	Field,
 	Identifier,
 	Initilization,
 	Interface,
