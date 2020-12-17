@@ -44,6 +44,7 @@ import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -267,7 +268,10 @@ public class ProjectExplorerViewController {
 		StructuredSelection structuredSelection = new StructuredSelection(
 				services.workspaceFileSystem.getWorkspaceDirectory());
 		_selectionService.setSelection(null);
-
+		
+		// Set Selection Mode
+		projectTree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 		// Add a SelectionListener to tree to propagate the selection that is done in
 		// the tree
 
@@ -275,7 +279,11 @@ public class ProjectExplorerViewController {
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<FileTreeElement>> observable,
 					TreeItem<FileTreeElement> oldValue, TreeItem<FileTreeElement> newValue) {
-				_selectionService.setSelection(new StructuredSelection(newValue.getValue()));
+				if (newValue == null) {
+					_selectionService.setSelection(null);
+				} else {
+					_selectionService.setSelection(new StructuredSelection(newValue.getValue()));
+				}
 				_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
 			}
 		};
