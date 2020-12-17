@@ -19,7 +19,7 @@ public class VisitorUtil {
 	 */
 	public static Node Leaf(com.github.javaparser.ast.Node n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		c.addAttribute(JavaNodeTypes.Value.name(), n.toString());
+		AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 		return c;
 	}
 	
@@ -41,7 +41,15 @@ public class VisitorUtil {
 	 * @param arg Parent Node of the new node
 	 * @return New Node
 	 */
-	public static Node Parent(String type, Node arg) {
-		return new NodeImpl(type, arg);
+	public static Node Node(JavaNodeTypes type, Node arg) {
+		return new NodeImpl(type.name(), arg);
+	}
+	
+	public static Node NodeSetElement(JavaNodeTypes type, int index, Node arg) {
+		return new NodeImpl(type.name() + index, arg);
+	}
+	
+	public static void AddAttribute(Node arg, JavaAttributesTypes key, String val) {
+		arg.addAttribute(key.name(), val);
 	}
 }
