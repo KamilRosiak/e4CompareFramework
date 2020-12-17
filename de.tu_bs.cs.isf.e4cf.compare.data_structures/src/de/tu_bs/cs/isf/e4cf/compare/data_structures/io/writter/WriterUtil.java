@@ -1,26 +1,16 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
 
-import com.github.javaparser.ast.visitor.*;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.*;
-import com.github.javaparser.ast.Modifier.Keyword;
-
-/**
- * 
-
- *
- */
 
 public class WriterUtil {
 	
@@ -33,176 +23,57 @@ public class WriterUtil {
 			jpN.setParentNode(jpNode);
 		}		
 		
-		// find all attributes
-		String name = "";
-		NodeList<Modifier> modifiers = new NodeList<Modifier>();
+		JavaWriterAttributeCollector attributes = new JavaWriterAttributeCollector();
+		attributes.collectAttributes(n);
 		
-		// fill name
-		for (Attribute a : n.getAttributes()) {
-			if (a.getAttributeKey() == JavaNodeTypes.Name.name()) {
-				List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-				name = tmpList.get(0); // to get the name, which is an attribute with one value
-			}
-		}
-		
-		// fill modifiers 
-		for (Attribute a : n.getAttributes()) {
-			if (a.getAttributeKey() == JavaNodeTypes.Modifier.name()) {
-				for (String s : a.getAttributeValues()) {
-					Modifier tmpModifier = new Modifier(Modifier.Keyword.valueOf(s.toUpperCase()));
-					modifiers.add(tmpModifier);
-				}
-			}
-		}
-		
-		if (n.getNodeType() == "CompilationUnit") {
-			boolean isInterface = false;
-			for (Attribute a : n.getAttributes()) {
-				if (a.getAttributeKey() == JavaNodeTypes.isInterface.name()) {
-					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					isInterface = Boolean.parseBoolean(tmpList.get(0));
-				}
-			}
-			jpNode = new ClassOrInterfaceDeclaration(modifiers, isInterface, name);
-			
-		} else if (n.getNodeType() == "AnnotationDeclaration") {
-			jpNode = new AnnotationDeclaration(modifiers, name);
-			
-		} else if (n.getNodeType() == "AnnotationMemberDeclaration") {
-			AnnotationMemberDeclaration tmpAMD = new AnnotationMemberDeclaration();
-			tmpAMD.setModifiers(modifiers);
-			tmpAMD.setName(name);
-			jpNode = tmpAMD;
-			
-		} else if (n.getNodeType() == "ArrayAccessExpr") {
-			jpNode = new ArrayAccessExpr();	
-			
-		} else if (n.getNodeType() == "ArrayCreationExpr") {
-			// need closer look
-			
-		} else if (n.getNodeType() == "ArrayCreationLevel") {
-			jpNode = new ArrayCreationLevel();
-			
-		} else if (n.getNodeType() == "ArrayInitializerExpr") {
-			// need closer look
-			
-		} else if (n.getNodeType() == "ArrayType") {
-			// need closer look
-			
-		} else if (n.getNodeType() == "AssertStmt") {
-			jpNode = new AssertStmt();
-
-		} else if (n.getNodeType() == "Check") {
-			/*for (Attribute a : n.getAttributes()) {
-				if (a.getAttributeKey() == JavaNodeTypes.Check.name()) {
-					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					//
-				}
-			}
-			((AssertStmt) parentNode).setCheck())*/
-			
-		} else if (n.getNodeType() == "Message") {
-			// to do
-			
+		if (n.getNodeType().equals(CompilationUnit.class.getSimpleName())) {
+			jpNode = new ClassOrInterfaceDeclaration(attributes.getModifier(), attributes.isInterface(), attributes.getName());
+		} else if (n.getNodeType().equals(AnnotationDeclaration.class.getSimpleName())) {
+			jpNode = new AnnotationDeclaration(attributes.getModifier(), attributes.getName());
+		} else if (n.getNodeType().equals(AnnotationMemberDeclaration.class.getSimpleName())) {
+			jpNode = new AnnotationMemberDeclaration(attributes.getModifier(), attributes.getType(), attributes.getName(), attributes.getValue());
+		} else if (n.getNodeType().equals(ArrayAccessExpr.class.getSimpleName())) {
+			jpNode = new ArrayAccessExpr(); // TODO fill attributes	
+		} else if (n.getNodeType().equals(ArrayCreationExpr.class.getSimpleName())) {
+			jpNode = new ArrayCreationExpr(attributes.getType()); // TODO needs closer look
+		} else if (n.getNodeType().equals(ArrayCreationLevel.class.getSimpleName())) {
+			jpNode = new ArrayCreationLevel(); // TODO needs closer look
+		} else if (n.getNodeType().equals(ArrayInitializerExpr.class.getSimpleName())) {
+			jpNode = new ArrayInitializerExpr();// TODO needs closer look
+		} else if (n.getNodeType().equals(ArrayType.class.getSimpleName())) {
+			jpNode = new ArrayType(attributes.getType(), attributes.getAnnotation().stream().toArray(AnnotationExpr[]::new));// TODO needs closer look
+		} else if (n.getNodeType().equals(AssertStmt.class.getSimpleName())) {
+			jpNode = new AssertStmt(attributes.getCheck(), attributes.getMessage());
 		} else if (n.getNodeType() == JavaNodeTypes.Assignment.name()) {
-			// AssignExpr
-			jpNode = new AssignExpr();
-			
-		} else if (n.getNodeType() == "BinaryExpr") {
-			// need closer look
-			
-		} else if (n.getNodeType() == "BlockStmt") {
+			jpNode = new AssignExpr(attributes.getTarget(), attributes.getValue(), AssignExpr.Operator.ASSIGN);
+		} else if (n.getNodeType().equals(BinaryExpr.class.getSimpleName())) {
+			jpNode = new BinaryExpr();	// TODO fill attributes
+		} else if (n.getNodeType().equals(BlockStmt.class.getSimpleName())) {
 			jpNode = new BlockStmt();
-			
-		} else if (n.getNodeType() == "BooleanLiteralExpr") {
-			// need closer look
-			
-		} else if (n.getNodeType() == "BreakStmt") {
-			String target = "";
-			for (Attribute a : n.getAttributes()) {
-				if (a.getAttributeKey() == JavaNodeTypes.Target.name()) {
-					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					target = tmpList.get(0); 
-				}
-			}
-			//SimpleName tmpName = new SimpleName(target);
-			jpNode = new BreakStmt(target);
-			
-		} else if (n.getNodeType() == "CastExpr") {
-			String type = "";
-			for (Attribute a : n.getAttributes()) {
-				if (a.getAttributeKey() == JavaNodeTypes.Type.name()) {
-					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					type = tmpList.get(0); 
-				}
-			}
-			jpNode = new CastExpr();
-			((CastExpr) jpNode).setType(type);
-			
-		} else if (n.getNodeType() == "CatchClause") {
+		} else if (n.getNodeType().equals(BooleanLiteralExpr.class.getSimpleName())) {
+			jpNode = new BooleanLiteralExpr(Boolean.valueOf(attributes.getValue().toString()));
+		} else if (n.getNodeType().equals(BreakStmt.class.getSimpleName())) {
+			jpNode = new BreakStmt();
+		} else if (n.getNodeType().equals(CastExpr.class.getSimpleName())) {
+			jpNode = new CastExpr().setType(attributes.getType());
+		} else if (n.getNodeType().equals(CatchClause.class.getSimpleName())) {
 			jpNode = new CatchClause();
-			
-		} else if (n.getNodeType() == "CharLiteralExpression") {
-			// need closer look
-			
-		} else if (n.getNodeType() == "ClassExpr") {
-			jpNode = new ClassExpr();
-			
-		} else if (n.getNodeType() == "ConditionalExpr") {
-			Expression condition = null;
-			Expression then = null;
-			Expression else_ = null;
-			for (Attribute a : n.getAttributes()) {
-				if (a.getAttributeKey() == JavaNodeTypes.Condition.name()) {
-					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					condition = StaticJavaParser.parseExpression(tmpList.get(0)); 
-				}
-				
-				if (a.getAttributeKey() == JavaNodeTypes.Then.name()) {
-					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					then = StaticJavaParser.parseExpression(tmpList.get(0)); 
-				}
-				
-				if (a.getAttributeKey() == JavaNodeTypes.Else.name()) {
-					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					else_ = StaticJavaParser.parseExpression(tmpList.get(0)); 
-				}
-			}
-			jpNode = new ConditionalExpr(condition, then, else_);
-			
-		} else if (n.getNodeType() == "ConstructorDeclaration") {
-			jpNode = new ConstructorDeclaration();
-			
-		} else if (n.getNodeType() == "ContinueStmt") {
-			String target = "";
-			for (Attribute a : n.getAttributes()) {
-				if (a.getAttributeKey() == JavaNodeTypes.Target.name()) {
-					List<String> tmpList = new ArrayList<>(a.getAttributeValues());
-					target = tmpList.get(0); 
-				}
-			}
-			jpNode = new ContinueStmt(target);
-			
-		} else if (n.getNodeType() == "DoStmt") {
-			jpNode = new DoStmt();
-			
-		} else if (n.getNodeType() == "DoubleLiteralExpr") {
-			// need closer look
-			
+		} else if (n.getNodeType().equals(CharLiteralExpr.class.getSimpleName())) {
+			jpNode = new CharLiteralExpr(attributes.getValue().toString());
+		} else if (n.getNodeType().equals(ClassExpr.class.getSimpleName())) {
+			jpNode = new ClassExpr(attributes.getType());
+		} else if (n.getNodeType().equals(ConditionalExpr.class.getSimpleName())) {
+			jpNode = new ConditionalExpr(attributes.getCondition().getFirst().get(), attributes.getThen(), attributes.getElse());
+		} else if (n.getNodeType().equals(ConstructorDeclaration.class.getSimpleName())) {
+			jpNode = new ConstructorDeclaration(attributes.getModifier(), attributes.getName()).setAnnotations(attributes.getAnnotation());
+		} else if (n.getNodeType().equals(ContinueStmt.class.getSimpleName())) {
+			jpNode = new ContinueStmt(attributes.getTarget().toString());
+		} else if (n.getNodeType().equals(DoStmt.class.getSimpleName())) {
+			jpNode = new DoStmt().setCondition(attributes.getCondition().getFirst().get());
+		} else if (n.getNodeType().equals(DoubleLiteralExpr.class.getSimpleName())) {
+			jpNode = new DoubleLiteralExpr(attributes.getValue().toString());
 		}
 		
-		
-		
-		// fill parameters
-		for (Node nod0 : n.getChildren()) {
-			if (nod0.getNodeType() == JavaNodeTypes.Argument.name()) {
-				for (Node nod1 : nod0.getChildren()) {
-					if (jpNode != null) {
-						visitWriter(nod1).setParentNode(jpNode);
-					}
-				}
-			}
-		}
 		
 		return jpNode;
 	}
