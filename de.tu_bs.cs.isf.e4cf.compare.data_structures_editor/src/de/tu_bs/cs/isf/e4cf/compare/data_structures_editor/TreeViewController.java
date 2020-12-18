@@ -21,6 +21,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 /**
  * Controller for VisualizeTreeView.fxml
@@ -45,6 +46,12 @@ public class TreeViewController {
 	@FXML
 	private Label testLabel;
 
+    @FXML
+    private Text hitCount;
+
+    @FXML
+    private Text totalNodeAmount;
+
 	@FXML
 	private TreeView<NodeUsage> treeView;
 
@@ -66,6 +73,7 @@ public class TreeViewController {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView);
 		treeView = TreeViewUtilities.addListener(treeView, services);
+		totalNodeAmount.setText("Total Node Amount: " + TreeViewUtilities.searchTreeItem(treeView.getRoot(), "").size());
 	}
 
 	/**
@@ -102,13 +110,14 @@ public class TreeViewController {
 	 */
 	@FXML
 	void search() {
+		TreeViewUtilities.clearSearchList();
 		treeView.getSelectionModel().clearSelection();
 		String searchFieldTextToRead = searchTextField.getText();
 		List <TreeItem<NodeUsage>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead);
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		treeView.getSelectionModel().select(getCurrentSearchItem(resultList));
 		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-		System.out.println(getSearchCounter() + "/" + resultList.size());
+		hitCount.setText(getSearchCounter() + "/" + resultList.size());
 //		for (TreeItem<NodeUsage> t : TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead)) {
 //			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 //			treeView.getSelectionModel().select(t);
@@ -118,7 +127,6 @@ public class TreeViewController {
 //			services.eventBroker.send("EmptyPropertiesTableEvent", true);
 //		}
 		resultList.clear();
-		TreeViewUtilities.clearSearchList();
 	}
 	
     @FXML
