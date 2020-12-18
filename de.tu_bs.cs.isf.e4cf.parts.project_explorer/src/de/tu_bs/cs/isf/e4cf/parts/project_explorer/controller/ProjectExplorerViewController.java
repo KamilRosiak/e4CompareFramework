@@ -113,7 +113,7 @@ public class ProjectExplorerViewController {
 
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
-				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider);
+				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services);
 				return treeCell;
 			}
 		});
