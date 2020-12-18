@@ -43,10 +43,10 @@
 		<MenuItem mnemonicParsing="false" text="Add Child" />
 		<MenuItem mnemonicParsing="false" text="Copy" />
 		<MenuItem mnemonicParsing="false" text="Paste" />
-                <MenuItem mnemonicParsing="false" text="Rename" />
+                <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
                 <MenuItem mnemonicParsing="false" text="Cut" />
 		<MenuItem mnemonicParsing="false" text="Extract to file" />
-                <MenuItem mnemonicParsing="false" text="Delete" />
+                <MenuItem mnemonicParsing="false" onAction="#deleteNode" text="Delete" />
               </items>
             </ContextMenu>
          </contextMenu></TreeView> 
