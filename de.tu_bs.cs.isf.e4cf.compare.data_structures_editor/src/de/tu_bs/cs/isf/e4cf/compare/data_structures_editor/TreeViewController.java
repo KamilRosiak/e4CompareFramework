@@ -161,18 +161,4 @@ public class TreeViewController {
     void incrementSearchCounter() {
     	searchCounter++;
     }
-	@FXML
-	void deleteNode() {
-		TreeItem<NodeUsage> deletingNode = treeView.getSelectionModel().getSelectedItem();
-		treeView.getSelectionModel().getSelectedItem().setValue(null);
-		treeView.getSelectionModel().getSelectedItem().setGraphic(null);
-		deletingNode.getParent().getChildren().remove(deletingNode);
-
-	}
-
-	@FXML
-	void renameNode() {
-		TreeItem<NodeUsage> renamingNode = treeView.getSelectionModel().getSelectedItem();
-
-	}
 }
