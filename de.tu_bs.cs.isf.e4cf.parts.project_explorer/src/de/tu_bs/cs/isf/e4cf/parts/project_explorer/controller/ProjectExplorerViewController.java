@@ -44,6 +44,7 @@ import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -60,7 +61,9 @@ public class ProjectExplorerViewController {
 	// Fields dependency injected from the ProjectExplorerView.fxml
 	@FXML
 	public TreeView<FileTreeElement> projectTree;
-
+	@FXML
+	public ToolBar projectToolbar;
+	
 	// E4 Injections
 	@Inject
 	private ServiceContainer services;
@@ -117,7 +120,10 @@ public class ProjectExplorerViewController {
 				return treeCell;
 			}
 		});
-
+		
+		// Handoff Toolbar
+		ProjectExplorerToolBarController tbc = new ProjectExplorerToolBarController(services, projectToolbar);
+		tbc.test();
 	}
 
 	/**
