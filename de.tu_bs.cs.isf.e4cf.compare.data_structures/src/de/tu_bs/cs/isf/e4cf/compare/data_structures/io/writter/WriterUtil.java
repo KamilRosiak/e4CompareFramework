@@ -73,7 +73,73 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(DoubleLiteralExpr.class.getSimpleName())) {
 			jpNode = new DoubleLiteralExpr(attributes.getValue().toString());
 		}
+
 		
+		else if (n.getNodeType().equals(MethodReferenceExpr.class.getSimpleName())) {
+			jpNode = new MethodReferenceExpr();
+		} else if (n.getNodeType().equals(NameExpr.class.getSimpleName())) {
+			jpNode = new NameExpr();
+		} else if (n.getNodeType().equals(NormalAnnotationExpr.class.getSimpleName())) {
+			jpNode = new NormalAnnotationExpr();
+		} else if (n.getNodeType().equals(NullLiteralExpr.class.getSimpleName())) {
+			jpNode = new NullLiteralExpr();
+		} else if (n.getNodeType().equals(ObjectCreationExpr.class.getSimpleName())) {
+			jpNode = new ObjectCreationExpr();
+		} else if (n.getNodeType().equals(Parameter.class.getSimpleName())) {
+			jpNode = new Parameter();
+		} else if (n.getNodeType().equals(PrimitiveType.class.getSimpleName())) {
+			jpNode = new PrimitiveType();
+		} else if (n.getNodeType().equals(ReceiverParameter.class.getSimpleName())) {
+			jpNode = new ReceiverParameter();
+		} else if (n.getNodeType().equals(ReturnStmt.class.getSimpleName())) {
+			jpNode = new ReturnStmt();
+		} else if (n.getNodeType().equals(SingleMemberAnnotationExpr.class.getSimpleName())) {
+			jpNode = new SingleMemberAnnotationExpr();
+		} else if (n.getNodeType().equals(StringLiteralExpr.class.getSimpleName())) {
+			jpNode = new StringLiteralExpr();
+		} else if (n.getNodeType().equals(SuperExpr.class.getSimpleName())) {
+			jpNode = new SuperExpr();
+		} else if (n.getNodeType().equals(SwitchEntry.class.getSimpleName())) {
+			jpNode = new SwitchEntry();
+		} else if (n.getNodeType().equals(SwitchExpr.class.getSimpleName())) {
+			jpNode = new SwitchExpr();
+		} else if (n.getNodeType().equals(SwitchStmt.class.getSimpleName())) {
+			jpNode = new SwitchStmt();
+		} else if (n.getNodeType().equals(SynchronizedStmt.class.getSimpleName())) {
+			jpNode = new SynchronizedStmt();
+		} else if (n.getNodeType().equals(TextBlockLiteralExpr.class.getSimpleName())) {
+			jpNode = new TextBlockLiteralExpr();
+		} else if (n.getNodeType().equals(ThisExpr.class.getSimpleName())) {
+			jpNode = new ThisExpr();
+		} else if (n.getNodeType().equals(ThrowStmt.class.getSimpleName())) {
+			jpNode = new ThrowStmt();
+		} else if (n.getNodeType().equals(TryStmt.class.getSimpleName())) {
+			jpNode = new TryStmt();
+		} else if (n.getNodeType().equals(TypeExpr.class.getSimpleName())) {
+			jpNode = new TypeExpr();
+		} else if (n.getNodeType().equals(TypeParameter.class.getSimpleName())) {
+			jpNode = new TypeParameter();
+		} else if (n.getNodeType().equals(UnaryExpr.class.getSimpleName())) {
+			jpNode = new UnaryExpr();
+		} else if (n.getNodeType().equals(UnionType.class.getSimpleName())) {
+			jpNode = new UnionType();
+		} else if (n.getNodeType().equals(UnknownType.class.getSimpleName())) {
+			jpNode = new UnknownType();
+		} else if (n.getNodeType().equals(UnparsableStmt.class.getSimpleName())) {
+			jpNode = new UnparsableStmt();
+		} else if (n.getNodeType().equals(VariableDeclarationExpr .class.getSimpleName())) {
+			jpNode = new VariableDeclarationExpr ();
+		} else if (n.getNodeType().equals(VarType.class.getSimpleName())) {
+			jpNode = new VarType();
+		} else if (n.getNodeType().equals(VoidType.class.getSimpleName())) {
+			jpNode = new VoidType();
+		} else if (n.getNodeType().equals(WhileStmt.class.getSimpleName())) {
+			jpNode = new WhileStmt();
+		} else if (n.getNodeType().equals(WildcardType.class.getSimpleName())) {
+			jpNode = new WildcardType();
+		} else if (n.getNodeType().equals(YieldStmt.class.getSimpleName())) {
+			jpNode = new YieldStmt();
+		}
 		
 		return jpNode;
 	}
