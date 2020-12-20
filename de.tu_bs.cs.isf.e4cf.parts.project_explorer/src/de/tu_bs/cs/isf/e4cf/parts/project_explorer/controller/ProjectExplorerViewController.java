@@ -78,6 +78,7 @@ public class ProjectExplorerViewController {
 	private ChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
+	private ProjectExplorerToolBarController toolbarController;
 
 	/**
 	 * This method is equivalent to the previous postContruct(), in that it sets up
@@ -121,9 +122,10 @@ public class ProjectExplorerViewController {
 			}
 		});
 		
+
 		// Handoff Toolbar
-		ProjectExplorerToolBarController tbc = new ProjectExplorerToolBarController(services, projectToolbar);
-		tbc.test();
+		toolbarController = new ProjectExplorerToolBarController(projectToolbar, services, canvas.getParent().getShell());
+		
 	}
 
 	/**
@@ -283,6 +285,7 @@ public class ProjectExplorerViewController {
 					TreeItem<FileTreeElement> oldValue, TreeItem<FileTreeElement> newValue) {
 				_selectionService.setSelection(new StructuredSelection(newValue.getValue()));
 				_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
+				toolbarController.update();
 			}
 		};
 
