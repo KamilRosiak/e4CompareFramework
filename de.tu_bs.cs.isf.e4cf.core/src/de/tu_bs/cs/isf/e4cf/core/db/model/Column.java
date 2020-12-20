@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.core.db;
+package de.tu_bs.cs.isf.e4cf.core.db.model;
 
 public class Column {
 
@@ -9,6 +9,9 @@ public class Column {
 	private boolean autoIncrement = false;
 	private boolean notNull = false;
 
+	public Column() {
+	}
+
 	public Column(final String pName, final String pType, final Boolean pPrimaryKey, final Boolean pUnique,
 			final Boolean pIncrement, final Boolean pNotNull) {
 		name = pName;
@@ -18,7 +21,7 @@ public class Column {
 		autoIncrement = pIncrement;
 		notNull = pNotNull;
 	}
-	
+
 	public Column(final String pName, final String pType) {
 		name = pName;
 		type = pType;

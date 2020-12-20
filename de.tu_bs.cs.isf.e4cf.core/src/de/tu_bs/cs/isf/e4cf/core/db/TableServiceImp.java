@@ -7,6 +7,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
+
 public class TableServiceImp extends TableUtilities implements ITableService {
 
 	/**
@@ -28,7 +30,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		if (attributes.length > 0) {
 			if (!tableExists(pPath, pDbName, tableName)) {
 				String sqlStatement = "CREATE TABLE " + tableName + "(";
-				String sqlprimarykey = "CONSTRAINT " + tableName + "_pl PRIMARY KEY (";
+				String sqlPrimaryKey = "CONSTRAINT " + tableName + "_pl PRIMARY KEY (";
 				for (final Column c : attributes) {
 					sqlStatement += c.getName() + " " + c.getType();
 					if (c.isUnique()) {
@@ -41,18 +43,16 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 						sqlStatement += " NOT NULL";
 					}
 					if (c.isPrimaryKey()) {
-						sqlprimarykey += c.getName() + ", ";
+						sqlPrimaryKey += c.getName() + ", ";
 						primaryKey = true;
 					}
 					sqlStatement += ", ";
 				}
 				if (primaryKey) {
-					sqlprimarykey = sqlprimarykey.substring(0, sqlprimarykey.length() - 2);
-					sqlprimarykey += ") ";
-					sqlStatement += sqlprimarykey + ");";
+					sqlPrimaryKey = sqlPrimaryKey.substring(0, sqlPrimaryKey.length() - 2) + ") ";
+					sqlStatement += sqlPrimaryKey + ");";
 				} else {
-					sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-					sqlStatement += ");";
+					sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2) + ");";
 				}
 				// System.out.println("Test STMT: " + sqlStatement);
 				stmt.execute(sqlStatement);
@@ -175,13 +175,13 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 					sqlStatement += ";";
 					System.out.println(sqlStatement);
 					stmt.execute(sqlStatement);
-					if(c.isPrimaryKey()) {
+					if (c.isPrimaryKey()) {
 						makeColumnPrimaryKey(pPath, pDbName, tableName, c.getName());
 					}
-					if(c.isUnique()) {
+					if (c.isUnique()) {
 						makeColumnUnique(pPath, pDbName, tableName, c.getName());
 					}
-					if(c.isAutoIncrement()) {
+					if (c.isAutoIncrement()) {
 						makeColumnAutoIncrement(pPath, pDbName, tableName, c.getName());
 					}
 					System.out.println("Column " + c.getName() + " added to table: " + tableName);
@@ -246,17 +246,17 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			renameTable(pPath, pDbName, tableName, "old_" + tableName);
 			List<Column> cols = getColumnsTable(pPath, pDbName, "old_" + tableName);
 			cols = new ArrayList<Column>(cols);
-			for ( String c : columns) {
+			for (String c : columns) {
 				cols.remove(getColumn(cols, c));
 				System.out.println(c + " has been deleted;");
 			}
 			Column[] col = new Column[cols.size()];
 			col = cols.toArray(col);
-			/*for(Column c : col) {
-				System.out.println(c.getName());
-			}*/
+			/*
+			 * for(Column c : col) { System.out.println(c.getName()); }
+			 */
 			createTable(pPath, pDbName, tableName, /* columns.stream().toArray(Column[]::new) */col);
-			
+
 			deleteTable(pPath, pDbName, "old_" + tableName);
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
@@ -324,10 +324,10 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			final String columnName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, tableName)) {
-			//if(isColumnAutoIncrement(pPath, pDbName, tableName, columnName)) {
-				setColumnAutoIncrement(pPath, pDbName, tableName, true, columnName);
-			//}
-			
+			// if(isColumnAutoIncrement(pPath, pDbName, tableName, columnName)) {
+			setColumnAutoIncrement(pPath, pDbName, tableName, true, columnName);
+			// }
+
 		} else {
 			System.out.println("Table " + tableName + " does not exist.");
 		}

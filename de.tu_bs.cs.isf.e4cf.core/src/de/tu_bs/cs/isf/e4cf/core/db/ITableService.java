@@ -2,6 +2,8 @@ package de.tu_bs.cs.isf.e4cf.core.db;
 
 import java.sql.SQLException;
 
+import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
+
 public interface ITableService {
 
 	/**

@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.tu_bs.cs.isf.e4cf.core.db.Column;
 import de.tu_bs.cs.isf.e4cf.core.db.DatabaseFactory;
 import de.tu_bs.cs.isf.e4cf.core.db.TableServiceImp;
+import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
 
 class Test_TableServices {
 
@@ -349,13 +349,6 @@ class Test_TableServices {
 		ts.deleteTable(_PATHTESTDATABASES, "testDB", "testDropColumnNotNull");
 	}
 
-	/**
-	 * 
-	 * This Method must be launched alone, because it could be that there are other
-	 * tables in the DB and so it will give a wrong result.
-	 * 
-	 * @throws SQLException
-	 */
 	@Test
 	void testTablesExistance() throws SQLException {
 		final List<String> listTables = Arrays.asList("t1", "t2", "t3");

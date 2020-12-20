@@ -5,9 +5,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import de.tu_bs.cs.isf.e4cf.core.db.Column;
+import de.tu_bs.cs.isf.e4cf.core.db.DataServiceImp;
 import de.tu_bs.cs.isf.e4cf.core.db.DatabaseFactory;
 import de.tu_bs.cs.isf.e4cf.core.db.TableServiceImp;
+import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
+import de.tu_bs.cs.isf.e4cf.core.db.model.ColumnValue;
 
 public class Test {
 
@@ -17,59 +19,22 @@ public class Test {
 		final String DATABASENAME = "TestDatenbank";
 		final String TABLEENAME = "testTabelle";
 
-		Column c1 = new Column("id", "integer", false, false, false,false);
-		Column c2 = new Column("age", "integer");
-		Column c3 = new Column("testID", "integer", false, false, false, false);
+		Column c1 = new Column("id", "integer");
+		Column c2 = new Column("name", "varchar (60)");
+		Column c3 = new Column("age", "integer");
 
 		TableServiceImp c = new TableServiceImp();
 
-		DatabaseFactory.getInstance().createDatabase(DATABASEPATH, DATABASENAME);
-		
-		//DatabaseFactory.getInstance().deleteDatabase(DATABASEPATH, DATABASENAME);
-		DatabaseFactory.getInstance().deleteDatabase(DATABASEPATH, "testDB");
+		DataServiceImp ds = new DataServiceImp();
 
-		//c.renameColumn(DATABASEPATH, DATABASENAME, TABLEENAME, c3.getName()+"renamed", c3.getName());
+		DatabaseFactory.getInstance().createDatabase(DATABASEPATH, DATABASENAME);
 
 		c.createTable(DATABASEPATH, DATABASENAME, TABLEENAME, c1, c2, c3);
-		c.deleteColumn(DATABASEPATH, DATABASENAME, TABLEENAME, c1.getName(),c2.getName());
-		//c.makeColumnAutoIncrement(DATABASEPATH, DATABASENAME, TABLEENAME, c1.getName());
-		//System.out.println("Test: "+c.isColumnAutoIncrement(DATABASEPATH, DATABASENAME, TABLEENAME, c1.getName()));
-		System.out.println("Test: "+c.columnExists(DATABASEPATH, DATABASENAME, TABLEENAME, c1.getName()));
-		//System.out.println("Test: "+c.columnExists(DATABASEPATH, DATABASENAME, TABLEENAME, c2.getName()));
-		//System.out.println("Test: "+c.columnExists(DATABASEPATH, DATABASENAME, TABLEENAME, c3.getName()));
-		 //c.makeColumnPrimaryKey(DATABASEPATH, DATABASENAME, TABLEENAME, c3.getName());
-		 
-		 //c.getColumnsTable(DATABASEPATH, DATABASENAME, TABLEENAME);
-		 
-		 //c.deleteTable(DATABASEPATH, DATABASENAME, TABLEENAME);
-		 
-		 /*System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c1.getName()));
+		
+		ColumnValue cv = new ColumnValue(c2.getName(), new String("Rami"));
 
-		 c.dropColumnPrimaryKey(DATABASEPATH, DATABASENAME, TABLEENAME, c1.getName());
-		 
-		 System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c1.getName()));
-		 
-		 System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c2.getName()));
-		 
-		 System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,TABLEENAME, c3.getName()));
-		*/
-		/*
-		 * System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,
-		 * TABLEENAME, c1.getName()));
-		 * 
-		 * System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,
-		 * TABLEENAME, c2.getName()));
-		 * 
-		 * System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,
-		 * TABLEENAME, c3.getName()));
-		 */
-
-		// c.makeColumnPrimaryKey(DATABASEPATH, DATABASENAME, TABLEENAME, c2.getName());
-
-		// System.out.println("Test: "+c.isColumnPrimaryKey(DATABASEPATH, DATABASENAME,
-		// TABLEENAME, c2.getName()));
-		// hier kommen noch die anderen features
-
+		//c.makeColumnAutoIncrement(DATABASEPATH, DATABASENAME, TABLEENAME, "id");
+		ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, cv,new ColumnValue(c3.getName(), new Integer(25)));
 	}
 
 }

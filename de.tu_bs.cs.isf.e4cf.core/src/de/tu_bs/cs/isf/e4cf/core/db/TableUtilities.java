@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
+
 public class TableUtilities {
 
 	/**
