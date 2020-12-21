@@ -32,7 +32,7 @@ public class JavaWriterAttributeCollector {
 	private Expression _expression = null;
 	private String _identifier = new String();
 	private Expression _initilization = null;
-	private String _interface = new String();
+	private NodeList<ClassOrInterfaceType> _interface = new NodeList<ClassOrInterfaceType>();
 	private boolean _isinterface = false;
 	private Expression _iterator = null;
 	private String _key = new String();
@@ -98,7 +98,7 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.Initilization.name())) {
 				_initilization = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Interface.name())) {
-				_interface = singleVal;
+				attribute.getAttributeValues().forEach(val -> _interface.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 			} else if (key.equals(JavaAttributesTypes.IsInterface.name())) {
 				_isinterface = Boolean.valueOf(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Iterator.name())) {
@@ -208,7 +208,7 @@ public class JavaWriterAttributeCollector {
 		return _initilization;
 	}
 
-	public String getInterface() {
+	public NodeList<ClassOrInterfaceType> getInterface() {
 		return _interface;
 	}
 
