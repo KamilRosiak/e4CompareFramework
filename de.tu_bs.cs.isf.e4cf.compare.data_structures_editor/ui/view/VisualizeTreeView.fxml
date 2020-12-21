@@ -40,8 +40,8 @@
             <ContextMenu>
               <items>
 		<MenuItem mnemonicParsing="false" text="add Attribute" />
-		<MenuItem mnemonicParsing="false" text="Add Child" />
-		<MenuItem mnemonicParsing="false" text="Copy" />
+		<MenuItem mnemonicParsing="false" onAction="#addChild" text="Add Child" />
+		<MenuItem mnemonicParsing="false" onAction="#copy" text="Copy" />
 		<MenuItem mnemonicParsing="false" text="Paste" />
                 <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
                 <MenuItem mnemonicParsing="false" text="Cut" />
