@@ -108,7 +108,7 @@ public class WriterUtil {
 			jpNode = new IfStmt();
 		} else if (n.getNodeType().equals(JavaNodeTypes.Import.name())) {
 			if (p != null) {
-				Optional<CompilationUnit> cuOpt = p.findAncestor(CompilationUnit.class);
+				Optional<CompilationUnit> cuOpt = p.findCompilationUnit();
 				if (cuOpt.isPresent() && !attributes.getName().isEmpty()) {
 					cuOpt.get().addImport(new ImportDeclaration(attributes.getName(), attributes.isStatic(),
 							attributes.isAsteriks()));
