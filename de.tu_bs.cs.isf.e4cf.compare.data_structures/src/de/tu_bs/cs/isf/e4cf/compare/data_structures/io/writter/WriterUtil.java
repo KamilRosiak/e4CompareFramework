@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
 import java.util.List;
+import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
@@ -13,8 +14,7 @@ import com.github.javaparser.ast.*;
 import com.github.javaparser.*;
 
 public class WriterUtil {
-
-	public static com.github.javaparser.ast.Node visitWriter(Node n) {
+	public static com.github.javaparser.ast.Node visitWriter(Node n, com.github.javaparser.ast.Node p) {
 		com.github.javaparser.ast.Node jpNode = null;
 
 		JavaWriterAttributeCollector attributes = new JavaWriterAttributeCollector();
@@ -25,6 +25,7 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(CompilationUnit.class.getSimpleName())) {
 			jpNode = new ClassOrInterfaceDeclaration(attributes.getModifier(), attributes.isInterface(),
 					attributes.getName());
+			((CompilationUnit) p).setPackageDeclaration(attributes.getPackage());
 		} else if (n.getNodeType().equals(AnnotationDeclaration.class.getSimpleName())) {
 			jpNode = new AnnotationDeclaration(attributes.getModifier(), attributes.getName());
 		} else if (n.getNodeType().equals(AnnotationMemberDeclaration.class.getSimpleName())) {
@@ -95,6 +96,14 @@ public class WriterUtil {
 			jpNode = new ForStmt();
 		} else if (n.getNodeType().equals(IfStmt.class.getSimpleName())) {
 			jpNode = new IfStmt();
+		} else if (n.getNodeType().equals(JavaNodeTypes.Import.name())) {
+			if (p != null) {
+				Optional<CompilationUnit> cuOpt = p.findAncestor(CompilationUnit.class);
+				if (cuOpt.isPresent() && !attributes.getName().isEmpty()) {
+					cuOpt.get().addImport(new ImportDeclaration(attributes.getName(), attributes.isStatic(),
+							attributes.isAsteriks()));
+				}
+			}
 		} else if (n.getNodeType().equals(InitializerDeclaration.class.getSimpleName())) {
 			jpNode = new InitializerDeclaration();
 		} else if (n.getNodeType().equals(InstanceOfExpr.class.getSimpleName())) {
@@ -184,16 +193,15 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(YieldStmt.class.getSimpleName())) {
 			jpNode = new YieldStmt();
 		}
-		
+
+		if (p != null && jpNode != null) {
+			jpNode.setParentNode(p);
+		}
+
 		// set jpNode as parent to all the nodes, that are generated from the
 		// children
 		for (Node nChild : n.getChildren()) {
-			com.github.javaparser.ast.Node jpChild = visitWriter(nChild);
-			if (jpChild != null) {
-				jpChild.setParentNode(jpNode);
-			} else {
-				System.out.println(nChild.getNodeType() + " is not supported yet.");
-			}
+			com.github.javaparser.ast.Node jpChild = visitWriter(nChild, Optional.ofNullable(jpNode).orElse(p));
 		}
 
 		return jpNode;
