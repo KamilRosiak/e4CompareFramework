@@ -17,16 +17,12 @@ public class WriterUtil {
 	public static com.github.javaparser.ast.Node visitWriter(Node n) {
 		com.github.javaparser.ast.Node jpNode = null;
 
-		// set jpNode as parent to all the nodes, that are generated from the
-		// children
-		for (com.github.javaparser.ast.Node jpN : visitWriter(n.getChildren())) {
-			jpN.setParentNode(jpNode);
-		}
-
 		JavaWriterAttributeCollector attributes = new JavaWriterAttributeCollector();
 		attributes.collectAttributes(n);
 
-		if (n.getNodeType().equals(CompilationUnit.class.getSimpleName())) {
+		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
+			jpNode = new CompilationUnit();
+		} else if (n.getNodeType().equals(CompilationUnit.class.getSimpleName())) {
 			jpNode = new ClassOrInterfaceDeclaration(attributes.getModifier(), attributes.isInterface(),
 					attributes.getName());
 		} else if (n.getNodeType().equals(AnnotationDeclaration.class.getSimpleName())) {
@@ -188,20 +184,18 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(YieldStmt.class.getSimpleName())) {
 			jpNode = new YieldStmt();
 		}
+		
+		// set jpNode as parent to all the nodes, that are generated from the
+		// children
+		for (Node nChild : n.getChildren()) {
+			com.github.javaparser.ast.Node jpChild = visitWriter(nChild);
+			if (jpChild != null) {
+				jpChild.setParentNode(jpNode);
+			} else {
+				System.out.println(nChild.getNodeType() + " is not supported yet.");
+			}
+		}
 
 		return jpNode;
 	}
-
-	public static NodeList<com.github.javaparser.ast.Node> visitWriter(List<Node> n) {
-		NodeList<com.github.javaparser.ast.Node> nodeList = new NodeList<>();
-
-		// go through all children and call visitWriter for every Node,
-		// then add the returned nodes to nodeList
-		for (Node node : n) {
-			nodeList.add(visitWriter(node));
-		}
-
-		return nodeList;
-	}
-
 }
