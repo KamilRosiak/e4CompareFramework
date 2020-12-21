@@ -61,7 +61,7 @@ public class JavaWriter extends AbstractArtifactWriter {
 	 */
 	private String createFileContent(Node root) {
 		
-		return WriterUtil.visitWriter(root);
+		return WriterUtil.visitWriter(root).toString();
 		
 		/*CompilationUnit cu = new CompilationUnit();
 		
