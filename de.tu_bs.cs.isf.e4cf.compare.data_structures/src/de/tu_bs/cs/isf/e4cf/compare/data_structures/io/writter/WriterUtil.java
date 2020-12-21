@@ -7,6 +7,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
 
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.nodeTypes.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.*;
@@ -33,9 +34,9 @@ public class WriterUtil {
 				cu.addType(coid);
 				cu.setPackageDeclaration(attributes.getPackage());
 			} else {
-				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName() + ". Expected: " + CompilationUnit.class.getSimpleName());
 			}
-			
+			jpNode = coid;
 		} else if (n.getNodeType().equals(AnnotationDeclaration.class.getSimpleName())) {
 			jpNode = new AnnotationDeclaration(attributes.getModifier(), attributes.getName());
 		} else if (n.getNodeType().equals(AnnotationMemberDeclaration.class.getSimpleName())) {
@@ -99,7 +100,17 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(FieldAccessExpr.class.getSimpleName())) {
 			jpNode = new FieldAccessExpr();
 		} else if (n.getNodeType().equals(FieldDeclaration.class.getSimpleName())) {
-			jpNode = new FieldDeclaration();
+			FieldDeclaration fd = new FieldDeclaration();
+			fd.setModifiers(attributes.getModifier());
+			fd.addVariable(new VariableDeclarator(attributes.getType(), attributes.getName(), attributes.getInitilization()));
+			
+			if (p instanceof TypeDeclaration) {
+				TypeDeclaration nwm = (TypeDeclaration) p;
+				nwm.addMember(fd);
+			} else {
+				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName() + ". Expected: " + TypeDeclaration.class.getSimpleName());
+			}
+			jpNode = fd;
 		} else if (n.getNodeType().equals(ForEachStmt.class.getSimpleName())) {
 			jpNode = new ForEachStmt();
 		} else if (n.getNodeType().equals(ForStmt.class.getSimpleName())) {
