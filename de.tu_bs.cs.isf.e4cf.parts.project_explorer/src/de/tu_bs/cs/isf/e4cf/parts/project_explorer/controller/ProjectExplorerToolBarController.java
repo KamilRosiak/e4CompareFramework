@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 
 import org.eclipse.swt.widgets.Shell;
 
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.FileImportHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFolderHandler;
@@ -50,8 +51,7 @@ public class ProjectExplorerToolBarController {
 		TextField search = new TextField();
 		search.setVisible(false);
 		search.setOnAction(actionEvent -> {
-			// TODO Perform Filter / send filter event #22
-			System.out.println(search.getText());
+			services.eventBroker.send(E4CEventTable.EVENT_FILTER_CHANGED, search.getText());
 		});
 
 		ImageView searchImage = services.imageService.getFXImage(null, FileTable.SEARCH_PNG);
@@ -72,7 +72,7 @@ public class ProjectExplorerToolBarController {
 				searchButton.setTooltip(searchTooltip);
 				search.setText("");
 				bar.getItems().remove(search);
-				// TODO Remove all filters from project view / send event #22
+				services.eventBroker.send(E4CEventTable.EVENT_FILTER_CHANGED, null);
 			}
 
 		});

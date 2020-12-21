@@ -79,6 +79,7 @@ public class ProjectExplorerViewController {
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
 	private ProjectExplorerToolBarController toolbarController;
+	private String filter = "";
 
 	/**
 	 * This method is equivalent to the previous postContruct(), in that it sets up
@@ -148,7 +149,8 @@ public class ProjectExplorerViewController {
 
 		for (FileTreeElement child : parentNode.getChildren()) {
 			TreeItem<FileTreeElement> node = buildTree(child, false, state);
-			currentNode.getChildren().add(node);
+			if (filter.equals("") || node.getValue().getRelativePath().contains(filter) || !node.getChildren().isEmpty())
+				currentNode.getChildren().add(node);
 		}
 
 		return currentNode;
@@ -247,6 +249,21 @@ public class ProjectExplorerViewController {
 	@Optional
 	public void rename(@UIEventTopic(E4CEventTable.EVENT_RENAME_PROJECT_EXPLORER_ITEM) Object o) {
 		projectTree.edit(projectTree.getSelectionModel().getSelectedItem());
+	}
+	
+	/**
+	 * Subscribing on filter / search change
+	 * 
+	 */
+	@Inject
+	@Optional
+	public void filter(@UIEventTopic(E4CEventTable.EVENT_FILTER_CHANGED) Object o) {
+		if (o instanceof String) {
+			filter = (String)o;
+		} else {
+			filter = "";
+		}
+		services.eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
 	}
 
 	/**
