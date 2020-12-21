@@ -5,6 +5,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeConverter;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
@@ -39,7 +40,7 @@ public class JavaReader extends AbstractArtifactReader {
 			String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
 			CompilationUnit cu = StaticJavaParser.parse(s);
 
-			Node rootNode = new NodeImpl(fileName);
+			Node rootNode = new NodeImpl(JavaWriter.NODE_TYPE_TREE);
 			
 			Visitor visitor = new Visitor();
 			
