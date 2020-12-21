@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
-import java.util.List;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -11,10 +10,9 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.*;
-import com.github.javaparser.*;
 
 public class WriterUtil {
-	public static com.github.javaparser.ast.Node visitWriter(Node n, com.github.javaparser.ast.Node p) {
+	public static com.github.javaparser.ast.Node visitWriter(Node n, com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
 		com.github.javaparser.ast.Node jpNode = null;
 
 		JavaWriterAttributeCollector attributes = new JavaWriterAttributeCollector();
@@ -23,9 +21,21 @@ public class WriterUtil {
 		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
 			jpNode = new CompilationUnit();
 		} else if (n.getNodeType().equals(CompilationUnit.class.getSimpleName())) {
-			jpNode = new ClassOrInterfaceDeclaration(attributes.getModifier(), attributes.isInterface(),
-					attributes.getName());
-			((CompilationUnit) p).setPackageDeclaration(attributes.getPackage());
+			ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
+			coid.setName(attributes.getName());
+			coid.setModifiers(attributes.getModifier());
+			coid.addExtendedType(attributes.getSuperclass());
+			coid.setImplementedTypes(attributes.getInterface());
+			coid.setInterface(attributes.isInterface());
+			
+			if (p instanceof CompilationUnit) {
+				CompilationUnit cu = (CompilationUnit) p;
+				cu.addType(coid);
+				cu.setPackageDeclaration(attributes.getPackage());
+			} else {
+				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+			}
+			
 		} else if (n.getNodeType().equals(AnnotationDeclaration.class.getSimpleName())) {
 			jpNode = new AnnotationDeclaration(attributes.getModifier(), attributes.getName());
 		} else if (n.getNodeType().equals(AnnotationMemberDeclaration.class.getSimpleName())) {
