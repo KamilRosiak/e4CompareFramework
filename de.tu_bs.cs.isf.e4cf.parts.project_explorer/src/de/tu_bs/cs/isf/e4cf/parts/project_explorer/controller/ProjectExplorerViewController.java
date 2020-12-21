@@ -38,13 +38,13 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -75,7 +75,7 @@ public class ProjectExplorerViewController {
 	private EMenuService _menuService;
 
 	// Controller fields
-	private ChangeListener<TreeItem<FileTreeElement>> changeListener;
+	private ListChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
 	private ProjectExplorerToolBarController toolbarController;
@@ -117,7 +117,7 @@ public class ProjectExplorerViewController {
 
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
-				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider);
+				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services);
 				return treeCell;
 			}
 		});
@@ -232,12 +232,12 @@ public class ProjectExplorerViewController {
 		HashMap<String, Boolean> oldTreeState = new HashMap<String, Boolean>();
 		traverseTree(projectTree.getRoot(), oldTreeState);
 
-		projectTree.getSelectionModel().selectedItemProperty().removeListener(changeListener);
+		projectTree.getSelectionModel().getSelectedItems().removeListener(changeListener);
 		TreeItem<FileTreeElement> root = buildTree(projectTree.getRoot().getValue(), true, oldTreeState);
 
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
-		projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
+		projectTree.getSelectionModel().getSelectedItems().addListener(changeListener);
 	}
 
 	/**
@@ -276,20 +276,28 @@ public class ProjectExplorerViewController {
 				services.workspaceFileSystem.getWorkspaceDirectory());
 		_selectionService.setSelection(null);
 
+		// Set Selection Mode
+		projectTree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
 		// Add a SelectionListener to tree to propagate the selection that is done in
 		// the tree
 
-		changeListener = new ChangeListener<TreeItem<FileTreeElement>>() {
+		changeListener = new ListChangeListener<TreeItem<FileTreeElement>>() {
+
 			@Override
-			public void changed(ObservableValue<? extends TreeItem<FileTreeElement>> observable,
-					TreeItem<FileTreeElement> oldValue, TreeItem<FileTreeElement> newValue) {
-				_selectionService.setSelection(new StructuredSelection(newValue.getValue()));
+			public void onChanged(Change<? extends TreeItem<FileTreeElement>> change) {
+
+				StructuredSelection selection = new StructuredSelection(
+						projectTree.getSelectionModel().getSelectedItems());
+
+				_selectionService.setSelection(selection);
 				_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
 				toolbarController.update();
 			}
+
 		};
 
-		projectTree.getSelectionModel().selectedItemProperty().addListener(changeListener);
+		projectTree.getSelectionModel().getSelectedItems().addListener(changeListener);
 	}
 
 	/**
