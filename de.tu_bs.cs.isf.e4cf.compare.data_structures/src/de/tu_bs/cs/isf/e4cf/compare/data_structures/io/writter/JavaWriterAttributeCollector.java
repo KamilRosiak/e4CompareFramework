@@ -11,7 +11,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaAttributesTypes;
 
 /**
- * This class collects all attributes of a Node and converts them back to the JavaParser type.
+ * This class collects all attributes of a Node and converts them back to the
+ * JavaParser type.
  * 
  * @author Paulo Haas
  *
@@ -59,12 +60,13 @@ public class JavaWriterAttributeCollector {
 	 * Fills the attributes of the object.
 	 * 
 	 * @param n Node, whose attributes should be collected.
-	 * @throws UnsupportedOperationException if an attribute has a key, that is not yet supported.
+	 * @throws UnsupportedOperationException if an attribute has a key, that is not
+	 *                                       yet supported.
 	 */
 	public void collectAttributes(Node n) throws UnsupportedOperationException {
 		for (Attribute attribute : n.getAttributes()) {
-			String key = attribute.getAttributeKey();
-			String singleVal = attribute.getAttributeValues().iterator().next();
+			final String key = attribute.getAttributeKey();
+			final String singleVal = attribute.getAttributeValues().iterator().next();
 
 			if (key.equals(JavaAttributesTypes.Annotation.name())) {
 				attribute.getAttributeValues().forEach(val -> _annotation.add(StaticJavaParser.parseAnnotation(val)));
@@ -96,9 +98,16 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.Identifier.name())) {
 				_identifier = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Initilization.name())) {
-				_initilization = StaticJavaParser.parseExpression(singleVal);
+				Expression expr;
+				if (singleVal.startsWith("{") && singleVal.endsWith("}")) {
+					expr = StaticJavaParser.parseExpression("new " + getType().asString() + " " + singleVal);
+				} else {
+					expr = StaticJavaParser.parseExpression(singleVal);
+				}
+				_initilization = expr;
 			} else if (key.equals(JavaAttributesTypes.Interface.name())) {
-				attribute.getAttributeValues().forEach(val -> _interface.add(StaticJavaParser.parseClassOrInterfaceType(val)));
+				attribute.getAttributeValues()
+						.forEach(val -> _interface.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 			} else if (key.equals(JavaAttributesTypes.IsInterface.name())) {
 				_isinterface = Boolean.valueOf(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Iterator.name())) {
