@@ -145,7 +145,8 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.Then.name())) {
 				_then = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Throws.name())) {
-				attribute.getAttributeValues().forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType(val)));
+				attribute.getAttributeValues()
+						.forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 			} else if (key.equals(JavaAttributesTypes.Type.name())) {
 				_type = StaticJavaParser.parseType(singleVal);
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
