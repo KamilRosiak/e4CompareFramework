@@ -52,7 +52,11 @@ public class WriterUtil {
 			obj.setName(attributes.getName());
 			obj.setDefaultValue(attributes.getValue());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ArrayAccessExpr.class.getSimpleName())) {
+		} else if (n.getNodeType().startsWith(JavaNodeTypes.Argument.name())) {
+			if (p != null && !attributes.getName().isEmpty() && !attributes.getType().equals(null)) {
+				((NodeWithParameters) p).addParameter(attributes.getType(), attributes.getName());
+			}
+		}else if (n.getNodeType().equals(ArrayAccessExpr.class.getSimpleName())) {
 			ArrayAccessExpr obj = new ArrayAccessExpr();
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ArrayCreationExpr.class.getSimpleName())) {
@@ -74,17 +78,23 @@ public class WriterUtil {
 			obj.setCheck(attributes.getCheck());
 			obj.setMessage(attributes.getMessage());
 			jpNode = obj;
-		} else if (n.getNodeType() == JavaNodeTypes.Assignment.name()) {
+		} else if (n.getNodeType().equals(JavaNodeTypes.Assignment.name())) {
 			AssignExpr obj = new AssignExpr();
 			obj.setTarget(attributes.getTarget());
 			obj.setValue(attributes.getValue());
 			obj.setOperator(AssignExpr.Operator.ASSIGN);
+			((NodeWithStatements) p).addStatement(obj);
 			jpNode = obj;
 		} else if (n.getNodeType().equals(BinaryExpr.class.getSimpleName())) {
 			BinaryExpr obj = new BinaryExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(BlockStmt.class.getSimpleName())) {
+		} else if (n.getNodeType().equals(BlockStmt.class.getSimpleName()) || n.getNodeType().equals(JavaNodeTypes.Body.name())) {
 			BlockStmt obj = new BlockStmt();
+			if (p instanceof NodeWithOptionalBlockStmt) {
+				((NodeWithOptionalBlockStmt) p).setBody(obj);
+			} else if (p instanceof NodeWithBlockStmt) {
+				((NodeWithBlockStmt) p).setBody(obj);
+			}
 			jpNode = obj;
 		} else if (n.getNodeType().equals(BooleanLiteralExpr.class.getSimpleName())) {
 			BooleanLiteralExpr obj = new BooleanLiteralExpr();
@@ -221,6 +231,15 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(MethodDeclaration.class.getSimpleName())) {
 			MethodDeclaration obj = new MethodDeclaration();
+			obj.setThrownExceptions(attributes.getThrows());
+			obj.setName(attributes.getName());
+			obj.setModifiers(attributes.getModifier());
+			obj.setType(attributes.getReturnType());
+			
+			if(p instanceof NodeWithMembers) {
+				((NodeWithMembers) p).addMember(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(MethodReferenceExpr.class.getSimpleName())) {
 			MethodReferenceExpr obj = new MethodReferenceExpr();
