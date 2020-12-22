@@ -5,6 +5,9 @@ import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
+import com.github.javaparser.ast.visitor.GenericVisitor;
+import com.github.javaparser.ast.visitor.VoidVisitor;
+import com.github.javaparser.resolution.types.ResolvedType;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -50,7 +53,7 @@ public class JavaWriterAttributeCollector {
 	private Expression _superexpr = null;
 	private Expression _target = null;
 	private Expression _then = null;
-	private Type _throws = null;
+	private NodeList<ReferenceType> _throws = new NodeList<ReferenceType>();
 	private Type _type = null;
 	private TypeParameter _typeargument = null;
 	private Expression _update = null;
@@ -142,7 +145,7 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.Then.name())) {
 				_then = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Throws.name())) {
-				_throws = StaticJavaParser.parseType(singleVal);
+				attribute.getAttributeValues().forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 			} else if (key.equals(JavaAttributesTypes.Type.name())) {
 				_type = StaticJavaParser.parseType(singleVal);
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
@@ -285,7 +288,7 @@ public class JavaWriterAttributeCollector {
 		return _then;
 	}
 
-	public Type getThrows() {
+	public NodeList<ReferenceType> getThrows() {
 		return _throws;
 	}
 
