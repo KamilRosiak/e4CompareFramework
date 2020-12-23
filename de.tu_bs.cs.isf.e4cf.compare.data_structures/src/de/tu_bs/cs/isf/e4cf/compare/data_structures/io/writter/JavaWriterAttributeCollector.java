@@ -35,7 +35,7 @@ public class JavaWriterAttributeCollector {
 	private Expression _else = null;
 	private Expression _expression = null;
 	private String _identifier = new String();
-	private Expression _initilization = null;
+	private NodeList<Expression> _initilization = new NodeList<Expression>();
 	private NodeList<ClassOrInterfaceType> _interface = new NodeList<ClassOrInterfaceType>();
 	private boolean _isinterface = false;
 	private Expression _iterator = null;
@@ -56,7 +56,7 @@ public class JavaWriterAttributeCollector {
 	private NodeList<ReferenceType> _throws = new NodeList<ReferenceType>();
 	private Type _type = null;
 	private TypeParameter _typeargument = null;
-	private Expression _update = null;
+	private NodeList<Expression> _update = new NodeList<Expression>();
 	private Expression _value = null;
 
 	/**
@@ -102,12 +102,18 @@ public class JavaWriterAttributeCollector {
 				_identifier = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Initilization.name())) {
 				Expression expr;
-				if (singleVal.startsWith("{") && singleVal.endsWith("}")) {
-					expr = StaticJavaParser.parseExpression("new " + getType().asString() + " " + singleVal);
-				} else {
-					expr = StaticJavaParser.parseExpression(singleVal);
+				for (String val : attribute.getAttributeValues()) {
+					if (val.startsWith("{") && val.endsWith("}")) {
+						expr = StaticJavaParser.parseExpression("new " + getType().asString() + " " + val);
+					} else {
+						try {
+							expr = StaticJavaParser.parseExpression(val);
+						} catch (ParseProblemException ppe) {
+							expr = StaticJavaParser.parseVariableDeclarationExpr(val);
+						}
+					}
+					_initilization.add(expr);
 				}
-				_initilization = expr;
 			} else if (key.equals(JavaAttributesTypes.Interface.name())) {
 				attribute.getAttributeValues()
 						.forEach(val -> _interface.add(StaticJavaParser.parseClassOrInterfaceType(val)));
@@ -152,7 +158,7 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
 				_typeargument = StaticJavaParser.parseTypeParameter(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Update.name())) {
-				_update = StaticJavaParser.parseExpression(singleVal);
+				attribute.getAttributeValues().forEach(val -> _update.add(StaticJavaParser.parseExpression(val)));
 			} else if (key.equals(JavaAttributesTypes.Value.name())) {
 				_value = StaticJavaParser.parseExpression(singleVal);
 			} else {
@@ -217,7 +223,7 @@ public class JavaWriterAttributeCollector {
 		return _identifier;
 	}
 
-	public Expression getInitilization() {
+	public NodeList<Expression> getInitilization() {
 		return _initilization;
 	}
 
@@ -301,7 +307,7 @@ public class JavaWriterAttributeCollector {
 		return _typeargument;
 	}
 
-	public Expression getUpdate() {
+	public NodeList<Expression> getUpdate() {
 		return _update;
 	}
 

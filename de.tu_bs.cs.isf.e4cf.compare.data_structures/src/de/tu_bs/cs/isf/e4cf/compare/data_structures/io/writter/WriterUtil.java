@@ -53,10 +53,14 @@ public class WriterUtil {
 			obj.setDefaultValue(attributes.getValue());
 			jpNode = obj;
 		} else if (n.getNodeType().startsWith(JavaNodeTypes.Argument.name())) {
-			if (p != null && !attributes.getName().isEmpty() && !attributes.getType().equals(null)) {
-				((NodeWithParameters) p).addParameter(attributes.getType(), attributes.getName());
+			if (p != null && !attributes.getName().isEmpty()) {
+				if (attributes.getType() != null) {
+					((NodeWithParameters) p).addParameter(attributes.getType(), attributes.getName());
+				} else {
+					((NodeWithArguments) p).addArgument(attributes.getName());
+				}
 			}
-		}else if (n.getNodeType().equals(ArrayAccessExpr.class.getSimpleName())) {
+		} else if (n.getNodeType().equals(ArrayAccessExpr.class.getSimpleName())) {
 			ArrayAccessExpr obj = new ArrayAccessExpr();
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ArrayCreationExpr.class.getSimpleName())) {
@@ -88,12 +92,15 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(BinaryExpr.class.getSimpleName())) {
 			BinaryExpr obj = new BinaryExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(BlockStmt.class.getSimpleName()) || n.getNodeType().equals(JavaNodeTypes.Body.name())) {
+		} else if (n.getNodeType().equals(BlockStmt.class.getSimpleName())
+				|| n.getNodeType().equals(JavaNodeTypes.Body.name())) {
 			BlockStmt obj = new BlockStmt();
 			if (p instanceof NodeWithOptionalBlockStmt) {
 				((NodeWithOptionalBlockStmt) p).setBody(obj);
 			} else if (p instanceof NodeWithBlockStmt) {
 				((NodeWithBlockStmt) p).setBody(obj);
+			} else if (p instanceof NodeWithBody) {
+				((NodeWithBody) p).setBody(obj);
 			}
 			jpNode = obj;
 		} else if (n.getNodeType().equals(BooleanLiteralExpr.class.getSimpleName())) {
@@ -166,8 +173,8 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(FieldDeclaration.class.getSimpleName())) {
 			FieldDeclaration fd = new FieldDeclaration();
 			fd.setModifiers(attributes.getModifier());
-			fd.addVariable(
-					new VariableDeclarator(attributes.getType(), attributes.getName(), attributes.getInitilization()));
+			fd.addVariable(new VariableDeclarator(attributes.getType(), attributes.getName(),
+					attributes.getInitilization().getFirst().get()));
 
 			if (p instanceof TypeDeclaration) {
 				TypeDeclaration nwm = (TypeDeclaration) p;
@@ -182,6 +189,14 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ForStmt.class.getSimpleName())) {
 			ForStmt obj = new ForStmt();
+			obj.setInitialization(attributes.getInitilization());
+			obj.setCompare(attributes.getComparison());
+			obj.setUpdate(attributes.getUpdate());
+
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(IfStmt.class.getSimpleName())) {
 			IfStmt obj = new IfStmt();
@@ -228,6 +243,13 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(MethodCallExpr.class.getSimpleName())) {
 			MethodCallExpr obj = new MethodCallExpr();
+			obj.setScope(attributes.getScope());
+			obj.setName(attributes.getName());
+
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(MethodDeclaration.class.getSimpleName())) {
 			MethodDeclaration obj = new MethodDeclaration();
@@ -235,11 +257,11 @@ public class WriterUtil {
 			obj.setName(attributes.getName());
 			obj.setModifiers(attributes.getModifier());
 			obj.setType(attributes.getReturnType());
-			
-			if(p instanceof NodeWithMembers) {
+
+			if (p instanceof NodeWithMembers) {
 				((NodeWithMembers) p).addMember(obj);
 			}
-			
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(MethodReferenceExpr.class.getSimpleName())) {
 			MethodReferenceExpr obj = new MethodReferenceExpr();
