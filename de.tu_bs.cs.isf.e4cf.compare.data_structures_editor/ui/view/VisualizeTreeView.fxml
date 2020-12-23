@@ -10,6 +10,7 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 
 <VBox fx:id="background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.TreeViewController">
   <children>
@@ -17,16 +18,9 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="New" />
-            <MenuItem mnemonicParsing="false" text="Open…" />
-            <Menu mnemonicParsing="false" text="Open Recent" />
-            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#closeFile" text="Close" />
             <MenuItem mnemonicParsing="false" text="Save" />
             <MenuItem mnemonicParsing="false" text="Save As…" />
-            <MenuItem mnemonicParsing="false" text="Revert" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
@@ -36,18 +30,8 @@
             <MenuItem mnemonicParsing="false" text="Undo" />
             <MenuItem mnemonicParsing="false" text="Redo" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Cut" />
-            <MenuItem mnemonicParsing="false" text="Copy" />
-            <MenuItem mnemonicParsing="false" text="Paste" />
-            <MenuItem mnemonicParsing="false" text="Delete" />
-            <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#selectAll" text="Select All" />
             <MenuItem mnemonicParsing="false" onAction="#unselectAll" text="Unselect All" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
           </items>
         </Menu>
       </menus>
@@ -58,18 +42,21 @@
               <items>
 		<MenuItem mnemonicParsing="false" text="add Attribute" />
 		<MenuItem mnemonicParsing="false" text="Add Child" />
-                <MenuItem mnemonicParsing="false" text="Rename" />
+		<MenuItem mnemonicParsing="false" text="Copy" />
+		<MenuItem mnemonicParsing="false" text="Paste" />
+                <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
                 <MenuItem mnemonicParsing="false" text="Cut" />
 		<MenuItem mnemonicParsing="false" text="Extract to file" />
-                <MenuItem mnemonicParsing="false" text="Delete" />
-		<MenuItem fx:id="properties" mnemonicParsing="false" text="Properties" />
+                <MenuItem mnemonicParsing="false" onAction="#deleteNode" text="Delete" />
               </items>
             </ContextMenu>
          </contextMenu></TreeView> 
       <ToolBar fx:id="toolBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
-            <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" />
+            <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" onAction="#onEnter" />
+            <Text fx:id="hitCount" strokeType="OUTSIDE" strokeWidth="0.0" />
           <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#search" text="Search" />
+            <Text fx:id="totalNodeAmount" nodeOrientation="LEFT_TO_RIGHT" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="187.6666259765625" />
         </items>
       </ToolBar>
   </children>
