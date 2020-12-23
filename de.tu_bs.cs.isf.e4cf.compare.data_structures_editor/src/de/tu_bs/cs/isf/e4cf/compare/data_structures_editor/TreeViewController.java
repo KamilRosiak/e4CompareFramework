@@ -21,6 +21,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 /**
  * Controller for VisualizeTreeView.fxml
@@ -45,14 +46,20 @@ public class TreeViewController {
 	@FXML
 	private Label testLabel;
 
+    @FXML
+    private Text hitCount;
+
+    @FXML
+    private Text totalNodeAmount;
+
 	@FXML
 	private TreeView<NodeUsage> treeView;
 
 	@FXML
 	private TextField searchTextField;
-
+	
 	private int searchCounter = 0;
-
+	
 	private String currentSearchText;
 
 	/**
@@ -64,10 +71,9 @@ public class TreeViewController {
 	@Inject
 	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
-		setTreeView(TreeViewUtilities.getTreeViewFromTree(tree, this.treeView));
-		setTreeView(TreeViewUtilities.addListener(treeView, services));
-		//treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView);
-		//treeView = TreeViewUtilities.addListener(treeView, services);
+		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView);
+		treeView = TreeViewUtilities.addListener(treeView, services);
+		totalNodeAmount.setText("Total Node Amount: " + TreeViewUtilities.searchTreeItem(treeView.getRoot(), "").size());
 	}
 
 	/**
@@ -76,8 +82,7 @@ public class TreeViewController {
 	@FXML
 	void closeFile() {
 		// set treeview and its values to null, then remove it from the background
-		getTreeView().setRoot(null);
-//		treeView.setRoot(null);
+		treeView.setRoot(null);
 		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
 
@@ -86,10 +91,8 @@ public class TreeViewController {
 	 */
 	@FXML
 	void selectAll() {
-		getTreeView().getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		getTreeView().getSelectionModel().selectAll();
-//		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-//		treeView.getSelectionModel().selectAll();
+		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		treeView.getSelectionModel().selectAll();
 		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
 
@@ -98,8 +101,7 @@ public class TreeViewController {
 	 */
 	@FXML
 	void unselectAll() {
-		getTreeView().getSelectionModel().clearSelection();
-//		treeView.getSelectionModel().clearSelection();
+		treeView.getSelectionModel().clearSelection();
 		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
 
@@ -108,14 +110,14 @@ public class TreeViewController {
 	 */
 	@FXML
 	void search() {
+		TreeViewUtilities.clearSearchList();
 		treeView.getSelectionModel().clearSelection();
 		String searchFieldTextToRead = searchTextField.getText();
-		List<TreeItem<NodeUsage>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
-				searchFieldTextToRead);
+		List <TreeItem<NodeUsage>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead);
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		treeView.getSelectionModel().select(getCurrentSearchItem(resultList));
 		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-//		System.out.println(getSearchCounter() + "/" + resultList.size());
+		hitCount.setText(getSearchCounter() + "/" + resultList.size());
 //		for (TreeItem<NodeUsage> t : TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead)) {
 //			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 //			treeView.getSelectionModel().select(t);
@@ -125,77 +127,50 @@ public class TreeViewController {
 //			services.eventBroker.send("EmptyPropertiesTableEvent", true);
 //		}
 		resultList.clear();
-		TreeViewUtilities.clearSearchList();
 	}
+	
+    @FXML
+    void onEnter(ActionEvent event) {
+    	if (currentSearchText == null) {
+    		currentSearchText = searchTextField.getText();
+    		search();
+    	} else {
+    		if (currentSearchText.equals(searchTextField.getText())) {
+    			search();
+    		} else {
+    			setSearchCounter(0);
+    			search();
+    			currentSearchText = searchTextField.getText();
+    		}
+    	}
+    }
+    
+    TreeItem<NodeUsage> getCurrentSearchItem(List <TreeItem<NodeUsage>> resultList) {
+    	TreeItem<NodeUsage> currentItem = new TreeItem<NodeUsage>();
+    	if (getSearchCounter() < resultList.size()) {
+    		currentItem = resultList.get(getSearchCounter());
+    		incrementSearchCounter();
+    	} else {
+    		setSearchCounter(0);
+    		currentItem = resultList.get(getSearchCounter());
+    		incrementSearchCounter();
+    	}
+    	return currentItem;
+    }
+    
+    int getSearchCounter() {
+    	return searchCounter;
+    }
 
-	/**
-	 * 
-	 * @param event
-	 */
-	@FXML
-	void onEnter(ActionEvent event) {
-		if (currentSearchText == null) {
-			currentSearchText = searchTextField.getText();
-			search();
-		} else {
-			if (currentSearchText.equals(searchTextField.getText())) {
-				search();
-			} else {
-				setSearchCounter(0);
-				search();
-				currentSearchText = searchTextField.getText();
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * @param resultList
-	 * @return
-	 */
-	TreeItem<NodeUsage> getCurrentSearchItem(List<TreeItem<NodeUsage>> resultList) {
-		TreeItem<NodeUsage> currentItem = new TreeItem<NodeUsage>();
-		if (getSearchCounter() < resultList.size()) {
-			currentItem = resultList.get(getSearchCounter());
-			incrementSearchCounter();
-		} else {
-			setSearchCounter(0);
-			currentItem = resultList.get(getSearchCounter());
-			incrementSearchCounter();
-		}
-		return currentItem;
-	}
-
-	/**
-	 * 
-	 * @return searchCounter
-	 */
-	int getSearchCounter() {
-		return searchCounter;
-	}
-
-	/**
-	 * 
-	 * @param i setting the SearchCounter
-	 */
-	void setSearchCounter(int i) {
-		this.searchCounter = i;
-		//searchCounter = i;
-	}
-
-	/**
-	 * 
-	 */
-	void incrementSearchCounter() {
-		setSearchCounter(getSearchCounter() + 1 );
-		//searchCounter++;
-	}
-
-	/**
-	 * 
-	 */
-
-	@FXML
+    void setSearchCounter(int i) {
+    	searchCounter = i;
+    }
+    
+    void incrementSearchCounter() {
+    	searchCounter++;
+    }
+    
+    @FXML
 	void deleteNode() {
 		TreeItem<NodeUsage> deletingNode = treeView.getSelectionModel().getSelectedItem();
 		treeView.getSelectionModel().getSelectedItem().setValue(null);
@@ -233,70 +208,4 @@ public class TreeViewController {
 		System.out.println(copiedNode + "sdhfg");
 		System.out.println(treeView.getSelectionModel().getSelectedItem());
 	}
-
-	public TreeView<NodeUsage> getTreeView() {
-		return treeView;
-	}
-
-	public void setTreeView(TreeView<NodeUsage> treeView) {
-		this.treeView = treeView;
-	}
-
-	public ServiceContainer getServices() {
-		return services;
-	}
-
-	public void setServices(ServiceContainer services) {
-		this.services = services;
-	}
-
-	public MenuItem getProperties() {
-		return properties;
-	}
-
-	public void setProperties(MenuItem properties) {
-		this.properties = properties;
-	}
-
-	public VBox getBackground() {
-		return background;
-	}
-
-	public void setBackground(VBox background) {
-		this.background = background;
-	}
-
-	public Button getSearch() {
-		return search;
-	}
-
-	public void setSearch(Button search) {
-		this.search = search;
-	}
-
-	public Label getTestLabel() {
-		return testLabel;
-	}
-
-	public void setTestLabel(Label testLabel) {
-		this.testLabel = testLabel;
-	}
-
-	public TextField getSearchTextField() {
-		return searchTextField;
-	}
-
-	public void setSearchTextField(TextField searchTextField) {
-		this.searchTextField = searchTextField;
-	}
-
-	public String getCurrentSearchText() {
-		return currentSearchText;
-	}
-
-	public void setCurrentSearchText(String currentSearchText) {
-		this.currentSearchText = currentSearchText;
-	}
-	
-	
 }
