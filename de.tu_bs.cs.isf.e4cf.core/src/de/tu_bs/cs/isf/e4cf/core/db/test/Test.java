@@ -34,7 +34,7 @@ public class Test {
 		ColumnValue cv = new ColumnValue(c2.getName(), new String("Rami"));
 
 		//c.makeColumnAutoIncrement(DATABASEPATH, DATABASENAME, TABLEENAME, "id");
-		ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, cv,new ColumnValue(c3.getName(), new Integer(25)));
+		ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(25)),cv);
 	}
 
 }

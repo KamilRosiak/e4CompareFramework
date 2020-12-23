@@ -168,13 +168,11 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			for (Column c : attributes) {
 				if (!columnExists(pPath, pDbName, tableName, c.getName())) {
 					String sqlStatement = "ALTER TABLE " + tableName + " ADD " + c.getName() + " " + c.getType();
-					if (c.isNotNull() == true) {
-						sqlStatement += " NOT NULL, ";
-						sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-					}
 					sqlStatement += ";";
-					System.out.println(sqlStatement);
 					stmt.execute(sqlStatement);
+					if (c.isNotNull()) {
+						makeColumnNotNull(pPath, pDbName, tableName, c.getName());
+					}
 					if (c.isPrimaryKey()) {
 						makeColumnPrimaryKey(pPath, pDbName, tableName, c.getName());
 					}
