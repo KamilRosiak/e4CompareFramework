@@ -13,7 +13,10 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard.DropElement;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
@@ -38,7 +41,8 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
 
-	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider) {
+	public CustomTreeCell(ServiceContainer services, WorkspaceFileSystem workspaceFileSystem,
+			FileImageProvider fileImageProvider) {
 		this.fileImageProvider = fileImageProvider;
 
 		setOnDragOver((DragEvent event) -> event.acceptTransferModes(TransferMode.COPY, TransferMode.MOVE));
@@ -62,6 +66,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				}
 
 				Path source = Paths.get(path);
+
 				Path target = Paths.get(directory.getAbsolutePath()).resolve(source.getFileName());
 				moveFileOrDirectory(source, target);
 
@@ -72,6 +77,14 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				List<java.io.File> files = db.getFiles();
 				for (java.io.File file : files) {
 					try {
+						if (file.isDirectory()) {
+							System.out.println("Copy directory");
+							Path source = file.toPath();
+							Path target = Paths.get(directory.getAbsolutePath()).resolve(source.getFileName());
+							DropElement dropElement = new DropElement(source, target);
+							services.eventBroker.post(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER, dropElement);
+							return;
+						}
 						workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
 								Paths.get(directory.getAbsolutePath()));
 						success = true;
@@ -160,7 +173,11 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	}
 
 	private void moveFileOrDirectory(Path source, Path target) {
+		System.out.println("Move file or directory");
 		File sourceFile = source.toFile();
+		if (sourceFile.list().length > 0) {
+			System.out.println("Directory");
+		}
 
 		if (!sourceFile.isDirectory() || (sourceFile.isDirectory() && sourceFile.list().length == 0)) {
 			try {
@@ -171,6 +188,8 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		} else {
 			// Traverse the file tree and copy each file/directory.
 			try {
+
+				System.out.println("Dropped a directory, now open wizard");
 
 				Files.walk(source).forEach(sourcePath -> {
 					Path targetPath = target.resolve(source.relativize(sourcePath));
