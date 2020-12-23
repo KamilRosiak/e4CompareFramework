@@ -668,7 +668,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnaryExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		Node unaryExprNode = VisitorUtil.Parent(n, arg);
+		VisitorUtil.AddAttribute(unaryExprNode, JavaAttributesTypes.Name, n.getExpression().toString());
+		VisitorUtil.AddAttribute(unaryExprNode, JavaAttributesTypes.Operator, n.getOperator().name());
 	}
 
 	/**
@@ -879,7 +881,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Iterator, n.getIterable().toString());
 		
 		// Initilization
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, n.getVariableDeclarator().toString());
+		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, n.getVariableDeclarator().getNameAsString());
+		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Type, n.getVariableDeclarator().getTypeAsString());
 		
 		// Block
 		n.getBody().accept(this, p);

@@ -23,6 +23,7 @@ public enum JavaAttributesTypes {
 	Message,
 	Modifier,
 	Name,
+	Operator,
 	Package,
 	ReturnType,
 	Scope,

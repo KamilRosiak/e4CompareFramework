@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.expr.UnaryExpr.Operator;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.visitor.GenericVisitor;
@@ -43,6 +44,7 @@ public class JavaWriterAttributeCollector {
 	private Expression _message = null;
 	private NodeList<Modifier> _modifier = new NodeList<Modifier>();
 	private String _name = new String();
+	private UnaryExpr.Operator _operator = null;
 	private String _package = new String();
 	private Type _returnType = null;
 	private Expression _scope = null;
@@ -130,6 +132,8 @@ public class JavaWriterAttributeCollector {
 						.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf(singleVal))));
 			} else if (key.equals(JavaAttributesTypes.Name.name())) {
 				_name = singleVal;
+			} else if (key.equals(JavaAttributesTypes.Operator.name())) {
+				_operator = UnaryExpr.Operator.valueOf(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Package.name())) {
 				_package = singleVal;
 			} else if (key.equals(JavaAttributesTypes.ReturnType.name())) {
@@ -253,6 +257,10 @@ public class JavaWriterAttributeCollector {
 
 	public String getName() {
 		return _name;
+	}
+	
+	public UnaryExpr.Operator getOperator() {
+		return _operator;
 	}
 
 	public String getPackage() {

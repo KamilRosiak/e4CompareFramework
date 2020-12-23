@@ -19,7 +19,7 @@ public class VisitorUtil {
 	 */
 	public static Node Leaf(com.github.javaparser.ast.Node n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
-		AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		AddAttribute(c, JavaAttributesTypes.Value, n.toString());
 		return c;
 	}
 	

@@ -186,6 +186,14 @@ public class WriterUtil {
 			jpNode = fd;
 		} else if (n.getNodeType().equals(ForEachStmt.class.getSimpleName())) {
 			ForEachStmt obj = new ForEachStmt();
+			obj.setIterable(attributes.getIterator());
+			obj.setVariable(new VariableDeclarationExpr(attributes.getType(),
+					attributes.getInitilization().getFirst().get().toString()));
+
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ForStmt.class.getSimpleName())) {
 			ForStmt obj = new ForStmt();
@@ -331,6 +339,13 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(UnaryExpr.class.getSimpleName())) {
 			UnaryExpr obj = new UnaryExpr();
+			obj.setExpression(attributes.getName());
+			obj.setOperator(attributes.getOperator());
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(UnionType.class.getSimpleName())) {
 			UnionType obj = new UnionType();
@@ -343,6 +358,17 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(VariableDeclarationExpr.class.getSimpleName())) {
 			VariableDeclarationExpr obj = new VariableDeclarationExpr();
+			jpNode = obj;
+		} else if (n.getNodeType().equals(VariableDeclarator.class.getSimpleName())) {
+			VariableDeclarator obj = new VariableDeclarator();
+			obj.setType(attributes.getType());
+			obj.setName(attributes.getName());
+			obj.setInitializer(attributes.getInitilization().getFirst().get());
+
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(new VariableDeclarationExpr(obj));
+			}
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(VarType.class.getSimpleName())) {
 			VarType obj = new VarType();
