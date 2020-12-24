@@ -4,10 +4,17 @@ public class ColumnValue {
 
 	private String columnName;
 	private Object value;
+	private String symbol = "=";
 
 	public ColumnValue(String pName, Object pValue) {
 		columnName = pName;
 		value = pValue;
+	}
+	
+	public ColumnValue(String pName, Object pValue, String pSymbol) {
+		columnName = pName;
+		value = pValue;
+		symbol = pSymbol;
 	}
 
 	public Object getValue() {
@@ -24,6 +31,14 @@ public class ColumnValue {
 
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
+	}
+	
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
 	}
 
 	@Override
