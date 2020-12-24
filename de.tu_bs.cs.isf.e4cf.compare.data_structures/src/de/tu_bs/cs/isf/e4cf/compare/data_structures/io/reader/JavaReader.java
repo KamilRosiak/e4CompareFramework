@@ -1,19 +1,18 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeConverter;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
-import java.nio.file.Path;
+
+import java.io.IOException;
 import java.nio.file.Paths;
-
-import com.github.javaparser.ast.CompilationUnit;
-
+import com.github.javaparser.*;
+import com.github.javaparser.ast.*;
 
 /***
  * 
@@ -25,23 +24,8 @@ import com.github.javaparser.ast.CompilationUnit;
  */
 
 public class JavaReader extends AbstractArtifactReader {
-	public final static String[] SUPPORTED_FILE_ENDINGS = {"java"};
+	public final static String[] SUPPORTED_FILE_ENDINGS = { "java" };
 
-	private Node recursivelyTreeBuilder(com.github.javaparser.ast.Node node) {
-		
-		Node newNode = null;
-		
-		// fill in attributes
-		
-		for (com.github.javaparser.ast.Node child : node.getChildNodes()) {
-			Node newChildNode = recursivelyTreeBuilder(child); 
-			newNode.addChild(newChildNode);
-		}
-		
-		return newNode;
-	}
-	
-	
 	public JavaReader() {
 		super(SUPPORTED_FILE_ENDINGS);
 	}
@@ -49,19 +33,28 @@ public class JavaReader extends AbstractArtifactReader {
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
 		Tree tree = null;
-		
+
 		if (isFileSupported(element)) {
 			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
 			String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
 			CompilationUnit cu = StaticJavaParser.parse(s);
-			// do stuff
+
+			Node rootNode = new NodeImpl(fileName);
 			
-			String sps = cu.toString();
+			Visitor visitor = new Visitor();
 			
-			//tree = new TreeImpl("", new NodeImpl(cu.toString()));
+			visitor.visit(cu, rootNode);
 			
+			tree = new TreeImpl(fileName, rootNode);
+
+			// Remove these lines after debug
+			System.out.print("\n\n--- JAVA PARSER AST BEGIN ---\n\n");
+			System.out.print(TreeConverter.javaParserNodeToDot(cu));
+			System.out.print("\n\n--- JAVA PARSER AST END ---\n\n");
+			System.out.print("\n\n--- FRAMEWORK TREE BEGIN ---\n\n");
+			System.out.println(TreeConverter.treeToDot(tree));
+			System.out.print("\n\n--- FRAMEWORK TREE END ---\n\n");
 		}
-		
 
 		
 		return tree;
