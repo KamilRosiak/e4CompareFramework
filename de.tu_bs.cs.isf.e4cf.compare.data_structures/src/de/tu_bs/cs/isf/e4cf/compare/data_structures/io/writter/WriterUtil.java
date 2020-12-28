@@ -91,7 +91,7 @@ public class WriterUtil {
 			AssignExpr obj = new AssignExpr();
 			obj.setTarget(attributes.getTarget());
 			obj.setValue(attributes.getValue());
-			obj.setOperator(AssignExpr.Operator.ASSIGN);
+			obj.setOperator(AssignExpr.Operator.valueOf(attributes.getOperator()));
 			((NodeWithStatements) p).addStatement(obj);
 			jpNode = obj;
 		} else if (n.getNodeType().equals(BinaryExpr.class.getSimpleName())) {
@@ -372,7 +372,7 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(UnaryExpr.class.getSimpleName())) {
 			UnaryExpr obj = new UnaryExpr();
 			obj.setExpression(attributes.getName());
-			obj.setOperator(attributes.getOperator());
+			obj.setOperator(UnaryExpr.Operator.valueOf(attributes.getOperator()));
 
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);

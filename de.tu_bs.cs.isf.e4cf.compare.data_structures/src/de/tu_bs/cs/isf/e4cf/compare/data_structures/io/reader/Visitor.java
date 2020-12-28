@@ -215,7 +215,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		Node assignment = VisitorUtil.Node(JavaNodeTypes.Assignment, arg);
 		VisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Target, n.getTarget().toString());
 		VisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Value, n.getValue().toString());
-		
+		VisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Operator, n.getOperator().name());
 	}
 
 	/**
