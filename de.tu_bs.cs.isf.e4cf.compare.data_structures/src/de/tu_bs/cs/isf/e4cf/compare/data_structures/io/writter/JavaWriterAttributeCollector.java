@@ -44,7 +44,7 @@ public class JavaWriterAttributeCollector {
 	private Expression _message = null;
 	private NodeList<Modifier> _modifier = new NodeList<Modifier>();
 	private String _name = new String();
-	private UnaryExpr.Operator _operator = null;
+	private String _operator = new String();
 	private String _package = new String();
 	private Type _returnType = null;
 	private Expression _scope = null;
@@ -133,7 +133,7 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.Name.name())) {
 				_name = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Operator.name())) {
-				_operator = UnaryExpr.Operator.valueOf(singleVal);
+				_operator = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Package.name())) {
 				_package = singleVal;
 			} else if (key.equals(JavaAttributesTypes.ReturnType.name())) {
@@ -259,7 +259,7 @@ public class JavaWriterAttributeCollector {
 		return _name;
 	}
 	
-	public UnaryExpr.Operator getOperator() {
+	public String getOperator() {
 		return _operator;
 	}
 
