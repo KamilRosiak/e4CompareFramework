@@ -16,7 +16,7 @@ public class WriterUtil {
 	public static com.github.javaparser.ast.Node visitWriter(Node n, com.github.javaparser.ast.Node p)
 			throws UnsupportedOperationException {
 		com.github.javaparser.ast.Node jpNode = null;
-
+		
 		JavaWriterAttributeCollector attributes = new JavaWriterAttributeCollector();
 		attributes.collectAttributes(n);
 
@@ -27,7 +27,10 @@ public class WriterUtil {
 			ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
 			coid.setName(attributes.getName());
 			coid.setModifiers(attributes.getModifier());
+			
+			if (!attributes.getSuperclass().isEmpty()) {
 			coid.addExtendedType(attributes.getSuperclass());
+			}
 			coid.setImplementedTypes(attributes.getInterface());
 			coid.setInterface(attributes.isInterface());
 
