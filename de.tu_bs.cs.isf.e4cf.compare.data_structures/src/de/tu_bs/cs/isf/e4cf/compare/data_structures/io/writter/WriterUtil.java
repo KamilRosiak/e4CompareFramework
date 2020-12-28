@@ -59,7 +59,9 @@ public class WriterUtil {
 			if (p == null) {
 				// Do nothing, e.g. parent of concrete arg was arg
 			} else if (attributes.getType() != null) {
-				((NodeWithParameters) p).addParameter(attributes.getType(), attributes.getName());
+				Parameter param = new Parameter(attributes.getType(), attributes.getName());
+				param.setModifiers(attributes.getModifier());
+				((NodeWithParameters) p).addParameter(param);
 			} else if (!attributes.getName().isEmpty()) {
 				((NodeWithArguments) p).addArgument(attributes.getName());
 			} else if (attributes.getValue() != null) {

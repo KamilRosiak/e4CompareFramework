@@ -69,6 +69,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			Node argNode = VisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, args);
 			VisitorUtil.AddAttribute(argNode, JavaAttributesTypes.Type, concreteParameter.getTypeAsString());
 			VisitorUtil.AddAttribute(argNode, JavaAttributesTypes.Name, concreteParameter.getNameAsString());
+			concreteParameter.getModifiers().forEach(modif -> modif.accept(this, argNode));
 			concreteParameter.removeForced();
 		}
 
