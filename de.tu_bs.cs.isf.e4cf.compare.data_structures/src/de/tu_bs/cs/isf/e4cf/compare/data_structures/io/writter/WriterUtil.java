@@ -112,8 +112,18 @@ public class WriterUtil {
 			BooleanLiteralExpr obj = new BooleanLiteralExpr();
 			obj.setValue(Boolean.valueOf(attributes.getValue().toString()));
 			jpNode = obj;
-		} else if (n.getNodeType().equals(BreakStmt.class.getSimpleName())) {
+		} else if (n.getNodeType().equals(BreakStmt.class.getSimpleName()) || n.getNodeType().equals(JavaNodeTypes.Break.name())) {	
 			BreakStmt obj = new BreakStmt();
+			if (attributes.getTarget() != null) {
+				obj.setLabel(new SimpleName(attributes.getTarget().toString()));
+			} else {
+				obj.removeLabel();
+			}
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(CastExpr.class.getSimpleName())) {
 			CastExpr obj = new CastExpr();
@@ -314,12 +324,29 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(SwitchEntry.class.getSimpleName())) {
 			SwitchEntry obj = new SwitchEntry();
+			obj.setType(SwitchEntry.Type.valueOf(attributes.getType().toString()));
+			if (!attributes.isDefault()) {
+				obj.setLabels(attributes.getCondition());
+			}
+			
+			if(p instanceof SwitchStmt) {
+				NodeList<SwitchEntry> entries = ((SwitchStmt) p).getEntries();
+				entries.add(obj);
+				((SwitchStmt) p).setEntries(entries);
+			}
+				
 			jpNode = obj;
 		} else if (n.getNodeType().equals(SwitchExpr.class.getSimpleName())) {
 			SwitchExpr obj = new SwitchExpr();
 			jpNode = obj;
 		} else if (n.getNodeType().equals(SwitchStmt.class.getSimpleName())) {
 			SwitchStmt obj = new SwitchStmt();
+			obj.setSelector(attributes.getSelector());
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(SynchronizedStmt.class.getSimpleName())) {
 			SynchronizedStmt obj = new SynchronizedStmt();
