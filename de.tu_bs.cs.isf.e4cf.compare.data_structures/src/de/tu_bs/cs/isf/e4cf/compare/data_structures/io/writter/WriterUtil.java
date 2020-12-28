@@ -53,11 +53,15 @@ public class WriterUtil {
 			obj.setDefaultValue(attributes.getValue());
 			jpNode = obj;
 		} else if (n.getNodeType().startsWith(JavaNodeTypes.Argument.name())) {
-			if (p != null && !attributes.getName().isEmpty()) {
+			if (p != null) {
 				if (attributes.getType() != null) {
 					((NodeWithParameters) p).addParameter(attributes.getType(), attributes.getName());
 				} else {
-					((NodeWithArguments) p).addArgument(attributes.getName());
+					if (!attributes.getName().isEmpty()) {
+						((NodeWithArguments) p).addArgument(attributes.getName());
+					} else if (attributes.getValue() != null) {
+						((NodeWithArguments) p).addArgument(attributes.getValue());
+					}
 				}
 			}
 		} else if (n.getNodeType().equals(ArrayAccessExpr.class.getSimpleName())) {
