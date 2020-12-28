@@ -128,6 +128,12 @@ public class ProjectExplorerToolBarController {
 			}
 		});
 		
+		// Switch between hierarchical and flat view
+		Button btnToggleView = createToolbarButton("Toggle View", "", actionEvent -> {
+			services.eventBroker.send(E4CEventTable.EVENT_VIEW_TOGGLE, null);
+		});
+		// TODO Image Magic
+		
 
 		update();
 	}

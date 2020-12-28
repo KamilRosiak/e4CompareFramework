@@ -39,6 +39,8 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
@@ -64,7 +66,7 @@ public class ProjectExplorerViewController {
 	public TreeView<FileTreeElement> projectTree;
 	@FXML
 	public ToolBar projectToolbar;
-	
+
 	// E4 Injections
 	@Inject
 	private ServiceContainer services;
@@ -80,8 +82,10 @@ public class ProjectExplorerViewController {
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
 	private ProjectExplorerToolBarController toolbarController;
+
 	private String filter = "";
-	private Boolean isFlatView;
+	private boolean isFlatView = false;
+	private HashMap<String, Boolean> expansionState = new HashMap<String, Boolean>();
 
 	/**
 	 * This method is equivalent to the previous postContruct(), in that it sets up
@@ -89,14 +93,12 @@ public class ProjectExplorerViewController {
 	 */
 	public void initializeView(IEclipseContext context, WorkspaceFileSystem fileSystem, FXCanvas canvas) {
 
-		isFlatView = false;
-
 		getContributions();
 
 		// Structure of Directories representing a Tree
 		FileTreeElement treeRoot = initializeInput(fileSystem);
 
-		TreeItem<FileTreeElement> root = buildTree(treeRoot, true, null);
+		TreeItem<FileTreeElement> root = buildTree(treeRoot);
 
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
@@ -126,15 +128,18 @@ public class ProjectExplorerViewController {
 				return treeCell;
 			}
 		});
-		
 
 		// Handoff Toolbar
-		toolbarController = new ProjectExplorerToolBarController(projectToolbar, services, canvas.getParent().getShell());
-		
+		toolbarController = new ProjectExplorerToolBarController(projectToolbar, services,
+				canvas.getParent().getShell());
+
 	}
 
-	// TODO DOC
-	private TreeItem<FileTreeElement> buildTree(FileTreeElement node, boolean isRoot, HashMap<String, Boolean> state) {
+	/**
+	 * Calls the correct tree building function depending on the project explorer
+	 * state (isFlatView)
+	 */
+	private TreeItem<FileTreeElement> buildTree(FileTreeElement node) {
 
 		TreeItem<FileTreeElement> rootNode = null;
 
@@ -142,7 +147,7 @@ public class ProjectExplorerViewController {
 			rootNode = buildFlatTree(node, true, null);
 			rootNode.getChildren().sort(Comparator.comparing(t -> t.toString()));
 		} else {
-			rootNode = buildHierachialTree(node, true, state);
+			rootNode = buildHierachialTree(node, true);
 		}
 
 		return rootNode;
@@ -153,23 +158,32 @@ public class ProjectExplorerViewController {
 	 * 
 	 * @param parentNode The parent node
 	 * @param isRoot     true if a given node is a root node
-	 * @param state      maps the expanded status for each node in the tree
 	 * @return a new tree item
 	 */
-	private TreeItem<FileTreeElement> buildHierachialTree(FileTreeElement parentNode, boolean isRoot,
-			HashMap<String, Boolean> state) {
+	private TreeItem<FileTreeElement> buildHierachialTree(FileTreeElement parentNode, boolean isRoot) {
 
 		Node imgNode = isRoot ? null : getImage(parentNode);
 
 		parentNode.setDisplayLongPath(false);
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
-		if (state != null && state.containsKey(currentNode.getValue().getAbsolutePath())) {
-			currentNode.setExpanded(state.get(currentNode.getValue().getAbsolutePath()));
+
+		// Update our tree expansion state when a node's expansion state changes
+		currentNode.expandedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				expansionState.put(currentNode.getValue().getAbsolutePath(), currentNode.isExpanded());
+			}
+		});
+
+		// Apply previous tree expansion state
+		if (expansionState != null && expansionState.containsKey(currentNode.getValue().getAbsolutePath())) {
+			currentNode.setExpanded(expansionState.get(currentNode.getValue().getAbsolutePath()));
 		}
 
 		for (FileTreeElement child : parentNode.getChildren()) {
-			TreeItem<FileTreeElement> node = buildHierachialTree(child, false, state);
-			if (filter.equals("") || node.getValue().getRelativePath().contains(filter) || !node.getChildren().isEmpty())
+			TreeItem<FileTreeElement> node = buildHierachialTree(child, false);
+			if (filter.equals("") || node.getValue().getRelativePath().contains(filter)
+					|| !node.getChildren().isEmpty())
 				currentNode.getChildren().add(node);
 		}
 
@@ -198,7 +212,8 @@ public class ProjectExplorerViewController {
 
 		for (FileTreeElement child : parentNode.getChildren()) {
 			TreeItem<FileTreeElement> node = buildFlatTree(child, false, rootNode);
-			if (filter.equals("") || node.getValue().getRelativePath().contains(filter) || !node.getChildren().isEmpty())
+			if (filter.equals("") || node.getValue().getRelativePath().contains(filter)
+					|| !node.getChildren().isEmpty())
 				rootNode.getChildren().add(node);
 		}
 
@@ -273,74 +288,47 @@ public class ProjectExplorerViewController {
 		return workspaceFileSystem.getWorkspaceDirectory();
 	}
 
-	/**
-	 * Rebuild the project explorer and update it's view.
-	 * 
-	 */
+	/** Rebuild the project explorer and update it's view. */
 	@Inject
 	@Optional
 	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Object o) {
 
-		HashMap<String, Boolean> oldTreeState = null;
-
-		if (!isFlatView) {
-			oldTreeState = new HashMap<String, Boolean>();
-			traverseTree(projectTree.getRoot(), oldTreeState);
-		}
-
 		projectTree.getSelectionModel().getSelectedItems().removeListener(changeListener);
-		TreeItem<FileTreeElement> root = buildTree(projectTree.getRoot().getValue(), true, oldTreeState);
+		TreeItem<FileTreeElement> root = buildTree(projectTree.getRoot().getValue());
 
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
 		projectTree.getSelectionModel().getSelectedItems().addListener(changeListener);
 	}
 
-	/**
-	 * Subscribing on the rename event
-	 */
+	/** Subscribing on the rename event */
 	@Inject
 	@Optional
 	public void rename(@UIEventTopic(E4CEventTable.EVENT_RENAME_PROJECT_EXPLORER_ITEM) Object o) {
 		projectTree.edit(projectTree.getSelectionModel().getSelectedItem());
 	}
-	
-	/**
-	 * Subscribing on filter / search change
-	 * 
-	 */
+
+	/** Subscribing on filter / search change */
 	@Inject
 	@Optional
 	public void filter(@UIEventTopic(E4CEventTable.EVENT_FILTER_CHANGED) Object o) {
 		if (o instanceof String) {
-			filter = (String)o;
+			filter = (String) o;
 		} else {
 			filter = "";
 		}
 		services.eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
 	}
 
-	/**
-	 * Traverse the filesystem tree via dfs to save the old state of each node
-	 * 
-	 * @param parentNode The parent node
-	 * @param state      maps the expanded status for each node in the tree
-	 */
-	private void traverseTree(TreeItem<FileTreeElement> parentNode, HashMap<String, Boolean> state) {
-
-		/*
-		 * put current element in hashmap with state
-		 */
-		state.put(parentNode.getValue().getAbsolutePath(), parentNode.isExpanded());
-
-		for (TreeItem<FileTreeElement> child : parentNode.getChildren()) {
-			traverseTree(child, state);
-		}
+	/** Subscribing on toggling hierarchical / flat view */
+	@Inject
+	@Optional
+	public void toggleView(@UIEventTopic(E4CEventTable.EVENT_VIEW_TOGGLE) Object o) {
+		isFlatView = !isFlatView;
+		services.eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
 	}
 
-	/**
-	 * Sets up the selection service via a ChangeListener on the projectTree
-	 */
+	/** Sets up the selection service via a ChangeListener on the projectTree */
 	private void setupSelectionService() {
 		// Set no initial selection
 		StructuredSelection structuredSelection = new StructuredSelection(
@@ -352,7 +340,6 @@ public class ProjectExplorerViewController {
 
 		// Add a SelectionListener to tree to propagate the selection that is done in
 		// the tree
-
 		changeListener = new ListChangeListener<TreeItem<FileTreeElement>>() {
 
 			@Override

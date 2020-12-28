@@ -12,5 +12,6 @@ public class E4CEventTable {
 
 	public static final String EVENT_RENAME_PROJECT_EXPLORER_ITEM = "EVENT_RENAME_PROJECT_EXPLORER_ITEM";
 	
-	public static final String EVENT_FILTER_CHANGED = "EVENT_FILTER_CHANGED"; 
+	public static final String EVENT_FILTER_CHANGED = "EVENT_FILTER_CHANGED";
+	public static final String EVENT_VIEW_TOGGLE = "EVENT_VIEW_TOGGLE";
 }
