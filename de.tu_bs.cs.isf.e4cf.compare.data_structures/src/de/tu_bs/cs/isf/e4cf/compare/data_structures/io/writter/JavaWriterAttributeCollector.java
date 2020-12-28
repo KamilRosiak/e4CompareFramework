@@ -129,7 +129,7 @@ public class JavaWriterAttributeCollector {
 				_message = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Modifier.name())) {
 				attribute.getAttributeValues()
-						.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf(singleVal))));
+						.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf(val))));
 			} else if (key.equals(JavaAttributesTypes.Name.name())) {
 				_name = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Operator.name())) {
