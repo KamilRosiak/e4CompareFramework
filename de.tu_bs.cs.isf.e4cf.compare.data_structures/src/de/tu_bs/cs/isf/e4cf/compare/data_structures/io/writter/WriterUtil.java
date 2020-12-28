@@ -13,8 +13,24 @@ import com.github.javaparser.ast.type.*;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.*;
 
+/**
+ * 
+ * @author Serkan Acar
+ * @author Pascal Blum
+ * @author Paulo Haas
+ * @author Hassan Smaoui
+ *
+ */
 public class WriterUtil {
-	public static com.github.javaparser.ast.Node visitWriter(Node n, com.github.javaparser.ast.Node p)
+	/**
+	 * Converts a framework node and it's children to a JavaParser node
+	 * 
+	 * @param n Framework node
+	 * @param p is the parent node of n's equivalent JavaParserNode. This can be null.
+	 * @return n as JavaParser node
+	 * @throws UnsupportedOperationException if an attribute, node type etc. is not supported.
+	 */
+	public static /*@ nullable @*/ com.github.javaparser.ast.Node visitWriter(Node n, /*@ nullable @*/ com.github.javaparser.ast.Node p)
 			throws UnsupportedOperationException {
 		com.github.javaparser.ast.Node jpNode = null;
 
