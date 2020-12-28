@@ -54,15 +54,13 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().startsWith(JavaNodeTypes.Argument.name())) {
 			if (p != null) {
-				if (attributes.getType() != null) {
-					((NodeWithParameters) p).addParameter(attributes.getType(), attributes.getName());
-				} else {
-					if (!attributes.getName().isEmpty()) {
-						((NodeWithArguments) p).addArgument(attributes.getName());
-					} else if (attributes.getValue() != null) {
-						((NodeWithArguments) p).addArgument(attributes.getValue());
-					}
-				}
+				// Do nothing, e.g. parent of concrete arg was arg
+			} else if (attributes.getType() != null) {
+				((NodeWithParameters) p).addParameter(attributes.getType(), attributes.getName());
+			} else if (!attributes.getName().isEmpty()) {
+				((NodeWithArguments) p).addArgument(attributes.getName());
+			} else if (attributes.getValue() != null) {
+				((NodeWithArguments) p).addArgument(attributes.getValue());
 			}
 		} else if (n.getNodeType().equals(ArrayAccessExpr.class.getSimpleName())) {
 			ArrayAccessExpr obj = new ArrayAccessExpr();
@@ -345,11 +343,11 @@ public class WriterUtil {
 			UnaryExpr obj = new UnaryExpr();
 			obj.setExpression(attributes.getName());
 			obj.setOperator(attributes.getOperator());
-			
+
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			}
-			
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(UnionType.class.getSimpleName())) {
 			UnionType obj = new UnionType();
