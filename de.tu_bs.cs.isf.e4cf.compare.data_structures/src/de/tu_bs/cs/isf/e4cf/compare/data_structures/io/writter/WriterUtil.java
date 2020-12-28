@@ -67,7 +67,7 @@ public class WriterUtil {
 				((NodeWithArguments) p).addArgument(attributes.getName());
 			} else if (attributes.getValue() != null) {
 				((NodeWithArguments) p).addArgument(attributes.getValue());
-			} else if (attributes.getChildren() == 0){
+			} else if (attributes.getChildren() == 0) {
 				for (Node nChild : n.getChildren()) {
 					com.github.javaparser.ast.Node jpChild = visitWriter(nChild, null);
 
@@ -83,7 +83,7 @@ public class WriterUtil {
 			ArrayAccessExpr obj = new ArrayAccessExpr();
 			obj.setIndex(attributes.getValue());
 			obj.setName(StaticJavaParser.parseExpression(attributes.getName()));
-			
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ArrayCreationExpr.class.getSimpleName())) {
 			ArrayCreationExpr obj = new ArrayCreationExpr();
@@ -103,6 +103,11 @@ public class WriterUtil {
 			AssertStmt obj = new AssertStmt();
 			obj.setCheck(attributes.getCheck());
 			obj.setMessage(attributes.getMessage());
+
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(JavaNodeTypes.Assignment.name())) {
 			AssignExpr obj = new AssignExpr();
