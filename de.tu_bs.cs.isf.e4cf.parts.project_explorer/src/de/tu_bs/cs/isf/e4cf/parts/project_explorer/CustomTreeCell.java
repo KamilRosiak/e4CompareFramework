@@ -191,7 +191,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	}
 
 	private void setupEditTextField() {
-		editTextField = new TextField(getItem().toString());
+		editTextField = new TextField(getItem().getFileName());
 		editTextField.selectAll();
 		editTextField.setOnKeyReleased((KeyEvent event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
