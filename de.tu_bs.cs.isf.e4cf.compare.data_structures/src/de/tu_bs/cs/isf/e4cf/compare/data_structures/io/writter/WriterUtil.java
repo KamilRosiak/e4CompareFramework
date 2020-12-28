@@ -56,7 +56,7 @@ public class WriterUtil {
 			obj.setDefaultValue(attributes.getValue());
 			jpNode = obj;
 		} else if (n.getNodeType().startsWith(JavaNodeTypes.Argument.name())) {
-			if (p != null) {
+			if (p == null) {
 				// Do nothing, e.g. parent of concrete arg was arg
 			} else if (attributes.getType() != null) {
 				((NodeWithParameters) p).addParameter(attributes.getType(), attributes.getName());
