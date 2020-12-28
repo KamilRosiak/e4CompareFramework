@@ -54,7 +54,10 @@ public class WriterUtil {
 			if (p instanceof CompilationUnit) {
 				CompilationUnit cu = (CompilationUnit) p;
 				cu.addType(coid);
+				
+				if (!attributes.getPackage().isEmpty()) {
 				cu.setPackageDeclaration(attributes.getPackage());
+				}
 			} else {
 				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
 						+ ". Expected: " + CompilationUnit.class.getSimpleName());
@@ -144,6 +147,8 @@ public class WriterUtil {
 				((NodeWithBlockStmt) p).setBody(obj);
 			} else if (p instanceof NodeWithBody) {
 				((NodeWithBody) p).setBody(obj);
+			} else if (p instanceof TryStmt) {
+				((TryStmt) p).setTryBlock(obj);
 			}
 			jpNode = obj;
 		} else if (n.getNodeType().equals(BooleanLiteralExpr.class.getSimpleName())) {
@@ -170,6 +175,13 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(CatchClause.class.getSimpleName())) {
 			CatchClause obj = new CatchClause();
+			
+			if (p instanceof TryStmt) {
+				NodeList<CatchClause> clauses = ((TryStmt) p).getCatchClauses();
+				clauses.add(obj);
+				((TryStmt) p).setCatchClauses(clauses);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(CharLiteralExpr.class.getSimpleName())) {
 			CharLiteralExpr obj = new CharLiteralExpr();
@@ -342,6 +354,13 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(Parameter.class.getSimpleName())) {
 			Parameter obj = new Parameter();
+			obj.setType(attributes.getType());
+			obj.setName(attributes.getName());
+			
+			if (p instanceof CatchClause) {
+				((CatchClause) p).setParameter(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(PrimitiveType.class.getSimpleName())) {
 			PrimitiveType obj = new PrimitiveType();
@@ -401,6 +420,11 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(TryStmt.class.getSimpleName())) {
 			TryStmt obj = new TryStmt();
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(TypeExpr.class.getSimpleName())) {
 			TypeExpr obj = new TypeExpr();
