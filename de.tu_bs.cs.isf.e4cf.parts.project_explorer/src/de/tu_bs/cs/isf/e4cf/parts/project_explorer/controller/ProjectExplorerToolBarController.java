@@ -36,6 +36,7 @@ public class ProjectExplorerToolBarController {
 	private Button btnImportFiles;
 	private Button btnDelete;
 	private Button btnShowExplorer;
+	boolean isFlatView = false;
 
 	/**
 	 * Fills the toolbar with Buttons performing project explorer related actions.
@@ -129,10 +130,21 @@ public class ProjectExplorerToolBarController {
 		});
 		
 		// Switch between hierarchical and flat view
-		Button btnToggleView = createToolbarButton("Toggle View", "", actionEvent -> {
+		ImageView flatViewImage = services.imageService.getFXImage(null, FileTable.FLAT_VIEW_PNG);
+		ImageView hierViewImage = services.imageService.getFXImage(null, FileTable.HIERARCICAL_VIEW_PNG);
+		Button btnToggleView = new Button("", flatViewImage);
+		btnToggleView.setTooltip(new Tooltip("Change Representation"));
+		btnToggleView.setOnAction(actionEvent -> {
+			isFlatView = !isFlatView;
 			services.eventBroker.send(E4CEventTable.EVENT_VIEW_TOGGLE, null);
+			
+			if (isFlatView) {
+				btnToggleView.setGraphic(hierViewImage);
+			} else {
+				btnToggleView.setGraphic(flatViewImage);
+			}
 		});
-		// TODO Image Magic
+		bar.getItems().add(btnToggleView);
 		
 
 		update();
