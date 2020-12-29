@@ -85,4 +85,16 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 		}
 		con.close();
 	}
+	
+	@Override
+	public void deleteData(String pPath, String pDbName, String pTableName, Condition condition)throws SQLException{
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		Statement stm = con.createStatement();
+		String sql = "DELETE FROM " + pTableName + wCondition(condition);
+		System.out.println(sql);
+		ResultSet rs = stm.executeQuery(sql);
+		
+		con.close();
+		
+	}
 }

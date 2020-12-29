@@ -28,19 +28,20 @@ public class Test {
 
 		DataServiceImp ds = new DataServiceImp();
 
-	//	DatabaseFactory.getInstance().createDatabase(DATABASEPATH, DATABASENAME);
-
-	//	c.createTable(DATABASEPATH, DATABASENAME, TABLEENAME, c1, c2, c3);
+		//DatabaseFactory.getInstance().createDatabase(DATABASEPATH, DATABASENAME);
+		//DatabaseFactory.getInstance().deleteDatabase(DATABASEPATH, DATABASENAME);
+		//c.createTable(DATABASEPATH, DATABASENAME, TABLEENAME, c1, c2, c3);
 		
 		ColumnValue cv = new ColumnValue(c2.getName(), new String("Rami"));
-		ColumnValue cv2 = new ColumnValue(c2.getName(),new String("'xx'"));
+		ColumnValue cv2 = new ColumnValue(c2.getName(),new String("xx"));
 		ColumnValue cv3 = new ColumnValue(c3.getName(),"23");
-		Condition cd = new Condition("or",cv,cv2);
+		Condition cd = new Condition(" ",cv);
 
 		//c.makeColumnAutoIncrement(DATABASEPATH, DATABASENAME, TABLEENAME, "id");
-	//	ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(25)),cv);
-	//	ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(24)),cv2);
-		ds.updateData(DATABASEPATH, DATABASENAME, TABLEENAME, cd, cv3);
+		ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(25)),cv);
+		ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(24)),cv2);
+		//ds.updateData(DATABASEPATH, DATABASENAME, TABLEENAME, cd, cv3);
+		ds.deleteData(DATABASEPATH, DATABASENAME, TABLEENAME, cd);
 	}
 
 }

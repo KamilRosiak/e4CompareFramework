@@ -70,4 +70,14 @@ public interface IDataService {
 	 */
 	public void selectData(String pPath, String pDbName, String pTableName, String attribute, Condition condition,
 			Sorting sort) throws SQLException;
+	/**
+	 * Method to delete data from a table
+	 * 
+	 * @param pPath
+	 * @param pDbName
+	 * @param pTableName
+	 * @param condition
+	 * @throws SQLException
+	 */
+	public void deleteData(String pPath, String pDbName, String pTableName, Condition condition)throws SQLException;
 }
