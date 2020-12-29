@@ -170,9 +170,33 @@ public class TreeViewController {
 
 	}
 
+	/**
+	 * 
+	 */
 	@FXML
 	void renameNode() {
-		TreeItem<NodeUsage> renamingNode = treeView.getSelectionModel().getSelectedItem();
+		treeView.getSelectionModel().getSelectedItem()
+				.setValue(new NodeUsage("NNNN", treeView.getSelectionModel().getSelectedItem().getParent().getValue()));
 
+	}
+
+	/**
+	 * 
+	 */
+	@FXML
+	void addChild() {
+		TreeItem<NodeUsage> treeV = new TreeItem<NodeUsage>();
+		treeV.setValue(new NodeUsage("llllOOLLL"));
+		treeView.getSelectionModel().getSelectedItem().getChildren().add(treeV);
+	}
+
+	/**
+	 * 
+	 */
+	@FXML
+	void copy() {
+		TreeItem<NodeUsage> copiedNode = treeView.getSelectionModel().getSelectedItem();
+		System.out.println(copiedNode + "sdhfg");
+		System.out.println(treeView.getSelectionModel().getSelectedItem());
 	}
 }
