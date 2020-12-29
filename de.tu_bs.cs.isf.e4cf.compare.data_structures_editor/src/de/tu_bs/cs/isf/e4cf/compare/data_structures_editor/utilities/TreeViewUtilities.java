@@ -8,6 +8,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeUsage;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -88,6 +89,16 @@ public final class TreeViewUtilities {
 	}
 	public static void clearSearchList() {
 		searchList.clear();
+	}
+	
+	public static String getInput() {
+		TextInputDialog td = new TextInputDialog("Enter new value");
+		td.showAndWait();
+		String s = td.getEditor().getText();
+		if(s.equals("Enter new value") || s.equals("") || s.equals(null)) {
+			throw new NullPointerException();
+		}		
+		return s;
 	}
 
 }

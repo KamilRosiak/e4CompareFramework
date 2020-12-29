@@ -52,5 +52,7 @@ public class PropertiesController {
 		propertiesTable.getColumns().clear();
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 	}
+	
+	
 
 }

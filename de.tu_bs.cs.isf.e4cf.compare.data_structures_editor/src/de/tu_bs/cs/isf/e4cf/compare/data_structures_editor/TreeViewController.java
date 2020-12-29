@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -7,6 +8,8 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
@@ -14,10 +17,12 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.VBox;
@@ -61,6 +66,11 @@ public class TreeViewController {
 	private int searchCounter = 0;
 	
 	private String currentSearchText;
+	
+	private TreeItem<NodeUsage> copiedNode;
+	
+	@FXML
+	private ContextMenu contextMenu;
 
 	/**
 	 * switching View to TreeView if a .txt file is selected from the explorer
@@ -176,7 +186,6 @@ public class TreeViewController {
 		treeView.getSelectionModel().getSelectedItem().setValue(null);
 		treeView.getSelectionModel().getSelectedItem().setGraphic(null);
 		deletingNode.getParent().getChildren().remove(deletingNode);
-
 	}
 
 	/**
@@ -184,9 +193,20 @@ public class TreeViewController {
 	 */
 	@FXML
 	void renameNode() {
-		treeView.getSelectionModel().getSelectedItem()
-				.setValue(new NodeUsage("NNNN", treeView.getSelectionModel().getSelectedItem().getParent().getValue()));
-
+		contextMenu.hide();
+		List<Attribute> attributeList = new ArrayList<Attribute>();
+		try {
+			attributeList.add(new AttributeImpl("TEXT", TreeViewUtilities.getInput()));
+		} catch (NullPointerException e) {
+			return;
+		}
+		List<Attribute> currentAttributeList = treeView.getSelectionModel().getSelectedItem().getValue().getAttributes();
+		currentAttributeList.remove(0);
+		attributeList.addAll(currentAttributeList);
+		treeView.getSelectionModel().getSelectedItem().getValue().setAttributes(attributeList);
+		treeView.refresh();
+		services.eventBroker.send("nodePropertiesEvent",
+				treeView.getSelectionModel().getSelectedItem().getValue());
 	}
 
 	/**
@@ -194,9 +214,15 @@ public class TreeViewController {
 	 */
 	@FXML
 	void addChild() {
-		TreeItem<NodeUsage> treeV = new TreeItem<NodeUsage>();
-		treeV.setValue(new NodeUsage("llllOOLLL"));
-		treeView.getSelectionModel().getSelectedItem().getChildren().add(treeV);
+		TreeItem<NodeUsage> newChild = new TreeItem<NodeUsage>();
+		newChild.setValue(new NodeUsage("DummyNode"));
+		contextMenu.hide();
+		try {
+			newChild.getValue().addAttribute("TEXT", TreeViewUtilities.getInput());
+		} catch (NullPointerException e) {
+			return;
+		}
+		treeView.getSelectionModel().getSelectedItem().getChildren().add(newChild);
 	}
 
 	/**
@@ -204,8 +230,18 @@ public class TreeViewController {
 	 */
 	@FXML
 	void copy() {
-		TreeItem<NodeUsage> copiedNode = treeView.getSelectionModel().getSelectedItem();
-		System.out.println(copiedNode + "sdhfg");
-		System.out.println(treeView.getSelectionModel().getSelectedItem());
+		copiedNode = treeView.getSelectionModel().getSelectedItem();
 	}
+	
+	@FXML
+	void paste() {
+		try {
+			TreeItem<NodeUsage> t = new TreeItem<NodeUsage>();
+			t.setValue(copiedNode.getValue());
+			treeView.getSelectionModel().getSelectedItem().getParent().getChildren().add(treeView.getSelectionModel().getSelectedIndex(), t);
+		} catch(NullPointerException e) {
+			System.out.println(e);
+		}
+	}
+	
 }
