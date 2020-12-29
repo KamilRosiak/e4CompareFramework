@@ -39,8 +39,6 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
@@ -168,11 +166,8 @@ public class ProjectExplorerViewController {
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
 
 		// Update our tree expansion state when a node's expansion state changes
-		currentNode.expandedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				expansionState.put(currentNode.getValue().getAbsolutePath(), currentNode.isExpanded());
-			}
+		currentNode.expandedProperty().addListener(changeListener -> {
+			expansionState.put(currentNode.getValue().getAbsolutePath(), currentNode.isExpanded());
 		});
 
 		// Apply previous tree expansion state

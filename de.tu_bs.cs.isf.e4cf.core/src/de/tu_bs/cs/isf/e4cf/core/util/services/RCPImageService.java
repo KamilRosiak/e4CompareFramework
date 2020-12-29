@@ -93,8 +93,7 @@ public class RCPImageService {
 	/**
 	 * This method returns a FX ImageView (Node) from his description it uses {@link getImageDescriptor()}.
 	 * @param bundleName the bundle name of the image.
-	 * @param imagePath the path within the bundle.
-	 * @param imageFileName the name of the image with extension.
+	 * @param imagePath the path within the bundle containing filename and extension
 	 * @return
 	 */
 	public ImageView getFXImage(String bundleName, String imagePath) {

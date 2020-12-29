@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 
-
 import org.eclipse.swt.widgets.Shell;
 
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
@@ -20,9 +19,9 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 
 /**
- * Fills and handles the ProjectExplorer Toolbar.
- * Please note that the use of FX Accelerators as shortcuts is discouraged as FX <13 consumes their KeyCombos application wide
- * and this is not desired behavior.
+ * Fills and handles the ProjectExplorer Toolbar. Please note that the use of FX
+ * Accelerators as shortcuts is discouraged as FX <13 consumes their KeyCombos
+ * application wide and this is not desired behavior.
  */
 public class ProjectExplorerToolBarController {
 
@@ -36,13 +35,17 @@ public class ProjectExplorerToolBarController {
 	private Button btnImportFiles;
 	private Button btnDelete;
 	private Button btnShowExplorer;
-	boolean isFlatView = false;
+
+	private boolean isFlatView = false;
 
 	/**
 	 * Fills the toolbar with Buttons performing project explorer related actions.
-	 * @param toolbar The FXML Toolbar Object defined in UI
-	 * @param services The ServiceContainer that holds all e4c Services, required for some handlers
-	 * @param shell The current UI Shell passed on from the ViewController's Parent, required for some handlers
+	 * 
+	 * @param toolbar  The FXML Toolbar Object defined in UI
+	 * @param services The ServiceContainer that holds all e4c Services, required
+	 *                 for some handlers
+	 * @param shell    The current UI Shell passed on from the ViewController's
+	 *                 Parent, required for some handlers
 	 */
 	public ProjectExplorerToolBarController(ToolBar toolbar, ServiceContainer services, Shell shell) {
 		bar = toolbar;
@@ -57,17 +60,18 @@ public class ProjectExplorerToolBarController {
 
 		ImageView searchImage = services.imageService.getFXImage(null, FileTable.SEARCH_PNG);
 		Tooltip searchTooltip = new Tooltip("Search Files");
-		ImageView xImage = services.imageService.getFXImage(null, FileTable.X_PNG);
+		ImageView closeSearchImage = services.imageService.getFXImage(null, FileTable.X_PNG);
 		Tooltip closeSearchTooltip = new Tooltip("Exit Search");
 		Button searchButton = new Button("", searchImage);
 		searchButton.setTooltip(searchTooltip);
 		searchButton.setOnAction(actionEvent -> {
 			search.setVisible(!search.isVisible());
-			// Removing and readding the search bar allows automatic resizing
+			// Removing and adding the search bar allows automatic resizing
 			if (search.isVisible()) {
-				searchButton.setGraphic(xImage);
+				searchButton.setGraphic(closeSearchImage);
 				searchButton.setTooltip(closeSearchTooltip);
 				bar.getItems().add(1, search);
+				search.requestFocus();
 			} else {
 				searchButton.setGraphic(searchImage);
 				searchButton.setTooltip(searchTooltip);
@@ -81,7 +85,8 @@ public class ProjectExplorerToolBarController {
 
 		bar.getItems().add(new Separator());
 
-		// Command Actions TODO to enable these buttons command stack systems are required Task #34
+		// Command Actions TODO to enable these buttons command stack systems are
+		// required Task #34
 		btnUndo = createToolbarButton("Undo", FileTable.UNDO_PNG, actionEvent -> {
 			System.out.println("Undo");
 		});
@@ -106,29 +111,30 @@ public class ProjectExplorerToolBarController {
 
 		// Import Files
 		btnImportFiles = createToolbarButton("Import Files", FileTable.FILE_PNG, actionEvent -> {
-			FileImportHandler h = new FileImportHandler();
-			if (h.canExecute(services.rcpSelectionService)) {
-				h.execute(services.imageService, services.dialogService, services.rcpSelectionService, shell,
+			FileImportHandler handler = new FileImportHandler();
+			if (handler.canExecute(services.rcpSelectionService)) {
+				handler.execute(services.imageService, services.dialogService, services.rcpSelectionService, shell,
 						services.workspaceFileSystem);
 			}
 		});
 
 		// Delete
-		btnDelete = createToolbarButton("Delete Selected Files", FileTable.DELETE_PNG, actionEvent -> {
-			RemoveFileCommand h = new RemoveFileCommand();
-			if (h.canExecute(services.rcpSelectionService)) {
-				h.execute(shell, services.rcpSelectionService, services.imageService, services.workspaceFileSystem);
+		btnDelete = createToolbarButton("Delete Selected Entries", FileTable.DELETE_PNG, actionEvent -> {
+			RemoveFileCommand handler = new RemoveFileCommand();
+			if (handler.canExecute(services.rcpSelectionService)) {
+				handler.execute(shell, services.rcpSelectionService, services.imageService,
+						services.workspaceFileSystem);
 			}
 		});
 
 		// Show in Explorer
 		btnShowExplorer = createToolbarButton("Show in Explorer", FileTable.EXPLORER_PNG, actionEvent -> {
-			ShowInExplorerHandler h = new ShowInExplorerHandler();
-			if (h.canExecute(services.rcpSelectionService)) {
-				h.execute(services.rcpSelectionService);
+			ShowInExplorerHandler handler = new ShowInExplorerHandler();
+			if (handler.canExecute(services.rcpSelectionService)) {
+				handler.execute(services.rcpSelectionService);
 			}
 		});
-		
+
 		// Switch between hierarchical and flat view
 		ImageView flatViewImage = services.imageService.getFXImage(null, FileTable.FLAT_VIEW_PNG);
 		ImageView hierViewImage = services.imageService.getFXImage(null, FileTable.HIERARCICAL_VIEW_PNG);
@@ -137,7 +143,7 @@ public class ProjectExplorerToolBarController {
 		btnToggleView.setOnAction(actionEvent -> {
 			isFlatView = !isFlatView;
 			services.eventBroker.send(E4CEventTable.EVENT_VIEW_TOGGLE, null);
-			
+
 			if (isFlatView) {
 				btnToggleView.setGraphic(hierViewImage);
 			} else {
@@ -145,17 +151,16 @@ public class ProjectExplorerToolBarController {
 			}
 		});
 		bar.getItems().add(btnToggleView);
-		
 
 		update();
 	}
-	
-	
+
 	/**
 	 * Creates an FX Button and adds it to the toolbar.
-	 * @param tooltip The Tooltip to be displayed
+	 * 
+	 * @param tooltip   The Tooltip to be displayed
 	 * @param imagePath Path to a 16px Image, ideally via FileTable
-	 * @param value The Action to be performed once the button is clicked
+	 * @param value     The Action to be performed once the button is clicked
 	 * @return The created button
 	 */
 	private Button createToolbarButton(String tooltip, String imagePath, EventHandler<ActionEvent> value) {
@@ -172,7 +177,7 @@ public class ProjectExplorerToolBarController {
 		// Command Buttons are currently UI Placeholders TODO #34
 		btnRedo.setDisable(true);
 		btnUndo.setDisable(true);
-		
+
 		// NewFolder
 		NewFolderHandler nfh = new NewFolderHandler();
 		btnNewFolder.setDisable(!nfh.canExecute(services.rcpSelectionService));
@@ -186,8 +191,8 @@ public class ProjectExplorerToolBarController {
 		btnDelete.setDisable(!rmc.canExecute(services.rcpSelectionService));
 
 		// Show in Explorer
-		ShowInExplorerHandler h = new ShowInExplorerHandler();
-		btnShowExplorer.setDisable(!h.canExecute(services.rcpSelectionService));
+		ShowInExplorerHandler seh = new ShowInExplorerHandler();
+		btnShowExplorer.setDisable(!seh.canExecute(services.rcpSelectionService));
 
 	}
 
