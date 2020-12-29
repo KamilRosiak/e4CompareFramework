@@ -9,8 +9,6 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.RecursiveCopyOptionsController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
@@ -25,7 +23,7 @@ public class ChooseRecursiveCopyOptionPage extends WizardPage {
 	private boolean copyRecursivly = true;
 
 	public ChooseRecursiveCopyOptionPage(String pageName, IEclipseContext context) {
-		super(pageName);
+		super(pageName, pageName, null);
 		this.context = context;
 	}
 
@@ -40,14 +38,11 @@ public class ChooseRecursiveCopyOptionPage extends WizardPage {
 
 		loader.getController().toggleGroup();
 
-		loader.getController().recursiveRB.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> obs, Boolean wasPreviouslySelected,
-					Boolean isNowSelected) {
-				copyRecursivly = isNowSelected;
-				update();
-			}
-		});
+		loader.getController().recursiveRB.selectedProperty()
+				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+					copyRecursivly = isNowSelected;
+					update();
+				});
 
 		setControl(canvas);
 	}

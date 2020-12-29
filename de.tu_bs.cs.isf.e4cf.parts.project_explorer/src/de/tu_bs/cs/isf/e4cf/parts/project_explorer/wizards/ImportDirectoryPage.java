@@ -9,8 +9,6 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CopyDirectoryController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
@@ -25,7 +23,7 @@ public class ImportDirectoryPage extends WizardPage {
 	private boolean copyEmptyFolder = true;
 
 	public ImportDirectoryPage(String pageName, IEclipseContext context) {
-		super(pageName);
+		super(pageName, pageName, null);
 		this.context = context;
 	}
 
@@ -38,15 +36,11 @@ public class ImportDirectoryPage extends WizardPage {
 
 		canvas.setScene(scene);
 
-		loader.getController().copyEmptyRB.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> obs, Boolean wasPreviouslySelected,
-					Boolean isNowSelected) {
-				copyEmptyFolder = isNowSelected;
-
-				update();
-			}
-		});
+		loader.getController().copyEmptyRB.selectedProperty()
+				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+					copyEmptyFolder = isNowSelected;
+					update();
+				});
 
 		loader.getController().toggleGroup();
 
