@@ -17,6 +17,8 @@ import javafx.scene.control.TreeView;
  *
  */
 public final class TreeViewUtilities {
+	
+	static List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
 
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
@@ -68,18 +70,24 @@ public final class TreeViewUtilities {
 	 * @return
 	 */
 	public static List<TreeItem<NodeUsage>> searchTreeItem(TreeItem<NodeUsage> item, String name) {
-		List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
 		if (item.getValue().toString().contains(name)) {
 			searchList.add(item);
 		}
 		List<TreeItem<NodeUsage>> result = new ArrayList<TreeItem<NodeUsage>>();
 		for (TreeItem<NodeUsage> child : item.getChildren()) {
 			result.addAll(searchTreeItem(child, name));
-			if (result != null) {
+			if (result.size() < 1) {
 				searchList.addAll(result);
 			}
 		}
 		return searchList;
+	}
+	
+	public static List<TreeItem<NodeUsage>> getSearchList() {
+		return searchList;
+	}
+	public static void clearSearchList() {
+		searchList.clear();
 	}
 
 }
