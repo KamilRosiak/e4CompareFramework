@@ -1,9 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.core.db;
 
+import de.tu_bs.cs.isf.e4cf.core.db.model.AddCondition;
 import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
 import de.tu_bs.cs.isf.e4cf.core.db.model.Sorting;
 import de.tu_bs.cs.isf.e4cf.core.db.model.ColumnValue;
 import de.tu_bs.cs.isf.e4cf.core.db.model.Condition;
+import de.tu_bs.cs.isf.e4cf.core.db.model.HavingCondition;
+import de.tu_bs.cs.isf.e4cf.core.db.model.LikeCondition;
+import de.tu_bs.cs.isf.e4cf.core.db.model.OrCondition;
 
 public class DataUtilities {
 
@@ -13,77 +17,29 @@ public class DataUtilities {
 	 * @param condi
 	 * @return
 	 */
-	public String wCondition(Condition condi) {
-		final String sql;
-		if (condi != null) {
-			switch (condi.getConditionTyp()) {
-			case "and":
-				sql = andCondition(condi);
-				break;
-			case "or":
-				sql = orCondition(condi);
-				break;
-			case "like":
-				sql = likeCondition(condi);
-				break;
-			default:
-				sql = defaultCondition(condi);
+	 public String W_condition(Condition condi) {
+		  final String sql;
+		  if(condi != null) {
+			  switch(condi.getClass().getSimpleName()) {
+			   case "AddCondition" : sql = new AddCondition().and_Condition(condi);
+			                break;
+			   case "OrCondition"  : sql = new OrCondition().or_Condition(condi);
+			                 break;
+			   case "LikeCondition": sql = new LikeCondition().like_Condition(condi);
+			                 break;
+			   case "HavingCondition":sql = new HavingCondition().havingCondition(condi);
+					         break;
+			   default:    sql= new Condition().default_Condition(condi) ; 
+			   
+			   }
+			   return sql;
+		  } else {
+			  return ";";
+		  }
+	   }
+	   
 
-			}
-			return sql;
-		} else {
-			return ";";
-		}
 
-	}
-
-	public String andCondition(Condition condi) {
-		String conditionsql = " WHERE ";
-		for (ColumnValue c : condi.getConditionValue()) {
-			conditionsql += c.getColumnName() + " " + c.getSymbol() + " " + c.getValue() + " AND ";
-		}
-		conditionsql = conditionsql.substring(0, conditionsql.length() - 4);
-		conditionsql += ";";
-		return conditionsql;
-	}
-
-	public String orCondition(Condition condi) {
-		String conditionsql = " WHERE ";
-		for (ColumnValue c : condi.getConditionValue()) {
-			conditionsql += c.getColumnName() + " " + c.getSymbol() + " " + c.getValue() + " OR ";
-		}
-		conditionsql = conditionsql.substring(0, conditionsql.length() - 4);
-		conditionsql += ";";
-		return conditionsql;
-	}
-
-	public String likeCondition(Condition condi) {
-		String conditionsql = " WHERE ";
-		for (ColumnValue c : condi.getConditionValue()) {
-			conditionsql += c.getColumnName() + " LIKE " + "'" + c.getValue() + "'";
-		}
-		conditionsql += ";";
-		return conditionsql;
-	}
-
-	public String defaultCondition(Condition condi) {
-		String conditionsql = " WHERE ";
-		for (ColumnValue c : condi.getConditionValue()) {
-			conditionsql += c.getColumnName() + " " + c.getSymbol() + " " + c.getValue();
-		}
-		conditionsql += ";";
-		return conditionsql;
-
-	}
-
-	public String havingCondition(Condition condi) {
-		String conditionsql = " HAVING ";
-		for (ColumnValue c : condi.getConditionValue()) {
-			conditionsql += c.getColumnName() + " " + c.getSymbol() + " " + c.getValue();
-		}
-		conditionsql += ";";
-		return conditionsql;
-	}
 
 	public String sort(Sorting sorting) {
 		final String sql;
@@ -110,7 +66,7 @@ public class DataUtilities {
 			groupSql += c.getName() + " ";
 		}
 		if (sort.getGroupCondition() != null) {
-			groupSql += havingCondition(sort.getGroupCondition());
+			groupSql += new HavingCondition().havingCondition(sort.getGroupCondition());
 			groupSql = groupSql.substring(0, groupSql.length() - 1);
 		}
 		groupSql += ";";

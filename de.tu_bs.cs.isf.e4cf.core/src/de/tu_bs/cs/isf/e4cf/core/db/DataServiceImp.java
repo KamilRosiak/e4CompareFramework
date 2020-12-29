@@ -37,10 +37,10 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 		final Statement s = con.createStatement();
 		String sqlStatement = "UPDATE " + pTableName + " SET ";
 		for (ColumnValue c : data) {
-			sqlStatement += c.getColumnName() + " = " + c.getValue() + ", ";
+			sqlStatement += c.getColumnName() + " = " + "'" + c.getValue() + "', ";
 		}
 		sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-		sqlStatement += wCondition(condition);
+		sqlStatement += W_condition(condition);
 		System.out.println(sqlStatement);
 		s.execute(sqlStatement);
 		con.close();
@@ -51,7 +51,7 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 			Sorting sorting) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		Statement stm = con.createStatement();
-		String sql = "SELECT " + attribute + " FROM " + pTableName + wCondition(condition);
+		String sql = "SELECT " + attribute + " FROM " + pTableName + W_condition(condition);
 		sql = sql.substring(0, sql.length() - 1) + sort(sorting);
 		ResultSet rs = stm.executeQuery(sql);
 		while (rs.next()) {
@@ -90,7 +90,7 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 	public void deleteData(String pPath, String pDbName, String pTableName, Condition condition)throws SQLException{
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		Statement stm = con.createStatement();
-		String sql = "DELETE FROM " + pTableName + wCondition(condition);
+		String sql = "DELETE FROM " + pTableName + W_condition(condition);
 		System.out.println(sql);
 		ResultSet rs = stm.executeQuery(sql);
 		

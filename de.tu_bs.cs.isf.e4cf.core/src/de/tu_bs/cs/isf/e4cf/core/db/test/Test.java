@@ -8,9 +8,13 @@ import java.sql.SQLException;
 import de.tu_bs.cs.isf.e4cf.core.db.DataServiceImp;
 import de.tu_bs.cs.isf.e4cf.core.db.DatabaseFactory;
 import de.tu_bs.cs.isf.e4cf.core.db.TableServiceImp;
+import de.tu_bs.cs.isf.e4cf.core.db.model.AddCondition;
 import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
 import de.tu_bs.cs.isf.e4cf.core.db.model.ColumnValue;
 import de.tu_bs.cs.isf.e4cf.core.db.model.Condition;
+import de.tu_bs.cs.isf.e4cf.core.db.model.HavingCondition;
+import de.tu_bs.cs.isf.e4cf.core.db.model.LikeCondition;
+import de.tu_bs.cs.isf.e4cf.core.db.model.OrCondition;
 
 public class Test {
 
@@ -35,13 +39,14 @@ public class Test {
 		ColumnValue cv = new ColumnValue(c2.getName(), new String("Rami"));
 		ColumnValue cv2 = new ColumnValue(c2.getName(),new String("xx"));
 		ColumnValue cv3 = new ColumnValue(c3.getName(),"23");
-		Condition cd = new Condition(" ",cv);
+		//Condition cd = new OrCondition(cv,cv2);
+		Condition cd = new LikeCondition(cv);
 
 		//c.makeColumnAutoIncrement(DATABASEPATH, DATABASENAME, TABLEENAME, "id");
-		ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(25)),cv);
-		ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(24)),cv2);
-		//ds.updateData(DATABASEPATH, DATABASENAME, TABLEENAME, cd, cv3);
-		ds.deleteData(DATABASEPATH, DATABASENAME, TABLEENAME, cd);
+		//ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(25)),cv);
+		//ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new ColumnValue(c3.getName(), new Integer(24)),cv2);
+		ds.updateData(DATABASEPATH, DATABASENAME, TABLEENAME, cd, cv3);
+		//ds.deleteData(DATABASEPATH, DATABASENAME, TABLEENAME, cd);
 	}
 
 }

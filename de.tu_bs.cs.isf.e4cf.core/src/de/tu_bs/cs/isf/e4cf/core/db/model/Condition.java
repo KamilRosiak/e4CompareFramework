@@ -4,16 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Condition {
-	 private List<ColumnValue> columnvalue;
-	 private String conditiontyp;
-	  
-	  public Condition(String pConditiontyp, ColumnValue...columnValues) {
+	 private List<ColumnValue> columnvalue;  
+	  public Condition(ColumnValue...columnValues) {
 		  List<ColumnValue> columnVa = new ArrayList<>();
 		  for (ColumnValue c: columnValues) {
 				columnVa.add(c);
 			}
 		  columnvalue = columnVa;
-		  conditiontyp = pConditiontyp;
 	  }
 	  
 	  
@@ -27,18 +24,19 @@ public class Condition {
 			}
 			
 		}
-		
-		public String getConditionTyp() {
-			return conditiontyp;
-		}
 
-		public void setConditionTyp(String conditiontyp) {
-			this.conditiontyp = conditiontyp;
-		}
-
+		 public String default_Condition(Condition condi) {
+			   String conditionsql= " WHERE ";
+			   for(ColumnValue c :condi.getConditionValue() ) {
+				   conditionsql += c.getColumnName() + " " + c.getSymbol() + " " + c.getValue();
+			   }
+			   conditionsql += ";";
+		      return conditionsql; 
+		 }
+		 
 		@Override
 		public String toString() {
 			
-			return "toString" + columnvalue.toString() + "  " + conditiontyp;
+			return "toString" + columnvalue.toString() + "  " ;
 		}
 }
