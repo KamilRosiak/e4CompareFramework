@@ -6,6 +6,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -75,19 +76,17 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 
 			if (db.hasFiles()) {
 				List<java.io.File> files = db.getFiles();
+				List<java.io.File> directories = new ArrayList<File>();
 				for (java.io.File file : files) {
 					try {
-						if (file.isDirectory()) {
-							System.out.println("Copy directory");
-							Path source = file.toPath();
-							Path target = Paths.get(directory.getAbsolutePath()).resolve(source.getFileName());
-							DropElement dropElement = new DropElement(source, target);
-							services.eventBroker.post(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER, dropElement);
-							return;
+						if (file.isDirectory() && file.list().length > 0) {
+							directories.add(file);
+						} else {
+							workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
+									Paths.get(directory.getAbsolutePath()));
+							success = true;
 						}
-						workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
-								Paths.get(directory.getAbsolutePath()));
-						success = true;
+
 					} catch (FileAlreadyExistsException e) {
 						RCPMessageProvider.errorMessage("File already exsits.",
 								"A file with the name " + file + " exists.");
@@ -95,6 +94,14 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 						e.printStackTrace();
 					}
 				}
+				// after copying empty directories or normal files copy the directories with
+				// content in it.
+				if (directories.size() > 0) {
+					Path[] sources = directories.stream().map(file -> file.toPath()).toArray(Path[]::new);
+					DropElement dropElement = new DropElement(Paths.get(directory.getAbsolutePath()), sources);
+					services.eventBroker.post(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER, dropElement);
+				}
+
 			}
 			event.setDropCompleted(success);
 			event.consume();
@@ -173,11 +180,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	}
 
 	private void moveFileOrDirectory(Path source, Path target) {
-		System.out.println("Move file or directory");
 		File sourceFile = source.toFile();
-		if (sourceFile.list().length > 0) {
-			System.out.println("Directory");
-		}
 
 		if (!sourceFile.isDirectory() || (sourceFile.isDirectory() && sourceFile.list().length == 0)) {
 			try {
@@ -188,8 +191,6 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		} else {
 			// Traverse the file tree and copy each file/directory.
 			try {
-
-				System.out.println("Dropped a directory, now open wizard");
 
 				Files.walk(source).forEach(sourcePath -> {
 					Path targetPath = target.resolve(source.relativize(sourcePath));

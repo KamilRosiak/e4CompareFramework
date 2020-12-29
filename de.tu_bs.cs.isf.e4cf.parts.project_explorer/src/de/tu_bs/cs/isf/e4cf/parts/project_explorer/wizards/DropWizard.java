@@ -55,21 +55,21 @@ public class DropWizard extends Wizard {
 	 *              children 2: Copy all children recursively
 	 */
 	private void copyRecursivly(int depth) {
-		System.out.println("Copy with depth: " + depth);
 
-		try {
-			Files.walk(dropElement.getSource(), depth).forEach(sourcePath -> {
-				System.out.println(sourcePath);
-				Path targetPath = dropElement.getTarget().resolve(dropElement.getSource().relativize(sourcePath));
-				System.out.println("Target path: " + targetPath);
-				try {
-					Files.copy(sourcePath, targetPath);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
+		for (Path directoryPath : dropElement.getSources()) {
+			try {
+				Files.walk(directoryPath, depth).forEach(sourcePath -> {
+					Path target = (dropElement.getTarget().resolve(directoryPath.getFileName()))
+							.resolve(directoryPath.relativize(sourcePath));
+					try {
+						Files.copy(sourcePath, target);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -79,20 +79,28 @@ public class DropWizard extends Wizard {
 	}
 
 	/**
-	 * An element that contains the source and the target path for a drag and drop
-	 * operation.
+	 * An element that contains the target directory path and the source paths from
+	 * a drag and drop operation. A DropElement can contain multiple sources.
 	 */
 	public static class DropElement {
-		private Path source;
+		private Path[] sources;
 		private Path target;
 
-		public DropElement(Path source, Path target) {
-			this.source = source;
+		/**
+		 * Creates an drop element for a drag-and-drop operation.
+		 * 
+		 * @param target  the path from the target directory. This represents the 'root'
+		 *                directory relative to the sources.
+		 * @param sources an array of source paths, that will be copied to the target
+		 *                directory.
+		 */
+		public DropElement(Path target, Path... sources) {
+			this.sources = sources;
 			this.target = target;
 		}
 
-		public Path getSource() {
-			return source;
+		public Path[] getSources() {
+			return sources;
 		}
 
 		public Path getTarget() {
