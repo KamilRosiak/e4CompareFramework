@@ -199,4 +199,11 @@ public class TreeViewController {
 		System.out.println(copiedNode + "sdhfg");
 		System.out.println(treeView.getSelectionModel().getSelectedItem());
 	}
+	
+	@FXML
+	void save() {
+		TreeViewUtilities.serializesTree(treeView);
+	}
+	
+
 }
