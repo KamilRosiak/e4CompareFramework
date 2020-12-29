@@ -1,10 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +12,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeUsage;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -23,9 +22,9 @@ import javafx.scene.control.TreeView;
  *
  */
 public final class TreeViewUtilities {
-	
+
 	static List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
-	
+
 	public static String treeName = "";
 
 	public static void switchToPart(String path, ServiceContainer services) {
@@ -90,55 +89,64 @@ public final class TreeViewUtilities {
 		}
 		return searchList;
 	}
-	
+
 	public static List<TreeItem<NodeUsage>> getSearchList() {
 		return searchList;
 	}
+
 	public static void clearSearchList() {
 		searchList.clear();
 	}
-	
+
 	public static void serializesTree(TreeView trview) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + "neuneu.txt");
 		System.out.println(file.getAbsolutePath());
 
-		//int choice = 0;
-		//int inputChoice = 1;
-		
-		//if(file.exists()) {
-			//choice = RCPMessageProvider.optionMessage(FILE_EXISTS, METRIC_WITH_NAME_EXISTS, E4CStringTable.DIALOG_OK, E4CStringTable.DIALOG_RENAME, E4CStringTable.DIALOG_CANCEL);
-		//}
-		/*if(choice == 1) {
-			InputDialog dialog = new InputDialog(new Shell(),"Name");
-			inputChoice = dialog.open();
-			if(inputChoice == 0) {
-				file = new File(RCPContentProvider.getCurrentWorkspacePath() + CompareST.METRICS_FOLDER + "/" + dialog.getFirstVar()+"."+ CompareST.FILE_ENDING_METRIC);
-				metric.setMetricName(dialog.getFirstVar());
-				if(file.exists()) {
-					choice = 1;
-					RCPMessageProvider.errorMessage(FILE_EXISTS, METRIC_WITH_NAME_EXISTS);
-				}
+		// int choice = 0;
+		// int inputChoice = 1;
+
+		// if(file.exists()) {
+		// choice = RCPMessageProvider.optionMessage(FILE_EXISTS,
+		// METRIC_WITH_NAME_EXISTS, E4CStringTable.DIALOG_OK,
+		// E4CStringTable.DIALOG_RENAME, E4CStringTable.DIALOG_CANCEL);
+		// }
+		/*
+		 * if(choice == 1) { InputDialog dialog = new InputDialog(new Shell(),"Name");
+		 * inputChoice = dialog.open(); if(inputChoice == 0) { file = new
+		 * File(RCPContentProvider.getCurrentWorkspacePath() + CompareST.METRICS_FOLDER
+		 * + "/" + dialog.getFirstVar()+"."+ CompareST.FILE_ENDING_METRIC);
+		 * metric.setMetricName(dialog.getFirstVar()); if(file.exists()) { choice = 1;
+		 * RCPMessageProvider.errorMessage(FILE_EXISTS, METRIC_WITH_NAME_EXISTS); } } }
+		 */
+
+		// if(choice == 0 || (choice == 1 && inputChoice == 0)) {
+		try {
+			FileWriter writer = new FileWriter(file);
+			TreeItem<NodeUsage> rootItem = trview.getRoot();
+			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
+				System.out.println("in for schleife");
+				writer.write(node.getValue().toString());
+				System.out.println(node.toString());
+				writer.write("\n");
 			}
-		}*/
-		
-		//if(choice == 0 || (choice == 1 && inputChoice == 0)) {
-			try {
-				FileWriter writer = new FileWriter(file);
-				TreeItem<NodeUsage> rootItem = trview.getRoot();
-				for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
-					System.out.println("in for schleife");
-					writer.write(node.getValue().toString());
-					System.out.println(node.toString());
-					writer.write("\n");
-				}
-				writer.close();
-				//output.write();
-				//output.close();
-				System.out.println("Tree: "+file.getAbsolutePath()+" stored.");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}	
-		//}
+			writer.close();
+			// output.write();
+			// output.close();
+			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String getInput() {
+		TextInputDialog td = new TextInputDialog("Enter new value");
+		td.showAndWait();
+		String s = td.getEditor().getText();
+		if (s.equals("Enter new value") || s.equals("") || s.equals(null)) {
+			throw new NullPointerException();
+		}
+		return s;
+
 	}
 
 }
