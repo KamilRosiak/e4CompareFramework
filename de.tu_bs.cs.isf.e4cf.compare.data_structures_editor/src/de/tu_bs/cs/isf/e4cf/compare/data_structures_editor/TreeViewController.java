@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.swing.JFileChooser;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
@@ -236,14 +240,10 @@ public class TreeViewController {
 		TreeViewUtilities.serializesTree(treeView);
 	}
 	
-	@FXML
-	void addAttribute() {
-		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(TreeViewUtilities.getInput("Enter attribute name"), TreeViewUtilities.getInput("Enter attribute value"));
-	}
 	
-	void addAttribute(String attributeName, String attributeValue) {
-		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
-		treeView.refresh();
+	void saveAs() {
+		
+		TreeViewUtilities.serializesTree(treeView, TreeViewUtilities.getInput());
 	}
 
 	@FXML
@@ -259,7 +259,14 @@ public class TreeViewController {
 			return;
 		}
 	}
+	@FXML
+	void addAttribute() {
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(TreeViewUtilities.getInput("Enter attribute name"), TreeViewUtilities.getInput("Enter attribute value"));
+	}
 	
-	
+	void addAttribute(String attributeName, String attributeValue) {
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
+		treeView.refresh();
+}
 
 }
