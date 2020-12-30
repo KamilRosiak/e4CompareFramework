@@ -240,10 +240,10 @@ public class TreeViewController {
 		TreeViewUtilities.serializesTree(treeView);
 	}
 	
-	
+	@FXML
 	void saveAs() {
 		
-		TreeViewUtilities.serializesTree(treeView, TreeViewUtilities.getInput());
+		TreeViewUtilities.serializesTree(treeView, TreeViewUtilities.getInput("Save as"));
 	}
 
 	@FXML
