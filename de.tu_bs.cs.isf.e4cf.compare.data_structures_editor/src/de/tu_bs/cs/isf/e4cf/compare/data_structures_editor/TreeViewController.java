@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.swing.JFileChooser;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
@@ -227,6 +231,12 @@ public class TreeViewController {
 	void save() {
 		TreeViewUtilities.serializesTree(treeView);
 	}
+	
+	@FXML
+	void saveAs() {
+		
+		TreeViewUtilities.serializesTree(treeView, TreeViewUtilities.getInput());
+	}
 
 	@FXML
 	void paste() {
@@ -239,5 +249,7 @@ public class TreeViewController {
 			System.out.println(e);
 		}
 	}
+	@FXML
+	void addAttribute() {}
 
 }

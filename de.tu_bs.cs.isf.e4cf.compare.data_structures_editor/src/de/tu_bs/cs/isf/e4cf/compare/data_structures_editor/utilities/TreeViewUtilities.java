@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFileChooser;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeUsage;
@@ -98,40 +100,37 @@ public final class TreeViewUtilities {
 		searchList.clear();
 	}
 
-	public static void serializesTree(TreeView trview) {
-		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + "neuneu.txt");
-		System.out.println(file.getAbsolutePath());
+	public static void serializesTree(TreeView treeView) {
+		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
 
-		// int choice = 0;
-		// int inputChoice = 1;
+		if (file.getName().equals(treeName)) {
+			file.delete();
+		}
 
-		// if(file.exists()) {
-		// choice = RCPMessageProvider.optionMessage(FILE_EXISTS,
-		// METRIC_WITH_NAME_EXISTS, E4CStringTable.DIALOG_OK,
-		// E4CStringTable.DIALOG_RENAME, E4CStringTable.DIALOG_CANCEL);
-		// }
-		/*
-		 * if(choice == 1) { InputDialog dialog = new InputDialog(new Shell(),"Name");
-		 * inputChoice = dialog.open(); if(inputChoice == 0) { file = new
-		 * File(RCPContentProvider.getCurrentWorkspacePath() + CompareST.METRICS_FOLDER
-		 * + "/" + dialog.getFirstVar()+"."+ CompareST.FILE_ENDING_METRIC);
-		 * metric.setMetricName(dialog.getFirstVar()); if(file.exists()) { choice = 1;
-		 * RCPMessageProvider.errorMessage(FILE_EXISTS, METRIC_WITH_NAME_EXISTS); } } }
-		 */
-
-		// if(choice == 0 || (choice == 1 && inputChoice == 0)) {
 		try {
 			FileWriter writer = new FileWriter(file);
-			TreeItem<NodeUsage> rootItem = trview.getRoot();
+			TreeItem<NodeUsage> rootItem = treeView.getRoot();
 			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
-				System.out.println("in for schleife");
 				writer.write(node.getValue().toString());
-				System.out.println(node.toString());
 				writer.write("\n");
 			}
 			writer.close();
-			// output.write();
-			// output.close();
+			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void serializesTree(TreeView treeView, String newFileName) {
+		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName );
+		try {
+			FileWriter writer = new FileWriter(file);
+			TreeItem<NodeUsage> rootItem = treeView.getRoot();
+			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
+				writer.write(node.getValue().toString());
+				writer.write("\n");
+			}
+			writer.close();
 			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -148,5 +147,5 @@ public final class TreeViewUtilities {
 		return s;
 
 	}
-
+	
 }
