@@ -138,11 +138,14 @@ public final class TreeViewUtilities {
 		}
 	}
 
-	public static String getInput() {
-		TextInputDialog td = new TextInputDialog("Enter new value");
+	public static String getInput(String displayedDialog) {
+		TextInputDialog td = new TextInputDialog();
+		td.setHeaderText(displayedDialog);
+		td.setGraphic(null);
+		td.setTitle("Dialog");
 		td.showAndWait();
 		String s = td.getEditor().getText();
-		if (s.equals("Enter new value") || s.equals("") || s.equals(null)) {
+		if (s.equals("") || s.equals(null)) {
 			throw new NullPointerException();
 		}
 		return s;

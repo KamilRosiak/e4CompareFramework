@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -29,8 +30,11 @@ public class NodeUsage extends AbstractNode {
 			return s1 + "Root";
 		}
 //		String returnString = getAttributeForKey("text").toString();
-		for (Attribute attribut : this.getAttributes()) {
-			for (String s : attribut.getAttributeValues()) {
+		for (Attribute attribute : this.getAttributes()) {
+			if(attribute.getAttributeKey().toLowerCase().equals("name")) {
+				return attribute.getAttributeValues().iterator().next();
+			}
+			for (String s : attribute.getAttributeValues()) {
 				s1 = s;
 			}
 		}

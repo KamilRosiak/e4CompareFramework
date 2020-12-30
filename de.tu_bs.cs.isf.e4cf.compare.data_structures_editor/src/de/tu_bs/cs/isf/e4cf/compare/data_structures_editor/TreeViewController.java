@@ -184,17 +184,24 @@ public class TreeViewController {
 	@FXML
 	void renameNode() {
 		contextMenu.hide();
-		List<Attribute> attributeList = new ArrayList<Attribute>();
-		try {
-			attributeList.add(new AttributeImpl("TEXT", TreeViewUtilities.getInput()));
-		} catch (NullPointerException e) {
-			return;
+		for (Attribute attribute : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
+			if(attribute.getAttributeKey().toLowerCase().equals("name")) 
+			{
+				attribute.getAttributeValues().clear();
+			}
 		}
-		List<Attribute> currentAttributeList = treeView.getSelectionModel().getSelectedItem().getValue()
-				.getAttributes();
-		currentAttributeList.remove(0);
-		attributeList.addAll(currentAttributeList);
-		treeView.getSelectionModel().getSelectedItem().getValue().setAttributes(attributeList);
+		addAttribute("name",TreeViewUtilities.getInput("Enter new name"));
+//		List<Attribute> attributeList = new ArrayList<Attribute>();
+//		try {
+//			attributeList.add(new AttributeImpl("TEXT", TreeViewUtilities.getInput()));
+//		} catch (NullPointerException e) {
+//			return;
+//		}
+//		List<Attribute> currentAttributeList = treeView.getSelectionModel().getSelectedItem().getValue()
+//				.getAttributes();
+//		currentAttributeList.remove(0);
+//		attributeList.addAll(currentAttributeList);
+//		treeView.getSelectionModel().getSelectedItem().getValue().setAttributes(attributeList);
 		treeView.refresh();
 		services.eventBroker.send("nodePropertiesEvent", treeView.getSelectionModel().getSelectedItem().getValue());
 	}
@@ -208,7 +215,7 @@ public class TreeViewController {
 		newChild.setValue(new NodeUsage("DummyNode"));
 		contextMenu.hide();
 		try {
-			newChild.getValue().addAttribute("TEXT", TreeViewUtilities.getInput());
+			newChild.getValue().addAttribute("TEXT", TreeViewUtilities.getInput("Enter Child Text"));
 		} catch (NullPointerException e) {
 			return;
 		}
@@ -221,23 +228,38 @@ public class TreeViewController {
 	@FXML
 	void copy() {
 		copiedNode = treeView.getSelectionModel().getSelectedItem();
+		System.out.println(treeView.getSelectionModel().getSelectedIndex());
 	}
 
 	@FXML
 	void save() {
 		TreeViewUtilities.serializesTree(treeView);
 	}
+	
+	@FXML
+	void addAttribute() {
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(TreeViewUtilities.getInput("Enter attribute name"), TreeViewUtilities.getInput("Enter attribute value"));
+	}
+	
+	void addAttribute(String attributeName, String attributeValue) {
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
+		treeView.refresh();
+	}
 
 	@FXML
 	void paste() {
+		System.out.println(treeView.getSelectionModel().getSelectedIndex());
+		
 		try {
 			TreeItem<NodeUsage> t = new TreeItem<NodeUsage>();
 			t.setValue(copiedNode.getValue());
 			treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
 					.add(treeView.getSelectionModel().getSelectedIndex(), t);
 		} catch (NullPointerException e) {
-			System.out.println(e);
+			return;
 		}
 	}
+	
+	
 
 }
