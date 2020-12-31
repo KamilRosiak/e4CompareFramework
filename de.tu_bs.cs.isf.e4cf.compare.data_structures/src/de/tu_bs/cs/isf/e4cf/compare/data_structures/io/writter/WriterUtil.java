@@ -275,6 +275,10 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(IfStmt.class.getSimpleName())) {
 			IfStmt obj = new IfStmt();
 			jpNode = obj;
+			
+			if (p instanceof NodeWithStatements) {
+                ((NodeWithStatements) p).addStatement(obj);
+            }
 		} else if (n.getNodeType().equals(JavaNodeTypes.Import.name())) {
 			if (p != null) {
 				Optional<CompilationUnit> cuOpt = p.findCompilationUnit();
@@ -480,6 +484,28 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(YieldStmt.class.getSimpleName())) {
 			YieldStmt obj = new YieldStmt();
 			jpNode = obj;
+		} else if (n.getNodeType().equals(JavaNodeTypes.Then.name())) {
+			IfStmt ifStmt = (IfStmt) p;
+			while (ifStmt.hasElseBranch()) {
+				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
+			}
+			NodeList<Expression> conditions = attributes.getCondition();
+			ifStmt.setCondition(conditions.get(0));
+			IfStmt elseStmt = new IfStmt();
+			elseStmt.setCondition(new BooleanLiteralExpr(true));
+			elseStmt.setThenStmt(new EmptyStmt());
+			ifStmt.setElseStmt(elseStmt);
+			ifStmt.setThenStmt(new EmptyStmt());
+			jpNode = ifStmt;
+		} else if (n.getNodeType().equals(JavaNodeTypes.Else.name())) {
+			BlockStmt elseStmt = new BlockStmt();
+			IfStmt ifStmt = (IfStmt) p;
+			while (ifStmt.hasElseBranch()) {
+				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
+			}
+			IfStmt parentIfStmt = (IfStmt) ifStmt.getParentNode().get();
+			parentIfStmt.removeElseStmt();
+			parentIfStmt.setElseStmt(elseStmt);
 		}
 
 		if (p != null && jpNode != null) {
