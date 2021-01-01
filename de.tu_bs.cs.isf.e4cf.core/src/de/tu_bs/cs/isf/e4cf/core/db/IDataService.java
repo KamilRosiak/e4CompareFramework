@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.core.db;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import de.tu_bs.cs.isf.e4cf.core.db.model.ColumnValue;
@@ -33,44 +34,6 @@ public interface IDataService {
 			throws SQLException;
 
 	/**
-	 * Method to select certain data from a table and show it.
-	 * 
-	 * @param pPath
-	 * @param pDbName
-	 * @param pTableName
-	 * @param attribute
-	 * @throws SQLException
-	 */
-	public void selectData(String pPath, String pDbName, String pTableName, String attribute) throws SQLException;
-
-	/**
-	 * Method to select certain data from a table and show it sorted.
-	 * 
-	 * @param pPath
-	 * @param pDbName
-	 * @param pTableName
-	 * @param attribute
-	 * @param sort
-	 * @throws SQLException
-	 */
-	public void selectData(String pPath, String pDbName, String pTableName, String attribute, Sorting sort)
-			throws SQLException;
-
-	/**
-	 * Method to select certain data according to a given condition from a table and
-	 * show it sorted.
-	 * 
-	 * @param pPath
-	 * @param pDbName
-	 * @param pTableName
-	 * @param attribute
-	 * @param condition
-	 * @param sort
-	 * @throws SQLException
-	 */
-	public void selectData(String pPath, String pDbName, String pTableName, String attribute, Condition condition,
-			Sorting sort) throws SQLException;
-	/**
 	 * Method to delete data from a table
 	 * 
 	 * @param pPath
@@ -80,4 +43,18 @@ public interface IDataService {
 	 * @throws SQLException
 	 */
 	public void deleteData(String pPath, String pDbName, String pTableName, Condition condition)throws SQLException;
+
+	/**
+	 * 
+	 * @param pPath
+	 * @param pDbName
+	 * @param pTableName
+	 * @param condition
+	 * @param sorting
+	 * @param attributes
+	 * @return
+	 * @throws SQLException
+	 */
+	public ResultSet selectData(String pPath, String pDbName, String pTableName, Condition condition, Sorting sorting,
+			String... attributes) throws SQLException;
 }

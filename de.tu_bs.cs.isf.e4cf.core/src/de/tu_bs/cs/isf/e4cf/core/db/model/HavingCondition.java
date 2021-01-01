@@ -1,9 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.core.db.model;
 
 public class HavingCondition extends Condition{
-	private String conditiontyp = "having";
+	private static final String conditiontyp = "having";
 	public HavingCondition(ColumnValue...columnValues) {
-		super(columnValues);
+		super(conditiontyp,columnValues);
 	}
 	
 	
@@ -13,8 +13,8 @@ public class HavingCondition extends Condition{
 
 	public String havingCondition(Condition condi) {
 		String conditionsql = " HAVING ";
-		for (ColumnValue c : condi.getConditionValue()) {
-			conditionsql += c.getColumnName() + " " + c.getSymbol() + " " + c.getValue();
+		for (ColumnValue c : condi.getColumnValuesList()) {
+			conditionsql += c.getColumnName() + " = " + c.getValue();
 		}
 		conditionsql += ";";
 		return conditionsql;

@@ -40,61 +40,54 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 			sqlStatement += c.getColumnName() + " = " + "'" + c.getValue() + "', ";
 		}
 		sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
-		sqlStatement += W_condition(condition);
+		sqlStatement += condition.getConditionAsSql();
 		System.out.println(sqlStatement);
 		s.execute(sqlStatement);
 		con.close();
 	}
 
 	@Override
-	public void selectData(String pPath, String pDbName, String pTableName, String attribute, Condition condition,
-			Sorting sorting) throws SQLException {
+	public void deleteData(String pPath, String pDbName, String pTableName, Condition condition) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		Statement stm = con.createStatement();
-		String sql = "SELECT " + attribute + " FROM " + pTableName + W_condition(condition);
-		sql = sql.substring(0, sql.length() - 1) + sort(sorting);
-		ResultSet rs = stm.executeQuery(sql);
-		while (rs.next()) {
-			String data = rs.getString(attribute);
-			System.out.println(data);
-		}
-		con.close();
-	}
-
-	@Override
-	public void selectData(String pPath, String pDbName, String pTableName, String attribute, Sorting sorting)
-			throws SQLException {
-		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		Statement stm = con.createStatement();
-		ResultSet rs = stm.executeQuery("SELECT " + attribute + " FROM " + pTableName + sort(sorting));
-		while (rs.next()) {
-			String data = rs.getString(attribute);
-			System.out.println(data);
-		}
-		con.close();
-	}
-
-	@Override
-	public void selectData(String pPath, String pDbName, String pTableName, String attribute) throws SQLException {
-		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		Statement stm = con.createStatement();
-		ResultSet rs = stm.executeQuery("SELECT " + attribute + " FROM " + pTableName);
-		while (rs.next()) {
-			String data = rs.getString(attribute);
-			System.out.println(data);
-		}
-		con.close();
-	}
-	
-	@Override
-	public void deleteData(String pPath, String pDbName, String pTableName, Condition condition)throws SQLException{
-		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		Statement stm = con.createStatement();
-		String sql = "DELETE FROM " + pTableName + W_condition(condition);
+		String sql = "DELETE FROM " + pTableName + condition.getConditionAsSql();
 		System.out.println(sql);
-		ResultSet rs = stm.executeQuery(sql);
-		
+		stm.execute(sql);
 		con.close();
-		
+	}
+
+	@Override
+	public ResultSet selectData(String pPath, String pDbName, String pTableName, Condition condition, Sorting sorting,
+			String... attributes) throws SQLException {
+		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
+		final Statement stm = con.createStatement();
+		String attributs = "", conditions = "", sortings = "";
+		if (null == attributes || attributes.length == 0) {
+			attributs = "*";
+		} else {
+			for (final String str : attributes) {
+				attributs += str + ", ";
+			}
+			attributs = attributs.substring(0, attributs.length() - 2);
+		}
+		if (null != condition) {
+			conditions = condition.getConditionAsSql();
+		}
+		if (null != sorting) {
+			sortings = sorting.getSortingAsSql();
+		}
+		String sqlStatement = "SELECT " + attributs + " FROM " + pTableName + " " + conditions + sortings;
+		System.out.println("Test Select: " + sqlStatement);
+		ResultSet rs = stm.executeQuery(sqlStatement);
+		while (rs.next()) {
+			for (int i = 1; i <= 3; i++) {
+				System.out.print(rs.getString(i) + " ");
+			}
+			System.out.println();
+			// System.out.println(rs.getString(i++));
+			// if(i==3) i=1;
+			// System.out.println(i++);
+		}
+		return rs;
 	}
 }
