@@ -6,10 +6,13 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
+/**
+ * 
+ * @author Team05
+ * Implementation of adapter class abstract node
+ */
 public class NodeUsage extends AbstractNode {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 378278236426734L;
 
 	public NodeUsage(String nodeType) {
@@ -25,11 +28,9 @@ public class NodeUsage extends AbstractNode {
 	@Override
 	public String toString() {
 		String s1 = "";
-		// Condition must be revised so that not every node without attributes is root
 		if (this.getAttributes().isEmpty()) {
 			return s1 + "Root";
 		}
-//		String returnString = getAttributeForKey("text").toString();
 		for (Attribute attribute : this.getAttributes()) {
 			if(attribute.getAttributeKey().toLowerCase().equals("name")) {
 				return attribute.getAttributeValues().iterator().next();
@@ -40,12 +41,7 @@ public class NodeUsage extends AbstractNode {
 		}
 		return s1;
 	}
-//
-//	public String fakeToString() {
-//		String returnString = getNodeType();
-//		returnString += " NodeUsage";
-//		return returnString;
-//	}
+
 
 	public NodeUsage(String nodeType, Node parent) {
 		this(nodeType);

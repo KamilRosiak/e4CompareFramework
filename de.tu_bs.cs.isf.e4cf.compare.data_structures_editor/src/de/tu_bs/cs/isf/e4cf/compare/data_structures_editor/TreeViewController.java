@@ -1,18 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.swing.JFileChooser;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Shell;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
@@ -60,7 +54,7 @@ public class TreeViewController {
 	@FXML
 	private TextField searchTextField;
 
-	private int searchCounter = 0;
+	
 
 	private String currentSearchText;
 
@@ -75,8 +69,9 @@ public class TreeViewController {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView);
 		treeView = TreeViewUtilities.addListener(treeView, services);
-		totalNodeAmount
-				.setText("Total Node Amount: " + TreeViewUtilities.searchTreeItem(treeView.getRoot(), "").size());
+		//totalNodeAmount
+		//		.setText("Total Node Amount: " + TreeViewUtilities.searchTreeItem(treeView.getRoot(), "").size());
+		displayTotalNodeAmount();
 	}
 
 	/**
@@ -109,27 +104,17 @@ public class TreeViewController {
 	}
 
 	/**
-	 * searchButton to search what is typed in searchField
+	 * search the text given in the searchfield 
 	 */
 	@FXML
 	void search() {
 		TreeViewUtilities.clearSearchList();
 		treeView.getSelectionModel().clearSelection();
-		String searchFieldTextToRead = searchTextField.getText();
 		List<TreeItem<NodeUsage>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
-				searchFieldTextToRead);
-		treeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		treeView.getSelectionModel().select(getCurrentSearchItem(resultList));
+				searchTextField.getText());
+		treeView.getSelectionModel().select(TreeViewUtilities.getCurrentSearchItem(resultList));
 		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-		hitCount.setText(getSearchCounter() + "/" + resultList.size());
-//		for (TreeItem<NodeUsage> t : TreeViewUtilities.searchTreeItem(treeView.getRoot(), searchFieldTextToRead)) {
-//			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-//			treeView.getSelectionModel().select(t);
-//			treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-//		}
-//		if (treeView.getSelectionModel().getSelectedItems().size() > 1) {
-//			services.eventBroker.send("EmptyPropertiesTableEvent", true);
-//		}
+		hitCount.setText(TreeViewUtilities.getSearchCounter() + "/" + resultList.size());
 		resultList.clear();
 	}
 
@@ -142,44 +127,21 @@ public class TreeViewController {
 			if (currentSearchText.equals(searchTextField.getText())) {
 				search();
 			} else {
-				setSearchCounter(0);
+				TreeViewUtilities.setSearchCounter(0);
 				search();
 				currentSearchText = searchTextField.getText();
 			}
 		}
 	}
 
-	TreeItem<NodeUsage> getCurrentSearchItem(List<TreeItem<NodeUsage>> resultList) {
-		TreeItem<NodeUsage> currentItem = new TreeItem<NodeUsage>();
-		if (getSearchCounter() < resultList.size()) {
-			currentItem = resultList.get(getSearchCounter());
-			incrementSearchCounter();
-		} else {
-			setSearchCounter(0);
-			currentItem = resultList.get(getSearchCounter());
-			incrementSearchCounter();
-		}
-		return currentItem;
-	}
 
-	int getSearchCounter() {
-		return searchCounter;
-	}
-
-	void setSearchCounter(int i) {
-		searchCounter = i;
-	}
-
-	void incrementSearchCounter() {
-		searchCounter++;
-	}
+	
 
 	@FXML
 	void deleteNode() {
-		TreeItem<NodeUsage> deletingNode = treeView.getSelectionModel().getSelectedItem();
-		treeView.getSelectionModel().getSelectedItem().setValue(null);
-		treeView.getSelectionModel().getSelectedItem().setGraphic(null);
-		deletingNode.getParent().getChildren().remove(deletingNode);
+		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
+				.remove(treeView.getSelectionModel().getSelectedItem());
+		displayTotalNodeAmount();
 	}
 
 	/**
@@ -189,23 +151,11 @@ public class TreeViewController {
 	void renameNode() {
 		contextMenu.hide();
 		for (Attribute attribute : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
-			if(attribute.getAttributeKey().toLowerCase().equals("name")) 
-			{
+			if (attribute.getAttributeKey().toLowerCase().equals("name")) {
 				attribute.getAttributeValues().clear();
 			}
 		}
-		addAttribute("name",TreeViewUtilities.getInput("Enter new name"));
-//		List<Attribute> attributeList = new ArrayList<Attribute>();
-//		try {
-//			attributeList.add(new AttributeImpl("TEXT", TreeViewUtilities.getInput()));
-//		} catch (NullPointerException e) {
-//			return;
-//		}
-//		List<Attribute> currentAttributeList = treeView.getSelectionModel().getSelectedItem().getValue()
-//				.getAttributes();
-//		currentAttributeList.remove(0);
-//		attributeList.addAll(currentAttributeList);
-//		treeView.getSelectionModel().getSelectedItem().getValue().setAttributes(attributeList);
+		addAttribute("name", TreeViewUtilities.getInput("Enter new name"));
 		treeView.refresh();
 		services.eventBroker.send("nodePropertiesEvent", treeView.getSelectionModel().getSelectedItem().getValue());
 	}
@@ -224,6 +174,7 @@ public class TreeViewController {
 			return;
 		}
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(newChild);
+		displayTotalNodeAmount();
 	}
 
 	/**
@@ -239,34 +190,47 @@ public class TreeViewController {
 	void save() {
 		TreeViewUtilities.serializesTree(treeView);
 	}
-	
+
 	@FXML
 	void saveAs() {
-		
 		TreeViewUtilities.serializesTree(treeView, TreeViewUtilities.getInput("Save as"));
 	}
 
 	@FXML
 	void paste() {
 		System.out.println(treeView.getSelectionModel().getSelectedIndex());
-		
+
 		try {
 			TreeItem<NodeUsage> t = new TreeItem<NodeUsage>();
 			t.setValue(copiedNode.getValue());
 			treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
 					.add(treeView.getSelectionModel().getSelectedIndex(), t);
+			displayTotalNodeAmount();
 		} catch (NullPointerException e) {
 			return;
 		}
 	}
+
 	@FXML
 	void addAttribute() {
-		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(TreeViewUtilities.getInput("Enter attribute name"), TreeViewUtilities.getInput("Enter attribute value"));
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(
+				TreeViewUtilities.getInput("Enter attribute name"),
+				TreeViewUtilities.getInput("Enter attribute value"));
 	}
-	
+
 	void addAttribute(String attributeName, String attributeValue) {
 		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
 		treeView.refresh();
-}
+	}
 
+	@FXML
+	void cut() {
+		copy();
+		deleteNode();
+	}
+
+	void displayTotalNodeAmount() {
+		totalNodeAmount
+		.setText("Total Node Amount: " + (treeView.getRoot().getChildren().size() + 1));
+	}
 }

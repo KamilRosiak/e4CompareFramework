@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFileChooser;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeUsage;
@@ -28,6 +26,8 @@ public final class TreeViewUtilities {
 	static List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
 
 	public static String treeName = "";
+
+	private static int searchCounter = 0;
 
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
@@ -100,7 +100,7 @@ public final class TreeViewUtilities {
 		searchList.clear();
 	}
 
-	public static void serializesTree(TreeView treeView) {
+	public static void serializesTree(TreeView<NodeUsage> treeView) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
 
 		if (file.getName().equals(treeName)) {
@@ -121,8 +121,8 @@ public final class TreeViewUtilities {
 		}
 	}
 
-	public static void serializesTree(TreeView treeView, String newFileName) {
-		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName );
+	public static void serializesTree(TreeView<NodeUsage> treeView, String newFileName) {
+		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		try {
 			FileWriter writer = new FileWriter(file);
 			TreeItem<NodeUsage> rootItem = treeView.getRoot();
@@ -150,5 +150,30 @@ public final class TreeViewUtilities {
 		return s;
 
 	}
-	
+
+	public static TreeItem<NodeUsage> getCurrentSearchItem(List<TreeItem<NodeUsage>> resultList) {
+		TreeItem<NodeUsage> currentItem = new TreeItem<NodeUsage>();
+		if (getSearchCounter() < resultList.size()) {
+			currentItem = resultList.get(getSearchCounter());
+			incrementSearchCounter();
+		} else {
+			setSearchCounter(0);
+			currentItem = resultList.get(getSearchCounter());
+			incrementSearchCounter();
+		}
+		return currentItem;
+	}
+
+	public static int getSearchCounter() {
+		return searchCounter;
+	}
+
+	public static void setSearchCounter(int i) {
+		searchCounter = i;
+	}
+
+	public static void incrementSearchCounter() {
+		searchCounter++;
+	}
+
 }

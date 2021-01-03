@@ -20,21 +20,9 @@ public class PropertiesController {
 	@FXML
 	private TableView<Attribute> propertiesTable;
 
-//	ObservableList<NodeUsage> createRow() {
-//		ObservableList<NodeUsage> nodes = FXCollections.observableArrayList();
-//		nodes.add(new NodeUsage("text"));
-//		return nodes;
-//	}
-
-//	ObservableList<NodeUsage> createRow(NodeUsage node) {
-//		ObservableList<NodeUsage> nodes = FXCollections.observableArrayList();
-//		nodes.add(node);
-//		return nodes;
-//	}
-
 	/**
 	 * 
-	 * @param bool
+	 * @param bool (always has to be true)
 	 */
 	@Optional
 	@Inject
@@ -44,7 +32,7 @@ public class PropertiesController {
 
 	/**
 	 * 
-	 * @param node
+	 * @param node to be shown in the properties table
 	 */
 	@Optional
 	@Inject
