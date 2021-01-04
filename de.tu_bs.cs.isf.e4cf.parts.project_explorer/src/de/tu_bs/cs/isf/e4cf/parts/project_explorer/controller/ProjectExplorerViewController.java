@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -60,6 +62,8 @@ public class ProjectExplorerViewController {
 	// Fields dependency injected from the ProjectExplorerView.fxml
 	@FXML
 	public TreeView<FileTreeElement> projectTree;
+	@FXML
+	public ToolBar projectToolbar;
 
 	// E4 Injections
 	@Inject
@@ -75,6 +79,11 @@ public class ProjectExplorerViewController {
 	private ListChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
+	private ProjectExplorerToolBarController toolbarController;
+
+	private String filter = "";
+	private boolean isFlatView = false;
+	private HashMap<String, Boolean> expansionState = new HashMap<String, Boolean>();
 
 	/**
 	 * This method is equivalent to the previous postContruct(), in that it sets up
@@ -87,7 +96,7 @@ public class ProjectExplorerViewController {
 		// Structure of Directories representing a Tree
 		FileTreeElement treeRoot = initializeInput(fileSystem);
 
-		TreeItem<FileTreeElement> root = buildTree(treeRoot, true, null);
+		TreeItem<FileTreeElement> root = buildTree(treeRoot);
 
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
@@ -118,6 +127,28 @@ public class ProjectExplorerViewController {
 			}
 		});
 
+		// Handoff Toolbar
+		toolbarController = new ProjectExplorerToolBarController(projectToolbar, services,
+				canvas.getParent().getShell());
+
+	}
+
+	/**
+	 * Calls the correct tree building function depending on the project explorer
+	 * state (isFlatView)
+	 */
+	private TreeItem<FileTreeElement> buildTree(FileTreeElement node) {
+
+		TreeItem<FileTreeElement> rootNode = null;
+
+		if (isFlatView) {
+			rootNode = buildFlatTree(node, true, null);
+			rootNode.getChildren().sort(Comparator.comparing(t -> t.toString()));
+		} else {
+			rootNode = buildHierachialTree(node, true);
+		}
+
+		return rootNode;
 	}
 
 	/**
@@ -125,22 +156,60 @@ public class ProjectExplorerViewController {
 	 * 
 	 * @param parentNode The parent node
 	 * @param isRoot     true if a given node is a root node
-	 * @param state      maps the expanded status for each node in the tree
 	 * @return a new tree item
 	 */
-	private TreeItem<FileTreeElement> buildTree(FileTreeElement parentNode, boolean isRoot,
-			HashMap<String, Boolean> state) {
+	private TreeItem<FileTreeElement> buildHierachialTree(FileTreeElement parentNode, boolean isRoot) {
 
 		Node imgNode = isRoot ? null : getImage(parentNode);
 
+		parentNode.setDisplayLongPath(false);
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
-		if (state != null && state.containsKey(currentNode.getValue().getAbsolutePath())) {
-			currentNode.setExpanded(state.get(currentNode.getValue().getAbsolutePath()));
+
+		// Update our tree expansion state when a node's expansion state changes
+		currentNode.expandedProperty().addListener(changeListener -> {
+			expansionState.put(currentNode.getValue().getAbsolutePath(), currentNode.isExpanded());
+		});
+
+		// Apply previous tree expansion state
+		if (expansionState != null && expansionState.containsKey(currentNode.getValue().getAbsolutePath())) {
+			currentNode.setExpanded(expansionState.get(currentNode.getValue().getAbsolutePath()));
 		}
 
 		for (FileTreeElement child : parentNode.getChildren()) {
-			TreeItem<FileTreeElement> node = buildTree(child, false, state);
-			currentNode.getChildren().add(node);
+			TreeItem<FileTreeElement> node = buildHierachialTree(child, false);
+			if (filter.equals("") || node.getValue().getRelativePath().contains(filter)
+					|| !node.getChildren().isEmpty())
+				currentNode.getChildren().add(node);
+		}
+
+		return currentNode;
+	}
+
+	/**
+	 * Traverse the filesystem tree via dfs to generate a javafx flat treeview
+	 * 
+	 * @param parentNode The parent node
+	 * @param isRoot     true if a given node is a root node
+	 * @param rootNode   the root node that holds all the children
+	 * @return a new tree item
+	 */
+	private TreeItem<FileTreeElement> buildFlatTree(FileTreeElement parentNode, boolean isRoot,
+			TreeItem<FileTreeElement> rootNode) {
+
+		Node imgNode = isRoot ? null : getImage(parentNode);
+
+		parentNode.setDisplayLongPath(true);
+		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
+
+		if (isRoot) {
+			rootNode = currentNode;
+		}
+
+		for (FileTreeElement child : parentNode.getChildren()) {
+			TreeItem<FileTreeElement> node = buildFlatTree(child, false, rootNode);
+			if (filter.equals("") || node.getValue().getRelativePath().contains(filter)
+					|| !node.getChildren().isEmpty())
+				rootNode.getChildren().add(node);
 		}
 
 		return currentNode;
@@ -214,54 +283,47 @@ public class ProjectExplorerViewController {
 		return workspaceFileSystem.getWorkspaceDirectory();
 	}
 
-	/**
-	 * Rebuild the project explorer and update it's view.
-	 * 
-	 */
+	/** Rebuild the project explorer and update it's view. */
 	@Inject
 	@Optional
 	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Object o) {
-		HashMap<String, Boolean> oldTreeState = new HashMap<String, Boolean>();
-		traverseTree(projectTree.getRoot(), oldTreeState);
 
 		projectTree.getSelectionModel().getSelectedItems().removeListener(changeListener);
-		TreeItem<FileTreeElement> root = buildTree(projectTree.getRoot().getValue(), true, oldTreeState);
+		TreeItem<FileTreeElement> root = buildTree(projectTree.getRoot().getValue());
 
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
 		projectTree.getSelectionModel().getSelectedItems().addListener(changeListener);
 	}
 
-	/**
-	 * Subscribing on the rename event
-	 */
+	/** Subscribing on the rename event */
 	@Inject
 	@Optional
 	public void rename(@UIEventTopic(E4CEventTable.EVENT_RENAME_PROJECT_EXPLORER_ITEM) Object o) {
 		projectTree.edit(projectTree.getSelectionModel().getSelectedItem());
 	}
 
-	/**
-	 * Traverse the filesystem tree via dfs to save the old state of each node
-	 * 
-	 * @param parentNode The parent node
-	 * @param state      maps the expanded status for each node in the tree
-	 */
-	private void traverseTree(TreeItem<FileTreeElement> parentNode, HashMap<String, Boolean> state) {
-
-		/*
-		 * put current element in hashmap with state
-		 */
-		state.put(parentNode.getValue().getAbsolutePath(), parentNode.isExpanded());
-
-		for (TreeItem<FileTreeElement> child : parentNode.getChildren()) {
-			traverseTree(child, state);
+	/** Subscribing on filter / search change */
+	@Inject
+	@Optional
+	public void filter(@UIEventTopic(E4CEventTable.EVENT_FILTER_CHANGED) Object o) {
+		if (o instanceof String) {
+			filter = (String) o;
+		} else {
+			filter = "";
 		}
+		services.eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
 	}
 
-	/**
-	 * Sets up the selection service via a ChangeListener on the projectTree
-	 */
+	/** Subscribing on toggling hierarchical / flat view */
+	@Inject
+	@Optional
+	public void toggleView(@UIEventTopic(E4CEventTable.EVENT_VIEW_TOGGLE) Object o) {
+		isFlatView = !isFlatView;
+		services.eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
+	}
+
+	/** Sets up the selection service via a ChangeListener on the projectTree */
 	private void setupSelectionService() {
 		// Set no initial selection
 		StructuredSelection structuredSelection = new StructuredSelection(
@@ -273,7 +335,6 @@ public class ProjectExplorerViewController {
 
 		// Add a SelectionListener to tree to propagate the selection that is done in
 		// the tree
-
 		changeListener = new ListChangeListener<TreeItem<FileTreeElement>>() {
 
 			@Override
@@ -284,7 +345,7 @@ public class ProjectExplorerViewController {
 
 				_selectionService.setSelection(selection);
 				_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
-
+				toolbarController.update();
 			}
 
 		};
