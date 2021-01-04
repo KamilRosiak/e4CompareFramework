@@ -5,6 +5,9 @@ import java.nio.file.Paths;
 public class FileTable {
 	public static final String PROJECT_EXPLORER_VIEW_FXML = Paths.get("ui", "view", "ProjectExplorerView.fxml").toString();
 	
+	public static final String NEW_FILE_PAGE_VIEW = Paths.get("ui", "view", "NewFileView.fxml").toString();
+	
+	
 	// Image paths
 	public static String PROJECT_EXPLORER_ICONS = Paths.get("icons", "Explorer_View", "items").toString();
 	public static String PROJECT_PNG= Paths.get(PROJECT_EXPLORER_ICONS, "project16.png").toString();
