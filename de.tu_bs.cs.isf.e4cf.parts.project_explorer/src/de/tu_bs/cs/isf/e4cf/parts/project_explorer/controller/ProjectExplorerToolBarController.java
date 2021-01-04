@@ -29,8 +29,6 @@ public class ProjectExplorerToolBarController {
 
 	private ToolBar bar;
 
-	private Button btnUndo;
-	private Button btnRedo;
 	private Button btnNewFolder;
 	private Button btnImportFiles;
 	private Button btnDelete;
@@ -82,18 +80,6 @@ public class ProjectExplorerToolBarController {
 
 		});
 		bar.getItems().add(searchButton);
-
-		bar.getItems().add(new Separator());
-
-		// Command Actions TODO to enable these buttons command stack systems are
-		// required Task #34
-		btnUndo = createToolbarButton("Undo", FileTable.UNDO_PNG, actionEvent -> {
-			System.out.println("Undo");
-		});
-
-		btnRedo = createToolbarButton("Redo", FileTable.REDO_PNG, actionEvent -> {
-			System.out.println("Redo");
-		});
 
 		bar.getItems().add(new Separator());
 
@@ -174,9 +160,6 @@ public class ProjectExplorerToolBarController {
 
 	/** Update Button states based on their handler */
 	public void update() {
-		// Command Buttons are currently UI Placeholders TODO #34
-		btnRedo.setDisable(true);
-		btnUndo.setDisable(true);
 
 		// NewFolder
 		NewFolderHandler nfh = new NewFolderHandler();

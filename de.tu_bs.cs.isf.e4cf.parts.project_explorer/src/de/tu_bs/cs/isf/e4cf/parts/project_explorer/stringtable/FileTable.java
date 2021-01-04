@@ -18,8 +18,6 @@ public class FileTable {
 	public static String PROJECT_EXPLORER_TOOLBAR = Paths.get(PROJECT_EXPLORER, "ToolBar").toString();
 	public static String SEARCH_PNG = Paths.get(PROJECT_EXPLORER_TOOLBAR, "search16.png").toString();
 	public static String X_PNG = Paths.get(PROJECT_EXPLORER_TOOLBAR, "x16.png").toString();
-	public static String UNDO_PNG = Paths.get(PROJECT_EXPLORER_TOOLBAR, "undo16.png").toString();
-	public static String REDO_PNG = Paths.get(PROJECT_EXPLORER_TOOLBAR, "redo16.png").toString();
 	public static String FLAT_VIEW_PNG = Paths.get(PROJECT_EXPLORER_TOOLBAR, "flatview16.png").toString();
 	public static String HIERARCICAL_VIEW_PNG = Paths.get(PROJECT_EXPLORER_TOOLBAR, "hierview16.png").toString();
 	public static String DELETE_PNG = Paths.get(PROJECT_EXPLORER, "delete_16.png").toString();
