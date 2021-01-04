@@ -38,4 +38,10 @@ public class PropertiesViewUtilities {
 
 		return tableView;
 	}
+
+//	  public static void handle(MouseEvent event, TableView<Attribute> tempTable) {  
+//		  if (event.getClickCount()==2) {  
+//			  
+//	    }  
+//	  }  
 }
