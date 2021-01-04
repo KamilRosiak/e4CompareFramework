@@ -12,6 +12,8 @@ import com.github.javaparser.ast.type.*;
 
 import java.util.Arrays;
 
+import javax.swing.text.html.HTMLEditorKit.InsertHTMLTextAction;
+
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.*;
 
@@ -1155,11 +1157,9 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * Creates a new node of type {@link TryStmt} and adds the try statement as a
-	 * string as an attribute {@link JavaAttributesTypes#Value}.
+	 * Creates a new node of type {@link TryStmt} and visits all children of the try
+	 * stmt.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/TryStmt.html">JavaParser
 	 *      Docs - TryStmt</a>
@@ -1189,9 +1189,27 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link TypeParameter}.
+	 * <p>
+	 * The name of the {@link TypeParameter} is added as an attribute
+	 * {@link JavaAttributesTypes#Name} to the new node.
+	 * <p>
+	 * For every annotation ({@link TypeParameter#getAnnotations()}) an attribute
+	 * {@link JavaAttributesTypes#Annotation} with the annotation's name as a value
+	 * is added.
+	 * <p>
+	 * The {@link TypeParameter}'s bounds ({@link TypeParameter#getTypeBound()} are
+	 * added as a child node to the new node. The bound nodes are of type
+	 * {@link JavaNodeTypes#Bound} with an index. The bounds are then visited with
+	 * their respective node as the framework's parent node. Finally an attribute
+	 * {@link JavaAttributesTypes#Bound} with the number bounds is added to the
+	 * {@link TypeParameters}'s node.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/TypeParameter.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/TypeParameter.html">JavaParser
+	 *      Docs - TypeParameter</a>
+	 * @param n   TypeParameter
+	 * @param arg Parent framework node of the TypeParameter's framework node.
 	 */
 	@Override
 	public void visit(TypeParameter n, Node arg) {
@@ -1232,9 +1250,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node with type {@link UnionType} and adds an attribute
+	 * {@link JavaAttributesTypes#Type} for every element in
+	 * {@link UnionType#getElements()}.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/UnionType.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/UnionType.html">JavaParser
+	 *      Docs - UnionType</a>
+	 * @param n   UnionType
+	 * @param arg Parent framework node of the UnionType's framework node.
 	 */
 	@Override
 	public void visit(UnionType n, Node arg) {
@@ -1278,9 +1302,16 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * For every child node of the {@link VariableDeclarationExpr} a new node is
+	 * created with the child's class as a type. Each child is then visited with
+	 * it's new node as a parent.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/VariableDeclarationExpr.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/VariableDeclarationExpr.html">JavaParser
+	 *      Docs - VariableDeclarationExpr</a>
+	 * @param n   VariableDeclarationExpr
+	 * @param arg Parent framework node of the VariableDeclarationExpr's framework
+	 *            node.
 	 */
 	@Override
 	public void visit(VariableDeclarationExpr n, Node arg) {
@@ -1292,9 +1323,19 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Adds an attribute {@link JavaAttributesTypes#Type} with value
+	 * {@link VariableDeclarator#getType()}, an attribute
+	 * {@link JavaAttributesTypes#Name} with value
+	 * {@link VariableDeclarator#getName()} and an attribute
+	 * {@link JavaAttributesTypes#Initilization} with value of
+	 * {@link VariableDeclarator#getInitializer()} is the initializer is present to
+	 * the parent node.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/index.html?com/github/javaparser/ast/expr/MemberValuePair.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/VariableDeclarator.html">JavaParser
+	 *      Docs - VariableDeclarator</a>
+	 * @param n   VariableDeclarator
+	 * @param arg Parent framework node of the VariableDeclarator's framework node.
 	 */
 	@Override
 	public void visit(VariableDeclarator n, Node arg) {
@@ -1328,9 +1369,16 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Adds an attribute {@link JavaAttributesTypes#Value} with value
+	 * {@link VoidType} as a string to the parent. If the parent is of the
+	 * {@link VoidType} is {@link MethodDeclaration}, then the attribute type will
+	 * be {@link JavaAttributesTypes#ReturnType}.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/VoidType.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/VoidType.html">JavaParser
+	 *      Docs - VoidType</a>
+	 * @param n   VoidType
+	 * @param arg Parent framework node of the VoidType's framework node.
 	 */
 	@Override
 	public void visit(VoidType n, Node arg) {
@@ -1342,9 +1390,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link WhileStmt} and visits all children of the
+	 * while statement.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/WhileStmt.html
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/WhileStmt.html">JavaParser
+	 *      Docs - WhileStmt</a>
+	 * @param n   WhileStmt
+	 * @param arg Parent framework node of the WhileStmt's framework node.
 	 */
 	@Override
 	public void visit(WhileStmt n, Node arg) {
@@ -1369,9 +1423,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link YieldStmt} and visits all children of the
+	 * yield statement.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/YieldStmt.html
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/YieldStmt.html">JavaParser
+	 *      Docs - YieldStmt</a>
+	 * @param n   YieldStmt
+	 * @param arg Parent framework node of the YieldStmt's framework node.
 	 */
 	@Override
 	public void visit(YieldStmt n, Node arg) {
@@ -1379,10 +1439,16 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link ConstructorDeclaration} and visits all
+	 * children of the constructor declaration.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/ConstructorDeclaration.html
-	 * 
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/ConstructorDeclaration.html">JavaParser
+	 *      Docs - ConstructorDeclaration</a>
+	 * @param n   ConstructorDeclaration
+	 * @param arg Parent framework node of the ConstructorDeclaration's framework
+	 *            node.
 	 */
 	@Override
 	public void visit(ConstructorDeclaration n, Node arg) {
@@ -1390,9 +1456,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link JavaNodeTypes#Continue} and adds an
+	 * attribute {@link JavaAttributesTypes#Target} with value
+	 * {@link ContinueStmt#getLabel()} is a label is present.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ContinueStmt.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/ContinueStmt.html">JavaParser
+	 *      Docs - ContinueStmt</a>
+	 * @param n   ContinueStmt
+	 * @param arg Parent framework node of the ContinueStmt's framework node.
 	 */
 	@Override
 	public void visit(ContinueStmt n, Node arg) {
@@ -1403,9 +1475,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link DoStmt} and visits all children of the do
+	 * stmt.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/DoStmt.html
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/DoStmt.html">JavaParser
+	 *      Docs - DoStmt</a>
+	 * @param n   DoStmt
+	 * @param arg Parent framework node of the DoStmt's framework node.
 	 */
 	@Override
 	public void visit(DoStmt n, Node arg) {
@@ -1449,9 +1527,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link EnclosedExpr} and visits all children of
+	 * the enclosed expression.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/EnclosedExpr.html
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/EnclosedExpr.html">JavaParser
+	 *      Docs - EnclosedExpr</a>
+	 * @param n   EnclosedExpr
+	 * @param arg Parent framework node of the EnclosedExpr's framework node.
 	 */
 	@Override
 	public void visit(EnclosedExpr n, Node arg) {
@@ -1459,9 +1543,16 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link EnumConstantDeclaration} and visits all
+	 * children of the enum constant declaration.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumConstantDeclaration.html
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumConstantDeclaration.html">JavaParser
+	 *      Docs - EnumConstantDeclaration</a>
+	 * @param n   EnumConstantDeclaration
+	 * @param arg Parent framework node of the EnumConstantDeclaration's framework
+	 *            node.
 	 */
 	@Override
 	public void visit(EnumConstantDeclaration n, Node arg) {
@@ -1469,9 +1560,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link EnumDeclaration} and visits all children of
+	 * the enum declaration.
 	 * 
-	 * https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumDeclaration.html
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumDeclaration.html">JavaParser
+	 *      Docs - EnumDeclaration</a>
+	 * @param n   EnumDeclaration
+	 * @param arg Parent framework node of the EnumDeclaration's framework node.
 	 */
 	@Override
 	public void visit(EnumDeclaration n, Node arg) {
@@ -1480,9 +1577,25 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link ExplicitConstructorInvocationStmt}.
+	 * <p>
+	 * If type arguments are present, then for every type argument an attribute is
+	 * added to the new node. The attribute is of type
+	 * {@link JavaAttributesTypes#TypeArgument} with the type argument as a string
+	 * as value.
+	 * <p>
+	 * The new node gets a child node with type {@link JavaNodeTypes#Argument},
+	 * which has an attribute {@link JavaAttributesTypes#Children} which indicates
+	 * the number of arguments. The argument node gets an node of
+	 * {@link JavaNodeTypes#Argument} with an index for every argument. The indexed
+	 * argument node is the parent node for each argument, which are visited.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ExplicitConstructorInvocationStmt.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/ExplicitConstructorInvocationStmt.html">JavaParser
+	 *      Docs - ExplicitConstructorInvocationStmt</a>
+	 * @param n   ExplicitConstructorInvocationStmt
+	 * @param arg Parent framework node of the ExplicitConstructorInvocationStmt's
+	 *            framework node.
 	 */
 	@Override
 	public void visit(ExplicitConstructorInvocationStmt n, Node arg) {
@@ -1507,9 +1620,21 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node with type {@link ForEachStmt}.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ForEachStmt.html
+	 * Adds an attribute {@link JavaAttributesTypes#Iterator} with value
+	 * {@link ForEachStmt#getIterable()} and an attribute
+	 * {@link JavaAttributesTypes#Initilization} with value
+	 * {@link ForEachStmt#getVariableDeclarator()} to new node.
+	 * 
+	 * Afterwards the body of the {@link ForEachStmt} is visited
+	 * ({@link ForEachStmt#getBody()}).
+	 * 
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/ForEachStmt.html">JavaParser
+	 *      Docs - ForEachStmt</a>
+	 * @param n   ForEachStmt
+	 * @param arg Parent framework node of the ForEachStmt's framework node.
 	 */
 	@Override
 	public void visit(ForEachStmt n, Node arg) {
@@ -1527,9 +1652,28 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * A new node with type {@link ForStmt} is generated.
+	 * <p>
+	 * This node gets an attribute {@link JavaAttributesTypes#Comparison} if a
+	 * comparison is present. This attribute contains the expression of
+	 * {@link ForStmt#getCompare()} as a string.
+	 * <p>
+	 * For every initialization {@link ForStmt#getInitialization()} an attribute
+	 * {@link JavaAttributesTypes#Initilization} with the initialization expression
+	 * as a string is added. The initilization are removed from the {@link ForStmt}
+	 * JavaParser node afterwards.
+	 * <p>
+	 * Analog to the initializations, the same thing is done with the updates
+	 * ({@link ForStmt#getUpdate()}). These are added to the attribute
+	 * {@link JavaAttributesTypes#Update}.
+	 * <p>
+	 * Finally the leftovers are visited.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/ForStmt.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/ForStmt.html">JavaParser
+	 *      Docs - ForStmt</a>
+	 * @param n   ForStmt
+	 * @param arg Parent framework node of the ForStmt's framework node.
 	 */
 	@Override
 	public void visit(ForStmt n, Node arg) {
@@ -1560,9 +1704,16 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * A new node with type {@link IfStmt} is created. Then
+	 * {@link JavaVisitor#visitIfStmt(IfStmt, Node)} is used to generate the
+	 * children recursively.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/stmt/IfStmt.html
+	 * @see JavaVisitor#visitIfStmt(IfStmt, Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/IfStmt.html">JavaParser
+	 *      Docs - IfStmt</a>
+	 * @param n   IfStmt
+	 * @param arg Parent framework node of the IfStmt's framework node.
 	 */
 	@Override
 	public void visit(IfStmt n, Node arg) {
@@ -1571,9 +1722,17 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
-	 * 
-	 * Util to generate multiple 'Then' cases
+	 * The then statement is added as a child node {@link JavaNodeTypes#Then} to the
+	 * parent. This node gets an attribute {@link JavaAttributesTypes#Condition}
+	 * with the condition for the follow block. Then the then stmt visited with the
+	 * new node as a parent and removed from the {@link IfStmt}.
+	 * <p>
+	 * If the else stmt (@link IfStmt#getElseStmt()) is an if stmt, then this method
+	 * is called again, such that a new then node is created.
+	 * <p>
+	 * Otherwise, if the else stmt is not an if stmt, then a new node
+	 * {@link JavaNodeTypes#Else} is created, which represents the parent node of
+	 * the else stmt which is then visited.
 	 * 
 	 * @param n   If Statement
 	 * @param arg Parent Node
@@ -1599,9 +1758,16 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link InitializerDeclaration} and visits all
+	 * children of the initializer declaration.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/body/InitializerDeclaration.html
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/decl/InitializerDeclaration.html">JavaParser
+	 *      Docs - InitializerDeclaration</a>
+	 * @param n   InitializerDeclaration
+	 * @param arg Parent framework node of the InitializerDeclaration's framework
+	 *            node.
 	 */
 	@Override
 	public void visit(InitializerDeclaration n, Node arg) {
@@ -1609,9 +1775,18 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node with type {@link InstanceOfExpr}.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/InstanceOfExpr.html/
+	 * Adds an attribute {@link JavaAttributesTypes#Type} with value
+	 * {@link InstanceOfExpr#getType()} and adds an attribute
+	 * {@link JavaAttributesTypes#Expression} with value
+	 * {@link InstanceOfExpr#getExpression()}.
+	 * 
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/InstanceOfExpr.html">JavaParser
+	 *      Docs - InstanceOfExpr</a>
+	 * @param n   InstanceOfExpr
+	 * @param arg Parent framework node of the InstanceOfExpr's framework node.
 	 */
 	@Override
 	public void visit(InstanceOfExpr n, Node arg) {
@@ -1621,9 +1796,14 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Adds an attribute {@link JavaAttributesTypes#Value} with value
+	 * {@link IntegerLiteralExpr} as number to the parent node.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/expr/IntegerLiteralExpr.html
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/IntegerLiteralExpr.html">JavaParser
+	 *      Docs - IntegerLiteralExpr</a>
+	 * @param n   IntegerLiteralExpr
+	 * @param arg Parent framework node of the IntegerLiteralExpr's framework node.
 	 */
 	@Override
 	public void visit(IntegerLiteralExpr n, Node arg) {
@@ -1632,9 +1812,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 
 	/**
-	 * TODO this javadoc
+	 * Creates a new node of type {@link IntersectionType} and visits all children
+	 * of the intersection type.
 	 * 
-	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/type/IntersectionType.html
+	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
+	 * @see <a href=
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/IntersectionType.html">JavaParser
+	 *      Docs - IntersectionType</a>
+	 * @param n   IntersectionType
+	 * @param arg Parent framework node of the IntersectionType's framework node.
 	 */
 	@Override
 	public void visit(IntersectionType n, Node arg) {
