@@ -15,12 +15,16 @@ public class CopyDirectoryController {
 	@FXML
 	public RadioButton copyEmptyRB;
 
+	@FXML
+	public RadioButton copyShallowRB;
+
 	public ToggleGroup toggleGroup = new ToggleGroup();
 
 	public void toggleGroup() {
 
 		copyContentRB.setToggleGroup(toggleGroup);
 		copyEmptyRB.setToggleGroup(toggleGroup);
+		copyShallowRB.setToggleGroup(toggleGroup);
 		copyEmptyRB.setSelected(true);
 
 	}

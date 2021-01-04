@@ -34,6 +34,7 @@ import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
+import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.CustomTreeCell;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.FileImageProvider;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
@@ -77,6 +78,9 @@ public class ProjectExplorerViewController {
 	@Inject
 	private EMenuService _menuService;
 
+	@Inject
+	private RCPImageService imageService;
+	
 	@Inject
 	@Named(IServiceConstants.ACTIVE_SHELL)
 	private Shell _shell;
@@ -262,7 +266,7 @@ public class ProjectExplorerViewController {
 	public void dropElements(@UIEventTopic(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER) Object o) {
 		System.out.println("About to copy a directory");
 		if (o instanceof DropElement) {
-			WizardDialog dialog = new WizardDialog(_shell, new DropWizard(context, (DropElement) o));
+			WizardDialog dialog = new WizardDialog(_shell, new DropWizard(context, (DropElement) o, imageService));
 			dialog.open();
 		}
 	}

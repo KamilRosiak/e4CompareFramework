@@ -11,10 +11,12 @@
 	fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CopyDirectoryController">
 	<children>
 		<Text strokeType="OUTSIDE" strokeWidth="0.0"
-			text="How do you want to perform the copy?" />
-		<RadioButton fx:id="copyContentRB" mnemonicParsing="false"
-			text="Recursive Copy (Default behavior is full recursive)." />
+			text="How do you want to import the Directory?" />
 		<RadioButton fx:id="copyEmptyRB" mnemonicParsing="false"
 			text="Only generate the folder without the content." />
+		<RadioButton fx:id="copyShallowRB" mnemonicParsing="false"
+			text="Shallow Copy (Only copy 1st level children)" />
+		<RadioButton fx:id="copyContentRB" mnemonicParsing="false"
+			text="Recursive Copy" />
 	</children>
 </VBox>

@@ -1,6 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards;
 
+import java.nio.file.Path;
+
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -20,11 +23,12 @@ public class ImportDirectoryPage extends WizardPage {
 
 	private IEclipseContext context;
 
-	private boolean copyEmptyFolder = true;
+	private CopyStrategy copyStrategy = CopyStrategy.EMPTY;
 
-	public ImportDirectoryPage(String pageName, IEclipseContext context) {
-		super(pageName, pageName, null);
+	public ImportDirectoryPage(String pageName, Path path, IEclipseContext context, ImageDescriptor imgDescriptor) {
+		super(pageName, pageName, imgDescriptor);
 		this.context = context;
+		setDescription(path.toString());
 	}
 
 	@Override
@@ -38,7 +42,26 @@ public class ImportDirectoryPage extends WizardPage {
 
 		loader.getController().copyEmptyRB.selectedProperty()
 				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
-					copyEmptyFolder = isNowSelected;
+					if (isNowSelected) {
+						copyStrategy = CopyStrategy.EMPTY;
+					}
+
+					update();
+				});
+
+		loader.getController().copyShallowRB.selectedProperty()
+				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+					if (isNowSelected) {
+						copyStrategy = CopyStrategy.SHALLOW;
+					}
+					update();
+				});
+
+		loader.getController().copyContentRB.selectedProperty()
+				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+					if (isNowSelected) {
+						copyStrategy = CopyStrategy.RECURSIVE;
+					}
 					update();
 				});
 
@@ -47,17 +70,20 @@ public class ImportDirectoryPage extends WizardPage {
 		setControl(canvas);
 	}
 
-	public boolean copyWithoutContent() {
-		return copyEmptyFolder;
-	}
-
 	@Override
-	public boolean canFlipToNextPage() {
-		return !copyEmptyFolder;
+	public void setDescription(String description) {
+		super.setDescription("Copy to: " + description);
+	};
+
+	public CopyStrategy getCopyStrategy() {
+		return copyStrategy;
 	}
 
 	private void update() {
 		getWizard().getContainer().updateButtons();
 	}
 
+	enum CopyStrategy {
+		EMPTY, SHALLOW, RECURSIVE;
+	}
 }

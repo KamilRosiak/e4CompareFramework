@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.wizard.Wizard;
 
+import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
+
 /**
  * A wizard that handles drops from the system explorer to the project explorer,
  * if the drop contains a nested element (e.g. directory)
@@ -14,36 +16,33 @@ import org.eclipse.jface.wizard.Wizard;
 public class DropWizard extends Wizard {
 
 	private ImportDirectoryPage copyOptionsPage;
-	private ChooseRecursiveCopyOptionPage recursiveCopyOptionPage;
-	private IEclipseContext context;
-
 	private DropElement dropElement;
 
-	public DropWizard(IEclipseContext context, DropElement dropElement) {
-		this.context = context;
+	public DropWizard(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
 		this.dropElement = dropElement;
-	}
-
-	@Override
-	public void addPages() {
-		this.copyOptionsPage = new ImportDirectoryPage("Import directory", context);
-		this.recursiveCopyOptionPage = new ChooseRecursiveCopyOptionPage("Choose strategy", context);
+		this.copyOptionsPage = new ImportDirectoryPage("Import directory", dropElement.getTarget(), context,
+				imgService.getImageDescriptor(null, "icons/Explorer_View/items/folder24.png"));
 		addPage(copyOptionsPage);
-		addPage(recursiveCopyOptionPage);
 	}
 
 	@Override
 	public boolean performFinish() {
 
-		if (copyOptionsPage.copyWithoutContent()) {
-			// perform copy of just the folder itself, with no content that is in it.
-			copyRecursivly(0);
-		} else if (!recursiveCopyOptionPage.copyRecursivly()) {
-			// copy only first level children
-			copyRecursivly(1);
-		} else {
-			// make full copy
-			copyRecursivly(Integer.MAX_VALUE);
+		switch (copyOptionsPage.getCopyStrategy()) {
+
+		case EMPTY:
+			copyRecursively(0);
+			break;
+		case RECURSIVE:
+			copyRecursively(Integer.MAX_VALUE);
+			break;
+		case SHALLOW:
+			copyRecursively(1);
+			break;
+		default:
+			copyRecursively(0);
+			break;
+
 		}
 		return true;
 	}
@@ -54,7 +53,7 @@ public class DropWizard extends Wizard {
 	 *              Create only folder without content 1: Copy only first level
 	 *              children 2: Copy all children recursively
 	 */
-	private void copyRecursivly(int depth) {
+	private void copyRecursively(int depth) {
 
 		for (Path directoryPath : dropElement.getSources()) {
 			try {
