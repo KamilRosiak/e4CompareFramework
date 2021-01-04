@@ -102,31 +102,19 @@ public final class TreeViewUtilities {
 
 	public static void serializesTree(TreeView<NodeUsage> treeView) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
-
-		if (file.getName().equals(treeName)) {
-			file.delete();
-		}
-
-		try {
-			FileWriter writer = new FileWriter(file);
-			TreeItem<NodeUsage> rootItem = treeView.getRoot();
-			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
-				writer.write(node.getValue().toString());
-				writer.write("\n");
-			}
-			writer.close();
-			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		writeToFile(file, treeView);
 	}
 
 	public static void serializesTree(TreeView<NodeUsage> treeView, String newFileName) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
+		writeToFile(file, treeView);
+	}
+
+	public static void extractTree(TreeView<NodeUsage> treeView, String newFileName, List<TreeItem> tempList) {
+		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		try {
 			FileWriter writer = new FileWriter(file);
-			TreeItem<NodeUsage> rootItem = treeView.getRoot();
-			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
+			for (TreeItem<NodeUsage> node : tempList) {
 				writer.write(node.getValue().toString());
 				writer.write("\n");
 			}
@@ -176,4 +164,22 @@ public final class TreeViewUtilities {
 		searchCounter++;
 	}
 
+	public static void writeToFile(File file, TreeView treeView) {
+		if (file.getName().equals(treeName)) {
+			file.delete();
+		}
+
+		try {
+			FileWriter writer = new FileWriter(file);
+			TreeItem<NodeUsage> rootItem = treeView.getRoot();
+			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
+				writer.write(node.getValue().toString());
+				writer.write("\n");
+			}
+			writer.close();
+			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
