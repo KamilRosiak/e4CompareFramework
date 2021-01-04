@@ -67,7 +67,7 @@ public class TreeViewController {
 	@Inject
 	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
-		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView);
+		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView, new TreeItem<NodeUsage> (new NodeUsage(tree.getRoot())));
 		treeView = TreeViewUtilities.addListener(treeView, services);
 		//totalNodeAmount
 		//		.setText("Total Node Amount: " + TreeViewUtilities.searchTreeItem(treeView.getRoot(), "").size());
@@ -142,6 +142,7 @@ public class TreeViewController {
 		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
 				.remove(treeView.getSelectionModel().getSelectedItem());
 		displayTotalNodeAmount();
+		treeView.refresh();
 	}
 
 	/**
@@ -175,6 +176,7 @@ public class TreeViewController {
 		}
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(newChild);
 		displayTotalNodeAmount();
+		treeView.refresh();
 	}
 
 	/**
@@ -206,6 +208,7 @@ public class TreeViewController {
 			treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
 					.add(treeView.getSelectionModel().getSelectedIndex(), t);
 			displayTotalNodeAmount();
+			treeView.refresh();
 		} catch (NullPointerException e) {
 			return;
 		}
@@ -216,6 +219,7 @@ public class TreeViewController {
 		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(
 				TreeViewUtilities.getInput("Enter attribute name"),
 				TreeViewUtilities.getInput("Enter attribute value"));
+		treeView.refresh();
 	}
 
 	void addAttribute(String attributeName, String attributeValue) {
@@ -232,5 +236,6 @@ public class TreeViewController {
 	void displayTotalNodeAmount() {
 		totalNodeAmount
 		.setText("Total Node Amount: " + (treeView.getRoot().getChildren().size() + 1));
+		treeView.refresh();
 	}
 }

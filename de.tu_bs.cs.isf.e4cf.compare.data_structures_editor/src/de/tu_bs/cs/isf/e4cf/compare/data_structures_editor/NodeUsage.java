@@ -23,13 +23,14 @@ public class NodeUsage extends AbstractNode {
 		setNodeType(node.getNodeType());
 		setAttributes(node.getAttributes());
 		setParent(node.getParent());
+		setChildren(node.getChildren());
 	}
 
 	@Override
 	public String toString() {
 		String s1 = "";
 		if (this.getAttributes().isEmpty()) {
-			return s1 + "Root";
+			return s1 + "empty";
 		}
 		for (Attribute attribute : this.getAttributes()) {
 			if(attribute.getAttributeKey().toLowerCase().equals("name")) {
