@@ -50,7 +50,8 @@ public class NewFileHandler {
 		if (context != null) {
 			this.context = context;
 		}
-		NewFileWizard newFileWizard = new NewFileWizard(context, directory);
+
+		NewFileWizard newFileWizard = new NewFileWizard(this.context, directory);
 		WizardDialog dialog = new WizardDialog(shell, newFileWizard);
 		dialog.open();
 	}

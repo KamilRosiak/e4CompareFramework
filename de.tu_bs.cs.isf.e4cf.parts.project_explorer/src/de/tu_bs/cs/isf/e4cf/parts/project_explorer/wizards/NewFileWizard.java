@@ -37,7 +37,7 @@ public class NewFileWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 
-		Path target = newFilePage.getTargetPath().resolve(newFilePage.getFilename());
+		Path target = targetPath.resolve(newFilePage.getFilename());
 		if (Files.exists(target)) {
 			newFilePage.setFileAlreadyExistsHint(true);
 			return false;

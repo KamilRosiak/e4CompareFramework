@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards;
 
-import java.io.File;
 import java.nio.file.Path;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -14,7 +13,6 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
-import javafx.stage.DirectoryChooser;
 
 /**
  * Wizard Page that lets the user create a new file.
@@ -25,17 +23,14 @@ public class NewFilePage extends WizardPage {
 
 	private String fileName = "";
 
-	private Path targetPath;
-
 	private FXMLLoader<NewFileViewController> loader;
 
 	// the regex to check if filename is valid.
-	private static final String FILE_NAME_REGEX = "[a-zA-Z0-9-_]+[.]{1}[a-zA-Z0-9]+";
+	private static final String FILE_NAME_REGEX = "[a-zA-Z0-9-_#]*[.]{1}[a-zA-Z0-9]+";
 
 	protected NewFilePage(String pageName, Path target, IEclipseContext context) {
 		super(pageName, pageName, null);
 		this.context = context;
-		this.targetPath = target;
 		setDescription(target.toString());
 	}
 
@@ -55,20 +50,6 @@ public class NewFilePage extends WizardPage {
 		loader.getController().fileNameTextField.focusedProperty().addListener((obs, oldValue, newValue) -> {
 			if (newValue) {
 				setFileAlreadyExistsHint(false);
-			}
-		});
-
-		/**
-		 * Lets the user choose a new directory as the target dir and updates the
-		 * targetPath field.
-		 */
-		loader.getController().changeRootBtn.setOnAction(event -> {
-			DirectoryChooser chooser = new DirectoryChooser();
-			chooser.setInitialDirectory(targetPath.toFile());
-			File selectedDirectory = chooser.showDialog(scene.getWindow());
-			if (selectedDirectory != null) {
-				targetPath = selectedDirectory.toPath();
-				setDescription(targetPath.toString());
 			}
 		});
 
@@ -117,16 +98,6 @@ public class NewFilePage extends WizardPage {
 	 */
 	public String getFilename() {
 		return fileName;
-	}
-
-	/**
-	 * Get the path, where the file should be created. User can change the target
-	 * path so always get the path from the page.
-	 * 
-	 * @return target path
-	 */
-	public Path getTargetPath() {
-		return targetPath;
 	}
 
 	/**
