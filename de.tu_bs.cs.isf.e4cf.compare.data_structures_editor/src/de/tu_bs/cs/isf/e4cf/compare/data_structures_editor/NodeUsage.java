@@ -24,6 +24,7 @@ public class NodeUsage extends AbstractNode {
 		setAttributes(node.getAttributes());
 		setParent(node.getParent());
 		setChildren(node.getChildren());
+		setUUID(node.getUUID());
 	}
 
 	@Override

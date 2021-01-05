@@ -31,6 +31,8 @@ public final class TreeViewUtilities {
 	private static int searchCounter = 0;
 
 	private static int recursionCounter = 0;
+	
+	public static List<TreeItem<NodeUsage>> list = new ArrayList<TreeItem<NodeUsage>>();
 
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
@@ -58,6 +60,8 @@ public final class TreeViewUtilities {
 
 		return treeView;
 	}
+	
+	
 	/**
 	 * Temporäre Lösung, noch nicht fertiggestellt
 	 * @param tr
@@ -74,16 +78,55 @@ public final class TreeViewUtilities {
 			treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(item)));
 			treeView.getRoot().setExpanded(true);
 			treeView.setShowRoot(true);
+			list.add(new TreeItem<NodeUsage>(new NodeUsage(item)));
 		}
-		if(item.getChildren().size() > 0) {
+
+		if(!item.isLeaf()) {
 			for(Node n : item.getChildren()) {
 				getTreeViewFromTree(tr, treeView, n);
+
 			}
 		} else {
-			item.getParent().getChildren().add(item);
+//			System.out.println("DadTreeItem" + findTreeItemInTreeView(treeView, item));
+//			findTreeItemInTreeView(treeView, item).getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			treeView.getRoot().getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			
 		}
 		return treeView;
 	}
+	
+//	public static TreeItem<NodeUsage> findTreeItemInTreeView(TreeView<NodeUsage> treeView, Node item){
+//		
+//		treeViewToList(treeView.getRoot());
+//		for (TreeItem<NodeUsage> n : list ) {
+//			System.out.println("item: " + item);
+//			System.out.println("n: " + n.getValue());
+//			
+//			NodeUsage x = new NodeUsage (item);
+//			if (n.getValue().getUUID().equals(x.getUUID())) {
+//				System.out.println("uuid gleich");
+//				return n;
+//			} else {
+//				continue;
+//			}
+//			
+//		}
+//		return null;
+//	}
+//	
+//	public static void treeViewToList(TreeItem<NodeUsage> item){
+//		
+//		if (!(item.getValue().getAttributes().isEmpty())){
+//			list.add(item);
+//		}
+//		
+//		if(!item.getValue().isLeaf()) {
+//			System.out.println(item + "hasChildren");
+//			for(TreeItem<NodeUsage> t : item.getChildren())
+//			treeViewToList(t);
+//		}
+//		System.out.println("treeViewToList" + list);
+//	}
 
 //	public static TreeView<NodeUsage> getTreeRecursively(Tree tr, TreeView<NodeUsage> treeView, TreeItem<NodeUsage> item) {
 //		nextItem = item;
