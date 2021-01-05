@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -65,53 +66,21 @@ public final class TreeViewUtilities {
 	 * @return
 	 */
 	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView,
-			TreeItem<NodeUsage> item) {
+			Node item) {
 
 		recursionCounter += 1;
-		System.out.println(recursionCounter);
 
 		if (recursionCounter == 1) {
-			item.setExpanded(true);
-			treeView.setRoot(item);
+			treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			treeView.getRoot().setExpanded(true);
 			treeView.setShowRoot(true);
 		}
-
-		System.out.println("itemValue children: " + item.getValue().getChildren());
-////		if (item.getValue().getChildren().size() > 0) {
-////			treeView.getRoot().getChildren().add(item);
-//			System.out.println("rootChildren: " + treeView.getRoot().getValue().getChildren());
-//			Iterator<Node> it = item.getValue().getChildren().iterator();
-//			while(it.hasNext()) {
-//				System.out.println(" it next children" + it.next().getChildren());
-//				if(it.next().getChildren().size() > 0) {
-//					treeView.getRoot().getChildren().add(new TreeItem<NodeUsage> (new NodeUsage(it.next())));
-//					getTreeViewFromTree(tr, treeView, new TreeItem<NodeUsage> (new NodeUsage(it.next())));
-//				} else {
-//					treeView.getRoot().getChildren().add(new TreeItem<NodeUsage> (new NodeUsage(it.next())));
-//				}
-//				
-//			}
-////			for (Node n : item.getValue().getChildren()) {
-////				getTreeViewFromTree(tr, treeView, new TreeItem<NodeUsage> (new NodeUsage(n)));
-////			}
-////			
-////		} else {
-////			treeView.getRoot().getChildren().add(item);
-////		}
-
-		for (Node n : item.getValue().getChildren()) {
-			TreeItem<NodeUsage> temp = new TreeItem<NodeUsage>(new NodeUsage(n));
-			System.out.println(n.getAttributes());
-			if ((item.getValue().getChildren().equals(null) || item.getValue().getChildren().size() == 0)
-					&& (recursionCounter != 1)) {
-				break;
+		if(item.getChildren().size() > 0) {
+			for(Node n : item.getChildren()) {
+				getTreeViewFromTree(tr, treeView, n);
 			}
-			if (!(n.getAttributes().isEmpty()) && recursionCounter != 1) {
-				System.out.println("adding node");
-				treeView.getRoot().getChildren().add(temp);
-			}
-			getTreeViewFromTree(tr, treeView, temp);
-
+		} else {
+			item.getParent().getChildren().add(item);
 		}
 		return treeView;
 	}
