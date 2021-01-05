@@ -13,8 +13,10 @@ public class FileTable {
 	public static String PROJECT_EXPLORER_ICONS = Paths.get(PROJECT_EXPLORER, "items").toString();
 	public static String PROJECT_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "project16.png").toString();
 	public static String FOLDER_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "folder16.png").toString();
+	public static String NEWFOLDER_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "newfolder16.png").toString();
 	public static String XML_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "xml16.png").toString();
 	public static String FILE_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "file16.png").toString();
+	public static String NEWFILE_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "newfile16.png").toString();
 
 	// Toolbar
 	public static String PROJECT_EXPLORER_TOOLBAR = Paths.get(PROJECT_EXPLORER, "ToolBar").toString();

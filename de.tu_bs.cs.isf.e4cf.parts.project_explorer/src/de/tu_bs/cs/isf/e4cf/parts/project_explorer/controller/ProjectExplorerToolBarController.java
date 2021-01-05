@@ -32,10 +32,10 @@ public class ProjectExplorerToolBarController {
 	private ToolBar bar;
 
 	private Button btnNewFolder;
+	private Button btnNewFile;
 	private Button btnImportFiles;
 	private Button btnDelete;
 	private Button btnShowExplorer;
-	private Button btnNewFile;
 
 	private boolean isFlatView = false;
 
@@ -52,6 +52,7 @@ public class ProjectExplorerToolBarController {
 			Shell shell) {
 		bar = toolbar;
 		this.services = services;
+
 		// Search Section
 		TextField search = new TextField();
 		search.setVisible(false);
@@ -86,11 +87,8 @@ public class ProjectExplorerToolBarController {
 
 		bar.getItems().add(new Separator());
 
-		// File Actions
-		// TODO New File Task #33
-
 		// New Folder
-		btnNewFolder = createToolbarButton("Create New Folder", FileTable.FOLDER_PNG, actionEvent -> {
+		btnNewFolder = createToolbarButton("Create New Folder", FileTable.NEWFOLDER_PNG, actionEvent -> {
 			NewFolderHandler handler = new NewFolderHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
 				handler.execute(shell, services.dialogService, services.rcpSelectionService, services.imageService,
@@ -98,8 +96,17 @@ public class ProjectExplorerToolBarController {
 			}
 		});
 
+		// File Actions
+		btnNewFile = createToolbarButton("Create new File", FileTable.NEWFILE_PNG, actionEvent -> {
+			NewFileHandler handler = new NewFileHandler();
+			if (handler.canExecute(services.rcpSelectionService)) {
+				handler.execute(context, services.dialogService, services.rcpSelectionService, services.imageService,
+						services.workspaceFileSystem);
+			}
+		});
+
 		// Import Files
-		btnImportFiles = createToolbarButton("Import Files", FileTable.FILE_PNG, actionEvent -> {
+		btnImportFiles = createToolbarButton("Import ...", FileTable.FILE_PNG, actionEvent -> {
 			FileImportHandler handler = new FileImportHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
 				handler.execute(services.imageService, services.dialogService, services.rcpSelectionService, shell,
@@ -121,15 +128,6 @@ public class ProjectExplorerToolBarController {
 			ShowInExplorerHandler handler = new ShowInExplorerHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
 				handler.execute(services.rcpSelectionService);
-			}
-		});
-
-		// TODO: create icon for newfile action
-		btnNewFile = createToolbarButton("Create new File", FileTable.FILE_PNG, actionEvent -> {
-			NewFileHandler handler = new NewFileHandler();
-			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(context, services.dialogService, services.rcpSelectionService, services.imageService,
-						services.workspaceFileSystem);
 			}
 		});
 
@@ -188,7 +186,7 @@ public class ProjectExplorerToolBarController {
 		// Show in Explorer
 		ShowInExplorerHandler seh = new ShowInExplorerHandler();
 		btnShowExplorer.setDisable(!seh.canExecute(services.rcpSelectionService));
-		
+
 		// New file
 		NewFileHandler newFileHandler = new NewFileHandler();
 		btnNewFile.setDisable(!newFileHandler.canExecute(services.rcpSelectionService));
