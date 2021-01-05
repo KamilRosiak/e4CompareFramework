@@ -68,6 +68,7 @@ public class TreeViewController {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		closeFile();
 		treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(tree.getRoot())));
+		treeView.getRoot().setExpanded(true);
 		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView,
 				new TreeItem<NodeUsage>(new NodeUsage(tree.getRoot())));
 		treeView = TreeViewUtilities.addListener(treeView, services);
