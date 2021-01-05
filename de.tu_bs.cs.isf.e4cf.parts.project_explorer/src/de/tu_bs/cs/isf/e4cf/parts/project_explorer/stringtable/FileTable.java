@@ -7,6 +7,8 @@ public class FileTable {
 
 	public static final String PROJECT_EXPLORER_VIEW_FXML = Paths
 			.get(PROJECT_EXPLORER_VIEWS, "ProjectExplorerView.fxml").toString();
+	public static final String COPY_DIRECTORY_PAGE_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "CopyDirectoryView.fxml")
+			.toString();
 	public static final String NEW_FILE_PAGE_VIEW = Paths.get(PROJECT_EXPLORER_VIEWS, "NewFileView.fxml").toString();
 
 	// Image paths

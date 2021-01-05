@@ -14,8 +14,10 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard.DropMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -35,10 +37,15 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
 
+	/**
+	 * Indicates whether a file transfer operation actually changed the filetree.
+	 */
+	private boolean fileMoved;
+
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider,
 			ServiceContainer services) {
 		this.fileImageProvider = fileImageProvider;
-		
+
 		// Allow Drops on Directory TreeItems but not on files
 		setOnDragOver((DragEvent event) -> {
 			if (getTreeItem().getValue() instanceof Directory)
@@ -53,6 +60,13 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 
 			final Dragboard db = event.getDragboard();
 			boolean success = false;
+			// keeps track from where the drop has been received. this is important for the
+			// copying behavior.
+			DropMode dropMode = DropMode.COPY;
+			/**
+			 * Keeps tracks of all directories of the current selection
+			 */
+			List<File> directories = new ArrayList<File>();
 
 			if (db.hasFiles()) {
 				List<java.io.File> files = db.getFiles();
@@ -68,27 +82,71 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 
 				for (java.io.File file : files) {
 					try {
+
 						// Determine if a drop originates from tree or from file system
 						// This can not be done via transfer mode!
 						if (event.getGestureSource() instanceof CustomTreeCell) {
 							// In-Tree: Perform Move
-							moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
-									Paths.get(directory.getAbsolutePath(), file.getName()));
+							dropMode = DropMode.MOVE;
+							/**
+							 * If current file is a directory with content it has to have special copying
+							 * functionality.
+							 */
+							if (file.isDirectory() && file.listFiles().length > 0) {
+								// we only want the parent since it is full recursive copying. Can be improved
+								// later.
+								if (!files.contains(file.getParentFile())) {
+									directories.add(file);
+								}
+							} else {
+								// if this file is not a parent of a currently selected folder copy it now.
+								if (!files.contains(file.getParentFile())) {
+									moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
+											Paths.get(directory.getAbsolutePath(), file.getName()));
+								}
+
+							}
 						} else {
 							// From file system: Copy File
-							workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
-									Paths.get(directory.getAbsolutePath()));
+							dropMode = DropMode.COPY;
+							// only copy folder with content, otherwise just handle as a normal file.
+							if (file.isDirectory() && file.listFiles().length > 0) {
+								directories.add(file);
+
+							} else {
+								try {
+									workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
+											Paths.get(directory.getAbsolutePath()));
+								} catch (FileAlreadyExistsException already) {
+									RCPMessageProvider.errorMessage("File already exsits.",
+											"A file with the name " + file.getName() + " exists.");
+								}
+							}
 						}
 						success = true;
-					} catch (FileAlreadyExistsException e) {
-						success = false;
-						RCPMessageProvider.errorMessage("File already exsits.",
-								"A file with the name " + file + " exists.");
-						break;
 					} catch (IOException e) {
 						success = false;
 						e.printStackTrace();
 						break;
+					}
+				}
+				/**
+				 * If there were directories with content copy them.
+				 */
+				if (directories.size() > 0) {
+					Path[] sources = directories.stream().map(file -> file.toPath()).toArray(Path[]::new);
+					// transfer files from system.
+					if (dropMode == DropMode.COPY) {
+						// dispatch copying to wizard. the wizard keeps track of All directories at
+						// once.
+						DropElement dropElement = new DropElement(Paths.get(directory.getAbsolutePath()), sources);
+						services.eventBroker.post(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER, dropElement);
+					} else {
+						// move elements in the filetree full recursive.
+						for (Path source : sources) {
+							moveFileOrDirectory(source,
+									Paths.get(directory.getAbsolutePath()).resolve(source.getFileName()));
+						}
 					}
 				}
 			}
@@ -158,23 +216,55 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		if (!sourceFile.isDirectory() || (sourceFile.isDirectory() && sourceFile.list().length == 0)) {
 			try {
 				Files.move(source, target);
+			} catch (FileAlreadyExistsException alreadyExists) {
+				RCPMessageProvider.errorMessage("File already exsits.",
+						"A file with the name " + sourceFile.getName() + " exists.");
+				alreadyExists.printStackTrace();
 			} catch (IOException e) {
 				RCPMessageProvider.errorMessage("Error when moving a file or directory", e.getMessage());
 			}
 		} else {
 			// Traverse the file tree and copy each file/directory.
+			// reset with every iteration the fileMoved so it is specific for every file in
+			// the iteration
+			fileMoved = true;
 			try {
-
-				Files.walk(source).forEach(sourcePath -> {
-					Path targetPath = target.resolve(source.relativize(sourcePath));
-					try {
-						Files.copy(sourcePath, targetPath);
-					} catch (IOException e) {
-						e.printStackTrace();
+				// walk through all levels -> MAX_VALUE
+				Files.walk(source, Integer.MAX_VALUE).forEach(sourcePath -> {
+					// if parent did not move, children do not move either
+					if (!fileMoved) {
+						return;
 					}
+
+					Path targetPath = target.resolve(source.relativize(sourcePath));
+
+					// if file is dropped on itself, do nothing
+					if (targetPath.equals(sourcePath)) {
+						// target did not move
+						fileMoved = false;
+					} else {
+						try {
+							Files.copy(sourcePath, targetPath);
+						} catch (FileAlreadyExistsException alreadyExistExc) {
+							// file did not move but is already there, so throw an exception only for the
+							// first time this occurs.
+							if (fileMoved) {
+								RCPMessageProvider.errorMessage("File already exsits.",
+										"A file with the name " + sourceFile.getName() + " exists.");
+							}
+							// because file is already there it did not move.
+							fileMoved = false;
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+
 				});
 
-				Files.walk(source).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+				// if files have changed there location clean up the old space.
+				if (fileMoved) {
+					Files.walk(source).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+				}
 
 			} catch (IOException e) {
 				e.printStackTrace();

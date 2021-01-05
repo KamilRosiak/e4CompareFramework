@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -17,9 +18,12 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Shell;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
@@ -31,7 +35,9 @@ import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
+import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.CustomTreeCell;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.FileImageProvider;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.WorkspaceStructureTemplate;
@@ -39,6 +45,7 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
@@ -74,6 +81,16 @@ public class ProjectExplorerViewController {
 	private IEventBroker _eventBroker;
 	@Inject
 	private EMenuService _menuService;
+
+	@Inject
+	private RCPImageService imageService;
+
+	@Inject
+	@Named(IServiceConstants.ACTIVE_SHELL)
+	private Shell _shell;
+
+	@Inject
+	IEclipseContext context;
 
 	// Controller fields
 	
@@ -324,6 +341,18 @@ public class ProjectExplorerViewController {
 		services.eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
 	}
 
+	/**
+	 * Subscribing on the drop element event
+	 */
+	@Inject
+	@Optional
+	public void dropElements(@UIEventTopic(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER) Object o) {
+		if (o instanceof DropElement) {
+			WizardDialog dialog = new WizardDialog(_shell, new DropWizard(context, (DropElement) o, imageService));
+			dialog.open();
+		}
+	}
+
 	/** Sets up the selection service via a ChangeListener on the projectTree */
 	private void setupSelectionService() {
 		// Set no initial selection
@@ -336,8 +365,8 @@ public class ProjectExplorerViewController {
 
 		// Add a SelectionListener to tree to propagate the selection that is done in
 		// the tree
-		changeListener = new ListChangeListener<TreeItem<FileTreeElement>>() {
 
+		changeListener = new ListChangeListener<TreeItem<FileTreeElement>>() {
 			@Override
 			public void onChanged(Change<? extends TreeItem<FileTreeElement>> change) {
 
