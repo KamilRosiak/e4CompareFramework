@@ -60,6 +60,8 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 
 			final Dragboard db = event.getDragboard();
 			boolean success = false;
+			// keeps track from where the drop has been received. this is important for the
+			// copying behavior.
 			DropMode dropMode = DropMode.COPY;
 			/**
 			 * Keeps tracks of all directories of the current selection
@@ -107,6 +109,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 						} else {
 							// From file system: Copy File
 							dropMode = DropMode.COPY;
+							// only copy folder with content, otherwise just handle as a normal file.
 							if (file.isDirectory() && file.listFiles().length > 0) {
 								directories.add(file);
 
@@ -134,6 +137,8 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 					Path[] sources = directories.stream().map(file -> file.toPath()).toArray(Path[]::new);
 					// transfer files from system.
 					if (dropMode == DropMode.COPY) {
+						// dispatch copying to wizard. the wizard keeps track of All directories at
+						// once.
 						DropElement dropElement = new DropElement(Paths.get(directory.getAbsolutePath()), sources);
 						services.eventBroker.post(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER, dropElement);
 					} else {
@@ -241,11 +246,13 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 						try {
 							Files.copy(sourcePath, targetPath);
 						} catch (FileAlreadyExistsException alreadyExistExc) {
-							// file did not move.
+							// file did not move but is already there, so throw an exception only for the
+							// first time this occurs.
 							if (fileMoved) {
 								RCPMessageProvider.errorMessage("File already exsits.",
 										"A file with the name " + sourceFile.getName() + " exists.");
 							}
+							// because file is already there it did not move.
 							fileMoved = false;
 						} catch (IOException e) {
 							e.printStackTrace();
