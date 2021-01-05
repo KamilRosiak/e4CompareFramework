@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement.DropMode;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard.DropMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -36,6 +36,8 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
+
+	private boolean fileMoved;
 
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider,
 			ServiceContainer services) {
@@ -80,26 +82,28 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 							dropMode = DropMode.MOVE;
 							if (file.isDirectory() && file.listFiles().length > 0) {
 								directories.add(file);
-								continue;
+
+							} else {
+								moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
+										Paths.get(directory.getAbsolutePath(), file.getName()));
 							}
-							moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
-									Paths.get(directory.getAbsolutePath(), file.getName()));
 						} else {
 							// From file system: Copy File
 							dropMode = DropMode.COPY;
 							if (file.isDirectory() && file.listFiles().length > 0) {
 								directories.add(file);
-								continue;
+
+							} else {
+								try {
+									workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
+											Paths.get(directory.getAbsolutePath()));
+								} catch (FileAlreadyExistsException already) {
+									RCPMessageProvider.errorMessage("File already exsits.",
+											"A file with the name " + file.getName() + " exists.");
+								}
 							}
-							workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
-									Paths.get(directory.getAbsolutePath()));
 						}
 						success = true;
-					} catch (FileAlreadyExistsException e) {
-						success = false;
-						RCPMessageProvider.errorMessage("File already exsits.",
-								"A file with the name " + file + " exists.");
-						break;
 					} catch (IOException e) {
 						success = false;
 						e.printStackTrace();
@@ -108,9 +112,16 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				}
 				if (directories.size() > 0) {
 					Path[] sources = directories.stream().map(file -> file.toPath()).toArray(Path[]::new);
-					DropElement dropElement = new DropElement(dropMode, Paths.get(directory.getAbsolutePath()),
-							sources);
-					services.eventBroker.post(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER, dropElement);
+					if (dropMode == DropMode.COPY) {
+						DropElement dropElement = new DropElement(Paths.get(directory.getAbsolutePath()), sources);
+						services.eventBroker.post(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER, dropElement);
+					} else {
+						// move elements in the filetree full recursive.
+						for (Path source : sources) {
+							moveFileOrDirectory(source,
+									Paths.get(directory.getAbsolutePath()).resolve(source.getFileName()));
+						}
+					}
 				}
 			}
 			event.setDropCompleted(success);
@@ -179,23 +190,46 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		if (!sourceFile.isDirectory() || (sourceFile.isDirectory() && sourceFile.list().length == 0)) {
 			try {
 				Files.move(source, target);
+			} catch (FileAlreadyExistsException alreadyExists) {
+				RCPMessageProvider.errorMessage("File already exsits.",
+						"A file with the name " + sourceFile.getName() + " exists.");
+				alreadyExists.printStackTrace();
 			} catch (IOException e) {
 				RCPMessageProvider.errorMessage("Error when moving a file or directory", e.getMessage());
 			}
 		} else {
 			// Traverse the file tree and copy each file/directory.
+			fileMoved = true;
 			try {
-
-				Files.walk(source).forEach(sourcePath -> {
-					Path targetPath = target.resolve(source.relativize(sourcePath));
-					try {
-						Files.copy(sourcePath, targetPath);
-					} catch (IOException e) {
-						e.printStackTrace();
+				Files.walk(source, Integer.MAX_VALUE).forEach(sourcePath -> {
+					if (!fileMoved) {
+						return;
 					}
+
+					Path targetPath = target.resolve(source.relativize(sourcePath));
+
+					if (targetPath.equals(sourcePath)) {
+						// target did not move
+						fileMoved = false;
+					} else {
+						try {
+							Files.copy(sourcePath, targetPath);
+						} catch (FileAlreadyExistsException alreadyExistExc) {
+							if (fileMoved) {
+								RCPMessageProvider.errorMessage("File already exsits.",
+										"A file with the name " + sourceFile.getName() + " exists.");
+							}
+							fileMoved = false;
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+
 				});
 
-				Files.walk(source).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+				if (fileMoved) {
+					Files.walk(source).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+				}
 
 			} catch (IOException e) {
 				e.printStackTrace();

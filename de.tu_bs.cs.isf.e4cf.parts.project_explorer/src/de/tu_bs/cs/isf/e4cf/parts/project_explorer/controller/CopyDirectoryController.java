@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 
@@ -18,9 +17,6 @@ public class CopyDirectoryController {
 
 	@FXML
 	public RadioButton copyShallowRB;
-
-	@FXML
-	public CheckBox moveCheckbox;
 
 	public ToggleGroup toggleGroup = new ToggleGroup();
 

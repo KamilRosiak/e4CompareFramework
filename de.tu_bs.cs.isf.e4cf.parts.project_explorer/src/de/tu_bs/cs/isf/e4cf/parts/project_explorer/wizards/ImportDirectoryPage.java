@@ -9,7 +9,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement.DropMode;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CopyDirectoryController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
@@ -27,8 +26,6 @@ public class ImportDirectoryPage extends WizardPage {
 	// the strategy how the dropped directories should be copied (3 states)
 	private CopyStrategy copyStrategy = CopyStrategy.EMPTY;
 
-	private DropMode dropMode;
-
 	private FXMLLoader<CopyDirectoryController> loader;
 
 	/**
@@ -42,12 +39,10 @@ public class ImportDirectoryPage extends WizardPage {
 	 * @param context       the Eclipse Context used for the FXML loader
 	 * @param imgDescriptor an image for the page to display.
 	 */
-	public ImportDirectoryPage(String pageName, DropMode dropMode, Path path, IEclipseContext context,
-			ImageDescriptor imgDescriptor) {
+	public ImportDirectoryPage(String pageName, Path path, IEclipseContext context, ImageDescriptor imgDescriptor) {
 		super(pageName, pageName, imgDescriptor);
 		this.context = context;
 		setDescription(path.toString());
-		this.dropMode = dropMode;
 	}
 
 	@Override
@@ -58,12 +53,6 @@ public class ImportDirectoryPage extends WizardPage {
 		Scene scene = new Scene(loader.getNode());
 
 		canvas.setScene(scene);
-		
-		if (dropMode == DropMode.COPY) {
-			loader.getController().moveCheckbox.setDisable(true);
-		} else {
-			loader.getController().moveCheckbox.setSelected(true);
-		}
 
 		loader.getController().copyEmptyRB.selectedProperty()
 				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
@@ -90,16 +79,6 @@ public class ImportDirectoryPage extends WizardPage {
 					update();
 				});
 
-		loader.getController().moveCheckbox.selectedProperty()
-				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
-					if (isNowSelected) {
-						dropMode = DropMode.MOVE;
-					} else {
-						dropMode = DropMode.COPY;
-					}
-					update();
-				});
-
 		loader.getController().toggleGroup();
 
 		setControl(canvas);
@@ -117,15 +96,6 @@ public class ImportDirectoryPage extends WizardPage {
 	 */
 	public CopyStrategy getCopyStrategy() {
 		return copyStrategy;
-	}
-
-	/**
-	 * Return the currently selected drop mode
-	 * 
-	 * @return the currently selected drop mode
-	 */
-	public DropMode getDropMode() {
-		return dropMode;
 	}
 
 	/**
