@@ -76,6 +76,7 @@ public class ProjectExplorerViewController {
 	private EMenuService _menuService;
 
 	// Controller fields
+	
 	private ListChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
@@ -128,7 +129,7 @@ public class ProjectExplorerViewController {
 		});
 
 		// Handoff Toolbar
-		toolbarController = new ProjectExplorerToolBarController(projectToolbar, services,
+		toolbarController = new ProjectExplorerToolBarController(projectToolbar, context, services,
 				canvas.getParent().getShell());
 
 	}

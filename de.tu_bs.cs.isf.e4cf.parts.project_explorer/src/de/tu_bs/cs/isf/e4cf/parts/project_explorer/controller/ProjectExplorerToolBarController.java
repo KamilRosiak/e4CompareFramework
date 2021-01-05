@@ -1,10 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.widgets.Shell;
 
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.FileImportHandler;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFileHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFolderHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.RemoveFileCommand;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.ShowInExplorerHandler;
@@ -30,6 +32,7 @@ public class ProjectExplorerToolBarController {
 	private ToolBar bar;
 
 	private Button btnNewFolder;
+	private Button btnNewFile;
 	private Button btnImportFiles;
 	private Button btnDelete;
 	private Button btnShowExplorer;
@@ -45,7 +48,8 @@ public class ProjectExplorerToolBarController {
 	 * @param shell    The current UI Shell passed on from the ViewController's
 	 *                 Parent, required for some handlers
 	 */
-	public ProjectExplorerToolBarController(ToolBar toolbar, ServiceContainer services, Shell shell) {
+	public ProjectExplorerToolBarController(ToolBar toolbar, IEclipseContext context, ServiceContainer services,
+			Shell shell) {
 		bar = toolbar;
 		this.services = services;
 
@@ -83,11 +87,8 @@ public class ProjectExplorerToolBarController {
 
 		bar.getItems().add(new Separator());
 
-		// File Actions
-		// TODO New File Task #33
-
 		// New Folder
-		btnNewFolder = createToolbarButton("Create New Folder", FileTable.FOLDER_PNG, actionEvent -> {
+		btnNewFolder = createToolbarButton("Create New Folder", FileTable.NEWFOLDER_PNG, actionEvent -> {
 			NewFolderHandler handler = new NewFolderHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
 				handler.execute(shell, services.dialogService, services.rcpSelectionService, services.imageService,
@@ -95,8 +96,17 @@ public class ProjectExplorerToolBarController {
 			}
 		});
 
+		// File Actions
+		btnNewFile = createToolbarButton("Create new File", FileTable.NEWFILE_PNG, actionEvent -> {
+			NewFileHandler handler = new NewFileHandler();
+			if (handler.canExecute(services.rcpSelectionService)) {
+				handler.execute(context, services.dialogService, services.rcpSelectionService, services.imageService,
+						services.workspaceFileSystem);
+			}
+		});
+
 		// Import Files
-		btnImportFiles = createToolbarButton("Import Files", FileTable.FILE_PNG, actionEvent -> {
+		btnImportFiles = createToolbarButton("Import ...", FileTable.FILE_PNG, actionEvent -> {
 			FileImportHandler handler = new FileImportHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
 				handler.execute(services.imageService, services.dialogService, services.rcpSelectionService, shell,
@@ -176,6 +186,10 @@ public class ProjectExplorerToolBarController {
 		// Show in Explorer
 		ShowInExplorerHandler seh = new ShowInExplorerHandler();
 		btnShowExplorer.setDisable(!seh.canExecute(services.rcpSelectionService));
+
+		// New file
+		NewFileHandler newFileHandler = new NewFileHandler();
+		btnNewFile.setDisable(!newFileHandler.canExecute(services.rcpSelectionService));
 
 	}
 
