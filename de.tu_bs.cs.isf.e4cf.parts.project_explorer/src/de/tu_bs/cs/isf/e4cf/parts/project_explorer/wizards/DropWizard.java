@@ -21,6 +21,7 @@ public class DropWizard extends Wizard {
 	private ImportDirectoryPage copyOptionsPage;
 	private DropElement dropElement;
 
+	// indicates whether a file has been moved.
 	boolean didFileMove = true;
 
 	public DropWizard(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
@@ -98,6 +99,9 @@ public class DropWizard extends Wizard {
 		return true;
 	}
 
+	/**
+	 * All options for file transfer behavior.
+	 */
 	public enum DropMode {
 		COPY, MOVE;
 	}
