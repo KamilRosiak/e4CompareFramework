@@ -24,10 +24,7 @@ public class DropWizard extends Wizard {
 	private ImportDirectoryPage copyOptionsPage;
 	private DropElement dropElement;
 
-	/**
-	 * Indicates whether a transfer of files has been done correctly.
-	 */
-	private boolean alreadyExists = false;
+	boolean didFileMove = true;
 
 	public DropWizard(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
 		this.dropElement = dropElement;
@@ -63,37 +60,42 @@ public class DropWizard extends Wizard {
 	 * @param depth indicates to which level the user want to copy the files. 0:
 	 *              Create only folder without content 1: Copy only first level
 	 *              children 2: Copy all children recursively
-	 * @return false if no directory could be copied / moved. True otherwise.
 	 */
 	private void copyRecursively(int depth) {
 
-		for (Path directoryPath : dropElement.getSources()) {
-			alreadyExists = false;
+		for (Path directory : dropElement.getSources()) {
+			didFileMove = true;
 			try {
-				Files.walk(directoryPath, depth).forEach(sourcePath -> {
-					if (alreadyExists) {
+				Files.walk(directory, depth).forEach(sourcePath -> {
+					// if parent didn't move then children don't need to move either.
+					if (!didFileMove) {
 						return;
 					}
-					Path target = (dropElement.getTarget().resolve(directoryPath.getFileName()))
-							.resolve(directoryPath.relativize(sourcePath));
-					try {
-						Files.copy(sourcePath, target);
-					} catch (FileAlreadyExistsException alreadyExc) {
-						alreadyExists = true;
-					} catch (IOException e) {
-						e.printStackTrace();
+					// construct new target path
+					Path target = (dropElement.getTarget().resolve(directory.getFileName()))
+							.resolve(directory.relativize(sourcePath));
+					if (target.equals(sourcePath)) {
+						// no need to copy
+						didFileMove = false;
+					} else {
+						try {
+							Files.copy(sourcePath, target);
+						} catch (FileAlreadyExistsException fae) {
+							if (didFileMove) {
+								RCPMessageProvider.errorMessage("Directory already exsits.",
+										"A Directory with the name " + directory.getFileName() + " exists.");
+							}
+							didFileMove = false;
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
 				});
-				if (!alreadyExists) {
-					if (copyOptionsPage.getDropMode() == DropMode.MOVE) {
-						Files.walk(directoryPath).sorted(Comparator.reverseOrder()).map(Path::toFile)
-								.forEach(File::delete);
-					}
-				} else {
-					RCPMessageProvider.errorMessage("Directory already exsits.",
-							"A Directory with the name " + directoryPath.getFileName() + " exists.");
+				if (didFileMove && copyOptionsPage.getDropMode() == DropMode.MOVE) {
+					// if we selected DropMode Move we need to delete the files from the old
+					// location.
+					Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 				}
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
