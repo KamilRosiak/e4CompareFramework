@@ -68,7 +68,7 @@ public class TreeViewController {
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		closeFile();
-		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView, new TreeItem<NodeUsage> (new NodeUsage(tree.getRoot())));
+		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView, tree.getRoot());
 		treeView = TreeViewUtilities.addListener(treeView, services);
 		// totalNodeAmount
 		// .setText("Total Node Amount: " +
