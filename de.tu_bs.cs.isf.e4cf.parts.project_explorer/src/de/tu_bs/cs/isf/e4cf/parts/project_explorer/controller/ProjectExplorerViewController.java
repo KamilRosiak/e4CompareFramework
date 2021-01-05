@@ -84,7 +84,7 @@ public class ProjectExplorerViewController {
 
 	@Inject
 	private RCPImageService imageService;
-	
+
 	@Inject
 	@Named(IServiceConstants.ACTIVE_SHELL)
 	private Shell _shell;
@@ -319,7 +319,7 @@ public class ProjectExplorerViewController {
 	public void rename(@UIEventTopic(E4CEventTable.EVENT_RENAME_PROJECT_EXPLORER_ITEM) Object o) {
 		projectTree.edit(projectTree.getSelectionModel().getSelectedItem());
 	}
-	
+
 	/** Subscribing on filter / search change */
 	@Inject
 	@Optional
@@ -331,7 +331,7 @@ public class ProjectExplorerViewController {
 		}
 		services.eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
 	}
-	
+
 	/** Subscribing on toggling hierarchical / flat view */
 	@Inject
 	@Optional
@@ -346,7 +346,6 @@ public class ProjectExplorerViewController {
 	@Inject
 	@Optional
 	public void dropElements(@UIEventTopic(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER) Object o) {
-		System.out.println("About to copy a directory");
 		if (o instanceof DropElement) {
 			WizardDialog dialog = new WizardDialog(_shell, new DropWizard(context, (DropElement) o, imageService));
 			dialog.open();
@@ -416,4 +415,3 @@ public class ProjectExplorerViewController {
 	}
 
 }
-	
