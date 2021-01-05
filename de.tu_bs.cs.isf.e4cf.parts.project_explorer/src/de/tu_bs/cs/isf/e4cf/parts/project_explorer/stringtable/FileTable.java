@@ -3,10 +3,12 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable;
 import java.nio.file.Paths;
 
 public class FileTable {
-	public static final String PROJECT_EXPLORER_VIEW_FXML = Paths.get("ui", "view", "ProjectExplorerView.fxml")
-			.toString();
+	public static final String PROJECT_EXPLORER_VIEWS = Paths.get("ui", "view").toString();
 
-	public static final String COPY_DIRECTORY_PAGE_FXML = Paths.get("ui", "view", "CopyDirectoryView.fxml").toString();
+	public static final String PROJECT_EXPLORER_VIEW_FXML = Paths
+			.get(PROJECT_EXPLORER_VIEWS, "ProjectExplorerView.fxml").toString();
+	public static final String COPY_DIRECTORY_PAGE_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "CopyDirectoryView.fxml")
+			.toString();
 
 	// Image paths
 	public static String PROJECT_EXPLORER = Paths.get("icons", "Explorer_View").toString();

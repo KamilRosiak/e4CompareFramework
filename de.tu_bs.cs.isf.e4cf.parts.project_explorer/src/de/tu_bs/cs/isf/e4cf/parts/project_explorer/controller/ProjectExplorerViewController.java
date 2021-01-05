@@ -37,6 +37,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.CustomTreeCell;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.FileImageProvider;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.WorkspaceStructureTemplate;
@@ -45,7 +46,6 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyL
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard.DropElement;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;

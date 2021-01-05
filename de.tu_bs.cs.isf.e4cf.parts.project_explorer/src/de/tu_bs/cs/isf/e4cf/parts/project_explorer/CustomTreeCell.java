@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard.DropElement;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement.DropMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -55,7 +55,8 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 
 			final Dragboard db = event.getDragboard();
 			boolean success = false;
-			List<java.io.File> directories = new ArrayList<File>();
+			DropMode dropMode = DropMode.COPY;
+			List<File> directories = new ArrayList<File>();
 
 			if (db.hasFiles()) {
 				List<java.io.File> files = db.getFiles();
@@ -72,19 +73,24 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				for (java.io.File file : files) {
 					try {
 
-						if (file.isDirectory() && file.listFiles().length > 0) {
-							directories.add(file);
-							continue;
-						}
-
 						// Determine if a drop originates from tree or from file system
 						// This can not be done via transfer mode!
 						if (event.getGestureSource() instanceof CustomTreeCell) {
 							// In-Tree: Perform Move
+							dropMode = DropMode.MOVE;
+							if (file.isDirectory() && file.listFiles().length > 0) {
+								directories.add(file);
+								continue;
+							}
 							moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
 									Paths.get(directory.getAbsolutePath(), file.getName()));
 						} else {
 							// From file system: Copy File
+							dropMode = DropMode.COPY;
+							if (file.isDirectory() && file.listFiles().length > 0) {
+								directories.add(file);
+								continue;
+							}
 							workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
 									Paths.get(directory.getAbsolutePath()));
 						}
@@ -102,7 +108,8 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				}
 				if (directories.size() > 0) {
 					Path[] sources = directories.stream().map(file -> file.toPath()).toArray(Path[]::new);
-					DropElement dropElement = new DropElement(Paths.get(directory.getAbsolutePath()), sources);
+					DropElement dropElement = new DropElement(dropMode, Paths.get(directory.getAbsolutePath()),
+							sources);
 					services.eventBroker.post(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER, dropElement);
 				}
 			}
