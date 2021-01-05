@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,20 +21,23 @@ import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.NewFileWizard;
 
 /**
- * This handler handles the request from the ContextMenu Children for creating a new file.
+ * This handler handles the request from the ContextMenu Children for creating a
+ * new file.
  *
  */
 public class NewFileHandler {
-	
+
 	@Inject
 	IEclipseContext context;
-	
-	@Inject @Named(IServiceConstants.ACTIVE_SHELL) private Shell shell;
+
+	@Inject
+	@Named(IServiceConstants.ACTIVE_SHELL)
+	private Shell shell;
 
 	@Execute
-	public void execute(RCPDialogService dialogService,
-			RCPSelectionService selectionService, RCPImageService imageService, WorkspaceFileSystem fileSystem) {
-		
+	public void execute(IEclipseContext context, RCPDialogService dialogService, RCPSelectionService selectionService,
+			RCPImageService imageService, WorkspaceFileSystem fileSystem) {
+
 		FileTreeElement selectedElement = selectionService.getCurrentSelectionFromExplorer();
 
 		Path directory;
@@ -44,8 +46,10 @@ public class NewFileHandler {
 		} else {
 			directory = FileHandlingUtility.getPath(fileSystem.getWorkspaceDirectory());
 		}
-		
 
+		if (context != null) {
+			this.context = context;
+		}
 		NewFileWizard newFileWizard = new NewFileWizard(context, directory);
 		WizardDialog dialog = new WizardDialog(shell, newFileWizard);
 		dialog.open();

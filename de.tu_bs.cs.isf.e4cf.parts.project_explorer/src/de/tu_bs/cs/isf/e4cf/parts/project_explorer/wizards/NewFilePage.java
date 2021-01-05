@@ -30,7 +30,7 @@ public class NewFilePage extends WizardPage {
 	private FXMLLoader<NewFileViewController> loader;
 
 	// the regex to check if filename is valid.
-	private static final String FILE_NAME_REGEX = "[a-zA-Z0-9-_]+[.]{1}[a-zA-Z]+";
+	private static final String FILE_NAME_REGEX = "[a-zA-Z0-9-_]+[.]{1}[a-zA-Z0-9]+";
 
 	protected NewFilePage(String pageName, Path target, IEclipseContext context) {
 		super(pageName, pageName, null);

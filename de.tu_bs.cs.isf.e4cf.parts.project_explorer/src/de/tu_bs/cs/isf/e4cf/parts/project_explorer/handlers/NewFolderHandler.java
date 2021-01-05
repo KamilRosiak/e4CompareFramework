@@ -26,7 +26,7 @@ public class NewFolderHandler {
 		
 		NewFolderPage page = new NewFolderPage(
 				"NewFolder", "Choose a Folder Name", 
-				imageService.getImageDescriptor(null, "icons/Explorer_View/items/project32.png")
+				imageService.getImageDescriptor(null, "icons/Explorer_View/items/folder24.png")
 		);
 		
 		// create selected directory when selected element available, else create new project

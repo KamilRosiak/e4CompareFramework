@@ -6,6 +6,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
-import javafx.geometry.Insets;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;
@@ -25,10 +26,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 
 /**
  * A tree cell that supports dragging
@@ -38,10 +35,17 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
 
-	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider) {
+	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider,
+			ServiceContainer services) {
 		this.fileImageProvider = fileImageProvider;
-
-		setOnDragOver((DragEvent event) -> event.acceptTransferModes(TransferMode.COPY, TransferMode.MOVE));
+		
+		// Allow Drops on Directory TreeItems but not on files
+		setOnDragOver((DragEvent event) -> {
+			if (getTreeItem().getValue() instanceof Directory)
+				event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+			else
+				event.acceptTransferModes(TransferMode.NONE);
+		});
 
 		setOnDragDropped((DragEvent event) -> {
 			TreeItem<FileTreeElement> currentItem = getTreeItem();
@@ -50,36 +54,41 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			final Dragboard db = event.getDragboard();
 			boolean success = false;
 
-			// For drops in the tree we just get a String of the sources absolute path
-			if (db.hasString()) {
-				String path = db.getString();
+			if (db.hasFiles()) {
+				List<java.io.File> files = db.getFiles();
 
-				// Ignore drop on the same element that is displayed
-				if (path == currentItem.getValue().getAbsolutePath()) {
-					event.setDropCompleted(success);
+				// Prevent Dropping on a directory contained in drag source
+				if (files.contains(directory.getFile().toFile())) {
+					RCPMessageProvider.errorMessage("Drag and Drop Error",
+							"Drop-Target is not allowed to be contained in Drag-Sources");
+					event.setDropCompleted(false);
 					event.consume();
 					return;
 				}
 
-				Path source = Paths.get(path);
-				Path target = Paths.get(directory.getAbsolutePath()).resolve(source.getFileName());
-				moveFileOrDirectory(source, target);
-
-				success = true;
-			}
-
-			if (db.hasFiles()) {
-				List<java.io.File> files = db.getFiles();
 				for (java.io.File file : files) {
 					try {
-						workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
-								Paths.get(directory.getAbsolutePath()));
+						// Determine if a drop originates from tree or from file system
+						// This can not be done via transfer mode!
+						if (event.getGestureSource() instanceof CustomTreeCell) {
+							// In-Tree: Perform Move
+							moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
+									Paths.get(directory.getAbsolutePath(), file.getName()));
+						} else {
+							// From file system: Copy File
+							workspaceFileSystem.copy(Paths.get(file.getAbsolutePath()),
+									Paths.get(directory.getAbsolutePath()));
+						}
 						success = true;
 					} catch (FileAlreadyExistsException e) {
+						success = false;
 						RCPMessageProvider.errorMessage("File already exsits.",
 								"A file with the name " + file + " exists.");
+						break;
 					} catch (IOException e) {
+						success = false;
 						e.printStackTrace();
+						break;
 					}
 				}
 			}
@@ -87,41 +96,25 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			event.consume();
 		});
 
+		// Start Drag
 		setOnDragDetected((MouseEvent event) -> {
-			TreeItem<FileTreeElement> currentItem = getTreeItem();
 			Dragboard db = startDragAndDrop(TransferMode.MOVE);
 
 			ClipboardContent content = new ClipboardContent();
-			content.putString(currentItem.getValue().getAbsolutePath());
+
+			ArrayList<java.io.File> sources = new ArrayList<java.io.File>();
+
+			for (FileTreeElement entry : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
+				sources.add(new java.io.File(entry.getAbsolutePath()));
+			}
+
+			content.putFiles(sources);
+
 			db.setContent(content);
 
 			event.consume();
 		});
 
-		setOnDragEntered((DragEvent event) -> {
-			Background background = new Background(
-					new BackgroundFill(Color.CORNFLOWERBLUE, CornerRadii.EMPTY, Insets.EMPTY));
-
-			if (event.getDragboard().hasString()) {
-				if (event.getGestureSource() instanceof CustomTreeCell) {
-					CustomTreeCell source = (CustomTreeCell) event.getGestureSource();
-					// Don't color if we are the source
-					if (!source.getTreeItem().equals(getTreeItem())) {
-						setBackground(background);
-					}
-				} else {
-					setBackground(background);
-				}
-			}
-
-			event.consume();
-		});
-
-		setOnDragExited((DragEvent event) -> {
-			setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-			setTextFill(Color.BLACK);
-			event.consume();
-		});
 	}
 
 	/**
@@ -198,7 +191,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	}
 
 	private void setupEditTextField() {
-		editTextField = new TextField(getItem().toString());
+		editTextField = new TextField(getItem().getFileName());
 		editTextField.selectAll();
 		editTextField.setOnKeyReleased((KeyEvent event) -> {
 			if (event.getCode() == KeyCode.ENTER) {
