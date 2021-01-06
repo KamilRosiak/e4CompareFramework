@@ -16,4 +16,5 @@ public class E4CEventTable {
 	
 	public static final String EVENT_FILTER_CHANGED = "EVENT_FILTER_CHANGED";
 	public static final String EVENT_VIEW_TOGGLE = "EVENT_VIEW_TOGGLE";
+	public static final String EVENT_SET_TREE_SELECTION = "EVENT_SET_TREE_SELECTION";
 }

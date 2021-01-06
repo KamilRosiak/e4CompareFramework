@@ -341,9 +341,7 @@ public class ProjectExplorerViewController {
 		services.eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
 	}
 
-	/**
-	 * Subscribing on the drop element event
-	 */
+	/** Subscribing on the drop element event */
 	@Inject
 	@Optional
 	public void dropElements(@UIEventTopic(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER) Object o) {

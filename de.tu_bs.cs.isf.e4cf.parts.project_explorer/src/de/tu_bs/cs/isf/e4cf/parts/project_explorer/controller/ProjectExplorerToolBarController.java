@@ -91,7 +91,7 @@ public class ProjectExplorerToolBarController {
 		btnNewFolder = createToolbarButton("Create New Folder", FileTable.NEWFOLDER_PNG, actionEvent -> {
 			NewFolderHandler handler = new NewFolderHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(services.rcpSelectionService);
+				handler.execute(services.eventBroker, services.rcpSelectionService);
 			}
 		});
 
