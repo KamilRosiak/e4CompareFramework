@@ -91,8 +91,7 @@ public class ProjectExplorerToolBarController {
 		btnNewFolder = createToolbarButton("Create New Folder", FileTable.NEWFOLDER_PNG, actionEvent -> {
 			NewFolderHandler handler = new NewFolderHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(shell, services.dialogService, services.rcpSelectionService, services.imageService,
-						services.workspaceFileSystem);
+				handler.execute(services.rcpSelectionService);
 			}
 		});
 
@@ -109,8 +108,7 @@ public class ProjectExplorerToolBarController {
 		btnImportFiles = createToolbarButton("Import ...", FileTable.FILE_PNG, actionEvent -> {
 			FileImportHandler handler = new FileImportHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(services.imageService, services.dialogService, services.rcpSelectionService, shell,
-						services.workspaceFileSystem);
+				handler.execute(services.rcpSelectionService, services.workspaceFileSystem);
 			}
 		});
 
