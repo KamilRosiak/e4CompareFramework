@@ -58,6 +58,7 @@ public class JavaWriterAttributeCollector {
 	private NodeList<ReferenceType> _throws = new NodeList<ReferenceType>();
 	private Type _type = null;
 	private TypeParameter _typeargument = null;
+	private NodeList<ReferenceType> _unionType = new NodeList<ReferenceType>();
 	private NodeList<Expression> _update = new NodeList<Expression>();
 	private Expression _value = null;
 
@@ -74,14 +75,24 @@ public class JavaWriterAttributeCollector {
 			final String singleVal = attribute.getAttributeValues().iterator().next();
 
 			if (key.equals(JavaAttributesTypes.Annotation.name())) {
-				attribute.getAttributeValues().forEach(val -> _annotation.add(StaticJavaParser.parseAnnotation(val)));
+				for (String value : attribute.getAttributeValues()) {
+					// Annotations start with an at-symbol
+					if (!value.startsWith("@")) {
+						value = "@" + value;
+					}
+					_annotation.add(StaticJavaParser.parseAnnotation(value));
+				}
 			} else if (key.equals(JavaAttributesTypes.Assignment.name())) {
 				_assignment = StaticJavaParser.parseStatement(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Asterisks.name())) {
 				_asteriks = Boolean.valueOf(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Bound.name())) {
-				attribute.getAttributeValues()
-						.forEach(val -> _bound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
+				/*
+				 * Attribute Bound contains the number of bound children
+				 * 
+				 * attribute.getAttributeValues()
+				 * 		.forEach(val -> _bound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
+				*/
 			} else if (key.equals(JavaAttributesTypes.Cast.name())) {
 				_cast = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Check.name())) {
@@ -158,7 +169,14 @@ public class JavaWriterAttributeCollector {
 				attribute.getAttributeValues()
 						.forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 			} else if (key.equals(JavaAttributesTypes.Type.name())) {
-				_type = StaticJavaParser.parseType(singleVal);
+				if(!singleVal.contains("|")) {
+					_type = StaticJavaParser.parseType(singleVal);
+				} else {
+					String[] types = singleVal.split("\\|");
+					for(String type : types) {
+						_unionType.add(StaticJavaParser.parseClassOrInterfaceType(type));
+					}
+				}
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
 				_typeargument = StaticJavaParser.parseTypeParameter(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Update.name())) {
@@ -308,7 +326,11 @@ public class JavaWriterAttributeCollector {
 	}
 
 	public Type getType() {
-		return _type;
+		Type t = _type;
+		if (t == null && !_unionType.isEmpty()) {
+			t = new UnionType(_unionType);
+		}
+		return t;
 	}
 
 	public TypeParameter getTypeArgument() {

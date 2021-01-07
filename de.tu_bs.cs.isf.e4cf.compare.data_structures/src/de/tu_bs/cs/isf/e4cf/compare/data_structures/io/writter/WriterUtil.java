@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -76,9 +77,9 @@ public class WriterUtil {
 			obj.setDefaultValue(attributes.getValue());
 			jpNode = obj;
 		} else if (n.getNodeType().startsWith(JavaNodeTypes.Argument.name())) {
-			if (p == null) {
+			if (p == null || attributes.getChildren() > 0) {
 				// Do nothing, e.g. parent of concrete arg was arg
-			} else if (attributes.getType() != null) {
+			} else if (attributes.getType() != null && attributes.getName() != null) {
 				Parameter param = new Parameter(attributes.getType(), attributes.getName());
 				param.setModifiers(attributes.getModifier());
 				((NodeWithParameters) p).addParameter(param);
@@ -253,9 +254,16 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(FieldDeclaration.class.getSimpleName())) {
 			FieldDeclaration fd = new FieldDeclaration();
 			fd.setModifiers(attributes.getModifier());
-			fd.addVariable(new VariableDeclarator(attributes.getType(), attributes.getName(),
-					attributes.getInitilization().getFirst().get()));
-
+			
+			VariableDeclarator vd = new VariableDeclarator();
+			vd.setType(attributes.getType());
+			vd.setName(attributes.getName());
+			if (!attributes.getInitilization().isEmpty()) {
+				vd.setInitializer(attributes.getInitilization().getFirst().get());
+			}
+			
+			fd.addVariable(vd);
+			
 			if (p instanceof TypeDeclaration) {
 				TypeDeclaration nwm = (TypeDeclaration) p;
 				nwm.addMember(fd);
@@ -348,8 +356,12 @@ public class WriterUtil {
 			obj.setThrownExceptions(attributes.getThrows());
 			obj.setName(attributes.getName());
 			obj.setModifiers(attributes.getModifier());
-			obj.setType(attributes.getReturnType());
-
+			if (attributes.getReturnType() != null) {
+				obj.setType(attributes.getReturnType());
+			} else if (attributes.getType() != null) {
+				obj.setType(attributes.getType());
+			}
+			
 			if (p instanceof NodeWithMembers) {
 				((NodeWithMembers) p).addMember(obj);
 			}
@@ -447,7 +459,7 @@ public class WriterUtil {
 			ThisExpr obj = new ThisExpr();
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ThrowStmt.class.getSimpleName())) {
-			ThrowStmt obj = new ThrowStmt();
+			ThrowStmt obj = new ThrowStmt();			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(TryStmt.class.getSimpleName())) {
 			TryStmt obj = new TryStmt();
