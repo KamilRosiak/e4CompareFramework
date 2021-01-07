@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard.DropMode;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog.DropMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.TextFieldTreeCell;

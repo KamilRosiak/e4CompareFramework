@@ -46,6 +46,8 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyL
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard;
+//import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
@@ -348,6 +350,8 @@ public class ProjectExplorerViewController {
 		if (o instanceof DropElement) {
 			WizardDialog dialog = new WizardDialog(_shell, new DropWizard(context, (DropElement) o, imageService));
 			dialog.open();
+//			DropFilesDialog dialog = new DropFilesDialog(context, (DropElement) o, imageService);
+//			dialog.showDialog();
 		}
 	}
 
