@@ -18,6 +18,7 @@ public class VisitorUtil {
 	 * @param arg Parent Node
 	 */
 	public static Node Leaf(com.github.javaparser.ast.Node n, Node arg) {
+		n = n.removeComment();
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		AddAttribute(c, JavaAttributesTypes.Value, n.toString());
 		return c;
@@ -31,6 +32,7 @@ public class VisitorUtil {
 	 * @return New Node
 	 */
 	public static Node Parent(com.github.javaparser.ast.Node n, Node arg) {
+		n = n.removeComment();
 		return new NodeImpl(n.getClass().getSimpleName(), arg);
 	}
 	

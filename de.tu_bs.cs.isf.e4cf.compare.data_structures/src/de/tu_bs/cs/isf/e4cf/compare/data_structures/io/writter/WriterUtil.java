@@ -386,7 +386,9 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(Parameter.class.getSimpleName())) {
 			Parameter obj = new Parameter();
-			obj.setType(attributes.getType());
+			if (attributes.getType() != null) {
+				obj.setType(attributes.getType());
+			}
 			obj.setName(attributes.getName());
 
 			if (p instanceof CatchClause) {

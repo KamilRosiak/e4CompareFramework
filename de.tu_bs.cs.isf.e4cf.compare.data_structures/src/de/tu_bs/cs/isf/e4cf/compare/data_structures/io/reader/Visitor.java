@@ -364,7 +364,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MarkerAnnotationExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Annotation, n.toString());
+		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Annotation, n.getNameAsString());
 	}
 
 	/**
@@ -493,7 +493,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(Parameter n, Node arg) {
 		Node c = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
+		if (!n.getTypeAsString().isEmpty()) {
+			VisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
+		}
 		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
 	}
 

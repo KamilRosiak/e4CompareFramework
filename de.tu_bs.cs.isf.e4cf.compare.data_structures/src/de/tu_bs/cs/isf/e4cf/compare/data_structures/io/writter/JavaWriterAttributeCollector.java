@@ -172,8 +172,7 @@ public class JavaWriterAttributeCollector {
 				if(!singleVal.contains("|")) {
 					_type = StaticJavaParser.parseType(singleVal);
 				} else {
-					String[] types = singleVal.split("\\|");
-					for(String type : types) {
+					for(String type : singleVal.split("\\|")) {
 						_unionType.add(StaticJavaParser.parseClassOrInterfaceType(type));
 					}
 				}
