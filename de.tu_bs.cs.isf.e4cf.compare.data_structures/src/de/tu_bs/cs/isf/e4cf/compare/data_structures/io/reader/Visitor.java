@@ -621,7 +621,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ThrowStmt n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		VisitorUtil.AddAttribute(VisitorUtil.Parent(n, arg), JavaAttributesTypes.Statement, n.toString());
 	}
 
 	/**
