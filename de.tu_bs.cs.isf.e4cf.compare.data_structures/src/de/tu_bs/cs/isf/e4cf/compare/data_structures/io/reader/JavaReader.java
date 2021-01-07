@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
+import com.github.javaparser.printer.DotPrinter;
 
 /***
  * 
@@ -50,7 +51,7 @@ public class JavaReader extends AbstractArtifactReader {
 
 			// Remove these lines after debug
 			System.out.print("\n\n--- JAVA PARSER AST BEGIN ---\n\n");
-			System.out.print(TreeConverter.javaParserNodeToDot(cu));
+			System.out.print(new DotPrinter(true).output(cu));
 			System.out.print("\n\n--- JAVA PARSER AST END ---\n\n");
 			System.out.print("\n\n--- FRAMEWORK TREE BEGIN ---\n\n");
 			System.out.println(TreeConverter.treeToDot(tree));
