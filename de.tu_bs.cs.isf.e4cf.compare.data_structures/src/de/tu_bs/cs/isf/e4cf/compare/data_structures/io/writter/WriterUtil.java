@@ -516,6 +516,14 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(WhileStmt.class.getSimpleName())) {
 			WhileStmt obj = new WhileStmt();
+			obj.setCondition(attributes.getValue());
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			} else {
+				throw new UnsupportedOperationException();
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(WildcardType.class.getSimpleName())) {
 			WildcardType obj = new WildcardType();
