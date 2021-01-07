@@ -39,7 +39,7 @@ public class NewFileDialog {
 		final Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(imageService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
 
-		dialog.setTitle("File Creation Dialog");
+		dialog.setTitle("Create New File...");
 		dialog.setHeaderText("Root Directory: " + parentPath.getFileName() + "\nEnter the new file name:");
 		dialog.setGraphic(imageService.getFXImage(null, FileTable.NEWFILE_PNG));
 
