@@ -3,14 +3,12 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files;
 import java.nio.file.Path;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.jface.resource.ImageDescriptor;
 
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CopyDirectoryController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import javafx.scene.Parent;
-import javafx.scene.control.DialogPane;
 
 /**
  * Represents a Wizard Page which lets the user choose to copy the content of a
@@ -24,7 +22,7 @@ public class ImportDirectoryPage {
 	private CopyStrategy copyStrategy = CopyStrategy.EMPTY;
 
 	private FXMLLoader<CopyDirectoryController> loader;
-	private DialogPane pane;
+	// by passing the Pane of the dialog into createControl the dialog buttons become accessible to the page
 
 	/**
 	 * Creates a new page for the wizard that displays importing a directory
@@ -41,17 +39,14 @@ public class ImportDirectoryPage {
 		this.context = context;
 	}
 
-	public Parent createControl(DialogPane pane) {
+	public Parent createControl() {
 		loader = new FXMLLoader<CopyDirectoryController>(context, StringTable.BUNDLE_NAME,
 				FileTable.COPY_DIRECTORY_PAGE_FXML);
-		this.pane = pane;
 		loader.getController().copyEmptyRB.selectedProperty()
 				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
 					if (isNowSelected) {
 						this.copyStrategy = CopyStrategy.EMPTY;
 					}
-
-//					update();
 				});
 
 		loader.getController().copyShallowRB.selectedProperty()
@@ -59,7 +54,6 @@ public class ImportDirectoryPage {
 					if (isNowSelected) {
 						this.copyStrategy = CopyStrategy.SHALLOW;
 					}
-//					update();
 				});
 
 		loader.getController().copyContentRB.selectedProperty()
@@ -67,23 +61,12 @@ public class ImportDirectoryPage {
 					if (isNowSelected) {
 						copyStrategy = CopyStrategy.RECURSIVE;
 					}
-//					update();
 				});
 
 		loader.getController().toggleGroup();
 		
 		return loader.getNode();
 	}
-
-	/**
-	 * Update the buttons of the wizard
-	 */
-//	private void update() {
-//		if (copyStrategy == null) {
-//			pane.lookupButton(ButtonType.OK).setDisable(true);
-//		}
-//
-//	}
 
 	/**
 	 * Get the currently selected copying strategy

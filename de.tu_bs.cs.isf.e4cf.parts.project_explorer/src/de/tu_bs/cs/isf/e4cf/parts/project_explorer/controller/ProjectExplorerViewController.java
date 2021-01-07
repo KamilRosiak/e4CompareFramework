@@ -21,7 +21,6 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 
@@ -45,8 +44,6 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard;
-//import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.DropWizard;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
@@ -348,10 +345,8 @@ public class ProjectExplorerViewController {
 	@Optional
 	public void dropElements(@UIEventTopic(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER) Object o) {
 		if (o instanceof DropElement) {
-			WizardDialog dialog = new WizardDialog(_shell, new DropWizard(context, (DropElement) o, imageService));
-			dialog.open();
-//			DropFilesDialog dialog = new DropFilesDialog(context, (DropElement) o, imageService);
-//			dialog.showDialog();
+			DropFilesDialog dialog = new DropFilesDialog(context, (DropElement) o, imageService);
+			dialog.showDialog();
 		}
 	}
 

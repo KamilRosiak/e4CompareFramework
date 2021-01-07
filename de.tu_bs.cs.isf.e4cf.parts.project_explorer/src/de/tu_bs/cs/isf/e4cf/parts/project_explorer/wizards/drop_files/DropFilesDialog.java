@@ -12,7 +12,6 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
@@ -23,38 +22,43 @@ import javafx.scene.control.DialogPane;
  * if the drop contains a nested element (e.g. directory)
  */
 public class DropFilesDialog {
-	
+
 	private DropElement dropElement;
-	// indicates whether a file has been moved.
-	boolean didFileMove = true;
 	private Alert alert;
 	private ImportDirectoryPage copyOptionsPage;
-		
-	
-	public DropFilesDialog (IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
+	// indicates whether a file has been moved.
+	boolean didFileMove = true;
+
+	/**
+	 * @param context
+	 * @param dropElement
+	 * @param imgService
+	 */
+	public DropFilesDialog(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
+		this.dropElement = dropElement;
 		alert = new Alert(AlertType.NONE);
 		alert.setTitle("Import a Directory");
 		final Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(imgService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
-		
+
 		final DialogPane pane = alert.getDialogPane();
 		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
+
 		this.copyOptionsPage = new ImportDirectoryPage(dropElement.getTarget(), context);
 
-		pane.setContent(copyOptionsPage.createControl(pane));
-		
+		pane.setContent(copyOptionsPage.createControl());
+
 	}
-	
+
+	/** show he dialog and wait for the users input */
 	public void showDialog() {
 		alert.showAndWait().ifPresent(response -> {
 			this.performFinish();
 		});
 	}
-	
-	public boolean performFinish() {
 
-		System.out.println(copyOptionsPage.getCopyStrategy().toString());
+	public void performFinish() {
+
 		switch (copyOptionsPage.getCopyStrategy()) {
 		case EMPTY:
 			copyRecursively(0);
@@ -69,7 +73,6 @@ public class DropFilesDialog {
 			copyRecursively(0);
 			break;
 		}
-		return true;
 	}
 
 	/**
@@ -81,7 +84,6 @@ public class DropFilesDialog {
 	private void copyRecursively(int depth) {
 
 		for (Path directory : dropElement.getSources()) {
-			System.out.println(directory.getFileName());
 			didFileMove = true;
 			try {
 				Files.walk(directory, depth).forEach(sourcePath -> {
@@ -114,7 +116,7 @@ public class DropFilesDialog {
 			}
 		}
 	}
-	
+
 	/**
 	 * All options for file transfer behavior.
 	 */
