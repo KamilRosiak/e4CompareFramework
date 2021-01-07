@@ -215,6 +215,15 @@ public class WriterUtil {
 			DoubleLiteralExpr obj = new DoubleLiteralExpr();
 			obj.setValue(attributes.getValue().toString());
 			jpNode = obj;
+		} else if (n.getNodeType().equals(JavaNodeTypes.Else.name())) {
+			BlockStmt elseStmt = new BlockStmt();
+			IfStmt ifStmt = (IfStmt) p;
+			while (ifStmt.hasElseBranch()) {
+				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
+			}
+			IfStmt parentIfStmt = (IfStmt) ifStmt.getParentNode().get();
+			parentIfStmt.removeElseStmt();
+			parentIfStmt.setElseStmt(elseStmt);
 		} else if (n.getNodeType().equals(EmptyStmt.class.getSimpleName())) {
 			EmptyStmt obj = new EmptyStmt();
 			jpNode = obj;
@@ -416,6 +425,19 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(TextBlockLiteralExpr.class.getSimpleName())) {
 			TextBlockLiteralExpr obj = new TextBlockLiteralExpr();
 			jpNode = obj;
+		} else if (n.getNodeType().equals(JavaNodeTypes.Then.name())) {
+			IfStmt ifStmt = (IfStmt) p;
+			while (ifStmt.hasElseBranch()) {
+				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
+			}
+			NodeList<Expression> conditions = attributes.getCondition();
+			ifStmt.setCondition(conditions.get(0));
+			IfStmt elseStmt = new IfStmt();
+			elseStmt.setCondition(new BooleanLiteralExpr(true));
+			elseStmt.setThenStmt(new EmptyStmt());
+			ifStmt.setElseStmt(elseStmt);
+			ifStmt.setThenStmt(new EmptyStmt());
+			jpNode = ifStmt;
 		} else if (n.getNodeType().equals(ThisExpr.class.getSimpleName())) {
 			ThisExpr obj = new ThisExpr();
 			jpNode = obj;
@@ -484,30 +506,8 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(YieldStmt.class.getSimpleName())) {
 			YieldStmt obj = new YieldStmt();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(JavaNodeTypes.Then.name())) {
-			IfStmt ifStmt = (IfStmt) p;
-			while (ifStmt.hasElseBranch()) {
-				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
-			}
-			NodeList<Expression> conditions = attributes.getCondition();
-			ifStmt.setCondition(conditions.get(0));
-			IfStmt elseStmt = new IfStmt();
-			elseStmt.setCondition(new BooleanLiteralExpr(true));
-			elseStmt.setThenStmt(new EmptyStmt());
-			ifStmt.setElseStmt(elseStmt);
-			ifStmt.setThenStmt(new EmptyStmt());
-			jpNode = ifStmt;
-		} else if (n.getNodeType().equals(JavaNodeTypes.Else.name())) {
-			BlockStmt elseStmt = new BlockStmt();
-			IfStmt ifStmt = (IfStmt) p;
-			while (ifStmt.hasElseBranch()) {
-				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
-			}
-			IfStmt parentIfStmt = (IfStmt) ifStmt.getParentNode().get();
-			parentIfStmt.removeElseStmt();
-			parentIfStmt.setElseStmt(elseStmt);
 		}
-
+		
 		if (p != null && jpNode != null) {
 			jpNode.setParentNode(p);
 		}
