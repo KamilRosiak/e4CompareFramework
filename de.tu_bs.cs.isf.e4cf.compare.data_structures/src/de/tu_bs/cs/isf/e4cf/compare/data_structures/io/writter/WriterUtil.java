@@ -27,12 +27,14 @@ public class WriterUtil {
 	 * Converts a framework node and it's children to a JavaParser node
 	 * 
 	 * @param n Framework node
-	 * @param p is the parent node of n's equivalent JavaParserNode. This can be null.
+	 * @param p is the parent node of n's equivalent JavaParserNode. This can be
+	 *          null.
 	 * @return n as JavaParser node
-	 * @throws UnsupportedOperationException if an attribute, node type etc. is not supported.
+	 * @throws UnsupportedOperationException if an attribute, node type etc. is not
+	 *                                       supported.
 	 */
-	public static /*@ nullable @*/ com.github.javaparser.ast.Node visitWriter(Node n, /*@ nullable @*/ com.github.javaparser.ast.Node p)
-			throws UnsupportedOperationException {
+	public static /* @ nullable @ */ com.github.javaparser.ast.Node visitWriter(Node n,
+			/* @ nullable @ */ com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
 		com.github.javaparser.ast.Node jpNode = null;
 
 		JavaWriterAttributeCollector attributes = new JavaWriterAttributeCollector();
@@ -55,9 +57,9 @@ public class WriterUtil {
 			if (p instanceof CompilationUnit) {
 				CompilationUnit cu = (CompilationUnit) p;
 				cu.addType(coid);
-				
+
 				if (!attributes.getPackage().isEmpty()) {
-				cu.setPackageDeclaration(attributes.getPackage());
+					cu.setPackageDeclaration(attributes.getPackage());
 				}
 			} else {
 				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
@@ -180,13 +182,13 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(CatchClause.class.getSimpleName())) {
 			CatchClause obj = new CatchClause();
-			
+
 			if (p instanceof TryStmt) {
 				NodeList<CatchClause> clauses = ((TryStmt) p).getCatchClauses();
 				clauses.add(obj);
 				((TryStmt) p).setCatchClauses(clauses);
 			}
-			
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(CharLiteralExpr.class.getSimpleName())) {
 			CharLiteralExpr obj = new CharLiteralExpr();
@@ -254,16 +256,16 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(FieldDeclaration.class.getSimpleName())) {
 			FieldDeclaration fd = new FieldDeclaration();
 			fd.setModifiers(attributes.getModifier());
-			
+
 			VariableDeclarator vd = new VariableDeclarator();
 			vd.setType(attributes.getType());
 			vd.setName(attributes.getName());
 			if (!attributes.getInitilization().isEmpty()) {
 				vd.setInitializer(attributes.getInitilization().getFirst().get());
 			}
-			
+
 			fd.addVariable(vd);
-			
+
 			if (p instanceof TypeDeclaration) {
 				TypeDeclaration nwm = (TypeDeclaration) p;
 				nwm.addMember(fd);
@@ -297,10 +299,10 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(IfStmt.class.getSimpleName())) {
 			IfStmt obj = new IfStmt();
 			jpNode = obj;
-			
+
 			if (p instanceof NodeWithStatements) {
-                ((NodeWithStatements) p).addStatement(obj);
-            }
+				((NodeWithStatements) p).addStatement(obj);
+			}
 		} else if (n.getNodeType().equals(JavaNodeTypes.Import.name())) {
 			if (p != null) {
 				Optional<CompilationUnit> cuOpt = p.findCompilationUnit();
@@ -361,7 +363,7 @@ public class WriterUtil {
 			} else if (attributes.getType() != null) {
 				obj.setType(attributes.getType());
 			}
-			
+
 			if (p instanceof NodeWithMembers) {
 				((NodeWithMembers) p).addMember(obj);
 			}
@@ -386,11 +388,11 @@ public class WriterUtil {
 			Parameter obj = new Parameter();
 			obj.setType(attributes.getType());
 			obj.setName(attributes.getName());
-			
+
 			if (p instanceof CatchClause) {
 				((CatchClause) p).setParameter(obj);
 			}
-			
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(PrimitiveType.class.getSimpleName())) {
 			PrimitiveType obj = new PrimitiveType();
@@ -399,7 +401,14 @@ public class WriterUtil {
 			ReceiverParameter obj = new ReceiverParameter();
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ReturnStmt.class.getSimpleName())) {
-			ReturnStmt obj = new ReturnStmt();
+			ReturnStmt obj = new ReturnStmt(attributes.getValue());
+
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			} else {
+				throw new UnsupportedOperationException();
+			}
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(SingleMemberAnnotationExpr.class.getSimpleName())) {
 			SingleMemberAnnotationExpr obj = new SingleMemberAnnotationExpr();
@@ -459,15 +468,22 @@ public class WriterUtil {
 			ThisExpr obj = new ThisExpr();
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ThrowStmt.class.getSimpleName())) {
-			ThrowStmt obj = new ThrowStmt();			
+			ThrowStmt obj = attributes.getStatement().asThrowStmt();
+
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			} else {
+				throw new UnsupportedOperationException();
+			}
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(TryStmt.class.getSimpleName())) {
 			TryStmt obj = new TryStmt();
-			
+
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			}
-			
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(TypeExpr.class.getSimpleName())) {
 			TypeExpr obj = new TypeExpr();
@@ -517,13 +533,13 @@ public class WriterUtil {
 		} else if (n.getNodeType().equals(WhileStmt.class.getSimpleName())) {
 			WhileStmt obj = new WhileStmt();
 			obj.setCondition(attributes.getValue());
-			
+
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			} else {
 				throw new UnsupportedOperationException();
 			}
-			
+
 			jpNode = obj;
 		} else if (n.getNodeType().equals(WildcardType.class.getSimpleName())) {
 			WildcardType obj = new WildcardType();
@@ -532,7 +548,7 @@ public class WriterUtil {
 			YieldStmt obj = new YieldStmt();
 			jpNode = obj;
 		}
-		
+
 		if (p != null && jpNode != null) {
 			jpNode.setParentNode(p);
 		}
