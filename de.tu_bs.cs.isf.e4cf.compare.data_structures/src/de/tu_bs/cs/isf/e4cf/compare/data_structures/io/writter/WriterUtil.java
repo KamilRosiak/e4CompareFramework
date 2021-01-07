@@ -149,6 +149,10 @@ public class WriterUtil {
 				((NodeWithBody) p).setBody(obj);
 			} else if (p instanceof TryStmt) {
 				((TryStmt) p).setTryBlock(obj);
+			} else if (p instanceof BlockStmt) {
+				obj = (BlockStmt) p;
+			} else if (p instanceof IfStmt) {
+				((IfStmt) p).setThenStmt(obj);
 			}
 			jpNode = obj;
 		} else if (n.getNodeType().equals(BooleanLiteralExpr.class.getSimpleName())) {
@@ -224,6 +228,7 @@ public class WriterUtil {
 			IfStmt parentIfStmt = (IfStmt) ifStmt.getParentNode().get();
 			parentIfStmt.removeElseStmt();
 			parentIfStmt.setElseStmt(elseStmt);
+			jpNode = elseStmt;
 		} else if (n.getNodeType().equals(EmptyStmt.class.getSimpleName())) {
 			EmptyStmt obj = new EmptyStmt();
 			jpNode = obj;
