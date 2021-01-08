@@ -36,8 +36,10 @@ public class DropFilesDialog {
 	 */
 	public DropFilesDialog(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
 		this.dropElement = dropElement;
+		
 		alert = new Alert(AlertType.NONE);
 		alert.setTitle("Import a Directory");
+		
 		final Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(imgService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
 
@@ -45,18 +47,18 @@ public class DropFilesDialog {
 		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		this.copyOptionsPage = new ImportDirectoryPage(dropElement.getTarget(), context);
-
 		pane.setContent(copyOptionsPage.createControl());
 
 	}
 
-	/** show he dialog and wait for the users input */
+	/** show the dialog and wait for the users input */
 	public void showDialog() {
 		alert.showAndWait().ifPresent(response -> {
 			this.performFinish();
 		});
 	}
 
+	/** evaluate the copyStrategy */
 	public void performFinish() {
 
 		switch (copyOptionsPage.getCopyStrategy()) {

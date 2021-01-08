@@ -15,10 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
-/**
- * A wizard that lets the user create a new file.
- *
- */
+/** A wizard that lets the user create a new file. */
 public class NewFileDialog {
 
 	private Path parentPath;
