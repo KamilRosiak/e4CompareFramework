@@ -32,7 +32,7 @@ public class NewFileHandler {
 		}
 
 		NewFileDialog dialog = new NewFileDialog(directory, imageService);
-		dialog.showDialog();
+		dialog.open();
 	}
 
 	@CanExecute

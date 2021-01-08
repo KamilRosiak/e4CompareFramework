@@ -54,7 +54,7 @@ public class NewFileDialog {
 	}
 
 	/** shows the dialog and creates the file, name is checked in the dialog */
-	public void showDialog() {
+	public void open() {
 		Optional<String> result = dialog.showAndWait();
 		result.ifPresent(name -> {
 			try {

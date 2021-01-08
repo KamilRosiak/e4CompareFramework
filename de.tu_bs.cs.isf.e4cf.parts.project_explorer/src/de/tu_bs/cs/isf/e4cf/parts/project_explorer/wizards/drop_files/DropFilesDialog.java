@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.DialogPane;
 
 /**
- * A wizard that handles drops from the system explorer to the project explorer,
+ * A dialog that handles drops from the system explorer to the project explorer,
  * if the drop contains a nested element (e.g. directory)
  */
 public class DropFilesDialog {
@@ -30,9 +30,11 @@ public class DropFilesDialog {
 	boolean didFileMove = true;
 
 	/**
-	 * @param context
-	 * @param dropElement
-	 * @param imgService
+	 * Dialog to present different copy strategies
+	 * 
+	 * @param context  IEclipseContextfor the FXMLLoader
+	 * @param dropElement  the files dragged from the system explorer
+	 * @param imgService  to get
 	 */
 	public DropFilesDialog(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
 		this.dropElement = dropElement;

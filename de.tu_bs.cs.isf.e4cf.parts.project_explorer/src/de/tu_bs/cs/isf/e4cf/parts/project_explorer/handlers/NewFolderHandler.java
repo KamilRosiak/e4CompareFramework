@@ -17,13 +17,13 @@ public class NewFolderHandler {
 	public void execute(RCPSelectionService rcpSelectionService) {
 		FileTreeElement element = rcpSelectionService.getCurrentSelectionFromExplorer();
 		String stringPath = element.getAbsolutePath();
-		File dir = new File(stringPath + FOLDER_PLACEHOLDER);
-		int i = 2;
-		while (dir.exists()) {
-			dir = new File(stringPath + FOLDER_PLACEHOLDER + " (" + i + ")");
-			i++;
+		File folderToCreate = new File(stringPath + FOLDER_PLACEHOLDER);
+		int folderNameExistsCounter = 2;
+		while (folderToCreate.exists()) {
+			folderToCreate = new File(stringPath + FOLDER_PLACEHOLDER + " (" + folderNameExistsCounter + ")");
+			folderNameExistsCounter++;
 		}
-		dir.mkdir();
+		folderToCreate.mkdir();
 	}
 
 	@CanExecute

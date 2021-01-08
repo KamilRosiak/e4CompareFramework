@@ -22,18 +22,13 @@ public class ImportDirectoryPage {
 	private CopyStrategy copyStrategy = CopyStrategy.EMPTY;
 
 	private FXMLLoader<CopyDirectoryController> loader;
-	// by passing the Pane of the dialog into createControl the dialog buttons become accessible to the page
 
 	/**
-	 * Creates a new page for the wizard that displays importing a directory
+	 * Creates a new page for the dialog that displays directory import
 	 * options.
 	 * 
-	 * @param pageName      the name of the page, it is use to display a title in
-	 *                      the wizard.
-	 * @param path          the target path, where the dropped items should copied
-	 *                      to.
-	 * @param context       the Eclipse Context used for the FXML loader
-	 * @param imgDescriptor an image for the page to display.
+	 * @param path
+	 * @param context
 	 */
 	public ImportDirectoryPage(Path path, IEclipseContext context) {
 		this.context = context;

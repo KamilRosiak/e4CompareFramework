@@ -53,14 +53,14 @@ public class FileImportHandler {
 		}
 	}
 
-	private final Path getTargetPath(RCPSelectionService selectionService) throws NotDirectoryException {
+	private Path getTargetPath(RCPSelectionService selectionService) throws NotDirectoryException {
 		FileTreeElement selection = selectionService.getCurrentSelectionFromExplorer();
 		checkForValidSelection(selection);
 		Path target = FileHandlingUtility.getPath(selection);
 		return target;
 	}
 
-	private final void checkForValidSelection(FileTreeElement selection) throws NotDirectoryException {
+	private void checkForValidSelection(FileTreeElement selection) throws NotDirectoryException {
 		if (selection == null) {
 			throw new NullPointerException("selection is invalid.");
 		}

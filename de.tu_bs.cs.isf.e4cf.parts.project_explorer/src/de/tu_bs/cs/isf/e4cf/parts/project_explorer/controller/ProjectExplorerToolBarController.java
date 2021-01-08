@@ -104,7 +104,7 @@ public class ProjectExplorerToolBarController {
 		});
 
 		// Import Files
-		btnImportFiles = createToolbarButton("Import ...", FileTable.FILE_PNG, actionEvent -> {
+		btnImportFiles = createToolbarButton("Import Files", FileTable.FILE_PNG, actionEvent -> {
 			FileImportHandler handler = new FileImportHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
 				handler.execute(services.rcpSelectionService, services.workspaceFileSystem);
