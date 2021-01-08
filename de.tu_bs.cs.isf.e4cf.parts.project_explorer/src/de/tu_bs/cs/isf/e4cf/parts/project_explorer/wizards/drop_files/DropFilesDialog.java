@@ -27,7 +27,7 @@ public class DropFilesDialog {
 	private Alert alert;
 	private ImportDirectoryPage copyOptionsPage;
 	// indicates whether a file has been moved.
-	boolean didFileMove = true;
+	private boolean didFileMove = true;
 
 	/**
 	 * Dialog to present different copy strategies
