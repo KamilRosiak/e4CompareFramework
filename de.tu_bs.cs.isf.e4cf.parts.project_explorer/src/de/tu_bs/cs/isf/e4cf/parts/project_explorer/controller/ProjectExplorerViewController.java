@@ -346,7 +346,7 @@ public class ProjectExplorerViewController {
 	public void dropElements(@UIEventTopic(E4CEventTable.EVENT_DROP_ELEMENT_IN_EXPLORER) Object o) {
 		if (o instanceof DropElement) {
 			DropFilesDialog dialog = new DropFilesDialog(context, (DropElement) o, imageService);
-			dialog.showDialog();
+			dialog.open();
 		}
 	}
 

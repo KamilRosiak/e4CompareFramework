@@ -91,7 +91,7 @@ public class ProjectExplorerToolBarController {
 		btnNewFolder = createToolbarButton("Create New Folder", FileTable.NEWFOLDER_PNG, actionEvent -> {
 			NewFolderHandler handler = new NewFolderHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(services.rcpSelectionService);
+				handler.execute(context, services, shell);
 			}
 		});
 
@@ -99,7 +99,7 @@ public class ProjectExplorerToolBarController {
 		btnNewFile = createToolbarButton("Create new File", FileTable.NEWFILE_PNG, actionEvent -> {
 			NewFileHandler handler = new NewFileHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(services.rcpSelectionService, services.imageService, services.workspaceFileSystem);
+				handler.execute(context, services, shell);
 			}
 		});
 
@@ -107,7 +107,7 @@ public class ProjectExplorerToolBarController {
 		btnImportFiles = createToolbarButton("Import Files", FileTable.FILE_PNG, actionEvent -> {
 			FileImportHandler handler = new FileImportHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(services.rcpSelectionService, services.workspaceFileSystem);
+				handler.execute(context, services, shell);
 			}
 		});
 
@@ -115,8 +115,7 @@ public class ProjectExplorerToolBarController {
 		btnDelete = createToolbarButton("Delete Selected Entries", FileTable.DELETE_PNG, actionEvent -> {
 			RemoveFileCommand handler = new RemoveFileCommand();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(shell, services.rcpSelectionService, services.imageService,
-						services.workspaceFileSystem);
+				handler.execute(context, services, shell);
 			}
 		});
 
@@ -124,7 +123,7 @@ public class ProjectExplorerToolBarController {
 		btnShowExplorer = createToolbarButton("Show in Explorer", FileTable.EXPLORER_PNG, actionEvent -> {
 			ShowInExplorerHandler handler = new ShowInExplorerHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(services.rcpSelectionService);
+				handler.execute(context, services, shell);
 			}
 		});
 

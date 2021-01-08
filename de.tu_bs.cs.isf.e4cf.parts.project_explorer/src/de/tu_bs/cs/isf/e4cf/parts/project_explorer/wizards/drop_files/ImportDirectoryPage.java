@@ -24,8 +24,7 @@ public class ImportDirectoryPage {
 	private FXMLLoader<CopyDirectoryController> loader;
 
 	/**
-	 * Creates a new page for the dialog that displays directory import
-	 * options.
+	 * Creates a new page for the dialog that displays directory import options.
 	 * 
 	 * @param path
 	 * @param context
@@ -59,7 +58,7 @@ public class ImportDirectoryPage {
 				});
 
 		loader.getController().toggleGroup();
-		
+
 		return loader.getNode();
 	}
 

@@ -32,16 +32,16 @@ public class DropFilesDialog {
 	/**
 	 * Dialog to present different copy strategies
 	 * 
-	 * @param context  IEclipseContextfor the FXMLLoader
-	 * @param dropElement  the files dragged from the system explorer
+	 * @param context     IEclipseContextfor the FXMLLoader
+	 * @param dropElement the files dragged from the system explorer
 	 * @param imgService  to get
 	 */
 	public DropFilesDialog(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
 		this.dropElement = dropElement;
-		
+
 		alert = new Alert(AlertType.NONE);
 		alert.setTitle("Import a Directory");
-		
+
 		final Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.getIcons().add(imgService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
 
@@ -54,8 +54,8 @@ public class DropFilesDialog {
 	}
 
 	/** show the dialog and wait for the users input */
-	public void showDialog() {
-		alert.showAndWait().ifPresent(response -> {
+	public void open() {
+		alert.showAndWait().filter(response -> response == ButtonType.OK).ifPresent(response -> {
 			this.performFinish();
 		});
 	}
