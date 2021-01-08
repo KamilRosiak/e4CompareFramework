@@ -11,7 +11,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.NewFileDialog;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.new_file.NewFileDialog;
 
 /**
  * This handler handles the request from the ContextMenu Children for creating a
@@ -31,7 +31,7 @@ public class NewFileHandler implements IHandler {
 			directory = FileHandlingUtility.getPath(services.workspaceFileSystem.getWorkspaceDirectory());
 		}
 
-		NewFileDialog dialog = new NewFileDialog(directory, services.imageService);
+		NewFileDialog dialog = new NewFileDialog(context, directory, services.imageService);
 		dialog.open();
 	}
 

@@ -25,7 +25,7 @@ public class DropFilesDialog {
 
 	private DropElement dropElement;
 	private Alert alert;
-	private ImportDirectoryPage copyOptionsPage;
+	private ImportDirectoryPage importDirectoryPage;
 	// indicates whether a file has been moved.
 	private boolean didFileMove = true;
 
@@ -42,14 +42,14 @@ public class DropFilesDialog {
 		alert = new Alert(AlertType.NONE);
 		alert.setTitle("Import a Directory");
 
-		final Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(imgService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
-
 		final DialogPane pane = alert.getDialogPane();
 		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		
+		final Stage stage = (Stage) pane.getScene().getWindow();
+		stage.getIcons().add(imgService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
 
-		this.copyOptionsPage = new ImportDirectoryPage(dropElement.getTarget(), context);
-		pane.setContent(copyOptionsPage.createControl());
+		this.importDirectoryPage = new ImportDirectoryPage(dropElement.getTarget(), context);
+		pane.setContent(importDirectoryPage.createControl());
 
 	}
 
@@ -63,7 +63,7 @@ public class DropFilesDialog {
 	/** evaluate the copyStrategy */
 	public void performFinish() {
 
-		switch (copyOptionsPage.getCopyStrategy()) {
+		switch (importDirectoryPage.getCopyStrategy()) {
 		case EMPTY:
 			copyRecursively(0);
 			break;
