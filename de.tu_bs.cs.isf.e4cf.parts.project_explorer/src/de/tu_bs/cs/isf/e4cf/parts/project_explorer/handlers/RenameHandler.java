@@ -11,6 +11,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IHandler;
 
 /**
  * A handler that passes on a renaming event to the event broker.

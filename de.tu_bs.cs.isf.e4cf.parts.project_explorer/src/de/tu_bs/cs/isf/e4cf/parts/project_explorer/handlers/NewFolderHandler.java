@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IHandler;
 
 public class NewFolderHandler implements IHandler {
 

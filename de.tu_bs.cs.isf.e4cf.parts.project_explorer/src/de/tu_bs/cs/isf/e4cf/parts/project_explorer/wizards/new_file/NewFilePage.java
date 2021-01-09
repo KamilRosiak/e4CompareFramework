@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 
 
 /** A wizard that lets the user create a new file. */
@@ -45,33 +46,36 @@ public class NewFilePage {
 				FileTable.NEW_FILE_PAGE_VIEW);
 		
 		TextField input = loader.getController().fileNameTextField;
+		Text alreadyExitsText = loader.getController().alreadyExitsText;
+		Text notValidText = loader.getController().notValidText;
+		Text fileTypeMissingText = loader.getController().fileTypeMissingText;
 		input.textProperty().addListener((obs, oldValue, newValue) -> {
 			String inputValue = input.getText();
 			if (isFilenameValid(inputValue) && isFilePathValid(inputValue)) {
 				inputValue= input.getText();
 				btnOk.setDisable(false);
-				loader.getController().alreadyExitsText.setVisible(false);
-				loader.getController().notValidText.setVisible(false);
-				loader.getController().fileTypeMissingText.setVisible(false);
+				alreadyExitsText.setVisible(false);
+				notValidText.setVisible(false);
+				fileTypeMissingText.setVisible(false);
 			} else {
 				btnOk.setDisable(true);
 				
 				if (!isFilePathValid(inputValue)) {
-					loader.getController().alreadyExitsText.setVisible(true);
+					alreadyExitsText.setVisible(true);
 				} else {
-					loader.getController().alreadyExitsText.setVisible(false);
+					alreadyExitsText.setVisible(false);
 				}
 				
 				if (isFileTypeMising(inputValue)) {
-					loader.getController().notValidText.setVisible(true);
+					notValidText.setVisible(true);
 				} else {
-					loader.getController().notValidText.setVisible(false);
+					notValidText.setVisible(false);
 				}
 				
 				if (isFileTypeMising(inputValue)) {
-					loader.getController().fileTypeMissingText.setVisible(true);
+					fileTypeMissingText.setVisible(true);
 				} else {
-					loader.getController().fileTypeMissingText.setVisible(false);
+					fileTypeMissingText.setVisible(false);
 				}
 			}
 		});
