@@ -5,8 +5,11 @@ import static de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.Famil
 import static de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings.PREF_ARTEFACT_SPECIALIZATION_KEY;
 import static de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings.PREF_FM_SPECIALIZATION_KEY;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,12 +17,14 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.Active;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -27,26 +32,36 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view.util.DetailViewStringTable;
+import de.tu_bs.cs.isf.e4cf.core.compare.string_table.E4CompareEventTable;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.key_value.KeyValueNode;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModel;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.FamilyModelPackage;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.Variant;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.model.FamilyModel.VariationPoint;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.IResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.persistence.SimpleFMResourceManager;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.plugin.FamilyModelViewPlugin;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewEvents;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.tests.CarExampleBuilder;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.transformation.FamilyModelTransformation;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.EmptyIconProvider;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.FamilyModelTransformation;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullExtensionProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.util.NullLabelProvider;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FXTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FamilyModelView;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.components.DefaultArtefactFilter;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXVariantResourceDialog;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.AbstractResourceRowDialog.ResourceEntry;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.LoadFamilyModelDialog;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.dialog.SaveFamilyModelDialog;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXFamilyModelElement;
+import javafx.stage.FileChooser;
 
 public class FamilyModelViewController {
 		
@@ -69,18 +84,23 @@ public class FamilyModelViewController {
 	private MPart part;
 
 	private Composite parentComposite;
+
+	private IEclipseContext fmvContext;
 	
 	@Inject
-	public FamilyModelViewController(ServiceContainer services) {
+	public FamilyModelViewController(@Active MPart part, @Active IEclipseContext ctx, ServiceContainer services) {
 		setServices(services);
 		this.part = services.partService.getPart(FamilyModelViewStrings.PART_NAME);
 //		this.part.setDirty(false);
+		
+		this.fmvContext = ctx;
 	}
 	
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		this.parentComposite = parent;
 		reload(null);
+		
 	}
 	
 	/**
@@ -95,8 +115,13 @@ public class FamilyModelViewController {
 		collectProviderExtensions();
 		initializeCarExampleFamilyModel();
 		resetFamilyModelView();
+		
+		// clear the context from a previous content
+		fmvContext.remove(FamilyModelViewStrings.ACTIVE_DATA_SOURCE);
+		fmvContext.remove(FamilyModelViewStrings.ACTIVE_VAR_POINT_MAPPING);
 	}
 
+	@Inject
 	private void collectProviderExtensions() {
 		FamilyModelViewPlugin thisPlugin = new FamilyModelViewPlugin(FamilyModelViewStrings.FM_EXT_POINT_ID);
 		
@@ -178,17 +203,6 @@ public class FamilyModelViewController {
 		parentComposite.layout();
 	}
 	
-	/**
-	 * Initialize the resource manager and the generic family model.
-	 * 
-	 * @param familyModel The model for this view.
-	 */
-	private void initializeFamilyModel(FamilyModel familyModel) {
-		IResourceManager resourceManager = new SimpleFMResourceManager(artefactExtensionProvider, fmvExtensionProvider);
-		GenericFamilyModel genericFamilyModel = new GenericFamilyModel(familyModel, resourceManager);
-		setGenericFamilyModel(genericFamilyModel);
-	}
-	
 	@PreDestroy
 	public void preDestroy() {
 		
@@ -205,35 +219,134 @@ public class FamilyModelViewController {
 			return;
 		}
 		
-		// Query the user for the storage path for each object
+		// Create a save dialog and let the user select the correct paths for saving the family model + variants  
 		FamilyModel fm = familyModelWrapper.getInternalFamilyModel();
 		final int dialogWidth = 1024;
-		final int rowHeight = 30;
-		FXVariantResourceDialog dialog = new FXVariantResourceDialog(fm, "Family Model Resources", dialogWidth, rowHeight);
-		dialog.open();
+		final int rowHeight = 40;
+		SaveFamilyModelDialog dialog = new SaveFamilyModelDialog("Family Model Resources", dialogWidth, rowHeight);
 		
-		Map<EObject, String> resourceMap = dialog.getResourceMap();
+		// Family model resource entry
+		ResourceEntry fmEntry = new ResourceEntry();
+		fmEntry.setId(fm.getName());
+		fmEntry.setLabel(fm.getName());
+		fmEntry.setButtonLabel("Select Family Model Resource Path");
+		fmEntry.setResource(dialog.getResourcePath(fm));
+		fmEntry.setResourceSetter(oldEntry -> {
+			FileChooser fc = new FileChooser();
+			
+			File dir = new File(RCPContentProvider.getCurrentWorkspacePath());
+			fc.setInitialDirectory(dir);
+			fc.setTitle("Choose a Family Model File");
+			File selectedFile = fc.showSaveDialog(dialog.getStage());
+			if (selectedFile != null) {	
+				return new Pair<>(fm.getName(), selectedFile.toString());
+			}
+			return null;
+		});
+		
+		// Variant resource entries
+		List<ResourceEntry> variantEntries = new ArrayList<>();
+		for (Variant variant : fm.getVariants()) {
+			ResourceEntry variantEntry = new ResourceEntry();
+			variantEntry.setId(variant.getIdentifier());
+			variantEntry.setLabel(variant.getIdentifier());
+			variantEntry.setButtonLabel("Select Variant Path");
+			variantEntry.setResource(dialog.getResourcePath(variant.getInstance()));
+			variantEntry.setResourceSetter(oldEntry -> {
+				FileChooser fc = new FileChooser();
+				
+				File dir = new File(RCPContentProvider.getCurrentWorkspacePath());
+				fc.setInitialDirectory(dir);
+				fc.setTitle("Choose a Variant File");
+				File selectedFile = fc.showSaveDialog(dialog.getStage());
+				if (selectedFile != null) {	
+					return new Pair<>(variant.getIdentifier(), selectedFile.toString());
+				}
+				return null;
+			});
+			
+			variantEntries.add(variantEntry);
+		}
+		
+		// Build and open dialog
+		dialog.buildDialog()
+			.buildResourceEntry(fmEntry)
+			.buildSeparator()
+			.buildResourceEntry(variantEntries.toArray(new ResourceEntry[0]))
+			.open();
+		
+		// Obtain the resources from the dialog
+		Map<String, String> resourceMap = dialog.getResources();
 		if (resourceMap.isEmpty()) {
-			RCPMessageProvider.errorMessage("Save Family Model", "The resource path could not be initialized correctly. "
-					+ "You haven't choosen a root directory.");
+			RCPMessageProvider.errorMessage("Save Family Model", "The save operation has been aborted.");
 			return;
+		}
+		
+		// Map resources to actual eobjects
+		Map<EObject, String> resourceObjectMap = new HashMap<>();
+		resourceObjectMap.put(fm, resourceMap.get(fm.getName()));
+		for (Variant variant : fm.getVariants()) {
+			resourceObjectMap.put(variant, resourceMap.get(variant.getIdentifier()));
 		}
 		
 		// save the family model along with the referenced variants
 		try {
-			familyModelWrapper.save(resourceMap);
-//			part.setDirty(false);
-			System.out.println("Saved the following family model resources:");
-			for (Map.Entry<EObject, String> saveLocation : resourceMap.entrySet()) {
-				if (saveLocation.getKey() instanceof FamilyModel) {
-					System.out.println("\t > Family Model("+((FamilyModel) saveLocation.getKey()).getName()+") \""+saveLocation.getValue()+"\"");					
-				} else if (saveLocation.getKey() instanceof Variant) {
-					System.out.println("\t > Variant("+((Variant) saveLocation.getKey()).getIdentifier()+") \""+saveLocation.getValue()+"\"");
-				}
+
+			boolean isSaved = familyModelWrapper.save(resourceObjectMap);
+			if (isSaved) {
+				part.setDirty(false);
+				System.out.println("Saved the following family model resources:");
+				for (Map.Entry<EObject, String> saveLocation : resourceObjectMap.entrySet()) {
+					if (saveLocation.getKey() instanceof FamilyModel) {
+						System.out.println("\t > Family Model("+((FamilyModel) saveLocation.getKey()).getName()+") \""+saveLocation.getValue()+"\"");					
+					} else if (saveLocation.getKey() instanceof Variant) {
+						System.out.println("\t > Variant("+((Variant) saveLocation.getKey()).getIdentifier()+") \""+saveLocation.getValue()+"\"");
+					}
+				}				
+			} else {
+				RCPMessageProvider.errorMessage("Save Family Model", "An error occurred while saving. The family model has not been saved.");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void loadFamilyModel() {
+		// Query the user for the storage path for each object
+		final int dialogWidth = 1024;
+		final int rowHeight = 40;
+		LoadFamilyModelDialog dialog = new LoadFamilyModelDialog("Family Model Resources", dialogWidth, rowHeight);
+		
+		String resourceId = "fm";
+		ResourceEntry fmEntry = new ResourceEntry();
+		fmEntry.setId(resourceId);
+		fmEntry.setLabel("Family Model Resource");
+		fmEntry.setButtonLabel("Select Resource");
+		fmEntry.setResource("");
+		fmEntry.setResourceSetter(oldEntry -> {
+			FileChooser fc = new FileChooser();
+			
+			File dir = new File(RCPContentProvider.getCurrentWorkspacePath());
+			fc.setInitialDirectory(dir);
+			fc.setTitle("Choose the Family Model");
+			File selectedFile = fc.showOpenDialog(dialog.getStage());
+			if (selectedFile != null && selectedFile.exists()) {
+				return new Pair<String, String>(fmEntry.getId(), selectedFile.toString());
+			}
+			return null;
+		});
+		
+		dialog.buildDialog().buildResourceEntry(fmEntry).open();
+		
+		// Retrieve the user selected resource
+		String fmPathString = dialog.getResources().get(resourceId);
+		String fmExtension = getExtension(FamilyModelPackage.eINSTANCE.getFamilyModel());
+		if (!fmPathString.endsWith(fmExtension)) {
+			RCPMessageProvider.errorMessage("Load Family Model", "The selected resource does not have a valid file extension.");
+			return;
+		}
+		
+		loadFamilyModel(fmPathString);
 	}
 	
 	@Optional
@@ -248,8 +361,8 @@ public class FamilyModelViewController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
- 		
-//		part.setDirty(false);
+ 		 		
+		//part.setDirty(false);
 	}
 	
 	@Optional
@@ -271,33 +384,85 @@ public class FamilyModelViewController {
 		}
 	}
 	
+	/**
+	 * Sets a data source for the family model.<br><br>
+	 * 
+	 * The data source is a single object that encapsulates the entire comparison represented in the family model view. 
+	 * If there are parts or components interested in the comparison detail, they can listen for changes in the data source object.<br><br>
+	 * 
+	 * Sends Events:
+	 * <ul>
+	 * 	<li> {@link FamilyModelViewEvents#EVENT_DATA_SOURCE_UPDATED} 
+	 * </ul> 
+	 * 
+	 * @param dataSource encapsulates entire comparison information
+	 */
 	@Optional
 	@Inject
-	public void transformAndShowFamilyModel(@UIEventTopic(FamilyModelViewEvents.EVENT_TRANSFORM_AND_SHOW_FAMILY_MODEL) Object object) {
-		// check if the object actually is transformable, pick the first transformation
-		java.util.Optional<FamilyModelTransformation> fmTransformation = fmTransformations.stream()
-				.filter(transformation -> transformation.canTransform(object)).findFirst();
-		if (!fmTransformation.isPresent()) {
-			RCPMessageProvider.errorMessage("Transform Family Model", "There is not suitable transformation for the provided model.");
+	public void setDataSource(@UIEventTopic(FamilyModelViewEvents.EVENT_SET_DATA_SOURCE) Object dataSource, IEventBroker eventBroker) {
+		if (dataSource != null) {
+			fmvContext.set(FamilyModelViewStrings.ACTIVE_DATA_SOURCE, dataSource);
+			eventBroker.send(FamilyModelViewEvents.EVENT_DATA_SOURCE_UPDATED, dataSource);
 		}
-			
-		// apply transformation
-		FamilyModel fm = fmTransformation.get().apply(object);
+	}
+	
+	/**
+	 * Sets a mapping from variation points to corresponding comparison data objects. 
+	 * Internally this is used to provide the detail view with concrete information about every variation points.<br><br>
+	 * 
+	 * Sends Events:
+	 * <ul>
+	 * 	<li> {@link FamilyModelViewEvents#EVENT_VAR_POINT_MAPPING_UPDATED} 
+	 * </ul> 
+	 * 
+	 * @param varPointMapping maps a variation points to an object
+	 */
+	@Optional
+	@Inject
+	public void setVariationPointMapping(@UIEventTopic(FamilyModelViewEvents.EVENT_SET_VAR_POINT_MAPPING) Map<VariationPoint, ?> varPointMapping, IEventBroker eventBroker) {
+		if (varPointMapping != null) {
+			fmvContext.set(FamilyModelViewStrings.ACTIVE_VAR_POINT_MAPPING, varPointMapping);			
+			eventBroker.send(FamilyModelViewEvents.EVENT_VAR_POINT_MAPPING_UPDATED, varPointMapping);
+		}
+	}
+	
+	/**
+	 * Shows family model details for a tree node in the family model tree. <br><br>
+	 * 
+	 * Sends Events:
+	 * <ul>
+	 * 	<li> {@link E4CompareEventTable#SHOW_DETAIL_EVENT} 
+	 * </ul> 
+	 * 
+	 * @param fxFmElement
+	 */
+	@Optional
+	@Inject
+	public void showDetails(@UIEventTopic(FamilyModelViewEvents.EVENT_SHOW_DETAILS) FXFamilyModelElement fxFmElement) {
+		// Check if there's a variation point with a mapping onto a comparison data object
+		Object targetData = fxFmElement.get();
 		
-		if (fm == null) {
-			RCPMessageProvider.errorMessage("Transform Family Model", "Transformation to family model failed.");
+		// Query the local context for a mapping that contains the variation point
+		Object activeVarPointMapping = fmvContext.get(FamilyModelViewStrings.ACTIVE_VAR_POINT_MAPPING);
+		if (activeVarPointMapping instanceof Map) {
+			Map<?,?> variationPointDataMapping = (Map<?, ?>) activeVarPointMapping;
+			Object mappedData = variationPointDataMapping.get(targetData);
+			if (mappedData != null) {
+				targetData = mappedData;
+			}
 		}
 		
-		showFamilyModel(fm);
+		services.partService.showPart(DetailViewStringTable.FAMILYMODE_DETAIL_VIEW_ID);
+		services.eventBroker.send(E4CompareEventTable.SHOW_DETAIL_EVENT, targetData);
 	}
 
 	/**
 	 * Asks the user to save the part if dirty.
 	 */
 	private void requestPartSave() {
-		EPartService ePartService = services.partService.partService;
-		MPart thisPart = ePartService.findPart(FamilyModelViewStrings.PART_NAME);
-		ePartService.savePart(thisPart, true);
+//		EPartService ePartService = services.partService.partService;
+//		MPart thisPart = ePartService.findPart(FamilyModelViewStrings.PART_NAME);
+//		ePartService.savePart(thisPart, true);
 	}
 	
 	public ServiceContainer getServices() {

@@ -25,11 +25,22 @@ public class FamilyModelViewStrings {
 	public static final String FM_DEFAULT_FILE_EXT = "fml";
 	
 	/**
+	 * DATA EXCHANGE<br>
+	 * -> Defines the external data stored and processed by the family model view<br>
+	 * -> The data source contains vital comparison information which is not contained in the family meta model<br>
+	 * -> The variation point mapping assigns each variation point to its original data comparison object
+	 * 
+	 * E.g. In the case of IEC analysis, the data source is the ConfigurationResultRoot which represents the entire comparison, while the 
+	 * variation points are mapped to original CompareContainers
+	 */
+	public static final String ACTIVE_DATA_SOURCE = "_activeDataSource";
+	public static final String ACTIVE_VAR_POINT_MAPPING = "_activeVarPointMapping";
+	
+	/**
 	 * CAR EXAMPLE
 	 */
 	public static final String TEST_EXT_ID = "car_artefact_specialization";
 	public static final String TEST_CAR_FILE_EXTENSION = "car";
-	public static final String TEST_= "";
 	
 	/**
 	 * PREFERENCE PAGE

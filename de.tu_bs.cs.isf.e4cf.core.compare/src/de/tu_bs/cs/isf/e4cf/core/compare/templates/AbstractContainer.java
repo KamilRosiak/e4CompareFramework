@@ -31,6 +31,7 @@ public abstract class AbstractContainer<ElementType extends EObject, MetricType>
 		setSecond(second);
 		setMetric(metric);
 		results = new ArrayList<ResultElement<ElementType>>();
+		setOptions(new ArrayList<AbstractOption>());
 	}
 	
 	public abstract void reset();

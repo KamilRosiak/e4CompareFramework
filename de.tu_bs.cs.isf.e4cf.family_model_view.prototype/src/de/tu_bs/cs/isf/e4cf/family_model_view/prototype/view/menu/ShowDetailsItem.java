@@ -3,8 +3,10 @@ package de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.menu;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view.util.DetailViewStringTable;
 import de.tu_bs.cs.isf.e4cf.core.compare.string_table.E4CompareEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewEvents;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewFiles;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.FamilyModelView;
+import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.view.elements.FXFamilyModelElement;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,11 +14,11 @@ import javafx.scene.image.ImageView;
 public class ShowDetailsItem extends MenuItem {
 
 	private ServiceContainer serviceContainer;
-	private Object selectedElement;
+	private FXFamilyModelElement selectedElement;
 
 	public ShowDetailsItem(FamilyModelView view, ServiceContainer serviceContainer) {
 		this.serviceContainer = serviceContainer;
-		this.selectedElement = view.getFamilyModel();
+		this.selectedElement = view.getFamilyModelTree().getTree().getRoot().getValue();
 		setText("Show Details");
         
 		// set the icon
@@ -33,8 +35,7 @@ public class ShowDetailsItem extends MenuItem {
 	@Override
 	public void fire() {
 		if (selectedElement != null) {
-			serviceContainer.partService.showPart(DetailViewStringTable.FAMILYMODE_DETAIL_VIEW_ID);
-			serviceContainer.eventBroker.send(E4CompareEventTable.SHOW_DETAIL_EVENT, selectedElement);			
+			serviceContainer.eventBroker.send(FamilyModelViewEvents.EVENT_SHOW_DETAILS, selectedElement);			
 		}
 		
 		super.fire();
