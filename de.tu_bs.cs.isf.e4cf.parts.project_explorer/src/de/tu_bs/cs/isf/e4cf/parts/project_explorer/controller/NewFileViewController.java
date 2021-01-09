@@ -18,5 +18,8 @@ public class NewFileViewController {
 
 	@FXML
 	public Text alreadyExitsText;
+	
+	@FXML
+	public Text fileTypeMissingText;
 
 }

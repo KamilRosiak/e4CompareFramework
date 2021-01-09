@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards;
+package de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -6,36 +6,64 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.jface.wizard.Wizard;
 
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CFileTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
+import javafx.scene.control.DialogPane;
 
 /**
- * A wizard that handles drops from the system explorer to the project explorer,
+ * A dialog that handles drops from the system explorer to the project explorer,
  * if the drop contains a nested element (e.g. directory)
  */
-public class DropWizard extends Wizard {
+public class DropFilesDialog {
 
-	private ImportDirectoryPage copyOptionsPage;
 	private DropElement dropElement;
-
+	private Alert alert;
+	private ImportDirectoryPage importDirectoryPage;
 	// indicates whether a file has been moved.
-	boolean didFileMove = true;
+	private boolean didFileMove = true;
 
-	public DropWizard(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
+	/**
+	 * Dialog to present different copy strategies
+	 * 
+	 * @param context     IEclipseContextfor the FXMLLoader
+	 * @param dropElement the files dragged from the system explorer
+	 * @param imgService  to get
+	 */
+	public DropFilesDialog(IEclipseContext context, DropElement dropElement, RCPImageService imgService) {
 		this.dropElement = dropElement;
-		this.copyOptionsPage = new ImportDirectoryPage("Import directory", dropElement.getTarget(), context,
-				imgService.getImageDescriptor(null, "icons/Explorer_View/items/folder24.png"));
 
-		addPage(copyOptionsPage);
+		alert = new Alert(AlertType.NONE);
+		alert.setTitle("Import a Directory");
+
+		final DialogPane pane = alert.getDialogPane();
+		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		
+		final Stage stage = (Stage) pane.getScene().getWindow();
+		stage.getIcons().add(imgService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
+
+		this.importDirectoryPage = new ImportDirectoryPage(dropElement.getTarget(), context);
+		pane.setContent(importDirectoryPage.createControl());
+
 	}
 
-	@Override
-	public boolean performFinish() {
+	/** show the dialog and wait for the users input */
+	public void open() {
+		alert.showAndWait().filter(response -> response == ButtonType.OK).ifPresent(response -> {
+			this.performFinish();
+		});
+	}
 
-		switch (copyOptionsPage.getCopyStrategy()) {
+	/** evaluate the copyStrategy */
+	public void performFinish() {
+
+		switch (importDirectoryPage.getCopyStrategy()) {
 		case EMPTY:
 			copyRecursively(0);
 			break;
@@ -49,7 +77,6 @@ public class DropWizard extends Wizard {
 			copyRecursively(0);
 			break;
 		}
-		return true;
 	}
 
 	/**
@@ -92,11 +119,6 @@ public class DropWizard extends Wizard {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public boolean canFinish() {
-		return true;
 	}
 
 	/**

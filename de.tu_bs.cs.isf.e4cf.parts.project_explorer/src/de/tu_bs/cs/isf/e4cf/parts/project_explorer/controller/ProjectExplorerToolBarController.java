@@ -91,8 +91,7 @@ public class ProjectExplorerToolBarController {
 		btnNewFolder = createToolbarButton("Create New Folder", FileTable.NEWFOLDER_PNG, actionEvent -> {
 			NewFolderHandler handler = new NewFolderHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(shell, services.dialogService, services.rcpSelectionService, services.imageService,
-						services.workspaceFileSystem);
+				handler.execute(context, services, shell);
 			}
 		});
 
@@ -100,17 +99,15 @@ public class ProjectExplorerToolBarController {
 		btnNewFile = createToolbarButton("Create new File", FileTable.NEWFILE_PNG, actionEvent -> {
 			NewFileHandler handler = new NewFileHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(context, services.dialogService, services.rcpSelectionService, services.imageService,
-						services.workspaceFileSystem);
+				handler.execute(context, services, shell);
 			}
 		});
 
 		// Import Files
-		btnImportFiles = createToolbarButton("Import ...", FileTable.FILE_PNG, actionEvent -> {
+		btnImportFiles = createToolbarButton("Import Files", FileTable.FILE_PNG, actionEvent -> {
 			FileImportHandler handler = new FileImportHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(services.imageService, services.dialogService, services.rcpSelectionService, shell,
-						services.workspaceFileSystem);
+				handler.execute(context, services, shell);
 			}
 		});
 
@@ -118,8 +115,7 @@ public class ProjectExplorerToolBarController {
 		btnDelete = createToolbarButton("Delete Selected Entries", FileTable.DELETE_PNG, actionEvent -> {
 			RemoveFileCommand handler = new RemoveFileCommand();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(shell, services.rcpSelectionService, services.imageService,
-						services.workspaceFileSystem);
+				handler.execute(context, services, shell);
 			}
 		});
 
@@ -127,7 +123,7 @@ public class ProjectExplorerToolBarController {
 		btnShowExplorer = createToolbarButton("Show in Explorer", FileTable.EXPLORER_PNG, actionEvent -> {
 			ShowInExplorerHandler handler = new ShowInExplorerHandler();
 			if (handler.canExecute(services.rcpSelectionService)) {
-				handler.execute(services.rcpSelectionService);
+				handler.execute(context, services, shell);
 			}
 		});
 

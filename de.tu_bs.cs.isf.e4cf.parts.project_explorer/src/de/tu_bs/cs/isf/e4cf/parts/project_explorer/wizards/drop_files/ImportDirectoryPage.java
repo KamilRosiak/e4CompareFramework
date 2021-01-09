@@ -1,25 +1,20 @@
-package de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards;
+package de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files;
 
 import java.nio.file.Path;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CopyDirectoryController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import javafx.embed.swt.FXCanvas;
-import javafx.scene.Scene;
+import javafx.scene.Parent;
 
 /**
  * Represents a Wizard Page which lets the user choose to copy the content of a
  * directory or only the directory itself (empty).
  */
-public class ImportDirectoryPage extends WizardPage {
+public class ImportDirectoryPage {
 
 	private IEclipseContext context;
 
@@ -29,46 +24,30 @@ public class ImportDirectoryPage extends WizardPage {
 	private FXMLLoader<CopyDirectoryController> loader;
 
 	/**
-	 * Creates a new page for the wizard that displays importing a directory
-	 * options.
+	 * Creates a new page for the dialog that displays directory import options.
 	 * 
-	 * @param pageName      the name of the page, it is use to display a title in
-	 *                      the wizard.
-	 * @param path          the target path, where the dropped items should copied
-	 *                      to.
-	 * @param context       the Eclipse Context used for the FXML loader
-	 * @param imgDescriptor an image for the page to display.
+	 * @param path
+	 * @param context
 	 */
-	public ImportDirectoryPage(String pageName, Path path, IEclipseContext context, ImageDescriptor imgDescriptor) {
-		super(pageName, pageName, imgDescriptor);
+	public ImportDirectoryPage(Path path, IEclipseContext context) {
 		this.context = context;
-		setDescription(path.toString());
 	}
 
-	@Override
-	public void createControl(Composite parent) {
-		FXCanvas canvas = new FXCanvas(parent, SWT.None);
+	public Parent createControl() {
 		loader = new FXMLLoader<CopyDirectoryController>(context, StringTable.BUNDLE_NAME,
 				FileTable.COPY_DIRECTORY_PAGE_FXML);
-		Scene scene = new Scene(loader.getNode());
-
-		canvas.setScene(scene);
-
 		loader.getController().copyEmptyRB.selectedProperty()
 				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
 					if (isNowSelected) {
-						copyStrategy = CopyStrategy.EMPTY;
+						this.copyStrategy = CopyStrategy.EMPTY;
 					}
-
-					update();
 				});
 
 		loader.getController().copyShallowRB.selectedProperty()
 				.addListener((obs, wasPreviouslySelected, isNowSelected) -> {
 					if (isNowSelected) {
-						copyStrategy = CopyStrategy.SHALLOW;
+						this.copyStrategy = CopyStrategy.SHALLOW;
 					}
-					update();
 				});
 
 		loader.getController().copyContentRB.selectedProperty()
@@ -76,18 +55,12 @@ public class ImportDirectoryPage extends WizardPage {
 					if (isNowSelected) {
 						copyStrategy = CopyStrategy.RECURSIVE;
 					}
-					update();
 				});
 
 		loader.getController().toggleGroup();
 
-		setControl(canvas);
+		return loader.getNode();
 	}
-
-	@Override
-	public void setDescription(String description) {
-		super.setDescription("To: " + description);
-	};
 
 	/**
 	 * Get the currently selected copying strategy
@@ -95,14 +68,7 @@ public class ImportDirectoryPage extends WizardPage {
 	 * @return the currently selected copying strategy
 	 */
 	public CopyStrategy getCopyStrategy() {
-		return copyStrategy;
-	}
-
-	/**
-	 * Update the buttons of the wizard
-	 */
-	private void update() {
-		getWizard().getContainer().updateButtons();
+		return this.copyStrategy;
 	}
 
 	/**
