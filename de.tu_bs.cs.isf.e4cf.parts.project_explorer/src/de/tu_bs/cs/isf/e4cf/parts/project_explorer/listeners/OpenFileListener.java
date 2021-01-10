@@ -10,21 +10,19 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
-
 public class OpenFileListener implements EventHandler<MouseEvent> {
-	
+
 	IEclipseContext eclipseContext;
 	private ServiceContainer services;
-	private Map<String,IProjectExplorerExtension> fileExtensions;
-	
-	public OpenFileListener(IEclipseContext eclipseContext, Map<String,
-			IProjectExplorerExtension> fileExtensions,
+	private Map<String, IProjectExplorerExtension> fileExtensions;
+
+	public OpenFileListener(IEclipseContext eclipseContext, Map<String, IProjectExplorerExtension> fileExtensions,
 			ServiceContainer services) {
 		this.eclipseContext = eclipseContext;
 		this.fileExtensions = fileExtensions;
 		this.services = services;
 	}
-	
+
 	/**
 	 * Add double-click listener to the files of the project explorer
 	 * 
@@ -33,24 +31,23 @@ public class OpenFileListener implements EventHandler<MouseEvent> {
 	@Override
 	public void handle(MouseEvent event) {
 		// left mouse button and double click required
-		if(event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
+		if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
 			// should not trigger on directories
 			FileTreeElement target = services.rcpSelectionService.getCurrentSelectionFromExplorer();
-			if(!target.isDirectory()) {
+			if (target != null && !target.isDirectory()) {
 				openFile(target);
 			}
 		}
 	}
-	
+
 	private void openFile(FileTreeElement target) {
-		if(target != null) {
-			String path = target.getAbsolutePath();
-			String fileExtension = path.substring(path.lastIndexOf(".")+1);
+		if (target != null) {
+			String fileExtension = target.getExtension();
 			// if a double click action is available for given extension execute it.
-			if(fileExtensions.containsKey(fileExtension)) {
+			if (fileExtensions.containsKey(fileExtension)) {
 				fileExtensions.get(fileExtension).execute(services);
 			}
 		}
-		
+
 	}
 }
