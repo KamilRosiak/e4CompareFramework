@@ -50,8 +50,8 @@ import javafx.embed.swt.FXCanvas;
 import javafx.embed.swt.SWTFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -92,7 +92,7 @@ public class ProjectExplorerViewController {
 	IEclipseContext context;
 
 	// Controller fields
-	
+
 	private ListChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
@@ -166,6 +166,25 @@ public class ProjectExplorerViewController {
 		}
 
 		return rootNode;
+	}
+
+	/**
+	 * Walks the (sub)-tree from and applies selection to the selection model if
+	 * required.
+	 * 
+	 * @param currentItem start point for tree traversal
+	 * @param selections  A list of previously selected FileTreeElements
+	 */
+	private void setSelections(TreeItem<FileTreeElement> currentItem, List<FileTreeElement> selections) {
+
+		for (TreeItem<FileTreeElement> child : currentItem.getChildren()) {
+			setSelections(child, selections);
+		}
+
+		if (selections.contains(currentItem.getValue())) {
+			projectTree.getSelectionModel().select(currentItem);
+		}
+
 	}
 
 	/**
@@ -305,12 +324,17 @@ public class ProjectExplorerViewController {
 	@Optional
 	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Object o) {
 
-		projectTree.getSelectionModel().getSelectedItems().removeListener(changeListener);
+		// Store list of current selections before the tree is destroyed and rebuilt
+		List<FileTreeElement> selections = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
+
 		TreeItem<FileTreeElement> root = buildTree(projectTree.getRoot().getValue());
 
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
-		projectTree.getSelectionModel().getSelectedItems().addListener(changeListener);
+
+		// re-apply selections
+		setSelections(root, selections);
+
 	}
 
 	/** Subscribing on the rename event */

@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -38,7 +39,11 @@ public class FileImportHandler implements IHandler {
 				FileTreeElement selection = services.rcpSelectionService.getCurrentSelectionFromExplorer();
 				target = FileHandlingUtility.getPath(selection);
 				for (File file : selectedFiles) {
-					services.workspaceFileSystem.copy(file.toPath(), target);
+					try {
+						services.workspaceFileSystem.copy(file.toPath(), target);
+					} catch (FileAlreadyExistsException faee) {
+						System.out.println("ERROR: Could not import '"+file.getName()+"' because it already exists in that directory!");
+					}  
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -48,7 +53,7 @@ public class FileImportHandler implements IHandler {
 
 	@CanExecute
 	public boolean canExecute(RCPSelectionService selectionService) {
-		FileTreeElement element = selectionService.getCurrentSelectionFromExplorer();
-		return element != null && element.isDirectory();
+		List<FileTreeElement> selections = selectionService.getCurrentSelectionsFromExplorer();
+		return selections != null && selections.size() == 1 && selections.get(0).isDirectory();
 	}
 }

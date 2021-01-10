@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -33,7 +34,7 @@ public class NewFolderHandler implements IHandler {
 
 	@CanExecute
 	public boolean canExecute(RCPSelectionService selectionService) {
-		FileTreeElement element = selectionService.getCurrentSelectionFromExplorer();
-		return element != null && element.isDirectory();
+		List<FileTreeElement> selections = selectionService.getCurrentSelectionsFromExplorer();
+		return selections != null && selections.size() == 1 && selections.get(0).isDirectory();
 	}
 }
