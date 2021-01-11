@@ -194,6 +194,22 @@ public class WriterUtil {
 			CharLiteralExpr obj = new CharLiteralExpr();
 			obj.setValue(attributes.getValue().toString());
 			jpNode = obj;
+		} else if (n.getNodeType().equals(JavaNodeTypes.Class.name())) {
+			ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
+			coid.setName(attributes.getName());
+			coid.setModifiers(attributes.getModifier());
+
+			if (!attributes.getSuperclass().isEmpty()) {
+				coid.addExtendedType(attributes.getSuperclass());
+			}
+			coid.setImplementedTypes(attributes.getInterface());
+			coid.setInterface(attributes.isInterface());
+
+			if (p instanceof NodeWithMembers) {
+				((NodeWithMembers) p).addMember(coid);
+			}
+					
+			jpNode = coid;
 		} else if (n.getNodeType().equals(ClassExpr.class.getSimpleName())) {
 			ClassExpr obj = new ClassExpr();
 			obj.setType(attributes.getType());
