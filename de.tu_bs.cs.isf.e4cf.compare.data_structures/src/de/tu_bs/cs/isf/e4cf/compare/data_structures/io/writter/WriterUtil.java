@@ -219,6 +219,11 @@ public class WriterUtil {
 			obj.setCondition(attributes.getCondition().getFirst().get());
 			obj.setThenExpr(attributes.getThen());
 			obj.setElseExpr(attributes.getElse());
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(ConstructorDeclaration.class.getSimpleName())) {
 			ConstructorDeclaration obj = new ConstructorDeclaration();
@@ -253,6 +258,11 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(EnclosedExpr.class.getSimpleName())) {
 			EnclosedExpr obj = new EnclosedExpr();
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(EnumConstantDeclaration.class.getSimpleName())) {
 			EnumConstantDeclaration obj = new EnumConstantDeclaration();
@@ -605,6 +615,10 @@ public class WriterUtil {
 
 		if (p != null && jpNode != null) {
 			jpNode.setParentNode(p);
+			
+			if (p instanceof EnclosedExpr && jpNode instanceof Expression) {
+				((EnclosedExpr) p).setInner((Expression) jpNode);
+			}
 		}
 
 		// set jpNode as parent to all the nodes, that are generated from the
