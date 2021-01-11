@@ -330,6 +330,11 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(LambdaExpr.class.getSimpleName())) {
 			LambdaExpr obj = new LambdaExpr();
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(LocalClassDeclarationStmt.class.getSimpleName())) {
 			LocalClassDeclarationStmt obj = new LocalClassDeclarationStmt();
@@ -359,6 +364,8 @@ public class WriterUtil {
 
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
+			} else if (p instanceof LambdaExpr) {
+				((LambdaExpr) p).setBody(new ExpressionStmt(obj));
 			}
 
 			jpNode = obj;
@@ -406,10 +413,14 @@ public class WriterUtil {
 			Parameter obj = new Parameter();
 			if (attributes.getType() != null) {
 				obj.setType(attributes.getType());
+			} else {
+				obj.setType(new UnknownType());
 			}
 			obj.setName(attributes.getName());
 
-			if (p instanceof CatchClause) {
+			if (p instanceof NodeWithParameters) {
+				((NodeWithParameters) p).addParameter(obj);
+			} else if (p instanceof CatchClause) {
 				((CatchClause) p).setParameter(obj);
 			}
 
