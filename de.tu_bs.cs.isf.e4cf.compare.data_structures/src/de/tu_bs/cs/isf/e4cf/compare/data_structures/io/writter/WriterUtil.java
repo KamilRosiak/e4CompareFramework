@@ -342,6 +342,15 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(MemberValuePair.class.getSimpleName())) {
 			MemberValuePair obj = new MemberValuePair();
+			obj.setName(attributes.getKey());
+			obj.setValue(attributes.getValue());
+			
+			if (p instanceof NormalAnnotationExpr) {
+				NodeList<MemberValuePair> paris = ((NormalAnnotationExpr) p).getPairs();
+				paris.add(obj);
+				((NormalAnnotationExpr) p).setPairs(paris);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(MethodCallExpr.class.getSimpleName())) {
 			MethodCallExpr obj = new MethodCallExpr();
@@ -363,6 +372,9 @@ public class WriterUtil {
 			} else if (attributes.getType() != null) {
 				obj.setType(attributes.getType());
 			}
+			if (attributes.getAnnotation().isNonEmpty()) {
+				obj.setAnnotations(attributes.getAnnotation());
+			}
 
 			if (p instanceof NodeWithMembers) {
 				((NodeWithMembers) p).addMember(obj);
@@ -377,6 +389,12 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(NormalAnnotationExpr.class.getSimpleName())) {
 			NormalAnnotationExpr obj = new NormalAnnotationExpr();
+			obj.setName(attributes.getName());
+			
+			if(p instanceof NodeWithAnnotations) {
+				((NodeWithAnnotations) p).addAnnotation(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(NullLiteralExpr.class.getSimpleName())) {
 			NullLiteralExpr obj = new NullLiteralExpr();
@@ -414,6 +432,13 @@ public class WriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(SingleMemberAnnotationExpr.class.getSimpleName())) {
 			SingleMemberAnnotationExpr obj = new SingleMemberAnnotationExpr();
+			obj.setName(attributes.getName());
+			obj.setMemberValue(attributes.getValue());
+			
+			if (p instanceof NodeWithAnnotations) {
+				((NodeWithAnnotations) p).addAnnotation(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(StringLiteralExpr.class.getSimpleName())) {
 			StringLiteralExpr obj = new StringLiteralExpr();
