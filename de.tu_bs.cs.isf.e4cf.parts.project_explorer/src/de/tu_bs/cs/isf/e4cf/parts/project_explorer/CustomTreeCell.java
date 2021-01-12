@@ -10,17 +10,28 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
+
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
+import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CustomTreeCellController;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagStore;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog.DropMode;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -28,12 +39,18 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 /**
  * A tree cell that supports dragging
  */
-public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
+public class CustomTreeCell extends TreeCell<FileTreeElement> {
 
+	// TODO: inject?
+//	@Inject
+	private TagStore tagStore;
+	
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
 
@@ -41,9 +58,18 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	 * Indicates whether a file transfer operation actually changed the filetree.
 	 */
 	private boolean fileMoved;
+	
+	private FXMLLoader<CustomTreeCellController> loader;
+	private CustomTreeCellController controller;
 
+	// TODO constructor optimization
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider,
-			ServiceContainer services) {
+			ServiceContainer services, IEclipseContext context, TagStore tagStore) {
+		loader = new FXMLLoader<CustomTreeCellController>(context, StringTable.BUNDLE_NAME,
+			FileTable.CUSTOM_TREE_CELL_FXML);
+		controller = loader.getController();
+		this.tagStore = tagStore;
+		
 		this.fileImageProvider = fileImageProvider;
 
 		// Allow Drops on Directory TreeItems but not on files
@@ -182,7 +208,6 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	@Override
 	public void startEdit() {
 		super.startEdit();
-		setText("");
 		setupEditTextField();
 		setGraphic(editTextField);
 	}
@@ -193,8 +218,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		setText(getItem().toString());
-		setGraphic(fileImageProvider.getImage(getItem()));
+		setGraphic(loader.getNode());
 	}
 
 	@Override
@@ -202,10 +226,17 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		super.updateItem(item, empty);
 
 		if (!empty) {
-			setText(item.toString());
-			setGraphic(fileImageProvider.getImage(item));
+			controller.text.setText(item.toString());
+			controller.image.setImage(fileImageProvider.getImage(item));
+			
+			ObservableList<Node> tagContainer = controller.tags.getChildren();
+			tagContainer.clear();
+			for (Tag tag : tagStore.getTags(item)) {
+				tagContainer.add(createTagIcon(tag.getColor()));
+			}
+			
+			setGraphic(loader.getNode());
 		} else {
-			setText("");
 			setGraphic(null);
 		}
 	}
@@ -280,6 +311,20 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		moveFileOrDirectory(source, target);
 	}
 
+	private Circle createTagIcon(Color color) {
+
+		// TODO styling and layout
+		DropShadow dropShadow = new DropShadow();
+		dropShadow.setOffsetX(1);
+		dropShadow.setOffsetY(1);
+		dropShadow.setRadius(2);
+		dropShadow.setColor(Color.GRAY);
+		
+		Circle circle = new Circle(6, color);
+		circle.setEffect(dropShadow);
+		return circle;
+	}
+	
 	private void setupEditTextField() {
 		editTextField = new TextField(getItem().getFileName());
 		editTextField.selectAll();

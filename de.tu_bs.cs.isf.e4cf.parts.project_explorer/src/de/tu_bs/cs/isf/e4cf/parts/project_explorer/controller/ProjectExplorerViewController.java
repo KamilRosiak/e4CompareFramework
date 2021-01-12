@@ -44,6 +44,7 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagStore;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
@@ -90,6 +91,9 @@ public class ProjectExplorerViewController {
 
 	@Inject
 	IEclipseContext context;
+
+	@Inject
+	private TagStore tagStore;
 
 	// Controller fields
 
@@ -139,7 +143,7 @@ public class ProjectExplorerViewController {
 
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
-				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services);
+				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services, context, tagStore);
 				return treeCell;
 			}
 		});
@@ -148,6 +152,9 @@ public class ProjectExplorerViewController {
 		toolbarController = new ProjectExplorerToolBarController(projectToolbar, context, services,
 				canvas.getParent().getShell());
 
+		// Init tagstore
+		tagStore.init();
+		System.out.println(tagStore.getAvailableTags());
 	}
 
 	/**

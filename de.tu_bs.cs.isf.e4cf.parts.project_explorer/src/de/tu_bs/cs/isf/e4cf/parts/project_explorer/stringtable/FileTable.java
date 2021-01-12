@@ -10,6 +10,8 @@ public class FileTable {
 	public static final String COPY_DIRECTORY_PAGE_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "CopyDirectoryView.fxml")
 			.toString();
 	public static final String NEW_FILE_PAGE_VIEW = Paths.get(PROJECT_EXPLORER_VIEWS, "NewFileView.fxml").toString();
+	public static final String CUSTOM_TREE_CELL_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "CustomTreeCellView.fxml")
+			.toString();
 
 	// Image paths
 	public static String PROJECT_EXPLORER = Paths.get("icons", "Explorer_View").toString();
