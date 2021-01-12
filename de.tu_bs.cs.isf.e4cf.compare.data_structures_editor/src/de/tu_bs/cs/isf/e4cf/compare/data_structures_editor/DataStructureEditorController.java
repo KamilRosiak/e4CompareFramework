@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.view.VisualizeTreeView;
-//import de.tu_bs.cs.isf.e4cf.compare.data_structures.editor.src.view.TreeViewController;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.embed.swt.FXCanvas;

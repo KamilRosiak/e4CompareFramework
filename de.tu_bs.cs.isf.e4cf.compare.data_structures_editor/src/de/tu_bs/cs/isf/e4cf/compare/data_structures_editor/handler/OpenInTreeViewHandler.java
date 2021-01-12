@@ -11,10 +11,11 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 public class OpenInTreeViewHandler {
 
-	/**
-	 * starting TreeView with a file from the explorer and sending an event
-	 */
-
+	
+/**
+ * starting TreeView with a file from the explorer and sending an event
+ * @param services
+ */
 	@Execute
 	public void execute(ServiceContainer services) {
 		FileTreeElement element = services.rcpSelectionService.getCurrentSelectionFromExplorer();

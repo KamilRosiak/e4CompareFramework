@@ -45,10 +45,7 @@ public class TreeViewController {
 	private Label testLabel;
 
 	@FXML
-	private Text hitCount;
-
-	@FXML
-	private Text totalNodeAmount;
+	private Text hitCount,totalNodeAmount;
 
 	@FXML
 	private TreeView<NodeUsage> treeView;
@@ -56,10 +53,10 @@ public class TreeViewController {
 	@FXML
 	private TextField searchTextField;
 
-	private String currentSearchText;
-
 	@FXML
 	private ContextMenu contextMenu;
+	
+	private String currentSearchText;
 
 	private List<TreeItem<NodeUsage>> copyList = new ArrayList<TreeItem<NodeUsage>>();
 
@@ -95,7 +92,7 @@ public class TreeViewController {
 	}
 
 	@FXML
-	void addAttribute() {
+	void addNodeAttribute() {
 //			treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(
 //					TreeViewUtilities.getInput("Enter attribute name"),
 //					TreeViewUtilities.getInput("Enter attribute value"));
@@ -116,7 +113,7 @@ public class TreeViewController {
 	 * 
 	 */
 	@FXML
-	void addChild() {
+	void addChildNode() {
 		TreeItem<NodeUsage> newChild = new TreeItem<NodeUsage>();
 		newChild.setValue(new NodeUsage("DummyNode"));
 		contextMenu.hide();
@@ -134,7 +131,7 @@ public class TreeViewController {
 	 * 
 	 */
 	@FXML
-	void copy() {
+	void copyNode() {
 		contextMenu.hide();
 		copyList.clear();
 		copyList.addAll(new ArrayList<TreeItem<NodeUsage>>(treeView.getSelectionModel().getSelectedItems())); // Bug:
@@ -147,7 +144,7 @@ public class TreeViewController {
 	}
 
 	@FXML
-	void paste() {
+	void pasteNode() {
 
 		contextMenu.hide();
 
@@ -168,8 +165,7 @@ public class TreeViewController {
 	 * 
 	 */
 	@FXML
-	void renameNode() { // Bug: Ändert nicht die Property sondern fügt nur neue Property hinzu mit neuem
-						// Value
+	void renameNode() { 						
 		contextMenu.hide();
 		for (Attribute attribute : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
 			if (attribute.getAttributeKey().toLowerCase().equals("name")) {
@@ -182,8 +178,8 @@ public class TreeViewController {
 	}
 
 	@FXML
-	void cut() {
-		copy();
+	void cutNode() {
+		copyNode();
 		deleteNode();
 	}
 
@@ -204,18 +200,16 @@ public class TreeViewController {
 	}
 
 	/**
-	 * A method to close a file #UNFINISHED throws nullpointer when new file is
-	 * opened
+	 * set treeview and its values to null, then remove it from the background
 	 */
 	@FXML
 	void closeFile() {
-		// set treeview and its values to null, then remove it from the background
 		treeView.setRoot(null);
 		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
 
 	@FXML
-	void save() {
+	void saveFile() {
 		TreeViewUtilities.serializesTree(treeView);
 	}
 
@@ -225,12 +219,12 @@ public class TreeViewController {
 	}
 
 	@FXML
-	void undo() {
+	void undoAction() {
 		System.out.println("UNDO");
 	}
 
 	@FXML
-	void redo() {
+	void redoAction() {
 		System.out.println("REDO");
 	}
 
@@ -238,7 +232,7 @@ public class TreeViewController {
 	 * Selects all elements in the treeview
 	 */
 	@FXML
-	void selectAll() {
+	void selectAllNodes() {
 		treeView.getSelectionModel().selectAll();
 		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
@@ -247,7 +241,7 @@ public class TreeViewController {
 	 * Unselects all elements in the treeview
 	 */
 	@FXML
-	void unselectAll() {
+	void unselectAllNodes() {
 		treeView.getSelectionModel().clearSelection();
 		services.eventBroker.send("EmptyPropertiesTableEvent", true);
 	}
@@ -256,8 +250,8 @@ public class TreeViewController {
 	 * search the text given in the searchfield
 	 */
 	@FXML
-	void search() {
-		TreeViewUtilities.clearSearchList();
+	void searchForNode() {
+		TreeViewUtilities.searchList.clear();
 		treeView.getSelectionModel().clearSelection();
 		List<TreeItem<NodeUsage>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
 				searchTextField.getText());
@@ -268,16 +262,16 @@ public class TreeViewController {
 	}
 
 	@FXML
-	void onEnter(ActionEvent event) {
+	void startSearch(ActionEvent event) {
 		if (currentSearchText == null) {
 			currentSearchText = searchTextField.getText();
-			search();
+			searchForNode();
 		} else {
 			if (currentSearchText.equals(searchTextField.getText())) {
-				search();
+				searchForNode();
 			} else {
 				TreeViewUtilities.setSearchCounter(0);
-				search();
+				searchForNode();
 				currentSearchText = searchTextField.getText();
 			}
 		}
