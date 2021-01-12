@@ -10,5 +10,6 @@ Require-Bundle: org.eclipse.e4.core.services,
  org.eclipse.e4.core.di.annotations,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.core.compare
-Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces,
+Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.impl,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.util

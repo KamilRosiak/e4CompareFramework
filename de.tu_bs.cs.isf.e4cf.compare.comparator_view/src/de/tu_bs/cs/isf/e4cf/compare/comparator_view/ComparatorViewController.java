@@ -14,10 +14,10 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 public class ComparatorViewController {
     private static final String COMPARATOR_VIEW_FXML = "/ui/view/ComparatorView.fxml";
-    public static final String COMPARATOR_VIEW_CSS_LOCATION ="css/comparator_view.css";
-    
+    public static final String COMPARATOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
+
     private ComparatorView view;
-    
+
     @PostConstruct
     public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
 	view = FXMLUtil.<ComparatorView>loadFXML(parent, context, ComparatorST.BUNDLE_NAME, COMPARATOR_VIEW_FXML);

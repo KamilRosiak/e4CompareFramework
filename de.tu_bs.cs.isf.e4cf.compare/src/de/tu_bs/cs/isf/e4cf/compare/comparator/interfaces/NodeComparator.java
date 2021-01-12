@@ -18,8 +18,13 @@ public interface NodeComparator {
 	public boolean isComparable(Node firstNode, Node secondNode);
 	
 	/**
-	 * This method compares two nodes of the same type.
+	 * This method compares two nodes of the same type and returns the similarity.
 	 */
-	public Comparison compare(Node firstNode, Node secondNode);
+	public float compare(Node firstNode, Node secondNode);
 	
+	/**
+	 * Returns the similarity of this comparison
+	 */
+	public float getSimilarity();
+
 }

@@ -10,7 +10,6 @@ import javafx.scene.layout.BorderPane;
 public class ComparatorView implements Initializable {
 
     
-    
     @FXML BorderPane root;
     
     @Override

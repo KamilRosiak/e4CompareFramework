@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.cell.*?> 
 
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #c1d5ef" stylesheets="@../../css/compare_engine.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.view.CompareEngineView">
    <top>
@@ -23,12 +24,12 @@
             </Label>
             <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="removeArtifact" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Remove Artifact" HBox.hgrow="ALWAYS">
+                  <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#removeArtifacts" text="Remove Artifact" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets right="5.0" top="5.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="addArtifact" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Add Artifact" HBox.hgrow="ALWAYS">
+                  <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addArtifacts" text="Add Artifact" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets top="5.0" />
                      </HBox.margin>
@@ -108,10 +109,19 @@
    <center>
       <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="artifactTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <TableView fx:id="artifactTable"  maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
               <columns>
-                <TableColumn fx:id="nameColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" text="Name" />
-                <TableColumn fx:id="typeColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" text="Type" />
+                <TableColumn fx:id="nameColumn" maxWidth="6000" minWidth="-1.0" prefWidth="-1.0" text="Name">
+                        <cellValueFactory>
+                        	<PropertyValueFactory property="treeName" />
+        				</cellValueFactory>
+        		</TableColumn>
+                <TableColumn fx:id="typeColumn" maxWidth="3000" minWidth="-1.0" prefWidth="-1.0" text="Type">
+                        <cellValueFactory>
+                        	<PropertyValueFactory property="artifactType" />
+        				</cellValueFactory>
+        		</TableColumn>
               </columns>
             </TableView>
          </children>

@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.comparator;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.AbstractComparsion;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
  * A container for the storage of attribute comparisons
@@ -18,4 +19,8 @@ public class AttrComparison extends AbstractComparsion<Attribute>{
 		this(first_attr, second_attr);
 		setSimilarity(similarity);
 	}
+
+
+	
+	
 }
