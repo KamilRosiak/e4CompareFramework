@@ -31,7 +31,7 @@ public class NodeUsage extends AbstractNode {
 	public String toString() {
 		String s1 = "";
 		if (this.getAttributes().isEmpty()) {
-			return s1 + "Root";
+			return s1 + "empty";
 		}
 		for (Attribute attribute : this.getAttributes()) {
 			if(attribute.getAttributeKey().toLowerCase().equals("name")) {

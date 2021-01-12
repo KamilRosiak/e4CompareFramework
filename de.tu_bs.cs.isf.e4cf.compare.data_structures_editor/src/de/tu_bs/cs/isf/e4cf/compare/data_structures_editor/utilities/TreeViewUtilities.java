@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -31,6 +32,10 @@ public final class TreeViewUtilities {
 	
 	private static TreeItem<NodeUsage> nextItem;
 
+	private static int recursionCounter = 0;
+	
+	public static List<TreeItem<NodeUsage>> list = new ArrayList<TreeItem<NodeUsage>>();
+
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
 	}
@@ -45,6 +50,9 @@ public final class TreeViewUtilities {
 		TreeItem<NodeUsage> rootItem = new TreeItem<NodeUsage>(new NodeUsage(tr.getRoot()));
 		rootItem.setExpanded(true);
 		treeView.setRoot(rootItem);
+		System.out.println("root: " + rootItem + "children: " + rootItem.getChildren() + tr.getRoot().getChildren());
+		treeView.setRoot(rootItem);
+//		getTreeRecursively(tr, treeView, rootItem);
 		for (Node node : tr.getLeaves()) {
 			TreeItem<NodeUsage> item = new TreeItem<NodeUsage>(new NodeUsage(node));
 			rootItem.getChildren().add(item);
@@ -55,21 +63,88 @@ public final class TreeViewUtilities {
 
 		return treeView;
 	}
+
 	
-	public static TreeView<NodeUsage> getTreeRecursively(Tree tr, TreeView<NodeUsage> treeView, TreeItem<NodeUsage> item) {
-		nextItem = item;
-		System.out.println("for schleife");
-		//TreeItem<NodeUsage> nextItem = new TreeItem<NodeUsage>(new NodeUsage(node));
-		System.out.println("children: " + item.getValue().getChildren());
-		for(Node n: item.getValue().getChildren()) {
-			nextItem.getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(n)));
-			System.out.println(n);
-			TreeItem<NodeUsage> next = new TreeItem<NodeUsage>(new NodeUsage(n));
-			getTreeRecursively(tr, treeView, next);
+	/**
+	 * Temporäre Lösung, noch nicht fertiggestellt
+	 * @param tr
+	 * @param treeView
+	 * @param item
+	 * @return
+	 */
+	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView,
+			Node item) {
+
+		recursionCounter += 1;
+
+		if (recursionCounter == 1) {
+			treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			treeView.getRoot().setExpanded(true);
+			treeView.setShowRoot(true);
+			list.add(new TreeItem<NodeUsage>(new NodeUsage(item)));
 		}
-	    
+
+		if(!item.isLeaf()) {
+			for(Node n : item.getChildren()) {
+				getTreeViewFromTree(tr, treeView, n);
+
+			}
+		} else {
+//			System.out.println("DadTreeItem" + findTreeItemInTreeView(treeView, item));
+//			findTreeItemInTreeView(treeView, item).getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			treeView.getRoot().getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			
+		}
 		return treeView;
 	}
+	
+//	public static TreeItem<NodeUsage> findTreeItemInTreeView(TreeView<NodeUsage> treeView, Node item){
+//		
+//		treeViewToList(treeView.getRoot());
+//		for (TreeItem<NodeUsage> n : list ) {
+//			System.out.println("item: " + item);
+//			System.out.println("n: " + n.getValue());
+//			
+//			NodeUsage x = new NodeUsage (item);
+//			if (n.getValue().getUUID().equals(x.getUUID())) {
+//				System.out.println("uuid gleich");
+//				return n;
+//			} else {
+//				continue;
+//			}
+//			
+//		}
+//		return null;
+//	}
+//	
+//	public static void treeViewToList(TreeItem<NodeUsage> item){
+//		
+//		if (!(item.getValue().getAttributes().isEmpty())){
+//			list.add(item);
+//		}
+//		
+//		if(!item.getValue().isLeaf()) {
+//			System.out.println(item + "hasChildren");
+//			for(TreeItem<NodeUsage> t : item.getChildren())
+//			treeViewToList(t);
+//		}
+//		System.out.println("treeViewToList" + list);
+//	}
+
+//	public static TreeView<NodeUsage> getTreeRecursively(Tree tr, TreeView<NodeUsage> treeView, TreeItem<NodeUsage> item) {
+//		nextItem = item;
+//		System.out.println("for schleife");
+//		//TreeItem<NodeUsage> nextItem = new TreeItem<NodeUsage>(new NodeUsage(node));
+//		System.out.println("children: " + item.getValue().getChildren());
+//		for(Node n: item.getValue().getChildren()) {
+//			nextItem.getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(n)));
+//			System.out.println(n);
+//			TreeItem<NodeUsage> next = new TreeItem<NodeUsage>(new NodeUsage(n));
+//			getTreeRecursively(tr, treeView, next);
+//		}
+//	    
+//		return treeView;
+//	}
 
 	/**
 	 * 
@@ -119,31 +194,19 @@ public final class TreeViewUtilities {
 
 	public static void serializesTree(TreeView<NodeUsage> treeView) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
-
-		if (file.getName().equals(treeName)) {
-			file.delete();
-		}
-
-		try {
-			FileWriter writer = new FileWriter(file);
-			TreeItem<NodeUsage> rootItem = treeView.getRoot();
-			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
-				writer.write(node.getValue().toString());
-				writer.write("\n");
-			}
-			writer.close();
-			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		writeToFile(file, treeView);
 	}
 
 	public static void serializesTree(TreeView<NodeUsage> treeView, String newFileName) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
+		writeToFile(file, treeView);
+	}
+
+	public static void extractTree(TreeView<NodeUsage> treeView, String newFileName, List<TreeItem> tempList) {
+		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		try {
 			FileWriter writer = new FileWriter(file);
-			TreeItem<NodeUsage> rootItem = treeView.getRoot();
-			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
+			for (TreeItem<NodeUsage> node : tempList) {
 				writer.write(node.getValue().toString());
 				writer.write("\n");
 			}
@@ -194,4 +257,22 @@ public final class TreeViewUtilities {
 	}
 	
 
+	public static void writeToFile(File file, TreeView treeView) {
+		if (file.getName().equals(treeName)) {
+			file.delete();
+		}
+
+		try {
+			FileWriter writer = new FileWriter(file);
+			TreeItem<NodeUsage> rootItem = treeView.getRoot();
+			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
+				writer.write(node.getValue().toString());
+				writer.write("\n");
+			}
+			writer.close();
+			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

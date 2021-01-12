@@ -17,6 +17,8 @@ import javafx.scene.control.TableView;
  */
 public class PropertiesController {
 
+	// private MouseEvent event;
+
 	@FXML
 	private TableView<Attribute> propertiesTable;
 
@@ -40,7 +42,9 @@ public class PropertiesController {
 		propertiesTable.getColumns().clear();
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 	}
-	
-	
+
+//	public void gandalf () {
+//		PropertiesViewUtilities.handle(event, propertiesTable);
+//	}
 
 }

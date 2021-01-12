@@ -18,15 +18,15 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#closeFile" text="Close" />
             <MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
             <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As…" />
+             <MenuItem mnemonicParsing="false" onAction="#closeFile" text="Close" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
+            <MenuItem mnemonicParsing="false" onAction="#undo" text="Undo" />
+            <MenuItem mnemonicParsing="false"  onAction="#redo" text="Redo" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#selectAll" text="Select All" />
             <MenuItem mnemonicParsing="false" onAction="#unselectAll" text="Unselect All" />
@@ -44,7 +44,7 @@
 		<MenuItem mnemonicParsing="false" onAction="#paste" text="Paste" />
                 <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
                 <MenuItem mnemonicParsing="false" onAction= "#cut" text="Cut" />
-		<MenuItem mnemonicParsing="false" text="Extract to file" />
+		<MenuItem mnemonicParsing="false" onAction="#extractToFile" text="Extract to file" />
                 <MenuItem mnemonicParsing="false" onAction="#deleteNode" text="Delete" />
               </items>
             </ContextMenu>
