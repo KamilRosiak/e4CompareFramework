@@ -44,7 +44,7 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagStore;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
@@ -93,7 +93,7 @@ public class ProjectExplorerViewController {
 	IEclipseContext context;
 
 	@Inject
-	private TagStore tagStore;
+	private TagService tagStore;
 
 	// Controller fields
 
@@ -122,6 +122,8 @@ public class ProjectExplorerViewController {
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
 
+		tagStore.syncWithFileSystem(treeRoot);
+
 		// Register the SWT Context menu on the canvas
 		_menuService.registerContextMenu(canvas, StringTable.PROJECT_EXPLORER_CONTEXT_MENU_ID);
 
@@ -143,7 +145,8 @@ public class ProjectExplorerViewController {
 
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
-				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services, context, tagStore);
+				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services,
+						context, tagStore);
 				return treeCell;
 			}
 		});
@@ -151,10 +154,6 @@ public class ProjectExplorerViewController {
 		// Handoff Toolbar
 		toolbarController = new ProjectExplorerToolBarController(projectToolbar, context, services,
 				canvas.getParent().getShell());
-
-		// Init tagstore
-		tagStore.init();
-		System.out.println(tagStore.getAvailableTags());
 	}
 
 	/**

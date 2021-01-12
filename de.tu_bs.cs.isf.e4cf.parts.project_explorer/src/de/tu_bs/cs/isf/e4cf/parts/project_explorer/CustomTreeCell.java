@@ -24,7 +24,7 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CustomTreeCellCont
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagStore;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog.DropMode;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -49,7 +49,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 
 	// TODO: inject?
 //	@Inject
-	private TagStore tagStore;
+	private TagService tagStore;
 	
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
@@ -64,7 +64,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 
 	// TODO constructor optimization
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider,
-			ServiceContainer services, IEclipseContext context, TagStore tagStore) {
+			ServiceContainer services, IEclipseContext context, TagService tagStore) {
 		loader = new FXMLLoader<CustomTreeCellController>(context, StringTable.BUNDLE_NAME,
 			FileTable.CUSTOM_TREE_CELL_FXML);
 		controller = loader.getController();
