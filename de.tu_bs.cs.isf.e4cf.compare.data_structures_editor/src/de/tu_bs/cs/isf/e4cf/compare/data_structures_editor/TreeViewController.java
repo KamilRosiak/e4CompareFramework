@@ -61,17 +61,16 @@ public class TreeViewController {
 	@FXML
 	private ContextMenu contextMenu;
 
-	private List<TreeItem> copyList = new ArrayList<TreeItem>();
+	private List<TreeItem<NodeUsage>> copyList = new ArrayList<TreeItem<NodeUsage>>();
 
-	private void initiallizeTree(Tree tree) {
+	private void initializeTree(Tree tree) {
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		closeFile();
 
 		treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(tree.getRoot())));
 		treeView.getRoot().setExpanded(true);
-		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView,
-				new TreeItem<NodeUsage>(new NodeUsage(tree.getRoot())));
+		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView, tree.getRoot());
 		treeView = TreeViewUtilities.addListener(treeView, services);
 		// totalNodeAmount
 		// .setText("Total Node Amount: " +
@@ -92,7 +91,7 @@ public class TreeViewController {
 	@Optional
 	@Inject
 	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
-		initiallizeTree(tree);
+		initializeTree(tree);
 	}
 
 	@FXML
@@ -111,7 +110,6 @@ public class TreeViewController {
 		attribute.getAttributeValues().clear();
 		attribute.setAttributeKey(TreeViewUtilities.getInput("Enter attribute name"));
 		attribute.getAttributeValues().add(TreeViewUtilities.getInput("Enter attribute value"));
-
 	}
 
 	/**
@@ -139,8 +137,13 @@ public class TreeViewController {
 	void copy() {
 		contextMenu.hide();
 		copyList.clear();
-		copyList.addAll(treeView.getSelectionModel().getSelectedItems()); // Bug: Paste ist spiegelverkehrt bei oben
-																			// nach unten Markierung
+		copyList.addAll(new ArrayList<TreeItem<NodeUsage>>(treeView.getSelectionModel().getSelectedItems())); // Bug:
+																												// Paste
+																												// ist
+																												// spiegelverkehrt
+																												// bei
+																												// oben
+		System.out.println(copyList); // nach unten Markierung
 	}
 
 	@FXML
@@ -193,11 +196,10 @@ public class TreeViewController {
 
 	@FXML
 	void deleteNode() {
-		for (int i = 0; i < copyList.size(); i++) {
-			treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
-					.remove(treeView.getSelectionModel().getSelectedItem());
-			displayTotalNodeAmount();
-		}
+		contextMenu.hide();
+		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
+				.remove(treeView.getSelectionModel().getSelectedItem());
+		displayTotalNodeAmount();
 		treeView.refresh();
 	}
 
@@ -224,13 +226,12 @@ public class TreeViewController {
 
 	@FXML
 	void undo() {
-		System.out.println("undo");
-
+		System.out.println("UNDO");
 	}
 
 	@FXML
 	void redo() {
-		System.out.println("redo");
+		System.out.println("REDO");
 	}
 
 	/**
@@ -281,5 +282,4 @@ public class TreeViewController {
 			}
 		}
 	}
-
 }

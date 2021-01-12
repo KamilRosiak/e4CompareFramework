@@ -30,10 +30,6 @@ public final class TreeViewUtilities {
 
 	private static int searchCounter = 0;
 	
-	private static TreeItem<NodeUsage> nextItem;
-
-	private static int recursionCounter = 0;
-	
 	public static List<TreeItem<NodeUsage>> list = new ArrayList<TreeItem<NodeUsage>>();
 
 	public static void switchToPart(String path, ServiceContainer services) {
@@ -75,25 +71,18 @@ public final class TreeViewUtilities {
 	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView,
 			Node item) {
 
-		recursionCounter += 1;
-
-		if (recursionCounter == 1) {
+		if (item.isRoot()) {
 			treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(item)));
 			treeView.getRoot().setExpanded(true);
 			treeView.setShowRoot(true);
 			list.add(new TreeItem<NodeUsage>(new NodeUsage(item)));
-		}
-
+		} 
 		if(!item.isLeaf()) {
 			for(Node n : item.getChildren()) {
 				getTreeViewFromTree(tr, treeView, n);
-
 			}
 		} else {
-//			System.out.println("DadTreeItem" + findTreeItemInTreeView(treeView, item));
-//			findTreeItemInTreeView(treeView, item).getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));
-			treeView.getRoot().getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));
-			
+			treeView.getRoot().getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));		
 		}
 		return treeView;
 	}
