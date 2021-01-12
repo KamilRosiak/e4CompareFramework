@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox styleClass="box" xmlns="http://javafx.com/javafx/8.0.171"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CopyDirectoryController"
+	stylesheets="@ui/view/CopyDirectoryView.css">
+	<children>
+		<Text strokeType="OUTSIDE" strokeWidth="0.0"
+			text="How do you want to import the Directory?" styleClass="header"/>
+		<RadioButton fx:id="copyEmptyRB" mnemonicParsing="false"
+			text="Only generate the folder without the content." styleClass="choices"/>
+		<RadioButton fx:id="copyShallowRB" mnemonicParsing="false"
+			text="Shallow (Only 1st level children)" styleClass="choices"/>
+		<RadioButton fx:id="copyContentRB" mnemonicParsing="false"
+			text="Recursive" styleClass="choices"/>
+	</children>
+</VBox>
