@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
+import javafx.scene.control.TreeItem;
 
 @Creatable
 @Singleton
@@ -31,13 +32,16 @@ public class RCPSelectionService {
 		
 	}
 	
+
+	@SuppressWarnings("unchecked")  // Eclipse does not comprehend verified generic typecast!
 	public List<FileTreeElement> getCurrentSelectionsFromExplorer() {
 		List<FileTreeElement> selection = new ArrayList<>();
 		Object selectionObject = selectionService.getSelection(PROJECT_EXPLORER_PART_ID);
 		if(selectionObject != null && selectionObject instanceof IStructuredSelection) {
 			IStructuredSelection selectionFromExplorer = (IStructuredSelection) selectionObject;
 			for(Object o : selectionFromExplorer.toList()) {
-				if (o instanceof FileTreeElement) selection.add((FileTreeElement) o); 	
+				if (o instanceof TreeItem<?> && ((TreeItem<?>) o).getValue() instanceof FileTreeElement)
+					selection.add(((TreeItem<FileTreeElement>) o).getValue());
 			}
 		}
 		return selection;

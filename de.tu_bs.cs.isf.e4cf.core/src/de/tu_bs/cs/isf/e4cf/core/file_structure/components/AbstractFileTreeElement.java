@@ -19,8 +19,10 @@ public abstract class AbstractFileTreeElement implements FileTreeElement {
 	protected Path _file;
 	protected FileTreeElement _parent;
 	protected List<FileTreeElement> _childElements = new ArrayList<>();
-	
+	protected Boolean displayLongPath;
+
 	protected AbstractFileTreeElement(String path, FileTreeElement parent, List<FileTreeElement> childElements) {
+		displayLongPath = true;
 		try {
 			_file = Paths.get(path);
 			_parent = parent;
@@ -31,7 +33,7 @@ public abstract class AbstractFileTreeElement implements FileTreeElement {
 				_childElements.addAll(childElements);
 				_childElements.forEach(c -> c.setParent(this));
 			}
-		} catch(InvalidPathException e) {
+		} catch (InvalidPathException e) {
 			System.err.println(e.getMessage());
 			e.printStackTrace();
 		}
@@ -46,12 +48,11 @@ public abstract class AbstractFileTreeElement implements FileTreeElement {
 	public boolean equals(FileTreeElement ftElement) {
 		return this.getAbsolutePath().equals(ftElement.getAbsolutePath());
 	}
-	
+
 	public boolean exists() {
 		return Files.exists(_file, LinkOption.NOFOLLOW_LINKS);
 	}
 
-	
 	@Override
 	public String getAbsolutePath() {
 		return _file.normalize().toAbsolutePath().toString();
@@ -82,7 +83,7 @@ public abstract class AbstractFileTreeElement implements FileTreeElement {
 	public void setParent(FileTreeElement parent) {
 		_parent = parent;
 	}
-	
+
 	@Override
 	public List<FileTreeElement> getChildren() {
 		return _childElements;
@@ -92,12 +93,29 @@ public abstract class AbstractFileTreeElement implements FileTreeElement {
 	public void save(SaveOperation saveOp) {
 		saveOp.execute();
 	}
-	
+
 	public Path getFile() {
 		return _file;
 	}
 
 	public void setFile(Path file) {
 		_file = file;
+	}
+
+	public String getFileName() {
+		return this.getFile().getFileName().toString();
+	}
+
+	@Override
+	public String toString() {
+		if (displayLongPath) {
+			return getRelativePath();
+		} else {
+			return this.getFileName();
+		}
+	}
+
+	public void setDisplayLongPath(Boolean display) {
+		this.displayLongPath = display;
 	}
 }

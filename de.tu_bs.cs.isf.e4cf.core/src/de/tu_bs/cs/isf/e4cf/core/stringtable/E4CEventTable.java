@@ -8,6 +8,12 @@ public class E4CEventTable {
 	public static final String SELECTION_CHANGED_EVENT ="SELECTION_CHANGED_EVENT";
 	public static final String NEW_IEC_PROJECT_EVENT ="NEW_PROJECT_EVENT";
 	
+	public static final String EVENT_DROP_ELEMENT_IN_EXPLORER = "DROP_ELEMENT_IN_EXPLORER";
+	
 	public static final String UPDATE_STATUS_BAR = "UPDATE_STATUS_BAR";
 
+	public static final String EVENT_RENAME_PROJECT_EXPLORER_ITEM = "EVENT_RENAME_PROJECT_EXPLORER_ITEM";
+	
+	public static final String EVENT_FILTER_CHANGED = "EVENT_FILTER_CHANGED";
+	public static final String EVENT_VIEW_TOGGLE = "EVENT_VIEW_TOGGLE";
 }

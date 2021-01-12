@@ -16,68 +16,70 @@ import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 
 /**
- * The label provider of the project explorer defines what kind of representation the loaded items becomes 
+ * The label provider of the project explorer defines what kind of
+ * representation the loaded items becomes
+ * 
  * @author {Kamil Rosiak}
  *
  */
 public class ProjectExplorerLabelProvider implements ILabelProvider {
-	private final List<ILabelProviderListener> listeners = new ArrayList<ILabelProviderListener>(); 
+	private final List<ILabelProviderListener> listeners = new ArrayList<ILabelProviderListener>();
 	private RCPImageService imageService;
 	private WorkspaceFileSystem workspaceFileSystem;
-	private Map<String,IProjectExplorerExtension> fileExtensions;
-	
-	public ProjectExplorerLabelProvider(RCPImageService imageService, WorkspaceFileSystem workspaceFileSystem, Map<String,IProjectExplorerExtension> fileExtensions) {
+	private Map<String, IProjectExplorerExtension> fileExtensions;
+
+	public ProjectExplorerLabelProvider(RCPImageService imageService, WorkspaceFileSystem workspaceFileSystem,
+			Map<String, IProjectExplorerExtension> fileExtensions) {
 		this.imageService = imageService;
 		this.workspaceFileSystem = workspaceFileSystem;
 		this.fileExtensions = fileExtensions;
 	}
-	
+
 	@Override
 	public void addListener(ILabelProviderListener listener) {
-		 if (!listeners.contains(listener)) { 
-			   listeners.add(listener); 
-			  } 
+		if (!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public boolean isLabelProperty(Object element, String property) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void removeListener(ILabelProviderListener listener) {
-		 if (listeners.contains(listener)) { 
-			  listeners.remove(listener); 
-		 } 
+		if (listeners.contains(listener)) {
+			listeners.remove(listener);
+		}
 	}
+
 	/**
 	 * This method gives the different files a different look
 	 */
 	@Override
 	public Image getImage(Object element) {
 		Image image = null;
-		
+
 		if (element instanceof FileTreeElement) {
 			FileTreeElement fileElement = (FileTreeElement) element;
-			if(workspaceFileSystem.isProject(fileElement)) {
+			if (workspaceFileSystem.isProject(fileElement)) {
 				image = imageService.getImage(null, "icons/Explorer_View/items/project16.png");
 			} else if (fileElement.isDirectory()) {
 				image = imageService.getImage(null, "icons/Explorer_View/items/folder16.png");
 			} else {
 				String fileExtension = fileElement.getExtension();
-				//load extended file icons 
-				if(fileExtensions.containsKey(fileExtension)) {
+				// load extended file icons
+				if (fileExtensions.containsKey(fileExtension)) {
 					image = fileExtensions.get(fileExtension).getIcon(imageService);
 				} else if (fileExtension.equals(E4CStringTable.FILE_ENDING_XML)) {
 					image = imageService.getImage(null, "icons/Explorer_View/items/xml16.png");
 				} else {
-					//default file icon
+					// default file icon
 					image = imageService.getImage(null, "icons/Explorer_View/items/file16.png");
 				};
 			}
@@ -93,5 +95,5 @@ public class ProjectExplorerLabelProvider implements ILabelProvider {
 			return "placeholder";
 		}
 	}
-	
+
 }
