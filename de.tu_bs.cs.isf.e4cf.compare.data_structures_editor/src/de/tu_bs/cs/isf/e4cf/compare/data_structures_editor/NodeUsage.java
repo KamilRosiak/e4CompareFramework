@@ -23,6 +23,8 @@ public class NodeUsage extends AbstractNode {
 		setNodeType(node.getNodeType());
 		setAttributes(node.getAttributes());
 		setParent(node.getParent());
+		setChildren(node.getChildren());
+		setUUID(node.getUUID());
 	}
 
 	@Override
@@ -53,5 +55,6 @@ public class NodeUsage extends AbstractNode {
 		this(nodeString, parent);
 		setVariabilityClass(varClass);
 	}
+	
 
 }

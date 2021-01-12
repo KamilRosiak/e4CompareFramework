@@ -28,6 +28,8 @@ public final class TreeViewUtilities {
 	public static String treeName = "";
 
 	private static int searchCounter = 0;
+	
+	private static TreeItem<NodeUsage> nextItem;
 
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
@@ -42,15 +44,30 @@ public final class TreeViewUtilities {
 	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView) {
 		TreeItem<NodeUsage> rootItem = new TreeItem<NodeUsage>(new NodeUsage(tr.getRoot()));
 		rootItem.setExpanded(true);
-
+		treeView.setRoot(rootItem);
 		for (Node node : tr.getLeaves()) {
 			TreeItem<NodeUsage> item = new TreeItem<NodeUsage>(new NodeUsage(node));
 			rootItem.getChildren().add(item);
 		}
 
-		treeView.setRoot(rootItem);
+		//tv.setRoot(rootItem);
 		treeView.setShowRoot(true);
 
+		return treeView;
+	}
+	
+	public static TreeView<NodeUsage> getTreeRecursively(Tree tr, TreeView<NodeUsage> treeView, TreeItem<NodeUsage> item) {
+		nextItem = item;
+		System.out.println("for schleife");
+		//TreeItem<NodeUsage> nextItem = new TreeItem<NodeUsage>(new NodeUsage(node));
+		System.out.println("children: " + item.getValue().getChildren());
+		for(Node n: item.getValue().getChildren()) {
+			nextItem.getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(n)));
+			System.out.println(n);
+			TreeItem<NodeUsage> next = new TreeItem<NodeUsage>(new NodeUsage(n));
+			getTreeRecursively(tr, treeView, next);
+		}
+	    
 		return treeView;
 	}
 
@@ -175,5 +192,6 @@ public final class TreeViewUtilities {
 	public static void incrementSearchCounter() {
 		searchCounter++;
 	}
+	
 
 }
