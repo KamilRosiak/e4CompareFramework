@@ -126,7 +126,6 @@ public class PropertiesTagStore implements ITagStore {
 				+ format(color.getOpacity())).toUpperCase();
 	}
 
-	// TODO hash?
 	@Override
 	public Map<String, List<Tag>> loadTagMap(List<Tag> availableTags) {
 		Properties tagMapProperties = new Properties();
