@@ -20,140 +20,155 @@ import org.osgi.framework.FrameworkUtil;
 
 import javafx.scene.paint.Color;
 
+/**
+ * A ITagStore using properties files to persist tagging information
+ */
 public class PropertiesTagStore implements ITagStore {
 
 	private static final String AVAILABLE_TAGS_PROPERTIES_FILE = "available_tags.properties";
 	private static final String TAG_MAP_PROPERTIES_FILE = "tag_map.properties";
-	
+
 	private static final String AVAILABLE_TAGS_PROPERTIES_COMMENT = "Map of all available tags and its colors";
 	private static final String TAG_MAP_PROPERTIES_COMMENT = "Map of all available paths and its tags";
-	
+
 	private File availableTagsFile;
 	private File tagMapFile;
-	
+
+	/**
+	 * Default constructor that gets the file locations
+	 */
 	public PropertiesTagStore() {
 		Bundle bundle = FrameworkUtil.getBundle(getClass());
 		IPath stateLoc = Platform.getStateLocation(bundle);
-		
+
 		availableTagsFile = stateLoc.append(AVAILABLE_TAGS_PROPERTIES_FILE).toFile();
 		tagMapFile = stateLoc.append(TAG_MAP_PROPERTIES_FILE).toFile();
 	}
-	
-	@Override
-	public List<Tag> loadAvailableTags() {
-		Properties availableTagsProperties = new Properties();
-		
-		if(availableTagsFile.exists()) {
+
+	/**
+	 * Load properties from a properties file
+	 * 
+	 * @param properties to load
+	 * @param file       to load from
+	 */
+	private void loadPropertiesFromFile(Properties properties, File file) {
+		if (file.exists()) {
 			try {
-				availableTagsProperties.load(new FileInputStream(availableTagsFile));
+				properties.load(new FileInputStream(file));
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
+	}
+
+	/**
+	 * Store properties in a properties file
+	 * 
+	 * @param properties to store
+	 * @param file       to store into
+	 * @param comment    file header comment
+	 */
+	private void storePropertiesToFile(Properties properties, File file, String comment) {
+		try {
+			properties.store(new FileWriter(file), comment);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public List<Tag> loadAvailableTags() {
+		Properties availableTagsProperties = new Properties();
+
+		loadPropertiesFromFile(availableTagsProperties, availableTagsFile);
+
 		ArrayList<Tag> availableTags = new ArrayList<Tag>();
-		
+
 		availableTagsProperties.forEach((name, color) -> {
-			System.out.println(name + " " + color);
 			availableTags.add(new Tag((String) name, Color.web((String) color)));
 		});
-		
+
 		return availableTags;
 	}
 
 	@Override
 	public void storeAvailableTags(List<Tag> availableTags) {
 		Properties availableTagsProperties = new Properties();
-		
+
 		for (Tag tag : availableTags) {
 			availableTagsProperties.put(tag.getName(), toHexString(tag.getColor()));
 		}
-		
-		try {
-			availableTagsProperties.store(new FileWriter(availableTagsFile), AVAILABLE_TAGS_PROPERTIES_COMMENT);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		storePropertiesToFile(availableTagsProperties, availableTagsFile, AVAILABLE_TAGS_PROPERTIES_COMMENT);
 	}
 
-	private String format(double val) {
-		String in = Integer.toHexString((int) Math.round(val * 255));
+	/**
+	 * Format a value as a hex string
+	 * 
+	 * @param value double
+	 * @return hex string
+	 */
+	private String format(double value) {
+		String in = Integer.toHexString((int) Math.round(value * 255));
 		return in.length() == 1 ? "0" + in : in;
 	}
 
-	public String toHexString(Color value) {
-		return "#" + (
-				format(value.getRed()) + 
-				format(value.getGreen()) + 
-				format(value.getBlue()) + 
-				format(value.getOpacity())
-			).toUpperCase();
+	/**
+	 * Build hex string representing a color
+	 * 
+	 * @param color to represent
+	 * @return hex string for color
+	 */
+	private String toHexString(Color color) {
+		return "#" + (format(color.getRed()) + format(color.getGreen()) + format(color.getBlue())
+				+ format(color.getOpacity())).toUpperCase();
 	}
 
-	// TODO hash
+	// TODO hash?
 	@Override
-	public Map<String, List<Tag>> loadTaggedFileTreeElements(List<Tag> availableTags) {
+	public Map<String, List<Tag>> loadTagMap(List<Tag> availableTags) {
 		Properties tagMapProperties = new Properties();
-		
-		if(tagMapFile.exists()) {
-			try {
-				tagMapProperties.load(new FileInputStream(tagMapFile));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
+
+		loadPropertiesFromFile(tagMapProperties, tagMapFile);
+
 		HashMap<String, List<Tag>> tagMap = new HashMap<String, List<Tag>>();
-		
+
 		tagMapProperties.forEach((file, tags) -> {
 			ArrayList<Tag> tagsOfEntry = new ArrayList<Tag>();
-			
+
 			String[] tagStrings = ((String) tags).split(TagService.TAG_PREFIX);
-			
-			if(tagStrings.length > 1) {
-				for(int i = 1; i < tagStrings.length; i++) {
+
+			if (tagStrings.length > 1) {
+				for (int i = 1; i < tagStrings.length; i++) {
 					for (Tag tag : availableTags) {
-						if(tagStrings[i].equals(tag.getName())) {
+						if (tagStrings[i].equals(tag.getName())) {
 							tagsOfEntry.add(tag);
 							break;
 						}
 					}
 				}
 			}
-			
+
 			tagMap.put((String) file, tagsOfEntry);
 		});
-		
+
 		return tagMap;
 	}
 
 	@Override
-	public void storeTaggedFileTreeElements(Map<String, List<Tag>> tagMap) {
+	public void storeTagMap(Map<String, List<Tag>> tagMap) {
 		Properties tagMapProperties = new Properties();
-		
+
 		for (Entry<String, List<Tag>> entry : tagMap.entrySet()) {
-			String tags = TagService.TAG_PREFIX + entry.getValue().stream()
-					.map(n -> n.getName())
+			String tags = TagService.TAG_PREFIX + entry.getValue().stream().map(n -> n.getName())
 					.collect(Collectors.joining(TagService.TAG_PREFIX));
-			
+
 			tagMapProperties.put(entry.getKey(), tags);
 		}
-		
-		try {
-			tagMapProperties.store(new FileWriter(tagMapFile), TAG_MAP_PROPERTIES_COMMENT);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		storePropertiesToFile(tagMapProperties, tagMapFile, TAG_MAP_PROPERTIES_COMMENT);
 	}
 
 }

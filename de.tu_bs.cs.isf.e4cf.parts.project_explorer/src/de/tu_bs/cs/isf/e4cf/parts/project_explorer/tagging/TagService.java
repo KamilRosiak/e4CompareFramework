@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 
@@ -13,58 +14,102 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 
 @Creatable
 @Singleton
+/**
+ * Provides tagging capabilities for FileTreeElement. Should be synchronized
+ * with the file system at startup
+ */
 public class TagService {
-	
+
 	public static final String TAG_PREFIX = ":";
-	
+
+	// Persists the tags
+	private ITagStore tagStore;
+
+	// Fields used for tagging
 	private List<Tag> availableTags;
 	private Map<String, List<Tag>> tagMap;
-	
-	private ITagStore tagStore;
-	
-	public TagService() {
+
+	/**
+	 * Load data from the tagStore
+	 */
+	@PostConstruct
+	private void load() {
 		tagStore = new PropertiesTagStore();
 		availableTags = tagStore.loadAvailableTags();
-		tagMap = tagStore.loadTaggedFileTreeElements(availableTags);
+		tagMap = tagStore.loadTagMap(availableTags);
 	}
-	
+
+	/**
+	 * Store data in the tagStore
+	 */
 	@PreDestroy
 	private void store() {
 		tagStore.storeAvailableTags(availableTags);
-		tagStore.storeTaggedFileTreeElements(tagMap);
+		tagStore.storeTagMap(tagMap);
 	}
-	
+
+	/**
+	 * Synchronize the tagService data with the current FS state: Create empty tag
+	 * list for all unknown FileTreeElements and remove entries for FileTreeElements
+	 * that are not longer present in the FS.
+	 * 
+	 * @param root FileTreeElement
+	 */
 	public void syncWithFileSystem(FileTreeElement root) {
-		syncWithFileSystem(root, true);
+		// Load the FS Tree and keep track of all file paths that exist
+		ArrayList<String> paths = new ArrayList<String>();
+		loadFileSystem(root, true, paths);
+
+		// Delete files that do not exist anymore
+		tagMap.keySet().removeIf(key -> !paths.contains(key));
 	}
-	
-	private void syncWithFileSystem(FileTreeElement element, boolean isRoot) {
-		// TODO: check if all stored tags and files still exists
-		// if not delete them
-		
-		if(!isRoot) {
+
+	/**
+	 * Recursively iterate the FS, initialize tags and store seen paths
+	 * 
+	 * @param element the current FileTreeElement
+	 * @param isRoot  if the current element is the root element
+	 * @param paths   List to store seen paths
+	 */
+	private void loadFileSystem(FileTreeElement element, boolean isRoot, List<String> paths) {
+		paths.add(element.getRelativePath());
+
+		if (!isRoot) {
+			// Initialize tags for each file
 			List<Tag> tags = getTags(element);
-			if(tags == null) {
+			if (tags == null) {
 				tagMap.put(element.getRelativePath(), new ArrayList<Tag>());
 			}
 		}
-		
-		for(FileTreeElement child : element.getChildren()) {
-			syncWithFileSystem(child, false);
+
+		// Recursion
+		for (FileTreeElement child : element.getChildren()) {
+			loadFileSystem(child, false, paths);
 		}
 	}
-	
+
+	/** @return all available tags */
 	public List<Tag> getAvailableTags() {
 		return availableTags;
 	}
-	
+
+	/**
+	 * Add an available tag
+	 * 
+	 * @param tag
+	 */
 	public void addAvailableTag(Tag tag) {
 		availableTags.add(tag);
 	}
-	
+
+	/**
+	 * Delete an available tag
+	 * 
+	 * @param tag
+	 */
 	public void delteAvailableTag(Tag tag) {
 		getAvailableTags().remove(tag);
-		
+
 		// Remove all entries of the deleted tag
 		for (List<Tag> tags : tagMap.values()) {
 			if (tags.contains(tag)) {
@@ -72,25 +117,41 @@ public class TagService {
 			}
 		}
 	}
-	
-	// TODO: caching
-	// NPE save
+
+	/**
+	 * Get the tags for a FileTreeElement If no tags exists create an empty list
+	 * 
+	 * @param treeElement to get tags for
+	 * @return List of all tags of the element
+	 */
 	public List<Tag> getTags(FileTreeElement treeElement) {
 		String path = treeElement.getRelativePath();
-		
+
 		List<Tag> tags = tagMap.get(path);
-		if(tags == null) {
+		if (tags == null) {
 			tags = new ArrayList<Tag>();
 			tagMap.put(path, tags);
 		}
 		return tags;
 	}
-	
+
+	/**
+	 * Add a tag for a treeElement
+	 * 
+	 * @param treeElement
+	 * @param tag
+	 */
 	public void addTag(FileTreeElement treeElement, Tag tag) {
 		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
 		tagList.add(tag);
 	}
-	
+
+	/**
+	 * Delete a tag for a treeElement
+	 * 
+	 * @param treeElement
+	 * @param tag
+	 */
 	public void deleteTag(FileTreeElement treeElement, Tag tag) {
 		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
 		tagList.remove(tag);
