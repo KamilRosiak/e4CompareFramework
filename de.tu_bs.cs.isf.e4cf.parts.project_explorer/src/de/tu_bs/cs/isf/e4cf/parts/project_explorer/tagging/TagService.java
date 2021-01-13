@@ -11,6 +11,8 @@ import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.ITagStore;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.SerializableTagStore;
 
 @Creatable
 @Singleton
@@ -34,9 +36,9 @@ public class TagService {
 	 */
 	@PostConstruct
 	private void load() {
-		tagStore = new PropertiesTagStore();
+		tagStore = new SerializableTagStore();
 		availableTags = tagStore.loadAvailableTags();
-		tagMap = tagStore.loadTagMap(availableTags);
+		tagMap = tagStore.loadTagMap();
 	}
 
 	/**
@@ -72,14 +74,16 @@ public class TagService {
 	 * @param paths   List to store seen paths
 	 */
 	private void loadFileSystem(FileTreeElement element, boolean isRoot, List<String> paths) {
-		paths.add(element.getRelativePath());
 
 		if (!isRoot) {
+			paths.add(element.getRelativePath());
 			// Initialize tags for each file
 			List<Tag> tags = getTags(element);
 			if (tags == null) {
 				tagMap.put(element.getRelativePath(), new ArrayList<Tag>());
 			}
+			// Delete tags that are not available
+			tags.removeIf(tag -> !availableTags.contains(tag));
 		}
 
 		// Recursion
@@ -143,7 +147,9 @@ public class TagService {
 	 */
 	public void addTag(FileTreeElement treeElement, Tag tag) {
 		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
-		tagList.add(tag);
+		if(!tagList.contains(tag)) {
+			tagList.add(tag);
+		}
 	}
 
 	/**

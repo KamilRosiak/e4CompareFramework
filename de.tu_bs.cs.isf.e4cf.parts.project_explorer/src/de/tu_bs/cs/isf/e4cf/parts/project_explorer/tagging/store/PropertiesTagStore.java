@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging;
+package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +18,8 @@ import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import javafx.scene.paint.Color;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 
 /**
  * A ITagStore using properties files to persist tagging information
@@ -33,6 +34,9 @@ public class PropertiesTagStore implements ITagStore {
 
 	private File availableTagsFile;
 	private File tagMapFile;
+	
+	// This tag store needs to hold the available tags
+	private List<Tag> availableTags;
 
 	/**
 	 * Default constructor that gets the file locations
@@ -87,9 +91,10 @@ public class PropertiesTagStore implements ITagStore {
 		ArrayList<Tag> availableTags = new ArrayList<Tag>();
 
 		availableTagsProperties.forEach((name, color) -> {
-			availableTags.add(new Tag((String) name, Color.web((String) color)));
+			availableTags.add(new Tag((String) name, (String) color));
 		});
 
+		this.availableTags = availableTags;
 		return availableTags;
 	}
 
@@ -98,36 +103,14 @@ public class PropertiesTagStore implements ITagStore {
 		Properties availableTagsProperties = new Properties();
 
 		for (Tag tag : availableTags) {
-			availableTagsProperties.put(tag.getName(), toHexString(tag.getColor()));
+			availableTagsProperties.put(tag.getName(), tag.getColorString());
 		}
 
 		storePropertiesToFile(availableTagsProperties, availableTagsFile, AVAILABLE_TAGS_PROPERTIES_COMMENT);
 	}
 
-	/**
-	 * Format a value as a hex string
-	 * 
-	 * @param value double
-	 * @return hex string
-	 */
-	private String format(double value) {
-		String in = Integer.toHexString((int) Math.round(value * 255));
-		return in.length() == 1 ? "0" + in : in;
-	}
-
-	/**
-	 * Build hex string representing a color
-	 * 
-	 * @param color to represent
-	 * @return hex string for color
-	 */
-	private String toHexString(Color color) {
-		return "#" + (format(color.getRed()) + format(color.getGreen()) + format(color.getBlue())
-				+ format(color.getOpacity())).toUpperCase();
-	}
-
 	@Override
-	public Map<String, List<Tag>> loadTagMap(List<Tag> availableTags) {
+	public Map<String, List<Tag>> loadTagMap() {
 		Properties tagMapProperties = new Properties();
 
 		loadPropertiesFromFile(tagMapProperties, tagMapFile);
@@ -141,6 +124,7 @@ public class PropertiesTagStore implements ITagStore {
 
 			if (tagStrings.length > 1) {
 				for (int i = 1; i < tagStrings.length; i++) {
+					// Lookup the tag by it's name
 					for (Tag tag : availableTags) {
 						if (tagStrings[i].equals(tag.getName())) {
 							tagsOfEntry.add(tag);

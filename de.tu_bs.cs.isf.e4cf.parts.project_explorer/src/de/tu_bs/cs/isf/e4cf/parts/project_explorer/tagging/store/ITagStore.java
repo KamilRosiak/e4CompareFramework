@@ -1,7 +1,9 @@
-package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging;
+package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store;
 
 import java.util.List;
 import java.util.Map;
+
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
 
 public interface ITagStore {
 
@@ -19,11 +21,9 @@ public interface ITagStore {
 	
 	/**
 	 * Load a map of tags for each file
-	 * Only include available tags
-	 * @param availableTags
 	 * @return map with tags
 	 */
-	public Map<String, List<Tag>> loadTagMap(List<Tag> availableTags);
+	public Map<String, List<Tag>> loadTagMap();
 	
 	/**
 	 * Store a map of tags for each file
