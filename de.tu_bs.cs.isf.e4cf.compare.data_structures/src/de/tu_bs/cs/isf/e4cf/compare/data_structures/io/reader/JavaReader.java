@@ -43,7 +43,7 @@ public class JavaReader extends AbstractArtifactReader {
 
 			Node rootNode = new NodeImpl(JavaWriter.NODE_TYPE_TREE);
 			
-			Visitor visitor = new Visitor();
+			JavaVisitor visitor = new JavaVisitor();
 			
 			visitor.visit(cu, rootNode);
 			

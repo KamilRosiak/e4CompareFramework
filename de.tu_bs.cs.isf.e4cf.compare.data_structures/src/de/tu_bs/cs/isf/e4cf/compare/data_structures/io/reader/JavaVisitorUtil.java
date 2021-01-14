@@ -10,7 +10,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
  *
  */
 
-public class VisitorUtil {
+public class JavaVisitorUtil {
 	/**
 	 * Creates a leaf node
 	 * 

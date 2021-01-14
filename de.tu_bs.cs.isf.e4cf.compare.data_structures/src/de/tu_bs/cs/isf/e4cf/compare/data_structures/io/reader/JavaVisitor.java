@@ -25,18 +25,18 @@ import com.github.javaparser.ast.*;
  * @author Hassan Smaoui
  *
  */
-public class Visitor extends VoidVisitorAdapter<Node> {
+public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	/**
 	 * https://www.javadoc.io/static/com.github.javaparser/javaparser-core/3.17.0/com/github/javaparser/ast/CompilationUnit.html
 	 */
 	@Override
 	public void visit(CompilationUnit n, Node arg) {
-		Node cu = VisitorUtil.Parent(n, arg);
+		Node cu = JavaVisitorUtil.Parent(n, arg);
 
 		// Imports
-		Node imports = VisitorUtil.Node(JavaNodeTypes.Import, cu);
+		Node imports = JavaVisitorUtil.Node(JavaNodeTypes.Import, cu);
 		int importSize = n.getImports().size();
-		VisitorUtil.AddAttribute(imports, JavaAttributesTypes.Children, String.valueOf(importSize));
+		JavaVisitorUtil.AddAttribute(imports, JavaAttributesTypes.Children, String.valueOf(importSize));
 		for (int i = 0; i < importSize; i++) {
 			ImportDeclaration c = n.getImport(0);
 			visit(c, imports);
@@ -51,24 +51,24 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MethodDeclaration n, Node arg) {
-		Node p = VisitorUtil.Parent(n, arg);
+		Node p = JavaVisitorUtil.Parent(n, arg);
 		
 		// Throws
 		for(int i = n.getThrownExceptions().size(); i > 0; i--) {
 			ReferenceType referenceType = n.getThrownException(0);
-			VisitorUtil.AddAttribute(p, JavaAttributesTypes.Throws, referenceType.asString());
+			JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Throws, referenceType.asString());
 			referenceType.removeForced();
 		}
 		
 		// Arguments
-		Node args = VisitorUtil.Node(JavaNodeTypes.Argument, p);
+		Node args = JavaVisitorUtil.Node(JavaNodeTypes.Argument, p);
 		int argList = n.getParameters().size();
-		VisitorUtil.AddAttribute(args, JavaAttributesTypes.Children, String.valueOf(argList));
+		JavaVisitorUtil.AddAttribute(args, JavaAttributesTypes.Children, String.valueOf(argList));
 		for (int i = 0; i < argList; i++) {
 			Parameter concreteParameter = n.getParameter(0);
-			Node argNode = VisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, args);
-			VisitorUtil.AddAttribute(argNode, JavaAttributesTypes.Type, concreteParameter.getTypeAsString());
-			VisitorUtil.AddAttribute(argNode, JavaAttributesTypes.Name, concreteParameter.getNameAsString());
+			Node argNode = JavaVisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, args);
+			JavaVisitorUtil.AddAttribute(argNode, JavaAttributesTypes.Type, concreteParameter.getTypeAsString());
+			JavaVisitorUtil.AddAttribute(argNode, JavaAttributesTypes.Name, concreteParameter.getNameAsString());
 			concreteParameter.getModifiers().forEach(modif -> modif.accept(this, argNode));
 			concreteParameter.removeForced();
 		}
@@ -81,7 +81,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(Modifier n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Modifier, n.getKeyword().name());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Modifier, n.getKeyword().name());
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(SimpleName n, Node arg) {
 		if (!(n.getParentNode().get() instanceof ClassOrInterfaceDeclaration)) {
-			VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.toString());
+			JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.toString());
 		}
 	}
 
@@ -101,15 +101,15 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
 		Node classOrInterfaceDeclarationNode = arg;
 		if (!n.getParentNode().isPresent() || !(n.getParentNode().get() instanceof CompilationUnit)) {
-			classOrInterfaceDeclarationNode = VisitorUtil.Node(n.isInterface() ? JavaNodeTypes.Interface : JavaNodeTypes.Class, arg);
+			classOrInterfaceDeclarationNode = JavaVisitorUtil.Node(n.isInterface() ? JavaNodeTypes.Interface : JavaNodeTypes.Class, arg);
 		}
 		
 		// Class or Interface?
-		VisitorUtil.AddAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.IsInterface, String.valueOf(n.isInterface()));
+		JavaVisitorUtil.AddAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.IsInterface, String.valueOf(n.isInterface()));
 
 		// Name
 		SimpleName simpleName = n.getName();
-		VisitorUtil.AddAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Name, simpleName.asString());
+		JavaVisitorUtil.AddAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Name, simpleName.asString());
 		// simpleName.removeForced(); // SimpleName is unremovable -> Solution cf.
 		// visit(SimpleName,Node)
 
@@ -117,7 +117,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		if (n.getExtendedTypes().size() > 0) {
 			// Only a single class can be inherited!
 			ClassOrInterfaceType superclass = n.getExtendedTypes(0);
-			VisitorUtil.AddAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Superclass, superclass.getNameAsString());
+			JavaVisitorUtil.AddAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Superclass, superclass.getNameAsString());
 			superclass.removeForced();
 		}
 
@@ -126,7 +126,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		for (int i = 0; i < interfaceSize; i++) {
 			// Multiple classes can be implemented
 			ClassOrInterfaceType implemented = n.getImplementedTypes(0);
-			VisitorUtil.AddAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Interface, implemented.getNameAsString());
+			JavaVisitorUtil.AddAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Interface, implemented.getNameAsString());
 			implemented.removeForced();
 		}
 		super.visit(n, classOrInterfaceDeclarationNode);
@@ -145,7 +145,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AnnotationDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayAccessExpr n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayCreationExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayCreationLevel n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayInitializerExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayType n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Type, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Type, n.toString());
 	}
 
 	/**
@@ -201,10 +201,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AssertStmt n, Node arg) {
-		Node parent = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(parent, JavaAttributesTypes.Check, n.getCheck().toString());
+		Node parent = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(parent, JavaAttributesTypes.Check, n.getCheck().toString());
 		if(n.getMessage().isPresent()) {
-			VisitorUtil.AddAttribute(parent, JavaAttributesTypes.Message, n.getMessage().get().toString());
+			JavaVisitorUtil.AddAttribute(parent, JavaAttributesTypes.Message, n.getMessage().get().toString());
 		}
 	}
 
@@ -213,10 +213,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AssignExpr n, Node arg) {
-		Node assignment = VisitorUtil.Node(JavaNodeTypes.Assignment, arg);
-		VisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Target, n.getTarget().toString());
-		VisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Value, n.getValue().toString());
-		VisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Operator, n.getOperator().name());
+		Node assignment = JavaVisitorUtil.Node(JavaNodeTypes.Assignment, arg);
+		JavaVisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Target, n.getTarget().toString());
+		JavaVisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Value, n.getValue().toString());
+		JavaVisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Operator, n.getOperator().name());
 	}
 
 	/**
@@ -224,7 +224,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BinaryExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BlockStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Node(JavaNodeTypes.Body, arg));
+		super.visit(n, JavaVisitorUtil.Node(JavaNodeTypes.Body, arg));
 	}
 
 	/**
@@ -240,7 +240,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BooleanLiteralExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
@@ -248,9 +248,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BreakStmt n, Node arg) {
-		Node breakNode = VisitorUtil.Node(JavaNodeTypes.Break, arg);
+		Node breakNode = JavaVisitorUtil.Node(JavaNodeTypes.Break, arg);
 		if(n.getLabel().isPresent()) {
-			VisitorUtil.AddAttribute(breakNode, JavaAttributesTypes.Target, n.getLabel().get().toString());
+			JavaVisitorUtil.AddAttribute(breakNode, JavaAttributesTypes.Target, n.getLabel().get().toString());
 		}
 	}
 
@@ -259,8 +259,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(CastExpr n, Node arg) {
-		Node node = VisitorUtil.Node(JavaNodeTypes.Cast, arg);
-		VisitorUtil.AddAttribute(node, JavaAttributesTypes.Type, n.getTypeAsString());
+		Node node = JavaVisitorUtil.Node(JavaNodeTypes.Cast, arg);
+		JavaVisitorUtil.AddAttribute(node, JavaAttributesTypes.Type, n.getTypeAsString());
 		n.getExpression().accept(this, node);
 	}
 
@@ -269,7 +269,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(CatchClause n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(CharLiteralExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
@@ -285,7 +285,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -293,10 +293,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ConditionalExpr n, Node arg) {
-		Node p = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Condition, n.getCondition().toString());
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Then, n.getThenExpr().toString());
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Else, n.getElseExpr().toString());
+		Node p = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Condition, n.getCondition().toString());
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Then, n.getThenExpr().toString());
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Else, n.getElseExpr().toString());
 	}
 
 	/**
@@ -304,7 +304,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(PackageDeclaration n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Package, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Package, n.getNameAsString());
 	}
 
 	/**
@@ -312,10 +312,10 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ImportDeclaration n, Node arg) {
-		Node leaf = VisitorUtil.Node(JavaNodeTypes.Import, arg);
-		VisitorUtil.AddAttribute(leaf, JavaAttributesTypes.Asterisks, String.valueOf(n.isAsterisk()));
-		VisitorUtil.AddAttribute(leaf, JavaAttributesTypes.Static, String.valueOf(n.isStatic()));
-		VisitorUtil.AddAttribute(leaf, JavaAttributesTypes.Name, String.valueOf(n.getName()));
+		Node leaf = JavaVisitorUtil.Node(JavaNodeTypes.Import, arg);
+		JavaVisitorUtil.AddAttribute(leaf, JavaAttributesTypes.Asterisks, String.valueOf(n.isAsterisk()));
+		JavaVisitorUtil.AddAttribute(leaf, JavaAttributesTypes.Static, String.valueOf(n.isStatic()));
+		JavaVisitorUtil.AddAttribute(leaf, JavaAttributesTypes.Name, String.valueOf(n.getName()));
 	}
 
 	/**
@@ -323,8 +323,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(FieldAccessExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Scope, n.getScope().toString());
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Scope, n.getScope().toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
 	}
 
 	/**
@@ -332,7 +332,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(FieldDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg)); // TODO super call?
+		super.visit(n, JavaVisitorUtil.Parent(n, arg)); // TODO super call?
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(LambdaExpr n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -348,7 +348,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(LocalClassDeclarationStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -356,7 +356,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(LongLiteralExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
@@ -364,7 +364,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MarkerAnnotationExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Annotation, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Annotation, n.getNameAsString());
 	}
 
 	/**
@@ -372,9 +372,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MemberValuePair n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Key, n.getNameAsString());
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Value, n.getValue().toString());
+		Node c = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Key, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Value, n.getValue().toString());
 	}
 
 	/**
@@ -382,30 +382,30 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MethodCallExpr n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
+		Node c = JavaVisitorUtil.Parent(n, arg);
 		
 		// Scope
 		if (n.getScope().isPresent()) {
-			VisitorUtil.AddAttribute(c, JavaAttributesTypes.Scope, n.getScope().get().toString());
+			JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Scope, n.getScope().get().toString());
 		}
 		
 		// TypeArguments
 		if(n.getTypeArguments().isPresent()) {
 			for(Type typeArgumentExpr : n.getTypeArguments().get()) {
-				VisitorUtil.AddAttribute(c, JavaAttributesTypes.TypeArgument, typeArgumentExpr.toString());
+				JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.TypeArgument, typeArgumentExpr.toString());
 			}
 		}
 		
 		// Name
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
 		
 		// Arguments
-		Node args = VisitorUtil.Node(JavaNodeTypes.Argument, c);
+		Node args = JavaVisitorUtil.Node(JavaNodeTypes.Argument, c);
 		int argSize = n.getArguments().size(); 
-		VisitorUtil.AddAttribute(args, JavaAttributesTypes.Children, String.valueOf(argSize));
+		JavaVisitorUtil.AddAttribute(args, JavaAttributesTypes.Children, String.valueOf(argSize));
 		for (int i = 0; i < argSize; i++) {
 			Expression argumentExpr = n.getArgument(0);
-			Node argNode = VisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, args);
+			Node argNode = JavaVisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, args);
 			argumentExpr.accept(this, argNode);
 		}
 	}
@@ -415,17 +415,17 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MethodReferenceExpr n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
+		Node c = JavaVisitorUtil.Parent(n, arg);
 		
 		// Identifier
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Identifier, n.getIdentifier());
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Identifier, n.getIdentifier());
 		
 		// Scope
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Scope, n.getScope().toString());
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Scope, n.getScope().toString());
 		
 		// Type
 		if (n.getTypeArguments().isPresent()) {
-			n.getTypeArguments().get().forEach(typeArg -> VisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, typeArg.toString()));
+			n.getTypeArguments().get().forEach(typeArg -> JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, typeArg.toString()));
 		}
 		
 	}
@@ -435,7 +435,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(Name n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.toString());
 	}
 
 	/**
@@ -443,7 +443,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(NameExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
 	}
 
 	/**
@@ -451,7 +451,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(NormalAnnotationExpr n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));		
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));		
 	}
 
 	/**
@@ -459,7 +459,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(NullLiteralExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
@@ -467,22 +467,22 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ObjectCreationExpr n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
+		Node c = JavaVisitorUtil.Parent(n, arg);
 
 		// Type
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
 
 		// Arguments
-		Node arguments = VisitorUtil.Node(JavaNodeTypes.Argument, c);
-		VisitorUtil.AddAttribute(arguments, JavaAttributesTypes.Children, String.valueOf(n.getArguments().size()));
+		Node arguments = JavaVisitorUtil.Node(JavaNodeTypes.Argument, c);
+		JavaVisitorUtil.AddAttribute(arguments, JavaAttributesTypes.Children, String.valueOf(n.getArguments().size()));
 		for (int i = 0; i < n.getArguments().size(); i++) {
-			Node argNode = VisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, arguments);
+			Node argNode = JavaVisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, arguments);
 			n.getArgument(i).accept(this, argNode);
 		}
 
 		// Anonymous Class Body
 		if (n.getAnonymousClassBody().isPresent()) {
-			Node anonClassBody = VisitorUtil.Node(JavaNodeTypes.Body, c);
+			Node anonClassBody = JavaVisitorUtil.Node(JavaNodeTypes.Body, c);
 			n.getAnonymousClassBody().get().forEach(decl -> decl.accept(this, anonClassBody));
 		}
 	}
@@ -492,11 +492,11 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(Parameter n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
+		Node c = JavaVisitorUtil.Parent(n, arg);
 		if (!n.getTypeAsString().isEmpty()) {
-			VisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
+			JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
 		}
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
 	}
 
 	/**
@@ -504,7 +504,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(PrimitiveType n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Type, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Type, n.toString());
 	}
 
 	/**
@@ -512,8 +512,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ReceiverParameter n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getType().toString());
+		Node c = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getType().toString());
 		super.visit(n, c);
 	}
 
@@ -522,7 +522,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ReturnStmt n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
+		Node c = JavaVisitorUtil.Parent(n, arg);
 		super.visit(n, c);
 	}
 
@@ -531,9 +531,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SingleMemberAnnotationExpr n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Value, n.getMemberValue().toString());
+		Node c = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Value, n.getMemberValue().toString());
 	}
 
 	/**
@@ -541,7 +541,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(StringLiteralExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
@@ -549,7 +549,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SuperExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.SuperExpr, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.SuperExpr, n.toString());
 	}
 
 	/**
@@ -557,16 +557,16 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchEntry n, Node arg) {
-		Node parent = VisitorUtil.Parent(n, arg);
+		Node parent = JavaVisitorUtil.Parent(n, arg);
 		
 		// Label
-		n.getLabels().forEach(label -> VisitorUtil.AddAttribute(parent, JavaAttributesTypes.Condition, label.toString()));
+		n.getLabels().forEach(label -> JavaVisitorUtil.AddAttribute(parent, JavaAttributesTypes.Condition, label.toString()));
 		if(n.getLabels().size() == 0) {
-			VisitorUtil.AddAttribute(parent, JavaAttributesTypes.Default, String.valueOf(true));
+			JavaVisitorUtil.AddAttribute(parent, JavaAttributesTypes.Default, String.valueOf(true));
 		}
 		
 		// Type
-		VisitorUtil.AddAttribute(parent, JavaAttributesTypes.Type, n.getType().name());
+		JavaVisitorUtil.AddAttribute(parent, JavaAttributesTypes.Type, n.getType().name());
 		
 		// Statements
 		n.getStatements().forEach(stmt -> stmt.accept(this, parent));
@@ -577,8 +577,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchExpr n, Node arg) {
-		Node parent = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(parent, JavaAttributesTypes.Selector, n.getSelector().toString());
+		Node parent = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(parent, JavaAttributesTypes.Selector, n.getSelector().toString());
 		n.getEntries().forEach(entry -> entry.accept(this, parent));
 	}
 
@@ -587,8 +587,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SwitchStmt n, Node arg) {
-		Node parent = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(parent, JavaAttributesTypes.Selector, n.getSelector().toString());
+		Node parent = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(parent, JavaAttributesTypes.Selector, n.getSelector().toString());
 		n.getEntries().forEach(entry -> entry.accept(this, parent));
 	}
 
@@ -597,8 +597,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(SynchronizedStmt n, Node arg) {
-		Node sync = VisitorUtil.Node(JavaNodeTypes.Synchronized, arg);
-		VisitorUtil.AddAttribute(sync, JavaAttributesTypes.Expression, n.getExpression().toString());
+		Node sync = JavaVisitorUtil.Node(JavaNodeTypes.Synchronized, arg);
+		JavaVisitorUtil.AddAttribute(sync, JavaAttributesTypes.Expression, n.getExpression().toString());
 		n.getBody().accept(this, sync);
 	}
 
@@ -607,7 +607,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TextBlockLiteralExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -615,7 +615,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ThisExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -623,7 +623,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ThrowStmt n, Node arg) {
-		VisitorUtil.AddAttribute(VisitorUtil.Parent(n, arg), JavaAttributesTypes.Statement, n.toString());
+		JavaVisitorUtil.AddAttribute(JavaVisitorUtil.Parent(n, arg), JavaAttributesTypes.Statement, n.toString());
 	}
 
 	/**
@@ -631,7 +631,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TryStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -639,7 +639,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TypeExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -647,23 +647,23 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TypeParameter n, Node arg) {
-		Node p = VisitorUtil.Parent(n, arg);
+		Node p = JavaVisitorUtil.Parent(n, arg);
 		
 		// Name
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Name, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Name, n.getNameAsString());
 		
 		// Annotations
 		for(AnnotationExpr annotationExpr : n.getAnnotations()) {
-			VisitorUtil.AddAttribute(p, JavaAttributesTypes.Annotation, annotationExpr.getNameAsString());
+			JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Annotation, annotationExpr.getNameAsString());
 		}
 		
 		// Bounds
 		int boundCounter = 0;
 		for(ClassOrInterfaceType bound : n.getTypeBound()) {
-			Node boundNode = VisitorUtil.NodeSetElement(JavaNodeTypes.Bound, boundCounter++, p);
+			Node boundNode = JavaVisitorUtil.NodeSetElement(JavaNodeTypes.Bound, boundCounter++, p);
 			bound.accept(this, boundNode);
 		}
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Bound, String.valueOf(n.getTypeBound().size()));
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Bound, String.valueOf(n.getTypeBound().size()));
 	}
 
 	/**
@@ -671,9 +671,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnaryExpr n, Node arg) {
-		Node unaryExprNode = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(unaryExprNode, JavaAttributesTypes.Name, n.getExpression().toString());
-		VisitorUtil.AddAttribute(unaryExprNode, JavaAttributesTypes.Operator, n.getOperator().name());
+		Node unaryExprNode = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(unaryExprNode, JavaAttributesTypes.Name, n.getExpression().toString());
+		JavaVisitorUtil.AddAttribute(unaryExprNode, JavaAttributesTypes.Operator, n.getOperator().name());
 	}
 
 	/**
@@ -681,8 +681,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnionType n, Node arg) {
-		Node unionTypeNode = VisitorUtil.Parent(n, arg);
-		n.getElements().forEach(elem -> VisitorUtil.AddAttribute(unionTypeNode, JavaAttributesTypes.Type, elem.toString()));
+		Node unionTypeNode = JavaVisitorUtil.Parent(n, arg);
+		n.getElements().forEach(elem -> JavaVisitorUtil.AddAttribute(unionTypeNode, JavaAttributesTypes.Type, elem.toString()));
 	}
 
 	/**
@@ -690,7 +690,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnknownType n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -698,7 +698,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnparsableStmt n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -708,7 +708,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	public void visit(VariableDeclarationExpr n, Node arg) {
 		for(int childNodeCounter = 0; childNodeCounter < n.getChildNodes().size(); childNodeCounter++) {
 			com.github.javaparser.ast.Node child = n.getChildNodes().get(childNodeCounter); 
-			Node childNode = VisitorUtil.Parent(child, arg);
+			Node childNode = JavaVisitorUtil.Parent(child, arg);
 			n.getChildNodes().get(childNodeCounter).accept(this, childNode);
 		}
 	}
@@ -719,14 +719,14 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(VariableDeclarator n, Node arg) {
 		// Type
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Type, n.getTypeAsString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Type, n.getTypeAsString());
 		
 		// Name
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
 		
 		// Initializer
 		if (n.getInitializer().isPresent()) {
-			VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Initilization, n.getInitializer().get().toString());
+			JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Initilization, n.getInitializer().get().toString());
 		}
 	}
 
@@ -735,7 +735,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(VarType n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -747,7 +747,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		if (n.getParentNode().get() instanceof MethodDeclaration) {
 			type = JavaAttributesTypes.ReturnType;
 		}
-		VisitorUtil.AddAttribute(arg, type, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, type, n.toString());
 	}
 
 	/**
@@ -755,7 +755,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(WhileStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -763,7 +763,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(WildcardType n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -771,7 +771,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(YieldStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -780,7 +780,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ConstructorDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -788,9 +788,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ContinueStmt n, Node arg) {
-		Node continueNode = VisitorUtil.Node(JavaNodeTypes.Continue, arg);
+		Node continueNode = JavaVisitorUtil.Node(JavaNodeTypes.Continue, arg);
 		if(n.getLabel().isPresent()) {
-			VisitorUtil.AddAttribute(continueNode, JavaAttributesTypes.Target, n.getLabel().get().toString());
+			JavaVisitorUtil.AddAttribute(continueNode, JavaAttributesTypes.Target, n.getLabel().get().toString());
 		}
 	}
 
@@ -799,7 +799,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(DoStmt n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 
 	}
 
@@ -808,7 +808,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(EmptyStmt n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 	}
 
 	/**
@@ -816,7 +816,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(DoubleLiteralExpr n, Node arg) {
-		VisitorUtil.Leaf(n, arg);
+		JavaVisitorUtil.Leaf(n, arg);
 
 	}
 
@@ -826,7 +826,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 
 	@Override
 	public void visit(EnclosedExpr n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -835,7 +835,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 
 	@Override
 	public void visit(EnumConstantDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -844,7 +844,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(EnumDeclaration n, Node arg) {
 
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -853,22 +853,22 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 
 	@Override
 	public void visit(ExplicitConstructorInvocationStmt n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
+		Node c = JavaVisitorUtil.Parent(n, arg);
 		
 		// TypeArguments
 		if(n.getTypeArguments().isPresent()) {
 			for(Type typeArgumentExpr : n.getTypeArguments().get()) {
-				VisitorUtil.AddAttribute(c, JavaAttributesTypes.TypeArgument, typeArgumentExpr.toString());
+				JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.TypeArgument, typeArgumentExpr.toString());
 			}
 		}
 		
 		// Arguments
-		Node args = VisitorUtil.Node(JavaNodeTypes.Argument, c);
+		Node args = JavaVisitorUtil.Node(JavaNodeTypes.Argument, c);
 		int argSize = n.getArguments().size(); 
-		VisitorUtil.AddAttribute(args, JavaAttributesTypes.Children, String.valueOf(argSize));
+		JavaVisitorUtil.AddAttribute(args, JavaAttributesTypes.Children, String.valueOf(argSize));
 		for (int i = 0; i < argSize; i++) {
 			Expression argumentExpr = n.getArgument(0);
-			Node argNode = VisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, args);
+			Node argNode = JavaVisitorUtil.NodeSetElement(JavaNodeTypes.Argument, i, args);
 			argumentExpr.accept(this, argNode);
 		}
 	}
@@ -878,14 +878,14 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ForEachStmt n, Node arg) {
-		Node p = VisitorUtil.Parent(n, arg);
+		Node p = JavaVisitorUtil.Parent(n, arg);
 		
 		// Iterator
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Iterator, n.getIterable().toString());
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Iterator, n.getIterable().toString());
 		
 		// Initilization
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, n.getVariableDeclarator().getNameAsString());
-		VisitorUtil.AddAttribute(p, JavaAttributesTypes.Type, n.getVariableDeclarator().getTypeAsString());
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, n.getVariableDeclarator().getNameAsString());
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Type, n.getVariableDeclarator().getTypeAsString());
 		
 		// Block
 		n.getBody().accept(this, p);
@@ -897,11 +897,11 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ForStmt n, Node arg) {
-		Node p = VisitorUtil.Parent(n, arg);
+		Node p = JavaVisitorUtil.Parent(n, arg);
 
 		// Comparison
 		if (n.getCompare().isPresent()) {
-			VisitorUtil.AddAttribute(p, JavaAttributesTypes.Comparison, n.getCompare().get().toString());
+			JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Comparison, n.getCompare().get().toString());
 		}
 		n.removeCompare(); // rm bc visited
 
@@ -909,7 +909,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		int initializations = n.getInitialization().size();
 		for (int i = 0; i < initializations; i++) {
 			Expression initExpr = n.getInitialization().get(0);
-			VisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, initExpr.toString());
+			JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, initExpr.toString());
 			initExpr.removeForced();
 		}
 
@@ -917,7 +917,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		int updates = n.getUpdate().size();
 		for (int i = 0; i < updates; i++) {
 			Expression updateExpr = n.getUpdate().get(0);
-			VisitorUtil.AddAttribute(p, JavaAttributesTypes.Update, updateExpr.toString());
+			JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Update, updateExpr.toString());
 			updateExpr.removeForced();
 		}
 
@@ -930,7 +930,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(IfStmt n, Node arg) {
-		Node p = VisitorUtil.Parent(n, arg);
+		Node p = JavaVisitorUtil.Parent(n, arg);
 		this.visitIfStmt(n, p);
 	}
 
@@ -943,8 +943,8 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	private void visitIfStmt(IfStmt n, Node arg) {
 		// Fall through
 		Statement thenStmt = n.getThenStmt();
-		Node thenNode = VisitorUtil.Node(JavaNodeTypes.Then, arg);
-		VisitorUtil.AddAttribute(thenNode, JavaAttributesTypes.Condition, n.getCondition().toString());
+		Node thenNode = JavaVisitorUtil.Node(JavaNodeTypes.Then, arg);
+		JavaVisitorUtil.AddAttribute(thenNode, JavaAttributesTypes.Condition, n.getCondition().toString());
 		thenStmt.accept(this, thenNode);
 		n.remove(thenStmt);
 
@@ -954,7 +954,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 			if(elseStmt instanceof IfStmt) {
 				visitIfStmt((IfStmt) elseStmt, arg);
 			} else {
-				Node elseNode = VisitorUtil.Node(JavaNodeTypes.Else, arg);
+				Node elseNode = JavaVisitorUtil.Node(JavaNodeTypes.Else, arg);
 				elseStmt.accept(this, elseNode);
 			}
 		}
@@ -965,7 +965,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(InitializerDeclaration n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 
 	/**
@@ -973,9 +973,9 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(InstanceOfExpr n, Node arg) {
-		Node c = VisitorUtil.Parent(n, arg);
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getType().toString());
-		VisitorUtil.AddAttribute(c, JavaAttributesTypes.Expression, n.getExpression().toString());
+		Node c = JavaVisitorUtil.Parent(n, arg);
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getType().toString());
+		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Expression, n.getExpression().toString());
 	}
 
 	/**
@@ -983,7 +983,7 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(IntegerLiteralExpr n, Node arg) {
-		VisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.asNumber().toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Value, n.asNumber().toString());
 
 	}
 
@@ -992,6 +992,6 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(IntersectionType n, Node arg) {
-		super.visit(n, VisitorUtil.Parent(n, arg));
+		super.visit(n, JavaVisitorUtil.Parent(n, arg));
 	}
 }
