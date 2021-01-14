@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Remote
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.core.compare.remote
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.core.compare.remote
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.google.common.base;version="21.0.0",
+ de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces
+Require-Bundle: org.eclipse.e4.core.di;bundle-version="1.7.600",
+ de.tu_bs.cs.isf.e4cf.compare.data_structures;bundle-version="1.0.0"
+Bundle-ClassPath: .,
+ lib/gson-2.8.6.jar
