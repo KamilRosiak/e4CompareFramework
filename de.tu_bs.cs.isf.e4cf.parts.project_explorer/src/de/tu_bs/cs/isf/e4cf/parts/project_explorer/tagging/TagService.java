@@ -214,4 +214,16 @@ public class TagService {
 		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
 		return tagList.contains(tag);
 	}
+
+	/**
+	 * Check if the treeElement has all tags
+	 * 
+	 * @param treeElement
+	 * @param tags
+	 * @return true if the treeElement has the tags
+	 */
+	public boolean hasTags(FileTreeElement treeElement, List<Tag> tags) {
+		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
+		return tagList.containsAll(tags);
+	}
 }

@@ -55,6 +55,8 @@ public class ProjectExplorerToolBarController {
 
 		// Search Section
 		TextField search = new TextField();
+		Tooltip searchTextFieldTooltip = new Tooltip("Search by name and optional tag (e.g. name or name:tag1:tag2)");
+		search.setTooltip(searchTextFieldTooltip);
 		search.setVisible(false);
 		search.setOnAction(actionEvent -> {
 			services.eventBroker.send(E4CEventTable.EVENT_FILTER_CHANGED, search.getText());
