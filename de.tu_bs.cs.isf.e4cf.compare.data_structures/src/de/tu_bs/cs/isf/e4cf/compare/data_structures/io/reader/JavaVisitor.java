@@ -1847,46 +1847,55 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 
 	/**
 	 * Creates a new node of type {@link LineComment}.
+	 * <p>
+	 * The content of the comment ({@link Comment#getContent()} is saved in an
+	 * attributes {@link JavaAttributesTypes#Comment}.
 	 * 
 	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
 	 * @see <a href=
-	 * 		"https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/LineComment.html">JavaParser
-	 * 		Docs - LineComment</a>
-	 * @param n LineComment
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/LineComment.html">JavaParser
+	 *      Docs - LineComment</a>
+	 * @param n   LineComment
 	 * @param arg Parent framework node of the LineComment's framework node.
 	 */
-	@Override
 	public void visit(LineComment n, Node arg) {
-		JavaVisitorUtil.createNode(JavaNodeTypes.LineComment, arg);
+		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.LineComment, arg);
+		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
 	}
 
 	/**
 	 * Creates a new node of type {@link BlockComment}.
+	 * <p>
+	 * The content of the comment ({@link Comment#getContent()} is saved in an
+	 * attributes {@link JavaAttributesTypes#Comment}.
 	 * 
 	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
 	 * @see <a href=
-	 * 		"https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/BlockComment.html">JavaParser
-	 * 		Docs - BlockComment</a>
-	 * @param n BlockComment
-	 * @param arg Parent framework node of the BlockComment's framework node. 
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/BlockComment.html">JavaParser
+	 *      Docs - BlockComment</a>
+	 * @param n   BlockComment
+	 * @param arg Parent framework node of the BlockComment's framework node.
 	 */
-	@Override
 	public void visit(BlockComment n, Node arg) {
-		JavaVisitorUtil.createNode(JavaNodeTypes.BlockComment, arg);
+		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.BlockComment, arg);
+		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
 	}
 
 	/**
 	 * Creates a new node of type {@link JavadocComment}.
+	 * <p>
+	 * The content of the comment ({@link Comment#getContent()} is saved in an
+	 * attributes {@link JavaAttributesTypes#Comment}.
 	 * 
 	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
 	 * @see <a href=
-	 * 		"https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/JavadocComment.html">JavaParser
-	 * 		Docs - JavadocComment</a>
-	 * @param n JavadocComment
-	 * @param arg Parent framework node of the JavadocComment's framework node. 
+	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/JavadocComment.html">JavaParser
+	 *      Docs - JavadocComment</a>
+	 * @param n   JavadocComment
+	 * @param arg Parent framework node of the JavadocComment's framework node.
 	 */
-	@Override
 	public void visit(JavadocComment n, Node arg) {
-		JavaVisitorUtil.createNode(JavaNodeTypes.JavadocComment, arg);
+		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.JavadocComment, arg);
+		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
 	}
 }

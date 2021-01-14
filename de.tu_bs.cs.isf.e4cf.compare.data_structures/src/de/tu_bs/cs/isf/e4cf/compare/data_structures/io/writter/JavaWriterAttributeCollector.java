@@ -30,6 +30,7 @@ public class JavaWriterAttributeCollector {
 	private Expression _check = null;
 	private int _children = 0;
 	private String _class = new String();
+	private String _comment = new String();
 	private Expression _comparison = null;
 	private NodeList<Expression> _condition = new NodeList<Expression>();
 	private boolean _default = false;
@@ -101,6 +102,8 @@ public class JavaWriterAttributeCollector {
 				_children = Integer.parseInt(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Class.name())) {
 				_class = singleVal;
+			} else if (key.equals(JavaAttributesTypes.Comment.name())) {
+				_comment = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Comparison.name())) {
 				_comparison = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Condition.name())) {
@@ -218,6 +221,10 @@ public class JavaWriterAttributeCollector {
 
 	public String getClassAttribute() {
 		return _class;
+	}
+	
+	public String getComment() {
+		return _comment;
 	}
 
 	public Expression getComparison() {

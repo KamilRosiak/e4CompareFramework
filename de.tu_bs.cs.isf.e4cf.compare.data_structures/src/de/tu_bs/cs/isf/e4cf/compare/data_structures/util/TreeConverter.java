@@ -39,7 +39,7 @@ public class TreeConverter {
 		}
 		s += n.hashCode() + "[label=\"" + n.getNodeType().replace("\r\n", " \\n ");
 		for (Attribute a : n.getAttributes()) {
-			s += "\\nAttribute: " + a.getAttributeKey().replace("\r\n", " \\n ") + " --- " + a.getAttributeValues().toString().replace("\"", "\\\"").replace("\r\n", " \\n ");
+			s += "\\nAttribute: " + a.getAttributeKey().replace("\r\n", " \\n ") + " --- " + a.getAttributeValues().toString().replace("\"", "\\\"").replace("\n", " \\n ");
 		}
 		return s + "\"];\n";
 	}

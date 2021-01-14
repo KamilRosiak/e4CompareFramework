@@ -9,6 +9,7 @@ public enum JavaAttributesTypes {
 	Check,
 	Children,
 	Class,
+	Comment,
 	Comparison,
 	Condition,
 	Default,
