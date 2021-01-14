@@ -198,12 +198,15 @@ public class ProjectExplorerViewController {
 
 	/**
 	 * If a treeItem should be displayed
+	 * 
 	 * @param node treeItem
 	 * @return true if it is searched for or nothing is searched
 	 */
 	private boolean showTreeItem(TreeItem<FileTreeElement> node) {
-		return ((filter.equals("") && filterTags.isEmpty()) || (node.getValue().getRelativePath().contains(filter)
-				&& tagService.hasTags(node.getValue(), filterTags)) || !node.getChildren().isEmpty());
+		return ((filter.equals("") && filterTags.isEmpty())
+				|| (node.getValue().getRelativePath().toLowerCase().contains(filter.toLowerCase())
+						&& tagService.hasTags(node.getValue(), filterTags))
+				|| !node.getChildren().isEmpty());
 	}
 
 	/**
