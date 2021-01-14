@@ -1,19 +1,15 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import javafx.scene.effect.Lighting;
-
 import com.github.javaparser.ast.visitor.*;
+import com.sun.javafx.fxml.expression.UnaryExpression;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.expr.UnaryExpr.Operator;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 
-import java.util.Arrays;
-
-import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.*;
 
 /**
@@ -86,9 +82,11 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 * {@link JavaNodeTypes#Argument} with the attributes types
 	 * {@link JavaAttributesTypes#Type} containing the parameter's type and an
 	 * attributes {@link JavaAttributesTypes#Name} containing the parameter's name.
+	 * Then the each modifier of the parameter is visited.
 	 * <p>
 	 * Finally the remaining children of the method declaration are visited.
 	 *
+	 * @see JavaVisitor#visit(Modifier, Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/MethodDeclaration.html">Javaparser
 	 *      Docs - MethodDeclaration</a>
@@ -375,7 +373,11 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 * attribute {@link JavaAttributesTypes#Type}, adds the target of assignment as
 	 * an attributes {@link JavaAttributesTypes#Target} and adds the value of the
 	 * assignment as an attribute {@link JavaAttributesTypes#Value}.
+	 * <p>
+	 * The attribute {@link JavaAttributesTypes#Operator} contains the assignment
+	 * operation.
 	 * 
+	 * @see com.github.javaparser.ast.expr.AssignExpr.Operator
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/AssignExpr.html">JavaParser
 	 *      Docs - AssignExpr</a>
@@ -888,6 +890,8 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 * Creates a new node for the parameter of type {@link Parameter} and adds the
 	 * parameter's type and name as attributes {@link JavaAttributesTypes#Type} and
 	 * {@link JavaAttributesTypes#Name}.
+	 * <p>
+	 * If the parameter is has no type, then the attribute is omitted.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/Parameter.html">JavaParser
@@ -1237,7 +1241,11 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	/**
 	 * Creates a new node of type {@link UnaryExpr} and adds the unary expression as
 	 * a string as an attribute {@link JavaAttributesTypes#Value}.
+	 * <p>
+	 * In the attribute {@link JavaAttributesTypes#Operator} the name of the unary
+	 * operation is saved.
 	 * 
+	 * @see com.github.javaparser.ast.expr.UnaryExpr.Operator
 	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
 	 *      Node)
 	 * @see <a href=
@@ -1625,12 +1633,15 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 
 	/**
 	 * Creates a new node with type {@link ForEachStmt}.
-	 * 
+	 * <p>
 	 * Adds an attribute {@link JavaAttributesTypes#Iterator} with value
-	 * {@link ForEachStmt#getIterable()} and an attribute
-	 * {@link JavaAttributesTypes#Initilization} with value
-	 * {@link ForEachStmt#getVariableDeclarator()} to new node.
-	 * 
+	 * {@link ForEachStmt#getIterable()}.
+	 * <p>
+	 * Another attribute {@link JavaAttributesTypes#Initilization} with the name of
+	 * {@link ForEachStmt#getVariableDeclarator()} is added to the new node. The
+	 * attribute {@link JavaAttributesTypes#Type} contains the type of
+	 * {@link ForEachStmt#getVariableDeclarator()}.
+	 * <p>
 	 * Afterwards the body of the {@link ForEachStmt} is visited
 	 * ({@link ForEachStmt#getBody()}).
 	 * 
@@ -1650,7 +1661,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 		// Initilization
 		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Initilization, n.getVariableDeclarator().getNameAsString());
 		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Type, n.getVariableDeclarator().getTypeAsString());
-		
+
 		// Block
 		n.getBody().accept(this, p);
 
@@ -1833,7 +1844,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	public void visit(IntersectionType n, Node arg) {
 		super.visit(n, JavaVisitorUtil.createNode(n, arg));
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -1841,7 +1852,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	public void visit(LineComment n, Node arg) {
 		JavaVisitorUtil.createNode(JavaNodeTypes.LineComment, arg);
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -1849,7 +1860,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	public void visit(BlockComment n, Node arg) {
 		JavaVisitorUtil.createNode(JavaNodeTypes.BlockComment, arg);
 	}
-	
+
 	/**
 	 * 
 	 */
