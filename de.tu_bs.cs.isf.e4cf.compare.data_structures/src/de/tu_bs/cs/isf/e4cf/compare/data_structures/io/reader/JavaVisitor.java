@@ -1835,7 +1835,14 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 	
 	/**
+	 * Creates a new node of type {@link LineComment}.
 	 * 
+	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
+	 * @see <a href=
+	 * 		"https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/LineComment.html">JavaParser
+	 * 		Docs - LineComment</a>
+	 * @param n LineComment
+	 * @param arg Parent framework node of the LineComment's framework node.
 	 */
 	@Override
 	public void visit(LineComment n, Node arg) {
@@ -1843,7 +1850,14 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 	
 	/**
+	 * Creates a new node of type {@link BlockComment}.
 	 * 
+	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
+	 * @see <a href=
+	 * 		"https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/BlockComment.html">JavaParser
+	 * 		Docs - BlockComment</a>
+	 * @param n BlockComment
+	 * @param arg Parent framework node of the BlockComment's framework node. 
 	 */
 	@Override
 	public void visit(BlockComment n, Node arg) {
@@ -1851,7 +1865,14 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	}
 	
 	/**
+	 * Creates a new node of type {@link JavadocComment}.
 	 * 
+	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
+	 * @see <a href=
+	 * 		"https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/JavadocComment.html">JavaParser
+	 * 		Docs - JavadocComment</a>
+	 * @param n JavadocComment
+	 * @param arg Parent framework node of the JavadocComment's framework node. 
 	 */
 	@Override
 	public void visit(JavadocComment n, Node arg) {
