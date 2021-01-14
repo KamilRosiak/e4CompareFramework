@@ -12,12 +12,17 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.ExportService;
+import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
 
+/**
+ * A Handler to test the functionality of the export service.
+ * 
+ * @author Team 6.
+ */
 public class ExportButtonHandler {
 	@Execute
 	public void execute() {
-		ExportService exportService = new ExportService();
+		GsonExportService exportService = new GsonExportService();
 
         Set<String> stringSet = new HashSet<>();
         stringSet.add("value1");
@@ -36,6 +41,6 @@ public class ExportButtonHandler {
         tree.setArtifactType("type");
         tree.setRoot(root);
         
-        System.out.println(exportService.createJSON(tree));
+        System.out.println(exportService.exportTree(tree));
 	}
 }

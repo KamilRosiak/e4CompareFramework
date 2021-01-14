@@ -1,23 +1,15 @@
 package de.tu_bs.cs.isf.e4cf.core.import_export.services;
 
-import javax.inject.Singleton;
-
-import org.eclipse.e4.core.di.annotations.Creatable;
-
-import com.google.gson.Gson;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 
-@Creatable
-@Singleton
-public class ExportService {
-	private Gson gson;
-	
-	public ExportService() {
-		this.gson = new Gson();
-	}
-	
-	public String createJSON(TreeImpl tree) {
-        return this.gson.toJson(tree);
-    }
+/**
+ * Interface to allow multiple implementation of ExportServices.
+ * Can be used to extend functionality with other export formats.
+ * 
+ * @author Team 6
+ *
+ * @param <T> Expected Type of export format.
+ */
+public interface ExportService<T> {
+	T exportTree(TreeImpl tree);
 }
