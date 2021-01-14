@@ -127,21 +127,23 @@ public class TagService {
 		}
 	}
 
-	/**
-	 * Get the tags for a FileTreeElement If no tags exists create an empty list
-	 * 
-	 * @param treeElement to get tags for
-	 * @return List of all tags of the element
-	 */
-	public List<Tag> getTags(FileTreeElement treeElement) {
-		String path = treeElement.getRelativePath();
-
+	private List<Tag> saveGetListFromMap(String path) {
 		List<Tag> tags = tagMap.get(path);
 		if (tags == null) {
 			tags = new ArrayList<Tag>();
 			tagMap.put(path, tags);
 		}
 		return tags;
+	}
+
+	/**
+	 * Get the tags for a FileTreeElement If no tags exists create an empty list
+	 * 
+	 * @param treeElement to get tags for
+	 * @return List of all tags of the element
+	 */
+	public List<Tag> getTags(FileTreeElement treeElement) {		
+		return saveGetListFromMap(treeElement.getRelativePath());
 	}
 
 	/**
@@ -162,7 +164,7 @@ public class TagService {
 	 * @param tags
 	 */
 	public void addTags(FileTreeElement treeElement, List<Tag> tags) {
-		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
+		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
 		for (Tag tag : tags) {
 			if (canAddTag(tagList, tag)) {
 				tagList.add(tag);
@@ -177,7 +179,7 @@ public class TagService {
 	 * @param tag
 	 */
 	public void addTag(FileTreeElement treeElement, Tag tag) {
-		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
+		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
 		if (canAddTag(tagList, tag)) {
 			tagList.add(tag);
 		}
@@ -190,7 +192,7 @@ public class TagService {
 	 * @param tag
 	 */
 	public void deleteTag(FileTreeElement treeElement, Tag tag) {
-		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
+		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
 		tagList.remove(tag);
 	}
 
@@ -211,7 +213,7 @@ public class TagService {
 	 * @return true if the treeElement has the tag
 	 */
 	public boolean hasTag(FileTreeElement treeElement, Tag tag) {
-		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
+		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
 		return tagList.contains(tag);
 	}
 
@@ -223,7 +225,7 @@ public class TagService {
 	 * @return true if the treeElement has the tags
 	 */
 	public boolean hasTags(FileTreeElement treeElement, List<Tag> tags) {
-		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
+		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
 		return tagList.containsAll(tags);
 	}
 }
