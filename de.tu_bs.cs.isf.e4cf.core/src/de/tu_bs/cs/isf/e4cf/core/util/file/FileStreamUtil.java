@@ -1,9 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.core.util.file;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,7 +51,7 @@ public class FileStreamUtil {
 			}
 			//choice yes means to overwrite the file if exist
 			if(choice == 0) {
-				FileWriter writer = new FileWriter(path);
+				Writer writer = new OutputStreamWriter(new FileOutputStream(file),StandardCharsets.UTF_8);
 				PrintWriter print = new PrintWriter(writer);
 				print.append(text);
 				print.close();

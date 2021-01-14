@@ -12,8 +12,6 @@ import com.github.javaparser.ast.type.*;
 
 import java.util.Arrays;
 
-import javax.swing.text.html.HTMLEditorKit.InsertHTMLTextAction;
-
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.*;
 
@@ -116,6 +114,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 			Node argNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Argument, i, args);
 			JavaVisitorUtil.AddAttribute(argNode, JavaAttributesTypes.Type, concreteParameter.getTypeAsString());
 			JavaVisitorUtil.AddAttribute(argNode, JavaAttributesTypes.Name, concreteParameter.getNameAsString());
+			concreteParameter.getModifiers().forEach(modif -> modif.accept(this, argNode));
 			concreteParameter.removeForced();
 		}
 
@@ -387,7 +386,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 		Node assignment = JavaVisitorUtil.createNode(JavaNodeTypes.Assignment, arg);
 		JavaVisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Target, n.getTarget().toString());
 		JavaVisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Value, n.getValue().toString());
-
+		JavaVisitorUtil.AddAttribute(assignment, JavaAttributesTypes.Operator, n.getOperator().name());
 	}
 
 	/**
@@ -669,7 +668,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(MarkerAnnotationExpr n, Node arg) {
-		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Annotation, n.toString());
+		JavaVisitorUtil.AddAttribute(arg, JavaAttributesTypes.Annotation, n.getNameAsString());
 	}
 
 	/**
@@ -898,7 +897,9 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(Parameter n, Node arg) {
 		Node c = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
+		if (!n.getTypeAsString().isEmpty()) {
+			JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
+		}
 		JavaVisitorUtil.AddAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
 	}
 
@@ -1153,7 +1154,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ThrowStmt n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		JavaVisitorUtil.AddAttribute(JavaVisitorUtil.Parent(n, arg), JavaAttributesTypes.Statement, n.toString());
 	}
 
 	/**
@@ -1246,7 +1247,9 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(UnaryExpr n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		Node unaryExprNode = JavaVisitorUtil.createNode(n, arg);
+		JavaVisitorUtil.AddAttribute(unaryExprNode, JavaAttributesTypes.Name, n.getExpression().toString());
+		JavaVisitorUtil.AddAttribute(unaryExprNode, JavaAttributesTypes.Operator, n.getOperator().name());
 	}
 
 	/**
@@ -1644,8 +1647,9 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Iterator, n.getIterable().toString());
 
 		// Initilization
-		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, n.getVariableDeclarator().toString());
-
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, n.getVariableDeclarator().getNameAsString());
+		JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Type, n.getVariableDeclarator().getTypeAsString());
+		
 		// Block
 		n.getBody().accept(this, p);
 
@@ -1686,14 +1690,16 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 		n.removeCompare(); // rm bc visited
 
 		// Initializations
-		for (int i = 0; i < n.getInitialization().size(); i++) {
+		int initializations = n.getInitialization().size();
+		for (int i = 0; i < initializations; i++) {
 			Expression initExpr = n.getInitialization().get(0);
 			JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, initExpr.toString());
 			initExpr.removeForced();
 		}
 
 		// Updates
-		for (int i = 0; i < n.getUpdate().size(); i++) {
+		int updates = n.getUpdate().size();
+		for (int i = 0; i < updates; i++) {
 			Expression updateExpr = n.getUpdate().get(0);
 			JavaVisitorUtil.AddAttribute(p, JavaAttributesTypes.Update, updateExpr.toString());
 			updateExpr.removeForced();
