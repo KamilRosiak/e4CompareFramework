@@ -21,7 +21,7 @@ public class JavaVisitorUtil {
 	 */
 	public static Node createNodeWithValue(com.github.javaparser.ast.Node n, Node arg) {
 		Node c = createNode(n, arg);
-		AddAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		addAttribute(arg, JavaAttributesTypes.Value, n.toString());
 		return c;
 	}
 
@@ -66,7 +66,7 @@ public class JavaVisitorUtil {
 	 * @param key Attribute key
 	 * @param val Attribute value
 	 */
-	public static void AddAttribute(Node arg, JavaAttributesTypes key, String val) {
+	public static void addAttribute(Node arg, JavaAttributesTypes key, String val) {
 		arg.addAttribute(key.name(), val);
 	}
 }
