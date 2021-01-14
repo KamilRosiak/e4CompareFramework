@@ -23,7 +23,7 @@ import com.github.javaparser.ast.*;
  * @author Hassan Smaoui
  *
  */
-public class WriterUtil {
+public class JavaWriterUtil {
 	/**
 	 * Converts a framework node and it's children to a JavaParser node
 	 * 

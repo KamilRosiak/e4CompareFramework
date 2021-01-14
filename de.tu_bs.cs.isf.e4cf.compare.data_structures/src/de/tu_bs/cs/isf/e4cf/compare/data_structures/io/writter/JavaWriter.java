@@ -2,7 +2,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
 import java.util.Set;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.WriterUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriterUtil;
 
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
@@ -60,6 +60,6 @@ public class JavaWriter extends AbstractArtifactWriter {
 	 * @return Contents of a file
 	 */
 	private String createFileContent(Node root) {	
-		return WriterUtil.visitWriter(root, null).toString();
+		return JavaWriterUtil.visitWriter(root, null).toString();
 	}
 }
