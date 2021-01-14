@@ -47,7 +47,6 @@ public class JavaWriter extends AbstractArtifactWriter {
 	 */
 	@Override
 	public void writeArtifact(Tree tree, String path) {
-		// TODO Auto-generated method stub
 		if (tree.getArtifactType().equals(NODE_TYPE_TREE)) {
 			FileStreamUtil.writeTextToFile(path + "." + FILE_ENDING, createFileContent(tree.getRoot()));
 		}
@@ -59,46 +58,7 @@ public class JavaWriter extends AbstractArtifactWriter {
 	 * @param root Node of the syntax tree.
 	 * @return Contents of a file
 	 */
-	private String createFileContent(Node root) {
-		
+	private String createFileContent(Node root) {	
 		return WriterUtil.visitWriter(root, null).toString();
-		
-		/*CompilationUnit cu = new CompilationUnit();
-		
-		for(Attribute attribute : root.getAttributes()) {
-			String key = attribute.getAttributeKey();
-			Set<String> value = attribute.getAttributeValues();
-			if(key.startsWith(JavaNodeTypes.Package.toString())) {
-				// Assumption: If node has key package, it must have the single value of package name
-				cu.setPackageDeclaration(value.iterator().next());
-			}
-		}
-		
-		// Build the file depth-first
-		// If node is leaf then getChildren returns an empty list and the body of the
-		// for loop is not executed.
-		for (Node child : root.getChildren()) {
-			
-		}
-		return cu.toString();*/
 	}
-	/*
-	private void ImportDeclaration(Node node, CompilationUnit cu) {
-		for(Node child : node.getChildren()) {
-			cu.addImport(child.getNodeType());
-		}
-	}
-	
-	private void ClassOrInterfaceDeclaration(Node node, CompilationUnit cu) {
-		ClassOrInterfaceDeclaration coid; 
-		Attribute attr = node.getAttributeForKey(JavaNodeTypes.Type.toString());
-		if (attr.getAttributeValues().iterator().next().equals(JavaNodeTypes.Class.toString())) {
-			coid = cu.addClass(name);
-		} else if (attr.getAttributeValues().iterator().next().equals(JavaNodeTypes.Interface.toString())) {
-			coid = cu.addInterface(name);
-		}
-		for(Node chlild : node.getChildren()) {
-			
-		}
-	}*/
 }
