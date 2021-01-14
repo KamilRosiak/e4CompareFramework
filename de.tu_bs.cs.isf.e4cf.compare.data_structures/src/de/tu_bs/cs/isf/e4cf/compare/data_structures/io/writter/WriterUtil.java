@@ -136,7 +136,11 @@ public class WriterUtil {
 			obj.setTarget(attributes.getTarget());
 			obj.setValue(attributes.getValue());
 			obj.setOperator(AssignExpr.Operator.valueOf(attributes.getOperator()));
-			((NodeWithStatements) p).addStatement(obj);
+			
+			if (p instanceof NodeWithStatements) {
+				((NodeWithStatements) p).addStatement(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(BinaryExpr.class.getSimpleName())) {
 			BinaryExpr obj = new BinaryExpr();

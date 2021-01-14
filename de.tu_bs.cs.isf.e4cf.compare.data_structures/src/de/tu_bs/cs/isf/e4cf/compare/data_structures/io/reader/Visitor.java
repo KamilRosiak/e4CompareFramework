@@ -906,14 +906,16 @@ public class Visitor extends VoidVisitorAdapter<Node> {
 		n.removeCompare(); // rm bc visited
 
 		// Initializations
-		for (int i = 0; i < n.getInitialization().size(); i++) {
+		int initializations = n.getInitialization().size();
+		for (int i = 0; i < initializations; i++) {
 			Expression initExpr = n.getInitialization().get(0);
 			VisitorUtil.AddAttribute(p, JavaAttributesTypes.Initilization, initExpr.toString());
 			initExpr.removeForced();
 		}
 
 		// Updates
-		for (int i = 0; i < n.getUpdate().size(); i++) {
+		int updates = n.getUpdate().size();
+		for (int i = 0; i < updates; i++) {
 			Expression updateExpr = n.getUpdate().get(0);
 			VisitorUtil.AddAttribute(p, JavaAttributesTypes.Update, updateExpr.toString());
 			updateExpr.removeForced();
