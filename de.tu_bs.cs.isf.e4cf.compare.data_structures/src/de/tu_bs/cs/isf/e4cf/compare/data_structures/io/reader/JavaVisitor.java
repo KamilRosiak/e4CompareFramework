@@ -6,6 +6,7 @@ import javafx.scene.effect.Lighting;
 
 import com.github.javaparser.ast.visitor.*;
 import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
@@ -1831,5 +1832,29 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(IntersectionType n, Node arg) {
 		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public void visit(LineComment n, Node arg) {
+		JavaVisitorUtil.createNode(JavaNodeTypes.LineComment, arg);
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public void visit(BlockComment n, Node arg) {
+		JavaVisitorUtil.createNode(JavaNodeTypes.BlockComment, arg);
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public void visit(JavadocComment n, Node arg) {
+		JavaVisitorUtil.createNode(JavaNodeTypes.JavadocComment, arg);
 	}
 }
