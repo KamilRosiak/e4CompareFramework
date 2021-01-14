@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.ITagStore;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.SerializableTagStore;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.MockedTagStore;
 
 @Creatable
 @Singleton
@@ -36,7 +37,7 @@ public class TagService {
 	 */
 	@PostConstruct
 	private void load() {
-		tagStore = new SerializableTagStore();
+		tagStore = new MockedTagStore();
 		availableTags = tagStore.loadAvailableTags();
 		tagMap = tagStore.loadTagMap();
 	}
@@ -80,10 +81,14 @@ public class TagService {
 			// Initialize tags for each file
 			List<Tag> tags = getTags(element);
 			if (tags == null) {
-				tagMap.put(element.getRelativePath(), new ArrayList<Tag>());
+				tags = new ArrayList<Tag>();
+			} else {
+				// Remove duplicates
+				tags = new ArrayList<>(new HashSet<>(tags));
+				// Delete tags that are not available
+				tags.removeIf(tag -> !availableTags.contains(tag));
 			}
-			// Delete tags that are not available
-			tags.removeIf(tag -> !availableTags.contains(tag));
+			tagMap.put(element.getRelativePath(), tags);
 		}
 
 		// Recursion
@@ -140,6 +145,32 @@ public class TagService {
 	}
 
 	/**
+	 * Check if a tag can be added to a tag list
+	 * 
+	 * @param tagList
+	 * @param tag
+	 * @return true if it is not in the list already and an available tag
+	 */
+	private boolean canAddTag(List<Tag> tagList, Tag tag) {
+		return !tagList.contains(tag) && availableTags.contains(tag);
+	}
+
+	/**
+	 * Add a list of tags for a treeElement
+	 * 
+	 * @param treeElement
+	 * @param tags
+	 */
+	public void addTags(FileTreeElement treeElement, List<Tag> tags) {
+		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
+		for (Tag tag : tags) {
+			if (canAddTag(tagList, tag)) {
+				tagList.add(tag);
+			}
+		}
+	}
+
+	/**
 	 * Add a tag for a treeElement
 	 * 
 	 * @param treeElement
@@ -147,7 +178,7 @@ public class TagService {
 	 */
 	public void addTag(FileTreeElement treeElement, Tag tag) {
 		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
-		if(!tagList.contains(tag)) {
+		if (canAddTag(tagList, tag)) {
 			tagList.add(tag);
 		}
 	}
@@ -161,5 +192,26 @@ public class TagService {
 	public void deleteTag(FileTreeElement treeElement, Tag tag) {
 		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
 		tagList.remove(tag);
+	}
+
+	/**
+	 * Clear the tags of a treeElement
+	 * 
+	 * @param treeElement
+	 */
+	public void clearTags(FileTreeElement treeElement) {
+		tagMap.get(treeElement.getRelativePath()).clear();
+	}
+
+	/**
+	 * Check if the treeElement has the tag
+	 * 
+	 * @param treeElement
+	 * @param tag
+	 * @return true if the treeElement has the tag
+	 */
+	public boolean hasTag(FileTreeElement treeElement, Tag tag) {
+		List<Tag> tagList = tagMap.get(treeElement.getRelativePath());
+		return tagList.contains(tag);
 	}
 }
