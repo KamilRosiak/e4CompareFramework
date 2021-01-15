@@ -15,7 +15,6 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
-import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor;
 import de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditorMenu;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;

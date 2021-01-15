@@ -1,19 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
-import java.awt.BorderLayout;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
-import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
-import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
-import de.tu_bs.cs.isf.e4cf.text_editor.WordCountUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 
 import javafx.fxml.FXML;
@@ -21,19 +12,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.IndexRange;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import org.fxmisc.richtext.CodeArea;
 
@@ -326,13 +310,15 @@ public class TextEditorMenu implements Initializable {
 	}
 
 	/**
-	 * Under Construction 
+	 * Calls a separate window used to find terms in the CodeArea. Makes use of the
+	 * open()-function implemented in FindOperation.java
+	 * 
+	 * @author Cedric Kapalla, Soeren Christmann
 	 */
 	@FXML
 	private void initFindAction() {
-		// Öffne Extra Suchfenster siehe FindGui.fxml
-		//Find Opertation.java
-		
+		FindOperation find = new FindOperation();
+		find.open();
 	}
 
 	/**
