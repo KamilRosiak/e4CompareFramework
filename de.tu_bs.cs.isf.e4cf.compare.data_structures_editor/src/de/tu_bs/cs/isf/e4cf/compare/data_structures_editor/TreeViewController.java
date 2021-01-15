@@ -45,7 +45,7 @@ public class TreeViewController {
 	private Label testLabel;
 
 	@FXML
-	private Text hitCount,totalNodeAmount;
+	private Text hitCount, totalNodeAmount;
 
 	@FXML
 	private TreeView<NodeUsage> treeView;
@@ -55,10 +55,16 @@ public class TreeViewController {
 
 	@FXML
 	private ContextMenu contextMenu;
-	
+
 	private String currentSearchText;
 
 	private List<TreeItem<NodeUsage>> copyList = new ArrayList<TreeItem<NodeUsage>>();
+
+	@Optional
+	@Inject
+	public void refreshTreeView(@UIEventTopic("RefreshTreeViewEvent") boolean bool) {
+		treeView.refresh();
+	}
 
 	private void initializeTree(Tree tree) {
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -135,11 +141,11 @@ public class TreeViewController {
 		contextMenu.hide();
 		copyList.clear();
 		copyList.addAll(new ArrayList<TreeItem<NodeUsage>>(treeView.getSelectionModel().getSelectedItems())); // Bug:
-																												// Paste
-																												// ist
-																												// spiegelverkehrt
-																												// bei
-																												// oben
+		System.out.println(treeView.getSelectionModel().getSelectedItem().getValue().getVariabilityClass()); // Paste
+		// ist
+		// spiegelverkehrt
+		// bei
+		// oben
 		System.out.println(copyList); // nach unten Markierung
 	}
 
@@ -165,7 +171,7 @@ public class TreeViewController {
 	 * 
 	 */
 	@FXML
-	void renameNode() { 						
+	void renameNode() {
 		contextMenu.hide();
 		for (Attribute attribute : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
 			if (attribute.getAttributeKey().toLowerCase().equals("name")) {
