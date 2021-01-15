@@ -27,24 +27,6 @@ public class NodeUsage extends AbstractNode {
 		setUUID(node.getUUID());
 	}
 
-	@Override
-	public String toString() {
-		String s1 = "";
-		if (this.getAttributes().isEmpty()) {
-			return s1 + "empty";
-		}
-		for (Attribute attribute : this.getAttributes()) {
-			if(attribute.getAttributeKey().toLowerCase().equals("name")) {
-				return attribute.getAttributeValues().iterator().next();
-			}
-			for (String s : attribute.getAttributeValues()) {
-				s1 = s;
-			}
-		}
-		return s1;
-	}
-
-
 	public NodeUsage(String nodeType, Node parent) {
 		this(nodeType);
 		setParent(parent);
@@ -56,5 +38,21 @@ public class NodeUsage extends AbstractNode {
 		setVariabilityClass(varClass);
 	}
 	
+	@Override
+	public String toString() {
+		String s1 = "";
+		if (this.getAttributes().isEmpty()) {
+			return "empty";
+		}
+		for (Attribute attribute : this.getAttributes()) {
+			if(attribute.getAttributeKey().toLowerCase().equals("name")) {
+				return attribute.getAttributeValues().iterator().next();
+			} //other way to get the last element than foreach
+			for (String s : attribute.getAttributeValues()) {
+				s1 = s;
+			}
+		}
+		return s1;
+	}
 
 }

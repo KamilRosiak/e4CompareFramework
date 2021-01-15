@@ -13,18 +13,20 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeUsage;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
 /**
- * 
+ * Utility Class for TreeViewController
  * @author Team05
  *
  */
 public final class TreeViewUtilities {
 
-	static List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
+	public static List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
 
 	public static String treeName = "";
 
@@ -37,7 +39,7 @@ public final class TreeViewUtilities {
 	}
 
 	/**
-	 * 
+	 * Creates TreeView from given Tree
 	 * @param tr
 	 * @param treeView
 	 * @return
@@ -62,7 +64,7 @@ public final class TreeViewUtilities {
 
 	
 	/**
-	 * Temporäre Lösung, noch nicht fertiggestellt
+	 * Creates TreeView from given Tree recursively
 	 * @param tr
 	 * @param treeView
 	 * @param item
@@ -173,14 +175,6 @@ public final class TreeViewUtilities {
 		return searchList;
 	}
 
-	public static List<TreeItem<NodeUsage>> getSearchList() {
-		return searchList;
-	}
-
-	public static void clearSearchList() {
-		searchList.clear();
-	}
-
 	public static void serializesTree(TreeView<NodeUsage> treeView) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
 		writeToFile(file, treeView);
@@ -202,7 +196,7 @@ public final class TreeViewUtilities {
 			writer.close();
 			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			alert("Es ist eine " + e + "aufgetreten");
 		}
 	}
 
@@ -214,7 +208,7 @@ public final class TreeViewUtilities {
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			throw new NullPointerException();
+			alert("Bitte einen Wert eingeben");
 		}
 		return s;
 
@@ -224,12 +218,11 @@ public final class TreeViewUtilities {
 		TreeItem<NodeUsage> currentItem = new TreeItem<NodeUsage>();
 		if (getSearchCounter() < resultList.size()) {
 			currentItem = resultList.get(getSearchCounter());
-			incrementSearchCounter();
 		} else {
 			setSearchCounter(0);
 			currentItem = resultList.get(getSearchCounter());
-			incrementSearchCounter();
 		}
+		incrementSearchCounter();
 		return currentItem;
 	}
 
@@ -263,5 +256,12 @@ public final class TreeViewUtilities {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public static void alert(String outputText) {
+		Alert alert = new Alert (AlertType.INFORMATION);
+		alert.setHeaderText(null);
+		alert.setContentText(outputText);
+		alert.setTitle("Fehler");
+		alert.showAndWait();
 	}
 }

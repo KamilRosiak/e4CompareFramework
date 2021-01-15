@@ -10,7 +10,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
- * 
+ * Utility Class for PropertyView
  * @author Team05
  *
  */
@@ -37,11 +37,5 @@ public class PropertiesViewUtilities {
 		tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		return tableView;
-	}
-
-//	  public static void handle(MouseEvent event, TableView<Attribute> tempTable) {  
-//		  if (event.getClickCount()==2) {  
-//			  
-//	    }  
-//	  }  
+	} 
 }
