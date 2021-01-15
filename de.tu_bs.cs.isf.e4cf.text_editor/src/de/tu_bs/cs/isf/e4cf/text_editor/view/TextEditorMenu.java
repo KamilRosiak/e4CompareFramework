@@ -1,7 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
+import java.awt.BorderLayout;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +21,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -26,6 +31,10 @@ import javafx.scene.control.TabPane;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import org.fxmisc.richtext.CodeArea;
 
 public class TextEditorMenu implements Initializable {
@@ -62,6 +71,8 @@ public class TextEditorMenu implements Initializable {
 	// Extra Menu
 	@FXML
 	private MenuItem preferences;
+	@FXML
+	private MenuItem find;
 
 	// Help Menu
 	@FXML
@@ -312,6 +323,16 @@ public class TextEditorMenu implements Initializable {
 		textEditorViewController.alert.setContentText(
 				"You would be able to adjust preferences here, but this is just a placeholder for now.");
 		textEditorViewController.alert.showAndWait();
+	}
+
+	/**
+	 * Under Construction 
+	 */
+	@FXML
+	private void initFindAction() {
+		// Öffne Extra Suchfenster siehe FindGui.fxml
+		//Find Opertation.java
+		
 	}
 
 	/**
