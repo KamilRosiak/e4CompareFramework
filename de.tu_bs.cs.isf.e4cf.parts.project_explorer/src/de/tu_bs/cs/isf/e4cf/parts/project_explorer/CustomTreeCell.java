@@ -163,9 +163,22 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			ArrayList<java.io.File> sources = new ArrayList<java.io.File>();
 
 			for (FileTreeElement entry : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
-				sources.add(new java.io.File(entry.getAbsolutePath()));
+				boolean found = false;
+				String dirName = entry.getAbsolutePath();
+				sourcesContainLoop:
+				for (File file: sources) {
+					if (dirName.contains(file.getAbsolutePath())) {
+						found = true;
+						break sourcesContainLoop;
+					}
+				}
+				if (!found) {
+					File fileToAdd = new java.io.File(dirName);
+					System.out.println(fileToAdd.getName());
+					sources.add(fileToAdd);
+				}
 			}
-
+			
 			content.putFiles(sources);
 
 			db.setContent(content);
@@ -209,7 +222,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			setGraphic(null);
 		}
 	}
-
+	
 	private void moveFileOrDirectory(Path source, Path target) {
 		File sourceFile = source.toFile();
 
