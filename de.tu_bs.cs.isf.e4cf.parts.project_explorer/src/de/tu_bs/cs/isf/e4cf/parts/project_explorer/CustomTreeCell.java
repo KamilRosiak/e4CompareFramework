@@ -88,15 +88,11 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 						if (event.getGestureSource() instanceof CustomTreeCell) {
 							// In-Tree: Perform Move
 							dropMode = DropMode.MOVE;
-							/**
-							 * If current file is a directory with content it has to have special copying
-							 * functionality.
-							 */
+							
 							if (file.isDirectory() && file.listFiles().length > 0) {
 								directories.add(file);
 
 							} else {
-								// if this file is not a parent of a currently selected folder copy it now.
 								moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
 										Paths.get(directory.getAbsolutePath(), file.getName()));
 							}
