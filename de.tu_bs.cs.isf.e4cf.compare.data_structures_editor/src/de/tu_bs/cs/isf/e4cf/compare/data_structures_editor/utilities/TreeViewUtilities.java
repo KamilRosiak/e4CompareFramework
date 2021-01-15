@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -21,6 +20,7 @@ import javafx.scene.control.TreeView;
 
 /**
  * Utility Class for TreeViewController
+ * 
  * @author Team05
  *
  */
@@ -31,7 +31,7 @@ public final class TreeViewUtilities {
 	public static String treeName = "";
 
 	private static int searchCounter = 0;
-	
+
 	public static List<TreeItem<NodeUsage>> list = new ArrayList<TreeItem<NodeUsage>>();
 
 	public static void switchToPart(String path, ServiceContainer services) {
@@ -40,6 +40,7 @@ public final class TreeViewUtilities {
 
 	/**
 	 * Creates TreeView from given Tree
+	 * 
 	 * @param tr
 	 * @param treeView
 	 * @return
@@ -62,33 +63,33 @@ public final class TreeViewUtilities {
 		return treeView;
 	}
 
-	
+
 	/**
 	 * Creates TreeView from given Tree recursively
+	 * 
 	 * @param tr
 	 * @param treeView
 	 * @param item
 	 * @return
 	 */
-	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView,
-			Node item) {
+	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView, Node item) {
 
 		if (item.isRoot()) {
 			treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(item)));
 			treeView.getRoot().setExpanded(true);
 			treeView.setShowRoot(true);
 			list.add(new TreeItem<NodeUsage>(new NodeUsage(item)));
-		} 
-		if(!item.isLeaf()) {
-			for(Node n : item.getChildren()) {
+		}
+		if (!item.isLeaf()) {
+			for (Node n : item.getChildren()) {
 				getTreeViewFromTree(tr, treeView, n);
 			}
 		} else {
-			treeView.getRoot().getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));		
+			treeView.getRoot().getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));
 		}
 		return treeView;
 	}
-	
+
 //	public static TreeItem<NodeUsage> findTreeItemInTreeView(TreeView<NodeUsage> treeView, Node item){
 //		
 //		treeViewToList(treeView.getRoot());
@@ -257,8 +258,9 @@ public final class TreeViewUtilities {
 			e.printStackTrace();
 		}
 	}
+
 	public static void alert(String outputText) {
-		Alert alert = new Alert (AlertType.INFORMATION);
+		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
 		alert.setTitle("Fehler");

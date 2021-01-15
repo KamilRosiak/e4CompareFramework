@@ -18,18 +18,18 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
+            <MenuItem mnemonicParsing="false" onAction="#saveFile" text="Save" />
             <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As…" />
              <MenuItem mnemonicParsing="false" onAction="#closeFile" text="Close" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#undo" text="Undo" />
-            <MenuItem mnemonicParsing="false"  onAction="#redo" text="Redo" />
+            <MenuItem mnemonicParsing="false" onAction="#undoAction" text="Undo" />
+            <MenuItem mnemonicParsing="false"  onAction="#redoAction" text="Redo" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#selectAll" text="Select All" />
-            <MenuItem mnemonicParsing="false" onAction="#unselectAll" text="Unselect All" />
+            <MenuItem mnemonicParsing="false" onAction="#selectAllNodes" text="Select All" />
+            <MenuItem mnemonicParsing="false" onAction="#unselectAllNodes" text="Unselect All" />
           </items>
         </Menu>
       </menus>
@@ -38,22 +38,22 @@
          <contextMenu>
             <ContextMenu fx:id="contextMenu">
               <items>
-		<MenuItem mnemonicParsing="false" onAction="#addAttribute" text="Add Attribute" />
-		<MenuItem mnemonicParsing="false" onAction="#addChild" text="Add Child" />
-		<MenuItem mnemonicParsing="false" onAction="#copy" text="Copy" />
-		<MenuItem mnemonicParsing="false" onAction="#paste" text="Paste" />
+				<MenuItem mnemonicParsing="false" onAction="#addNodeAttribute" text="Add Attribute" />
+				<MenuItem mnemonicParsing="false" onAction="#addChildNode" text="Add Child" />
+				<MenuItem mnemonicParsing="false" onAction="#copyNode" text="Copy" />
+				<MenuItem mnemonicParsing="false" onAction="#pasteNode" text="Paste" />
                 <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
-                <MenuItem mnemonicParsing="false" onAction= "#cut" text="Cut" />
-		<MenuItem mnemonicParsing="false" onAction="#extractToFile" text="Extract to file" />
+                <MenuItem mnemonicParsing="false" onAction= "#cutNode" text="Cut" />
+				<MenuItem mnemonicParsing="false" onAction="#extractToFile" text="Extract to file" />
                 <MenuItem mnemonicParsing="false" onAction="#deleteNode" text="Delete" />
               </items>
             </ContextMenu>
          </contextMenu></TreeView> 
       <ToolBar fx:id="toolBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
-            <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" onAction="#onEnter" />
+            <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" onAction="#startSearch" />
             <Text fx:id="hitCount" strokeType="OUTSIDE" strokeWidth="0.0" />
-          <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#search" text="Search" />
+          <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#searchForNode" text="Search" />
             <Text fx:id="totalNodeAmount" nodeOrientation="LEFT_TO_RIGHT" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="187.6666259765625" />
         </items>
       </ToolBar>
