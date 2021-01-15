@@ -93,18 +93,12 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 							 * functionality.
 							 */
 							if (file.isDirectory() && file.listFiles().length > 0) {
-								// we only want the parent since it is full recursive copying. Can be improved
-								// later.
-								if (!files.contains(file.getParentFile())) {
-									directories.add(file);
-								}
+								directories.add(file);
+
 							} else {
 								// if this file is not a parent of a currently selected folder copy it now.
-								if (!files.contains(file.getParentFile())) {
-									moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
-											Paths.get(directory.getAbsolutePath(), file.getName()));
-								}
-
+								moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
+										Paths.get(directory.getAbsolutePath(), file.getName()));
 							}
 						} else {
 							// From file system: Copy File
@@ -165,8 +159,10 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			for (FileTreeElement entry : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
 				boolean found = false;
 				String dirName = entry.getAbsolutePath();
-				sourcesContainLoop:
-				for (File file: sources) {
+				// if a matching subpath is found (e.g. /something/dir exists and a new file
+				// /something/dir/file.file is added) the search ends and the path won't be
+				// added to the content list of files
+				sourcesContainLoop: for (File file : sources) {
 					if (dirName.contains(file.getAbsolutePath())) {
 						found = true;
 						break sourcesContainLoop;
@@ -174,11 +170,10 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 				}
 				if (!found) {
 					File fileToAdd = new java.io.File(dirName);
-					System.out.println(fileToAdd.getName());
 					sources.add(fileToAdd);
 				}
 			}
-			
+
 			content.putFiles(sources);
 
 			db.setContent(content);
@@ -222,7 +217,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			setGraphic(null);
 		}
 	}
-	
+
 	private void moveFileOrDirectory(Path source, Path target) {
 		File sourceFile = source.toFile();
 
