@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 import javafx.scene.control.Alert;
@@ -24,19 +25,21 @@ public class AddTagDialog {
 	// indicates whether a file has been moved.
 	private TagService tagService;
 	private List<FileTreeElement> selectedElements;
+	private ServiceContainer services;
 
-	public AddTagDialog(IEclipseContext context, TagService tagService, List<FileTreeElement> selectedElements) {
+	public AddTagDialog(IEclipseContext context, TagService tagService, ServiceContainer services, List<FileTreeElement> selectedElements) {
 		alert = new Alert(AlertType.NONE);
 		alert.setTitle("Add Tags");
 
 		this.tagService = tagService;
+		this.services = services;
 
 		this.selectedElements = selectedElements;
 
 		final DialogPane pane = alert.getDialogPane();
 		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		this.addTagPage = new AddTagPage(context, this, tagService, selectedElements);
+		this.addTagPage = new AddTagPage(context, this, tagService, services, selectedElements);
 		pane.setContent(addTagPage.createControl());
 	}
 
@@ -75,6 +78,8 @@ public class AddTagDialog {
 				tagService.addTag(element, tag);
 			}
 		}
+		
+		services.workspaceFileSystem.refresh();
 	}
 
 }

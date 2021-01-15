@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -21,12 +22,14 @@ public class EditTagDialog {
 	private IEclipseContext context;
 	private TagService tagService;
 	private List<FileTreeElement> selectedElements;
+	private ServiceContainer services;
 
-	public EditTagDialog(IEclipseContext context, TagService tagService, List<FileTreeElement> selectedElements) {
+	public EditTagDialog(IEclipseContext context, TagService tagService, ServiceContainer services, List<FileTreeElement> selectedElements) {
 
 		this.context = context;
 		this.tagService = tagService;
 		this.selectedElements = selectedElements;
+		this.services = services;
 		alert = new Alert(AlertType.NONE);
 		alert.setTitle("Edit Tags");
 
@@ -47,7 +50,7 @@ public class EditTagDialog {
 	}
 
 	public void performFinish() {
-		AddTagDialog dialog = new AddTagDialog(context, tagService, selectedElements);
+		AddTagDialog dialog = new AddTagDialog(context, tagService, services, selectedElements);
 		dialog.open();
 	}
 

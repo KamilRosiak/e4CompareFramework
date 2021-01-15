@@ -33,7 +33,7 @@ public class MockedTagStore implements ITagStore {
 	}
 
 	@Override
-	public Map<String, List<Tag>> loadTagMap() {
+	public Map<String, List<Tag>> loadTagMap(List<Tag> availableTags) {
 		HashMap<String, List<Tag>> tagMap = new HashMap<String, List<Tag>>();
 		
 		tagMap.put(" 01 RAW", new ArrayList<Tag>());

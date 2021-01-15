@@ -34,10 +34,6 @@ public class PropertiesTagStore implements ITagStore {
 
 	private File availableTagsFile;
 	private File tagMapFile;
-	
-	// This tag store needs to hold the available tags
-	private List<Tag> availableTags;
-
 	/**
 	 * Default constructor that gets the file locations
 	 */
@@ -94,7 +90,6 @@ public class PropertiesTagStore implements ITagStore {
 			availableTags.add(new Tag((String) name, (String) color));
 		});
 
-		this.availableTags = availableTags;
 		return availableTags;
 	}
 
@@ -110,7 +105,7 @@ public class PropertiesTagStore implements ITagStore {
 	}
 
 	@Override
-	public Map<String, List<Tag>> loadTagMap() {
+	public Map<String, List<Tag>> loadTagMap(List<Tag> availableTags) {
 		Properties tagMapProperties = new Properties();
 
 		loadPropertiesFromFile(tagMapProperties, tagMapFile);

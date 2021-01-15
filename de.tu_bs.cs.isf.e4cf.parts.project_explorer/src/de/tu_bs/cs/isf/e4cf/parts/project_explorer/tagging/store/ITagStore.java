@@ -23,7 +23,7 @@ public interface ITagStore {
 	 * Load a map of tags for each file
 	 * @return map with tags
 	 */
-	public Map<String, List<Tag>> loadTagMap();
+	public Map<String, List<Tag>> loadTagMap(List<Tag> availableTags);
 	
 	/**
 	 * Store a map of tags for each file

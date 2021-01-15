@@ -13,7 +13,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.ITagStore;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.MockedTagStore;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.SerializableTagStore;
 
 @Creatable
 @Singleton
@@ -37,9 +37,9 @@ public class TagService {
 	 */
 	@PostConstruct
 	private void load() {
-		tagStore = new MockedTagStore();
+		tagStore = new SerializableTagStore();
 		availableTags = tagStore.loadAvailableTags();
-		tagMap = tagStore.loadTagMap();
+		tagMap = tagStore.loadTagMap(availableTags);
 	}
 
 	/**
@@ -85,8 +85,8 @@ public class TagService {
 			} else {
 				// Remove duplicates
 				tags = new ArrayList<>(new HashSet<>(tags));
-				// Delete tags that are not available
-				tags.removeIf(tag -> !availableTags.contains(tag));
+//				// Delete tags that are not available
+//				tags.removeIf(tag -> !availableTags.contains(tag));
 			}
 			tagMap.put(element.getRelativePath(), tags);
 		}

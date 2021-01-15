@@ -92,6 +92,8 @@ public class EditTagPage {
 			updateList();
 		});
 
+		// TODO: can we ensure that tag names are unique
+		// / not let the user create a tag with the same name
 		loader.getController().updateBtn.setOnAction(event -> {
 			Tag tag = loader.getController().listView.getSelectionModel().getSelectedItem();
 			loader.getController().tagTextField.setText(tag.getName());

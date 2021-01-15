@@ -231,7 +231,13 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 			
 			ObservableList<Node> tagContainer = controller.tags.getChildren();
 			tagContainer.clear();
-			for (Tag tag : tagStore.getTags(item)) {
+			
+			// Sort the tags
+			List<Tag> tags = tagStore.getTags(item);
+			tags.sort(Comparator.comparing(t -> t.toString()));
+			
+			// Create UI for the tags
+			for (Tag tag : tags) {
 				tagContainer.add(createTagIcon(tag.getColor()));
 			}
 			

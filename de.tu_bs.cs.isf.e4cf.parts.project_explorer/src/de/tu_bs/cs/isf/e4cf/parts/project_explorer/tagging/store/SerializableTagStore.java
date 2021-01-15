@@ -91,16 +91,46 @@ public class SerializableTagStore implements ITagStore {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, List<Tag>> loadTagMap() {
-		Map<String, List<Tag>> tagMap = (Map<String, List<Tag>>) loadFromFile(tagMapFile);
-		if(tagMap == null) {
-			tagMap = new HashMap<String, List<Tag>>();
+	public Map<String, List<Tag>> loadTagMap(List<Tag> availableTags) {
+		Map<String, List<Tag>> tagMap = new HashMap<String, List<Tag>>();
+		
+		Map<String, List<String>> stringMap = (Map<String, List<String>>) loadFromFile(tagMapFile);
+		
+		if(stringMap != null) {
+			for (String key : stringMap.keySet()) {
+				List<String> stringList = stringMap.get(key);
+				List<Tag> tagList = new ArrayList<Tag>();
+				
+				for (String stringTag : stringList) {
+					for (Tag tag : availableTags) {
+						if (stringTag.equals(tag.getName())) {
+							tagList.add(tag);
+							break;
+						}
+					}
+				}
+				
+				tagMap.put(key, tagList);
+			}
 		}
+		
 		return tagMap;
 	}
 
 	@Override
 	public void storeTagMap(Map<String, List<Tag>> tagMap) {
-		storeToFile(tagMapFile, tagMap);
+		Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
+		
+		for (String key : tagMap.keySet()) {
+			List<String> stringList = new ArrayList<String>();
+			
+			for (Tag string : tagMap.get(key)) {
+				stringList.add(string.getName());
+			}
+			
+			stringMap.put(key, stringList);
+		}
+		
+		storeToFile(tagMapFile, stringMap);
 	}
 }

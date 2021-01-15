@@ -7,6 +7,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.TagListCell;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.TagViewController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
@@ -31,6 +32,8 @@ public class AddTagPage {
 
 	private TagService tagService;
 
+	private ServiceContainer services;
+
 	private List<FileTreeElement> selectedElements;
 
 	private AddTagDialog dialog;
@@ -40,14 +43,16 @@ public class AddTagPage {
 	 * 
 	 * @param path
 	 * @param context
+	 * @param services 
 	 */
 	public AddTagPage(IEclipseContext context, AddTagDialog dialog, TagService tagService,
-			List<FileTreeElement> selectedElements) {
+			ServiceContainer services, List<FileTreeElement> selectedElements) {
 		this.context = context;
 		this.tagService = tagService;
 		this.availableTags = tagService.getAvailableTags();
 		this.selectedElements = selectedElements;
 		this.dialog = dialog;
+		this.services = services;
 	}
 
 	public Parent createControl() {
@@ -58,7 +63,7 @@ public class AddTagPage {
 		loader.getController().editTagsBtn.setOnAction(event -> {
 			// open window in which user can 'CRUD' tags.
 			dialog.getAlert().close();
-			EditTagDialog dialog = new EditTagDialog(context, tagService, selectedElements);
+			EditTagDialog dialog = new EditTagDialog(context, tagService, services, selectedElements);
 			dialog.open();
 		});
 

@@ -24,7 +24,7 @@ public class AddTagHandler implements IHandler {
 	@Override
 	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
 		List<FileTreeElement> selection = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
-		AddTagDialog dialog = new AddTagDialog(context, tagService, selection);
+		AddTagDialog dialog = new AddTagDialog(context, tagService, services, selection);
 		dialog.open();
 	}
 
