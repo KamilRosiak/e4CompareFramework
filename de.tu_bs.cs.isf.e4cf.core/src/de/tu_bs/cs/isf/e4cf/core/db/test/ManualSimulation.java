@@ -1,7 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.core.db.test;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -21,39 +19,71 @@ public class ManualSimulation {
 
 	public static void main(String[] args) throws SQLException, IOException {
 
-		final String DATABASEPATH = "./testDatabases/";
-		final String DATABASENAME = "TestDatenbank";
-		final String TABLEENAME = "testTabelle";
+		final String _DATABASEPATH = "./testDatabases/";
+		final String _DATABASENAME = "TestDatenbank";
+		final String _TABLEENAME   = "testTabelle";
+		
+		
+		/* Database */
+		
+		//DatabaseFactory.getInstance().createDatabase(_DATABASEPATH, _DATABASENAME);
+		//DatabaseFactory.getInstance().deleteDatabase("", _DATABASENAME);
+		//DatabaseFactory.getInstance().renameDatabase(_DATABASEPATH, _DATABASENAME, "newName"+_DATABASENAME);
 
-		Column c1 = new Column("id", "integer", false, false, true, false);
-		Column c2 = new Column("name", "varchar (60)");
+		//_____________________________________________________________________________________
+		
+		/* Tables */
+		
+		TableServiceImp ts = new TableServiceImp();
+		
+		Column c1 = new Column("id", "integer", false, false, false, false);
+		Column c2 = new Column("name", "varchar (60)", false, false, false, true);
 		Column c3 = new Column("age", "integer");
-
-		TableServiceImp c = new TableServiceImp();
-
+		
+		//ts.createTable(_DATABASEPATH, _DATABASENAME, _TABLEENAME, c1, c2, c3);	
+		//System.out.println("Columns: "+ts.getColumnsTable(_DATABASEPATH, _DATABASENAME, _TABLEENAME));
+		//ts.deleteTable(_DATABASEPATH, _DATABASENAME, _TABLEENAME);
+		
+		//ts.makeColumnPrimaryKey(_DATABASEPATH, _DATABASENAME, _TABLEENAME, c1.getName());
+		
+		//ts.dropColumnUnique(_DATABASEPATH, _DATABASENAME, _TABLEENAME, c2.getName());
+		
+		//ts.makeColumnAutoIncrement(_DATABASEPATH, _DATABASENAME, _TABLEENAME, c1.getName());
+		
+		//_____________________________________________________________________________________
+		
+		/* Data */
+		
 		DataServiceImp ds = new DataServiceImp();
-
-		// DatabaseFactory.getInstance().createDatabase(DATABASEPATH, DATABASENAME);
-		// DatabaseFactory.getInstance().deleteDatabase(DATABASEPATH, DATABASENAME);
-		// c.createTable(DATABASEPATH, DATABASENAME, TABLEENAME, c1, c2, c3);
-
-		ColumnValue cv = new ColumnValue(c2.getName(), new String("Xong2"));
-		ColumnValue cv2 = new ColumnValue(c2.getName(), new String("souma"));
-		ColumnValue cv3 = new ColumnValue(c3.getName(), "60");
-		// Condition cd = new OrCondition(cv,cv2);
-		//Condition cd = new LikeCondition(cv,cv3);
-		Condition ad = new AndCondition(cv3,cv2);
-		//System.out.println("Test Condition: "+ad.getSqlCondition());
-		// c.makeColumnAutoIncrement(DATABASEPATH, DATABASENAME, TABLEENAME, "id");
-		 ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, cv3,cv2);
-		// ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, cv3,cv3);
-		// ds.insertData(DATABASEPATH, DATABASENAME, TABLEENAME, new
-		// ColumnValue(c3.getName(), new Integer(24)),cv2);
-		 //ds.updateData(DATABASEPATH, DATABASENAME, TABLEENAME, ad, new ColumnValue(c3.getName(), "100"));
-		 //ds.deleteData(DATABASEPATH, DATABASENAME, TABLEENAME, ad);
-		Sorting s = new Sorting(null, new Condition(new ColumnValue(c3.getName(), null)), null, null);
-
-		ds.selectData(DATABASEPATH, DATABASENAME, TABLEENAME, null, s, null);
+		
+		ColumnValue cv = new ColumnValue(c1.getName(), new Integer(15));
+		ColumnValue cv1 = new ColumnValue(c2.getName(), new String("Mohamedd ali"));
+		ColumnValue cv2 = new ColumnValue(c3.getName(), 44);
+		
+		//ds.insertData(_DATABASEPATH, _DATABASENAME, _TABLEENAME, cv1, cv2);
+		
+		ColumnValue cvv = new ColumnValue(c1.getName(), new Integer(1111));
+		ColumnValue cv3 = new ColumnValue(c2.getName(), "Rami ");
+		ColumnValue cv4 = new ColumnValue(c3.getName(), 48);
+		
+		//ds.insertData(_DATABASEPATH, _DATABASENAME, _TABLEENAME, cv3, cv4);
+		//ds.printTable(_DATABASEPATH, _DATABASENAME, _TABLEENAME);
+		
+		Condition cd = new AndCondition(cv4);
+		
+		ColumnValue cvn = new ColumnValue(c2.getName(), "John Q");
+		ColumnValue cvn2 = new ColumnValue(c3.getName(), 20);
+		
+		//ds.updateData(_DATABASEPATH, _DATABASENAME, _TABLEENAME, cd, cvn);
+		
+		Condition groupCondition = new HavingCondition(cvn);
+		
+		Sorting sort = new Sorting(groupCondition, null, "ASC");
+		
+		//ds.deleteData(_DATABASEPATH, _DATABASENAME, _TABLEENAME, dc);
+		
+		ds.selectData(_DATABASEPATH, _DATABASENAME, _TABLEENAME, null, sort, null);
+		
 
 	}
 

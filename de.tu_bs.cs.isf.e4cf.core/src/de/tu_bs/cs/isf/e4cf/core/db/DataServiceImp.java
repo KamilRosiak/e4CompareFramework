@@ -28,6 +28,7 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 		PreparedStatement prep = con
 				.prepareStatement("insert into " + pTableName + " (" + columns + ") values (" + datas + ");");
 		prep.execute();
+		con.close();
 	}
 
 	@Override
@@ -57,8 +58,8 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 	}
 
 	@Override
-	public ResultSet selectData(String pPath, String pDbName, String pTableName, Condition condition, Sorting sorting,
-			String... attributes) throws SQLException {
+	public ResultSet selectData(final String pPath, final String pDbName, final String pTableName, Condition condition,
+			Sorting sorting, final String... attributes) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		final Statement stm = con.createStatement();
 		String attributs = "", conditions = "", sortings = "";
@@ -79,15 +80,19 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 		String sqlStatement = "SELECT " + attributs + " FROM " + pTableName + " " + conditions + sortings;
 		System.out.println("Test Select: " + sqlStatement);
 		ResultSet rs = stm.executeQuery(sqlStatement);
-		while (rs.next()) {
-			for (int i = 1; i <= 3; i++) {
-				System.out.print(rs.getString(i) + " ");
-			}
-			System.out.println();
-			// System.out.println(rs.getString(i++));
-			// if(i==3) i=1;
-			// System.out.println(i++);
-		}
+		printResultSet(stm, sqlStatement);
+		con.close();
 		return rs;
 	}
+
+	public long summe(final String pPath, final String pDbName, final String pTableName, Condition condition,
+			Sorting sorting, final String... attributes) {
+		return 0;
+	}
+	
+	public long count(final String pPath, final String pDbName, final String pTableName, Condition condition,
+			Sorting sorting, final String... attributes) {
+		return 0;
+	}
+
 }

@@ -27,6 +27,7 @@ class Test_TableServices {
 		assertTrue(ts.tableExists(_PATHTESTDATABASES, "testDB", "testTable"), "Error by creating table.");
 		assertFalse(ts.tableExists(_PATHTESTDATABASES, "testDB", "tt"));
 	}
+	
 	@Test
 	void testDeleteTable_normal() throws SQLException, IOException {
 		DatabaseFactory.getInstance().createDatabase(_PATHTESTDATABASES, "testDB");
