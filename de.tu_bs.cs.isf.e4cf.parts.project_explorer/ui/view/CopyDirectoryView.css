@@ -1,0 +1,17 @@
+.box {
+	maxHeight: 300px; 
+	maxWidth: 500px;
+	minHeight: 50;
+	minWidth: 250;
+	prefHeight: 80.0;
+	prefWidth: 300.0;
+}
+
+.choices {
+	-fx-padding: 5px;
+}
+
+.header {
+	-fx-font-size: 14px;
+	-fx-padding: 5px;
+}

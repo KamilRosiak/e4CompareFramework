@@ -69,11 +69,6 @@ public class MetricView implements Initializable {
     }
     
     
-    
-    
-    
-    
-    
     private void initMetricTree() {
 	
 	

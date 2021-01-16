@@ -8,7 +8,7 @@ public class StringComparator implements NodeComparator {
 
 	@Override
 	public String getSupportedNodeType() {
-		return "ALL";
+		return "";
 	}
 
 	@Override
@@ -17,18 +17,24 @@ public class StringComparator implements NodeComparator {
 	}
 
 	@Override
-	public Comparison compare(Node firstNode, Node secondNode) {
+	public float compare(Node firstNode, Node secondNode) {
 		
 		
 	
 		
 		
-		return null;
+		return 0;
 	}
 	
 	
 	public void compareAttributes(Node firstNode, Node secondNode) {
 		
+	}
+
+	@Override
+	public float getSimilarity() {
+	    // TODO Auto-generated method stub
+	    return 0;
 	}
 	
 

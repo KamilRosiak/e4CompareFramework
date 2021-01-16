@@ -21,3 +21,6 @@ build
 
 # ignore binary folders
 bin/
+
+#ignore target folders
+target/

@@ -28,7 +28,7 @@ public class GraphicalNode extends Region {
     public GraphicalNode() {
         // create background shape
         shape = new GeometryNode<>(new RoundedRectangle(0, 0, 70, 30, 8, 8));
-        shape.setFill(Color.LIGHTGREEN);
+        shape.setFill(Color.GRAY);
         shape.setStroke(Color.BLACK);
         
         // create vertical box for title and description

@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.AttrComparison;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.NodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.interfaces.Result;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 
@@ -23,29 +23,42 @@ public class CompareEngine {
 	setMetric(comparisonMetric);
 	setMatcher(matcher);
 
-	Result result = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
+	Set<Comparison> comparisons = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
 
     }
 
-    public Result compare(Node firstNode, Node secondNode) {
+    public Set<Comparison> compare(Node firstNode, Node secondNode) {
 	Set<String> nodeTypes = getNodeTypes(firstNode, secondNode);
+	Set<Comparison> comparisons = new HashSet<Comparison>();
 
 	/**
 	 * Compare only nodes with the same type.
 	 */
 	for (String nodeType : nodeTypes) {
-	    List<Node> firstArtifacts = firstNode.getChildrenOfType(nodeType);
-	    List<Node> secondArtifacts = secondNode.getChildrenOfType(nodeType);
-	    List<NodeComparator> comparator = metric.getComparatorForNodeType(nodeType);
-
-	    for (Node leftArtifact : firstArtifacts) {
-		for (Node rightArtifact : secondArtifacts) {
-
+	    // first check if the node type is not ignored
+	    if (metric.isTypeIgnored(nodeType)) {
+		// Gather nodes of type of both trees
+		List<Node> firstArtifacts = firstNode.getChildrenOfType(nodeType);
+		List<Node> secondArtifacts = secondNode.getChildrenOfType(nodeType);
+		// Get all comparator for this node type
+		List<NodeComparator> comparators = metric.getComparatorForNodeType(nodeType);
+		// Compare every artifact of the same type with each other
+		for (Node leftArtifact : firstArtifacts) {
+		    for (Node rightArtifact : secondArtifacts) {
+			if (!comparators.isEmpty()) {
+			    NodeComparison nodeComparison = new NodeComparison(leftArtifact, rightArtifact);
+			    for (NodeComparator comparator : comparators) {
+				comparator.compare(leftArtifact, rightArtifact);
+			
+			    }
+			} else {
+			    comparisons.add(defaultCompare(leftArtifact, rightArtifact));
+			}
+		    }
 		}
 	    }
-
 	}
-	return null;
+	return comparisons;
     }
 
     /**
@@ -67,14 +80,18 @@ public class CompareEngine {
 
 	for (Attribute first_attr : firstNode.getAttributes()) {
 	    for (Attribute second_attr : secondNode.getAttributes()) {
-		if(isSameAttributeType(first_attr,second_attr)) {
-		    comparisons.add(new AttrComparison(first_attr, second_attr, first_attr.compare(second_attr)));  
+		if (isSameAttributeType(first_attr, second_attr)) {
+		    comparisons.add(new AttrComparison(first_attr, second_attr, first_attr.compare(second_attr)));
 		}
 	    }
 	}
+	int maxAttrs = Math.max(firstNode.getAttributes().size(), secondNode.getAttributes().size());
+	float similarity = 0f;
 	comparisons = matcher.getMatching(comparisons);
-
-	return null;
+	
+	
+	return new NodeComparison(firstNode, secondNode, similarity) {
+	};
     }
 
     private List<Comparison> getMatching(List<Comparison> comparisons) {
@@ -89,7 +106,7 @@ public class CompareEngine {
     private boolean isSameAttributeType(Attribute firstAttr, Attribute secondAttr) {
 	return firstAttr.getAttributeKey().equals(secondAttr.getAttributeKey());
     }
-    
+
     /**
      * This method compares the node type of two nodes.
      * 
