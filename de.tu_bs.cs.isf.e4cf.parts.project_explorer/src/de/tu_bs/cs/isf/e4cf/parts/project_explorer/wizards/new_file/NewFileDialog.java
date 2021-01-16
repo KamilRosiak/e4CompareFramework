@@ -17,48 +17,47 @@ import javafx.stage.Stage;
 
 /** A wizard that lets the user create a new file. */
 public class NewFileDialog {
-	
-	private Dialog<Path> dialog;
-	private NewFilePage newFilePage;
 
-	/**
-	 * @param parentPath
-	 * @param imageService
-	 */
-	public NewFileDialog(IEclipseContext context, Path parentPath, RCPImageService imageService) {
-		dialog = new Dialog<Path>();
-		dialog.setTitle("Create New File...");
-		
-		final DialogPane pane = dialog.getDialogPane();
-		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    private Dialog<Path> dialog;
+    private NewFilePage newFilePage;
 
-		final Stage stage = (Stage) pane.getScene().getWindow();
-		stage.getIcons().add(imageService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
-		
-		this.newFilePage =  new NewFilePage(context,  parentPath);
-		pane.setContent(newFilePage.createControl(pane));
+    /**
+     * @param parentPath
+     * @param imageService
+     */
+    public NewFileDialog(IEclipseContext context, Path parentPath, RCPImageService imageService) {
+	dialog = new Dialog<Path>();
+	dialog.setTitle("Create New File...");
 
-		dialog.setResultConverter(dialogBtn -> {
-			if (dialogBtn == ButtonType.OK) {
-		        return this.newFilePage.targetPath;
-		    }
-		    return null;
-		});
-	}
+	final DialogPane pane = dialog.getDialogPane();
+	pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-	/** shows the dialog and creates the file, name is checked in the dialog */
-	public void open() {
-		Optional<Path> result = dialog.showAndWait();
-		result.ifPresent(path -> {
-			try {
-				Files.createFile(path);
-			} catch (FileAlreadyExistsException alreadyException) {
-				alreadyException.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
+	final Stage stage = (Stage) pane.getScene().getWindow();
+	stage.getIcons().add(imageService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
 
+	this.newFilePage = new NewFilePage(context, parentPath);
+	pane.setContent(newFilePage.createControl(pane));
+
+	dialog.setResultConverter(dialogBtn -> {
+	    if (dialogBtn == ButtonType.OK) {
+		return this.newFilePage.targetPath;
+	    }
+	    return null;
+	});
+    }
+
+    /** shows the dialog and creates the file, name is checked in the dialog */
+    public void open() {
+	Optional<Path> result = dialog.showAndWait();
+	result.ifPresent(path -> {
+	    try {
+		Files.createFile(path);
+	    } catch (FileAlreadyExistsException alreadyException) {
+		alreadyException.printStackTrace();
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+	});
+    }
 
 }

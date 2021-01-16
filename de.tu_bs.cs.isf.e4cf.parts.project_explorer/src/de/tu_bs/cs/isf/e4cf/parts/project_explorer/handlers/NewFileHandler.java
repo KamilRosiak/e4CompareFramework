@@ -22,25 +22,25 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.new_file.NewFileDialo
  */
 public class NewFileHandler implements IHandler {
 
-	@Execute
-	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
-		FileTreeElement selectedElement = services.rcpSelectionService.getCurrentSelectionFromExplorer();
+    @Execute
+    public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
+	FileTreeElement selectedElement = services.rcpSelectionService.getCurrentSelectionFromExplorer();
 
-		Path directory;
-		if (selectedElement != null) {
-			directory = FileHandlingUtility.getPath(selectedElement);
-		} else {
-			directory = FileHandlingUtility.getPath(services.workspaceFileSystem.getWorkspaceDirectory());
-		}
-
-		NewFileDialog dialog = new NewFileDialog(context, directory, services.imageService);
-		dialog.open();
+	Path directory;
+	if (selectedElement != null) {
+	    directory = FileHandlingUtility.getPath(selectedElement);
+	} else {
+	    directory = FileHandlingUtility.getPath(services.workspaceFileSystem.getWorkspaceDirectory());
 	}
 
-	@CanExecute
-	public boolean canExecute(RCPSelectionService selectionService) {
-		List<FileTreeElement> selections = selectionService.getCurrentSelectionsFromExplorer();
-		return selections != null && selections.size() == 1 && selections.get(0).isDirectory();
-	}
+	NewFileDialog dialog = new NewFileDialog(context, directory, services.imageService);
+	dialog.open();
+    }
+
+    @CanExecute
+    public boolean canExecute(RCPSelectionService selectionService) {
+	List<FileTreeElement> selections = selectionService.getCurrentSelectionsFromExplorer();
+	return selections != null && selections.size() == 1 && selections.get(0).isDirectory();
+    }
 
 }
