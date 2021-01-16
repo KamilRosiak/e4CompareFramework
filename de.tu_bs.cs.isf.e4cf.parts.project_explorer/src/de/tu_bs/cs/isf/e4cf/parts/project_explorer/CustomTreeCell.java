@@ -88,23 +88,13 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 						if (event.getGestureSource() instanceof CustomTreeCell) {
 							// In-Tree: Perform Move
 							dropMode = DropMode.MOVE;
-							/**
-							 * If current file is a directory with content it has to have special copying
-							 * functionality.
-							 */
+							
 							if (file.isDirectory() && file.listFiles().length > 0) {
-								// we only want the parent since it is full recursive copying. Can be improved
-								// later.
-								if (!files.contains(file.getParentFile())) {
-									directories.add(file);
-								}
-							} else {
-								// if this file is not a parent of a currently selected folder copy it now.
-								if (!files.contains(file.getParentFile())) {
-									moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
-											Paths.get(directory.getAbsolutePath(), file.getName()));
-								}
+								directories.add(file);
 
+							} else {
+								moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
+										Paths.get(directory.getAbsolutePath(), file.getName()));
 							}
 						} else {
 							// From file system: Copy File
@@ -163,7 +153,21 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			ArrayList<java.io.File> sources = new ArrayList<java.io.File>();
 
 			for (FileTreeElement entry : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
-				sources.add(new java.io.File(entry.getAbsolutePath()));
+				boolean found = false;
+				String dirName = entry.getAbsolutePath();
+				// if a matching subpath is found (e.g. /something/dir exists and a new file
+				// /something/dir/file.file is added) the search ends and the path won't be
+				// added to the content list of files
+				sourcesContainLoop: for (File file : sources) {
+					if (dirName.contains(file.getAbsolutePath())) {
+						found = true;
+						break sourcesContainLoop;
+					}
+				}
+				if (!found) {
+					File fileToAdd = new java.io.File(dirName);
+					sources.add(fileToAdd);
+				}
 			}
 
 			content.putFiles(sources);
