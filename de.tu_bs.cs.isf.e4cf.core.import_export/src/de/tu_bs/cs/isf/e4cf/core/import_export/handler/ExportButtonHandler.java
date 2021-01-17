@@ -14,7 +14,13 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.ExportService;
 
+/**
+ * Handler for the button to export a tree as JSON.
+ */
 public class ExportButtonHandler {
+	/**
+	 * Implementation of the execution hook to initialize the ExportButtonHandler with the GUI.
+	 */
 	@Execute
 	public void execute() {
 		ExportService exportService = new ExportService();
@@ -35,7 +41,7 @@ public class ExportButtonHandler {
         TreeImpl tree = new TreeImpl("testTree");
         tree.setArtifactType("type");
         tree.setRoot(root);
-        
+
         System.out.println(exportService.createJSON(tree));
 	}
 }
