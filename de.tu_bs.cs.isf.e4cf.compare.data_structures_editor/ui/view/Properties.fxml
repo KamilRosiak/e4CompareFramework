@@ -16,13 +16,13 @@
 				<ContextMenu>
 					<items>
 						<MenuItem mnemonicParsing="false"
-							onAction="#editNodeAttribute" text="EditAttribute" />
+							onAction="#editNodeAttribute" text="Edit Property Designation" />
 						<MenuItem mnemonicParsing="false"
-							onAction="#editNodeValue" text="EditAttributeValue" />
+							onAction="#editNodeValue" text="Edit Value" />
 						<MenuItem mnemonicParsing="false"
-							onAction="#removeNodeAttribute" text="RemoveAttribute" />
+							onAction="#removeNodeAttribute" text="Remove Attribute" />
 						<MenuItem mnemonicParsing="false"
-							onAction="#AddNodeValue" text="AddValue" />
+							onAction="#AddNodeValue" text="Add Value" />
 					</items>
 				</ContextMenu>
 			</contextMenu>

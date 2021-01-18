@@ -65,6 +65,19 @@ public class TreeViewController {
 	public void refreshTreeView(@UIEventTopic("RefreshTreeViewEvent") boolean bool) {
 		treeView.refresh();
 	}
+	@Optional
+	@Inject
+	public void removeNodeAttributeFromSelectedItem(@UIEventTopic("DeleteAttributeEvent") String text) {
+		List<Attribute> tempList = new ArrayList<Attribute>();
+		for(Attribute attr: treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
+			tempList.add(attr);
+		}
+		for (Attribute attribute: tempList) {
+			if(attribute.getAttributeKey().equals(text)) {
+				treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().remove(attribute);
+			}
+		}
+	}
 
 	private void initializeTree(Tree tree) {
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -99,10 +112,10 @@ public class TreeViewController {
 
 	@FXML
 	void addNodeAttribute() {
-//			treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(
-//					TreeViewUtilities.getInput("Enter attribute name"),
-//					TreeViewUtilities.getInput("Enter attribute value"));
-		addAtrrOnIndex();
+			treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(
+					TreeViewUtilities.getInput("Enter attribute name"),
+					TreeViewUtilities.getInput("Enter attribute value"));
+		//addAtrrOnIndex();
 		treeView.refresh();
 	}
 

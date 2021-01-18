@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.PropertiesViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -47,7 +48,9 @@ public class PropertiesController {
 
 	@FXML
 	public void editNodeAttribute() {
-		String s = PropertiesViewUtilities.getInput("Please enter new Attribute Name");
+		String s = PropertiesViewUtilities.getInput("Please enter new property designation");
+		AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
+		attr.setAttributeKey(s);
 		refreshGUI();
 	}
 
@@ -61,18 +64,19 @@ public class PropertiesController {
 
 	@FXML
 	public void removeNodeAttribute() {
+		services.eventBroker.send("DeleteAttributeEvent", getSelectedItem().getAttributeKey().toString());
+		refreshGUI();
 	}
 
 	@FXML
 	public void AddNodeValue() {
-		String s = PropertiesViewUtilities.getInput("Please enter another Value");
-		getSelectedItem().getAttributeValues().add(s);
+		getSelectedItem().getAttributeValues().add(PropertiesViewUtilities.getInput("Please enter another Value"));
 		refreshGUI();
 	}
 
 	private void refreshGUI() {
-		propertiesTable.refresh();
 		services.eventBroker.send("RefreshTreeViewEvent", true);
+		propertiesTable.refresh();
 	}
 
 	private Attribute getSelectedItem() {
