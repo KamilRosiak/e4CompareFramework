@@ -1,19 +1,29 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.ITagStore;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.SerializableTagStore;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.PropertiesTagStore;
+import javafx.scene.paint.Color;
 
 @Creatable
 @Singleton
@@ -24,6 +34,8 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.SerializableTag
 public class TagService {
 
 	public static final String TAG_PREFIX = ":";
+	@Inject
+	protected IEventBroker _eventBroker;
 
 	// Persists the tags
 	private ITagStore tagStore;
@@ -37,7 +49,7 @@ public class TagService {
 	 */
 	@PostConstruct
 	private void load() {
-		tagStore = new SerializableTagStore();
+		tagStore = new PropertiesTagStore();
 		availableTags = tagStore.loadAvailableTags();
 		tagMap = tagStore.loadTagMap(availableTags);
 	}
@@ -64,7 +76,16 @@ public class TagService {
 		loadFileSystem(root, true, paths);
 
 		// Delete files that do not exist anymore
-		tagMap.keySet().removeIf(key -> !paths.contains(key));
+		Iterator<String> iter = tagMap.keySet().iterator();
+		while (iter.hasNext()) {
+			String key = iter.next();
+			if (!paths.contains(key)) {
+				iter.remove();
+				System.out.println(
+						"Warning: a previously tagged file could not be found, perhaps it was moved on the file system: "
+								+ key);
+			}
+		}
 	}
 
 	/**
@@ -85,8 +106,6 @@ public class TagService {
 			} else {
 				// Remove duplicates
 				tags = new ArrayList<>(new HashSet<>(tags));
-//				// Delete tags that are not available
-//				tags.removeIf(tag -> !availableTags.contains(tag));
 			}
 			tagMap.put(element.getRelativePath(), tags);
 		}
@@ -109,6 +128,19 @@ public class TagService {
 	 */
 	public void addAvailableTag(Tag tag) {
 		availableTags.add(tag);
+	}
+
+	/**
+	 * Changes the color of an existing tag
+	 * 
+	 * @param tag
+	 * @param newColor
+	 */
+	public void updateAvailableTag(Tag tag, Color newColor) {
+		if (availableTags.contains(tag)) {
+			availableTags.get(availableTags.indexOf(tag)).setColor(newColor);
+			_eventBroker.send(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER, null);
+		}
 	}
 
 	/**
@@ -142,7 +174,7 @@ public class TagService {
 	 * @param treeElement to get tags for
 	 * @return List of all tags of the element
 	 */
-	public List<Tag> getTags(FileTreeElement treeElement) {		
+	public List<Tag> getTags(FileTreeElement treeElement) {
 		return saveGetListFromMap(treeElement.getRelativePath());
 	}
 
@@ -194,6 +226,31 @@ public class TagService {
 	public void deleteTag(FileTreeElement treeElement, Tag tag) {
 		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
 		tagList.remove(tag);
+	}
+
+	private String pathToString(Path path) {
+		return Paths.get(RCPContentProvider.getCurrentWorkspacePath()).relativize(path).toString();
+	}
+
+	/**
+	 * Moves the tags of an on FS level moved element
+	 * 
+	 * @param o Array of paths
+	 */
+	@Inject
+	@Optional
+	public void moveTags(@UIEventTopic(E4CEventTable.EVENT_MOVE_ITEM) Object o) {
+		if (o instanceof Path[]) {
+			Path[] paths = (Path[]) o;
+			String pathFrom = pathToString(paths[0]);
+			String pathTo = pathToString(paths[1]);
+
+			if (tagMap.containsKey(pathFrom)) {
+				List<Tag> tags = tagMap.get(pathFrom);
+				tagMap.put(pathTo, tags);
+				tagMap.remove(pathFrom);
+			}
+		}
 	}
 
 	/**
