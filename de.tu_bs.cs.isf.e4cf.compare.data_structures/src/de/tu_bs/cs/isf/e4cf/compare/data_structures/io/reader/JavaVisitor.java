@@ -2,11 +2,10 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import com.github.javaparser.ast.visitor.*;
-import com.sun.javafx.fxml.expression.UnaryExpression;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.expr.UnaryExpr.Operator;
+import com.github.javaparser.ast.modules.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 
@@ -25,7 +24,17 @@ import com.github.javaparser.ast.*;
  * @author Hassan Smaoui
  *
  */
-public class JavaVisitor extends VoidVisitorAdapter<Node> {
+public class JavaVisitor implements VoidVisitor<Node> {
+	/**
+	 * Visits all children of the node n.
+	 * 
+	 * @param n JavaParser Node
+	 * @param arg e4cf Parent Node
+	 */
+	private void visitor(com.github.javaparser.ast.Node n, Node arg) {
+		n.getChildNodes().forEach(c -> c.accept(this, arg));
+	}
+	
 	/**
 	 * Visits the compilation unit and creates a new node of type "CompilationUnit"
 	 * ({@link CompilationUnit} as a string).
@@ -61,7 +70,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 			c.removeForced();
 		}
 
-		super.visit(n, cu);
+		visitor(n, cu);
 	}
 
 	/**
@@ -117,7 +126,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 			concreteParameter.removeForced();
 		}
 
-		super.visit(n, p);
+		visitor(n, p);
 	}
 
 	/**
@@ -223,7 +232,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 					implemented.getNameAsString());
 			implemented.removeForced();
 		}
-		super.visit(n, classOrInterfaceDeclarationNode);
+		visitor(n, classOrInterfaceDeclarationNode);
 	}
 
 	/**
@@ -238,7 +247,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ClassOrInterfaceType n, Node arg) {
-		super.visit(n, arg);
+		visitor(n, arg);
 	}
 
 	/**
@@ -253,7 +262,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AnnotationDeclaration n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -269,7 +278,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -283,7 +292,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayAccessExpr n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -312,7 +321,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ArrayCreationLevel n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -419,7 +428,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(BlockStmt n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(JavaNodeTypes.Body, arg));
+		visitor(n, JavaVisitorUtil.createNode(JavaNodeTypes.Body, arg));
 	}
 
 	/**
@@ -486,7 +495,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(CatchClause n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -609,7 +618,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(FieldDeclaration n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -624,7 +633,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(LambdaExpr n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -640,7 +649,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(LocalClassDeclarationStmt n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -823,7 +832,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(NormalAnnotationExpr n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -939,7 +948,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	public void visit(ReceiverParameter n, Node arg) {
 		Node c = JavaVisitorUtil.createNode(n, arg);
 		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Type, n.getType().toString());
-		super.visit(n, c);
+		visitor(n, c);
 	}
 
 	/**
@@ -955,7 +964,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(ReturnStmt n, Node arg) {
 		Node c = JavaVisitorUtil.createNode(n, arg);
-		super.visit(n, c);
+		visitor(n, c);
 	}
 
 	/**
@@ -1174,7 +1183,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(TryStmt n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1414,7 +1423,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(WhileStmt n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1447,7 +1456,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(YieldStmt n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1464,7 +1473,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(ConstructorDeclaration n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1499,7 +1508,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(DoStmt n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 
 	}
 
@@ -1551,7 +1560,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(EnclosedExpr n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1568,7 +1577,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(EnumConstantDeclaration n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1585,7 +1594,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	@Override
 	public void visit(EnumDeclaration n, Node arg) {
 
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1718,7 +1727,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 		}
 
 		// Leftovers
-		super.visit(n, p);
+		visitor(n, p);
 	}
 
 	/**
@@ -1789,7 +1798,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(InitializerDeclaration n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1842,7 +1851,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 */
 	@Override
 	public void visit(IntersectionType n, Node arg) {
-		super.visit(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, JavaVisitorUtil.createNode(n, arg));
 	}
 
 	/**
@@ -1858,6 +1867,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 * @param n   LineComment
 	 * @param arg Parent framework node of the LineComment's framework node.
 	 */
+	@Override
 	public void visit(LineComment n, Node arg) {
 		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.LineComment, arg);
 		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
@@ -1876,6 +1886,7 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 * @param n   BlockComment
 	 * @param arg Parent framework node of the BlockComment's framework node.
 	 */
+	@Override
 	public void visit(BlockComment n, Node arg) {
 		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.BlockComment, arg);
 		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
@@ -1894,8 +1905,68 @@ public class JavaVisitor extends VoidVisitorAdapter<Node> {
 	 * @param n   JavadocComment
 	 * @param arg Parent framework node of the JavadocComment's framework node.
 	 */
+	@Override
 	public void visit(JavadocComment n, Node arg) {
 		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.JavadocComment, arg);
 		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
+	}
+
+	@Override
+	public void visit(NodeList n, Node arg) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void visit(ExpressionStmt n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
+
+	@Override
+	public void visit(LabeledStmt n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
+
+	@Override
+	public void visit(ModuleDeclaration n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
+
+	@Override
+	public void visit(ModuleRequiresDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
+
+	@Override
+	public void visit(ModuleExportsDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
+
+	@Override
+	public void visit(ModuleProvidesDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
+
+	@Override
+	public void visit(ModuleUsesDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
+
+	@Override
+	public void visit(ModuleOpensDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
+
+	@Override
+	public void visit(PatternExpr n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
 	}
 }
