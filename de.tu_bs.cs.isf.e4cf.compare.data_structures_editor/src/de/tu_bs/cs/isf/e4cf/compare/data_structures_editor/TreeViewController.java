@@ -24,6 +24,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
@@ -65,25 +66,27 @@ public class TreeViewController {
 	public void refreshTreeView(@UIEventTopic("RefreshTreeViewEvent") boolean bool) {
 		treeView.refresh();
 	}
+
 	@Optional
 	@Inject
 	public void removeNodeAttributeFromSelectedItem(@UIEventTopic("DeleteAttributeEvent") String text) {
 		List<Attribute> tempList = new ArrayList<Attribute>();
-		for(Attribute attr: treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
+		for (Attribute attr : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
 			tempList.add(attr);
 		}
-		for (Attribute attribute: tempList) {
-			if(attribute.getAttributeKey().equals(text)) {
+		for (Attribute attribute : tempList) {
+			if (attribute.getAttributeKey().equals(text)) {
 				treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().remove(attribute);
 			}
 		}
 	}
 
 	private void initializeTree(Tree tree) {
+		treeView.setContextMenu(contextMenu);
+		background.setOnMouseEntered(event ->  contextMenu.hide());
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		closeFile();
-
 		treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(tree.getRoot())));
 		treeView.getRoot().setExpanded(true);
 		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView, tree.getRoot());
@@ -112,10 +115,10 @@ public class TreeViewController {
 
 	@FXML
 	void addNodeAttribute() {
-			treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(
-					TreeViewUtilities.getInput("Enter attribute name"),
-					TreeViewUtilities.getInput("Enter attribute value"));
-		//addAtrrOnIndex();
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(
+				TreeViewUtilities.getInput("Enter attribute name"),
+				TreeViewUtilities.getInput("Enter attribute value"));
+		// addAtrrOnIndex();
 		treeView.refresh();
 	}
 
@@ -135,7 +138,6 @@ public class TreeViewController {
 	void addChildNode() {
 		TreeItem<NodeUsage> newChild = new TreeItem<NodeUsage>();
 		newChild.setValue(new NodeUsage("DummyNode"));
-		contextMenu.hide();
 		try {
 			newChild.getValue().addAttribute("TEXT", TreeViewUtilities.getInput("Enter Child Text"));
 		} catch (NullPointerException e) {
@@ -151,7 +153,6 @@ public class TreeViewController {
 	 */
 	@FXML
 	void copyNode() {
-		contextMenu.hide();
 		copyList.clear();
 		copyList.addAll(new ArrayList<TreeItem<NodeUsage>>(treeView.getSelectionModel().getSelectedItems())); // Bug:
 		System.out.println(treeView.getSelectionModel().getSelectedItem().getValue().getVariabilityClass()); // Paste
@@ -164,9 +165,6 @@ public class TreeViewController {
 
 	@FXML
 	void pasteNode() {
-
-		contextMenu.hide();
-
 		try {
 			for (TreeItem<NodeUsage> copiedNode : copyList) {
 				TreeItem<NodeUsage> t = new TreeItem<NodeUsage>();
@@ -185,7 +183,6 @@ public class TreeViewController {
 	 */
 	@FXML
 	void renameNode() {
-		contextMenu.hide();
 		for (Attribute attribute : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
 			if (attribute.getAttributeKey().toLowerCase().equals("name")) {
 				attribute.getAttributeValues().clear();
@@ -211,7 +208,6 @@ public class TreeViewController {
 
 	@FXML
 	void deleteNode() {
-		contextMenu.hide();
 		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
 				.remove(treeView.getSelectionModel().getSelectedItem());
 		displayTotalNodeAmount();

@@ -10,6 +10,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.PropertiesViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.fxml.FXML;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableView;
 
 /**
@@ -21,6 +22,9 @@ public class PropertiesController {
 
 	@Inject
 	private ServiceContainer services;
+
+	@FXML
+	private ContextMenu contextMenu;
 
 	@FXML
 	private TableView<Attribute> propertiesTable;
@@ -44,6 +48,7 @@ public class PropertiesController {
 	public void showProperties(@UIEventTopic("nodePropertiesEvent") NodeUsage node) {
 		propertiesTable.getColumns().clear();
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
+		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
 	}
 
 	@FXML

@@ -13,7 +13,7 @@
 	<children>
 		<TableView fx:id="propertiesTable" VBox.vgrow="ALWAYS">
 			<contextMenu>
-				<ContextMenu>
+				<ContextMenu fx:id="contextMenu">
 					<items>
 						<MenuItem mnemonicParsing="false"
 							onAction="#editNodeAttribute" text="Edit Property Designation" />
