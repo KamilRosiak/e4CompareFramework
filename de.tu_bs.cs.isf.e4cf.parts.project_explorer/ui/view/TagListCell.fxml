@@ -5,12 +5,15 @@
 <?import javafx.scene.text.Text?>
 
 <HBox fx:id="root" alignment="CENTER_LEFT" maxHeight="-Infinity"
-	maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-	minWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1"
-	xmlns:fx="http://javafx.com/fxml/1" spacing="4"
+	maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity"
+	spacing="4" xmlns="http://javafx.com/javafx/11.0.1"
+	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.TagListCellController">
 	<children>
-		<Text fx:id="tagName" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
-			HBox.hgrow="ALWAYS" />
+		<CheckBox fx:id="selectChechbox" mnemonicParsing="false" text="Select to use" />
+		<Text fx:id="tagName" strokeType="OUTSIDE" strokeWidth="0.0"
+			text="Text" />
+		<HBox prefWidth="0.0" fx:id="tag" HBox.hgrow="ALWAYS"
+			alignment="CENTER_RIGHT" spacing="4.0" />
 	</children>
 </HBox>

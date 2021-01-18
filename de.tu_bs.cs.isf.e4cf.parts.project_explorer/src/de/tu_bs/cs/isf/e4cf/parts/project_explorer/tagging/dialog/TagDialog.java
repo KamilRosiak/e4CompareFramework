@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.dialog;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -18,29 +19,35 @@ import javafx.scene.control.DialogPane;
  * A dialog that display the page in which the user can add custom tags to
  * FileTreeElements.
  */
-public class AddTagDialog {
+public class TagDialog {
 
 	private Alert alert;
-	private AddTagPage addTagPage;
+	private TagPage tagPage;
 	// indicates whether a file has been moved.
 	private TagService tagService;
 	private List<FileTreeElement> selectedElements;
 	private ServiceContainer services;
 
-	public AddTagDialog(IEclipseContext context, TagService tagService, ServiceContainer services, List<FileTreeElement> selectedElements) {
+	List<Tag> previouslySelected = new ArrayList<Tag>();
+
+	public TagDialog(IEclipseContext context, TagService tagService, ServiceContainer services,
+			List<FileTreeElement> selectedElements) {
 		alert = new Alert(AlertType.NONE);
-		alert.setTitle("Add Tags");
+		alert.setTitle("Manage Tags");
 
 		this.tagService = tagService;
 		this.services = services;
 
 		this.selectedElements = selectedElements;
 
+		previouslySelected = getInitialSelectedTags();
+
 		final DialogPane pane = alert.getDialogPane();
 		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		this.addTagPage = new AddTagPage(context, this, tagService, services, selectedElements);
-		pane.setContent(addTagPage.createControl());
+		this.tagPage = new TagPage(context, tagService, previouslySelected);
+		pane.setContent(tagPage.createControl());
+
 	}
 
 	/** show the dialog and wait for the users input */
@@ -60,8 +67,7 @@ public class AddTagDialog {
 	 */
 	public void performFinish() {
 
-		List<Tag> previouslySelected = addTagPage.findInitialSelection();
-		List<Tag> selectedTags = addTagPage.getSelectedTags();
+		List<Tag> selectedTags = tagPage.getSelectedTags();
 		List<Tag> notIntersect = new ArrayList<Tag>();
 
 		for (Tag tag : previouslySelected) {
@@ -78,8 +84,16 @@ public class AddTagDialog {
 				tagService.addTag(element, tag);
 			}
 		}
-		
+
 		services.workspaceFileSystem.refresh();
 	}
 
+	// get all tags that are active on these elements.
+	public List<Tag> getInitialSelectedTags() {
+		HashSet<Tag> tags = new HashSet<Tag>();
+		for (FileTreeElement element : selectedElements) {
+			tags.addAll(tagService.getTags(element));
+		}
+		return new ArrayList<Tag>(tags);
+	}
 }

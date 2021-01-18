@@ -13,9 +13,7 @@ public class FileTable {
 	public static final String CUSTOM_TREE_CELL_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "CustomTreeCellView.fxml")
 			.toString();
 
-	public static final String ADD_TAG_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "AddTagView.fxml").toString();
-	public static final String EDIT_TAG_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "EditTagView.fxml").toString();
-	public static final String MODIFY_TAG_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "ModifyTagView.fxml").toString();
+	public static final String ADD_TAG_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "TagView.fxml").toString();
 
 	public static final String TAG_LIST_CELL = Paths.get(PROJECT_EXPLORER_VIEWS, "TagListCell.fxml").toString();
 

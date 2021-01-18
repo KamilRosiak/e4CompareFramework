@@ -13,9 +13,9 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.dialog.AddTagDialog;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.dialog.TagDialog;
 
-public class AddTagHandler implements IHandler {
+public class TagHandler implements IHandler {
 
 	@Inject
 	private TagService tagService;
@@ -24,7 +24,7 @@ public class AddTagHandler implements IHandler {
 	@Override
 	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
 		List<FileTreeElement> selection = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
-		AddTagDialog dialog = new AddTagDialog(context, tagService, services, selection);
+		TagDialog dialog = new TagDialog(context, tagService, services, selection);
 		dialog.open();
 	}
 
