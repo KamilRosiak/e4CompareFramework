@@ -10,7 +10,6 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
@@ -25,7 +24,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
@@ -84,7 +82,7 @@ public class TreeViewController {
 
 	private void initializeTree(Tree tree) {
 		treeView.setContextMenu(contextMenu);
-		background.setOnMouseEntered(event ->  contextMenu.hide());
+		background.setOnMouseEntered(event -> contextMenu.hide());
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		closeFile();
@@ -148,7 +146,6 @@ public class TreeViewController {
 		displayTotalNodeAmount();
 		treeView.refresh();
 	}
-	
 
 	/**
 	 * 
@@ -164,7 +161,7 @@ public class TreeViewController {
 		// oben
 		System.out.println(copyList); // nach unten Markierung
 		System.out.println(copyList.get(0).getChildren().get(0));
-		
+
 	}
 
 	@FXML
@@ -177,8 +174,8 @@ public class TreeViewController {
 				tempNode.setValue(copiedNode.getValue());
 				treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
 						.add(treeView.getSelectionModel().getSelectedIndex(), tempNode);
-				
-				for(TreeItem<NodeUsage> child: copiedNode.getChildren()) {
+
+				for (TreeItem<NodeUsage> child : copiedNode.getChildren()) {
 					tempNode.getChildren().add(child);
 				}
 				displayTotalNodeAmount();
@@ -187,7 +184,7 @@ public class TreeViewController {
 			return;
 		}
 
-	} 
+	}
 
 	/**
 	 * 
