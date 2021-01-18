@@ -10,6 +10,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
@@ -147,6 +148,7 @@ public class TreeViewController {
 		displayTotalNodeAmount();
 		treeView.refresh();
 	}
+	
 
 	/**
 	 * 
@@ -161,22 +163,31 @@ public class TreeViewController {
 		// bei
 		// oben
 		System.out.println(copyList); // nach unten Markierung
+		System.out.println(copyList.get(0).getChildren().get(0));
+		
 	}
 
 	@FXML
 	void pasteNode() {
+
 		try {
-			for (TreeItem<NodeUsage> copiedNode : copyList) {
-				TreeItem<NodeUsage> t = new TreeItem<NodeUsage>();
-				t.setValue(copiedNode.getValue());
+			for (int i = copyList.size() - 1; i >= 0; i--) {
+				TreeItem<NodeUsage> copiedNode = copyList.get(i);
+				TreeItem<NodeUsage> tempNode = new TreeItem<NodeUsage>();
+				tempNode.setValue(copiedNode.getValue());
 				treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
-						.add(treeView.getSelectionModel().getSelectedIndex(), t);
+						.add(treeView.getSelectionModel().getSelectedIndex(), tempNode);
+				
+				for(TreeItem<NodeUsage> child: copiedNode.getChildren()) {
+					tempNode.getChildren().add(child);
+				}
 				displayTotalNodeAmount();
 			}
 		} catch (NullPointerException e) {
 			return;
 		}
-	}
+
+	} 
 
 	/**
 	 * 

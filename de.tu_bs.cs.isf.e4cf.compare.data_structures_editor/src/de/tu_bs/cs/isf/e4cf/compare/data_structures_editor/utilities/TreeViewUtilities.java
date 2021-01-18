@@ -48,6 +48,7 @@ public final class TreeViewUtilities {
 	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView) {
 		TreeItem<NodeUsage> rootItem = new TreeItem<NodeUsage>(new NodeUsage(tr.getRoot()));
 		rootItem.setExpanded(true);
+		treeView.setRoot(rootItem);
 		System.out.println("root: " + rootItem + "children: " + rootItem.getChildren() + tr.getRoot().getChildren());
 		treeView.setRoot(rootItem);
 //		getTreeRecursively(tr, treeView, rootItem);
@@ -56,11 +57,12 @@ public final class TreeViewUtilities {
 			rootItem.getChildren().add(item);
 		}
 
-		// tv.setRoot(rootItem);
+		//tv.setRoot(rootItem);
 		treeView.setShowRoot(true);
 
 		return treeView;
 	}
+
 
 	/**
 	 * Creates TreeView from given Tree recursively
@@ -236,6 +238,7 @@ public final class TreeViewUtilities {
 	public static void incrementSearchCounter() {
 		searchCounter++;
 	}
+	
 
 	public static void writeToFile(File file, TreeView treeView) {
 		if (file.getName().equals(treeName)) {
