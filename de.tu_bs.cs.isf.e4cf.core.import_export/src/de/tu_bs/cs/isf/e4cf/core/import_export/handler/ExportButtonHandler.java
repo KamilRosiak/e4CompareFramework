@@ -25,23 +25,23 @@ public class ExportButtonHandler {
 	public void execute() {
 		ExportService exportService = new ExportService();
 
-        Set<String> stringSet = new HashSet<>();
-        stringSet.add("value1");
-        stringSet.add("value2");
+		Set<String> stringSet = new HashSet<>();
+		stringSet.add("value1");
+		stringSet.add("value2");
 
 
-        List<Attribute> testAttributes = new LinkedList<>();
-        testAttributes.add(new AttributeImpl("Key1","Value"));
+		List<Attribute> testAttributes = new LinkedList<>();
+		testAttributes.add(new AttributeImpl("Key1","Value"));
 
-        NodeImpl root = new NodeImpl("Root");
-        root.setAttributes(testAttributes);
-        root.setVariabilityClass(VariabilityClass.MANDATORY);
-        root.setChildren(new LinkedList<>());
+		NodeImpl root = new NodeImpl("Root");
+		root.setAttributes(testAttributes);
+		root.setVariabilityClass(VariabilityClass.MANDATORY);
+		root.setChildren(new LinkedList<>());
 
-        TreeImpl tree = new TreeImpl("testTree");
-        tree.setArtifactType("type");
-        tree.setRoot(root);
+		TreeImpl tree = new TreeImpl("testTree");
+		tree.setArtifactType("type");
+		tree.setRoot(root);
 
-        System.out.println(exportService.createJSON(tree));
+		System.out.println(exportService.createJSON(tree));
 	}
 }

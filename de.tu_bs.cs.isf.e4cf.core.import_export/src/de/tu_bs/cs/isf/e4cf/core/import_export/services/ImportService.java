@@ -18,16 +18,15 @@ import de.tu_bs.cs.isf.e4cf.core.import_export.services.adapter.TreeInstanceCrea
 @Creatable
 @Singleton
 public class ImportService {
-
 	private Gson gson;
 
 	/**
 	 * Creates a new ImportService instance.
 	 */
 	public ImportService() {
-		 GsonBuilder gsonBuilder = new GsonBuilder();
-	     gsonBuilder.registerTypeAdapter(Tree.class, new TreeInstanceCreator());
-	     this.gson = gsonBuilder.create();
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(Tree.class, new TreeInstanceCreator());
+		this.gson = gsonBuilder.create();
 	}
 
 	/**
@@ -37,16 +36,19 @@ public class ImportService {
 	 * @return An instance of TreeImpl.
 	 */
 	public TreeImpl readJSON(String jsonString) {
-        TreeImpl tree = (TreeImpl) this.gson.fromJson(jsonString, Tree.class);
-        this.reconstructTree(tree.getRoot());
-        return tree;
-    }
+		TreeImpl tree = (TreeImpl) this.gson.fromJson(jsonString, Tree.class);
+		this.reconstructTree(tree.getRoot());
+		return tree;
+    	}
 
 	private void reconstructTree(Node node) {
-        if (node == null || node.getChildren() == null) return;
-        for (Node children : node.getChildren()) {
-            children.setParent(node);
-            reconstructTree(children);
-        }
-    }
+		if (node == null || node.getChildren() == null) {
+			return;
+		}
+
+		for (Node children : node.getChildren()) {
+		    children.setParent(node);
+		    reconstructTree(children);
+		}
+	}
 }
