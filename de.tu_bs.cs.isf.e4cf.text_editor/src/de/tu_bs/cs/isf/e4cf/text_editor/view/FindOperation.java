@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  * Contains the setup and functions to find specific terms in text.
@@ -18,7 +19,6 @@ import javafx.scene.control.TextField;
  * @author Cedric Kapalla, Soeren Christmann
  */
 public class FindOperation implements Initializable {
-	@FXML
 	public TextEditor textEditor;
 	@FXML
 	private Button findButton;
@@ -28,6 +28,12 @@ public class FindOperation implements Initializable {
 	private TextField searchField;
 
 	private Scene scene;
+
+	// term to be searched in the text
+	private String findTerm = "";
+
+	// list of starting points
+	private ArrayList<Integer> findings = new ArrayList<Integer>();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -39,40 +45,47 @@ public class FindOperation implements Initializable {
 	}
 
 	/**
-	 * Function dedicated to opening the Find-window.
-	 * 
-	 * @author
-	 */
-	public void open() {
-		// currently non-functional
-	}
-
-	/**
-	 * Activated by pressing the Find-button. Selects a single match and deviates
-	 * between them.
+	 * Activated by pressing the Find-button. Selects the next match and removes it
+	 * from the list; if a new term is searched, the list is emptied.
 	 * 
 	 * @author Cedric Kapalla, Soeren Christmann
 	 * 
 	 */
 	public void initDoFindAction() {
-		ArrayList<Integer> findings = new ArrayList<Integer>();
-		String input = textEditor.getCurrentText();
 		String lookingFor = searchField.getText();
-		Pattern pattern = Pattern.compile("\\b" + lookingFor + "\\b");
-		Matcher matcher = pattern.matcher(input);
-		while (matcher.find()) {
-			findings.add(matcher.start());
+
+		if (lookingFor == "") {
+			return; // do nothing if nothing is in the search-field
 		}
-		int start = findings.get(1);
-		textEditor.getCurrentCodeArea().selectRange(start, start + lookingFor.length());
-	}//WIP
-	
+
+		if (findTerm != lookingFor || findings.isEmpty()) {
+			findTerm = lookingFor; // set findTerm to be what is sought after now
+			String input = textEditor.getCurrentText();
+			findings.clear(); //empty the list if another term is searched
+
+			Pattern pattern = Pattern.compile("\\b" + lookingFor + "\\b");
+			Matcher matcher = pattern.matcher(input);
+			while (matcher.find()) {
+				// always adds starting value to the ArrayList
+				findings.add(matcher.start());
+			}
+		}
+
+		int startPoint = findings.remove(0);
+		textEditor.getCurrentCodeArea().selectRange(startPoint, startPoint + lookingFor.length());
+	}
+
 	/**
+	 * Closes the popup window.
 	 * 
-	 * 
-	 * @author 
+	 * @author Soeren Christmann, Cedric Kapalla
 	 */
 	public void initCancelAction() {
-		// beendet Suche
+		Stage stage = (Stage) cancelButton.getScene().getWindow();
+		stage.close();
+	}
+
+	public void setTextEditor(TextEditor editor) {
+		textEditor = editor;
 	}
 }

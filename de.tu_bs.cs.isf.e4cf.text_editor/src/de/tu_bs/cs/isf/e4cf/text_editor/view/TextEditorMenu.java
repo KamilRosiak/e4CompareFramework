@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -18,6 +19,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
+import javafx.stage.Stage;
 
 import org.fxmisc.richtext.CodeArea;
 
@@ -316,9 +318,19 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla, Soeren Christmann
 	 */
 	@FXML
-	private void initFindAction() {
-		FindOperation find = new FindOperation();
-		find.open();
+	private void initFindAction() throws Exception {
+		try {
+	        FXMLLoader fxmlLoader = new FXMLLoader();
+	        fxmlLoader.setLocation(getClass().getResource(EditorST.FIND_OPERATION_FXML));
+	        Scene scene = new Scene(fxmlLoader.load());
+	        Stage stage = new Stage();
+	        stage.setTitle("Find");
+	        stage.setScene(scene);
+	        stage.show();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+		
 	}
 
 	/**
@@ -338,5 +350,4 @@ public class TextEditorMenu implements Initializable {
 						+ "It can do all the things one would expect from such an editor.");
 		textEditorViewController.alert.showAndWait();
 	}
-
 }
