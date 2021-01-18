@@ -15,32 +15,33 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
 
 /**
- * A Handler to test the functionality of the export service.
- * 
- * @author Team 6.
+ * Handler for the button to export a tree as JSON.
  */
 public class ExportButtonHandler {
+	/**
+	 * Implementation of the execution hook to initialize the ExportButtonHandler with the GUI.
+	 */
 	@Execute
 	public void execute() {
 		GsonExportService exportService = new GsonExportService();
 
-        Set<String> stringSet = new HashSet<>();
-        stringSet.add("value1");
-        stringSet.add("value2");
+		Set<String> stringSet = new HashSet<>();
+		stringSet.add("value1");
+		stringSet.add("value2");
 
 
-        List<Attribute> testAttributes = new LinkedList<>();
-        testAttributes.add(new AttributeImpl("Key1","Value"));
+		List<Attribute> testAttributes = new LinkedList<>();
+		testAttributes.add(new AttributeImpl("Key1","Value"));
 
-        NodeImpl root = new NodeImpl("Root");
-        root.setAttributes(testAttributes);
-        root.setVariabilityClass(VariabilityClass.MANDATORY);
-        root.setChildren(new LinkedList<>());
+		NodeImpl root = new NodeImpl("Root");
+		root.setAttributes(testAttributes);
+		root.setVariabilityClass(VariabilityClass.MANDATORY);
+		root.setChildren(new LinkedList<>());
 
-        TreeImpl tree = new TreeImpl("testTree");
-        tree.setArtifactType("type");
-        tree.setRoot(root);
-        
-        System.out.println(exportService.exportTree(tree));
+		TreeImpl tree = new TreeImpl("testTree");
+		tree.setArtifactType("type");
+		tree.setRoot(root);
+
+		System.out.println(exportService.createJSON(tree));
 	}
 }

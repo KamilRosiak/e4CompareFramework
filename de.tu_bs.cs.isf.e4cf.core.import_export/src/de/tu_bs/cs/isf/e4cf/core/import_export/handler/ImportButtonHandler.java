@@ -5,12 +5,12 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService;
 
 /**
- * A Handler to test the functionality of the import service.
- * 
- * @author Team 6
+ * Handler for the button to import a tree from JSON.
  */
 public class ImportButtonHandler {
-
+	/**
+	 * Implementation of the execution hook to initialize the ImportButtonHandler with the GUI.
+	 */
 	@Execute
 	public void execute() {
 		GsonImportService importService = new GsonImportService();
@@ -20,5 +20,4 @@ public class ImportButtonHandler {
 				+ "\"testTree\",\"artifactType\":\"Root\"}";
 		System.out.println(importService.importTree(testString));
 	}
-	
 }
