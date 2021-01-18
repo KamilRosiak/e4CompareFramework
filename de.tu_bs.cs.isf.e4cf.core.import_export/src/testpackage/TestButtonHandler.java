@@ -20,9 +20,13 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import util.TreeInstanceCreator;
 
-
-
+/**
+ * Handler of the test button for GUI integration.
+ */
 public class TestButtonHandler {
+	/**
+	 * Execution hook for GUI integration.
+	 */
 	@Execute
 	public void execute() {
 		System.out.println("ayyyy");
@@ -56,6 +60,12 @@ public class TestButtonHandler {
 		System.out.println(treeResult.toString());
 	}
 
+	/**
+	 * Post-processes the parsed JSON tree structure by reconstructing the tree
+	 * structure of Node objects by setting the appropriate parents.
+	 *
+	 * @param node The node to start the reconstruction on.
+	 */
 	private static void reconstructTree(Node node) {
 		if (node == null || node.getChildren() == null) {
 			return;
@@ -67,11 +77,25 @@ public class TestButtonHandler {
 		}
 	}
 
+	/**
+	 * Converts an arbitrary object into a JSON-ish string.
+	 *
+	 * @param object The object to convert into a JSON string.
+	 * @param builder An instance of GsonBuilder that shall perform the conversion.
+	 * @return A JSON-ish string representation of the object.
+	 */
 	private static String createJSON(Object object, GsonBuilder builder) {
 		Gson gson = builder.create();
 		return gson.toJson(object);
 	}
 
+	/**
+	 * Converts an arbitrary JSON-ish string into a Java object.
+	 *
+	 * @param jsonString The JSON string to convert into a Java object.
+	 * @param builder An instance of GsonBuilder that shall perform the conversion.
+	 * @return A Java object.
+	 */
 	private static Object readJSON(String jsonString, GsonBuilder builder) {
 		Gson gson = builder.create();
 		return gson.fromJson(jsonString, Tree.class);
