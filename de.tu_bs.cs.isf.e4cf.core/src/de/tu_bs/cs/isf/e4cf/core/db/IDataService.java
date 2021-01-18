@@ -34,7 +34,7 @@ public interface IDataService {
 			throws SQLException;
 
 	/**
-	 * Method to delete data from a table
+	 * Method to delete data from a table.
 	 * 
 	 * @param pPath
 	 * @param pDbName

@@ -13,21 +13,24 @@ import de.tu_bs.cs.isf.e4cf.core.db.model.Condition;
 public class DataServiceImp extends DataUtilities implements IDataService {
 
 	@Override
-	public void insertData(final String pPath, final String pDbName, final String pTableName, ColumnValue... data)
-			throws SQLException {
+	public void insertData(final String pPath, final String pDbName, final String pTableName, ColumnValue... data) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		String columns = "";
-		String datas = "";
-		for (ColumnValue c : data) {
-			columns += c.getColumnName() + ",";
-			datas += "'" + c.getValue() + "',";
+		try {
+			String columns = "";
+			String datas = "";
+			for (ColumnValue c : data) {
+				columns += c.getColumnName() + ",";
+				datas += "'" + c.getValue() + "',";
+			}
+			// delete the last commas
+			columns = columns.substring(0, columns.length() - 1);
+			datas = datas.substring(0, datas.length() - 1);
+			PreparedStatement prep = con
+					.prepareStatement("insert into " + pTableName + " (" + columns + ") values (" + datas + ");");
+			prep.execute();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
 		}
-		// delete the last commas
-		columns = columns.substring(0, columns.length() - 1);
-		datas = datas.substring(0, datas.length() - 1);
-		PreparedStatement prep = con
-				.prepareStatement("insert into " + pTableName + " (" + columns + ") values (" + datas + ");");
-		prep.execute();
 		con.close();
 	}
 
@@ -42,7 +45,7 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 		}
 		sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
 		sqlStatement += condition.getConditionAsSql();
-		System.out.println(sqlStatement);
+		//System.out.println(sqlStatement);
 		s.execute(sqlStatement);
 		con.close();
 	}
@@ -52,7 +55,7 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		Statement stm = con.createStatement();
 		String sql = "DELETE FROM " + pTableName + condition.getConditionAsSql();
-		System.out.println(sql);
+		//System.out.println(sql);
 		stm.execute(sql);
 		con.close();
 	}
@@ -78,7 +81,7 @@ public class DataServiceImp extends DataUtilities implements IDataService {
 			sortings = sorting.getSortingAsSql();
 		}
 		String sqlStatement = "SELECT " + attributs + " FROM " + pTableName + " " + conditions + sortings;
-		System.out.println("Test Select: " + sqlStatement);
+		//System.out.println("Test Select: " + sqlStatement);
 		ResultSet rs = stm.executeQuery(sqlStatement);
 		printResultSet(stm, sqlStatement);
 		con.close();
