@@ -68,16 +68,27 @@ public class JavaWriterUtil {
 			}
 			jpNode = coid;
 		} else if (n.getNodeType().equals(AnnotationDeclaration.class.getSimpleName())) {
-			AnnotationDeclaration obj = new AnnotationDeclaration();
-			obj.setModifiers(attributes.getModifier());
-			obj.setName(attributes.getName());
-			jpNode = obj;
+			CompilationUnit cu;
+			if (p instanceof CompilationUnit) {
+				cu = (CompilationUnit) p;
+			} else {
+				cu = p.findCompilationUnit().get();
+			}
+			Modifier.Keyword[] keywords = new Modifier.Keyword[attributes.getModifier().size()];
+			cu.addAnnotationDeclaration(attributes.getName(), attributes.getModifier().toArray(keywords));
+			
+			jpNode = cu.getAnnotationDeclarationByName(attributes.getName()).get();
 		} else if (n.getNodeType().equals(AnnotationMemberDeclaration.class.getSimpleName())) {
 			AnnotationMemberDeclaration obj = new AnnotationMemberDeclaration();
 			obj.setModifiers(attributes.getModifier());
 			obj.setType(attributes.getType());
 			obj.setName(attributes.getName());
 			obj.setDefaultValue(attributes.getValue());
+			
+			if (p instanceof AnnotationDeclaration) {
+				((AnnotationDeclaration) p).addMember(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().startsWith(JavaNodeTypes.Argument.name())) {
 			if (p == null || attributes.getChildren() > 0) {
