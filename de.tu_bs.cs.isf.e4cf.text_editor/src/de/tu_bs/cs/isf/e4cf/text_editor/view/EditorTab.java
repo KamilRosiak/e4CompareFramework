@@ -4,8 +4,12 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
 import de.tu_bs.cs.isf.e4cf.text_editor.highlighter.SyntaxHighlighter;
+import de.tu_bs.cs.isf.e4cf.text_editor.indentation.JavaIndentation;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 /**
  * Extension of Tab class. This class adds a constructor containing the type of
@@ -25,9 +29,16 @@ public class EditorTab extends Tab {
 	public EditorTab(String text, String fileEnding, String content) {
 		this.fileEnding = fileEnding;
 		CodeArea codeArea = CodeAreaFactory.createCodeArea(content);
+		setIndentation(codeArea, fileEnding);
 		setText(text);
 		highlighter = new SyntaxHighlighter(fileEnding, codeArea);
 		setContent(codeArea);
+	}
+
+	private void setIndentation(CodeArea codeArea, String fileEnding) {
+		if (fileEnding.endsWith("java")) {
+			new JavaIndentation(codeArea);
+		}
 	}
 
 	public String getFileEnding() {
