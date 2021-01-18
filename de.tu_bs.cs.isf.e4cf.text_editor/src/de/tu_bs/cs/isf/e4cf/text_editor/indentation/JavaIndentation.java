@@ -18,7 +18,7 @@ import javafx.scene.input.KeyEvent;
  */
 public class JavaIndentation {
     private String whiteSpaceRegex = "^\\s+";
-    private String braceRegex = ".*[{(]\\s*";
+    private String braceRegex = "[{(]\\s*$";
 
     private CodeArea codeArea;
 
