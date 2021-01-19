@@ -10,10 +10,11 @@
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.TagListCellController">
 	<children>
-		<CheckBox fx:id="selectChechbox" mnemonicParsing="false" text="Select to use" />
+		<CheckBox fx:id="selectChechbox" mnemonicParsing="false"
+			text="" />
 		<Text fx:id="tagName" strokeType="OUTSIDE" strokeWidth="0.0"
 			text="Text" />
-		<HBox prefWidth="0.0" fx:id="tag" HBox.hgrow="ALWAYS"
+		<HBox prefWidth="0.0" HBox.hgrow="ALWAYS"
 			alignment="CENTER_RIGHT" spacing="4.0" />
 	</children>
 </HBox>

@@ -14,6 +14,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
+/**
+ * Controller for the TagView FXML
+ */
 public class TagViewController implements Initializable {
 
 	@FXML

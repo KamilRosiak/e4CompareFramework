@@ -31,6 +31,8 @@ public class TagPage {
 
 	private List<Tag> currentlySelectedTags = new ArrayList<Tag>();
 
+	private Tag tagToUpdate;
+
 	private TagService tagService;
 
 	/**
@@ -55,11 +57,12 @@ public class TagPage {
 		// setup addBtn functionality
 		controller.addBtn.setOnAction(event -> {
 
+			// check if user wants to update or add a tag
 			if (controller.addBtn.getText().equals("Add")) {
 				Tag newTag = new Tag(controller.tagTextField.getText(), controller.colorPicker.getValue());
 				tagService.addAvailableTag(newTag);
 			} else {
-				// TODO: update a given tag
+				tagService.updateAvailableTag(tagToUpdate, controller.colorPicker.getValue());
 			}
 
 			showTagUpdateUI(false);
@@ -120,6 +123,7 @@ public class TagPage {
 						if (!empty && click.getClickCount() == 2) {
 							TagPage.this.controller.tagTextField.setText(item.getName());
 							TagPage.this.controller.colorPicker.setValue(item.getColor());
+							tagToUpdate = item;
 							showTagUpdateUI(true);
 						}
 					}
@@ -167,7 +171,6 @@ public class TagPage {
 	 */
 	private Circle createTagIcon(Color color) {
 
-		// TODO styling and layout
 		DropShadow dropShadow = new DropShadow();
 		dropShadow.setOffsetX(1);
 		dropShadow.setOffsetY(1);
