@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -118,6 +119,7 @@ public class TagService {
 
 	/** @return all available tags */
 	public List<Tag> getAvailableTags() {
+		availableTags.sort(Comparator.comparing(t -> t.toString()));
 		return availableTags;
 	}
 
@@ -175,7 +177,9 @@ public class TagService {
 	 * @return List of all tags of the element
 	 */
 	public List<Tag> getTags(FileTreeElement treeElement) {
-		return saveGetListFromMap(treeElement.getRelativePath());
+		List<Tag> tags = saveGetListFromMap(treeElement.getRelativePath());
+		tags.sort(Comparator.comparing(t -> t.toString()));
+		return tags;
 	}
 
 	/**

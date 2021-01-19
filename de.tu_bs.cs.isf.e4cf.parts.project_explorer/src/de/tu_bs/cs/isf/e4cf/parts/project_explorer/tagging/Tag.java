@@ -2,7 +2,9 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging;
 
 import java.io.Serializable;
 
+import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 public class Tag implements Serializable {
 
@@ -79,5 +81,28 @@ public class Tag implements Serializable {
 		Tag tag = (Tag) obj;
 
 		return (tag.name == this.name && tag.colorString == this.colorString);
+	}
+	
+	/**
+	 * Generates a small circle node with a specific color
+	 * 
+	 * @return the circle
+	 */
+	public Circle getTagIcon() {
+
+		DropShadow dropShadow = new DropShadow();
+		dropShadow.setOffsetX(1);
+		dropShadow.setOffsetY(1);
+		dropShadow.setRadius(2);
+		dropShadow.setColor(Color.GRAY);
+
+		Circle circle = new Circle(6, getColor());
+		circle.setEffect(dropShadow);
+		return circle;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 }

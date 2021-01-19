@@ -15,10 +15,8 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.ListCell;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 /**
  * A layout page that lets the user add tags to selected FileTreeElements.
@@ -85,6 +83,17 @@ public class TagPage {
 			}
 			updateList();
 		});
+		
+		controller.selectAllBtn.setOnAction(event -> {
+			currentlySelectedTags.clear();
+			currentlySelectedTags.addAll(controller.listView.getItems());
+			updateList();
+		});
+		
+		controller.deselectAllBtn.setOnAction(event -> {
+			currentlySelectedTags.clear();
+			updateList();
+		});
 
 		controller.listView.getItems().addAll(tagService.getAvailableTags());
 
@@ -102,7 +111,7 @@ public class TagPage {
 					TagListCellController controller = loader.getController();
 
 					controller.tagName.setText(item.getName());
-					controller.root.getChildren().add(createTagIcon(item.getColor()));
+					controller.root.getChildren().add(item.getTagIcon());
 
 					controller.selectChechbox.setSelected(currentlySelectedTags.contains(item));
 
@@ -161,24 +170,5 @@ public class TagPage {
 	 */
 	public List<Tag> getSelectedTags() {
 		return currentlySelectedTags;
-	}
-
-	/**
-	 * Generates a small circle node with a specific color
-	 * 
-	 * @param color the color of the circle
-	 * @return the circle
-	 */
-	private Circle createTagIcon(Color color) {
-
-		DropShadow dropShadow = new DropShadow();
-		dropShadow.setOffsetX(1);
-		dropShadow.setOffsetY(1);
-		dropShadow.setRadius(2);
-		dropShadow.setColor(Color.GRAY);
-
-		Circle circle = new Circle(6, color);
-		circle.setEffect(dropShadow);
-		return circle;
 	}
 }

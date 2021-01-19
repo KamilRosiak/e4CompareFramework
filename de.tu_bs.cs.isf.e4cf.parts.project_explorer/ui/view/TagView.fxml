@@ -3,18 +3,20 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity"
 	minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0"
-	spacing="4" xmlns="http://javafx.com/javafx/11.0.1"
+	spacing="4" xmlns="http://javafx.com/javafx/8.0.171"
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.TagViewController">
 	<children>
-		<HBox prefHeight="100.0" prefWidth="200.0">
+		<HBox spacing="4">
 			<children>
 				<TextField fx:id="tagTextField" promptText="Tag Name" />
 				<ColorPicker fx:id="colorPicker" />
@@ -23,11 +25,20 @@
 					text="Cancel" />
 			</children>
 		</HBox>
+		<Separator/>
 		<Text strokeType="OUTSIDE" strokeWidth="0.0"
-			text="Your available tags" />
-		<ListView fx:id="listView" prefHeight="200.0"
-			prefWidth="200.0" />
-		<Button fx:id="deleteBtn" mnemonicParsing="false" text="Delete" />
-
+			text="Available tags:&#10;- Select tags with the checkboxes&#10;- Edit a tag with doubleclick" />
+		<ListView fx:id="listView" prefHeight="200.0" />
+		<HBox spacing="4">
+			<children>
+				<Button fx:id="selectAllBtn" mnemonicParsing="false"
+					text="Select all tags" />
+				<Button fx:id="deselectAllBtn" mnemonicParsing="false"
+					text="Deselect all tags" />
+				<Region HBox.hgrow="ALWAYS" />
+				<Button fx:id="deleteBtn" mnemonicParsing="false"
+					text="Delete selected tag" />
+			</children>
+		</HBox>
 	</children>
 </VBox>

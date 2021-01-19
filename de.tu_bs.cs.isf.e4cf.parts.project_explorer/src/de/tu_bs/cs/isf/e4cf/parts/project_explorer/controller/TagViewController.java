@@ -32,6 +32,12 @@ public class TagViewController implements Initializable {
 	public Button deleteBtn;
 
 	@FXML
+	public Button selectAllBtn;
+
+	@FXML
+	public Button deselectAllBtn;
+
+	@FXML
 	public TextField tagTextField;
 
 	@FXML
