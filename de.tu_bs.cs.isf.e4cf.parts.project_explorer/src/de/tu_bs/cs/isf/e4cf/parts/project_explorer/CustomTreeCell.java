@@ -49,7 +49,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 
 	// TODO: inject?
 //	@Inject
-	private TagService tagStore;
+	private TagService tagService;
 	
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
@@ -68,7 +68,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 		loader = new FXMLLoader<CustomTreeCellController>(context, StringTable.BUNDLE_NAME,
 			FileTable.CUSTOM_TREE_CELL_FXML);
 		controller = loader.getController();
-		this.tagStore = tagStore;
+		this.tagService = tagStore;
 		
 		this.fileImageProvider = fileImageProvider;
 
@@ -233,7 +233,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 			tagContainer.clear();
 			
 			// Sort the tags
-			List<Tag> tags = tagStore.getTags(item);
+			List<Tag> tags = tagService.getTags(item);
 			tags.sort(Comparator.comparing(t -> t.toString()));
 			
 			// Create UI for the tags
@@ -253,6 +253,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 		if (!sourceFile.isDirectory() || (sourceFile.isDirectory() && sourceFile.list().length == 0)) {
 			try {
 				Files.move(source, target);
+				tagService.moveTags(new Path[] {source, target});
 			} catch (FileAlreadyExistsException alreadyExists) {
 				RCPMessageProvider.errorMessage("File already exsits.",
 						"A file with the name " + sourceFile.getName() + " exists.");
@@ -282,6 +283,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 					} else {
 						try {
 							Files.copy(sourcePath, targetPath);
+							tagService.moveTags(new Path[] {sourcePath, targetPath});
 						} catch (FileAlreadyExistsException alreadyExistExc) {
 							// file did not move but is already there, so throw an exception only for the
 							// first time this occurs.
