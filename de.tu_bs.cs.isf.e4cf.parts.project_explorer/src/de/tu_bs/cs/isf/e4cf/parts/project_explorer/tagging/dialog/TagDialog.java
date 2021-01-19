@@ -11,10 +11,12 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
 import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
+import javafx.stage.Stage;
 
 /**
  * A dialog that display the page in which the user can add custom tags to
@@ -49,6 +51,9 @@ public class TagDialog {
 		final DialogPane pane = alert.getDialogPane();
 		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
+		final Stage stage = (Stage) pane.getScene().getWindow();
+		stage.getIcons().add(services.imageService.getFXImage(null, FileTable.TAG_PNG).getImage());
+
 		this.tagPage = new TagPage(context, tagService, previouslySelected);
 		pane.setContent(tagPage.createControl());
 
@@ -76,24 +81,9 @@ public class TagDialog {
 	public void performFinish() {
 
 		List<Tag> availableSessionTags = tagPage.getSessionTags();
-		System.out.println("Session tags: " + availableSessionTags);
 
-		// update the tags in the tagservice.
-
-		/*
-		 * for (Tag tag : avaiableTags) { if (availableSessionTags.contains(tag)) {
-		 * tagService.delteAvailableTag(tag); } }
-		 * 
-		 * for (Tag tag : availableSessionTags) { if (!avaiableTags.contains(tag)) {
-		 * tagService.addAvailableTag(tag); } else { // check if tag has updated Tag t =
-		 * avaiableTags.get(avaiableTags.indexOf(tag)); if
-		 * (!t.getColor().equals(tag.getColor())) { tagService.updateAvailableTag(tag,
-		 * tag.getColor()); } } }
-		 */
 		tagService.getAvailableTags().clear();
 		tagService.getAvailableTags().addAll(availableSessionTags);
-
-		System.out.println("TagService avail tags after including session changes: " + tagService.getAvailableTags());
 
 		List<Tag> selectedTags = tagPage.getSelectedTags();
 		List<Tag> notIntersect = new ArrayList<Tag>();

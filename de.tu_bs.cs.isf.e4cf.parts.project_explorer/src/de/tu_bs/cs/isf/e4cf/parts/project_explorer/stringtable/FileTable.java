@@ -26,6 +26,7 @@ public class FileTable {
 	public static String XML_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "xml16.png").toString();
 	public static String FILE_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "file16.png").toString();
 	public static String NEWFILE_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "newfile16.png").toString();
+	public static String TAG_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "tag_16.png").toString();
 
 	// Toolbar
 	public static String PROJECT_EXPLORER_TOOLBAR = Paths.get(PROJECT_EXPLORER, "ToolBar").toString();

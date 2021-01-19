@@ -80,7 +80,7 @@ public class Tag {
 
 		Tag tag = (Tag) obj;
 
-		return (tag.name == this.name);
+		return (tag.name.equals(this.name));
 	}
 	
 	/**

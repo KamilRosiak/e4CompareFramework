@@ -69,26 +69,24 @@ public class TagPage {
 			// check if user wants to update or add a tag
 			if (controller.addBtn.getText().equals("Add")) {
 				// check if name is valid
-				String text = controller.tagTextField.getText();
-				if (text.trim().equals("") || text.contains(":")) {
+				String name = controller.tagTextField.getText();
+				if (name.trim().equals("") || name.contains(":")) {
 					// no valid name, so display error
 					controller.errorText.setText("No valid Tag name");
 					controller.errorText.setVisible(true);
-				} else if (sessionTags.contains(new Tag(text, Color.WHITE))) {
+				} else if (sessionTags.contains((new Tag(name.trim(), Color.WHITE)))) {
 					// tag with same name already included
-					controller.errorText.setText("Tag with name: " + text + " already exists");
+					controller.errorText.setText("Tag with name: " + name + " already exists");
 					controller.errorText.setVisible(true);
 				} else {
 					Tag newTag = new Tag(controller.tagTextField.getText(), controller.colorPicker.getValue());
 					sessionTags.add(newTag);
 					controller.errorText.setVisible(false);
 					resetTagUI();
-					updateList();
 				}
 			} else {
-				tagService.updateAvailableTag(tagToUpdate, controller.colorPicker.getValue());
+				sessionTags.get(sessionTags.indexOf(tagToUpdate)).setColor(controller.colorPicker.getValue());
 				resetTagUI();
-				updateList();
 			}
 		});
 
@@ -165,7 +163,7 @@ public class TagPage {
 
 		return loader.getNode();
 	}
-	
+
 	/**
 	 * Update the ui after a successful add / update operation
 	 */
@@ -173,6 +171,7 @@ public class TagPage {
 		showTagUpdateUI(false);
 		controller.tagTextField.setText("");
 		controller.colorPicker.setValue(Color.WHITE);
+		updateList();
 	}
 
 	/**
