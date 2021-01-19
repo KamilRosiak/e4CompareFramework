@@ -33,6 +33,8 @@ public class TagPage {
 
 	private TagService tagService;
 
+	private List<Tag> sessionTags = new ArrayList<Tag>();
+
 	/**
 	 * Lets the user add new tags, delete tags, update color of tags
 	 * 
@@ -45,6 +47,7 @@ public class TagPage {
 		this.context = context;
 		this.tagService = tagService;
 		currentlySelectedTags.addAll(initialSelectedTags);
+		sessionTags.addAll(tagService.getAvailableTags());
 	}
 
 	public Parent createControl() {
@@ -53,20 +56,40 @@ public class TagPage {
 		controller = loader.getController();
 
 		// setup addBtn functionality
+
+		// only enable add button if user typed an actual name
+		controller.tagTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (controller.errorText.isVisible()) {
+				controller.errorText.setVisible(false);
+			}
+		});
+
 		controller.addBtn.setOnAction(event -> {
 
 			// check if user wants to update or add a tag
 			if (controller.addBtn.getText().equals("Add")) {
-				Tag newTag = new Tag(controller.tagTextField.getText(), controller.colorPicker.getValue());
-				tagService.addAvailableTag(newTag);
+				// check if name is valid
+				String text = controller.tagTextField.getText();
+				if (text.trim().equals("") || text.contains(":")) {
+					// no valid name, so display error
+					controller.errorText.setText("No valid Tag name");
+					controller.errorText.setVisible(true);
+				} else if (sessionTags.contains(new Tag(text, Color.WHITE))) {
+					// tag with same name already included
+					controller.errorText.setText("Tag with name: " + text + " already exists");
+					controller.errorText.setVisible(true);
+				} else {
+					Tag newTag = new Tag(controller.tagTextField.getText(), controller.colorPicker.getValue());
+					sessionTags.add(newTag);
+					controller.errorText.setVisible(false);
+					resetTagUI();
+					updateList();
+				}
 			} else {
 				tagService.updateAvailableTag(tagToUpdate, controller.colorPicker.getValue());
+				resetTagUI();
+				updateList();
 			}
-
-			showTagUpdateUI(false);
-			controller.tagTextField.setText("");
-			controller.colorPicker.setValue(Color.WHITE);
-			updateList();
 		});
 
 		controller.cancelBtn.setOnAction(event -> {
@@ -78,18 +101,18 @@ public class TagPage {
 		// setup deleteBtn functionality
 		controller.deleteBtn.setOnAction(event -> {
 			for (Tag tag : controller.listView.getSelectionModel().getSelectedItems()) {
-				tagService.delteAvailableTag(tag);
+				sessionTags.remove(tag);
 				currentlySelectedTags.remove(tag);
 			}
 			updateList();
 		});
-		
+
 		controller.selectAllBtn.setOnAction(event -> {
 			currentlySelectedTags.clear();
 			currentlySelectedTags.addAll(controller.listView.getItems());
 			updateList();
 		});
-		
+
 		controller.deselectAllBtn.setOnAction(event -> {
 			currentlySelectedTags.clear();
 			updateList();
@@ -142,6 +165,15 @@ public class TagPage {
 
 		return loader.getNode();
 	}
+	
+	/**
+	 * Update the ui after a successful add / update operation
+	 */
+	private void resetTagUI() {
+		showTagUpdateUI(false);
+		controller.tagTextField.setText("");
+		controller.colorPicker.setValue(Color.WHITE);
+	}
 
 	/**
 	 * Toggle the UI elements to represent either the add or update tag
@@ -160,7 +192,7 @@ public class TagPage {
 	private void updateList() {
 		controller.listView.getItems().clear();
 
-		controller.listView.getItems().addAll(tagService.getAvailableTags());
+		controller.listView.getItems().addAll(sessionTags);
 	}
 
 	/**
@@ -170,5 +202,14 @@ public class TagPage {
 	 */
 	public List<Tag> getSelectedTags() {
 		return currentlySelectedTags;
+	}
+
+	/**
+	 * Get a list of all tags that are valid in this specific session.
+	 * 
+	 * @return a list of tags.
+	 */
+	public List<Tag> getSessionTags() {
+		return sessionTags;
 	}
 }

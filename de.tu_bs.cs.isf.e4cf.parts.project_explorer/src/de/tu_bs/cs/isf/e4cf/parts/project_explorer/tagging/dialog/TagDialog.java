@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.dialog;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
@@ -26,6 +27,7 @@ public class TagDialog {
 	// indicates whether a file has been moved.
 	private TagService tagService;
 	private List<FileTreeElement> selectedElements;
+	private List<Tag> avaiableTags = new ArrayList<Tag>();
 	private ServiceContainer services;
 
 	List<Tag> previouslySelected = new ArrayList<Tag>();
@@ -40,6 +42,8 @@ public class TagDialog {
 
 		this.selectedElements = selectedElements;
 
+		this.avaiableTags.addAll(tagService.getAvailableTags());
+
 		previouslySelected = getInitialSelectedTags();
 
 		final DialogPane pane = alert.getDialogPane();
@@ -52,9 +56,13 @@ public class TagDialog {
 
 	/** show the dialog and wait for the users input */
 	public void open() {
-		alert.showAndWait().filter(response -> response == ButtonType.OK).ifPresent(response -> {
-			this.performFinish();
-		});
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.CANCEL) {
+			// cancel the dialog without applying any changes made in this session
+			System.out.println("cancel");
+		} else if (result.get() == ButtonType.OK) {
+			performFinish();
+		}
 	}
 
 	public Alert getAlert() {
@@ -66,6 +74,26 @@ public class TagDialog {
 	 * that are not selected anymore.
 	 */
 	public void performFinish() {
+
+		List<Tag> availableSessionTags = tagPage.getSessionTags();
+		System.out.println("Session tags: " + availableSessionTags);
+
+		// update the tags in the tagservice.
+
+		/*
+		 * for (Tag tag : avaiableTags) { if (availableSessionTags.contains(tag)) {
+		 * tagService.delteAvailableTag(tag); } }
+		 * 
+		 * for (Tag tag : availableSessionTags) { if (!avaiableTags.contains(tag)) {
+		 * tagService.addAvailableTag(tag); } else { // check if tag has updated Tag t =
+		 * avaiableTags.get(avaiableTags.indexOf(tag)); if
+		 * (!t.getColor().equals(tag.getColor())) { tagService.updateAvailableTag(tag,
+		 * tag.getColor()); } } }
+		 */
+		tagService.getAvailableTags().clear();
+		tagService.getAvailableTags().addAll(availableSessionTags);
+
+		System.out.println("TagService avail tags after including session changes: " + tagService.getAvailableTags());
 
 		List<Tag> selectedTags = tagPage.getSelectedTags();
 		List<Tag> notIntersect = new ArrayList<Tag>();

@@ -13,6 +13,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 /**
  * Controller for the TagView FXML
@@ -21,6 +22,9 @@ public class TagViewController implements Initializable {
 
 	@FXML
 	public ListView<Tag> listView;
+
+	@FXML
+	public Text errorText;
 
 	@FXML
 	public HBox tag;
@@ -49,17 +53,13 @@ public class TagViewController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		addBtn.setDisable(true);
 		cancelBtn.setVisible(false);
 		deleteBtn.setDisable(true);
 		colorPicker.setValue(Color.WHITE);
 
+		errorText.setVisible(false);
+		
 		listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-		// only enable add button if user typed an actual name
-		tagTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			addBtn.setDisable(newValue.trim().isEmpty());
-		});
 
 		listView.getSelectionModel().selectedItemProperty().addListener((obs, ov, nv) -> {
 			int amountSelected = listView.getSelectionModel().getSelectedItems().size();
@@ -70,5 +70,4 @@ public class TagViewController implements Initializable {
 			}
 		});
 	}
-
 }
