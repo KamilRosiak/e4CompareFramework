@@ -157,15 +157,7 @@ public class TreeViewController {
 	@FXML
 	void copyNode() {
 		copyList.clear();
-		copyList.addAll(new ArrayList<TreeItem<NodeUsage>>(treeView.getSelectionModel().getSelectedItems())); // Bug:
-		System.out.println(treeView.getSelectionModel().getSelectedItem().getValue().getVariabilityClass()); // Paste
-		// ist
-		// spiegelverkehrt
-		// bei
-		// oben
-		System.out.println(copyList); // nach unten Markierung
-		System.out.println(copyList.get(0).getChildren().get(0));
-
+		copyList.addAll(new ArrayList<TreeItem<NodeUsage>>(treeView.getSelectionModel().getSelectedItems()));
 	}
 
 	@FXML
