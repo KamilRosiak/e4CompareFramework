@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store;
+package de.tu_bs.cs.isf.e4cf.core.util.tagging;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,9 +17,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 
 /**
  * A ITagStore using properties files to persist tagging information

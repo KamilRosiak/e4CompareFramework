@@ -20,11 +20,11 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CustomTreeCellController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog.DropMode;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -58,11 +58,11 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 	private CustomTreeCellController controller;
 
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider,
-			ServiceContainer services, IEclipseContext context, TagService tagService) {
+			ServiceContainer services, IEclipseContext context) {
 		loader = new FXMLLoader<CustomTreeCellController>(context, StringTable.BUNDLE_NAME,
 				FileTable.CUSTOM_TREE_CELL_FXML);
 		controller = loader.getController();
-		this.tagService = tagService;
+		this.tagService = services.tagService;
 
 		this.fileImageProvider = fileImageProvider;
 

@@ -36,6 +36,8 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.CustomTreeCell;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.FileImageProvider;
@@ -45,8 +47,6 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
@@ -149,7 +149,7 @@ public class ProjectExplorerViewController {
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
 				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services,
-						context, tagService);
+						context);
 				return treeCell;
 			}
 		});
@@ -371,7 +371,9 @@ public class ProjectExplorerViewController {
 		filterTags.clear();
 		if (o instanceof String) {
 			String filterString = (String) o;
-
+			
+			// Split search string at tag identifier and get the filter string and tags
+			// Were the first string always is the filter string followed by n tags
 			if (filterString.contains(TagService.TAG_PREFIX)) {
 				String[] filterStringParts = filterString.split(TagService.TAG_PREFIX);
 				if (filterStringParts.length > 0) {

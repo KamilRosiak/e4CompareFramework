@@ -3,7 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
