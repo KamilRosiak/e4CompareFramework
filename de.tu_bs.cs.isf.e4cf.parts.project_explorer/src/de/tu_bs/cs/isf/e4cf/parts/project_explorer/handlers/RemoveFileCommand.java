@@ -16,8 +16,8 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IHandler;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 
 public class RemoveFileCommand implements IHandler {
 	private @Inject TagService tagService;

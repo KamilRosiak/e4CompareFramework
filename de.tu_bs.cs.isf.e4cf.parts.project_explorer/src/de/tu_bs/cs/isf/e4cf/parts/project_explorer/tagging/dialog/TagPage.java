@@ -6,12 +6,12 @@ import java.util.List;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.TagListCellController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.TagViewController;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.ListCell;

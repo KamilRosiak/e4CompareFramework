@@ -1,14 +1,14 @@
-package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging;
-
-import java.io.Serializable;
+package de.tu_bs.cs.isf.e4cf.core.util.tagging;
 
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-public class Tag implements Serializable {
+/**
+ * A tag identified by its name that has a color
+ */
+public class Tag {
 
-	private static final long serialVersionUID = 1L;
 	private String name;
 	private String colorString;
 
@@ -80,7 +80,7 @@ public class Tag implements Serializable {
 
 		Tag tag = (Tag) obj;
 
-		return (tag.name == this.name && tag.colorString == this.colorString);
+		return (tag.name == this.name);
 	}
 	
 	/**

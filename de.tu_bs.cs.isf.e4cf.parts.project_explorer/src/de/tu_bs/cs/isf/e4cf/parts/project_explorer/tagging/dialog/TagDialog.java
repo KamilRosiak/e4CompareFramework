@@ -9,8 +9,8 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.Tag;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.TagService;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;

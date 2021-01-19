@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging;
+package de.tu_bs.cs.isf.e4cf.core.util.tagging;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,8 +22,6 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.ITagStore;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.store.PropertiesTagStore;
 import javafx.scene.paint.Color;
 
 @Creatable
@@ -161,7 +159,7 @@ public class TagService {
 		}
 	}
 
-	private List<Tag> saveGetListFromMap(String path) {
+	private List<Tag> safeGetListFromMap(String path) {
 		List<Tag> tags = tagMap.get(path);
 		if (tags == null) {
 			tags = new ArrayList<Tag>();
@@ -177,7 +175,7 @@ public class TagService {
 	 * @return List of all tags of the element
 	 */
 	public List<Tag> getTags(FileTreeElement treeElement) {
-		List<Tag> tags = saveGetListFromMap(treeElement.getRelativePath());
+		List<Tag> tags = safeGetListFromMap(treeElement.getRelativePath());
 		tags.sort(Comparator.comparing(t -> t.toString()));
 		return tags;
 	}
@@ -200,7 +198,7 @@ public class TagService {
 	 * @param tags
 	 */
 	public void addTags(FileTreeElement treeElement, List<Tag> tags) {
-		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
+		List<Tag> tagList = safeGetListFromMap(treeElement.getRelativePath());
 		for (Tag tag : tags) {
 			if (canAddTag(tagList, tag)) {
 				tagList.add(tag);
@@ -215,7 +213,7 @@ public class TagService {
 	 * @param tag
 	 */
 	public void addTag(FileTreeElement treeElement, Tag tag) {
-		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
+		List<Tag> tagList = safeGetListFromMap(treeElement.getRelativePath());
 		if (canAddTag(tagList, tag)) {
 			tagList.add(tag);
 		}
@@ -228,7 +226,7 @@ public class TagService {
 	 * @param tag
 	 */
 	public void deleteTag(FileTreeElement treeElement, Tag tag) {
-		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
+		List<Tag> tagList = safeGetListFromMap(treeElement.getRelativePath());
 		tagList.remove(tag);
 	}
 
@@ -274,7 +272,7 @@ public class TagService {
 	 * @return true if the treeElement has the tag
 	 */
 	public boolean hasTag(FileTreeElement treeElement, Tag tag) {
-		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
+		List<Tag> tagList = safeGetListFromMap(treeElement.getRelativePath());
 		return tagList.contains(tag);
 	}
 
@@ -286,7 +284,7 @@ public class TagService {
 	 * @return true if the treeElement has the tags
 	 */
 	public boolean hasTags(FileTreeElement treeElement, List<Tag> tags) {
-		List<Tag> tagList = saveGetListFromMap(treeElement.getRelativePath());
+		List<Tag> tagList = safeGetListFromMap(treeElement.getRelativePath());
 		return tagList.containsAll(tags);
 	}
 }
