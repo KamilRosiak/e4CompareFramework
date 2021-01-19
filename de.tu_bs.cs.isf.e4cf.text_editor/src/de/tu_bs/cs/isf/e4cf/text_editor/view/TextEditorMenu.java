@@ -325,6 +325,8 @@ public class TextEditorMenu implements Initializable {
 	        Scene scene = new Scene(fxmlLoader.load());
 	        Stage stage = new Stage();
 	        stage.setTitle("Find");
+	        FindOperation controller = fxmlLoader.getController();
+	        controller.setTextEditor(textEditorViewController);
 	        stage.setScene(scene);
 	        stage.show();
 	    } catch (Exception e) {
