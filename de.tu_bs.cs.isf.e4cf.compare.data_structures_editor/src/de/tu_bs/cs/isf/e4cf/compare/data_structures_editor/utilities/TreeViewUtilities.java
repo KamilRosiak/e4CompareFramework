@@ -17,6 +17,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * Utility Class for TreeViewController
@@ -29,6 +31,10 @@ public final class TreeViewUtilities {
 	public static List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
 
 	public static String treeName = "";
+	
+	public static Image nodeImage = new Image("icons/file16.png");
+	
+	public static Image rootImage = new Image("icons/rootSmall.png");
 
 	private static int searchCounter = 0;
 
@@ -45,7 +51,7 @@ public final class TreeViewUtilities {
 	 * @param treeView
 	 * @return
 	 */
-	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView) {
+	/*public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView) {
 		TreeItem<NodeUsage> rootItem = new TreeItem<NodeUsage>(new NodeUsage(tr.getRoot()));
 		rootItem.setExpanded(true);
 		treeView.setRoot(rootItem);
@@ -61,7 +67,7 @@ public final class TreeViewUtilities {
 		treeView.setShowRoot(true);
 
 		return treeView;
-	}
+	}*/
 
 
 	/**
@@ -75,7 +81,7 @@ public final class TreeViewUtilities {
 	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView, Node item) {
 
 		if (item.isRoot()) {
-			treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(item), new ImageView(rootImage)));
 			treeView.getRoot().setExpanded(true);
 			treeView.setShowRoot(true);
 			list.add(new TreeItem<NodeUsage>(new NodeUsage(item)));
@@ -85,7 +91,14 @@ public final class TreeViewUtilities {
 				getTreeViewFromTree(tr, treeView, n);
 			}
 		} else {
-			treeView.getRoot().getChildren().add(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			TreeItem<NodeUsage> nextItem;
+			if(item.getAttributes().get(0).getAttributeKey().equals("TEXT")) {
+				nextItem = new TreeItem<NodeUsage>(new NodeUsage(item), new ImageView(nodeImage));
+			} else {
+				nextItem = new TreeItem<NodeUsage>(new NodeUsage(item));
+			}
+			treeView.getRoot().getChildren().add(nextItem);
+			//nextItem.setGraphic(nodeImage);
 		}
 		return treeView;
 	}

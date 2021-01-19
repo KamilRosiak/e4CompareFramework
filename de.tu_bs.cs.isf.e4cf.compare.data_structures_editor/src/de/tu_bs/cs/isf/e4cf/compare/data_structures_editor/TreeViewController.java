@@ -24,6 +24,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
@@ -141,6 +142,9 @@ public class TreeViewController {
 			newChild.getValue().addAttribute("TEXT", TreeViewUtilities.getInput("Enter Child Text"));
 		} catch (NullPointerException e) {
 			return;
+		}
+		if(newChild.getValue().getAttributes().get(0).getAttributeKey().equals("TEXT")) {
+			newChild.setGraphic(new ImageView(TreeViewUtilities.nodeImage));
 		}
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(newChild);
 		displayTotalNodeAmount();
