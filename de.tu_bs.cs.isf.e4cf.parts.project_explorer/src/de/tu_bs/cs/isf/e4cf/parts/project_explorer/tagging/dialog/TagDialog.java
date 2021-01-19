@@ -62,16 +62,9 @@ public class TagDialog {
 	/** show the dialog and wait for the users input */
 	public void open() {
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == ButtonType.CANCEL) {
-			// cancel the dialog without applying any changes made in this session
-			System.out.println("cancel");
-		} else if (result.get() == ButtonType.OK) {
+		if (result.get() == ButtonType.OK) {
 			performFinish();
 		}
-	}
-
-	public Alert getAlert() {
-		return alert;
 	}
 
 	/**
@@ -88,30 +81,34 @@ public class TagDialog {
 		List<Tag> selectedTags = tagPage.getSelectedTags();
 		List<Tag> notIntersect = new ArrayList<Tag>();
 
-		for (Tag tag : previouslySelected) {
-			if (!selectedTags.contains(tag)) {
-				notIntersect.add(tag);
+		if (selectedElements != null) {
+			for (Tag tag : previouslySelected) {
+				if (!selectedTags.contains(tag)) {
+					notIntersect.add(tag);
+				}
+			}
+
+			for (FileTreeElement element : selectedElements) {
+				for (Tag tag : notIntersect) {
+					tagService.deleteTag(element, tag);
+				}
+				for (Tag tag : selectedTags) {
+					tagService.addTag(element, tag);
+				}
 			}
 		}
-
-		for (FileTreeElement element : selectedElements) {
-			for (Tag tag : notIntersect) {
-				tagService.deleteTag(element, tag);
-			}
-			for (Tag tag : selectedTags) {
-				tagService.addTag(element, tag);
-			}
-		}
-
 		services.workspaceFileSystem.refresh();
 	}
 
 	// get all tags that are active on these elements.
 	public List<Tag> getInitialSelectedTags() {
 		HashSet<Tag> tags = new HashSet<Tag>();
-		for (FileTreeElement element : selectedElements) {
-			tags.addAll(tagService.getTags(element));
+		if (selectedElements != null) {
+			for (FileTreeElement element : selectedElements) {
+				tags.addAll(tagService.getTags(element));
+			}
 		}
+
 		return new ArrayList<Tag>(tags);
 	}
 }

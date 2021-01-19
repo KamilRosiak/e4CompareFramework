@@ -10,9 +10,10 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFileHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFolderHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.RemoveFileCommand;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.ShowInExplorerHandler;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.TagHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
-import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -36,6 +37,7 @@ public class ProjectExplorerToolBarController {
 	private Button btnImportFiles;
 	private Button btnDelete;
 	private Button btnShowExplorer;
+	private Button btnTagManager;
 
 	private boolean isFlatView = false;
 
@@ -129,6 +131,14 @@ public class ProjectExplorerToolBarController {
 			}
 		});
 
+		// Tag managing
+		btnTagManager = createToolbarButton("Manage Tags", FileTable.TAG_PNG, actionEvent -> {
+			TagHandler handler = new TagHandler();
+			if (handler.canExecute(services.rcpSelectionService)) {
+				handler.execute(context, services, shell);
+			}
+		});
+
 		// Switch between hierarchical and flat view
 		ImageView flatViewImage = services.imageService.getFXImage(null, FileTable.FLAT_VIEW_PNG);
 		ImageView hierViewImage = services.imageService.getFXImage(null, FileTable.HIERARCICAL_VIEW_PNG);
@@ -188,6 +198,10 @@ public class ProjectExplorerToolBarController {
 		// New file
 		NewFileHandler newFileHandler = new NewFileHandler();
 		btnNewFile.setDisable(!newFileHandler.canExecute(services.rcpSelectionService));
+
+		// Tag Manager
+		TagHandler tagManagerHandler = new TagHandler();
+		btnTagManager.setDisable(!tagManagerHandler.canExecute(services.rcpSelectionService));
 
 	}
 

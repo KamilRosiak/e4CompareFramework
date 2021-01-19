@@ -21,17 +21,15 @@ public class TagHandler implements IHandler {
 	private TagService tagService;
 
 	@Execute
-	@Override
 	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
 		List<FileTreeElement> selection = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
 		TagDialog dialog = new TagDialog(context, tagService, services, selection);
+
 		dialog.open();
 	}
 
 	@Override
 	public boolean canExecute(RCPSelectionService selectionService) {
-		List<FileTreeElement> selection = selectionService.getCurrentSelectionsFromExplorer();
-		return selection != null && !selection.isEmpty();
+		return true;
 	}
-
 }
