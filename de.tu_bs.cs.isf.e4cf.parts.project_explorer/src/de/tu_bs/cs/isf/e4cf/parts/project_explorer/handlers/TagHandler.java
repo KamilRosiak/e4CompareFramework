@@ -2,8 +2,6 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -12,30 +10,16 @@ import org.eclipse.swt.widgets.Shell;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
-import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.dialog.TagDialog;
 
 public class TagHandler implements IHandler {
 
-	@Inject
-	private TagService tagService;
-
 	@Execute
 	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
 		List<FileTreeElement> selection = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
-		TagDialog dialog = new TagDialog(context, tagService, services, selection);
+		TagDialog dialog = new TagDialog(context, services, selection);
 		dialog.open();
-	}
-
-	/**
-	 * Explicit assignment of the tagservice. This needs to be done when calling
-	 * the handler manually.
-	 * 
-	 * @param tagService the service to assign.
-	 */
-	public void initTagService(TagService tagService) {
-		this.tagService = tagService;
 	}
 
 	@CanExecute

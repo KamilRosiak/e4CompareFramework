@@ -34,13 +34,12 @@ public class TagDialog {
 
 	List<Tag> previouslySelected = new ArrayList<Tag>();
 
-	public TagDialog(IEclipseContext context, TagService tagService, ServiceContainer services,
-			List<FileTreeElement> selectedElements) {
+	public TagDialog(IEclipseContext context, ServiceContainer services, List<FileTreeElement> selectedElements) {
 		alert = new Alert(AlertType.NONE);
 		alert.setTitle("Manage Tags");
 
-		this.tagService = tagService;
 		this.services = services;
+		this.tagService = services.tagService;
 
 		this.selectedElements.addAll(selectedElements);
 
