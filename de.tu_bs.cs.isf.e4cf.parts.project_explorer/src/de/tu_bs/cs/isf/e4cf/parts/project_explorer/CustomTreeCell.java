@@ -10,17 +10,27 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
+
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
+import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CustomTreeCellController;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog.DropMode;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -32,7 +42,9 @@ import javafx.scene.input.TransferMode;
 /**
  * A tree cell that supports dragging
  */
-public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
+public class CustomTreeCell extends TreeCell<FileTreeElement> {
+
+	private TagService tagService;
 
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
@@ -42,8 +54,16 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	 */
 	private boolean fileMoved;
 
+	private FXMLLoader<CustomTreeCellController> loader;
+	private CustomTreeCellController controller;
+
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider,
-			ServiceContainer services) {
+			ServiceContainer services, IEclipseContext context) {
+		loader = new FXMLLoader<CustomTreeCellController>(context, StringTable.BUNDLE_NAME,
+				FileTable.CUSTOM_TREE_CELL_FXML);
+		controller = loader.getController();
+		this.tagService = services.tagService;
+
 		this.fileImageProvider = fileImageProvider;
 
 		// Allow Drops on Directory TreeItems but not on files
@@ -186,7 +206,6 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	@Override
 	public void startEdit() {
 		super.startEdit();
-		setText("");
 		setupEditTextField();
 		setGraphic(editTextField);
 	}
@@ -197,8 +216,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		setText(getItem().toString());
-		setGraphic(fileImageProvider.getImage(getItem()));
+		setGraphic(loader.getNode());
 	}
 
 	@Override
@@ -206,10 +224,22 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		super.updateItem(item, empty);
 
 		if (!empty) {
-			setText(item.toString());
-			setGraphic(fileImageProvider.getImage(item));
+			controller.text.setText(item.toString());
+			controller.image.setImage(fileImageProvider.getImage(item));
+
+			ObservableList<Node> tagContainer = controller.tags.getChildren();
+			tagContainer.clear();
+
+			// Sort the tags
+			List<Tag> tags = tagService.getTags(item);
+
+			// Create UI for the tags
+			for (Tag tag : tags) {
+				tagContainer.add(tag.getTagIcon());
+			}
+
+			setGraphic(loader.getNode());
 		} else {
-			setText("");
 			setGraphic(null);
 		}
 	}
@@ -220,6 +250,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		if (!sourceFile.isDirectory() || (sourceFile.isDirectory() && sourceFile.list().length == 0)) {
 			try {
 				Files.move(source, target);
+				tagService.moveTags(new Path[] { source, target });
 			} catch (FileAlreadyExistsException alreadyExists) {
 				RCPMessageProvider.errorMessage("File already exsits.",
 						"A file with the name " + sourceFile.getName() + " exists.");
@@ -249,6 +280,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 					} else {
 						try {
 							Files.copy(sourcePath, targetPath);
+							tagService.moveTags(new Path[] { sourcePath, targetPath });
 						} catch (FileAlreadyExistsException alreadyExistExc) {
 							// file did not move but is already there, so throw an exception only for the
 							// first time this occurs.

@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,8 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.CustomTreeCell;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.DropElement;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.FileImageProvider;
@@ -91,6 +94,9 @@ public class ProjectExplorerViewController {
 	@Inject
 	IEclipseContext context;
 
+	@Inject
+	private TagService tagService;
+
 	// Controller fields
 
 	private ListChangeListener<TreeItem<FileTreeElement>> changeListener;
@@ -99,6 +105,7 @@ public class ProjectExplorerViewController {
 	private ProjectExplorerToolBarController toolbarController;
 
 	private String filter = "";
+	private List<Tag> filterTags = new ArrayList<Tag>();
 	private boolean isFlatView = false;
 	private HashMap<String, Boolean> expansionState = new HashMap<String, Boolean>();
 
@@ -117,6 +124,8 @@ public class ProjectExplorerViewController {
 
 		projectTree.setRoot(root);
 		projectTree.setShowRoot(false);
+
+		tagService.syncWithFileSystem(treeRoot);
 
 		// Register the SWT Context menu on the canvas
 		_menuService.registerContextMenu(canvas, StringTable.PROJECT_EXPLORER_CONTEXT_MENU_ID);
@@ -139,7 +148,8 @@ public class ProjectExplorerViewController {
 
 			@Override
 			public TreeCell<FileTreeElement> call(TreeView<FileTreeElement> param) {
-				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services);
+				TreeCell<FileTreeElement> treeCell = new CustomTreeCell(fileSystem, fileImageProvider, services,
+						context);
 				return treeCell;
 			}
 		});
@@ -147,7 +157,6 @@ public class ProjectExplorerViewController {
 		// Handoff Toolbar
 		toolbarController = new ProjectExplorerToolBarController(projectToolbar, context, services,
 				canvas.getParent().getShell());
-
 	}
 
 	/**
@@ -188,6 +197,19 @@ public class ProjectExplorerViewController {
 	}
 
 	/**
+	 * If a treeItem should be displayed
+	 * 
+	 * @param node treeItem
+	 * @return true if it is searched for or nothing is searched
+	 */
+	private boolean showTreeItem(TreeItem<FileTreeElement> node) {
+		return ((filter.equals("") && filterTags.isEmpty())
+				|| (node.getValue().getRelativePath().toLowerCase().contains(filter.toLowerCase())
+						&& tagService.hasTags(node.getValue(), filterTags))
+				|| !node.getChildren().isEmpty());
+	}
+
+	/**
 	 * Traverse the filesystem tree via dfs to generate a javafx treeview
 	 * 
 	 * @param parentNode The parent node
@@ -213,8 +235,7 @@ public class ProjectExplorerViewController {
 
 		for (FileTreeElement child : parentNode.getChildren()) {
 			TreeItem<FileTreeElement> node = buildHierachialTree(child, false);
-			if (filter.equals("") || node.getValue().getRelativePath().contains(filter)
-					|| !node.getChildren().isEmpty())
+			if (showTreeItem(node))
 				currentNode.getChildren().add(node);
 		}
 
@@ -243,8 +264,7 @@ public class ProjectExplorerViewController {
 
 		for (FileTreeElement child : parentNode.getChildren()) {
 			TreeItem<FileTreeElement> node = buildFlatTree(child, false, rootNode);
-			if (filter.equals("") || node.getValue().getRelativePath().contains(filter)
-					|| !node.getChildren().isEmpty())
+			if (showTreeItem(node))
 				rootNode.getChildren().add(node);
 		}
 
@@ -348,8 +368,27 @@ public class ProjectExplorerViewController {
 	@Inject
 	@Optional
 	public void filter(@UIEventTopic(E4CEventTable.EVENT_FILTER_CHANGED) Object o) {
+		filterTags.clear();
 		if (o instanceof String) {
-			filter = (String) o;
+			String filterString = (String) o;
+			
+			// Split search string at tag identifier and get the filter string and tags
+			// Were the first string always is the filter string followed by n tags
+			if (filterString.contains(TagService.TAG_PREFIX)) {
+				String[] filterStringParts = filterString.split(TagService.TAG_PREFIX);
+				if (filterStringParts.length > 0) {
+					filter = filterStringParts[0];
+					for (int i = 1; i < filterStringParts.length; i++) {
+						for (Tag tag : tagService.getAvailableTags()) {
+							if (tag.getName().equals(filterStringParts[i])) {
+								filterTags.add(tag);
+							}
+						}
+					}
+				}
+			} else {
+				filter = filterString;
+			}
 		} else {
 			filter = "";
 		}

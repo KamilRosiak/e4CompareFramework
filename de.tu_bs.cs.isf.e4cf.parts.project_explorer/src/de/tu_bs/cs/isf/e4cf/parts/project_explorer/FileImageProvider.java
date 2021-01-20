@@ -10,8 +10,6 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import javafx.embed.swt.SWTFXUtils;
-import javafx.scene.Node;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 
 /*
@@ -32,7 +30,7 @@ public class FileImageProvider {
 	 * 
 	 * @param element tree element
 	 */
-	public Node getImage(Object element) {
+	public WritableImage getImage(Object element) {
 		Image image = null;
 
 		if (element instanceof FileTreeElement) {
@@ -59,6 +57,6 @@ public class FileImageProvider {
 
 		WritableImage fxImage = SWTFXUtils.toFXImage(image.getImageData(), null);
 
-		return new ImageView(fxImage);
+		return fxImage;
 	}
 }

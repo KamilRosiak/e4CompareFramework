@@ -10,6 +10,12 @@ public class FileTable {
 	public static final String COPY_DIRECTORY_PAGE_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "CopyDirectoryView.fxml")
 			.toString();
 	public static final String NEW_FILE_PAGE_VIEW = Paths.get(PROJECT_EXPLORER_VIEWS, "NewFileView.fxml").toString();
+	public static final String CUSTOM_TREE_CELL_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "CustomTreeCellView.fxml")
+			.toString();
+
+	public static final String ADD_TAG_FXML = Paths.get(PROJECT_EXPLORER_VIEWS, "TagView.fxml").toString();
+
+	public static final String TAG_LIST_CELL = Paths.get(PROJECT_EXPLORER_VIEWS, "TagListCell.fxml").toString();
 
 	// Image paths
 	public static String PROJECT_EXPLORER = Paths.get("icons", "Explorer_View").toString();
@@ -20,6 +26,7 @@ public class FileTable {
 	public static String XML_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "xml16.png").toString();
 	public static String FILE_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "file16.png").toString();
 	public static String NEWFILE_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "newfile16.png").toString();
+	public static String TAG_PNG = Paths.get(PROJECT_EXPLORER_ICONS, "tag_16.png").toString();
 
 	// Toolbar
 	public static String PROJECT_EXPLORER_TOOLBAR = Paths.get(PROJECT_EXPLORER, "ToolBar").toString();
