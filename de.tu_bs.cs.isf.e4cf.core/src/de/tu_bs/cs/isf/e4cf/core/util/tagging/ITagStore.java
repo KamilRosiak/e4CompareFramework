@@ -20,6 +20,8 @@ public interface ITagStore {
 
 	/**
 	 * Load a map of tags for each file
+	 * mapping a workspace file path as key
+	 * to a list of tags for that path
 	 * @param availableTags because we only load existing tags
 	 * @return loaded map with tags
 	 */
@@ -27,6 +29,8 @@ public interface ITagStore {
 	
 	/**
 	 * Store a map of tags for each file
+	 * mapping a workspace file path as key
+	 * to a list of tags for that path
 	 * @param tagMap map of tags to store
 	 */
 	public void storeTagMap(Map<String, List<Tag>> tagMap);
