@@ -134,6 +134,7 @@ public class ProjectExplorerToolBarController {
 		// Tag managing
 		btnTagManager = createToolbarButton("Manage Tags", FileTable.TAG_PNG, actionEvent -> {
 			TagHandler handler = new TagHandler();
+			handler.initTagService(services.tagService);
 			if (handler.canExecute(services.rcpSelectionService)) {
 				handler.execute(context, services, shell);
 			}

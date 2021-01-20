@@ -28,7 +28,7 @@ public class TagDialog {
 	private TagPage tagPage;
 	// indicates whether a file has been moved.
 	private TagService tagService;
-	private List<FileTreeElement> selectedElements;
+	private List<FileTreeElement> selectedElements = new ArrayList<FileTreeElement>();
 	private List<Tag> avaiableTags = new ArrayList<Tag>();
 	private ServiceContainer services;
 
@@ -42,7 +42,7 @@ public class TagDialog {
 		this.tagService = tagService;
 		this.services = services;
 
-		this.selectedElements = selectedElements;
+		this.selectedElements.addAll(selectedElements);
 
 		this.avaiableTags.addAll(tagService.getAvailableTags());
 
@@ -56,7 +56,6 @@ public class TagDialog {
 
 		this.tagPage = new TagPage(context, tagService, previouslySelected);
 		pane.setContent(tagPage.createControl());
-
 	}
 
 	/** show the dialog and wait for the users input */
@@ -73,10 +72,7 @@ public class TagDialog {
 	 */
 	public void performFinish() {
 
-		List<Tag> availableSessionTags = tagPage.getSessionTags();
-
-		tagService.getAvailableTags().clear();
-		tagService.getAvailableTags().addAll(availableSessionTags);
+		applySessionChangesToTagService();
 
 		List<Tag> selectedTags = tagPage.getSelectedTags();
 		List<Tag> notIntersect = new ArrayList<Tag>();
@@ -98,6 +94,31 @@ public class TagDialog {
 			}
 		}
 		services.workspaceFileSystem.refresh();
+	}
+
+	/**
+	 * Apply changes made in this session to the available tags from the tag
+	 * service.
+	 */
+	private void applySessionChangesToTagService() {
+		List<Tag> availableSessionTags = tagPage.getSessionTags();
+
+		for (Tag tag : avaiableTags) {
+			if (!availableSessionTags.contains(tag)) {
+				tagService.delteAvailableTag(tag);
+			}
+		}
+
+		for (Tag tag : availableSessionTags) {
+			if (!avaiableTags.contains(tag)) {
+				tagService.addAvailableTag(tag);
+			} else {
+				avaiableTags.get(avaiableTags.indexOf(tag));
+				if (!tag.getColor().equals(tag.getColor())) {
+					tagService.updateAvailableTag(tag, tag.getColor());
+				}
+			}
+		}
 	}
 
 	// get all tags that are active on these elements.

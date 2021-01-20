@@ -31,8 +31,6 @@ public class TagPage {
 
 	private Tag tagToUpdate;
 
-	private TagService tagService;
-
 	private List<Tag> sessionTags = new ArrayList<Tag>();
 
 	/**
@@ -45,7 +43,6 @@ public class TagPage {
 	 */
 	public TagPage(IEclipseContext context, TagService tagService, List<Tag> initialSelectedTags) {
 		this.context = context;
-		this.tagService = tagService;
 		currentlySelectedTags.addAll(initialSelectedTags);
 		sessionTags.addAll(tagService.getAvailableTags());
 	}
@@ -116,7 +113,7 @@ public class TagPage {
 			updateList();
 		});
 
-		controller.listView.getItems().addAll(tagService.getAvailableTags());
+		controller.listView.getItems().addAll(sessionTags);
 
 		controller.listView.setCellFactory(listView -> new ListCell<Tag>() {
 

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;
 
@@ -24,12 +25,22 @@ public class TagHandler implements IHandler {
 	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
 		List<FileTreeElement> selection = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
 		TagDialog dialog = new TagDialog(context, tagService, services, selection);
-
 		dialog.open();
 	}
 
-	@Override
+	/**
+	 * Explicit assignment of the tagservice. This needs to be done when calling
+	 * the handler manually.
+	 * 
+	 * @param tagService the service to assign.
+	 */
+	public void initTagService(TagService tagService) {
+		this.tagService = tagService;
+	}
+
+	@CanExecute
 	public boolean canExecute(RCPSelectionService selectionService) {
-		return true;
+		List<FileTreeElement> selection = selectionService.getCurrentSelectionsFromExplorer();
+		return selection != null && !selection.isEmpty();
 	}
 }
