@@ -104,7 +104,7 @@ public class TagDialog {
 
 		for (Tag tag : avaiableTags) {
 			if (!availableSessionTags.contains(tag)) {
-				tagService.delteAvailableTag(tag);
+				tagService.deleteAvailableTag(tag);
 			}
 		}
 

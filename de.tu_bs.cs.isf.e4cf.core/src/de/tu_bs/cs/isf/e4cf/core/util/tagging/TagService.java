@@ -148,7 +148,7 @@ public class TagService {
 	 * 
 	 * @param tag
 	 */
-	public void delteAvailableTag(Tag tag) {
+	public void deleteAvailableTag(Tag tag) {
 		getAvailableTags().remove(tag);
 
 		// Remove all entries of the deleted tag
