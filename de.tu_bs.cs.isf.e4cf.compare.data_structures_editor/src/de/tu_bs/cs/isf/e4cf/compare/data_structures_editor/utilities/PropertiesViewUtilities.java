@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeUsage;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -26,7 +26,7 @@ public class PropertiesViewUtilities {
 	 * @param tableView
 	 * @return
 	 */
-	public static TableView<Attribute> getAttributeTable(NodeUsage node, TableView<Attribute> tableView) {
+	public static TableView<Attribute> getAttributeTable(NodeImpl node, TableView<Attribute> tableView) {
 
 		ObservableList<Attribute> data = FXCollections.observableArrayList(node.getAttributes());
 

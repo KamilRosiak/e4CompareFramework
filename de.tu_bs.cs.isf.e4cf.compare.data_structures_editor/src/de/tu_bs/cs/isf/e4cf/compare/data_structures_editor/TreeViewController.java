@@ -9,6 +9,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
@@ -49,7 +50,7 @@ public class TreeViewController {
 	private Text hitCount, totalNodeAmount;
 
 	@FXML
-	private TreeView<NodeUsage> treeView;
+	private TreeView<AbstractNode> treeView;
 
 	@FXML
 	private TextField searchTextField;
@@ -59,7 +60,7 @@ public class TreeViewController {
 
 	private String currentSearchText;
 
-	private List<TreeItem<NodeUsage>> copyList = new ArrayList<TreeItem<NodeUsage>>();
+	private List<TreeItem<AbstractNode>> copyList = new ArrayList<TreeItem<AbstractNode>>();
 
 	@Optional
 	@Inject
@@ -87,7 +88,7 @@ public class TreeViewController {
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		closeFile();
-		treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(tree.getRoot())));
+		treeView.setRoot(new TreeItem<AbstractNode>(new NodeImpl(tree.getRoot())));
 		treeView.getRoot().setExpanded(true);
 		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView, tree.getRoot());
 		treeView = TreeViewUtilities.addListener(treeView, services);
@@ -136,8 +137,8 @@ public class TreeViewController {
 	 */
 	@FXML
 	void addChildNode() {
-		TreeItem<NodeUsage> newChild = new TreeItem<NodeUsage>();
-		newChild.setValue(new NodeUsage("DummyNode"));
+		TreeItem<AbstractNode> newChild = new TreeItem<AbstractNode>();
+		newChild.setValue(new NodeImpl("DummyNode"));
 		try {
 			newChild.getValue().addAttribute("TEXT", TreeViewUtilities.getInput("Enter Child Text"));
 		} catch (NullPointerException e) {
@@ -157,7 +158,7 @@ public class TreeViewController {
 	@FXML
 	void copyNode() {
 		copyList.clear();
-		copyList.addAll(new ArrayList<TreeItem<NodeUsage>>(treeView.getSelectionModel().getSelectedItems()));
+		copyList.addAll(new ArrayList<TreeItem<AbstractNode>>(treeView.getSelectionModel().getSelectedItems()));
 	}
 
 	@FXML
@@ -165,13 +166,13 @@ public class TreeViewController {
 
 		try {
 			for (int i = copyList.size() - 1; i >= 0; i--) {
-				TreeItem<NodeUsage> copiedNode = copyList.get(i);
-				TreeItem<NodeUsage> tempNode = new TreeItem<NodeUsage>();
+				TreeItem<AbstractNode> copiedNode = copyList.get(i);
+				TreeItem<AbstractNode> tempNode = new TreeItem<AbstractNode>();
 				tempNode.setValue(copiedNode.getValue());
 				treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
 						.add(treeView.getSelectionModel().getSelectedIndex(), tempNode);
 
-				for (TreeItem<NodeUsage> child : copiedNode.getChildren()) {
+				for (TreeItem<AbstractNode> child : copiedNode.getChildren()) {
 					tempNode.getChildren().add(child);
 				}
 				displayTotalNodeAmount();
@@ -205,7 +206,7 @@ public class TreeViewController {
 
 	@FXML
 	void extractToFile() {
-		List<TreeItem> extractList = new ArrayList<TreeItem>();
+		List<TreeItem<AbstractNode>> extractList = new ArrayList<TreeItem<AbstractNode>>();
 		extractList.addAll(treeView.getSelectionModel().getSelectedItems());
 		TreeViewUtilities.extractTree(treeView, TreeViewUtilities.getInput("Extract to File"), extractList);
 	}
@@ -272,7 +273,7 @@ public class TreeViewController {
 	void searchForNode() {
 		TreeViewUtilities.searchList.clear();
 		treeView.getSelectionModel().clearSelection();
-		List<TreeItem<NodeUsage>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
+		List<TreeItem<AbstractNode>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
 				searchTextField.getText());
 		treeView.getSelectionModel().select(TreeViewUtilities.getCurrentSearchItem(resultList));
 		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());

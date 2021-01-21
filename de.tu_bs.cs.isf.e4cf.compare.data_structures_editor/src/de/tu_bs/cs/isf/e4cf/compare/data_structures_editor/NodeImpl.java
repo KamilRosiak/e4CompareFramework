@@ -9,15 +9,15 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
  * 
  * @author Team05 Implementation of adapter class abstract node
  */
-public class NodeUsage extends AbstractNode {
+public class NodeImpl extends AbstractNode {
 
 	private static final long serialVersionUID = 378278236426734L;
 
-	public NodeUsage(String nodeType) {
+	public NodeImpl(String nodeType) {
 		setNodeType(nodeType);
 	}
 
-	public NodeUsage(Node node) {
+	public NodeImpl(Node node) {
 		setNodeType(node.getNodeType());
 		setAttributes(node.getAttributes());
 		setParent(node.getParent());
@@ -27,13 +27,13 @@ public class NodeUsage extends AbstractNode {
 		initializeMandatoryAttributes(node);
 	}
 
-	public NodeUsage(String nodeType, Node parent) {
+	public NodeImpl(String nodeType, Node parent) {
 		this(nodeType);
 		setParent(parent);
 		parent.addChild(this);
 	}
 
-	public NodeUsage(String nodeString, Node parent, VariabilityClass varClass) {
+	public NodeImpl(String nodeString, Node parent, VariabilityClass varClass) {
 		this(nodeString, parent);
 		setVariabilityClass(varClass);
 	}

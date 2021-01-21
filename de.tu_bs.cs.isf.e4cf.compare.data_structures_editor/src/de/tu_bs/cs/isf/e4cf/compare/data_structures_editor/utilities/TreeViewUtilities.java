@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeUsage;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -28,7 +29,7 @@ import javafx.scene.image.ImageView;
  */
 public final class TreeViewUtilities {
 
-	public static List<TreeItem<NodeUsage>> searchList = new ArrayList<TreeItem<NodeUsage>>();
+	public static List<TreeItem<AbstractNode>> searchList = new ArrayList<TreeItem<AbstractNode>>();
 
 	public static String treeName = "";
 	
@@ -38,7 +39,7 @@ public final class TreeViewUtilities {
 
 	private static int searchCounter = 0;
 
-	public static List<TreeItem<NodeUsage>> list = new ArrayList<TreeItem<NodeUsage>>();
+	public static List<TreeItem<AbstractNode>> list = new ArrayList<TreeItem<AbstractNode>>();
 
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
@@ -78,24 +79,24 @@ public final class TreeViewUtilities {
 	 * @param item
 	 * @return
 	 */
-	public static TreeView<NodeUsage> getTreeViewFromTree(Tree tr, TreeView<NodeUsage> treeView, Node item) {
+	public static TreeView<AbstractNode> getTreeViewFromTree(Tree tr, TreeView<AbstractNode> treeView, Node item) {
 
 		if (item.isRoot()) {
-			treeView.setRoot(new TreeItem<NodeUsage>(new NodeUsage(item), new ImageView(rootImage)));
+			treeView.setRoot(new TreeItem<AbstractNode>(new NodeImpl(item), new ImageView(rootImage)));
 			treeView.getRoot().setExpanded(true);
 			treeView.setShowRoot(true);
-			list.add(new TreeItem<NodeUsage>(new NodeUsage(item)));
+			list.add(new TreeItem<AbstractNode>(new NodeImpl(item)));
 		}
 		if (!item.isLeaf()) {
 			for (Node n : item.getChildren()) {
 				getTreeViewFromTree(tr, treeView, n);
 			}
 		} else {
-			TreeItem<NodeUsage> nextItem;
+			TreeItem<AbstractNode> nextItem;
 			if(item.getAttributes().get(0).getAttributeKey().equals("TEXT")) {
-				nextItem = new TreeItem<NodeUsage>(new NodeUsage(item), new ImageView(nodeImage));
+				nextItem = new TreeItem<AbstractNode>(new NodeImpl(item), new ImageView(nodeImage));
 			} else {
-				nextItem = new TreeItem<NodeUsage>(new NodeUsage(item));
+				nextItem = new TreeItem<AbstractNode>(new NodeImpl(item));
 			}
 			treeView.getRoot().getChildren().add(nextItem);
 			//nextItem.setGraphic(nodeImage);
@@ -157,7 +158,7 @@ public final class TreeViewUtilities {
 	 * @param services
 	 * @return
 	 */
-	public static TreeView<NodeUsage> addListener(TreeView<NodeUsage> treeView, ServiceContainer services) {
+	public static TreeView<AbstractNode> addListener(TreeView<AbstractNode> treeView, ServiceContainer services) {
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
 				switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
@@ -175,12 +176,12 @@ public final class TreeViewUtilities {
 	 * @param name
 	 * @return
 	 */
-	public static List<TreeItem<NodeUsage>> searchTreeItem(TreeItem<NodeUsage> item, String name) {
+	public static List<TreeItem<AbstractNode>> searchTreeItem(TreeItem<AbstractNode> item, String name) {
 		if (item.getValue().toString().contains(name)) {
 			searchList.add(item);
 		}
-		List<TreeItem<NodeUsage>> result = new ArrayList<TreeItem<NodeUsage>>();
-		for (TreeItem<NodeUsage> child : item.getChildren()) {
+		List<TreeItem<AbstractNode>> result = new ArrayList<TreeItem<AbstractNode>>();
+		for (TreeItem<AbstractNode> child : item.getChildren()) {
 			result.addAll(searchTreeItem(child, name));
 			if (result.size() < 1) {
 				searchList.addAll(result);
@@ -189,21 +190,21 @@ public final class TreeViewUtilities {
 		return searchList;
 	}
 
-	public static void serializesTree(TreeView<NodeUsage> treeView) {
+	public static void serializesTree(TreeView<AbstractNode> treeView) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
 		writeToFile(file, treeView);
 	}
 
-	public static void serializesTree(TreeView<NodeUsage> treeView, String newFileName) {
+	public static void serializesTree(TreeView<AbstractNode> treeView, String newFileName) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		writeToFile(file, treeView);
 	}
 
-	public static void extractTree(TreeView<NodeUsage> treeView, String newFileName, List<TreeItem> tempList) {
+	public static void extractTree(TreeView<AbstractNode> treeView, String newFileName, List<TreeItem<AbstractNode>> tempList) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		try {
 			FileWriter writer = new FileWriter(file);
-			for (TreeItem<NodeUsage> node : tempList) {
+			for (TreeItem<AbstractNode> node : tempList) {
 				writer.write(node.getValue().toString());
 				writer.write("\n");
 			}
@@ -228,8 +229,8 @@ public final class TreeViewUtilities {
 
 	}
 
-	public static TreeItem<NodeUsage> getCurrentSearchItem(List<TreeItem<NodeUsage>> resultList) {
-		TreeItem<NodeUsage> currentItem = new TreeItem<NodeUsage>();
+	public static TreeItem<AbstractNode> getCurrentSearchItem(List<TreeItem<AbstractNode>> resultList) {
+		TreeItem<AbstractNode> currentItem = new TreeItem<AbstractNode>();
 		if (getSearchCounter() < resultList.size()) {
 			currentItem = resultList.get(getSearchCounter());
 		} else {
@@ -253,15 +254,15 @@ public final class TreeViewUtilities {
 	}
 	
 
-	public static void writeToFile(File file, TreeView treeView) {
+	public static void writeToFile(File file, TreeView<AbstractNode> treeView) {
 		if (file.getName().equals(treeName)) {
 			file.delete();
 		}
 
 		try {
 			FileWriter writer = new FileWriter(file);
-			TreeItem<NodeUsage> rootItem = treeView.getRoot();
-			for (TreeItem<NodeUsage> node : rootItem.getChildren()) {
+			TreeItem<AbstractNode> rootItem = treeView.getRoot();
+			for (TreeItem<AbstractNode> node : rootItem.getChildren()) {
 				writer.write(node.getValue().toString());
 				writer.write("\n");
 			}

@@ -45,7 +45,7 @@ public class PropertiesController {
 	 */
 	@Optional
 	@Inject
-	public void showProperties(@UIEventTopic("nodePropertiesEvent") NodeUsage node) {
+	public void showProperties(@UIEventTopic("nodePropertiesEvent") NodeImpl node) {
 		propertiesTable.getColumns().clear();
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
