@@ -1,10 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities;
 
+import java.util.Optional;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -62,5 +65,17 @@ public class PropertiesViewUtilities {
 		alert.setContentText(outputText);
 		alert.setTitle("Fehler");
 		alert.showAndWait();
+	}
+	
+	public static boolean confirmationAlert(String outputText) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setHeaderText(null);
+		alert.setContentText(outputText);
+		alert.setTitle("Confirmation required");
+		Optional<ButtonType> result = alert.showAndWait();
+		if(result.get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
 	}
 }

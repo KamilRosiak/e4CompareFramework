@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -15,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -162,7 +164,7 @@ public final class TreeViewUtilities {
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
 				switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
-				services.eventBroker.send("nodePropertiesEvent",
+				services.eventBroker.send("NodePropertiesEvent",
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
 		});
@@ -211,7 +213,7 @@ public final class TreeViewUtilities {
 			writer.close();
 			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
 		} catch (IOException e) {
-			alert("Es ist eine " + e + "aufgetreten");
+			informationAlert("Es ist eine " + e + "aufgetreten");
 		}
 	}
 
@@ -223,7 +225,7 @@ public final class TreeViewUtilities {
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			alert("Bitte einen Wert eingeben");
+			informationAlert("Bitte einen Wert eingeben");
 		}
 		return s;
 
@@ -273,11 +275,23 @@ public final class TreeViewUtilities {
 		}
 	}
 
-	public static void alert(String outputText) {
+	public static void informationAlert(String outputText) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
-		alert.setTitle("Fehler");
+		alert.setTitle("Error");
 		alert.showAndWait();
+	}
+	
+	public static boolean confirmationAlert(String outputText) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setHeaderText(null);
+		alert.setContentText(outputText);
+		alert.setTitle("Confirmation required");
+		Optional<ButtonType> result = alert.showAndWait();
+		if(result.get() == ButtonType.OK) {
+			return true;
+		}
+		return false;
 	}
 }

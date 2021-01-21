@@ -45,7 +45,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
                 <MenuItem mnemonicParsing="false" onAction="#cutNode" text="Cut" />
 				<MenuItem mnemonicParsing="false" onAction="#extractToFile" text="Extract to file" />
-                <MenuItem mnemonicParsing="false" onAction="#deleteNode" text="Delete" />
+                <MenuItem mnemonicParsing="false" onAction="#deleteNodeFXML" text="Delete" />
               </items>
             </ContextMenu>
          </contextMenu></TreeView> 

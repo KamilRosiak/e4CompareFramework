@@ -81,6 +81,13 @@ public class TreeViewController {
 			}
 		}
 	}
+	
+	@Optional
+	@Inject
+	public void reopenItem(@UIEventTopic("ReopenItemEvent") boolean bool) {
+		services.eventBroker.send("EmptyPropertiesTableEvent", true);
+		services.eventBroker.send("NodePropertiesEvent", treeView.getSelectionModel().getSelectedItem().getValue());
+	}
 
 	private void initializeTree(Tree tree) {
 		treeView.setContextMenu(contextMenu);
@@ -103,6 +110,22 @@ public class TreeViewController {
 		treeView.refresh();
 	}
 
+	void deleteNode() {
+		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
+				.remove(treeView.getSelectionModel().getSelectedItem());
+		displayTotalNodeAmount();
+		treeView.refresh();
+	}
+
+	void addAtrrOnIndex() {
+		int place = Integer.parseInt(TreeViewUtilities.getInput("Enter Place"));
+		AbstractAttribute attribute = (AbstractAttribute) treeView.getSelectionModel().getSelectedItem().getValue()
+				.getAttributes().get(place);
+		attribute.getAttributeValues().clear();
+		attribute.setAttributeKey(TreeViewUtilities.getInput("Enter attribute name"));
+		attribute.getAttributeValues().add(TreeViewUtilities.getInput("Enter attribute value"));
+	}
+
 	private void addAttribute(String attributeName, String attributeValue) {
 		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
 		treeView.refresh();
@@ -123,15 +146,6 @@ public class TreeViewController {
 		treeView.refresh();
 	}
 
-	void addAtrrOnIndex() {
-		int place = Integer.parseInt(TreeViewUtilities.getInput("Enter Place"));
-		AbstractAttribute attribute = (AbstractAttribute) treeView.getSelectionModel().getSelectedItem().getValue()
-				.getAttributes().get(place);
-		attribute.getAttributeValues().clear();
-		attribute.setAttributeKey(TreeViewUtilities.getInput("Enter attribute name"));
-		attribute.getAttributeValues().add(TreeViewUtilities.getInput("Enter attribute value"));
-	}
-
 	/**
 	 * 
 	 */
@@ -144,7 +158,7 @@ public class TreeViewController {
 		} catch (NullPointerException e) {
 			return;
 		}
-		if(newChild.getValue().getAttributes().get(0).getAttributeKey().equals("TEXT")) {
+		if (newChild.getValue().getAttributes().get(0).getAttributeKey().equals("TEXT")) {
 			newChild.setGraphic(new ImageView(TreeViewUtilities.nodeImage));
 		}
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(newChild);
@@ -195,7 +209,7 @@ public class TreeViewController {
 		}
 		addAttribute("name", TreeViewUtilities.getInput("Enter new name"));
 		treeView.refresh();
-		services.eventBroker.send("nodePropertiesEvent", treeView.getSelectionModel().getSelectedItem().getValue());
+		services.eventBroker.send("NodePropertiesEvent", treeView.getSelectionModel().getSelectedItem().getValue());
 	}
 
 	@FXML
@@ -212,11 +226,10 @@ public class TreeViewController {
 	}
 
 	@FXML
-	void deleteNode() {
-		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
-				.remove(treeView.getSelectionModel().getSelectedItem());
-		displayTotalNodeAmount();
-		treeView.refresh();
+	void deleteNodeFXML() {
+		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
+			deleteNode();
+		}
 	}
 
 	/**
