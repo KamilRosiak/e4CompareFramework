@@ -3,7 +3,6 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.util;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.core.compare.util.Tuple;
 
 /**
  * Converts a Tree to Dot (graph description language) for visualization. Use
@@ -12,9 +11,7 @@ import de.tu_bs.cs.isf.e4cf.core.compare.util.Tuple;
  * @author Paulo Haas
  *
  */
-public class TreeConverter {
-	private static int nodeCounter = 0;
-	
+public class TreeConverter {	
 	/**
 	 * Converts a Tree to Dot code
 	 * 
