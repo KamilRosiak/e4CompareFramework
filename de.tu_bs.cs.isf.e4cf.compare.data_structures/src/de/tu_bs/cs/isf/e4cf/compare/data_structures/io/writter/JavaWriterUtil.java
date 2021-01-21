@@ -8,6 +8,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
 
 import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.*;
 import com.github.javaparser.ast.stmt.*;
@@ -626,6 +628,14 @@ public class JavaWriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(YieldStmt.class.getSimpleName())) {
 			YieldStmt obj = new YieldStmt();
+			jpNode = obj;
+		} else if (n.getNodeType().equals(LineComment.class.getSimpleName())) {
+			LineComment obj = new LineComment(attributes.getComment());
+			p.setLineComment(attributes.getComment());
+			jpNode = obj;
+		} else if (n.getNodeType().equals(BlockComment.class.getSimpleName())) {
+			BlockComment obj = new BlockComment(attributes.getComment());
+			p.setBlockComment(attributes.getComment());
 			jpNode = obj;
 		}
 
