@@ -9,6 +9,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
 
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.*;
@@ -631,12 +633,25 @@ public class JavaWriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(LineComment.class.getSimpleName())) {
 			LineComment obj = new LineComment(attributes.getComment());
-			p.setLineComment(attributes.getComment());
+			p.addOrphanComment(obj);
 			jpNode = obj;
 		} else if (n.getNodeType().equals(BlockComment.class.getSimpleName())) {
 			BlockComment obj = new BlockComment(attributes.getComment());
-			p.setBlockComment(attributes.getComment());
+			p.addOrphanComment(obj);
 			jpNode = obj;
+		}
+		
+		if (!(jpNode instanceof Comment) && !attributes.getComment().isEmpty()) {
+			String commentContent = attributes.getComment();
+			Comment comment = null;
+			if (commentContent.startsWith("/**")) {
+				comment = new JavadocComment(commentContent);
+			} else if (commentContent.startsWith("//")) {
+				comment = new LineComment(commentContent);
+			} else {
+				comment = new BlockComment(commentContent);
+			}
+			jpNode.setComment(comment);
 		}
 
 		if (p != null && jpNode != null) {
