@@ -89,7 +89,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 			List<File> directories = new ArrayList<File>();
 
 			if (db.hasFiles()) {
-				List<java.io.File> files = db.getFiles();
+				List<File> files = db.getFiles();
 
 				// Prevent Dropping on a directory contained in drag source
 				if (files.contains(directory.getFile().toFile())) {
@@ -100,7 +100,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 					return;
 				}
 
-				for (java.io.File file : files) {
+				for (File file : files) {
 					try {
 
 						// Determine if a drop originates from tree or from file system
@@ -108,7 +108,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 						if (event.getGestureSource() instanceof CustomTreeCell) {
 							// In-Tree: Perform Move
 							dropMode = DropMode.MOVE;
-							
+
 							if (file.isDirectory() && file.listFiles().length > 0) {
 								directories.add(file);
 
@@ -170,7 +170,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 
 			ClipboardContent content = new ClipboardContent();
 
-			ArrayList<java.io.File> sources = new ArrayList<java.io.File>();
+			ArrayList<File> sources = new ArrayList<File>();
 
 			for (FileTreeElement entry : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
 				boolean found = false;
@@ -185,7 +185,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 					}
 				}
 				if (!found) {
-					File fileToAdd = new java.io.File(dirName);
+					File fileToAdd = new File(dirName);
 					sources.add(fileToAdd);
 				}
 			}

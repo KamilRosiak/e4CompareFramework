@@ -12,6 +12,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
 import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -31,30 +32,35 @@ public class TagDialog {
 	private List<FileTreeElement> selectedElements = new ArrayList<FileTreeElement>();
 	private List<Tag> avaiableTags = new ArrayList<Tag>();
 	private ServiceContainer services;
-
-	List<Tag> previouslySelected = new ArrayList<Tag>();
+	private List<Tag> previouslySelected = new ArrayList<Tag>();
+	private IEclipseContext context;
 
 	public TagDialog(IEclipseContext context, ServiceContainer services, List<FileTreeElement> selectedElements) {
-		alert = new Alert(AlertType.NONE);
-		alert.setTitle("Manage Tags");
-
+		this.context = context;
 		this.services = services;
 		this.tagService = services.tagService;
-
 		this.selectedElements.addAll(selectedElements);
-
 		this.avaiableTags.addAll(tagService.getAvailableTags());
 
-		previouslySelected = getInitialSelectedTags();
+		initAlert();
+		initDialog();
+	}
 
+	private void initDialog() {
 		final DialogPane pane = alert.getDialogPane();
 		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		final Stage stage = (Stage) pane.getScene().getWindow();
 		stage.getIcons().add(services.imageService.getFXImage(null, FileTable.TAG_PNG).getImage());
 
+		this.previouslySelected = getInitialSelectedTags();
 		this.tagPage = new TagPage(context, tagService, previouslySelected);
 		pane.setContent(tagPage.createControl());
+	}
+
+	private void initAlert() {
+		alert = new Alert(AlertType.NONE);
+		alert.setTitle(StringTable.TAG_DIALOG_TITLE);
 	}
 
 	/** show the dialog and wait for the users input */
@@ -70,7 +76,6 @@ public class TagDialog {
 	 * that are not selected anymore.
 	 */
 	public void performFinish() {
-
 		applySessionChangesToTagService();
 
 		List<Tag> selectedTags = tagPage.getSelectedTags();
@@ -82,7 +87,6 @@ public class TagDialog {
 					notIntersect.add(tag);
 				}
 			}
-
 			for (FileTreeElement element : selectedElements) {
 				for (Tag tag : notIntersect) {
 					tagService.deleteTag(element, tag);
@@ -128,7 +132,6 @@ public class TagDialog {
 				tags.addAll(tagService.getTags(element));
 			}
 		}
-
 		return new ArrayList<Tag>(tags);
 	}
 }

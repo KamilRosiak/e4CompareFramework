@@ -20,9 +20,10 @@
 			<children>
 				<TextField fx:id="tagTextField" promptText="Tag Name" />
 				<ColorPicker fx:id="colorPicker" />
-				<Button fx:id="addBtn" mnemonicParsing="false" text="Add" />
+				<Button fx:id="addBtn" mnemonicParsing="false"
+					onAction="#addTag" text="Add" />
 				<Button fx:id="cancelBtn" mnemonicParsing="false"
-					text="Cancel" />
+					onAction="#cancel" text="Cancel" />
 			</children>
 		</HBox>
 		<Text fx:id="errorText" fill="#ea0f0f" strokeType="OUTSIDE"
@@ -34,12 +35,12 @@
 		<HBox spacing="4">
 			<children>
 				<Button fx:id="selectAllBtn" mnemonicParsing="false"
-					text="Select all tags" />
+					onAction="#selectAll" text="Select all tags" />
 				<Button fx:id="deselectAllBtn" mnemonicParsing="false"
-					text="Deselect all tags" />
+					onAction="#deselectAll" text="Deselect all tags" />
 				<Region HBox.hgrow="ALWAYS" />
 				<Button fx:id="deleteBtn" mnemonicParsing="false"
-					text="Delete selected tag" />
+					onAction="#deleteTag" text="Delete selected tag" />
 			</children>
 		</HBox>
 	</children>

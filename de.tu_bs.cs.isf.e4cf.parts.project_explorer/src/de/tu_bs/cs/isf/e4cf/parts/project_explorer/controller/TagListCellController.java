@@ -5,6 +5,9 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
+/**
+ * A controller that manages the fxml for the cell in the listview
+ */
 public class TagListCellController {
 
 	@FXML

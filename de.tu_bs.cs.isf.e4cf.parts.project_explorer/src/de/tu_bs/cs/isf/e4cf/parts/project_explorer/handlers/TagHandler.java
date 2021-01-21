@@ -13,6 +13,10 @@ import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.tagging.dialog.TagDialog;
 
+/**
+ * A handler that opens a dialog that lets the user see all tags and manage them
+ * with basic CRUD functionality.
+ */
 public class TagHandler implements IHandler {
 
 	@Execute
