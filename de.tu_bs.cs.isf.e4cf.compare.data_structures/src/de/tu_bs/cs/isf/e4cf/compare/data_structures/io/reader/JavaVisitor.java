@@ -33,6 +33,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * @param arg e4cf Parent Node
 	 */
 	private void visitor(com.github.javaparser.ast.Node n, Node arg) {
+		if (n.getComment().isPresent()) {
+			JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Comment, n.getComment().get().getContent());
+		}
 		n.getChildNodes().forEach(c -> c.accept(this, arg));
 	}
 
