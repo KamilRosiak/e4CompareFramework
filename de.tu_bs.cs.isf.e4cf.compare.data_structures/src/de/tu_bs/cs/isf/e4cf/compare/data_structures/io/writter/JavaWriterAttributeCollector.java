@@ -23,13 +23,10 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaAttributesType
  */
 public class JavaWriterAttributeCollector {
 	private NodeList<AnnotationExpr> _annotation = new NodeList<AnnotationExpr>();
-	private Statement _assignment = null;
 	private boolean _asteriks = false;
 	private NodeList<ClassOrInterfaceType> _bound = new NodeList<ClassOrInterfaceType>();
-	private Expression _cast = null;
 	private Expression _check = null;
 	private int _children = 0;
-	private String _class = new String();
 	private String _comment = new String();
 	private Expression _comparison = null;
 	private NodeList<Expression> _condition = new NodeList<Expression>();
@@ -83,8 +80,6 @@ public class JavaWriterAttributeCollector {
 					}
 					_annotation.add(StaticJavaParser.parseAnnotation(value));
 				}
-			} else if (key.equals(JavaAttributesTypes.Assignment.name())) {
-				_assignment = StaticJavaParser.parseStatement(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Asterisks.name())) {
 				_asteriks = Boolean.valueOf(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Bound.name())) {
@@ -94,14 +89,10 @@ public class JavaWriterAttributeCollector {
 				 * attribute.getAttributeValues()
 				 * 		.forEach(val -> _bound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 				*/
-			} else if (key.equals(JavaAttributesTypes.Cast.name())) {
-				_cast = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Check.name())) {
 				_check = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Children.name())) {
 				_children = Integer.parseInt(singleVal);
-			} else if (key.equals(JavaAttributesTypes.Class.name())) {
-				_class = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Comment.name())) {
 				_comment = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Comparison.name())) {
@@ -195,20 +186,12 @@ public class JavaWriterAttributeCollector {
 		return _annotation;
 	}
 
-	public Statement getAssignment() {
-		return _assignment;
-	}
-
 	public boolean isAsteriks() {
 		return _asteriks;
 	}
 
 	public NodeList<ClassOrInterfaceType> getBound() {
 		return _bound;
-	}
-
-	public Expression getCast() {
-		return _cast;
 	}
 
 	public Expression getCheck() {
@@ -219,10 +202,6 @@ public class JavaWriterAttributeCollector {
 		return _children;
 	}
 
-	public String getClassAttribute() {
-		return _class;
-	}
-	
 	public String getComment() {
 		return _comment;
 	}
