@@ -12,7 +12,8 @@ import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.*;
 
 /**
- * Custom visitor class extending {@link VoidVisitorAdapter}.
+ * Custom visitor class extending {@link VoidVisitor} creating a {@link Node}
+ * for each {@link com.github.javaparser.ast.Node} visited.
  * 
  * @see <a href=
  *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/visitor/VoidVisitorAdapter.html">Javaparser
@@ -28,13 +29,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	/**
 	 * Visits all children of the node n.
 	 * 
-	 * @param n JavaParser Node
+	 * @param n   JavaParser Node
 	 * @param arg e4cf Parent Node
 	 */
 	private void visitor(com.github.javaparser.ast.Node n, Node arg) {
 		n.getChildNodes().forEach(c -> c.accept(this, arg));
 	}
-	
+
 	/**
 	 * Visits the compilation unit and creates a new node of type "CompilationUnit"
 	 * ({@link CompilationUnit} as a string).
