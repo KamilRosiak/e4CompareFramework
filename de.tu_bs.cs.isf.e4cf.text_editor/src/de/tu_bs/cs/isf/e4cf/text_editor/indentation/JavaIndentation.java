@@ -60,7 +60,11 @@ public class JavaIndentation {
             	insertClosingBrace("]");
             } else if (KE.getCode() == KeyCode.DIGIT8 && KE.isShiftDown()) {
             	insertClosingBrace(")");
-            }
+            } else if (KE.getCode() == KeyCode.DIGIT2 && KE.isShiftDown()) {
+            	insertClosingBrace("\"");
+            } else if (KE.getCode() == KeyCode.NUMBER_SIGN && KE.isShiftDown()) {
+            	insertClosingBrace("'");
+            } 
         });
     }
 
