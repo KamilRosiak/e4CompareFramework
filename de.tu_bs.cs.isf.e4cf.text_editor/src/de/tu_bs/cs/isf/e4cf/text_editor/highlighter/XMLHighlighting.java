@@ -18,7 +18,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 public class XMLHighlighting {
 
 	/**
-	 * Regular expressions for this file type
+	 * Regular expressions for this file type.
 	 */
 	private static final String ELEMENT_PATTERN = "(</?\\h*)(\\w+)([^<>]*)(\\h*/?>)";
 	private static final String COMMENT_PATTERN = "<!--[^<>]+-->";
@@ -34,7 +34,7 @@ public class XMLHighlighting {
 	private static final int GROUP_ATTRIBUTE_VALUE = 3;
 
 	/**
-	 * Compiling the pattern to be checked with Matcher later
+	 * Compiling the pattern to be checked with Matcher later.
 	 */
 	private static final Pattern XML_TAG = Pattern
 			.compile("(?<ELEMENT>" + ELEMENT_PATTERN + ")" + "|(?<COMMENT>" + COMMENT_PATTERN + ")");

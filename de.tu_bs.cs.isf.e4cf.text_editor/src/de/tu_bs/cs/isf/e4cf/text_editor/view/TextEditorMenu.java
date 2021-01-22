@@ -23,6 +23,13 @@ import javafx.stage.Stage;
 
 import org.fxmisc.richtext.CodeArea;
 
+/**
+ * The Class initialize the Main Menu of the Texteditor. Contains all menu items
+ * and their functions.
+ * 
+ * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
+ *
+ */
 public class TextEditorMenu implements Initializable {
 	// File Menu
 	@FXML
@@ -55,8 +62,6 @@ public class TextEditorMenu implements Initializable {
 	private MenuItem selectAllText;
 
 	// Extra Menu
-	@FXML
-	private MenuItem preferences;
 	@FXML
 	private MenuItem find;
 
@@ -295,23 +300,6 @@ public class TextEditorMenu implements Initializable {
 	}
 
 	/**
-	 * Sets the actions of the Preferences item in the Extra menu. Currently just a
-	 * placeholder until it is determined what Preferences are needed, or that the
-	 * Item is unnecessary.
-	 * 
-	 * @author Cedric Kapalla, Soeren Christmann
-	 */
-	@FXML
-	private void initPreferencesAction() {
-		textEditorViewController.alert = new Alert(AlertType.INFORMATION);
-		textEditorViewController.alert.setTitle("Preferences");
-		textEditorViewController.alert.setHeaderText("Placeholder");
-		textEditorViewController.alert.setContentText(
-				"You would be able to adjust preferences here, but this is just a placeholder for now.");
-		textEditorViewController.alert.showAndWait();
-	}
-
-	/**
 	 * Calls a separate window used to find terms in the CodeArea. Makes use of the
 	 * open()-function implemented in FindOperation.java
 	 * 
@@ -320,19 +308,19 @@ public class TextEditorMenu implements Initializable {
 	@FXML
 	private void initFindAction() throws Exception {
 		try {
-	        FXMLLoader fxmlLoader = new FXMLLoader();
-	        fxmlLoader.setLocation(getClass().getResource(EditorST.FIND_OPERATION_FXML));
-	        Scene scene = new Scene(fxmlLoader.load());
-	        Stage stage = new Stage();
-	        stage.setTitle("Find");
-	        FindOperation controller = fxmlLoader.getController();
-	        controller.setTextEditor(textEditorViewController);
-	        stage.setScene(scene);
-	        stage.show();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-		
+			FXMLLoader fxmlLoader = new FXMLLoader();
+			fxmlLoader.setLocation(getClass().getResource(EditorST.FIND_OPERATION_FXML));
+			Scene scene = new Scene(fxmlLoader.load());
+			Stage stage = new Stage();
+			stage.setTitle("Find");
+			FindOperation controller = fxmlLoader.getController();
+			controller.setTextEditor(textEditorViewController);
+			stage.setScene(scene);
+			stage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**

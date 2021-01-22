@@ -10,7 +10,7 @@ import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 /**
  * Base class for specific file extensions to extend. Implements the execute
  * method of the IProjectExplorerExtension as it does not differ between file
- * types
+ * types.
  * 
  * @author Lukas Cronauer
  *

@@ -62,7 +62,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Sets up the wordcount
+	 * Sets up the wordcount.
 	 * 
 	 * @author Soeren Christmann
 	 * 
@@ -72,7 +72,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Initialises counting of words and lines
+	 * Initialises counting of words and lines.
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
@@ -128,7 +128,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Gets the currently selected tab in the tabPane
+	 * Gets the currently selected tab in the tabPane.
 	 * 
 	 * @return Currently selected Tab in the tabPane
 	 *
@@ -147,7 +147,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Gets the currently visible CodeArea in the tabPane
+	 * Gets the currently visible CodeArea in the tabPane.
 	 * 
 	 * @return Currently visible CodeArea
 	 * 
@@ -158,7 +158,7 @@ public class TextEditor implements Initializable {
 	}
 
 	/**
-	 * Gets the text in the CodeArea of the currently selected Tab
+	 * Gets the text in the CodeArea of the currently selected Tab.
 	 * 
 	 * @return Text of currently visible CodeArea
 	 * 

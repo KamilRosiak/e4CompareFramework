@@ -8,14 +8,14 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 /**
  * Definition of highlighting function for file types that should not get
- * highlighted
+ * highlighted.
  * 
  * @author Lukas Cronauer
  *
  */
 public class NoHighlighting {
 	/**
-	 * Does not highlight the text
+	 * Does not highlight the text.
 	 * 
 	 * @param text String of text that the highlighting should be applied to
 	 * @return An empty StyleSpans-object

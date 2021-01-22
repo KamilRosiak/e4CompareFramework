@@ -17,7 +17,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Window;
 
 /**
- * Contains methods for common file interactions such as opening and closing
+ * Contains methods for common file interactions such as opening and closing.
  * 
  * @author Erwin Wijaya, Lukas Cronauer, Soeren Christmann, Cedric Kapalla
  *

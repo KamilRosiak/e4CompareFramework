@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.stringtable;
 
 /**
- * StringTable for the TextEditor plugin
+ * StringTable for the TextEditor plugin.
  *
  * @author Cedric Kapalla, Soeren Christmann, Lukas Cronauer, Erwin Wijaya
  *

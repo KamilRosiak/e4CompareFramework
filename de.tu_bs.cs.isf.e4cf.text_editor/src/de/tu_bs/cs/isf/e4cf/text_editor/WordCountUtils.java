@@ -2,7 +2,7 @@ package de.tu_bs.cs.isf.e4cf.text_editor;
 
 /**
  * Util class to hold a function to count the number of words and lines inside a
- * string
+ * string.
  * 
  * @author Erwin Wijaya, Lukas Cronauer
  */

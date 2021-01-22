@@ -46,8 +46,7 @@
                 </items>
             </Menu>
                 <Menu mnemonicParsing="false" text="Extra">
-                    <items>
-                    <MenuItem fx:id="preferences" mnemonicParsing="false" text="Preferences" onAction="#initPreferencesAction" />
+                    <items>          
                     <MenuItem fx:id="find" mnemonicParsing="false" text="Find" onAction="#initFindAction" accelerator="Shortcut+F" />
                     </items>
                 </Menu>

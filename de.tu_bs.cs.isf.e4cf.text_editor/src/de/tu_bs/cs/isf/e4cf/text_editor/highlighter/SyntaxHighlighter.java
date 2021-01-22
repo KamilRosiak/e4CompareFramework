@@ -40,7 +40,7 @@ public class SyntaxHighlighter {
 	private Timer timer;
 
 	/**
-	 * A Method to be called to initialize highlighting
+	 * A Method to be called to initialize highlighting.
 	 * 
 	 * @param fileType extension of the file
 	 * @param codeArea current area for text on active tab
@@ -76,7 +76,7 @@ public class SyntaxHighlighter {
 	}
 
 	/**
-	 * Schedules highlighting function every 500ms
+	 * Schedules highlighting function every 500ms.
 	 * 
 	 * @param codeArea current area for text on active tab
 	 */
@@ -125,7 +125,7 @@ public class SyntaxHighlighter {
 	}
 
 	/**
-	 * Cancels the timer which computes the highlighting, if one is active
+	 * Cancels the timer which computes the highlighting, if one is active.
 	 *
 	 * @author Lukas Cronauer
 	 */
@@ -136,7 +136,7 @@ public class SyntaxHighlighter {
 	}
 
 	/**
-	 * Calls the highlighting computation in the background using an executor
+	 * Calls the highlighting computation in the background using an executor.
 	 * 
 	 * @return The computed highlighting
 	 * @author Erwin Wijaya, Lukas Cronauer (from richtextfx)
@@ -154,7 +154,7 @@ public class SyntaxHighlighter {
 	}
 
 	/**
-	 * Applies highlighting to the codeArea
+	 * Applies highlighting to the codeArea.
 	 * 
 	 * @param highlighting
 	 */

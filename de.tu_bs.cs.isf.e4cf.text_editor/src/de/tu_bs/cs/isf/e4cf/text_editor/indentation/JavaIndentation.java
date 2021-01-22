@@ -30,7 +30,7 @@ public class JavaIndentation {
     }
 
     /**
-     * Applying the auto Indentation
+     * Applying the auto Indentation.
      * 
      * @param codeArea the codeArea to apply the indentation to
      * @author Lukas Cronauer, Erwin Wijaya
@@ -67,7 +67,11 @@ public class JavaIndentation {
             } 
         });
     }
-
+    /**
+     * Hier Kommentar einfügen @Lukas @Erwin
+     * 
+     * @param brace
+     */
     private void insertClosingBrace(String brace) {
         Platform.runLater(() -> codeArea.insertText(codeArea.getCaretPosition(), brace));
         Platform.runLater(() -> codeArea.moveTo(codeArea.getCaretPosition() - 1));

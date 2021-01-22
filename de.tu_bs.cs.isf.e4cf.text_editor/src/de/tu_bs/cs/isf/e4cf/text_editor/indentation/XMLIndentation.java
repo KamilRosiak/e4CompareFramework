@@ -9,7 +9,12 @@ import org.fxmisc.richtext.CodeArea;
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-
+/**
+ *  Indentation for xml-files.
+ *  
+ * @author Lukas Cronauer, Erwin Wijaya
+ *
+ */
 public class XMLIndentation {
     private String whiteSpaceRegex = "^\\s+";
     private String endtagRegex = ">\\s*$";
@@ -23,7 +28,7 @@ public class XMLIndentation {
     }
 
     /**
-     * Applying the auto Indentation
+     * Applying the auto Indentation.
      * 
      * @param codeArea the codeArea to apply the indentation to
      * @author Lukas Cronauer, Erwin Wijaya

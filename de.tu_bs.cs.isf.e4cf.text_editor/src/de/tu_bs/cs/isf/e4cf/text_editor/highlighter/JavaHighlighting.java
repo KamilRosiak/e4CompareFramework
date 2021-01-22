@@ -60,7 +60,7 @@ public class JavaHighlighting {
 	/**
 	 * A Method to check if the current user input is a match with either of our
 	 * pattern or our keyword for given fileType after successfully check and find
-	 * which word should be highlighted, it will then call the css
+	 * which word should be highlighted, it will then call the css.
 	 * 
 	 * @param text content on codeArea that will be checked
 	 * @return the collection of word that will be highlighted
@@ -122,7 +122,7 @@ public class JavaHighlighting {
 	/**
 	 * Adding a method to check if the user want to call instance If the instance
 	 * has not been initialized then it will mark it with java-error css otherwise
-	 * we highlight the name of instance
+	 * we highlight the name of instance.
 	 * 
 	 * @param text content on codeArea that will be checked
 	 * @return adding it to List of highlight
@@ -159,7 +159,7 @@ public class JavaHighlighting {
 	/**
 	 * Adding a method to check if both class on the initialization part same or not
 	 * if the class name is not the same then it will be highlighted otherwise it
-	 * will return as no error
+	 * will return as no error.
 	 * 
 	 * @param text content on codeArea that will be checked
 	 * @return adding it to List of highlight
