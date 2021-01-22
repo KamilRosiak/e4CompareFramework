@@ -316,6 +316,7 @@ public class TextEditorMenu implements Initializable {
 			FindOperation controller = fxmlLoader.getController();
 			controller.setTextEditor(textEditorViewController);
 			stage.setScene(scene);
+			stage.setResizable(false);
 			stage.show();
 		} catch (Exception e) {
 			e.printStackTrace();
