@@ -8,6 +8,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.PropertiesViewUtilities;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
@@ -45,10 +46,19 @@ public class PropertiesController {
 	 */
 	@Optional
 	@Inject
-	public void showProperties(@UIEventTopic("nodePropertiesEvent") NodeUsage node) {
+	public void showProperties(@UIEventTopic("NodePropertiesEvent") NodeImpl node) {
 		propertiesTable.getColumns().clear();
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
+	}
+	
+	private void refreshGUI() {
+		services.eventBroker.send("RefreshTreeViewEvent", true);
+		services.eventBroker.send("ReopenItemEvent", true);
+	}
+
+	private Attribute getSelectedItem() {
+		return propertiesTable.getSelectionModel().getSelectedItem();
 	}
 
 	@FXML
@@ -65,12 +75,16 @@ public class PropertiesController {
 		getSelectedItem().getAttributeValues().clear();
 		getSelectedItem().getAttributeValues().add(s);
 		refreshGUI();
+		
 	}
 
 	@FXML
 	public void removeNodeAttribute() {
-		services.eventBroker.send("DeleteAttributeEvent", getSelectedItem().getAttributeKey().toString());
-		refreshGUI();
+		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
+			services.eventBroker.send("DeleteAttributeEvent", getSelectedItem().getAttributeKey().toString());
+			refreshGUI();
+		}
+		
 	}
 
 	@FXML
@@ -79,12 +93,5 @@ public class PropertiesController {
 		refreshGUI();
 	}
 
-	private void refreshGUI() {
-		services.eventBroker.send("RefreshTreeViewEvent", true);
-		propertiesTable.refresh();
-	}
-
-	private Attribute getSelectedItem() {
-		return propertiesTable.getSelectionModel().getSelectedItem();
-	}
+	
 }
