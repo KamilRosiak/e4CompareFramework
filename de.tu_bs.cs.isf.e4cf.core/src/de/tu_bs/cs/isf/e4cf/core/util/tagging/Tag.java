@@ -38,6 +38,12 @@ public class Tag {
 		this.colorString = toHexString(color);
 	}
 
+	/**
+	 * Returns the color of this tag as a HEX-Color code that also includes alpha channel.
+	 * Last characters represent alpha channel
+	 * e.g.: RGBA(255, 0,0, 0.5) := #FF000080
+	 * @return the color of this tag as a hex string
+	 */
 	public String getColorString() {
 		return colorString;
 	}
@@ -82,14 +88,13 @@ public class Tag {
 
 		return (tag.name.equals(this.name));
 	}
-	
+
 	/**
 	 * Generates a small circle node with a specific color
 	 * 
 	 * @return the circle
 	 */
 	public Circle getTagIcon() {
-
 		DropShadow dropShadow = new DropShadow();
 		dropShadow.setOffsetX(1);
 		dropShadow.setOffsetY(1);
@@ -100,7 +105,7 @@ public class Tag {
 		circle.setEffect(dropShadow);
 		return circle;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();

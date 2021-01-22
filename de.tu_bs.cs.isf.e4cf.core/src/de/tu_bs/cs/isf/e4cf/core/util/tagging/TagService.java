@@ -159,6 +159,14 @@ public class TagService {
 		}
 	}
 
+	/**
+	 * Returns a list of tags for a given path of a file/directory. If no tags are
+	 * available for this path, then an empty list will be returned.
+	 * 
+	 * @param path the path of the file/directory for which to load the applied
+	 *             tags.
+	 * @return a list with all applied tags to that specific file/directory.
+	 */
 	private List<Tag> safeGetListFromMap(String path) {
 		List<Tag> tags = tagMap.get(path);
 		if (tags == null) {
