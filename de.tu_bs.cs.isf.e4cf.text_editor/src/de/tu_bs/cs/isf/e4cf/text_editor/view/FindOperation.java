@@ -1,10 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
+import java.awt.Toolkit;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -35,6 +38,8 @@ public class FindOperation implements Initializable {
 	// list of starting points
 	private ArrayList<Integer> findings = new ArrayList<Integer>();
 
+	private int searchTextLength = 0;
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -55,22 +60,18 @@ public class FindOperation implements Initializable {
 		String lookingFor = searchField.getText();
 
 		if (lookingFor == "") {
+			 Toolkit.getDefaultToolkit().beep();   
 			return; // do nothing if nothing is in the search-field
 		}
-
-		if (findTerm != lookingFor || findings.isEmpty()) {
-			findTerm = lookingFor; // set findTerm to be what is sought after now
-			String input = textEditor.getCurrentText();
-			findings.clear(); //empty the list if another term is searched
-
-			Pattern pattern = Pattern.compile("\\b" + lookingFor + "\\b");
-			Matcher matcher = pattern.matcher(input);
-			while (matcher.find()) {
-				// always adds starting value to the ArrayList
-				findings.add(matcher.start());
-			}
+		if (findings.isEmpty()) {
+			newFindOperation(lookingFor);
 		}
-
+		if (searchTextLength != textEditor.getCurrentText().length()) {
+			newFindOperation(lookingFor);
+		}
+		if (!(findTerm.equals(lookingFor))) {
+			newFindOperation(lookingFor);
+		}
 		int startPoint = findings.remove(0);
 		textEditor.getCurrentCodeArea().selectRange(startPoint, startPoint + lookingFor.length());
 	}
@@ -87,5 +88,18 @@ public class FindOperation implements Initializable {
 
 	public void setTextEditor(TextEditor editor) {
 		textEditor = editor;
+	}
+
+	private void newFindOperation(String lookingFor) {
+		findTerm = lookingFor; // set findTerm to be what is sought after now
+		String input = textEditor.getCurrentText();
+		findings.clear(); // empty the list if another term is searched
+		searchTextLength = input.length();
+		Pattern pattern = Pattern.compile("\\b" + lookingFor + "\\b");
+		Matcher matcher = pattern.matcher(input);
+		while (matcher.find()) {
+			// always adds starting value to the ArrayList
+			findings.add(matcher.start());
+		}
 	}
 }
