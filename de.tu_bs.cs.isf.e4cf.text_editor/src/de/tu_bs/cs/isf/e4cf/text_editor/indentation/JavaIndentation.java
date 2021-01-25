@@ -68,9 +68,10 @@ public class JavaIndentation {
         });
     }
     /**
-     * Hier Kommentar einfügen @Lukas @Erwin
+     * Inserts a character after another character
+     * Sets the cursor back to the previous position
      * 
-     * @param brace
+     * @param brace String to insert
      */
     private void insertClosingBrace(String brace) {
         Platform.runLater(() -> codeArea.insertText(codeArea.getCaretPosition(), brace));

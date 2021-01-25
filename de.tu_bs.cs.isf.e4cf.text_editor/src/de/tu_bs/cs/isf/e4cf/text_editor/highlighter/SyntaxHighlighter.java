@@ -81,27 +81,6 @@ public class SyntaxHighlighter {
 	 * @param codeArea current area for text on active tab
 	 */
 	private void scheduleHighlighting(CodeArea codeArea) {
-		/*
-		 * Scheduling using a executor, currently not working as ReactFx classes are not
-		 * included. Save to remove after WiSe 20/21!
-		 */
-//         executor = Executors.newSingleThreadExecutor();
-//         Subscription cleanupWhenDone = codeArea.multiPlainChanges()
-//                 .successionEnds(Duration.ofMillis(500))
-//                 .supplyTask(this::computeHighlightingAsync)
-//                 .awaitLatest(codeArea.multiPlainChanges())
-//                 .filterMap(t -> {
-//                     if(t.isSuccess()) {
-//                         return Optional.of(t.get());
-//                     } else {
-//                         t.getFailure().printStackTrace();
-//                         return Optional.empty();
-//                     }
-//                 })
-//                 .subscribe(this::applyHighlighting);
-
-		// call when no longer need it: `cleanupWhenFinished.unsubscribe();`
-
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
