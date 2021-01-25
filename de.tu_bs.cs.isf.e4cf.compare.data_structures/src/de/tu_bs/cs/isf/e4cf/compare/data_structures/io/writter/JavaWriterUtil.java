@@ -46,8 +46,7 @@ public class JavaWriterUtil {
 		attributes.collectAttributes(n);
 
 		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
-			CompilationUnit obj = new CompilationUnit();
-			jpNode = obj;
+			jpNode = compilationUnitFactory(); 
 		} else if (n.getNodeType().equals(CompilationUnit.class.getSimpleName())) {
 			ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
 			coid.setName(attributes.getName());
@@ -691,5 +690,9 @@ public class JavaWriterUtil {
 		}
 
 		return jpNode;
+	}
+	
+	private static CompilationUnit compilationUnitFactory() {
+		return new CompilationUnit();
 	}
 }
