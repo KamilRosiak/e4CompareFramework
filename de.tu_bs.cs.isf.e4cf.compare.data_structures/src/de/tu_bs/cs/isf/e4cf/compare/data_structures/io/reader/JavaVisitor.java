@@ -99,7 +99,11 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * attributes {@link JavaAttributesTypes#Name} containing the parameter's name.
 	 * Then the each modifier of the parameter is visited.
 	 * <p>
-	 * Finally the remaining children of the method declaration are visited.
+	 * The name of the return type of the method is written to an attribute
+	 * {@link JavaAttributesTypes#ReturnType}.
+	 * <p>
+	 * Finally the remaining children, except of the return type, of the method
+	 * declaration are visited.
 	 *
 	 * @see JavaVisitor#visit(Modifier, Node)
 	 * @see <a href=
@@ -132,7 +136,18 @@ public class JavaVisitor implements VoidVisitor<Node> {
 			concreteParameter.removeForced();
 		}
 
-		visitor(n, p);
+		// Return type
+		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.ReturnType, n.getTypeAsString());
+
+		/*
+		 * Return type cannot be removed, so just ignore it, but visit all other
+		 * children.
+		 */
+		n.getChildNodes().forEach(child -> {
+			if (!child.equals(n.getType())) {
+				child.accept(this, p);
+			}
+		});
 	}
 
 	/**
@@ -1409,11 +1424,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(VoidType n, Node arg) {
-		JavaAttributesTypes type = JavaAttributesTypes.Value;
-		if (n.getParentNode().get() instanceof MethodDeclaration) {
-			type = JavaAttributesTypes.ReturnType;
-		}
-		JavaVisitorUtil.addAttribute(arg, type, n.toString());
+		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
 	}
 
 	/**
