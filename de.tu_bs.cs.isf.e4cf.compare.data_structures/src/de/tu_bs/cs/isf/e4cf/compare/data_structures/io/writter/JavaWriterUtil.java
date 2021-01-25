@@ -48,28 +48,7 @@ public class JavaWriterUtil {
 		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
 			jpNode = compilationUnitFactory(); 
 		} else if (n.getNodeType().equals(CompilationUnit.class.getSimpleName())) {
-			ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
-			coid.setName(attributes.getName());
-			coid.setModifiers(attributes.getModifier());
-
-			if (!attributes.getSuperclass().isEmpty()) {
-				coid.addExtendedType(attributes.getSuperclass());
-			}
-			coid.setImplementedTypes(attributes.getInterface());
-			coid.setInterface(attributes.isInterface());
-
-			if (p instanceof CompilationUnit) {
-				CompilationUnit cu = (CompilationUnit) p;
-				cu.addType(coid);
-
-				if (!attributes.getPackage().isEmpty()) {
-					cu.setPackageDeclaration(attributes.getPackage());
-				}
-			} else {
-				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
-						+ ". Expected: " + CompilationUnit.class.getSimpleName());
-			}
-			jpNode = coid;
+			jpNode = classOrInterfaceDeclarationFactory(attributes, p);
 		} else if (n.getNodeType().equals(AnnotationDeclaration.class.getSimpleName())) {
 			CompilationUnit cu;
 			if (p instanceof CompilationUnit) {
@@ -699,5 +678,50 @@ public class JavaWriterUtil {
 	 */
 	private static CompilationUnit compilationUnitFactory() {
 		return new CompilationUnit();
+	}
+	
+	/**
+	 * Creates a new {@link ClassOrInterfaceDeclaration}.  The attributes for this node a retrieved from the parameter.
+	 * 
+	 * @param attributes Attributes of the new node
+	 * @param p Parent node of the new node
+	 * @return {@link ClassOrInterfaceDeclaration}
+	 */
+	private static ClassOrInterfaceDeclaration classOrInterfaceDeclarationFactory(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
+		ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
+		
+		// Name
+		coid.setName(attributes.getName());
+		
+		// Modifier
+		coid.setModifiers(attributes.getModifier());
+
+		// Extends a class?
+		if (!attributes.getSuperclass().isEmpty()) {
+			coid.addExtendedType(attributes.getSuperclass());
+		}
+		
+		// Implemented types
+		coid.setImplementedTypes(attributes.getInterface());
+		
+		// If node is an interface, set boolean to true
+		coid.setInterface(attributes.isInterface());
+
+		// Add new node to parent node
+		if (p instanceof CompilationUnit) {
+			CompilationUnit cu = (CompilationUnit) p;
+			cu.addType(coid);
+
+			// Set package of compilation unit
+			if (!attributes.getPackage().isEmpty()) {
+				cu.setPackageDeclaration(attributes.getPackage());
+			}
+		} else {
+			// If p is not supported, throw exception
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
+					+ ". Expected: " + CompilationUnit.class.getSimpleName());
+		}
+		
+		return coid;
 	}
 }
