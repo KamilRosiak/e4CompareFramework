@@ -1263,7 +1263,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 			Node boundNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Bound, boundCounter++, p);
 			bound.getAnnotations().forEach(ad -> ad.accept(this, boundNode));
 			bound.getName().accept(this, boundNode);
-			bound.getTypeArguments().ifPresent(args -> args.forEach(targ -> JavaVisitorUtil.addAttribute(boundNode, JavaAttributesTypes.Bound, targ.toString())));
+			bound.getTypeArguments().ifPresent(args -> args.forEach(targ -> JavaVisitorUtil.addAttribute(boundNode, JavaAttributesTypes.TypeParameterBound, targ.toString())));
 		}
 		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Bound, String.valueOf(n.getTypeBound().size()));
 	}

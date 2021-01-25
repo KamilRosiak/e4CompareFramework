@@ -186,6 +186,19 @@ public class JavaWriterUtil {
 			BooleanLiteralExpr obj = new BooleanLiteralExpr();
 			obj.setValue(Boolean.valueOf(attributes.getValue().toString()));
 			jpNode = obj;
+		} else if (n.getNodeType().startsWith(JavaNodeTypes.Bound.name())) {
+			if (p instanceof TypeParameter) {
+				TypeParameter tp = (TypeParameter) p;
+				NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound();
+				ClassOrInterfaceType bound = new ClassOrInterfaceType();
+				bound.setName(attributes.getName());
+				bound.setAnnotations(attributes.getAnnotation());
+				NodeList<Type> typeList = new NodeList<Type>();
+				attributes.getTypeParameterBound().forEach(coid -> typeList.add(coid));
+				bound.setTypeArguments(typeList);
+				getTypeBound.add(bound);
+				tp.setTypeBound(getTypeBound);
+			}
 		} else if (n.getNodeType().equals(BreakStmt.class.getSimpleName())
 				|| n.getNodeType().equals(JavaNodeTypes.Break.name())) {
 			BreakStmt obj = new BreakStmt();
@@ -581,7 +594,16 @@ public class JavaWriterUtil {
 			TypeExpr obj = new TypeExpr();
 			jpNode = obj;
 		} else if (n.getNodeType().equals(TypeParameter.class.getSimpleName())) {
-			TypeParameter obj = new TypeParameter();
+			TypeParameter obj = new TypeParameter();	
+			obj.setName(attributes.getName());
+			if (attributes.getAnnotation().isNonEmpty()) {
+				obj.setAnnotations(attributes.getAnnotation());
+			}
+			
+			if (p instanceof NodeWithTypeParameters) {
+				((NodeWithTypeParameters)p).addTypeParameter(obj);
+			}
+			
 			jpNode = obj;
 		} else if (n.getNodeType().equals(UnaryExpr.class.getSimpleName())) {
 			UnaryExpr obj = new UnaryExpr();

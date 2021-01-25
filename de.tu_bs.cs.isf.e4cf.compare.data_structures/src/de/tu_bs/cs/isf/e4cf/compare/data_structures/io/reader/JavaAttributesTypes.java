@@ -241,6 +241,12 @@ public enum JavaAttributesTypes {
 	 */
 	TypeArgument,
 	/**
+	 * A list of type arguments for a type parameter bound.
+	 * 
+	 * @see TypeParameter
+	 */
+	TypeParameterBound,
+	/**
 	 * The update expr of a for loop.
 	 * 
 	 * @see ForStmt

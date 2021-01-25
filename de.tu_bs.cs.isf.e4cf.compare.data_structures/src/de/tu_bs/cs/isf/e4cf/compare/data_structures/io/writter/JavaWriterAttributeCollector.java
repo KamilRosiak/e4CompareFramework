@@ -56,6 +56,7 @@ public class JavaWriterAttributeCollector {
 	private NodeList<ReferenceType> _throws = new NodeList<ReferenceType>();
 	private Type _type = null;
 	private TypeParameter _typeargument = null;
+	private NodeList<Type> _typeParameterBound = new NodeList<Type>();
 	private NodeList<ReferenceType> _unionType = new NodeList<ReferenceType>();
 	private NodeList<Expression> _update = new NodeList<Expression>();
 	private Expression _value = null;
@@ -86,9 +87,9 @@ public class JavaWriterAttributeCollector {
 				/*
 				 * Attribute Bound contains the number of bound children
 				 * 
-				 * attribute.getAttributeValues()
-				 * 		.forEach(val -> _bound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
-				*/
+				 * attribute.getAttributeValues() .forEach(val ->
+				 * _bound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
+				 */
 			} else if (key.equals(JavaAttributesTypes.Check.name())) {
 				_check = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Children.name())) {
@@ -163,15 +164,18 @@ public class JavaWriterAttributeCollector {
 				attribute.getAttributeValues()
 						.forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 			} else if (key.equals(JavaAttributesTypes.Type.name())) {
-				if(!singleVal.contains("|")) {
+				if (!singleVal.contains("|")) {
 					_type = StaticJavaParser.parseType(singleVal);
 				} else {
-					for(String type : singleVal.split("\\|")) {
+					for (String type : singleVal.split("\\|")) {
 						_unionType.add(StaticJavaParser.parseClassOrInterfaceType(type));
 					}
 				}
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
 				_typeargument = StaticJavaParser.parseTypeParameter(singleVal);
+			} else if (key.equals(JavaAttributesTypes.TypeParameterBound.name())) {
+				attribute.getAttributeValues()
+						.forEach(val -> _typeParameterBound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 			} else if (key.equals(JavaAttributesTypes.Update.name())) {
 				attribute.getAttributeValues().forEach(val -> _update.add(StaticJavaParser.parseExpression(val)));
 			} else if (key.equals(JavaAttributesTypes.Value.name())) {
@@ -261,7 +265,7 @@ public class JavaWriterAttributeCollector {
 	public String getName() {
 		return _name;
 	}
-	
+
 	public String getOperator() {
 		return _operator;
 	}
@@ -320,6 +324,10 @@ public class JavaWriterAttributeCollector {
 
 	public TypeParameter getTypeArgument() {
 		return _typeargument;
+	}
+	
+	public NodeList<Type> getTypeParameterBound() {
+		return _typeParameterBound;
 	}
 
 	public NodeList<Expression> getUpdate() {
