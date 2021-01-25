@@ -10,17 +10,27 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
+
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.WorkspaceFileSystem;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
+import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.Tag;
+import de.tu_bs.cs.isf.e4cf.core.util.tagging.TagService;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.CustomTreeCellController;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog.DropMode;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -32,7 +42,9 @@ import javafx.scene.input.TransferMode;
 /**
  * A tree cell that supports dragging
  */
-public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
+public class CustomTreeCell extends TreeCell<FileTreeElement> {
+
+	private TagService tagService;
 
 	private TextField editTextField;
 	private FileImageProvider fileImageProvider;
@@ -42,8 +54,16 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	 */
 	private boolean fileMoved;
 
+	private FXMLLoader<CustomTreeCellController> loader;
+	private CustomTreeCellController controller;
+
 	public CustomTreeCell(WorkspaceFileSystem workspaceFileSystem, FileImageProvider fileImageProvider,
-			ServiceContainer services) {
+			ServiceContainer services, IEclipseContext context) {
+		loader = new FXMLLoader<CustomTreeCellController>(context, StringTable.BUNDLE_NAME,
+				FileTable.CUSTOM_TREE_CELL_FXML);
+		controller = loader.getController();
+		this.tagService = services.tagService;
+
 		this.fileImageProvider = fileImageProvider;
 
 		// Allow Drops on Directory TreeItems but not on files
@@ -69,7 +89,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 			List<File> directories = new ArrayList<File>();
 
 			if (db.hasFiles()) {
-				List<java.io.File> files = db.getFiles();
+				List<File> files = db.getFiles();
 
 				// Prevent Dropping on a directory contained in drag source
 				if (files.contains(directory.getFile().toFile())) {
@@ -80,7 +100,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 					return;
 				}
 
-				for (java.io.File file : files) {
+				for (File file : files) {
 					try {
 
 						// Determine if a drop originates from tree or from file system
@@ -88,23 +108,13 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 						if (event.getGestureSource() instanceof CustomTreeCell) {
 							// In-Tree: Perform Move
 							dropMode = DropMode.MOVE;
-							/**
-							 * If current file is a directory with content it has to have special copying
-							 * functionality.
-							 */
-							if (file.isDirectory() && file.listFiles().length > 0) {
-								// we only want the parent since it is full recursive copying. Can be improved
-								// later.
-								if (!files.contains(file.getParentFile())) {
-									directories.add(file);
-								}
-							} else {
-								// if this file is not a parent of a currently selected folder copy it now.
-								if (!files.contains(file.getParentFile())) {
-									moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
-											Paths.get(directory.getAbsolutePath(), file.getName()));
-								}
 
+							if (file.isDirectory() && file.listFiles().length > 0) {
+								directories.add(file);
+
+							} else {
+								moveFileOrDirectory(Paths.get(file.getAbsolutePath()),
+										Paths.get(directory.getAbsolutePath(), file.getName()));
 							}
 						} else {
 							// From file system: Copy File
@@ -160,10 +170,24 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 
 			ClipboardContent content = new ClipboardContent();
 
-			ArrayList<java.io.File> sources = new ArrayList<java.io.File>();
+			ArrayList<File> sources = new ArrayList<File>();
 
 			for (FileTreeElement entry : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
-				sources.add(new java.io.File(entry.getAbsolutePath()));
+				boolean found = false;
+				String dirName = entry.getAbsolutePath();
+				// if a matching subpath is found (e.g. /something/dir exists and a new file
+				// /something/dir/file.file is added) the search ends and the path won't be
+				// added to the content list of files
+				sourcesContainLoop: for (File file : sources) {
+					if (dirName.contains(file.getAbsolutePath())) {
+						found = true;
+						break sourcesContainLoop;
+					}
+				}
+				if (!found) {
+					File fileToAdd = new File(dirName);
+					sources.add(fileToAdd);
+				}
 			}
 
 			content.putFiles(sources);
@@ -182,7 +206,6 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	@Override
 	public void startEdit() {
 		super.startEdit();
-		setText("");
 		setupEditTextField();
 		setGraphic(editTextField);
 	}
@@ -193,8 +216,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		setText(getItem().toString());
-		setGraphic(fileImageProvider.getImage(getItem()));
+		setGraphic(loader.getNode());
 	}
 
 	@Override
@@ -202,10 +224,22 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		super.updateItem(item, empty);
 
 		if (!empty) {
-			setText(item.toString());
-			setGraphic(fileImageProvider.getImage(item));
+			controller.text.setText(item.toString());
+			controller.image.setImage(fileImageProvider.getImage(item));
+
+			ObservableList<Node> tagContainer = controller.tags.getChildren();
+			tagContainer.clear();
+
+			// Sort the tags
+			List<Tag> tags = tagService.getTags(item);
+
+			// Create UI for the tags
+			for (Tag tag : tags) {
+				tagContainer.add(tag.getTagIcon());
+			}
+
+			setGraphic(loader.getNode());
 		} else {
-			setText("");
 			setGraphic(null);
 		}
 	}
@@ -216,6 +250,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 		if (!sourceFile.isDirectory() || (sourceFile.isDirectory() && sourceFile.list().length == 0)) {
 			try {
 				Files.move(source, target);
+				tagService.moveTags(new Path[] { source, target });
 			} catch (FileAlreadyExistsException alreadyExists) {
 				RCPMessageProvider.errorMessage("File already exsits.",
 						"A file with the name " + sourceFile.getName() + " exists.");
@@ -245,6 +280,7 @@ public class CustomTreeCell extends TextFieldTreeCell<FileTreeElement> {
 					} else {
 						try {
 							Files.copy(sourcePath, targetPath);
+							tagService.moveTags(new Path[] { sourcePath, targetPath });
 						} catch (FileAlreadyExistsException alreadyExistExc) {
 							// file did not move but is already there, so throw an exception only for the
 							// first time this occurs.
