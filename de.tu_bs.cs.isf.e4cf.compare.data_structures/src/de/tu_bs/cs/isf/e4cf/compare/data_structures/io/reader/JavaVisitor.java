@@ -1261,7 +1261,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		int boundCounter = 0;
 		for (ClassOrInterfaceType bound : n.getTypeBound()) {
 			Node boundNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Bound, boundCounter++, p);
-			bound.accept(this, boundNode);
+			bound.getAnnotations().forEach(ad -> ad.accept(this, boundNode));
+			bound.getName().accept(this, boundNode);
+			bound.getTypeArguments().ifPresent(args -> args.forEach(targ -> JavaVisitorUtil.addAttribute(boundNode, JavaAttributesTypes.Bound, targ.toString())));
 		}
 		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Bound, String.valueOf(n.getTypeBound().size()));
 	}
