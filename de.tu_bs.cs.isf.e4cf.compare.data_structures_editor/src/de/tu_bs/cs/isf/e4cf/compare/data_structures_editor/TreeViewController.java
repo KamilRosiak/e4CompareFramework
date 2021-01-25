@@ -81,7 +81,7 @@ public class TreeViewController {
 			}
 		}
 	}
-	
+
 	@Optional
 	@Inject
 	public void reopenItem(@UIEventTopic("ReopenItemEvent") boolean bool) {
@@ -97,8 +97,9 @@ public class TreeViewController {
 		closeFile();
 		treeView.setRoot(new TreeItem<AbstractNode>(new NodeImpl(tree.getRoot())));
 		treeView.getRoot().setExpanded(true);
-		treeView = TreeViewUtilities.getTreeViewFromTree(tree, this.treeView, tree.getRoot());
-		treeView = TreeViewUtilities.addListener(treeView, services);
+		treeView.setShowRoot(true);
+		TreeViewUtilities.fillTreeView(tree.getRoot(), treeView.getRoot());
+		TreeViewUtilities.addListener(treeView, services);
 		// totalNodeAmount
 		// .setText("Total Node Amount: " +
 		// TreeViewUtilities.searchTreeItem(treeView.getRoot(), "").size());

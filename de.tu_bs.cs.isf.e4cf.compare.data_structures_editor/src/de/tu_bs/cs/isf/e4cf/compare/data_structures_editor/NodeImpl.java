@@ -41,13 +41,23 @@ public class NodeImpl extends AbstractNode {
 	private void initializeMandatoryAttributes(Node node) {
 		if (node.isRoot()) {
 			node.addAttribute("name", "root");
-		} else {
+		} else if (attributeExists(node, "TEXT")) {
 			for (String string : node.getAttributeForKey("TEXT").getAttributeValues()) {
 				node.addAttribute("name", string);
 			}
+		} else {
+			node.addAttribute("name", node.getNodeType());
 		}
-
 		node.addAttribute("VariabilityClass", getVariabilityClass().toString());
+	}
+
+	public boolean attributeExists(Node node, String key) {
+		for (Attribute attr : node.getAttributes()) {
+			if (attr.getAttributeKey().equals(key)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
