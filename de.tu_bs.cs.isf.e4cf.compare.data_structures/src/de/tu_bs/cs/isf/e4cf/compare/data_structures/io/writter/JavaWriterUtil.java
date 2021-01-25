@@ -97,11 +97,9 @@ public class JavaWriterUtil {
 			obj.setElementType(attributes.getType());
 			jpNode = obj;
 		} else if (isOfType(n, ArrayCreationLevel.class)) {
-			ArrayCreationLevel obj = new ArrayCreationLevel();
-			jpNode = obj;
+			jpNode = new ArrayCreationLevel();
 		} else if (isOfType(n, ArrayInitializerExpr.class)) {
-			ArrayInitializerExpr obj = new ArrayInitializerExpr();
-			jpNode = obj;
+			jpNode = new ArrayInitializerExpr();
 		} else if (isOfType(n, ArrayType.class)) {
 			ArrayType obj = new ArrayType(attributes.getType(),
 					attributes.getAnnotation().stream().toArray(AnnotationExpr[]::new));// TODO needs closer lookjpNode
@@ -128,8 +126,7 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, BinaryExpr.class)) {
-			BinaryExpr obj = new BinaryExpr();
-			jpNode = obj;
+			jpNode = new BinaryExpr();
 		} else if (isOfType(n, BlockComment.class)) {
 			BlockComment obj = new BlockComment(attributes.getComment());
 			p.addOrphanComment(obj);
@@ -258,8 +255,7 @@ public class JavaWriterUtil {
 			parentIfStmt.setElseStmt(elseStmt);
 			jpNode = elseStmt;
 		} else if (isOfType(n, EmptyStmt.class)) {
-			EmptyStmt obj = new EmptyStmt();
-			jpNode = obj;
+			jpNode = new EmptyStmt();
 		} else if (isOfType(n, EnclosedExpr.class)) {
 			EnclosedExpr obj = new EnclosedExpr();
 
@@ -269,20 +265,15 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, EnumConstantDeclaration.class)) {
-			EnumConstantDeclaration obj = new EnumConstantDeclaration();
-			jpNode = obj;
+			jpNode = new EnumConstantDeclaration();
 		} else if (isOfType(n, EnumDeclaration.class)) {
-			EnumDeclaration obj = new EnumDeclaration();
-			jpNode = obj;
+			jpNode = new EnumDeclaration();
 		} else if (isOfType(n, ExplicitConstructorInvocationStmt.class)) {
-			ExplicitConstructorInvocationStmt obj = new ExplicitConstructorInvocationStmt();
-			jpNode = obj;
+			jpNode = new ExplicitConstructorInvocationStmt();
 		} else if (isOfType(n, ExpressionStmt.class)) {
-			ExpressionStmt obj = new ExpressionStmt();
-			jpNode = obj;
+			jpNode = new ExpressionStmt();
 		} else if (isOfType(n, FieldAccessExpr.class)) {
-			FieldAccessExpr obj = new FieldAccessExpr();
-			jpNode = obj;
+			jpNode = new FieldAccessExpr();
 		} else if (isOfType(n, FieldDeclaration.class)) {
 			FieldDeclaration fd = new FieldDeclaration();
 			fd.setModifiers(attributes.getModifier());
@@ -328,11 +319,12 @@ public class JavaWriterUtil {
 			jpNode = obj;
 		} else if (isOfType(n, IfStmt.class)) {
 			IfStmt obj = new IfStmt();
-			jpNode = obj;
 
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			}
+
+			jpNode = obj;
 		} else if (isOfType(n, JavaNodeTypes.Import)) {
 			if (p != null) {
 				Optional<CompilationUnit> cuOpt = p.findCompilationUnit();
@@ -342,22 +334,18 @@ public class JavaWriterUtil {
 				}
 			}
 		} else if (isOfType(n, InitializerDeclaration.class)) {
-			InitializerDeclaration obj = new InitializerDeclaration();
-			jpNode = obj;
+			jpNode = new InitializerDeclaration();
 		} else if (isOfType(n, InstanceOfExpr.class)) {
-			InstanceOfExpr obj = new InstanceOfExpr();
-			jpNode = obj;
+			jpNode = new InstanceOfExpr();
 		} else if (isOfType(n, IntegerLiteralExpr.class)) {
-			IntegerLiteralExpr obj = new IntegerLiteralExpr();
-			jpNode = obj;
+			jpNode = new IntegerLiteralExpr();
 		} else if (isOfType(n, IntersectionType.class)) {
 			/*
 			 * TODO fill arguments IntersectionType obj = new IntersectionType(); jpNode =
 			 * obj;
 			 */
 		} else if (isOfType(n, LabeledStmt.class)) {
-			LabeledStmt obj = new LabeledStmt();
-			jpNode = obj;
+			jpNode = new LabeledStmt();
 		} else if (isOfType(n, LambdaExpr.class)) {
 			LambdaExpr obj = new LambdaExpr();
 
@@ -371,14 +359,11 @@ public class JavaWriterUtil {
 			p.addOrphanComment(obj);
 			jpNode = obj;
 		} else if (isOfType(n, LocalClassDeclarationStmt.class)) {
-			LocalClassDeclarationStmt obj = new LocalClassDeclarationStmt();
-			jpNode = obj;
+			jpNode = new LocalClassDeclarationStmt();
 		} else if (isOfType(n, LongLiteralExpr.class)) {
-			LongLiteralExpr obj = new LongLiteralExpr();
-			jpNode = obj;
+			jpNode = new LongLiteralExpr();
 		} else if (isOfType(n, MarkerAnnotationExpr.class)) {
-			MarkerAnnotationExpr obj = new MarkerAnnotationExpr();
-			jpNode = obj;
+			jpNode = new MarkerAnnotationExpr();
 		} else if (isOfType(n, MemberValuePair.class)) {
 			MemberValuePair obj = new MemberValuePair();
 			obj.setName(attributes.getKey());
@@ -423,11 +408,9 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, MethodReferenceExpr.class)) {
-			MethodReferenceExpr obj = new MethodReferenceExpr();
-			jpNode = obj;
+			jpNode = new MethodReferenceExpr();
 		} else if (isOfType(n, NameExpr.class)) {
-			NameExpr obj = new NameExpr();
-			jpNode = obj;
+			jpNode = new NameExpr();
 		} else if (isOfType(n, NormalAnnotationExpr.class)) {
 			NormalAnnotationExpr obj = new NormalAnnotationExpr();
 			obj.setName(attributes.getName());
@@ -438,11 +421,9 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, NullLiteralExpr.class)) {
-			NullLiteralExpr obj = new NullLiteralExpr();
-			jpNode = obj;
+			jpNode = new NullLiteralExpr();
 		} else if (isOfType(n, ObjectCreationExpr.class)) {
-			ObjectCreationExpr obj = new ObjectCreationExpr();
-			jpNode = obj;
+			jpNode = new ObjectCreationExpr();
 		} else if (isOfType(n, Parameter.class)) {
 			Parameter obj = new Parameter();
 			if (attributes.getType() != null) {
@@ -460,11 +441,9 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, PrimitiveType.class)) {
-			PrimitiveType obj = new PrimitiveType();
-			jpNode = obj;
+			jpNode = new PrimitiveType();
 		} else if (isOfType(n, ReceiverParameter.class)) {
-			ReceiverParameter obj = new ReceiverParameter();
-			jpNode = obj;
+			jpNode = new ReceiverParameter();
 		} else if (isOfType(n, ReturnStmt.class)) {
 			ReturnStmt obj = new ReturnStmt(attributes.getValue());
 
@@ -486,11 +465,9 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, StringLiteralExpr.class)) {
-			StringLiteralExpr obj = new StringLiteralExpr();
-			jpNode = obj;
+			jpNode = new StringLiteralExpr();
 		} else if (isOfType(n, SuperExpr.class)) {
-			SuperExpr obj = new SuperExpr();
-			jpNode = obj;
+			jpNode = new SuperExpr();
 		} else if (isOfType(n, SwitchEntry.class)) {
 			SwitchEntry obj = new SwitchEntry();
 			obj.setType(SwitchEntry.Type.valueOf(attributes.getType().toString()));
@@ -506,8 +483,7 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, SwitchExpr.class)) {
-			SwitchExpr obj = new SwitchExpr();
-			jpNode = obj;
+			jpNode = new SwitchExpr();
 		} else if (isOfType(n, SwitchStmt.class)) {
 			SwitchStmt obj = new SwitchStmt();
 			obj.setSelector(attributes.getSelector());
@@ -518,11 +494,9 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, SynchronizedStmt.class)) {
-			SynchronizedStmt obj = new SynchronizedStmt();
-			jpNode = obj;
+			jpNode = new SynchronizedStmt();
 		} else if (isOfType(n, TextBlockLiteralExpr.class)) {
-			TextBlockLiteralExpr obj = new TextBlockLiteralExpr();
-			jpNode = obj;
+			jpNode = new TextBlockLiteralExpr();
 		} else if (isOfType(n, JavaNodeTypes.Then)) {
 			IfStmt ifStmt = (IfStmt) p;
 			while (ifStmt.hasElseBranch()) {
@@ -537,8 +511,7 @@ public class JavaWriterUtil {
 			ifStmt.setThenStmt(new EmptyStmt());
 			jpNode = ifStmt;
 		} else if (isOfType(n, ThisExpr.class)) {
-			ThisExpr obj = new ThisExpr();
-			jpNode = obj;
+			jpNode = new ThisExpr();
 		} else if (isOfType(n, ThrowStmt.class)) {
 			ThrowStmt obj = attributes.getStatement().asThrowStmt();
 
@@ -558,8 +531,7 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, TypeExpr.class)) {
-			TypeExpr obj = new TypeExpr();
-			jpNode = obj;
+			jpNode = new TypeExpr();
 		} else if (isOfType(n, TypeParameter.class)) {
 			TypeParameter obj = new TypeParameter();
 			obj.setName(attributes.getName());
@@ -583,17 +555,13 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, UnionType.class)) {
-			UnionType obj = new UnionType();
-			jpNode = obj;
+			jpNode = new UnionType();
 		} else if (isOfType(n, UnknownType.class)) {
-			UnknownType obj = new UnknownType();
-			jpNode = obj;
+			jpNode = new UnknownType();
 		} else if (isOfType(n, UnparsableStmt.class)) {
-			UnparsableStmt obj = new UnparsableStmt();
-			jpNode = obj;
+			jpNode = new UnparsableStmt();
 		} else if (isOfType(n, VariableDeclarationExpr.class)) {
-			VariableDeclarationExpr obj = new VariableDeclarationExpr();
-			jpNode = obj;
+			jpNode = new VariableDeclarationExpr();
 		} else if (isOfType(n, VariableDeclarator.class)) {
 			VariableDeclarator obj = new VariableDeclarator();
 			obj.setType(attributes.getType());
@@ -606,11 +574,9 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, VarType.class)) {
-			VarType obj = new VarType();
-			jpNode = obj;
+			jpNode = new VarType();
 		} else if (isOfType(n, VoidType.class)) {
-			VoidType obj = new VoidType();
-			jpNode = obj;
+			jpNode = new VoidType();
 		} else if (isOfType(n, WhileStmt.class)) {
 			WhileStmt obj = new WhileStmt();
 			obj.setCondition(attributes.getValue());
@@ -623,11 +589,9 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, WildcardType.class)) {
-			WildcardType obj = new WildcardType();
-			jpNode = obj;
+			jpNode = new WildcardType();
 		} else if (isOfType(n, YieldStmt.class)) {
-			YieldStmt obj = new YieldStmt();
-			jpNode = obj;
+			jpNode = new YieldStmt();
 		}
 
 		if (!(jpNode instanceof Comment) && !attributes.getComment().isEmpty()) {
