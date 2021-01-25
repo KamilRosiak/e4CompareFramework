@@ -16,6 +16,7 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.*;
 
@@ -52,17 +53,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, AnnotationDeclaration.class)) {
 			jpNode = createAnnotationDeclaration(attributes, p);
 		} else if (isOfType(n, AnnotationMemberDeclaration.class)) {
-			AnnotationMemberDeclaration obj = new AnnotationMemberDeclaration();
-			obj.setModifiers(attributes.getModifier());
-			obj.setType(attributes.getType());
-			obj.setName(attributes.getName());
-			obj.setDefaultValue(attributes.getValue());
-
-			if (p instanceof AnnotationDeclaration) {
-				((AnnotationDeclaration) p).addMember(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createAnnotationMemberDeclaration(attributes, p);
 		} else if (isOfType(n, JavaNodeTypes.Argument)) {
 			if (p == null || attributes.getChildren() > 0) {
 				// Do nothing, e.g. parent of concrete arg was arg
@@ -721,7 +712,7 @@ public class JavaWriterUtil {
 		}
 		// Create a new intermediate array for the keywords
 		Modifier.Keyword[] keywords = new Modifier.Keyword[attributes.getModifier().size()];
-		/* 
+		/*
 		 * Add the annotation declaration to the compilation unit, with its respective
 		 * attributes. This step creates a new annotation declaration.
 		 */
@@ -729,5 +720,40 @@ public class JavaWriterUtil {
 
 		// return the newly created annotation declaration
 		return cu.getAnnotationDeclarationByName(attributes.getName()).get();
+	}
+
+	/**
+	 * Creates a new {@link AnnotationMemberDeclaration}, sets it's attributes and
+	 * adds the new node to parental {@link AnnotationDeclaration}.
+	 * 
+	 * @param attributes Attributes of the annotation member decl
+	 * @param p          Parental annotation decl
+	 * @return New annotation member decl
+	 */
+	private static AnnotationMemberDeclaration createAnnotationMemberDeclaration(
+			JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
+		// Create new annotation member decl
+		AnnotationMemberDeclaration obj = new AnnotationMemberDeclaration();
+		// Modifiers
+		obj.setModifiers(attributes.getModifier());
+		// Type
+		obj.setType(attributes.getType());
+		// Name
+		obj.setName(attributes.getName());
+		// DefaultValue
+		obj.setDefaultValue(attributes.getValue());
+
+		// Add to parent node
+		if (p instanceof AnnotationDeclaration) {
+			// It should always be a annotation declaration
+			((AnnotationDeclaration) p).addMember(obj);
+		} else {
+			// Throw exception otherwise to signal missing impl
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
+					+ ". Expected: " + AnnotationDeclaration.class.getSimpleName());
+		}
+
+		return obj;
 	}
 }
