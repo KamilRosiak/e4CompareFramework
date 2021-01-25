@@ -1,4 +1,3 @@
-
 package de.tu_bs.cs.isf.e4cf.core.compare.remote.handler;
 
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -48,22 +47,22 @@ public class RestButtonHandler {
         TreeImpl tree1 = new TreeImpl("testTree1");
         tree1.setArtifactType("type");
         tree1.setRoot(root);
-        
-        
+
+
         testAttributes.add(new AttributeImpl("Key2","Value"));
         root.setAttributes(testAttributes);
 
         TreeImpl tree2 = new TreeImpl("testTree2");
         tree2.setArtifactType("type");
         tree2.setRoot(root);
-                
-		
+
+
         RemoteComparisonStatus statusRequest = RemoteComparisonFactory.createComparisonRequest(tree1, tree2);
         System.out.println(statusRequest.toString());
-        
+
         RemoteComparisonStatus statusResponse = RemoteComparisonFactory.getComparisonStatus(statusRequest.getUuid());
         System.out.println(statusResponse.toString());
-        
+
         TreeImpl resultTree = RemoteComparisonFactory.getComparisonResult(statusRequest.getUuid());
         System.out.println(resultTree.toString());
 	}

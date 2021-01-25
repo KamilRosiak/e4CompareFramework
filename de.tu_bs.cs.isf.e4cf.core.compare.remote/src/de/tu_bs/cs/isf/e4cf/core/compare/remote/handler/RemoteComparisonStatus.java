@@ -6,7 +6,7 @@ public class RemoteComparisonStatus {
 	private String result;
 	private String error;
 	private String uuid;
-	
+
 	public RemoteComparisonStatus(String status, int time, String result, String error, String uuid) {
 		super();
 		this.status = status;
@@ -47,7 +47,7 @@ public class RemoteComparisonStatus {
 	public void setError(String error) {
 		this.error = error;
 	}
-	
+
 
 	public String getUuid() {
 		return uuid;
@@ -56,7 +56,7 @@ public class RemoteComparisonStatus {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
-	
+
 
 	@Override
 	public String toString() {
