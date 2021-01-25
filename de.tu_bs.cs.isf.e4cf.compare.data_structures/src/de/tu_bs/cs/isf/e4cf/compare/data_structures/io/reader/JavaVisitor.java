@@ -67,7 +67,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		// Imports
 		Node imports = JavaVisitorUtil.createNode(JavaNodeTypes.Import, cu);
 		int importSize = n.getImports().size();
-		JavaVisitorUtil.addAttribute(imports, JavaAttributesTypes.Children, String.valueOf(importSize));
+		if (importSize > 0) {
+			JavaVisitorUtil.addAttribute(imports, JavaAttributesTypes.Children, String.valueOf(importSize));
+		}
 		for (int i = 0; i < importSize; i++) {
 			ImportDeclaration c = n.getImport(0);
 			visit(c, imports);
