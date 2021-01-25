@@ -55,28 +55,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, AnnotationMemberDeclaration.class)) {
 			jpNode = createAnnotationMemberDeclaration(attributes, p);
 		} else if (isOfType(n, JavaNodeTypes.Argument)) {
-			if (p == null || attributes.getChildren() > 0) {
-				// Do nothing, e.g. parent of concrete arg was arg
-			} else if (attributes.getType() != null && attributes.getName() != null) {
-				Parameter param = new Parameter(attributes.getType(), attributes.getName());
-				param.setModifiers(attributes.getModifier());
-				((NodeWithParameters) p).addParameter(param);
-			} else if (!attributes.getName().isEmpty()) {
-				((NodeWithArguments) p).addArgument(attributes.getName());
-			} else if (attributes.getValue() != null) {
-				((NodeWithArguments) p).addArgument(attributes.getValue());
-			} else if (attributes.getChildren() == 0) {
-				for (Node nChild : n.getChildren()) {
-					com.github.javaparser.ast.Node jpChild = visitWriter(nChild, null);
-
-					if (p instanceof NodeWithArguments && jpChild instanceof Expression) {
-						((NodeWithArguments) p).addArgument((Expression) jpChild);
-					} else {
-						throw new UnsupportedOperationException("p is " + p.getClass().getSimpleName()
-								+ " and jpChild is " + jpChild.getClass().getSimpleName());
-					}
-				}
-			}
+			processArgument(attributes, p);
 		} else if (isOfType(n, ArrayAccessExpr.class)) {
 			ArrayAccessExpr obj = new ArrayAccessExpr();
 			obj.setIndex(attributes.getValue());
@@ -646,14 +625,18 @@ public class JavaWriterUtil {
 
 	/**
 	 * Creates a new {@link ClassOrInterfaceDeclaration}. The attributes for this
-	 * node a retrieved from the parameter.
+	 * node a retrieved from the parameter. At the end the new node is added to its
+	 * parent node.
 	 * 
 	 * @param attributes Attributes of the new node
 	 * @param p          Parent node of the new node
+	 * @exception UnsupportedOperationException If p is not a compilation unit,
+	 *                                          there is missing implementation.
 	 * @return {@link ClassOrInterfaceDeclaration}
 	 */
 	private static ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(
-			JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
+			JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
 		ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
 
 		// Name
@@ -683,7 +666,7 @@ public class JavaWriterUtil {
 				cu.setPackageDeclaration(attributes.getPackage());
 			}
 		} else {
-			// If p is not supported, throw exception
+			// If p is not supported, throw exception, to signal missing impl
 			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
 					+ ". Expected: " + CompilationUnit.class.getSimpleName());
 		}
@@ -707,10 +690,17 @@ public class JavaWriterUtil {
 			// Is the parent the compilation unit?
 			cu = (CompilationUnit) p;
 		} else {
-			// Otherwise find the compilation unit and get it.
+			/*
+			 * Otherwise find the compilation unit and get it. There is always a compilation
+			 * unit.
+			 */
 			cu = p.findCompilationUnit().get();
 		}
-		// Create a new intermediate array for the keywords
+		/*
+		 * Create a new intermediate array for the keywords. The constructor of
+		 * annotation declaration requires an array, and cannot be used with a list
+		 * returned by attributes.
+		 */
 		Modifier.Keyword[] keywords = new Modifier.Keyword[attributes.getModifier().size()];
 		/*
 		 * Add the annotation declaration to the compilation unit, with its respective
@@ -731,29 +721,57 @@ public class JavaWriterUtil {
 	 * @return New annotation member decl
 	 */
 	private static AnnotationMemberDeclaration createAnnotationMemberDeclaration(
-			JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
-			throws UnsupportedOperationException {
+			JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
 		// Create new annotation member decl
 		AnnotationMemberDeclaration obj = new AnnotationMemberDeclaration();
+
 		// Modifiers
 		obj.setModifiers(attributes.getModifier());
+
 		// Type
 		obj.setType(attributes.getType());
+
 		// Name
 		obj.setName(attributes.getName());
+
 		// DefaultValue
 		obj.setDefaultValue(attributes.getValue());
 
 		// Add to parent node
-		if (p instanceof AnnotationDeclaration) {
-			// It should always be a annotation declaration
-			((AnnotationDeclaration) p).addMember(obj);
-		} else {
-			// Throw exception otherwise to signal missing impl
-			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
-					+ ". Expected: " + AnnotationDeclaration.class.getSimpleName());
-		}
+		((AnnotationDeclaration) p).addMember(obj);
 
+		// Return annotation member declaration
 		return obj;
 	}
+
+	private static void processArgument(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
+		if (p == null || attributes.getChildren() > 0) {
+			// Do nothing, e.g. parent of concrete arg was arg
+		} else if (attributes.getType() != null && attributes.getName() != null) {
+			// Parameter with type and name and eventually modifiers, e.g. method decl
+			Parameter param = new Parameter(attributes.getType(), attributes.getName());
+			param.setModifiers(attributes.getModifier());
+			((NodeWithParameters) p).addParameter(param);
+		} else if (!attributes.getName().isEmpty()) {
+			// Argument without type but name, e.g. method call expr
+			((NodeWithArguments) p).addArgument(attributes.getName());
+		} else if (attributes.getValue() != null) {
+			// Some arguments have no name but a value instead
+			((NodeWithArguments) p).addArgument(attributes.getValue());
+		} else if (attributes.getChildren() == 0) {
+			// TODO check if this is dead code
+			/*for (Node nChild : n.getChildren()) {
+				com.github.javaparser.ast.Node jpChild = visitWriter(nChild, null);
+
+				if (p instanceof NodeWithArguments && jpChild instanceof Expression) {
+					((NodeWithArguments) p).addArgument((Expression) jpChild);
+				} else {
+					throw new UnsupportedOperationException("p is " + p.getClass().getSimpleName() + " and jpChild is "
+							+ jpChild.getClass().getSimpleName());
+				}
+			}
+			*/
+		}
+	}
+
 }
