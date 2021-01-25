@@ -692,6 +692,11 @@ public class JavaWriterUtil {
 		return jpNode;
 	}
 	
+	/**
+	 * Returns a new {@link CompilationUnit}
+	 * 
+	 * @return {@link CompilationUnit}
+	 */
 	private static CompilationUnit compilationUnitFactory() {
 		return new CompilationUnit();
 	}
