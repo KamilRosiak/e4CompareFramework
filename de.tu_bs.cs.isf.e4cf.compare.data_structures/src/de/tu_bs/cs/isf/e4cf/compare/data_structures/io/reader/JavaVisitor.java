@@ -983,7 +983,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(ReturnStmt n, Node arg) {
 		Node c = JavaVisitorUtil.createNode(n, arg);
-		visitor(n, c);
+		n.getExpression().ifPresent(expr -> JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Value, expr.toString()));
 	}
 
 	/**
