@@ -766,7 +766,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		int argSize = n.getArguments().size();
 		JavaVisitorUtil.addAttribute(args, JavaAttributesTypes.Children, String.valueOf(argSize));
 		for (int i = 0; i < argSize; i++) {
-			Expression argumentExpr = n.getArgument(0);
+			Expression argumentExpr = n.getArgument(i);
 			Node argNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Argument, i, args);
 			argumentExpr.accept(this, argNode);
 		}
