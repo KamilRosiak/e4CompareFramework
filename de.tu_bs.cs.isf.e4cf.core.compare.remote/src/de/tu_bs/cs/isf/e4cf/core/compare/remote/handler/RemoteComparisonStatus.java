@@ -1,4 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.core.compare.remote.handler;
+
 public class RemoteComparisonStatus {
 
 	private String status;
@@ -48,7 +49,6 @@ public class RemoteComparisonStatus {
 		this.error = error;
 	}
 
-
 	public String getUuid() {
 		return uuid;
 	}
@@ -56,7 +56,6 @@ public class RemoteComparisonStatus {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
-
 
 	@Override
 	public String toString() {

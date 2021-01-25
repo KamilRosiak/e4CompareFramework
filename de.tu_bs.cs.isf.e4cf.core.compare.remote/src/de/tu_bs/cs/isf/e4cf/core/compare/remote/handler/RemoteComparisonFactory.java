@@ -13,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.core.compare.remote.config.RemoteComparisonStringTable;
 import de.tu_bs.cs.isf.e4cf.core.compare.remote.util.TreeInstanceCreator;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 
@@ -28,8 +29,10 @@ public class RemoteComparisonFactory {
 		StringBuilder stringBuilderUrl = new StringBuilder();
 		StringBuilder stringBuilderPayload = new StringBuilder();
 		stringBuilderUrl.append("http://")
-				.append(PreferencesUtil.getValueAsString("de.tu_bs.cs.isf.e4cf.compare.remote", "ip")).append(":")
-				.append(PreferencesUtil.getValueAsString("de.tu_bs.cs.isf.e4cf.compare.remote", "port"))
+				.append(PreferencesUtil.getValueAsString(RemoteComparisonStringTable.BUNDLE_NAME,
+						RemoteComparisonStringTable.IP_KEY))
+				.append(":").append(PreferencesUtil.getValueAsString(RemoteComparisonStringTable.BUNDLE_NAME,
+						RemoteComparisonStringTable.PORT_KEY))
 				.append("/createRequest/");
 		stringBuilderPayload.append("[").append(tree1Json).append(",").append(tree2Json).append("]");
 
@@ -47,8 +50,10 @@ public class RemoteComparisonFactory {
 
 		StringBuilder stringBuilderUrl = new StringBuilder();
 		stringBuilderUrl.append("http://")
-				.append(PreferencesUtil.getValueAsString("de.tu_bs.cs.isf.e4cf.compare.remote", "ip")).append(":")
-				.append(PreferencesUtil.getValueAsString("de.tu_bs.cs.isf.e4cf.compare.remote", "port"))
+				.append(PreferencesUtil.getValueAsString(RemoteComparisonStringTable.BUNDLE_NAME,
+						RemoteComparisonStringTable.IP_KEY))
+				.append(":").append(PreferencesUtil.getValueAsString(RemoteComparisonStringTable.BUNDLE_NAME,
+						RemoteComparisonStringTable.PORT_KEY))
 				.append("/status?uuid=").append(uuid);
 
 		String result = executeGet(stringBuilderUrl.toString());
@@ -65,8 +70,10 @@ public class RemoteComparisonFactory {
 
 		StringBuilder stringBuilderUrl = new StringBuilder();
 		stringBuilderUrl.append("http://")
-				.append(PreferencesUtil.getValueAsString("de.tu_bs.cs.isf.e4cf.compare.remote", "ip")).append(":")
-				.append(PreferencesUtil.getValueAsString("de.tu_bs.cs.isf.e4cf.compare.remote", "port"))
+				.append(PreferencesUtil.getValueAsString(RemoteComparisonStringTable.BUNDLE_NAME,
+						RemoteComparisonStringTable.IP_KEY))
+				.append(":").append(PreferencesUtil.getValueAsString(RemoteComparisonStringTable.BUNDLE_NAME,
+						RemoteComparisonStringTable.PORT_KEY))
 				.append("/status?uuid=").append(uuid);
 
 		String result = executeGet(stringBuilderUrl.toString());
