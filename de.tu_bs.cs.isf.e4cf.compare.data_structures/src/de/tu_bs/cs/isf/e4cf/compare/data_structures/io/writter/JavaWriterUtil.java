@@ -161,6 +161,10 @@ public class JavaWriterUtil {
 		} else if (n.getNodeType().equals(BinaryExpr.class.getSimpleName())) {
 			BinaryExpr obj = new BinaryExpr();
 			jpNode = obj;
+		} else if (n.getNodeType().equals(BlockComment.class.getSimpleName())) {
+			BlockComment obj = new BlockComment(attributes.getComment());
+			p.addOrphanComment(obj);
+			jpNode = obj;
 		} else if (n.getNodeType().equals(BlockStmt.class.getSimpleName())
 				|| n.getNodeType().equals(JavaNodeTypes.Body.name())) {
 			BlockStmt obj = new BlockStmt();
@@ -381,6 +385,10 @@ public class JavaWriterUtil {
 				((NodeWithStatements) p).addStatement(obj);
 			}
 			
+			jpNode = obj;
+		} else if (n.getNodeType().equals(LineComment.class.getSimpleName())) {
+			LineComment obj = new LineComment(attributes.getComment());
+			p.addOrphanComment(obj);
 			jpNode = obj;
 		} else if (n.getNodeType().equals(LocalClassDeclarationStmt.class.getSimpleName())) {
 			LocalClassDeclarationStmt obj = new LocalClassDeclarationStmt();
@@ -630,14 +638,6 @@ public class JavaWriterUtil {
 			jpNode = obj;
 		} else if (n.getNodeType().equals(YieldStmt.class.getSimpleName())) {
 			YieldStmt obj = new YieldStmt();
-			jpNode = obj;
-		} else if (n.getNodeType().equals(LineComment.class.getSimpleName())) {
-			LineComment obj = new LineComment(attributes.getComment());
-			p.addOrphanComment(obj);
-			jpNode = obj;
-		} else if (n.getNodeType().equals(BlockComment.class.getSimpleName())) {
-			BlockComment obj = new BlockComment(attributes.getComment());
-			p.addOrphanComment(obj);
 			jpNode = obj;
 		}
 		
