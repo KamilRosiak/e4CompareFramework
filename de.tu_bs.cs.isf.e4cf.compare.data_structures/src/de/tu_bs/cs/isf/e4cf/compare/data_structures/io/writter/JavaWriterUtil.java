@@ -46,10 +46,10 @@ public class JavaWriterUtil {
 		attributes.collectAttributes(n);
 
 		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
-			jpNode = compilationUnitFactory(); 
-		} else if (n.getNodeType().equals(CompilationUnit.class.getSimpleName())) {
-			jpNode = classOrInterfaceDeclarationFactory(attributes, p);
-		} else if (n.getNodeType().equals(AnnotationDeclaration.class.getSimpleName())) {
+			jpNode = new CompilationUnit();
+		} else if (isOfType(n, CompilationUnit.class)) {
+			jpNode = createClassOrInterfaceDeclaration(attributes, p);
+		} else if (isOfType(n, AnnotationDeclaration.class)) {
 			CompilationUnit cu;
 			if (p instanceof CompilationUnit) {
 				cu = (CompilationUnit) p;
@@ -58,21 +58,21 @@ public class JavaWriterUtil {
 			}
 			Modifier.Keyword[] keywords = new Modifier.Keyword[attributes.getModifier().size()];
 			cu.addAnnotationDeclaration(attributes.getName(), attributes.getModifier().toArray(keywords));
-			
+
 			jpNode = cu.getAnnotationDeclarationByName(attributes.getName()).get();
-		} else if (n.getNodeType().equals(AnnotationMemberDeclaration.class.getSimpleName())) {
+		} else if (isOfType(n, AnnotationMemberDeclaration.class)) {
 			AnnotationMemberDeclaration obj = new AnnotationMemberDeclaration();
 			obj.setModifiers(attributes.getModifier());
 			obj.setType(attributes.getType());
 			obj.setName(attributes.getName());
 			obj.setDefaultValue(attributes.getValue());
-			
+
 			if (p instanceof AnnotationDeclaration) {
 				((AnnotationDeclaration) p).addMember(obj);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().startsWith(JavaNodeTypes.Argument.name())) {
+		} else if (isOfType(n, JavaNodeTypes.Argument)) {
 			if (p == null || attributes.getChildren() > 0) {
 				// Do nothing, e.g. parent of concrete arg was arg
 			} else if (attributes.getType() != null && attributes.getName() != null) {
@@ -95,27 +95,27 @@ public class JavaWriterUtil {
 					}
 				}
 			}
-		} else if (n.getNodeType().equals(ArrayAccessExpr.class.getSimpleName())) {
+		} else if (isOfType(n, ArrayAccessExpr.class)) {
 			ArrayAccessExpr obj = new ArrayAccessExpr();
 			obj.setIndex(attributes.getValue());
 			obj.setName(StaticJavaParser.parseExpression(attributes.getName()));
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ArrayCreationExpr.class.getSimpleName())) {
+		} else if (isOfType(n, ArrayCreationExpr.class)) {
 			ArrayCreationExpr obj = new ArrayCreationExpr();
 			obj.setElementType(attributes.getType());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ArrayCreationLevel.class.getSimpleName())) {
+		} else if (isOfType(n, ArrayCreationLevel.class)) {
 			ArrayCreationLevel obj = new ArrayCreationLevel();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ArrayInitializerExpr.class.getSimpleName())) {
+		} else if (isOfType(n, ArrayInitializerExpr.class)) {
 			ArrayInitializerExpr obj = new ArrayInitializerExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ArrayType.class.getSimpleName())) {
+		} else if (isOfType(n, ArrayType.class)) {
 			ArrayType obj = new ArrayType(attributes.getType(),
 					attributes.getAnnotation().stream().toArray(AnnotationExpr[]::new));// TODO needs closer lookjpNode
 																						// = obj;
-		} else if (n.getNodeType().equals(AssertStmt.class.getSimpleName())) {
+		} else if (isOfType(n, AssertStmt.class)) {
 			AssertStmt obj = new AssertStmt();
 			obj.setCheck(attributes.getCheck());
 			obj.setMessage(attributes.getMessage());
@@ -125,26 +125,26 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(JavaNodeTypes.Assignment.name())) {
+		} else if (isOfType(n, JavaNodeTypes.Assignment)) {
 			AssignExpr obj = new AssignExpr();
 			obj.setTarget(attributes.getTarget());
 			obj.setValue(attributes.getValue());
 			obj.setOperator(AssignExpr.Operator.valueOf(attributes.getOperator()));
-			
+
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().equals(BinaryExpr.class.getSimpleName())) {
+		} else if (isOfType(n, BinaryExpr.class)) {
 			BinaryExpr obj = new BinaryExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(BlockComment.class.getSimpleName())) {
+		} else if (isOfType(n, BlockComment.class)) {
 			BlockComment obj = new BlockComment(attributes.getComment());
 			p.addOrphanComment(obj);
 			jpNode = obj;
-		} else if (n.getNodeType().equals(BlockStmt.class.getSimpleName())
-				|| n.getNodeType().equals(JavaNodeTypes.Body.name())) {
+		} else if (isOfType(n, BlockStmt.class)
+				|| isOfType(n, JavaNodeTypes.Body)) {
 			BlockStmt obj = new BlockStmt();
 			if (p instanceof NodeWithOptionalBlockStmt) {
 				((NodeWithOptionalBlockStmt) p).setBody(obj);
@@ -160,11 +160,11 @@ public class JavaWriterUtil {
 				((IfStmt) p).setThenStmt(obj);
 			}
 			jpNode = obj;
-		} else if (n.getNodeType().equals(BooleanLiteralExpr.class.getSimpleName())) {
+		} else if (isOfType(n, BooleanLiteralExpr.class)) {
 			BooleanLiteralExpr obj = new BooleanLiteralExpr();
 			obj.setValue(Boolean.valueOf(attributes.getValue().toString()));
 			jpNode = obj;
-		} else if (n.getNodeType().startsWith(JavaNodeTypes.Bound.name())) {
+		} else if (isOfType(n, JavaNodeTypes.Bound)) {
 			if (p instanceof TypeParameter) {
 				TypeParameter tp = (TypeParameter) p;
 				NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound();
@@ -177,8 +177,8 @@ public class JavaWriterUtil {
 				getTypeBound.add(bound);
 				tp.setTypeBound(getTypeBound);
 			}
-		} else if (n.getNodeType().equals(BreakStmt.class.getSimpleName())
-				|| n.getNodeType().equals(JavaNodeTypes.Break.name())) {
+		} else if (isOfType(n, BreakStmt.class)
+				|| isOfType(n, JavaNodeTypes.Break)) {
 			BreakStmt obj = new BreakStmt();
 			if (attributes.getTarget() != null) {
 				obj.setLabel(new SimpleName(attributes.getTarget().toString()));
@@ -191,11 +191,11 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(CastExpr.class.getSimpleName())) {
+		} else if (isOfType(n, CastExpr.class)) {
 			CastExpr obj = new CastExpr();
 			obj.setType(attributes.getType());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(CatchClause.class.getSimpleName())) {
+		} else if (isOfType(n, CatchClause.class)) {
 			CatchClause obj = new CatchClause();
 
 			if (p instanceof TryStmt) {
@@ -205,11 +205,11 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(CharLiteralExpr.class.getSimpleName())) {
+		} else if (isOfType(n, CharLiteralExpr.class)) {
 			CharLiteralExpr obj = new CharLiteralExpr();
 			obj.setValue(attributes.getValue().toString());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(JavaNodeTypes.Class.name())) {
+		} else if (isOfType(n, JavaNodeTypes.Class)) {
 			ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
 			coid.setName(attributes.getName());
 			coid.setModifiers(attributes.getModifier());
@@ -223,42 +223,42 @@ public class JavaWriterUtil {
 			if (p instanceof NodeWithMembers) {
 				((NodeWithMembers) p).addMember(coid);
 			}
-					
+
 			jpNode = coid;
-		} else if (n.getNodeType().equals(ClassExpr.class.getSimpleName())) {
+		} else if (isOfType(n, ClassExpr.class)) {
 			ClassExpr obj = new ClassExpr();
 			obj.setType(attributes.getType());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ConditionalExpr.class.getSimpleName())) {
+		} else if (isOfType(n, ConditionalExpr.class)) {
 			ConditionalExpr obj = new ConditionalExpr();
 			obj.setCondition(attributes.getCondition().getFirst().get());
 			obj.setThenExpr(attributes.getThen());
 			obj.setElseExpr(attributes.getElse());
-			
+
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ConstructorDeclaration.class.getSimpleName())) {
+		} else if (isOfType(n, ConstructorDeclaration.class)) {
 			ConstructorDeclaration obj = new ConstructorDeclaration();
 			obj.setModifiers(attributes.getModifier());
 			obj.setName(attributes.getName());
 			obj.setAnnotations(attributes.getAnnotation());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ContinueStmt.class.getSimpleName())) {
+		} else if (isOfType(n, ContinueStmt.class)) {
 			ContinueStmt obj = new ContinueStmt();
 			obj.setLabel(attributes.getTarget().toString());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(DoStmt.class.getSimpleName())) {
+		} else if (isOfType(n, DoStmt.class)) {
 			DoStmt obj = new DoStmt();
 			obj.setCondition(attributes.getCondition().getFirst().get());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(DoubleLiteralExpr.class.getSimpleName())) {
+		} else if (isOfType(n, DoubleLiteralExpr.class)) {
 			DoubleLiteralExpr obj = new DoubleLiteralExpr();
 			obj.setValue(attributes.getValue().toString());
 			jpNode = obj;
-		} else if (n.getNodeType().equals(JavaNodeTypes.Else.name())) {
+		} else if (isOfType(n, JavaNodeTypes.Else)) {
 			BlockStmt elseStmt = new BlockStmt();
 			IfStmt ifStmt = (IfStmt) p;
 			while (ifStmt.hasElseBranch()) {
@@ -268,33 +268,33 @@ public class JavaWriterUtil {
 			parentIfStmt.removeElseStmt();
 			parentIfStmt.setElseStmt(elseStmt);
 			jpNode = elseStmt;
-		} else if (n.getNodeType().equals(EmptyStmt.class.getSimpleName())) {
+		} else if (isOfType(n, EmptyStmt.class)) {
 			EmptyStmt obj = new EmptyStmt();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(EnclosedExpr.class.getSimpleName())) {
+		} else if (isOfType(n, EnclosedExpr.class)) {
 			EnclosedExpr obj = new EnclosedExpr();
-			
+
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().equals(EnumConstantDeclaration.class.getSimpleName())) {
+		} else if (isOfType(n, EnumConstantDeclaration.class)) {
 			EnumConstantDeclaration obj = new EnumConstantDeclaration();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(EnumDeclaration.class.getSimpleName())) {
+		} else if (isOfType(n, EnumDeclaration.class)) {
 			EnumDeclaration obj = new EnumDeclaration();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ExplicitConstructorInvocationStmt.class.getSimpleName())) {
+		} else if (isOfType(n, ExplicitConstructorInvocationStmt.class)) {
 			ExplicitConstructorInvocationStmt obj = new ExplicitConstructorInvocationStmt();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ExpressionStmt.class.getSimpleName())) {
+		} else if (isOfType(n, ExpressionStmt.class)) {
 			ExpressionStmt obj = new ExpressionStmt();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(FieldAccessExpr.class.getSimpleName())) {
+		} else if (isOfType(n, FieldAccessExpr.class)) {
 			FieldAccessExpr obj = new FieldAccessExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(FieldDeclaration.class.getSimpleName())) {
+		} else if (isOfType(n, FieldDeclaration.class)) {
 			FieldDeclaration fd = new FieldDeclaration();
 			fd.setModifiers(attributes.getModifier());
 
@@ -315,7 +315,7 @@ public class JavaWriterUtil {
 						+ ". Expected: " + TypeDeclaration.class.getSimpleName());
 			}
 			jpNode = fd;
-		} else if (n.getNodeType().equals(ForEachStmt.class.getSimpleName())) {
+		} else if (isOfType(n, ForEachStmt.class)) {
 			ForEachStmt obj = new ForEachStmt();
 			obj.setIterable(attributes.getIterator());
 			obj.setVariable(new VariableDeclarationExpr(attributes.getType(),
@@ -326,7 +326,7 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ForStmt.class.getSimpleName())) {
+		} else if (isOfType(n, ForStmt.class)) {
 			ForStmt obj = new ForStmt();
 			obj.setInitialization(attributes.getInitilization());
 			obj.setCompare(attributes.getComparison());
@@ -337,14 +337,14 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(IfStmt.class.getSimpleName())) {
+		} else if (isOfType(n, IfStmt.class)) {
 			IfStmt obj = new IfStmt();
 			jpNode = obj;
 
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			}
-		} else if (n.getNodeType().equals(JavaNodeTypes.Import.name())) {
+		} else if (isOfType(n, JavaNodeTypes.Import)) {
 			if (p != null) {
 				Optional<CompilationUnit> cuOpt = p.findCompilationUnit();
 				if (cuOpt.isPresent() && !attributes.getName().isEmpty()) {
@@ -352,57 +352,57 @@ public class JavaWriterUtil {
 							attributes.isAsteriks()));
 				}
 			}
-		} else if (n.getNodeType().equals(InitializerDeclaration.class.getSimpleName())) {
+		} else if (isOfType(n, InitializerDeclaration.class)) {
 			InitializerDeclaration obj = new InitializerDeclaration();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(InstanceOfExpr.class.getSimpleName())) {
+		} else if (isOfType(n, InstanceOfExpr.class)) {
 			InstanceOfExpr obj = new InstanceOfExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(IntegerLiteralExpr.class.getSimpleName())) {
+		} else if (isOfType(n, IntegerLiteralExpr.class)) {
 			IntegerLiteralExpr obj = new IntegerLiteralExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(IntersectionType.class.getSimpleName())) {
+		} else if (isOfType(n, IntersectionType.class)) {
 			/*
 			 * TODO fill arguments IntersectionType obj = new IntersectionType(); jpNode =
 			 * obj;
 			 */
-		} else if (n.getNodeType().equals(LabeledStmt.class.getSimpleName())) {
+		} else if (isOfType(n, LabeledStmt.class)) {
 			LabeledStmt obj = new LabeledStmt();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(LambdaExpr.class.getSimpleName())) {
+		} else if (isOfType(n, LambdaExpr.class)) {
 			LambdaExpr obj = new LambdaExpr();
-			
+
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().equals(LineComment.class.getSimpleName())) {
+		} else if (isOfType(n, LineComment.class)) {
 			LineComment obj = new LineComment(attributes.getComment());
 			p.addOrphanComment(obj);
 			jpNode = obj;
-		} else if (n.getNodeType().equals(LocalClassDeclarationStmt.class.getSimpleName())) {
+		} else if (isOfType(n, LocalClassDeclarationStmt.class)) {
 			LocalClassDeclarationStmt obj = new LocalClassDeclarationStmt();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(LongLiteralExpr.class.getSimpleName())) {
+		} else if (isOfType(n, LongLiteralExpr.class)) {
 			LongLiteralExpr obj = new LongLiteralExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(MarkerAnnotationExpr.class.getSimpleName())) {
+		} else if (isOfType(n, MarkerAnnotationExpr.class)) {
 			MarkerAnnotationExpr obj = new MarkerAnnotationExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(MemberValuePair.class.getSimpleName())) {
+		} else if (isOfType(n, MemberValuePair.class)) {
 			MemberValuePair obj = new MemberValuePair();
 			obj.setName(attributes.getKey());
 			obj.setValue(attributes.getValue());
-			
+
 			if (p instanceof NormalAnnotationExpr) {
 				NodeList<MemberValuePair> paris = ((NormalAnnotationExpr) p).getPairs();
 				paris.add(obj);
 				((NormalAnnotationExpr) p).setPairs(paris);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().equals(MethodCallExpr.class.getSimpleName())) {
+		} else if (isOfType(n, MethodCallExpr.class)) {
 			MethodCallExpr obj = new MethodCallExpr();
 			obj.setScope(attributes.getScope());
 			obj.setName(attributes.getName());
@@ -414,7 +414,7 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(MethodDeclaration.class.getSimpleName())) {
+		} else if (isOfType(n, MethodDeclaration.class)) {
 			MethodDeclaration obj = new MethodDeclaration();
 			obj.setThrownExceptions(attributes.getThrows());
 			obj.setName(attributes.getName());
@@ -433,28 +433,28 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(MethodReferenceExpr.class.getSimpleName())) {
+		} else if (isOfType(n, MethodReferenceExpr.class)) {
 			MethodReferenceExpr obj = new MethodReferenceExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(NameExpr.class.getSimpleName())) {
+		} else if (isOfType(n, NameExpr.class)) {
 			NameExpr obj = new NameExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(NormalAnnotationExpr.class.getSimpleName())) {
+		} else if (isOfType(n, NormalAnnotationExpr.class)) {
 			NormalAnnotationExpr obj = new NormalAnnotationExpr();
 			obj.setName(attributes.getName());
-			
-			if(p instanceof NodeWithAnnotations) {
+
+			if (p instanceof NodeWithAnnotations) {
 				((NodeWithAnnotations) p).addAnnotation(obj);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().equals(NullLiteralExpr.class.getSimpleName())) {
+		} else if (isOfType(n, NullLiteralExpr.class)) {
 			NullLiteralExpr obj = new NullLiteralExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ObjectCreationExpr.class.getSimpleName())) {
+		} else if (isOfType(n, ObjectCreationExpr.class)) {
 			ObjectCreationExpr obj = new ObjectCreationExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(Parameter.class.getSimpleName())) {
+		} else if (isOfType(n, Parameter.class)) {
 			Parameter obj = new Parameter();
 			if (attributes.getType() != null) {
 				obj.setType(attributes.getType());
@@ -470,13 +470,13 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(PrimitiveType.class.getSimpleName())) {
+		} else if (isOfType(n, PrimitiveType.class)) {
 			PrimitiveType obj = new PrimitiveType();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ReceiverParameter.class.getSimpleName())) {
+		} else if (isOfType(n, ReceiverParameter.class)) {
 			ReceiverParameter obj = new ReceiverParameter();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ReturnStmt.class.getSimpleName())) {
+		} else if (isOfType(n, ReturnStmt.class)) {
 			ReturnStmt obj = new ReturnStmt(attributes.getValue());
 
 			if (p instanceof NodeWithStatements) {
@@ -486,23 +486,23 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(SingleMemberAnnotationExpr.class.getSimpleName())) {
+		} else if (isOfType(n, SingleMemberAnnotationExpr.class)) {
 			SingleMemberAnnotationExpr obj = new SingleMemberAnnotationExpr();
 			obj.setName(attributes.getName());
 			obj.setMemberValue(attributes.getValue());
-			
+
 			if (p instanceof NodeWithAnnotations) {
 				((NodeWithAnnotations) p).addAnnotation(obj);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().equals(StringLiteralExpr.class.getSimpleName())) {
+		} else if (isOfType(n, StringLiteralExpr.class)) {
 			StringLiteralExpr obj = new StringLiteralExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(SuperExpr.class.getSimpleName())) {
+		} else if (isOfType(n, SuperExpr.class)) {
 			SuperExpr obj = new SuperExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(SwitchEntry.class.getSimpleName())) {
+		} else if (isOfType(n, SwitchEntry.class)) {
 			SwitchEntry obj = new SwitchEntry();
 			obj.setType(SwitchEntry.Type.valueOf(attributes.getType().toString()));
 			if (!attributes.isDefault()) {
@@ -516,10 +516,10 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(SwitchExpr.class.getSimpleName())) {
+		} else if (isOfType(n, SwitchExpr.class)) {
 			SwitchExpr obj = new SwitchExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(SwitchStmt.class.getSimpleName())) {
+		} else if (isOfType(n, SwitchStmt.class)) {
 			SwitchStmt obj = new SwitchStmt();
 			obj.setSelector(attributes.getSelector());
 
@@ -528,13 +528,13 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(SynchronizedStmt.class.getSimpleName())) {
+		} else if (isOfType(n, SynchronizedStmt.class)) {
 			SynchronizedStmt obj = new SynchronizedStmt();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(TextBlockLiteralExpr.class.getSimpleName())) {
+		} else if (isOfType(n, TextBlockLiteralExpr.class)) {
 			TextBlockLiteralExpr obj = new TextBlockLiteralExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(JavaNodeTypes.Then.name())) {
+		} else if (isOfType(n, JavaNodeTypes.Then)) {
 			IfStmt ifStmt = (IfStmt) p;
 			while (ifStmt.hasElseBranch()) {
 				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
@@ -547,10 +547,10 @@ public class JavaWriterUtil {
 			ifStmt.setElseStmt(elseStmt);
 			ifStmt.setThenStmt(new EmptyStmt());
 			jpNode = ifStmt;
-		} else if (n.getNodeType().equals(ThisExpr.class.getSimpleName())) {
+		} else if (isOfType(n, ThisExpr.class)) {
 			ThisExpr obj = new ThisExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(ThrowStmt.class.getSimpleName())) {
+		} else if (isOfType(n, ThrowStmt.class)) {
 			ThrowStmt obj = attributes.getStatement().asThrowStmt();
 
 			if (p instanceof NodeWithStatements) {
@@ -560,7 +560,7 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(TryStmt.class.getSimpleName())) {
+		} else if (isOfType(n, TryStmt.class)) {
 			TryStmt obj = new TryStmt();
 
 			if (p instanceof NodeWithStatements) {
@@ -568,22 +568,22 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(TypeExpr.class.getSimpleName())) {
+		} else if (isOfType(n, TypeExpr.class)) {
 			TypeExpr obj = new TypeExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(TypeParameter.class.getSimpleName())) {
-			TypeParameter obj = new TypeParameter();	
+		} else if (isOfType(n, TypeParameter.class)) {
+			TypeParameter obj = new TypeParameter();
 			obj.setName(attributes.getName());
 			if (attributes.getAnnotation().isNonEmpty()) {
 				obj.setAnnotations(attributes.getAnnotation());
 			}
-			
+
 			if (p instanceof NodeWithTypeParameters) {
-				((NodeWithTypeParameters)p).addTypeParameter(obj);
+				((NodeWithTypeParameters) p).addTypeParameter(obj);
 			}
-			
+
 			jpNode = obj;
-		} else if (n.getNodeType().equals(UnaryExpr.class.getSimpleName())) {
+		} else if (isOfType(n, UnaryExpr.class)) {
 			UnaryExpr obj = new UnaryExpr();
 			obj.setExpression(attributes.getName());
 			obj.setOperator(UnaryExpr.Operator.valueOf(attributes.getOperator()));
@@ -593,19 +593,19 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(UnionType.class.getSimpleName())) {
+		} else if (isOfType(n, UnionType.class)) {
 			UnionType obj = new UnionType();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(UnknownType.class.getSimpleName())) {
+		} else if (isOfType(n, UnknownType.class)) {
 			UnknownType obj = new UnknownType();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(UnparsableStmt.class.getSimpleName())) {
+		} else if (isOfType(n, UnparsableStmt.class)) {
 			UnparsableStmt obj = new UnparsableStmt();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(VariableDeclarationExpr.class.getSimpleName())) {
+		} else if (isOfType(n, VariableDeclarationExpr.class)) {
 			VariableDeclarationExpr obj = new VariableDeclarationExpr();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(VariableDeclarator.class.getSimpleName())) {
+		} else if (isOfType(n, VariableDeclarator.class)) {
 			VariableDeclarator obj = new VariableDeclarator();
 			obj.setType(attributes.getType());
 			obj.setName(attributes.getName());
@@ -616,13 +616,13 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(VarType.class.getSimpleName())) {
+		} else if (isOfType(n, VarType.class)) {
 			VarType obj = new VarType();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(VoidType.class.getSimpleName())) {
+		} else if (isOfType(n, VoidType.class)) {
 			VoidType obj = new VoidType();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(WhileStmt.class.getSimpleName())) {
+		} else if (isOfType(n, WhileStmt.class)) {
 			WhileStmt obj = new WhileStmt();
 			obj.setCondition(attributes.getValue());
 
@@ -633,14 +633,14 @@ public class JavaWriterUtil {
 			}
 
 			jpNode = obj;
-		} else if (n.getNodeType().equals(WildcardType.class.getSimpleName())) {
+		} else if (isOfType(n, WildcardType.class)) {
 			WildcardType obj = new WildcardType();
 			jpNode = obj;
-		} else if (n.getNodeType().equals(YieldStmt.class.getSimpleName())) {
+		} else if (isOfType(n, YieldStmt.class)) {
 			YieldStmt obj = new YieldStmt();
 			jpNode = obj;
 		}
-		
+
 		if (!(jpNode instanceof Comment) && !attributes.getComment().isEmpty()) {
 			String commentContent = attributes.getComment();
 			Comment comment = null;
@@ -656,7 +656,7 @@ public class JavaWriterUtil {
 
 		if (p != null && jpNode != null) {
 			jpNode.setParentNode(p);
-			
+
 			if (p instanceof EnclosedExpr && jpNode instanceof Expression) {
 				((EnclosedExpr) p).setInner((Expression) jpNode);
 			}
@@ -670,29 +670,51 @@ public class JavaWriterUtil {
 
 		return jpNode;
 	}
-	
+
 	/**
-	 * Returns a new {@link CompilationUnit}
+	 * Some {@link Node} have a type, that equals the simple name of a subclass of
+	 * {@link com.github.javaparser.ast.Node}. This function compares whatever the
+	 * node type of a e4cf node matches the class name.
 	 * 
-	 * @return {@link CompilationUnit}
+	 * @see isOfType
+	 * @param compareFrameworkNode The e4cf node
+	 * @param javaParserClazz      Class
+	 * @return <code>true</code>, if {@link Node#getNodeType()} matches
+	 *         {@link Class#getSimpleName()}.
 	 */
-	private static CompilationUnit compilationUnitFactory() {
-		return new CompilationUnit();
+	private static boolean isOfType(Node compareFrameworkNode, Class javaParserClazz) {
+		return compareFrameworkNode.getNodeType().equals(javaParserClazz.getSimpleName());
 	}
-	
+
 	/**
-	 * Creates a new {@link ClassOrInterfaceDeclaration}.  The attributes for this node a retrieved from the parameter.
+	 * Some {@link Node} have a type, that starts with (or equals) the name of an
+	 * element of the enumeration {@link JavaNodeTypes}. This function compares
+	 * whatever the node type of a e4cf node matches the name.
+	 * 
+	 * @param compareFrameworkNode e4cf Node
+	 * @param type                 Type to be checked
+	 * @return <code>true</code>, if {@link Node#getNodeType()} start with
+	 *         {@link JavaNodeTypes#name()}, <code>false</code> otherwise.
+	 */
+	private static boolean isOfType(Node compareFrameworkNode, JavaNodeTypes type) {
+		return compareFrameworkNode.getNodeType().startsWith(type.name());
+	}
+
+	/**
+	 * Creates a new {@link ClassOrInterfaceDeclaration}. The attributes for this
+	 * node a retrieved from the parameter.
 	 * 
 	 * @param attributes Attributes of the new node
-	 * @param p Parent node of the new node
+	 * @param p          Parent node of the new node
 	 * @return {@link ClassOrInterfaceDeclaration}
 	 */
-	private static ClassOrInterfaceDeclaration classOrInterfaceDeclarationFactory(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
+	private static ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(
+			JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
 		ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
-		
+
 		// Name
 		coid.setName(attributes.getName());
-		
+
 		// Modifier
 		coid.setModifiers(attributes.getModifier());
 
@@ -700,10 +722,10 @@ public class JavaWriterUtil {
 		if (!attributes.getSuperclass().isEmpty()) {
 			coid.addExtendedType(attributes.getSuperclass());
 		}
-		
+
 		// Implemented types
 		coid.setImplementedTypes(attributes.getInterface());
-		
+
 		// If node is an interface, set boolean to true
 		coid.setInterface(attributes.isInterface());
 
@@ -721,7 +743,7 @@ public class JavaWriterUtil {
 			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
 					+ ". Expected: " + CompilationUnit.class.getSimpleName());
 		}
-		
+
 		return coid;
 	}
 }
