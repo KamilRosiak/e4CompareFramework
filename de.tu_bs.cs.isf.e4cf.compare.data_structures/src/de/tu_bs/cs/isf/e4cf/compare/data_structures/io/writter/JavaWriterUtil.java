@@ -50,16 +50,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, CompilationUnit.class)) {
 			jpNode = createClassOrInterfaceDeclaration(attributes, p);
 		} else if (isOfType(n, AnnotationDeclaration.class)) {
-			CompilationUnit cu;
-			if (p instanceof CompilationUnit) {
-				cu = (CompilationUnit) p;
-			} else {
-				cu = p.findCompilationUnit().get();
-			}
-			Modifier.Keyword[] keywords = new Modifier.Keyword[attributes.getModifier().size()];
-			cu.addAnnotationDeclaration(attributes.getName(), attributes.getModifier().toArray(keywords));
-
-			jpNode = cu.getAnnotationDeclarationByName(attributes.getName()).get();
+			jpNode = createAnnotationDeclaration(attributes, p);
 		} else if (isOfType(n, AnnotationMemberDeclaration.class)) {
 			AnnotationMemberDeclaration obj = new AnnotationMemberDeclaration();
 			obj.setModifiers(attributes.getModifier());
@@ -143,8 +134,7 @@ public class JavaWriterUtil {
 			BlockComment obj = new BlockComment(attributes.getComment());
 			p.addOrphanComment(obj);
 			jpNode = obj;
-		} else if (isOfType(n, BlockStmt.class)
-				|| isOfType(n, JavaNodeTypes.Body)) {
+		} else if (isOfType(n, BlockStmt.class) || isOfType(n, JavaNodeTypes.Body)) {
 			BlockStmt obj = new BlockStmt();
 			if (p instanceof NodeWithOptionalBlockStmt) {
 				((NodeWithOptionalBlockStmt) p).setBody(obj);
@@ -177,8 +167,7 @@ public class JavaWriterUtil {
 				getTypeBound.add(bound);
 				tp.setTypeBound(getTypeBound);
 			}
-		} else if (isOfType(n, BreakStmt.class)
-				|| isOfType(n, JavaNodeTypes.Break)) {
+		} else if (isOfType(n, BreakStmt.class) || isOfType(n, JavaNodeTypes.Break)) {
 			BreakStmt obj = new BreakStmt();
 			if (attributes.getTarget() != null) {
 				obj.setLabel(new SimpleName(attributes.getTarget().toString()));
@@ -745,5 +734,36 @@ public class JavaWriterUtil {
 		}
 
 		return coid;
+	}
+
+	/**
+	 * Creates a new {@link AnnotationDeclaration}, sets it's attributes and adds
+	 * the new node to the {@link CompilationUnit}.
+	 * 
+	 * @param attributes Attributes of the new node
+	 * @param p          Parent node of the new node
+	 * @return new annotation declaration
+	 */
+	private static AnnotationDeclaration createAnnotationDeclaration(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) {
+		// Declare the compilation unit
+		CompilationUnit cu;
+		if (p instanceof CompilationUnit) {
+			// Is the parent the compilation unit?
+			cu = (CompilationUnit) p;
+		} else {
+			// Otherwise find the compilation unit and get it.
+			cu = p.findCompilationUnit().get();
+		}
+		// Create a new intermediate array for the keywords
+		Modifier.Keyword[] keywords = new Modifier.Keyword[attributes.getModifier().size()];
+		/* 
+		 * Add the annotation declaration to the compilation unit, with its respective
+		 * attributes. This step creates a new annotation declaration.
+		 */
+		cu.addAnnotationDeclaration(attributes.getName(), attributes.getModifier().toArray(keywords));
+
+		// return the newly created annotation declaration
+		return cu.getAnnotationDeclarationByName(attributes.getName()).get();
 	}
 }
