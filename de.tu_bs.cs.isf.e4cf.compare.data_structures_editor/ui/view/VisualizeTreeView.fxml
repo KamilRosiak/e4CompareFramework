@@ -30,6 +30,9 @@
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#selectAllNodes" text="Select All" />
             <MenuItem mnemonicParsing="false" onAction="#unselectAllNodes" text="Unselect All" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#expandAllItems" text="Expand All" />
+            <MenuItem mnemonicParsing="false" onAction="#collapseAllItems" text="Collapse All" />
           </items>
         </Menu>
       </menus>

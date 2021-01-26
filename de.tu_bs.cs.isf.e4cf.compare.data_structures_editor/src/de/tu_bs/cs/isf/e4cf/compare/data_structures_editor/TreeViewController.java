@@ -99,7 +99,7 @@ public class TreeViewController {
 		treeView.getRoot().setExpanded(true);
 		treeView.setShowRoot(true);
 		TreeViewUtilities.fillTreeView(tree.getRoot(), treeView.getRoot());
-		TreeViewUtilities.addListener(treeView, services);
+		addListener();
 		// totalNodeAmount
 		// .setText("Total Node Amount: " +
 		// TreeViewUtilities.searchTreeItem(treeView.getRoot(), "").size());
@@ -285,10 +285,11 @@ public class TreeViewController {
 	 */
 	@FXML
 	void searchForNode() {
-		TreeViewUtilities.searchList.clear();
+//		TreeViewUtilities.searchList.clear();
+		List<TreeItem<AbstractNode>> searchList = new ArrayList<TreeItem<AbstractNode>>();
 		treeView.getSelectionModel().clearSelection();
 		List<TreeItem<AbstractNode>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
-				searchTextField.getText());
+				searchTextField.getText(), searchList);
 		treeView.getSelectionModel().select(TreeViewUtilities.getCurrentSearchItem(resultList));
 		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
 		hitCount.setText(TreeViewUtilities.getSearchCounter() + "/" + resultList.size());
@@ -309,5 +310,47 @@ public class TreeViewController {
 				currentSearchText = searchTextField.getText();
 			}
 		}
+	}
+	
+	/**
+	 * Adds a listener to the TreeView so that PropertiesTable of a highlighted node is displayed
+	 * @param treeView
+	 * @param services
+	 * @return
+	 */
+	public void addListener() {
+		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
+				TreeViewUtilities.switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
+				services.eventBroker.send("NodePropertiesEvent",
+						treeView.getSelectionModel().getSelectedItem().getValue());
+			}
+		});
+	}
+	@FXML
+	public void expandAllItems() {
+		for(TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
+			ti.setExpanded(true);
+		}
+	}
+	
+	@FXML
+	public void collapseAllItems() {
+		for(TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
+			ti.setExpanded(false);
+		}
+	}
+	
+	public List<TreeItem<AbstractNode>> treeViewToList(TreeItem<AbstractNode> item, List<TreeItem<AbstractNode>> treeViewList) {
+		if(item.getValue().isRoot()) {
+			treeViewList.add(item);
+		}
+		for(TreeItem<AbstractNode> ti : item.getChildren()) {
+			treeViewList.add(ti);
+			if(!ti.isLeaf()) {
+				treeViewToList(ti, treeViewList);
+			}
+		}
+		return treeViewList;
 	}
 }

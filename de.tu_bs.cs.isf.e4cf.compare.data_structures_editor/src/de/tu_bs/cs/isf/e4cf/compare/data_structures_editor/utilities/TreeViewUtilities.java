@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.ui.di.UIEventTopic;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
@@ -29,13 +33,11 @@ import javafx.scene.image.Image;
  */
 public final class TreeViewUtilities {
 
-	public static List<TreeItem<AbstractNode>> searchList = new ArrayList<TreeItem<AbstractNode>>();
-
 	public static String treeName = "";
 
-	public static Image nodeImage = new Image("icons/file16.png");
+	public static final Image nodeImage = new Image("icons/file16.png");
 
-	public static Image rootImage = new Image("icons/rootSmall.png");
+	public static final Image rootImage = new Image("icons/rootSmall.png");
 
 	private static int searchCounter = 0;
 
@@ -44,10 +46,10 @@ public final class TreeViewUtilities {
 	}
 
 	/**
-	 * Adds a nodes children to the respective TreeItem as children
+	 * Adds a nodes children to the respective TreeItem as children recursively
 	 * 
-	 * @param node
-	 * @param parent
+	 * @param	node
+	 * @param	parent
 	 */
 	public static void fillTreeView(Node node, TreeItem<AbstractNode> parent) {
 		for (Node n : node.getChildren()) {
@@ -60,67 +62,114 @@ public final class TreeViewUtilities {
 	}
 
 	/**
-	 * 
-	 * @param treeView
-	 * @param services
-	 * @return
+	 * Builds a list of TreeItems which contain the given string based on a given root item
+	 * @param	item	Start node for the search (should contain all children, which are to be included in the search) 
+	 * @param	name	String to be searched for 
+	 * @param	searchList	to store the search results
+	 * @return	List	with all search results
 	 */
-	public static void addListener(TreeView<AbstractNode> treeView, ServiceContainer services) {
-		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
-				switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
-				services.eventBroker.send("NodePropertiesEvent",
-						treeView.getSelectionModel().getSelectedItem().getValue());
-			}
-		});
-	}
-
-	/**
-	 * 
-	 * @param item
-	 * @param name
-	 * @return
-	 */
-	public static List<TreeItem<AbstractNode>> searchTreeItem(TreeItem<AbstractNode> item, String name) {
+	public static List<TreeItem<AbstractNode>> searchTreeItem(TreeItem<AbstractNode> item, String name, List<TreeItem<AbstractNode>> searchList) {
 		if (item.getValue().toString().contains(name)) {
 			searchList.add(item);
 		}
 		List<TreeItem<AbstractNode>> result = new ArrayList<TreeItem<AbstractNode>>();
 		for (TreeItem<AbstractNode> child : item.getChildren()) {
-			result.addAll(searchTreeItem(child, name));
+			result.addAll(searchTreeItem(child, name, searchList));
 			if (result.size() < 1) {
 				searchList.addAll(result);
 			}
 		}
 		return searchList;
 	}
+	/**
+	 * Auxiliary method that returns the item currently to be displayed based on a searchCounter (necessary for the iteration through the resultList) 
+	 * @param	resultList	List to iterate through
+	 * @return 
+	 */
+	public static TreeItem<AbstractNode> getCurrentSearchItem(List<TreeItem<AbstractNode>> resultList) {
+		TreeItem<AbstractNode> currentItem = new TreeItem<AbstractNode>();
+		if (searchCounter < resultList.size()) {
+			currentItem = resultList.get(searchCounter);
+		} else {
+			searchCounter = 0;
+			currentItem = resultList.get(searchCounter);
+		}
+		searchCounter++;
+		return currentItem;
+	}
+	
+	/**
+	 * GETTER for searchCount
+	 * @return	current value of searchCounter
+	 */
+	public static int getSearchCounter() {
+		return searchCounter;
+	}
+	
+	/**
+	 * SETTER for searchCount
+	 * @param	i	value to set the searchCounter to
+	 * @return	true if setting was successful, false otherwise
+	 */
+	public static boolean setSearchCounter(int i) {
+		//try for a meaningful use of the bool return
+		try {
+			searchCounter = i;
+			return true;
+		} catch(Exception e) {
+			return false;
+		}
+	}
 
+	/**
+	 * 
+	 * @param treeView
+	 */
 	public static void serializesTree(TreeView<AbstractNode> treeView) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
 		writeToFile(file, treeView);
 	}
-
+	
+	/**
+	 * 
+	 * @param treeView
+	 * @param newFileName
+	 */
 	public static void serializesTree(TreeView<AbstractNode> treeView, String newFileName) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		writeToFile(file, treeView);
 	}
 
+	/**
+	 * 
+	 * @param treeView
+	 * @param newFileName
+	 * @param tempList
+	 */
 	public static void extractTree(TreeView<AbstractNode> treeView, String newFileName,
 			List<TreeItem<AbstractNode>> tempList) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		try {
 			FileWriter writer = new FileWriter(file);
 			for (TreeItem<AbstractNode> node : tempList) {
+				if(node.getValue().getNodeType().equals("LINE")) {
+					continue;
+				}
 				writer.write(node.getValue().toString());
 				writer.write("\n");
 			}
 			writer.close();
-			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
+			informationAlert(String.format("Tree %s successfully stored at %s", newFileName, file.getAbsolutePath()));
 		} catch (IOException e) {
-			informationAlert("Es ist eine " + e + "aufgetreten");
+			informationAlert(String.format(DataStructuresEditorST.EXCEPTION_MESSAGE, e));
 		}
 	}
 
+	/**
+	 * Opens a TextInputDialog to get input from the user
+	 * @param	displayedDialog	String which specify the displayed dialog
+	 * @return	User input
+	 */
 	public static String getInput(String displayedDialog) {
 		TextInputDialog td = new TextInputDialog();
 		td.setHeaderText(displayedDialog);
@@ -135,30 +184,11 @@ public final class TreeViewUtilities {
 
 	}
 
-	public static TreeItem<AbstractNode> getCurrentSearchItem(List<TreeItem<AbstractNode>> resultList) {
-		TreeItem<AbstractNode> currentItem = new TreeItem<AbstractNode>();
-		if (getSearchCounter() < resultList.size()) {
-			currentItem = resultList.get(getSearchCounter());
-		} else {
-			setSearchCounter(0);
-			currentItem = resultList.get(getSearchCounter());
-		}
-		incrementSearchCounter();
-		return currentItem;
-	}
-
-	public static int getSearchCounter() {
-		return searchCounter;
-	}
-
-	public static void setSearchCounter(int i) {
-		searchCounter = i;
-	}
-
-	public static void incrementSearchCounter() {
-		searchCounter++;
-	}
-
+	/**
+	 * 
+	 * @param file
+	 * @param treeView
+	 */
 	public static void writeToFile(File file, TreeView<AbstractNode> treeView) {
 		if (file.getName().equals(treeName)) {
 			file.delete();
