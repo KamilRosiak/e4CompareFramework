@@ -48,6 +48,10 @@ public class KeyValueNode {
 		return Float.parseFloat(value);
 	}
 	
+	public int getIntValue() {
+		return Integer.parseInt(value);
+	}
+	
 	public void setValue(String value) {
 		this.value = value;
 	}
