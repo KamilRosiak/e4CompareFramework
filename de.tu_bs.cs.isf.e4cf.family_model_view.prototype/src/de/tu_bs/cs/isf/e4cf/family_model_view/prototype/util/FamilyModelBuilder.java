@@ -38,7 +38,13 @@ public class FamilyModelBuilder {
 		VariantArtefact variantArtefact = fmFactory.createVariantArtefact();
 		variantArtefact.setName(name);
 		variantArtefact.getArtefacts().addAll(Arrays.asList(artifacts));
-		variantArtefact.getOrigins().addAll(Arrays.asList(origins));
+		try {
+			variantArtefact.getOrigins().addAll(Arrays.asList(origins));
+		}catch (Exception e) {
+			System.out.println(origins);
+			System.out.println();
+		}
+
 		return variantArtefact;
 	}
 	
