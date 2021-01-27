@@ -353,4 +353,18 @@ public class TreeViewController {
 		}
 		return treeViewList;
 	}
+	
+	@FXML
+	public void expandSelectedItems() {
+		for(TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+			ti.setExpanded(true);
+		}
+	}
+	
+	@FXML
+	public void collapseSelectedItems() {
+		for(TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+			ti.setExpanded(false);
+		}
+	}
 }
