@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -106,7 +107,7 @@ public class RemoteComparisonFactory {
 
 	public static String executeGet(String targetURL) {
 		HttpURLConnection connection = null;
-
+		StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
 		try {
 			// Create connection
 			URL url = new URL(targetURL);
@@ -120,27 +121,28 @@ public class RemoteComparisonFactory {
 			// Get Response
 			InputStream is = connection.getInputStream();
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
 			String line;
 			while ((line = rd.readLine()) != null) {
 				response.append(line);
 				response.append('\r');
 			}
 			rd.close();
-			return response.toString();
+		} catch (ConnectException e) {
+			System.out.println(e.getLocalizedMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		} finally {
 			if (connection != null) {
 				connection.disconnect();
 			}
 		}
+
+		return response.toString();
 	}
 
 	public static String executePost(String targetURL, String payload) {
 		HttpURLConnection connection = null;
-
+		StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
 		try {
 			// Create connection
 			URL url = new URL(targetURL);
@@ -152,7 +154,7 @@ public class RemoteComparisonFactory {
 			connection.setUseCaches(false);
 			connection.setDoOutput(true);
 
-//		    Send request
+			// Send request
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			wr.writeBytes(payload);
 			wr.close();
@@ -160,22 +162,22 @@ public class RemoteComparisonFactory {
 			// Get Response
 			InputStream is = connection.getInputStream();
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
 			String line;
 			while ((line = rd.readLine()) != null) {
 				response.append(line);
 				response.append('\r');
 			}
 			rd.close();
-			return response.toString();
+		} catch (ConnectException e) {
+			System.out.println(e.getLocalizedMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		} finally {
 			if (connection != null) {
 				connection.disconnect();
 			}
 		}
+		return response.toString();
 	}
 
 }

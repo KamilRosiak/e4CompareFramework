@@ -41,14 +41,19 @@ public class RestButtonHandler {
 		tree2.setArtifactType("type");
 		tree2.setRoot(root);
 
-		RemoteComparisonStatus statusRequest = RemoteComparisonFactory.createComparisonRequest(tree1, tree2);
-		System.out.println(statusRequest.toString());
+		try {
+			RemoteComparisonStatus statusRequest = RemoteComparisonFactory.createComparisonRequest(tree1, tree2);
+			System.out.println(statusRequest.toString());
 
-		RemoteComparisonStatus statusResponse = RemoteComparisonFactory.getComparisonStatus(statusRequest.getUuid());
-		System.out.println(statusResponse.toString());
+			RemoteComparisonStatus statusResponse = RemoteComparisonFactory
+					.getComparisonStatus(statusRequest.getUuid());
+			System.out.println(statusResponse.toString());
 
-		TreeImpl resultTree = RemoteComparisonFactory.getComparisonResult(statusRequest.getUuid());
-		System.out.println(resultTree.toString());
+			TreeImpl resultTree = RemoteComparisonFactory.getComparisonResult(statusRequest.getUuid());
+			System.out.println(resultTree.toString());
+		} catch (Exception e) {
+			System.out.println("Remote comparison failed.");
+		}
 	}
 
 }
