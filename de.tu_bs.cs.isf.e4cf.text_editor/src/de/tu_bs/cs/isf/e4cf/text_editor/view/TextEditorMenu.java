@@ -1,10 +1,19 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.InvalidRegistryObjectException;
 
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
+import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 
 import javafx.fxml.FXML;
@@ -76,7 +85,24 @@ public class TextEditorMenu implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		createNewFileItems();
+		createNewFileItems(getContributedFileFormats());
+	
+	}
+	
+	private List<String> getContributedFileFormats() {
+		IConfigurationElement[] configs = RCPContentProvider.getIConfigurationElements("de.tu_bs.cs.isf.e4cf.text_editor.file_format");	
+		List<String> fileExtensions = new ArrayList<>();
+		for(IConfigurationElement config : configs) {
+			try {
+				String fileExtension = config.getAttribute("file_extension");
+				fileExtensions.add(fileExtension);
+			} catch (InvalidRegistryObjectException e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		
+		return fileExtensions;
 	}
 
 	public void setScene(Scene scene) {
@@ -91,9 +117,9 @@ public class TextEditorMenu implements Initializable {
 	 * @author Soeren Christmann, Lukas Cronauer
 	 * 
 	 */
-	public void createNewFileItems() {
-		for (String FileType : EditorST.FILE_FORMATS) {
-			MenuItem menu = new MenuItem(FileType + "-File");
+	public void createNewFileItems(List<String> formats) {
+		for (String fileType : formats) {
+			MenuItem menu = new MenuItem(fileType.toUpperCase() + "-File");
 			menu.setOnAction(e -> {
 				for (Tab t : textEditorViewController.tabPane.getTabs()) {
 					if (t.getUserData().toString()
@@ -103,7 +129,7 @@ public class TextEditorMenu implements Initializable {
 				}
 				textEditorViewController.saveChanges();
 				textEditorViewController
-						.loadTab(EditorST.NEW_TAB_TITLE + textEditorViewController.untitledCount + "." + FileType, "");
+						.loadTab(EditorST.NEW_TAB_TITLE + textEditorViewController.untitledCount + "." + fileType, "");
 				textEditorViewController.getCurrentTab().getContent().requestFocus();
 			});
 			newFile.getItems().addAll(menu);

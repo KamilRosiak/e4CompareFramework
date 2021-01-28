@@ -1,14 +1,26 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.text_editor.FileFormatContainer;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.WordCountUtils;
+import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IFormatting;
+import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IHighlighting;
+import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IIndenting;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,6 +30,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.Clipboard;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.fxmisc.richtext.CodeArea;
 
 /**
@@ -34,7 +50,7 @@ public class TextEditor implements Initializable {
 	protected Label wordCount;
 	@FXML
 	protected Label rowCount;
-	// Public ?
+	
 	Clipboard systemClipboard = Clipboard.getSystemClipboard();
 
 	@FXML
@@ -45,9 +61,10 @@ public class TextEditor implements Initializable {
 
 	// Utils class to handle file operations
 	protected FileUtils fileUtils;
-
-	// Scene of this object
+	
 	private Scene scene;
+	
+	private Map<String, FileFormatContainer> fileExtensions;
 
 	Alert alert;
 
@@ -76,7 +93,6 @@ public class TextEditor implements Initializable {
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
-	// Work in Progress
 	protected void initCountLabelItemAction() {
 		for (Tab tab : tabPane.getTabs()) {
 			CodeArea codeArea = (CodeArea) tab.getContent();
@@ -125,6 +141,7 @@ public class TextEditor implements Initializable {
 		if (scene != null) {
 			fileUtils = new FileUtils(scene.getWindow());
 		}
+		fileExtensions = getContributedFileFormats();
 	}
 
 	/**
@@ -190,7 +207,7 @@ public class TextEditor implements Initializable {
 			}
 		}
 		// find out which type the given file has
-		for (String fileType : EditorST.FILE_FORMATS) {
+		for (String fileType : fileExtensions.keySet()) {
 			if (fileName.endsWith(fileType)) {
 				fileEnding = fileType;
 			}
@@ -203,6 +220,7 @@ public class TextEditor implements Initializable {
 		}
 
 		EditorTab newTab = new EditorTab(fileName, fileEnding, content);
+		newTab.initDisplayActions(fileExtensions.get(fileEnding));
 		newTab.setUserData(filePath);
 		tabPane.getTabs().add(newTab);
 		tabPane.getSelectionModel().select(newTab);
@@ -221,5 +239,46 @@ public class TextEditor implements Initializable {
 	protected void setCurrentTabUserData(String path) {
 		getCurrentTab().setUserData(path);
 		getCurrentTab().setText(fileUtils.parseFileNameFromPath(path));
+	}
+	
+	private Map<String, FileFormatContainer> getContributedFileFormats() {
+		IConfigurationElement[] configs = RCPContentProvider.getIConfigurationElements(EditorST.EXTP_ID);	
+		Map<String, FileFormatContainer> fileExtensions = new HashMap<>();
+		for(IConfigurationElement config : configs) {
+			Object highlighter = null, indenter = null, formatter = null;
+			try {
+				String[] allAttributes = config.getAttributeNames();
+				for (String attribute : allAttributes) {
+					if (!attribute.equals(EditorST.EXTP_EXTENSION) && !attribute.equals("css")) {
+						final Object extension = config.createExecutableExtension(attribute);
+						if (attribute.equals(EditorST.EXTP_HIGHLIGHT) && extension instanceof IHighlighting) {
+							highlighter = extension;
+						} else if (attribute.equals(EditorST.EXTP_INDENT) && extension instanceof IIndenting) {
+							indenter = extension;
+						} else if (attribute.equals(EditorST.EXTP_FORMAT) && extension instanceof IFormatting) {
+							formatter = extension;
+						}
+					}
+					if (attribute.equals("css")) {
+						String contributor = config.getContributor().getName();
+						String relPath = config.getAttribute(attribute);
+						String styleUrl = new URL("platform:/plugin/" + contributor + "/" + relPath).toExternalForm();
+						if (styleUrl.endsWith(".css")) {
+							scene.getStylesheets().add(styleUrl);
+						} else {
+							throw new IOException("Invalid file format for css style-sheet. Must be '.css'. Contributor: " + contributor);
+						}
+						
+					}
+				}
+				String fileExtension = config.getAttribute(EditorST.EXTP_EXTENSION);
+				fileExtensions.put(fileExtension, new FileFormatContainer(highlighter, indenter, formatter));
+			} catch (InvalidRegistryObjectException | CoreException | IOException e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		
+		return fileExtensions;
 	}
 }

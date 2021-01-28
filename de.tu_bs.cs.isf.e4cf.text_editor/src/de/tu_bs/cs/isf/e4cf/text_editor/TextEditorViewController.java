@@ -53,7 +53,6 @@ public class TextEditorViewController {
 		Scene scene = new Scene(loader.getNode());
 		loader.getController().setScene(scene);
 		textEditor = loader.getController();
-		// scene.getStylesheets().add(TEXT_EDITOR_CSS_LOCATION);
 		canvans.setScene(scene);
 	}
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
+   <extension-point id="file_format" name="FileFormat" schema="schema/file_format.exsd"/>
    <extension
          id="de.tu-bs.cs.isf.e4cf.text_editor.project_explorer_file_extension"
          point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
@@ -24,6 +25,27 @@
             uri="fragment.e4xmi"
             apply="always">
       </fragment>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.text_editor.file_format">
+      <file_format
+            css="ui/view/style/java-keyword.css"
+            file_extension="java"
+            formatting="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat"
+            highlighting="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat"
+            identation="de.tu_bs.cs.isf.e4cf.text_editor.indentation.JavaIndentation"
+            indentation="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat">
+      </file_format>
+      <file_format
+            css="ui/view/style/xml-keyword.css"
+            file_extension="xml"
+            highlighting="de.tu_bs.cs.isf.e4cf.text_editor.format.XmlFormat"
+            identation="de.tu_bs.cs.isf.e4cf.text_editor.indentation.XMLIndentation"
+            indentation="de.tu_bs.cs.isf.e4cf.text_editor.indentation.XMLIndentation">
+      </file_format>
+      <file_format
+            file_extension="txt">
+      </file_format>
    </extension>
 
 </plugin>

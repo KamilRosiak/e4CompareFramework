@@ -40,14 +40,6 @@ public class FileUtils {
 		this.parent = parent;
 
 		fileChooser = new FileChooser();
-
-		for (String extension : EditorST.FILE_FORMATS) {
-			String displayName = extension.substring(0, 1).toUpperCase() + extension.substring(1) + " File (."
-					+ extension + ")";
-			String extensionFormat = "*." + extension;
-			fileChooser.getExtensionFilters().add(new ExtensionFilter(displayName, extensionFormat));
-		}
-
 		fileChooser.setInitialDirectory(new File(RCPContentProvider.getCurrentWorkspacePath()));
 	}
 

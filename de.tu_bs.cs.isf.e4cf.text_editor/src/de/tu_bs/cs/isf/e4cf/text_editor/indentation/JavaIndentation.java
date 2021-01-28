@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.Paragraph;
 
+import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IIndenting;
 import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -18,16 +19,16 @@ import javafx.scene.input.KeyEvent;
  * @author Lukas Cronauer, Erwin Wijaya
  * 
  */
-public class JavaIndentation {
+public class JavaIndentation implements IIndenting {
     private String whiteSpaceRegex = "^\\s+";
     private String braceRegex = "[{(\\[]\\s*$";
 
     private CodeArea codeArea;
 
-    public JavaIndentation (CodeArea codeArea) {
-        this.codeArea = codeArea;
-        apply(codeArea);
-    }
+//    public JavaIndentation (CodeArea codeArea) {
+//        this.codeArea = codeArea;
+//        apply(codeArea);
+//    }
 
     /**
      * Applying the auto Indentation.
@@ -35,7 +36,7 @@ public class JavaIndentation {
      * @param codeArea the codeArea to apply the indentation to
      * @author Lukas Cronauer, Erwin Wijaya
      */
-    private void apply(CodeArea codeArea) {
+    public void applyIndentation(CodeArea codeArea) {
         Pattern whiteSpace = Pattern.compile(whiteSpaceRegex);
         Pattern brace = Pattern.compile(braceRegex);
         codeArea.addEventFilter(KeyEvent.KEY_PRESSED, KE -> {

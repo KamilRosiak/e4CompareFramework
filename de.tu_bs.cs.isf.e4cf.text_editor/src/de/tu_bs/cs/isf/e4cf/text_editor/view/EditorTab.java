@@ -1,15 +1,20 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
+import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import de.tu_bs.cs.isf.e4cf.text_editor.highlighter.SyntaxHighlighter;
-import de.tu_bs.cs.isf.e4cf.text_editor.indentation.JavaIndentation;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.SafeRunner;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.model.StyleSpans;
+
+import de.tu_bs.cs.isf.e4cf.text_editor.FileFormatContainer;
+import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IFormatting;
+import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IHighlighting;
+import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IIndenting;
 import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.control.Tab;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 /**
  * Extension of Tab class. This class adds a constructor containing the type of
@@ -22,10 +27,10 @@ import javafx.scene.input.KeyEvent;
  * 
  */
 public class EditorTab extends Tab {
+	private enum Action {HIGHLIGHT, INDENT, FORMAT};
 	private String fileEnding;
-
-	// Highlighter of this Tab's CodeArea
-	private SyntaxHighlighter highlighter;
+	private Timer timer;
+	private CodeArea codeArea;
 
 	/**
 	 * Constructs a new Editor Tab.
@@ -36,31 +41,94 @@ public class EditorTab extends Tab {
 	 */
 	public EditorTab(String text, String fileEnding, String content) {
 		this.fileEnding = fileEnding;
-		CodeArea codeArea = CodeAreaFactory.createCodeArea(content);
-		setIndentation(codeArea, fileEnding);
+		codeArea = CodeAreaFactory.createCodeArea(content);
 		setText(text);
-		highlighter = new SyntaxHighlighter(fileEnding, codeArea);
 		setContent(codeArea);
 	}
 
 	/**
-	 * Activates the Indentation for the java-files.
-	 * 
-	 * @param codeArea   The codearea which should be indent.
-	 * @param fileEnding The fileending which identifies the file as a java-file
-	 */
-	private void setIndentation(CodeArea codeArea, String fileEnding) {
-		if (fileEnding.endsWith("java")) {
-			new JavaIndentation(codeArea);
-		}
-	}
-
-	/**
-	 * Retrieves the file ending.
+	 * Returns the file extension
 	 * 
 	 * @return the current file ending
 	 */
 	public String getFileEnding() {
 		return fileEnding;
+	}
+	
+	@Override
+	public void finalize() {
+		this.canceHighlighting();
+	}
+	
+	/**
+	 * Schedules highlighting function every 500ms.
+	 * 
+	 * @param codeArea current area for text on active tab
+	 */
+	private void scheduleHighlighting(IHighlighting func) {
+		TimerTask timerTask = new TimerTask() {
+			@Override
+			public void run() {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						StyleSpans<Collection<String>> styleSpans;
+						try {
+							styleSpans = func.computeHighlighting(codeArea.getText());
+							codeArea.setStyleSpans(0, styleSpans);
+						} catch (NullPointerException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+		};
+		timer = new Timer();
+		timer.schedule(timerTask, 0, 500);
+	}
+
+	/**
+	 * Cancels the timer which computes the highlighting, if one is active.
+	 *
+	 * @author Lukas Cronauer
+	 */
+	public void canceHighlighting() {
+		if (timer != null) {
+			timer.cancel();
+		}
+	}
+
+	public void initDisplayActions(FileFormatContainer container) {
+		if (container.getHighlighter() != null) {
+			runSafe(container.getHighlighter(), Action.HIGHLIGHT);
+		}
+		if (container.getIndenter() != null) {
+			runSafe(container.getIndenter(), Action.INDENT);
+		}
+		if (container.getFormatter() != null) {
+			runSafe(container.getFormatter(), Action.FORMAT);
+		}
+	}
+	
+	private void runSafe(Object extension, Action action) {
+		ISafeRunnable runnable = new ISafeRunnable() {
+	            @Override
+	            public void handleException(Throwable e) {
+	                System.out.println("Exception in " + fileEnding + " extension");
+	                System.out.println(e.getMessage());
+	            }
+
+	            @Override
+	            public void run() throws Exception {
+	            	if (action == Action.HIGHLIGHT) {
+						scheduleHighlighting(((IHighlighting) extension));
+					} else if (action == Action.INDENT) {
+						((IIndenting) extension).applyIndentation(codeArea);
+					} else if (action == Action.FORMAT) {
+						((IFormatting) extension).format(codeArea);
+					}
+	            }
+		};
+		SafeRunner.run(runnable);
 	}
 }

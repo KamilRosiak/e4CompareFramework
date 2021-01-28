@@ -29,14 +29,10 @@ import java.util.function.Function;
  *
  */
 public class SyntaxHighlighter {
-	// reference to the codeArea the hightlighting is applied to
-	private CodeArea codeArea;
-
 	// reference to the corresponding highlighting function for the fileExtension
 	private Function<String, StyleSpans<Collection<String>>> highlightingFunction;
 
 	// executor / timer used to compute the highlighting at regular intervals
-	private ExecutorService executor;
 	private Timer timer;
 
 	/**
@@ -47,7 +43,6 @@ public class SyntaxHighlighter {
 	 * @author Erwin Wijaya, Lukas Cronauer
 	 */
 	public SyntaxHighlighter(String fileType, CodeArea codeArea) {
-		this.codeArea = codeArea;
 		setHighlightingFunction(fileType);
 		scheduleHighlighting(codeArea);
 	}
@@ -67,10 +62,6 @@ public class SyntaxHighlighter {
 
 		case "xml":
 			highlightingFunction = XMLHighlighting::computeHighlighting;
-			break;
-
-		default:
-			highlightingFunction = NoHighlighting::computeHighlighting;
 			break;
 		}
 	}
@@ -112,33 +103,6 @@ public class SyntaxHighlighter {
 		if (timer != null) {
 			timer.cancel();
 		}
-	}
-
-	/**
-	 * Calls the highlighting computation in the background using an executor.
-	 * 
-	 * @return The computed highlighting
-	 * @author Erwin Wijaya, Lukas Cronauer (from richtextfx)
-	 */
-	private Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
-		String text = codeArea.getText();
-		Task<StyleSpans<Collection<String>>> task = new Task<StyleSpans<Collection<String>>>() {
-			@Override
-			protected StyleSpans<Collection<String>> call() throws Exception {
-				return highlightingFunction.apply(text);
-			}
-		};
-		executor.execute(task);
-		return task;
-	}
-
-	/**
-	 * Applies highlighting to the codeArea.
-	 * 
-	 * @param highlighting
-	 */
-	private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
-		codeArea.setStyleSpans(0, highlighting);
 	}
 
 }
