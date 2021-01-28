@@ -146,14 +146,15 @@ public class JavaWriterUtil {
 			jpNode = createConditionalExpr(attributes, p);
 		} else if (isOfType(n, ConstructorDeclaration.class)) {
 			ConstructorDeclaration obj = new ConstructorDeclaration();
+			// Set modifiers of the constructor
 			obj.setModifiers(attributes.getModifier());
+			// Set name of the constructor
 			obj.setName(attributes.getName());
+			// And annotations of the constructor
 			obj.setAnnotations(attributes.getAnnotation());
 			jpNode = obj;
 		} else if (isOfType(n, ContinueStmt.class)) {
-			ContinueStmt obj = new ContinueStmt();
-			obj.setLabel(attributes.getTarget().toString());
-			jpNode = obj;
+			jpNode = createContinueStmt(attributes, p);
 		} else if (isOfType(n, DoStmt.class)) {
 			DoStmt obj = new DoStmt();
 			obj.setCondition(attributes.getCondition().getFirst().get());
@@ -553,6 +554,42 @@ public class JavaWriterUtil {
 		}
 
 		return jpNode;
+	}
+
+	/**
+	 * Creates a new {@link ContinueStmt} and sets its label. Then adds it to the
+	 * parent node.
+	 * 
+	 * @param attributes Attributes of the continue stmt
+	 * @param p Parent of the node
+	 * @return A new continue stmt
+	 * @throws UnsupportedOperationException Missing impl for type of p
+	 */
+	private ContinueStmt createContinueStmt(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
+		ContinueStmt obj = new ContinueStmt();
+		/*
+		 * If there is an optional label for the continue stmt, then set it; otherwise
+		 * remove the default "empty" label.
+		 */
+		if (attributes.getTarget() != null) {
+			obj.setLabel(new SimpleName(attributes.getTarget().toString()));
+		} else {
+			obj.removeLabel();
+		}
+
+		/*
+		 * Add the continue stmt to the parent node or throw an exception if there is
+		 * missing an implementation.
+		 */
+		if (p instanceof NodeWithStatements) {
+			((NodeWithStatements) p).addStatement(obj);
+		} else {
+			// there is missing a case
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
 	}
 
 	/**
