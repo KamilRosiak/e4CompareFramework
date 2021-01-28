@@ -15,12 +15,12 @@ import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
  * @author Lukas Cronauer
  *
  */
-public abstract class TextEditorProjectExplorerExtension implements IProjectExplorerExtension {
+public interface ITextEditorProjectExplorerExtension extends IProjectExplorerExtension {
 
-	public abstract Image getIcon(RCPImageService imageService);
+	public Image getIcon(RCPImageService imageService);
 
 	@Override
-	public void execute(ServiceContainer container) {
+	public default void execute(ServiceContainer container) {
 		container.eventBroker.send(EditorST.FILE_OPENED,
 				container.rcpSelectionService.getCurrentSelectionFromExplorer());
 	}

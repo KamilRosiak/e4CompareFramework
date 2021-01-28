@@ -10,7 +10,7 @@ import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
  * 
  * @author Lukas Cronauer
  */
-public class JavaFileExtension extends TextEditorProjectExplorerExtension {
+public class JavaFileExtension implements ITextEditorProjectExplorerExtension {
 	@Override
 	public Image getIcon(RCPImageService imageService) {
 		return imageService.getImage(EditorST.BUNDLE_NAME, "icons/java-icon.png");
