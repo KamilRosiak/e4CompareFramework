@@ -156,24 +156,20 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ContinueStmt.class)) {
 			jpNode = createContinueStmt(attributes, p);
 		} else if (isOfType(n, DoStmt.class)) {
-			DoStmt obj = new DoStmt();
-			obj.setCondition(attributes.getCondition().getFirst().get());
-			jpNode = obj;
+			jpNode = createDoStmt(attributes, p);
 		} else if (isOfType(n, DoubleLiteralExpr.class)) {
 			DoubleLiteralExpr obj = new DoubleLiteralExpr();
 			obj.setValue(attributes.getValue().toString());
 			jpNode = obj;
 		} else if (isOfType(n, JavaNodeTypes.Else)) {
-			BlockStmt elseStmt = new BlockStmt();
-			IfStmt ifStmt = (IfStmt) p;
-			while (ifStmt.hasElseBranch()) {
-				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
-			}
-			ifStmt.setElseStmt(elseStmt);
-			jpNode = elseStmt;
+			jpNode = createElseStmt((IfStmt) p);
 		} else if (isOfType(n, EmptyStmt.class)) {
 			jpNode = new EmptyStmt();
 		} else if (isOfType(n, EnclosedExpr.class)) {
+			/*
+			 * Only add the enclosed expr to the parent, the inner expr could contain
+			 * anything and is therefore set in the child.
+			 */
 			EnclosedExpr obj = new EnclosedExpr();
 
 			if (p instanceof NodeWithStatements) {
@@ -192,49 +188,15 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, FieldAccessExpr.class)) {
 			jpNode = new FieldAccessExpr();
 		} else if (isOfType(n, FieldDeclaration.class)) {
-			FieldDeclaration fd = new FieldDeclaration();
-			fd.setModifiers(attributes.getModifier());
-
-			VariableDeclarator vd = new VariableDeclarator();
-			vd.setType(attributes.getType());
-			vd.setName(attributes.getName());
-			if (!attributes.getInitilization().isEmpty()) {
-				vd.setInitializer(attributes.getInitilization().getFirst().get());
-			}
-
-			fd.addVariable(vd);
-
-			if (p instanceof TypeDeclaration) {
-				TypeDeclaration nwm = (TypeDeclaration) p;
-				nwm.addMember(fd);
-			} else {
-				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
-						+ ". Expected: " + TypeDeclaration.class.getSimpleName());
-			}
-			jpNode = fd;
+			jpNode = createFieldDeclaration(attributes, p);
 		} else if (isOfType(n, ForEachStmt.class)) {
-			ForEachStmt obj = new ForEachStmt();
-			obj.setIterable(attributes.getIterator());
-			obj.setVariable(new VariableDeclarationExpr(attributes.getType(),
-					attributes.getInitilization().getFirst().get().toString()));
-
-			if (p instanceof NodeWithStatements) {
-				((NodeWithStatements) p).addStatement(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createForEachStmt(attributes, p);
 		} else if (isOfType(n, ForStmt.class)) {
-			ForStmt obj = new ForStmt();
-			obj.setInitialization(attributes.getInitilization());
-			obj.setCompare(attributes.getComparison());
-			obj.setUpdate(attributes.getUpdate());
-
-			if (p instanceof NodeWithStatements) {
-				((NodeWithStatements) p).addStatement(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createForStmt(attributes, p);
 		} else if (isOfType(n, IfStmt.class)) {
+			/*
+			 * Just add the first if stmt, the logic is in THEN and ELSE.
+			 */
 			IfStmt obj = new IfStmt();
 
 			if (p instanceof NodeWithStatements) {
@@ -243,13 +205,7 @@ public class JavaWriterUtil {
 
 			jpNode = obj;
 		} else if (isOfType(n, JavaNodeTypes.Import)) {
-			if (p != null) {
-				Optional<CompilationUnit> cuOpt = p.findCompilationUnit();
-				if (cuOpt.isPresent() && !attributes.getName().isEmpty()) {
-					cuOpt.get().addImport(new ImportDeclaration(attributes.getName(), attributes.isStatic(),
-							attributes.isAsteriks()));
-				}
-			}
+			processImport(attributes, p);
 		} else if (isOfType(n, InitializerDeclaration.class)) {
 			jpNode = new InitializerDeclaration();
 		} else if (isOfType(n, InstanceOfExpr.class)) {
@@ -259,13 +215,15 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, JavaNodeTypes.Interface)) {
 			jpNode = createClassOrInterfaceDeclaration(attributes, p);
 		} else if (isOfType(n, IntersectionType.class)) {
-			/*
-			 * TODO fill arguments IntersectionType obj = new IntersectionType(); jpNode =
-			 * obj;
-			 */
+			// TODO fill arguments
+			// IntersectionType obj = new IntersectionType();
+			// jpNode = obj;
 		} else if (isOfType(n, LabeledStmt.class)) {
 			jpNode = new LabeledStmt();
 		} else if (isOfType(n, LambdaExpr.class)) {
+			/*
+			 * Just add a lambda expr, the logic is done in the children.
+			 */
 			LambdaExpr obj = new LambdaExpr();
 
 			if (p instanceof NodeWithStatements) {
@@ -284,53 +242,19 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, MarkerAnnotationExpr.class)) {
 			jpNode = new MarkerAnnotationExpr();
 		} else if (isOfType(n, MemberValuePair.class)) {
-			MemberValuePair obj = new MemberValuePair();
-			obj.setName(attributes.getKey());
-			obj.setValue(attributes.getValue());
-
-			if (p instanceof NormalAnnotationExpr) {
-				NodeList<MemberValuePair> paris = ((NormalAnnotationExpr) p).getPairs();
-				paris.add(obj);
-				((NormalAnnotationExpr) p).setPairs(paris);
-			}
-
-			jpNode = obj;
+			jpNode = createMemberValuePair(attributes, p);
 		} else if (isOfType(n, MethodCallExpr.class)) {
-			MethodCallExpr obj = new MethodCallExpr();
-			obj.setScope(attributes.getScope());
-			obj.setName(attributes.getName());
-
-			if (p instanceof NodeWithStatements) {
-				((NodeWithStatements) p).addStatement(obj);
-			} else if (p instanceof LambdaExpr) {
-				((LambdaExpr) p).setBody(new ExpressionStmt(obj));
-			}
-
-			jpNode = obj;
+			jpNode = createMethodCallExpr(attributes, p);
 		} else if (isOfType(n, MethodDeclaration.class)) {
-			MethodDeclaration obj = new MethodDeclaration();
-			obj.setThrownExceptions(attributes.getThrows());
-			obj.setName(attributes.getName());
-			obj.setModifiers(attributes.getModifier());
-			if (attributes.getReturnType() != null) {
-				obj.setType(attributes.getReturnType());
-			} else if (attributes.getType() != null) {
-				obj.setType(attributes.getType());
-			}
-			if (attributes.getAnnotation().isNonEmpty()) {
-				obj.setAnnotations(attributes.getAnnotation());
-			}
-
-			if (p instanceof NodeWithMembers) {
-				((NodeWithMembers) p).addMember(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createMethodDeclaration(attributes, p);
 		} else if (isOfType(n, MethodReferenceExpr.class)) {
 			jpNode = new MethodReferenceExpr();
 		} else if (isOfType(n, NameExpr.class)) {
 			jpNode = new NameExpr();
 		} else if (isOfType(n, NormalAnnotationExpr.class)) {
+			/*
+			 * Create a new normal annotation expr, set its name and add it to p.
+			 */
 			NormalAnnotationExpr obj = new NormalAnnotationExpr();
 			obj.setName(attributes.getName());
 
@@ -344,32 +268,18 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ObjectCreationExpr.class)) {
 			jpNode = new ObjectCreationExpr();
 		} else if (isOfType(n, Parameter.class)) {
-			Parameter obj = new Parameter();
-			if (attributes.getType() != null) {
-				obj.setType(attributes.getType());
-			} else {
-				obj.setType(new UnknownType());
-			}
-			obj.setName(attributes.getName());
-
-			if (p instanceof NodeWithParameters) {
-				((NodeWithParameters) p).addParameter(obj);
-			} else if (p instanceof CatchClause) {
-				((CatchClause) p).setParameter(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createParameter(attributes, p);
 		} else if (isOfType(n, PrimitiveType.class)) {
 			jpNode = new PrimitiveType();
 		} else if (isOfType(n, ReceiverParameter.class)) {
 			jpNode = new ReceiverParameter();
 		} else if (isOfType(n, ReturnStmt.class)) {
-			ReturnStmt obj = new ReturnStmt(attributes.getValue());
+			ReturnStmt obj = new ReturnStmt();
+			// What should be returned?
+			obj.setExpression(attributes.getValue());
 
 			if (p instanceof NodeWithStatements) {
 				((NodeWithStatements) p).addStatement(obj);
-			} else {
-				throw new UnsupportedOperationException();
 			}
 
 			jpNode = obj;
@@ -537,8 +447,8 @@ public class JavaWriterUtil {
 			jpNode.setParentNode(p);
 
 			/*
-			 * An enclosed expr could appear anywhere, there fore the parent node is set in
-			 * this place
+			 * An enclosed expr could contain any expression, so set the inner expression
+			 * here.
 			 */
 			if (p instanceof EnclosedExpr && jpNode instanceof Expression) {
 				((EnclosedExpr) p).setInner((Expression) jpNode);
@@ -556,11 +466,290 @@ public class JavaWriterUtil {
 	}
 
 	/**
+	 * Creates a new {@link Parameter}. This method sets
+	 * <li>the type of the parameter, if there is any, otherwise the type is
+	 * {@link UnknownType};</li>
+	 * <li>and the name.</li> Then the new parameter is added to its parent.
+	 * 
+	 * @param attributes Attributes of the node
+	 * @param p          Parent node the new node
+	 * @return A new node
+	 * @exception UnsupportedOperationException Missing impl for p
+	 */
+	private Parameter createParameter(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
+		Parameter obj = new Parameter();
+		if (attributes.getType() != null) {
+			obj.setType(attributes.getType());
+		} else {
+			obj.setType(new UnknownType());
+		}
+		obj.setName(attributes.getName());
+
+		if (p instanceof NodeWithParameters) {
+			((NodeWithParameters) p).addParameter(obj);
+		} else if (p instanceof CatchClause) {
+			((CatchClause) p).setParameter(obj);
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Creates a new {@link MethodDeclaration}.
+	 * <p>
+	 * This method sets
+	 * <li>the thrown exceptions,</li>
+	 * <li>the name,</li>
+	 * <li>the modifiers,</li>
+	 * <li>the return type</li>
+	 * <li>and the annotations.</li>
+	 * <p>
+	 * Then adds the decl to the parent.
+	 * 
+	 * @param attributes Attributes of the node
+	 * @param p          Parent node the new node
+	 * @return A new node
+	 * @exception UnsupportedOperationException Missing impl for p
+	 */
+	private MethodDeclaration createMethodDeclaration(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		MethodDeclaration obj = new MethodDeclaration();
+		obj.setThrownExceptions(attributes.getThrows());
+		obj.setName(attributes.getName());
+		obj.setModifiers(attributes.getModifier());
+		if (attributes.getReturnType() != null) {
+			obj.setType(attributes.getReturnType());
+		} else if (attributes.getType() != null) {
+			obj.setType(attributes.getType());
+		}
+		if (attributes.getAnnotation().isNonEmpty()) {
+			obj.setAnnotations(attributes.getAnnotation());
+		}
+
+		if (p instanceof NodeWithMembers) {
+			((NodeWithMembers) p).addMember(obj);
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Creates a new {@link MethodCallExpr} and sets its name and scope. Then adds
+	 * the node to its parent.
+	 * 
+	 * @param attributes Attributes of the node
+	 * @param p          Parent node the new node
+	 * @return A new node
+	 * @exception UnsupportedOperationException Missing impl for p
+	 */
+	private MethodCallExpr createMethodCallExpr(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		MethodCallExpr obj = new MethodCallExpr();
+		obj.setScope(attributes.getScope());
+		obj.setName(attributes.getName());
+
+		if (p instanceof NodeWithStatements) {
+			((NodeWithStatements) p).addStatement(obj);
+		} else if (p instanceof LambdaExpr) {
+			((LambdaExpr) p).setBody(new ExpressionStmt(obj));
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Creates a new {@link MemberValuePair} and sets its name and value. Then adds
+	 * the node to its parent.
+	 * 
+	 * @param attributes Attributes of the node
+	 * @param p          Parent node the new node
+	 * @return A new node
+	 * @exception UnsupportedOperationException Missing impl for p
+	 */
+	private MemberValuePair createMemberValuePair(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		MemberValuePair obj = new MemberValuePair();
+		obj.setName(attributes.getKey());
+		obj.setValue(attributes.getValue());
+
+		if (p instanceof NormalAnnotationExpr) {
+			/*
+			 * Get all annotations, append the list by the new pair, then set the pairs of
+			 * parent. Sadly there are only getter and setter, but no add method.
+			 */
+			NodeList<MemberValuePair> paris = ((NormalAnnotationExpr) p).getPairs();
+			paris.add(obj);
+			((NormalAnnotationExpr) p).setPairs(paris);
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Adds a new {@link ImportDeclaration} to the {@link CompilationUnit}
+	 * 
+	 * @param attributes Attributes of the import decl
+	 * @param p          any node of the tree
+	 */
+	private void processImport(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
+		/*
+		 * If p is not the compilation unit, then find the compilation unit. It is not
+		 * checked whetever there is a compilation unit, bc. there should always be a
+		 * compilation unit.
+		 */
+		if (p != null) {
+			CompilationUnit cuOpt = p.findCompilationUnit().get();
+			if (!attributes.getName().isEmpty()) {
+				/*
+				 * If name is not empty, then given attributes can construct a valid import
+				 * declaration. If the name is empty, it was the import node with meta info
+				 * number of children.
+				 */
+				ImportDeclaration id = new ImportDeclaration(attributes.getName(), attributes.isStatic(),
+						attributes.isAsteriks());
+				cuOpt.addImport(id);
+			}
+		}
+	}
+
+	/**
+	 * Creates a new {@link ForStmt} and sets its initilizations, comparisons and
+	 * updates. Then adds the node to its parent.
+	 * 
+	 * @param attributes Attributes of the for stmt
+	 * @param p          Parent node of the for stmt
+	 * @return A new for stmt
+	 * @exception UnsupportedOperationException Missing impl for p
+	 */
+	private com.github.javaparser.ast.Node createForStmt(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		ForStmt obj = new ForStmt();
+		obj.setInitialization(attributes.getInitilization());
+		obj.setCompare(attributes.getComparison());
+		obj.setUpdate(attributes.getUpdate());
+
+		if (p instanceof NodeWithStatements) {
+			((NodeWithStatements) p).addStatement(obj);
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Creates a new {@link ForEachStmt} and sets its iterable and its variable.
+	 * Afterwards the node is added to the parent.
+	 * 
+	 * @param attributes Attributes of the for each stmt
+	 * @param p          Parent node of the for each stmt
+	 * @return A new for each stmt
+	 * @exception UnsupportedOperationException Missing impl for p
+	 */
+	private ForEachStmt createForEachStmt(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
+		ForEachStmt obj = new ForEachStmt();
+		obj.setIterable(attributes.getIterator());
+		obj.setVariable(new VariableDeclarationExpr(attributes.getType(),
+				attributes.getInitilization().getFirst().get().toString()));
+
+		if (p instanceof NodeWithStatements) {
+			((NodeWithStatements) p).addStatement(obj);
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Creates a new {@link FieldDeclaration} and sets its variables and modifiers.
+	 * 
+	 * @param attributes Attributes of the field decl
+	 * @param p          Parent node of the field decl
+	 * @return A new field decl
+	 * @exception UnsupportedOperationException Missing impl for p
+	 */
+	private FieldDeclaration createFieldDeclaration(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		FieldDeclaration fd = new FieldDeclaration();
+		fd.setModifiers(attributes.getModifier());
+
+		VariableDeclarator vd = new VariableDeclarator();
+		vd.setType(attributes.getType());
+		vd.setName(attributes.getName());
+		if (!attributes.getInitilization().isEmpty()) {
+			vd.setInitializer(attributes.getInitilization().getFirst().get());
+		}
+
+		fd.addVariable(vd);
+
+		if (p instanceof TypeDeclaration) {
+			((TypeDeclaration) p).addMember(fd);
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return fd;
+	}
+
+	/**
+	 * Creates a new {@link BlockStmt} for the statements in an else branch.
+	 * 
+	 * @param ifStmt If Stmt of the else block
+	 * @return Block Stmt
+	 */
+	private BlockStmt createElseStmt(IfStmt ifStmt) {
+		BlockStmt elseStmt = new BlockStmt();
+		/*
+		 * In the JavaParser if-elif-else branches are nested; in the e4cf framework the
+		 * if-elif-else branches are flat. To reconstruct the depth, the else branches
+		 * of the superior if stmt must be traversed to the bottom. p is always the
+		 * uppermost/ first if case.
+		 */
+		while (ifStmt.hasElseBranch()) {
+			ifStmt = (IfStmt) ifStmt.getElseStmt().get();
+		}
+		ifStmt.setElseStmt(elseStmt);
+		return elseStmt;
+	}
+
+	/**
+	 * Creates a new {@link DoStmt}, sets its condition and adds it to the parent.
+	 * 
+	 * @param attributes Attributes of the do stmt
+	 * @param p          Parent node of the do stmt
+	 * @return A new do stmt
+	 * @throws UnsupportedOperationException Missing impl for type of p
+	 */
+	private com.github.javaparser.ast.Node createDoStmt(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		DoStmt obj = new DoStmt();
+		obj.setCondition(attributes.getCondition().getFirst().get());
+
+		if (p instanceof NodeWithStatements) {
+			((NodeWithStatements) p).addStatement(obj);
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+		return obj;
+	}
+
+	/**
 	 * Creates a new {@link ContinueStmt} and sets its label. Then adds it to the
 	 * parent node.
 	 * 
 	 * @param attributes Attributes of the continue stmt
-	 * @param p Parent of the node
+	 * @param p          Parent of the node
 	 * @return A new continue stmt
 	 * @throws UnsupportedOperationException Missing impl for type of p
 	 */
