@@ -33,13 +33,25 @@ public class JavaWriterUtil {
 	 * Converts a framework node and it's children to a JavaParser node
 	 * 
 	 * @param n Framework node
+	 * @return n as JavaParser node
+	 * @throws UnsupportedOperationException if an attribute, node type etc. is not
+	 *                                       supported.
+	 */
+	public com.github.javaparser.ast.Node visitWriter(Node n) throws UnsupportedOperationException {
+		return visitWriter(n, null);
+	}
+
+	/**
+	 * The recursive implementation of {@link JavaWriterUtil#visitWriter(Node)}.
+	 * 
+	 * @param n Framework node
 	 * @param p is the parent node of n's equivalent JavaParserNode. This can be
 	 *          null.
 	 * @return n as JavaParser node
 	 * @throws UnsupportedOperationException if an attribute, node type etc. is not
 	 *                                       supported.
 	 */
-	public static /* @ nullable @ */ com.github.javaparser.ast.Node visitWriter(Node n,
+	private /* @ nullable @ */ com.github.javaparser.ast.Node visitWriter(Node n,
 			/* @ nullable @ */ com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
 		// Declare a new node
 		com.github.javaparser.ast.Node jpNode = null;
@@ -598,8 +610,7 @@ public class JavaWriterUtil {
 		}
 
 		/*
-		 * set jpNode as parent to all the nodes, that are generated from the
-		 * children
+		 * set jpNode as parent to all the nodes, that are generated from the children
 		 */
 		for (Node nChild : n.getChildren()) {
 			com.github.javaparser.ast.Node jpChild = visitWriter(nChild, Optional.ofNullable(jpNode).orElse(p));
@@ -618,7 +629,7 @@ public class JavaWriterUtil {
 	 * @param p          Parent node of the new node
 	 * @return New array access expr
 	 */
-	private static com.github.javaparser.ast.Node createArrayAccessExpr(JavaWriterAttributeCollector attributes,
+	private com.github.javaparser.ast.Node createArrayAccessExpr(JavaWriterAttributeCollector attributes,
 			com.github.javaparser.ast.Node p) {
 		// Create a new expression
 		ArrayAccessExpr obj = new ArrayAccessExpr();
@@ -640,7 +651,7 @@ public class JavaWriterUtil {
 	 * @return <code>true</code>, if {@link Node#getNodeType()} matches
 	 *         {@link Class#getSimpleName()}.
 	 */
-	private static boolean isOfType(Node compareFrameworkNode, Class javaParserClazz) {
+	private boolean isOfType(Node compareFrameworkNode, Class javaParserClazz) {
 		return compareFrameworkNode.getNodeType().equals(javaParserClazz.getSimpleName());
 	}
 
@@ -654,7 +665,7 @@ public class JavaWriterUtil {
 	 * @return <code>true</code>, if {@link Node#getNodeType()} start with
 	 *         {@link JavaNodeTypes#name()}, <code>false</code> otherwise.
 	 */
-	private static boolean isOfType(Node compareFrameworkNode, JavaNodeTypes type) {
+	private boolean isOfType(Node compareFrameworkNode, JavaNodeTypes type) {
 		return compareFrameworkNode.getNodeType().startsWith(type.name());
 	}
 
@@ -669,9 +680,8 @@ public class JavaWriterUtil {
 	 *                                          there is missing implementation.
 	 * @return {@link ClassOrInterfaceDeclaration}
 	 */
-	private static ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(
-			JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
-			throws UnsupportedOperationException {
+	private ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
 		ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
 
 		// Name
@@ -717,7 +727,7 @@ public class JavaWriterUtil {
 	 * @param p          Parent node of the new node
 	 * @return new annotation declaration
 	 */
-	private static AnnotationDeclaration createAnnotationDeclaration(JavaWriterAttributeCollector attributes,
+	private AnnotationDeclaration createAnnotationDeclaration(JavaWriterAttributeCollector attributes,
 			com.github.javaparser.ast.Node p) {
 		// Declare the compilation unit
 		CompilationUnit cu;
@@ -755,8 +765,8 @@ public class JavaWriterUtil {
 	 * @param p          Parental annotation decl
 	 * @return New annotation member decl
 	 */
-	private static AnnotationMemberDeclaration createAnnotationMemberDeclaration(
-			JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
+	private AnnotationMemberDeclaration createAnnotationMemberDeclaration(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) {
 		// Create new annotation member decl
 		AnnotationMemberDeclaration obj = new AnnotationMemberDeclaration();
 
@@ -779,7 +789,7 @@ public class JavaWriterUtil {
 		return obj;
 	}
 
-	private static void processArgument(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
+	private void processArgument(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
 		if (p == null || attributes.getChildren() > 0) {
 			// Do nothing, e.g. parent of concrete arg was arg
 		} else if (attributes.getType() != null && attributes.getName() != null) {

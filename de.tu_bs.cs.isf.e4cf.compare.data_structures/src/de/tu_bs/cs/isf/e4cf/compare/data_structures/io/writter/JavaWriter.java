@@ -60,6 +60,7 @@ public class JavaWriter extends AbstractArtifactWriter {
 	 * @return Contents of a file
 	 */
 	private String createFileContent(Node root) {	
-		return JavaWriterUtil.visitWriter(root, null).toString();
+		JavaWriterUtil javaWriterUtil = new JavaWriterUtil();
+		return javaWriterUtil.visitWriter(root).toString();
 	}
 }
