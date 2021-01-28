@@ -136,23 +136,14 @@ public class JavaWriterUtil {
 			obj.setValue(attributes.getValue().toString());
 			jpNode = obj;
 		} else if (isOfType(n, JavaNodeTypes.Class)) {
-
 			jpNode = createClassOrInterfaceDeclaration(attributes, p);
 		} else if (isOfType(n, ClassExpr.class)) {
 			ClassExpr obj = new ClassExpr();
+			// Set the class of the expr
 			obj.setType(attributes.getType());
 			jpNode = obj;
 		} else if (isOfType(n, ConditionalExpr.class)) {
-			ConditionalExpr obj = new ConditionalExpr();
-			obj.setCondition(attributes.getCondition().getFirst().get());
-			obj.setThenExpr(attributes.getThen());
-			obj.setElseExpr(attributes.getElse());
-
-			if (p instanceof NodeWithStatements) {
-				((NodeWithStatements) p).addStatement(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createConditionalExpr(attributes, p);
 		} else if (isOfType(n, ConstructorDeclaration.class)) {
 			ConstructorDeclaration obj = new ConstructorDeclaration();
 			obj.setModifiers(attributes.getModifier());
@@ -562,6 +553,32 @@ public class JavaWriterUtil {
 		}
 
 		return jpNode;
+	}
+
+	/**
+	 * Creates a new {@link ConditionalExpr} and sets its check, then and else
+	 * statements. Afterwards the new node is added to its parent.
+	 * 
+	 * @param attributes Attributes of the node
+	 * @param p          Parent of the node
+	 * @return A new condition expr
+	 * @throws UnsupportedOperationException Missing impl for type of p
+	 */
+	private ConditionalExpr createConditionalExpr(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		ConditionalExpr obj = new ConditionalExpr();
+		// Set condition to first and only (should be)
+		obj.setCondition(attributes.getCondition().getFirst().get());
+		obj.setThenExpr(attributes.getThen());
+		obj.setElseExpr(attributes.getElse());
+
+		if (p instanceof NodeWithStatements) {
+			((NodeWithStatements) p).addStatement(obj);
+		} else {
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
 	}
 
 	/**
