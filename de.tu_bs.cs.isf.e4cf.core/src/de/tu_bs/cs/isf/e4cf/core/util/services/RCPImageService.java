@@ -16,6 +16,10 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
+
+import javafx.embed.swt.SWTFXUtils;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 /**
  * This service returns images from a iamgeDescriptor and caching them in a map. When a component needs an image this service looks in his map
  * if the image exists it will be returned else its creates it an returning them after. 
@@ -84,6 +88,18 @@ public class RCPImageService {
 			addImage(descriptor);
 		}
 			return _imageCache.get(descriptor);
+	}
+	
+	/**
+	 * This method returns a FX ImageView (Node) from his description it uses {@link getImageDescriptor()}.
+	 * @param bundleName the bundle name of the image.
+	 * @param imagePath the path within the bundle containing filename and extension
+	 * @return
+	 */
+	public ImageView getFXImage(String bundleName, String imagePath) {
+		Image im = getImage(bundleName, imagePath);
+		WritableImage fxImage = SWTFXUtils.toFXImage(im.getImageData(), null);
+		return new ImageView(fxImage);
 	}
 	
 	/**

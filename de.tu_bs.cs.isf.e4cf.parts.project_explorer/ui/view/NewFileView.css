@@ -1,0 +1,16 @@
+.box {
+	maxHeight: 300px; 
+	maxWidth: 500px;
+	minHeight: 50;
+	minWidth: 250;
+	prefHeight: 80.0;
+	prefWidth: 300.0;
+}
+
+.text-input {
+	-fx-padding: 5px;
+}
+
+.hints {
+	-fx-padding: 3px;
+}

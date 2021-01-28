@@ -20,7 +20,7 @@ public abstract class AbstractContainer<ElementType extends EObject, MetricType>
 	private static final long serialVersionUID = 1521277552874459308L;
 	private ElementType first;
 	private ElementType second;
-	private List<ResultElement<ElementType>> results;
+	private List<ResultElement> results;
 	private float similarity;
 	private MetricType metric;
 	private boolean isCompared = false;
@@ -30,7 +30,7 @@ public abstract class AbstractContainer<ElementType extends EObject, MetricType>
 		setFirst(first);
 		setSecond(second);
 		setMetric(metric);
-		results = new ArrayList<ResultElement<ElementType>>();
+		results = new ArrayList<ResultElement>();
 	}
 	
 	public abstract void reset();
@@ -51,7 +51,7 @@ public abstract class AbstractContainer<ElementType extends EObject, MetricType>
 		this.second = second;
 	}
 
-	public List<ResultElement<ElementType>> getResults() {
+	public List<ResultElement> getResults() {
 		return results;
 	}
 	
@@ -59,7 +59,7 @@ public abstract class AbstractContainer<ElementType extends EObject, MetricType>
 		results.add(result);
 	}
 	
-	public void setResults(List<ResultElement<ElementType>> results) {
+	public void setResults(List<ResultElement> results) {
 		this.results = results;
 	}
 
@@ -95,5 +95,8 @@ public abstract class AbstractContainer<ElementType extends EObject, MetricType>
 		this.options = options;
 	}
 	
-	
+	public void addOption(AbstractOption option) {
+		this.options.add(option);
+	}
+
 }
