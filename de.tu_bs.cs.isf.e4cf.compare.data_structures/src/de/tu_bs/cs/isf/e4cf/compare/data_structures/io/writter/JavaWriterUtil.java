@@ -75,9 +75,15 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, JavaNodeTypes.Argument)) {
 			processArgument(attributes, p);
 		} else if (isOfType(n, ArrayAccessExpr.class)) {
-			jpNode = createArrayAccessExpr(attributes, p);
+			ArrayAccessExpr obj = new ArrayAccessExpr();
+			// Set the index of the accessed entry
+			obj.setIndex(attributes.getValue());
+			// Set the name of the array, which must be an expression
+			obj.setName(StaticJavaParser.parseExpression(attributes.getName()));
+			jpNode = obj;
 		} else if (isOfType(n, ArrayCreationExpr.class)) {
 			ArrayCreationExpr obj = new ArrayCreationExpr();
+			// Set the type of the array creation expr
 			obj.setElementType(attributes.getType());
 			jpNode = obj;
 		} else if (isOfType(n, ArrayCreationLevel.class)) {
@@ -85,30 +91,17 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ArrayInitializerExpr.class)) {
 			jpNode = new ArrayInitializerExpr();
 		} else if (isOfType(n, ArrayType.class)) {
-			ArrayType obj = new ArrayType(attributes.getType(),
-					attributes.getAnnotation().stream().toArray(AnnotationExpr[]::new));// TODO needs closer lookjpNode
-																						// = obj;
+			// TODO check this
+			/*
+			 * ArrayType requires the annotations as an array, there the nodelist from
+			 * attributes must be converted.
+			 */
+			jpNode = new ArrayType(attributes.getType(),
+					attributes.getAnnotation().stream().toArray(AnnotationExpr[]::new));
 		} else if (isOfType(n, AssertStmt.class)) {
-			AssertStmt obj = new AssertStmt();
-			obj.setCheck(attributes.getCheck());
-			obj.setMessage(attributes.getMessage());
-
-			if (p instanceof NodeWithStatements) {
-				((NodeWithStatements) p).addStatement(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createAssertStmt(attributes, p);
 		} else if (isOfType(n, JavaNodeTypes.Assignment)) {
-			AssignExpr obj = new AssignExpr();
-			obj.setTarget(attributes.getTarget());
-			obj.setValue(attributes.getValue());
-			obj.setOperator(AssignExpr.Operator.valueOf(attributes.getOperator()));
-
-			if (p instanceof NodeWithStatements) {
-				((NodeWithStatements) p).addStatement(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createAssignExpr(attributes, p);
 		} else if (isOfType(n, BinaryExpr.class)) {
 			jpNode = new BinaryExpr();
 		} else if (isOfType(n, BlockComment.class)) {
@@ -116,65 +109,27 @@ public class JavaWriterUtil {
 			p.addOrphanComment(obj);
 			jpNode = obj;
 		} else if (isOfType(n, BlockStmt.class) || isOfType(n, JavaNodeTypes.Body)) {
-			BlockStmt obj = new BlockStmt();
-			if (p instanceof NodeWithOptionalBlockStmt) {
-				((NodeWithOptionalBlockStmt) p).setBody(obj);
-			} else if (p instanceof NodeWithBlockStmt) {
-				((NodeWithBlockStmt) p).setBody(obj);
-			} else if (p instanceof NodeWithBody) {
-				((NodeWithBody) p).setBody(obj);
-			} else if (p instanceof TryStmt) {
-				((TryStmt) p).setTryBlock(obj);
-			} else if (p instanceof BlockStmt) {
-				obj = (BlockStmt) p;
-			} else if (p instanceof IfStmt) {
-				((IfStmt) p).setThenStmt(obj);
-			}
-			jpNode = obj;
+			jpNode = createBlockStmt(p);
 		} else if (isOfType(n, BooleanLiteralExpr.class)) {
 			BooleanLiteralExpr obj = new BooleanLiteralExpr();
+			/*
+			 * A boolean literal expr is either true or false. This value is saved in the
+			 * attribute value, which is a parsed as an expression but needs to be converted
+			 * to a boolean.
+			 */
 			obj.setValue(Boolean.valueOf(attributes.getValue().toString()));
 			jpNode = obj;
 		} else if (isOfType(n, JavaNodeTypes.Bound)) {
-			if (p instanceof TypeParameter) {
-				TypeParameter tp = (TypeParameter) p;
-				NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound();
-				ClassOrInterfaceType bound = new ClassOrInterfaceType();
-				bound.setName(attributes.getName());
-				bound.setAnnotations(attributes.getAnnotation());
-				NodeList<Type> typeList = new NodeList<Type>();
-				attributes.getTypeParameterBound().forEach(coid -> typeList.add(coid));
-				bound.setTypeArguments(typeList);
-				getTypeBound.add(bound);
-				tp.setTypeBound(getTypeBound);
-			}
+			processBound(attributes, p);
 		} else if (isOfType(n, BreakStmt.class) || isOfType(n, JavaNodeTypes.Break)) {
-			BreakStmt obj = new BreakStmt();
-			if (attributes.getTarget() != null) {
-				obj.setLabel(new SimpleName(attributes.getTarget().toString()));
-			} else {
-				obj.removeLabel();
-			}
-
-			if (p instanceof NodeWithStatements) {
-				((NodeWithStatements) p).addStatement(obj);
-			}
-
-			jpNode = obj;
+			jpNode = createBreakStmt(attributes, p);
 		} else if (isOfType(n, CastExpr.class)) {
 			CastExpr obj = new CastExpr();
+			// Set the desired type
 			obj.setType(attributes.getType());
 			jpNode = obj;
 		} else if (isOfType(n, CatchClause.class)) {
-			CatchClause obj = new CatchClause();
-
-			if (p instanceof TryStmt) {
-				NodeList<CatchClause> clauses = ((TryStmt) p).getCatchClauses();
-				clauses.add(obj);
-				((TryStmt) p).setCatchClauses(clauses);
-			}
-
-			jpNode = obj;
+			jpNode = createCatchClause(p);
 		} else if (isOfType(n, CharLiteralExpr.class)) {
 			CharLiteralExpr obj = new CharLiteralExpr();
 			obj.setValue(attributes.getValue().toString());
@@ -620,23 +575,185 @@ public class JavaWriterUtil {
 	}
 
 	/**
-	 * Creates a new {@link ArrayAccessExpr} and sets its index
-	 * {@link ArrayAccessExpr#setIndex(Expression)} and its name
-	 * {@link ArrayAccessExpr#setName(Expression)} by the values retrieved from
-	 * attributes.
+	 * Creates a new {@link CatchClause} and adds it to the parent. 
 	 * 
-	 * @param attributes Attributes of the array access expr node
-	 * @param p          Parent node of the new node
-	 * @return New array access expr
+	 * @param p {@link TryStmt} of the catch clause
+	 * @return New catch clause
+	 * @exception UnsupportedOperationException When p is not a {@link TryStmt}
 	 */
-	private com.github.javaparser.ast.Node createArrayAccessExpr(JavaWriterAttributeCollector attributes,
-			com.github.javaparser.ast.Node p) {
-		// Create a new expression
-		ArrayAccessExpr obj = new ArrayAccessExpr();
-		// Set the index of the accessed entry
-		obj.setIndex(attributes.getValue());
-		// Set the name of the array, which must be an expression
-		obj.setName(StaticJavaParser.parseExpression(attributes.getName()));
+	private CatchClause createCatchClause(com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		CatchClause obj = new CatchClause();
+
+		if (p instanceof TryStmt) {
+			NodeList<CatchClause> clauses = ((TryStmt) p).getCatchClauses();
+			clauses.add(obj);
+			((TryStmt) p).setCatchClauses(clauses);
+		} else {
+			// It should always be a try stmt
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+		
+		return obj;
+	}
+
+	/**
+	 * Creates a new {@link BreakStmt} and sets its label properly. Then the
+	 * statement is added to the parent.
+	 * 
+	 * @param attributes Attributes of the break stmt
+	 * @param p          Parent of the break stmt
+	 * @throws UnsupportedOperationException When there is missing an implementation
+	 *                                       for specific types of p.
+	 */
+	private BreakStmt createBreakStmt(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
+		BreakStmt obj = new BreakStmt();
+		/*
+		 * If there is an target for the break stmt, then set it; otherwise remove the
+		 * default "empty" label.
+		 */
+		if (attributes.getTarget() != null) {
+			obj.setLabel(new SimpleName(attributes.getTarget().toString()));
+		} else {
+			obj.removeLabel();
+		}
+
+		/*
+		 * Add the break stmt to the parent node or throw an exception if there is
+		 * missing an implementation.
+		 */
+		if (p instanceof NodeWithStatements) {
+			((NodeWithStatements) p).addStatement(obj);
+		} else {
+			// there is missing a case
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Adds a bound to a type parameter.
+	 * 
+	 * @param attributes Attributes of the bound
+	 * @param p          Node with the bound
+	 * @throws UnsupportedOperationException When p is not a {@link TypeParameter},
+	 *                                       there is missing an implementation.
+	 */
+	private void processBound(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
+		if (p instanceof TypeParameter) {
+			// Cast p to type parameter for easier reuse
+			TypeParameter tp = (TypeParameter) p;
+			// Get current bounds of p
+			NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound();
+			// Create a new bound
+			ClassOrInterfaceType bound = new ClassOrInterfaceType();
+			// Set the name
+			bound.setName(attributes.getName());
+			// Set the annotations
+			bound.setAnnotations(attributes.getAnnotation());
+			// Set the generics of the bound (bound of bound :-))
+			bound.setTypeArguments(attributes.getTypeParameterBound());
+			// Add the bound to the current list of bounds
+			getTypeBound.add(bound);
+			// Set the new bound list
+			tp.setTypeBound(getTypeBound);
+		} else {
+			// there is missing a case
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+	}
+
+	/**
+	 * Creates a new {@link BlockStmt} and adds it to the parent node.
+	 * 
+	 * @param p Parent of the block stmt
+	 * @return New block stmt
+	 * @throws UnsupportedOperationException When there is missing an implementation
+	 *                                       for a specific parent.
+	 */
+	private BlockStmt createBlockStmt(com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		BlockStmt obj = new BlockStmt();
+		if (p instanceof NodeWithOptionalBlockStmt) {
+			((NodeWithOptionalBlockStmt) p).setBody(obj);
+		} else if (p instanceof NodeWithBlockStmt) {
+			((NodeWithBlockStmt) p).setBody(obj);
+		} else if (p instanceof NodeWithBody) {
+			((NodeWithBody) p).setBody(obj);
+		} else if (p instanceof TryStmt) {
+			((TryStmt) p).setTryBlock(obj);
+		} else if (p instanceof BlockStmt) {
+			obj = (BlockStmt) p;
+		} else if (p instanceof IfStmt) {
+			((IfStmt) p).setThenStmt(obj);
+		} else {
+			// there is missing a case
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
+		}
+		return obj;
+	}
+
+	/**
+	 * Creates a new {@link AssignExpr} and sets the target, value and operator of
+	 * the expression. The new node is then added to the parent as a statement.
+	 * 
+	 * @param attributes Attributes of the framework node
+	 * @param p          Parent node of the new node
+	 * @exception UnsupportedOperationException If there is missing a implementation
+	 *                                          for different types of p.
+	 * @return New assign stmt
+	 */
+	private AssignExpr createAssignExpr(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
+		AssignExpr obj = new AssignExpr();
+		obj.setTarget(attributes.getTarget());
+		obj.setValue(attributes.getValue());
+		obj.setOperator(AssignExpr.Operator.valueOf(attributes.getOperator()));
+
+		if (p instanceof NodeWithStatements) {
+			((NodeWithStatements) p).addStatement(obj);
+		} else {
+			// there is missing a case
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
+					+ ". Expected: " + NodeWithStatements.class.getSimpleName());
+		}
+
+		return obj;
+	}
+
+	/**
+	 * Generates a new instance of {@link AssertStmt}. This method sets the check
+	 * and the message of the new node with values from attributes. The new node is
+	 * added as a statement to the new node.
+	 * 
+	 * @param attributes Attributes of the framework node
+	 * @param p          Parent node of the new node
+	 * @exception UnsupportedOperationException If there is missing a implementation
+	 *                                          for different types of p.
+	 * @return New assert stmt
+	 */
+	private AssertStmt createAssertStmt(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
+			throws UnsupportedOperationException {
+		AssertStmt obj = new AssertStmt();
+		// Set the check
+		obj.setCheck(attributes.getCheck());
+		// Set the message
+		obj.setMessage(attributes.getMessage());
+
+		/*
+		 * Add node specifically as a child to parent, so it will rendered in the string
+		 * output later.
+		 */
+		if (p instanceof NodeWithStatements) {
+			// If parent is a node with statements
+			((NodeWithStatements) p).addStatement(obj);
+		} else {
+			// there is missing a case
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
+					+ ". Expected: " + NodeWithStatements.class.getSimpleName());
+		}
+
 		return obj;
 	}
 
