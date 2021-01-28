@@ -132,24 +132,12 @@ public class JavaWriterUtil {
 			jpNode = createCatchClause(p);
 		} else if (isOfType(n, CharLiteralExpr.class)) {
 			CharLiteralExpr obj = new CharLiteralExpr();
+			// Set the char of the expr
 			obj.setValue(attributes.getValue().toString());
 			jpNode = obj;
 		} else if (isOfType(n, JavaNodeTypes.Class)) {
-			ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration();
-			coid.setName(attributes.getName());
-			coid.setModifiers(attributes.getModifier());
 
-			if (!attributes.getSuperclass().isEmpty()) {
-				coid.addExtendedType(attributes.getSuperclass());
-			}
-			coid.setImplementedTypes(attributes.getInterface());
-			coid.setInterface(attributes.isInterface());
-
-			if (p instanceof NodeWithMembers) {
-				((NodeWithMembers) p).addMember(coid);
-			}
-
-			jpNode = coid;
+			jpNode = createClassOrInterfaceDeclaration(attributes, p);
 		} else if (isOfType(n, ClassExpr.class)) {
 			ClassExpr obj = new ClassExpr();
 			obj.setType(attributes.getType());
@@ -278,6 +266,8 @@ public class JavaWriterUtil {
 			jpNode = new InstanceOfExpr();
 		} else if (isOfType(n, IntegerLiteralExpr.class)) {
 			jpNode = new IntegerLiteralExpr();
+		} else if (isOfType(n, JavaNodeTypes.Interface)) {
+			jpNode = createClassOrInterfaceDeclaration(attributes, p);
 		} else if (isOfType(n, IntersectionType.class)) {
 			/*
 			 * TODO fill arguments IntersectionType obj = new IntersectionType(); jpNode =
@@ -575,7 +565,7 @@ public class JavaWriterUtil {
 	}
 
 	/**
-	 * Creates a new {@link CatchClause} and adds it to the parent. 
+	 * Creates a new {@link CatchClause} and adds it to the parent.
 	 * 
 	 * @param p {@link TryStmt} of the catch clause
 	 * @return New catch clause
@@ -592,7 +582,7 @@ public class JavaWriterUtil {
 			// It should always be a try stmt
 			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
 		}
-		
+
 		return obj;
 	}
 
@@ -793,8 +783,7 @@ public class JavaWriterUtil {
 	 * 
 	 * @param attributes Attributes of the new node
 	 * @param p          Parent node of the new node
-	 * @exception UnsupportedOperationException If p is not a compilation unit,
-	 *                                          there is missing implementation.
+	 * @exception UnsupportedOperationException If type of p is not implemented.
 	 * @return {@link ClassOrInterfaceDeclaration}
 	 */
 	private ClassOrInterfaceDeclaration createClassOrInterfaceDeclaration(JavaWriterAttributeCollector attributes,
@@ -827,10 +816,12 @@ public class JavaWriterUtil {
 			if (!attributes.getPackage().isEmpty()) {
 				cu.setPackageDeclaration(attributes.getPackage());
 			}
+		} else if (p instanceof NodeWithMembers) {
+			// Class in class or something
+			((NodeWithMembers) p).addMember(coid);
 		} else {
 			// If p is not supported, throw exception, to signal missing impl
-			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
-					+ ". Expected: " + CompilationUnit.class.getSimpleName());
+			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
 		}
 
 		return coid;
