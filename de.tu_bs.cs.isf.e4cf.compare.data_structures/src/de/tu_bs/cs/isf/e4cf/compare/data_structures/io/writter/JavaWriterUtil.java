@@ -41,11 +41,17 @@ public class JavaWriterUtil {
 	 */
 	public static /* @ nullable @ */ com.github.javaparser.ast.Node visitWriter(Node n,
 			/* @ nullable @ */ com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
+		// Declare a new node
 		com.github.javaparser.ast.Node jpNode = null;
 
+		// Collect the attributes from the given node
 		JavaWriterAttributeCollector attributes = new JavaWriterAttributeCollector();
 		attributes.collectAttributes(n);
 
+		/*
+		 * Create a new jp node based on e4cf node type and set specific values for the
+		 * new node
+		 */
 		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
 			jpNode = new CompilationUnit();
 		} else if (isOfType(n, CompilationUnit.class)) {
@@ -57,11 +63,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, JavaNodeTypes.Argument)) {
 			processArgument(attributes, p);
 		} else if (isOfType(n, ArrayAccessExpr.class)) {
-			ArrayAccessExpr obj = new ArrayAccessExpr();
-			obj.setIndex(attributes.getValue());
-			obj.setName(StaticJavaParser.parseExpression(attributes.getName()));
-
-			jpNode = obj;
+			jpNode = createArrayAccessExpr(attributes, p);
 		} else if (isOfType(n, ArrayCreationExpr.class)) {
 			ArrayCreationExpr obj = new ArrayCreationExpr();
 			obj.setElementType(attributes.getType());
@@ -564,7 +566,9 @@ public class JavaWriterUtil {
 			jpNode = new YieldStmt();
 		}
 
+		// Set general attributes, which could apply to a set of node here.
 		if (!(jpNode instanceof Comment) && !attributes.getComment().isEmpty()) {
+			// Set the comment of a node
 			String commentContent = attributes.getComment();
 			Comment comment = null;
 			if (commentContent.startsWith("/**")) {
@@ -577,21 +581,52 @@ public class JavaWriterUtil {
 			jpNode.setComment(comment);
 		}
 
+		/*
+		 * Set the parent of the node. This often needs to be done more specific. This
+		 * is done in the create functions.
+		 */
 		if (p != null && jpNode != null) {
 			jpNode.setParentNode(p);
 
+			/*
+			 * An enclosed expr could appear anywhere, there fore the parent node is set in
+			 * this place
+			 */
 			if (p instanceof EnclosedExpr && jpNode instanceof Expression) {
 				((EnclosedExpr) p).setInner((Expression) jpNode);
 			}
 		}
 
-		// set jpNode as parent to all the nodes, that are generated from the
-		// children
+		/*
+		 * set jpNode as parent to all the nodes, that are generated from the
+		 * children
+		 */
 		for (Node nChild : n.getChildren()) {
 			com.github.javaparser.ast.Node jpChild = visitWriter(nChild, Optional.ofNullable(jpNode).orElse(p));
 		}
 
 		return jpNode;
+	}
+
+	/**
+	 * Creates a new {@link ArrayAccessExpr} and sets its index
+	 * {@link ArrayAccessExpr#setIndex(Expression)} and its name
+	 * {@link ArrayAccessExpr#setName(Expression)} by the values retrieved from
+	 * attributes.
+	 * 
+	 * @param attributes Attributes of the array access expr node
+	 * @param p          Parent node of the new node
+	 * @return New array access expr
+	 */
+	private static com.github.javaparser.ast.Node createArrayAccessExpr(JavaWriterAttributeCollector attributes,
+			com.github.javaparser.ast.Node p) {
+		// Create a new expression
+		ArrayAccessExpr obj = new ArrayAccessExpr();
+		// Set the index of the accessed entry
+		obj.setIndex(attributes.getValue());
+		// Set the name of the array, which must be an expression
+		obj.setName(StaticJavaParser.parseExpression(attributes.getName()));
+		return obj;
 	}
 
 	/**
@@ -760,17 +795,15 @@ public class JavaWriterUtil {
 			((NodeWithArguments) p).addArgument(attributes.getValue());
 		} else if (attributes.getChildren() == 0) {
 			// TODO check if this is dead code
-			/*for (Node nChild : n.getChildren()) {
-				com.github.javaparser.ast.Node jpChild = visitWriter(nChild, null);
-
-				if (p instanceof NodeWithArguments && jpChild instanceof Expression) {
-					((NodeWithArguments) p).addArgument((Expression) jpChild);
-				} else {
-					throw new UnsupportedOperationException("p is " + p.getClass().getSimpleName() + " and jpChild is "
-							+ jpChild.getClass().getSimpleName());
-				}
-			}
-			*/
+			/*
+			 * for (Node nChild : n.getChildren()) { com.github.javaparser.ast.Node jpChild
+			 * = visitWriter(nChild, null);
+			 * 
+			 * if (p instanceof NodeWithArguments && jpChild instanceof Expression) {
+			 * ((NodeWithArguments) p).addArgument((Expression) jpChild); } else { throw new
+			 * UnsupportedOperationException("p is " + p.getClass().getSimpleName() +
+			 * " and jpChild is " + jpChild.getClass().getSimpleName()); } }
+			 */
 		}
 	}
 
