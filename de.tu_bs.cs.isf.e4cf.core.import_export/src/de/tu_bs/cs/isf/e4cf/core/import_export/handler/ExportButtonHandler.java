@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
@@ -35,13 +34,13 @@ public class ExportButtonHandler {
 
 		NodeImpl root = new NodeImpl("Root");
 		root.setAttributes(testAttributes);
-		root.setVariabilityClass(VariabilityClass.MANDATORY);
+//		root.setVariabilityClass(VariabilityClass.MANDATORY);
 		root.setChildren(new LinkedList<>());
 
 		TreeImpl tree = new TreeImpl("testTree");
 		tree.setArtifactType("type");
 		tree.setRoot(root);
 
-		System.out.println(exportService.createJSON(tree));
+		System.out.println(exportService.exportTree(tree));
 	}
 }

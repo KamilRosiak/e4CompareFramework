@@ -19,7 +19,7 @@ public class CreateSubdirectory implements CreateOperation {
 	public FileTreeElement execute(FileTreeElement element) {
 		Path newDirPath = Paths.get(element.getAbsolutePath(), _subdirName);
 		
-		if (Files.exists(newDirPath)) {
+		if (!Files.exists(newDirPath)) {
 			return new Directory(newDirPath.toString(), element);			
 		} else {
 			return null;

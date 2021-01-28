@@ -11,24 +11,24 @@
    <top>
       <ToolBar fx:id="toolBarTop" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-            <Button fx:id="newMetricButton" mnemonicParsing="false" text="New Metric" />
-            <Button fx:id="storeMetricButton" mnemonicParsing="false" text="Store Metric" />
-            <Button fx:id="loadMetricButton" mnemonicParsing="false" text="Load Metric" />
+            <Button fx:id = "newMetricButton" mnemonicParsing="false" text="New Metric" />
+          	<Button fx:id = "storeMetricButton" mnemonicParsing="false" text="Store Metric" />
+            <Button fx:id = "loadMetricButton" mnemonicParsing="false" text="Load Metric" />
         </items>
       </ToolBar>
    </top>
    <bottom>
       <ToolBar fx:id="toolBarBottom" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-          <Button fx:id="ignoreTypeButton" mnemonicParsing="false" text="Add Type to Ignore"/>
+          <Button fx:id = "ignoreTypeButton" mnemonicParsing="false" text="Add Type to Ignore" />
         </items>
       </ToolBar>
    </bottom>
    <center>
-      <TreeView fx:id="metricTree" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: GREY;" BorderPane.alignment="CENTER" />
+      <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: GREY;" BorderPane.alignment="CENTER" />
    </center>
    <right>
-      <TableView fx:id="ignoreTable" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Grey;" BorderPane.alignment="CENTER">
+      <TableView prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Grey;" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn maxWidth="300.0" minWidth="-1.0" prefWidth="-1.0" text="C1" />
         </columns>

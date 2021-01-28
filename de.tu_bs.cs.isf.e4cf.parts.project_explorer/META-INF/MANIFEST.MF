@@ -5,8 +5,7 @@ Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.parts.project_explorer;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: de.tu_bs.cs.isf.e4cf.parts.project_explorer.Activator
 Export-Package: de.tu_bs.cs.isf.e4cf.parts.project_explorer,
- de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces,
- de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards
+ de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces
 Require-Bundle: javax.inject,
  org.eclipse.ui,
  org.eclipse.core.runtime,

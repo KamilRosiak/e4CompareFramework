@@ -3,9 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 import java.io.Serializable;
 import java.util.List;
 
-public interface Tree {
-	
-	
+public interface Tree extends Serializable {
 	/**
 	 * @return the root node of this tree.
 	 */
@@ -53,7 +51,4 @@ public interface Tree {
 	 * Moreover, the first Node in this list is the startingNode and the last element is the targetNode.
 	 */
 	public List<Node> getPath(Node startingNode,Node targetNode);
-	
-	
-	
 }
