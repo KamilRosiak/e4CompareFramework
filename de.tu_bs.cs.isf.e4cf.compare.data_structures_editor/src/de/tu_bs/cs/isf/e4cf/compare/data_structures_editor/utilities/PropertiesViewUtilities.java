@@ -54,9 +54,18 @@ public class PropertiesViewUtilities {
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			alert("Bitte einen Wert eingeben");
+			if(confirmationAlert("No input detected. Are you sure you want to cancel the action?") == true) {
+				return null;
+			} else {
+				getInput(displayedDialog);
+			}
 		}
-		return s;
+		//Important because of overwriting returns in case of a recursion
+		if (s.equals("") || s.equals(null)) {
+			return null;
+		} else {
+			return s;
+		}
 	}
 
 	public static void alert(String outputText) {

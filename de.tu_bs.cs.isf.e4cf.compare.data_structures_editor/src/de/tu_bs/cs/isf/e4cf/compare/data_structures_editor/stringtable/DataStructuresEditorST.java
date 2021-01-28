@@ -9,5 +9,6 @@ public class DataStructuresEditorST {
 	public static final String TREE_VIEW_FXML = "ui/view/VisualizeTreeView.fxml";
 	public static final String COMPARATOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
 	public static final String EXCEPTION_MESSAGE = "A %s occured.";
-
+	public static final String EMPTY_PROPERTIES_EVENT = "EmptyPropertiesTableEvent";     
+	public static final String NODE_PROPERTIES_EVENT = "NodePropertiesEvent";
 }

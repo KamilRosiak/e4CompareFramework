@@ -120,7 +120,7 @@ public final class TreeViewUtilities {
 			return false;
 		}
 	}
-
+    
 	/**
 	 * 
 	 * @param treeView
@@ -164,6 +164,18 @@ public final class TreeViewUtilities {
 			informationAlert(String.format(DataStructuresEditorST.EXCEPTION_MESSAGE, e));
 		}
 	}
+	
+	public static List<TreeItem<AbstractNode>> getSubTreeAsList(TreeItem<AbstractNode> item, List<TreeItem<AbstractNode>> tempList) {
+		tempList.add(item);
+		for (TreeItem<AbstractNode> ti : item.getChildren()) {
+			if (!ti.isLeaf()) {
+				getSubTreeAsList(ti, tempList);
+			} else {
+				tempList.add(ti);
+			}
+		}
+		return tempList;		
+	}
 
 	/**
 	 * Opens a TextInputDialog to get input from the user
@@ -178,9 +190,18 @@ public final class TreeViewUtilities {
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			informationAlert("Bitte einen Wert eingeben");
+			if(confirmationAlert("No input detected. Are you sure you want to cancel the action?") == true) {
+				return null;
+			} else {
+				getInput(displayedDialog);
+			}
 		}
-		return s;
+		//Important because of overwriting returns in case of a recursion
+		if (s.equals("") || s.equals(null)) {
+			return null;
+		} else {
+			return s;
+		}
 
 	}
 
