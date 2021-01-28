@@ -169,9 +169,7 @@ public class JavaWriterUtil {
 			while (ifStmt.hasElseBranch()) {
 				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
 			}
-			IfStmt parentIfStmt = (IfStmt) ifStmt.getParentNode().get();
-			parentIfStmt.removeElseStmt();
-			parentIfStmt.setElseStmt(elseStmt);
+			ifStmt.setElseStmt(elseStmt);
 			jpNode = elseStmt;
 		} else if (isOfType(n, EmptyStmt.class)) {
 			jpNode = new EmptyStmt();
@@ -420,16 +418,17 @@ public class JavaWriterUtil {
 			jpNode = new TextBlockLiteralExpr();
 		} else if (isOfType(n, JavaNodeTypes.Then)) {
 			IfStmt ifStmt = (IfStmt) p;
+			int counter = 0;
 			while (ifStmt.hasElseBranch()) {
 				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
+				counter++;
 			}
 			NodeList<Expression> conditions = attributes.getCondition();
+			if (counter != 0 || !ifStmt.getCondition().equals(new BooleanLiteralExpr(false))) {
+				ifStmt.setElseStmt(new IfStmt());
+				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
+			}
 			ifStmt.setCondition(conditions.get(0));
-			IfStmt elseStmt = new IfStmt();
-			elseStmt.setCondition(new BooleanLiteralExpr(true));
-			elseStmt.setThenStmt(new EmptyStmt());
-			ifStmt.setElseStmt(elseStmt);
-			ifStmt.setThenStmt(new EmptyStmt());
 			jpNode = ifStmt;
 		} else if (isOfType(n, ThisExpr.class)) {
 			jpNode = new ThisExpr();
