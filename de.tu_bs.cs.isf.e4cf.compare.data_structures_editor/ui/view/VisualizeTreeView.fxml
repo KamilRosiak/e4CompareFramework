@@ -30,6 +30,9 @@
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#selectAllNodes" text="Select All" />
             <MenuItem mnemonicParsing="false" onAction="#unselectAllNodes" text="Unselect All" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#expandAllItems" text="Expand All" />
+            <MenuItem mnemonicParsing="false" onAction="#collapseAllItems" text="Collapse All" />
           </items>
         </Menu>
       </menus>
@@ -40,6 +43,8 @@
               <items>
 				<MenuItem mnemonicParsing="false" onAction="#addNodeAttribute" text="Add Attribute" />
 				<MenuItem mnemonicParsing="false" onAction="#addChildNode" text="Add Child" />
+				<MenuItem mnemonicParsing="false" onAction="#expandSelectedItems" text="Expand selected Items" />
+				<MenuItem mnemonicParsing="false" onAction="#collapseSelectedItems" text="Collaps selected Items" />
 				<MenuItem mnemonicParsing="false" onAction="#copyNode" text="Copy" />
 				<MenuItem mnemonicParsing="false" onAction="#pasteNode" text="Paste" />
                 <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
@@ -53,7 +58,7 @@
         <items>
             <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" onAction="#startSearch" />
             <Text fx:id="hitCount" strokeType="OUTSIDE" strokeWidth="0.0" />
-          <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#searchForNode" text="Search" />
+          <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#startSearch" text="Search" />
             <Text fx:id="totalNodeAmount" nodeOrientation="LEFT_TO_RIGHT" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="187.6666259765625" />
         </items>
       </ToolBar>

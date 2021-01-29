@@ -64,18 +64,21 @@ public class PropertiesController {
 	@FXML
 	public void editNodeAttribute() {
 		String s = PropertiesViewUtilities.getInput("Please enter new property designation");
-		AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
-		attr.setAttributeKey(s);
-		refreshGUI();
+		if (s != null) {
+			AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
+			attr.setAttributeKey(s);
+			refreshGUI();
+		}
 	}
 
 	@FXML
 	public void editNodeValue() {
 		String s = PropertiesViewUtilities.getInput("Please enter new Value");
-		getSelectedItem().getAttributeValues().clear();
-		getSelectedItem().getAttributeValues().add(s);
-		refreshGUI();
-		
+		if(s != null) {
+			getSelectedItem().getAttributeValues().clear();
+			getSelectedItem().getAttributeValues().add(s);
+			refreshGUI();
+		}
 	}
 
 	@FXML
@@ -89,8 +92,11 @@ public class PropertiesController {
 
 	@FXML
 	public void AddNodeValue() {
-		getSelectedItem().getAttributeValues().add(PropertiesViewUtilities.getInput("Please enter another Value"));
-		refreshGUI();
+		String s = PropertiesViewUtilities.getInput("Please enter another Value");
+		if(s != null) {
+			getSelectedItem().getAttributeValues().add(s);
+			refreshGUI();
+		}
 	}
 
 	

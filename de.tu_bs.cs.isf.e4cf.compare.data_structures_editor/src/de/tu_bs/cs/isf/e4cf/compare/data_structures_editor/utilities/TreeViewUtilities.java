@@ -13,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -20,6 +21,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 /**
  * Utility Class for TreeViewController
@@ -29,22 +31,20 @@ import javafx.scene.image.Image;
  */
 public final class TreeViewUtilities {
 
-	public static List<TreeItem<AbstractNode>> searchList = new ArrayList<TreeItem<AbstractNode>>();
-
 	public static String treeName = "";
 
-	public static Image nodeImage = new Image("icons/file16.png");
+	public static final Image nodeImage = new Image("icons/file16.png");
 
-	public static Image rootImage = new Image("icons/rootSmall.png");
+	public static final Image rootImage = new Image("icons/rootSmall.png");
 
-	private static int searchCounter = 0;
+	// private static int searchCounter = 0;
 
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
 	}
 
 	/**
-	 * Adds a nodes children to the respective TreeItem as children
+	 * Adds a nodes children to the respective TreeItem as children recursively
 	 * 
 	 * @param node
 	 * @param parent
@@ -60,34 +60,23 @@ public final class TreeViewUtilities {
 	}
 
 	/**
+	 * Builds a list of TreeItems which contain the given string based on a given
+	 * root item
 	 * 
-	 * @param treeView
-	 * @param services
-	 * @return
+	 * @param item       Start node for the search (should contain all children,
+	 *                   which are to be included in the search)
+	 * @param name       String to be searched for
+	 * @param searchList to store the search results
+	 * @return List with all search results
 	 */
-	public static void addListener(TreeView<AbstractNode> treeView, ServiceContainer services) {
-		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
-				switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
-				services.eventBroker.send("NodePropertiesEvent",
-						treeView.getSelectionModel().getSelectedItem().getValue());
-			}
-		});
-	}
-
-	/**
-	 * 
-	 * @param item
-	 * @param name
-	 * @return
-	 */
-	public static List<TreeItem<AbstractNode>> searchTreeItem(TreeItem<AbstractNode> item, String name) {
-		if (item.getValue().toString().contains(name)) {
+	public static List<TreeItem<AbstractNode>> searchTreeItem(TreeItem<AbstractNode> item, String name,
+			List<TreeItem<AbstractNode>> searchList) {
+		if (item.getValue().toString().toLowerCase().contains(name)) {
 			searchList.add(item);
 		}
 		List<TreeItem<AbstractNode>> result = new ArrayList<TreeItem<AbstractNode>>();
 		for (TreeItem<AbstractNode> child : item.getChildren()) {
-			result.addAll(searchTreeItem(child, name));
+			result.addAll(searchTreeItem(child, name, searchList));
 			if (result.size() < 1) {
 				searchList.addAll(result);
 			}
@@ -95,70 +84,101 @@ public final class TreeViewUtilities {
 		return searchList;
 	}
 
+	/**
+	 * 
+	 * @param treeView
+	 */
 	public static void serializesTree(TreeView<AbstractNode> treeView) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
 		writeToFile(file, treeView);
 	}
 
+	/**
+	 * 
+	 * @param treeView
+	 * @param newFileName
+	 */
 	public static void serializesTree(TreeView<AbstractNode> treeView, String newFileName) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		writeToFile(file, treeView);
 	}
 
+	/**
+	 * 
+	 * @param treeView
+	 * @param newFileName
+	 * @param tempList
+	 */
 	public static void extractTree(TreeView<AbstractNode> treeView, String newFileName,
 			List<TreeItem<AbstractNode>> tempList) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
 		try {
 			FileWriter writer = new FileWriter(file);
 			for (TreeItem<AbstractNode> node : tempList) {
+				if (node.getValue().getNodeType().equals("LINE")) {
+					continue;
+				}
 				writer.write(node.getValue().toString());
 				writer.write("\n");
 			}
 			writer.close();
-			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
+			informationAlert(String.format("Tree %s successfully stored at %s", newFileName, file.getAbsolutePath()));
 		} catch (IOException e) {
-			informationAlert("Es ist eine " + e + "aufgetreten");
+			informationAlert(String.format(DataStructuresEditorST.EXCEPTION_MESSAGE, e));
 		}
 	}
 
+	public static List<TreeItem<AbstractNode>> getSubTreeAsList(TreeItem<AbstractNode> item,
+			List<TreeItem<AbstractNode>> tempList) {
+		tempList.add(item);
+		for (TreeItem<AbstractNode> ti : item.getChildren()) {
+			if (!ti.isLeaf()) {
+				getSubTreeAsList(ti, tempList);
+			} else {
+				tempList.add(ti);
+			}
+		}
+		return tempList;
+	}
+
+	/**
+	 * Opens a TextInputDialog to get input from the user
+	 * 
+	 * @param displayedDialog String which specify the displayed dialog
+	 * @return User input
+	 */
 	public static String getInput(String displayedDialog) {
 		TextInputDialog td = new TextInputDialog();
 		td.setHeaderText(displayedDialog);
 		td.setGraphic(null);
 		td.setTitle("Dialog");
+		Stage stage = (Stage) td.getDialogPane().getScene().getWindow();
+		td.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION,
+				event -> td.getEditor().setText(null));
+		stage.setAlwaysOnTop(true);
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			informationAlert("Bitte einen Wert eingeben");
+			if (confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
+				return null;
+			} else {
+				getInput(displayedDialog);
+			}
 		}
-		return s;
-
-	}
-
-	public static TreeItem<AbstractNode> getCurrentSearchItem(List<TreeItem<AbstractNode>> resultList) {
-		TreeItem<AbstractNode> currentItem = new TreeItem<AbstractNode>();
-		if (getSearchCounter() < resultList.size()) {
-			currentItem = resultList.get(getSearchCounter());
+		// Important because of overwriting returns in case of a recursion
+		if (s.equals("") || s.equals(null)) {
+			return null;
 		} else {
-			setSearchCounter(0);
-			currentItem = resultList.get(getSearchCounter());
+			return s;
 		}
-		incrementSearchCounter();
-		return currentItem;
+
 	}
 
-	public static int getSearchCounter() {
-		return searchCounter;
-	}
-
-	public static void setSearchCounter(int i) {
-		searchCounter = i;
-	}
-
-	public static void incrementSearchCounter() {
-		searchCounter++;
-	}
-
+	/**
+	 * 
+	 * @param file
+	 * @param treeView
+	 */
 	public static void writeToFile(File file, TreeView<AbstractNode> treeView) {
 		if (file.getName().equals(treeName)) {
 			file.delete();
@@ -168,6 +188,9 @@ public final class TreeViewUtilities {
 			FileWriter writer = new FileWriter(file);
 			TreeItem<AbstractNode> rootItem = treeView.getRoot();
 			for (TreeItem<AbstractNode> node : rootItem.getChildren()) {
+				if (node.getValue().getNodeType().equals("LINE")) {
+					continue;
+				}
 				writer.write(node.getValue().toString());
 				writer.write("\n");
 			}
@@ -182,7 +205,7 @@ public final class TreeViewUtilities {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
-		alert.setTitle("Error");
+		alert.setTitle(DataStructuresEditorST.ATTENTION_REQUIRED);
 		alert.showAndWait();
 	}
 
@@ -190,7 +213,7 @@ public final class TreeViewUtilities {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
-		alert.setTitle("Confirmation required");
+		alert.setTitle(DataStructuresEditorST.CONFIRMATION_REQUIRED);
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
 			return true;

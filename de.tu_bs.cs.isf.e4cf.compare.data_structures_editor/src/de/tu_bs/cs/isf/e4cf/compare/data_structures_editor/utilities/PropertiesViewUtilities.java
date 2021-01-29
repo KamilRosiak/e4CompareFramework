@@ -4,16 +4,19 @@ import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 /**
  * Utility Class for PropertyView
@@ -51,29 +54,34 @@ public class PropertiesViewUtilities {
 		td.setHeaderText(displayedDialog);
 		td.setGraphic(null);
 		td.setTitle("Dialog");
+		Stage stage = (Stage) td.getDialogPane().getScene().getWindow();
+		td.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION,
+				event -> td.getEditor().setText(null));
+		stage.setAlwaysOnTop(true);
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			alert("Bitte einen Wert eingeben");
+			if (confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
+				return null;
+			} else {
+				getInput(displayedDialog);
+			}
 		}
-		return s;
+		// Important because of overwriting returns in case of a recursion
+		if (s.equals("") || s.equals(null)) {
+			return null;
+		} else {
+			return s;
+		}
 	}
 
-	public static void alert(String outputText) {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setHeaderText(null);
-		alert.setContentText(outputText);
-		alert.setTitle("Fehler");
-		alert.showAndWait();
-	}
-	
 	public static boolean confirmationAlert(String outputText) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
-		alert.setTitle("Confirmation required");
+		alert.setTitle(DataStructuresEditorST.CONFIRMATION_REQUIRED);
 		Optional<ButtonType> result = alert.showAndWait();
-		if(result.get() == ButtonType.OK) {
+		if (result.get() == ButtonType.OK) {
 			return true;
 		}
 		return false;
