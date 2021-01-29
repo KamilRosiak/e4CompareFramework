@@ -2,7 +2,6 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import javax.inject.Inject;
 
@@ -65,9 +64,8 @@ public class TreeViewController {
 	public int searchCounter;
 
 	private List<TreeItem<AbstractNode>> copyList = new ArrayList<TreeItem<AbstractNode>>();
-	
-	CommandManager TreeManager = new CommandManager();
 
+	CommandManager TreeManager = new CommandManager();
 
 	@Optional
 	@Inject
@@ -129,7 +127,6 @@ public class TreeViewController {
 		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
 		treeView.refresh();
 	}
-	
 
 	@Optional
 	@Inject
@@ -154,7 +151,7 @@ public class TreeViewController {
 	 * 
 	 */
 	@FXML
-	void addChildNode() {		
+	void addChildNode() {
 		TreeItem<AbstractNode> newChild = new TreeItem<AbstractNode>();
 		String childName = TreeViewUtilities.getInput("Enter child name");
 		if (childName != null) {
@@ -201,16 +198,16 @@ public class TreeViewController {
 		}
 
 	}
-	
 
 	/**
 	 * 
 	 */
 	@FXML
 	void renameNode() {
-		Attribute atr = null; 
-		//		String prevName = treeView.getSelectionModel().getSelectedItem().getValue().getAttributeForKey("name").toString();
-		//		System.out.println(treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().toString());
+		Attribute atr = null;
+		// String prevName =
+		// treeView.getSelectionModel().getSelectedItem().getValue().getAttributeForKey("name").toString();
+		// System.out.println(treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().toString());
 		if (treeView.getSelectionModel().getSelectedItems().size() > 1) {
 			TreeViewUtilities
 					.informationAlert("Multiple items selected. Rename can only be applied to one item at a time");
@@ -221,10 +218,13 @@ public class TreeViewController {
 				for (Attribute attribute : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
 					if (attribute.getAttributeKey().toLowerCase().equals("name")) {
 						attribute.getAttributeValues().clear();
-						atr=attribute;
+						atr = attribute;
 					}
-				} //atm noch hardcoded, bessere Version steht oben, funktioniert aber noch nicht
-				TreeManager.execute(new RenameNodeAction("renameNode",treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().get(0).getAttributeValues().toString() , atr, treeView, treeView.getSelectionModel().getSelectedItem().getValue()));
+				} // atm noch hardcoded, bessere Version steht oben, funktioniert aber noch nicht
+				TreeManager.execute(new RenameNodeAction("renameNode",
+						treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().get(0)
+								.getAttributeValues().toString(),
+						atr, treeView, treeView.getSelectionModel().getSelectedItem().getValue()));
 				addAttribute("name", newName);
 				treeView.refresh();
 				services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
@@ -395,7 +395,7 @@ public class TreeViewController {
 
 	@FXML
 	public void expandSelectedItems() {
-		// tempList necessary because we wanted to select all childs, too
+		// tempList necessary because we wanted to select all children, too
 		List<TreeItem<AbstractNode>> tempList = new ArrayList<TreeItem<AbstractNode>>();
 		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
 			tempList.addAll(TreeViewUtilities.getSubTreeAsList(ti, new ArrayList<TreeItem<AbstractNode>>()));

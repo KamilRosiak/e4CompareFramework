@@ -54,9 +54,14 @@ public class PropertiesViewUtilities {
 		td.setHeaderText(displayedDialog);
 		td.setGraphic(null);
 		td.setTitle("Dialog");
-		Stage stage = (Stage) td.getDialogPane().getScene().getWindow();
 		td.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION,
 				event -> td.getEditor().setText(null));
+		Stage stage = (Stage) td.getDialogPane().getScene().getWindow();
+		stage.setOnCloseRequest(e -> {
+			e.consume();
+			td.getEditor().setText(null);
+			stage.close();
+		});
 		stage.setAlwaysOnTop(true);
 		td.showAndWait();
 		String s = td.getEditor().getText();
