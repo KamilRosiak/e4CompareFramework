@@ -22,7 +22,7 @@ public class FindOperation implements Initializable {
 	@FXML
 	private Button findButton;
 	@FXML
-	private Button cancelButton;
+	private Button closeButton;
 	@FXML
 	private TextField searchField;
 
@@ -56,7 +56,7 @@ public class FindOperation implements Initializable {
 	 * @author Cedric Kapalla, Soeren Christmann
 	 * 
 	 */
-	public void initDoFindAction() {
+	public void searchSelectedWord() {
 		String lookingFor = searchField.getText();
 
 		if (lookingFor == "") {
@@ -81,8 +81,8 @@ public class FindOperation implements Initializable {
 	 * 
 	 * @author Soeren Christmann, Cedric Kapalla
 	 */
-	public void initCancelAction() {
-		Stage stage = (Stage) cancelButton.getScene().getWindow();
+	public void closeWindowAction() {
+		Stage stage = (Stage) closeButton.getScene().getWindow();
 		stage.close();
 	}
 

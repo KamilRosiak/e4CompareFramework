@@ -47,9 +47,9 @@ import org.fxmisc.richtext.CodeArea;
 public class TextEditor implements Initializable {
 	// word and row counter labels
 	@FXML
-	protected Label wordCount;
+	private Label wordCount;
 	@FXML
-	protected Label rowCount;
+	private Label rowCount;
 
 	Clipboard systemClipboard = Clipboard.getSystemClipboard();
 
@@ -58,7 +58,6 @@ public class TextEditor implements Initializable {
 
 	@Inject
 	protected ServiceContainer services;
-
 
 	private Scene scene;
 
@@ -71,19 +70,9 @@ public class TextEditor implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		initCountLabelItems();
+		initCountLabelItemAction();
 		getCurrentTab().setUserData(EditorST.NEW_TAB_TITLE);
 		getCurrentTab().setContent(CodeAreaFactory.createCodeArea(""));
-	}
-
-	/**
-	 * Sets up the wordcount.
-	 * 
-	 * @author Soeren Christmann
-	 * 
-	 */
-	private void initCountLabelItems() {
-		initCountLabelItemAction();
 	}
 
 	/**
@@ -150,7 +139,7 @@ public class TextEditor implements Initializable {
 			currentTab.setUserData(EditorST.NEW_TAB_TITLE);
 			tabPane.getTabs().add(currentTab);
 			tabPane.getSelectionModel().select(currentTab);
-			initCountLabelItems();
+			initCountLabelItemAction();
 		}
 		return currentTab;
 	}
@@ -217,7 +206,7 @@ public class TextEditor implements Initializable {
 		tabPane.getTabs().add(newTab);
 		tabPane.getSelectionModel().select(newTab);
 		getCurrentTab().getContent().requestFocus();
-		initCountLabelItems();
+		initCountLabelItemAction();
 	}
 
 	/**

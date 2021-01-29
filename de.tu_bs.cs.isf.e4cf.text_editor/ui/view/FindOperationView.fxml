@@ -10,8 +10,8 @@
   <children>
     <AnchorPane prefHeight="100.0" prefWidth="300.0" VBox.vgrow="ALWAYS">
       <children>
-            <Button fx:id="findButton" layoutX="52.0" layoutY="70.0" mnemonicParsing="false" text="Find" onAction="#initDoFindAction" />
-            <Button fx:id="cancelButton" layoutX="186.0" layoutY="70.0" mnemonicParsing="false" text="Cancel" onAction="#initCancelAction" /> 
+            <Button fx:id="findButton" layoutX="52.0" layoutY="70.0" mnemonicParsing="false" text="Find" onAction="#searchSelectedWord" />
+            <Button fx:id="closeButton" layoutX="186.0" layoutY="70.0" mnemonicParsing="false" text="Close" onAction="#closeWindowAction" /> 
             <Label  layoutX="31.0" layoutY="25.0" text="Search for :" />
             <TextField fx:id="searchField" layoutX="102.0" layoutY="25.0" prefHeight="17.0" prefWidth="149.0" />
       </children>

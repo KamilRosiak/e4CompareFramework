@@ -146,7 +146,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	@FXML
-	private void initOpenFileAction() {
+	private void openFileAction() {
 		// String[] fileInfo = textEditorViewController.fileUtils.openFile();
 		String content = "";
 		String filePath = RCPMessageProvider.getFilePathDialog(EditorST.OPEN_FILE_DIALOG,
@@ -164,10 +164,10 @@ public class TextEditorMenu implements Initializable {
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	@FXML
-	private void initSaveAction() {
+	private void saveAction() {
 		String filePath = (String) textEditorViewController.getCurrentTab().getUserData();
 		if (filePath.startsWith(EditorST.NEW_TAB_TITLE)) {
-			initSaveAsAction();
+			saveAsAction();
 		} else {
 			FileStreamUtil.writeTextToFile(filePath, textEditorViewController.getCurrentText());
 //			textEditorViewController.fileUtils.save((String) textEditorViewController.getCurrentTab().getUserData(),
@@ -182,7 +182,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
 	@FXML
-	private void initSaveAsAction() {
+	private void saveAsAction() {
 		final FileDialog dialog = new FileDialog(new Shell(), SWT.SAVE);
 		dialog.setText(EditorST.SAVE_AS_FILE_DIALOG);
 		dialog.setFilterPath(RCPContentProvider.getCurrentWorkspacePath());
@@ -200,7 +200,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
 	@FXML
-	private void initCloseFileAction() {
+	private void closeFileAction() {
 		textEditorViewController.saveChanges();
 		textEditorViewController.tabPane.getTabs().remove(textEditorViewController.getCurrentTab());
 	}
@@ -213,7 +213,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
 	@FXML
-	private void initCloseEditorAction() {
+	private void closeEditorAction() {
 		textEditorViewController.saveChanges();
 		textEditorViewController.services.partService.setPartToBeRendered(EditorST.TEXT_EDITOR_FXML_ID, false);
 	}
@@ -225,7 +225,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	@FXML
-	private void initUndoAction() {
+	private void undoAction() {
 		CodeArea codeArea = textEditorViewController.getCurrentCodeArea();
 		codeArea.undo();
 	}
@@ -237,7 +237,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	@FXML
-	private void initRedoAction() {
+	private void redoAction() {
 		CodeArea codeArea = textEditorViewController.getCurrentCodeArea();
 		codeArea.redo();
 	}
@@ -249,7 +249,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	@FXML
-	private void initCutAction() {
+	private void cutAction() {
 		CodeArea codeArea = textEditorViewController.getCurrentCodeArea();
 
 		ClipboardContent text = new ClipboardContent();
@@ -265,7 +265,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla
 	 */
 	@FXML
-	private void initCopyAction() {
+	private void copyAction() {
 		CodeArea codeArea = textEditorViewController.getCurrentCodeArea();
 
 		ClipboardContent text = new ClipboardContent(); // add selected text to clipboard content
@@ -281,7 +281,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla
 	 */
 	@FXML
-	private void initPasteAction() {
+	private void pasteAction() {
 		CodeArea codeArea = textEditorViewController.getCurrentCodeArea();
 
 		if (!textEditorViewController.systemClipboard.hasContent(DataFormat.PLAIN_TEXT)) {
@@ -320,7 +320,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla,Soeren Christmann
 	 */
 	@FXML
-	private void initDeleteAction() {
+	private void deleteAction() {
 		CodeArea codeArea = textEditorViewController.getCurrentCodeArea();
 		codeArea.deleteText(codeArea.getSelection());
 	}
@@ -332,7 +332,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla, Erwin Wijaya
 	 */
 	@FXML
-	private void initSelectAllAction() {
+	private void selectAllAction() {
 		CodeArea codeArea = textEditorViewController.getCurrentCodeArea();
 		codeArea.requestFocus();
 		codeArea.selectAll();
@@ -345,7 +345,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla, Soeren Christmann
 	 */
 	@FXML
-	private void initFindAction() throws Exception {
+	private void findAction() throws Exception {
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader();
 			fxmlLoader.setLocation(getClass().getResource(EditorST.FIND_OPERATION_FXML));
@@ -370,7 +370,7 @@ public class TextEditorMenu implements Initializable {
 	 * @author Cedric Kapalla, Soeren Christmann
 	 */
 	@FXML
-	private void initAboutAction() {
+	private void aboutAction() {
 		textEditorViewController.alert = new Alert(AlertType.INFORMATION);
 		textEditorViewController.alert.setTitle("About");
 		textEditorViewController.alert.setHeaderText("Text Editor");

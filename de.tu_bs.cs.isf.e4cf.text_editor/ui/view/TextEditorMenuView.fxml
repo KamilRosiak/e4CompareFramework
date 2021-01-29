@@ -23,36 +23,36 @@
             <Menu mnemonicParsing="false" text="File">
                 <items>
                 <Menu fx:id="newFile" accelerator="Shortcut+N" mnemonicParsing="false" text="New" />
-                <MenuItem fx:id="openFile" accelerator="Shortcut+O" mnemonicParsing="false" text="Open" onAction="#initOpenFileAction" />
+                <MenuItem fx:id="openFile" accelerator="Shortcut+O" mnemonicParsing="false" text="Open" onAction="#openFileAction" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem fx:id="saveFile" accelerator="Shortcut+S" mnemonicParsing="false" text="Save" onAction="#initSaveAction" />
-                <MenuItem fx:id="saveFileAs" mnemonicParsing="false" text="Save As" onAction="#initSaveAsAction" />
+                <MenuItem fx:id="saveFile" accelerator="Shortcut+S" mnemonicParsing="false" text="Save" onAction="#saveAction" />
+                <MenuItem fx:id="saveFileAs" mnemonicParsing="false" text="Save As" onAction="#saveAsAction" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem fx:id="closeFile" mnemonicParsing="false" text="Close File" onAction="#initCloseFileAction" />
-                <MenuItem fx:id="closeEditor" accelerator="Shortcut+E" mnemonicParsing="false" text="Close Editor" onAction="#initCloseEditorAction" />
+                <MenuItem fx:id="closeFile" mnemonicParsing="false" text="Close File" onAction="#closeFileAction" />
+                <MenuItem fx:id="closeEditor" accelerator="Shortcut+E" mnemonicParsing="false" text="Close Editor" onAction="#closeEditorAction" />
                 </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
                 <items>
-                <MenuItem fx:id="undo" accelerator="Shortcut+Z" mnemonicParsing="false" text="Undo" onAction="#initUndoAction" />
-                <MenuItem fx:id="redo" accelerator="Shortcut+Y" mnemonicParsing="false" text="Redo" onAction="#initRedoAction" />
+                <MenuItem fx:id="undo" accelerator="Shortcut+Z" mnemonicParsing="false" text="Undo" onAction="#undoAction" />
+                <MenuItem fx:id="redo" accelerator="Shortcut+Y" mnemonicParsing="false" text="Redo" onAction="#redoAction" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem fx:id="cutText" accelerator="Shortcut+X" mnemonicParsing="false" text="Cut" onAction="#initCutAction" />
-                <MenuItem fx:id="copyText" accelerator="Shortcut+C" mnemonicParsing="false" text="Copy" onAction="#initCopyAction" />
-                <MenuItem fx:id="pasteText" accelerator="Shortcut+V" mnemonicParsing="false" text="Paste" onAction="#initPasteAction"/>
-                <MenuItem fx:id="deleteText" mnemonicParsing="false" text="Delete" onAction="#initDeleteAction" />
+                <MenuItem fx:id="cutText" accelerator="Shortcut+X" mnemonicParsing="false" text="Cut" onAction="#cutAction" />
+                <MenuItem fx:id="copyText" accelerator="Shortcut+C" mnemonicParsing="false" text="Copy" onAction="#copyAction" />
+                <MenuItem fx:id="pasteText" accelerator="Shortcut+V" mnemonicParsing="false" text="Paste" onAction="#pasteAction"/>
+                <MenuItem fx:id="deleteText" mnemonicParsing="false" text="Delete" onAction="#deleteAction" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem fx:id="selectAllText" accelerator="Shortcut+A" mnemonicParsing="false" text="Select All" onAction="#initSelectAllAction" />
+                <MenuItem fx:id="selectAllText" accelerator="Shortcut+A" mnemonicParsing="false" text="Select All" onAction="#selectAllAction" />
                 </items>
             </Menu>
                 <Menu mnemonicParsing="false" text="Extra">
                     <items>          
-                    <MenuItem fx:id="find" mnemonicParsing="false" text="Find" onAction="#initFindAction" accelerator="Shortcut+F" />
+                    <MenuItem fx:id="find" mnemonicParsing="false" text="Find" onAction="#findAction" accelerator="Shortcut+F" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                    <MenuItem fx:id="about" mnemonicParsing="false" text="About" onAction="#initAboutAction" />
+                    <MenuItem fx:id="about" mnemonicParsing="false" text="About" onAction="#aboutAction" />
                     </items>
                 </Menu>
             </menus>

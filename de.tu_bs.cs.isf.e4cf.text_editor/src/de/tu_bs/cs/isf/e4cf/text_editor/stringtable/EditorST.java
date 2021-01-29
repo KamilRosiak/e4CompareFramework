@@ -27,5 +27,12 @@ public class EditorST {
 	public static final String EXTP_INDENT = "indentation";
 	public static final String EXTP_FORMAT = "formatting";
 	public static final String EXTP_EXTENSION = "file_extension";
+	
+	//icons
+	public static final String JAVA_ICON = "icons/java-icon.png";
+	public static final String XML_ICON = "icons/xml-icon.png";
+	public static final String TXT_ICON = "icons/txt-icon.png";
+	
+	
 
 }
