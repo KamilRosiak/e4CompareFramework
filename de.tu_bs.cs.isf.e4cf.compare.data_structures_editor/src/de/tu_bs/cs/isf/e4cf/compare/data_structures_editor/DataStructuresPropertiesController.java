@@ -22,7 +22,6 @@ public class DataStructuresPropertiesController {
 	@Inject
 	public DataStructuresPropertiesController(Composite parent, ServiceContainer services, IEclipseContext context) {
 		postConstruct(parent, services, context);
-
 	}
 
 	@PostConstruct

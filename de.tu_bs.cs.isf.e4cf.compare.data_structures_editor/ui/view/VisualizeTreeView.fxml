@@ -58,7 +58,7 @@
         <items>
             <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" onAction="#startSearch" />
             <Text fx:id="hitCount" strokeType="OUTSIDE" strokeWidth="0.0" />
-          <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#searchForNode" text="Search" />
+          <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#startSearch" text="Search" />
             <Text fx:id="totalNodeAmount" nodeOrientation="LEFT_TO_RIGHT" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="187.6666259765625" />
         </items>
       </ToolBar>

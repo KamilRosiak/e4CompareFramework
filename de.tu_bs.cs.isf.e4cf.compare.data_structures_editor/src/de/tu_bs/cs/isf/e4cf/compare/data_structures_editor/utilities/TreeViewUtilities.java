@@ -19,11 +19,13 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 /**
  * Utility Class for TreeViewController
@@ -39,7 +41,7 @@ public final class TreeViewUtilities {
 
 	public static final Image rootImage = new Image("icons/rootSmall.png");
 
-	private static int searchCounter = 0;
+	//private static int searchCounter = 0;
 
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
@@ -69,7 +71,7 @@ public final class TreeViewUtilities {
 	 * @return	List	with all search results
 	 */
 	public static List<TreeItem<AbstractNode>> searchTreeItem(TreeItem<AbstractNode> item, String name, List<TreeItem<AbstractNode>> searchList) {
-		if (item.getValue().toString().contains(name)) {
+		if (item.getValue().toString().toLowerCase().contains(name)) {
 			searchList.add(item);
 		}
 		List<TreeItem<AbstractNode>> result = new ArrayList<TreeItem<AbstractNode>>();
@@ -80,45 +82,6 @@ public final class TreeViewUtilities {
 			}
 		}
 		return searchList;
-	}
-	/**
-	 * Auxiliary method that returns the item currently to be displayed based on a searchCounter (necessary for the iteration through the resultList) 
-	 * @param	resultList	List to iterate through
-	 * @return 
-	 */
-	public static TreeItem<AbstractNode> getCurrentSearchItem(List<TreeItem<AbstractNode>> resultList) {
-		TreeItem<AbstractNode> currentItem = new TreeItem<AbstractNode>();
-		if (searchCounter < resultList.size()) {
-			currentItem = resultList.get(searchCounter);
-		} else {
-			searchCounter = 0;
-			currentItem = resultList.get(searchCounter);
-		}
-		searchCounter++;
-		return currentItem;
-	}
-	
-	/**
-	 * GETTER for searchCount
-	 * @return	current value of searchCounter
-	 */
-	public static int getSearchCounter() {
-		return searchCounter;
-	}
-	
-	/**
-	 * SETTER for searchCount
-	 * @param	i	value to set the searchCounter to
-	 * @return	true if setting was successful, false otherwise
-	 */
-	public static boolean setSearchCounter(int i) {
-		//try for a meaningful use of the bool return
-		try {
-			searchCounter = i;
-			return true;
-		} catch(Exception e) {
-			return false;
-		}
 	}
     
 	/**
@@ -187,17 +150,21 @@ public final class TreeViewUtilities {
 		td.setHeaderText(displayedDialog);
 		td.setGraphic(null);
 		td.setTitle("Dialog");
+		Stage stage = (Stage) td.getDialogPane().getScene().getWindow();
+		stage.setAlwaysOnTop(true);
+		Button closeButton = (Button) td.getDialogPane().lookupButton(ButtonType.CLOSE);
+		Button cancelButton = (Button) td.getDialogPane().lookupButton(ButtonType.CANCEL);
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			if(confirmationAlert("No input detected. Are you sure you want to cancel the action?") == true) {
+			if(confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
 				return null;
 			} else {
 				getInput(displayedDialog);
 			}
 		}
 		//Important because of overwriting returns in case of a recursion
-		if (s.equals("") || s.equals(null)) {
+		if (s.equals("") || s.equals(null) || closeButton.isPressed() || cancelButton.isPressed()) {
 			return null;
 		} else {
 			return s;
@@ -219,6 +186,9 @@ public final class TreeViewUtilities {
 			FileWriter writer = new FileWriter(file);
 			TreeItem<AbstractNode> rootItem = treeView.getRoot();
 			for (TreeItem<AbstractNode> node : rootItem.getChildren()) {
+				if(node.getValue().getNodeType().equals("LINE")) {
+					continue;
+				}
 				writer.write(node.getValue().toString());
 				writer.write("\n");
 			}
@@ -233,7 +203,7 @@ public final class TreeViewUtilities {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
-		alert.setTitle("Error");
+		alert.setTitle(DataStructuresEditorST.ATTENTION_REQUIRED);
 		alert.showAndWait();
 	}
 
@@ -241,7 +211,7 @@ public final class TreeViewUtilities {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
-		alert.setTitle("Confirmation required");
+		alert.setTitle(DataStructuresEditorST.CONFIRMATION_REQUIRED);
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
 			return true;

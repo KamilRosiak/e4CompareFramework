@@ -14,7 +14,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -59,17 +58,20 @@ public class TreeViewController {
 
 	private String currentSearchText;
 
+	public int searchCounter;
+
 	private List<TreeItem<AbstractNode>> copyList = new ArrayList<TreeItem<AbstractNode>>();
 
 	@Optional
 	@Inject
-	public void refreshTreeView(@UIEventTopic("RefreshTreeViewEvent") boolean bool) {
+	public void refreshTreeView(@UIEventTopic(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT) boolean bool) {
 		treeView.refresh();
 	}
 
 	@Optional
 	@Inject
-	public void removeNodeAttributeFromSelectedItem(@UIEventTopic("DeleteAttributeEvent") String text) {
+	public void removeNodeAttributeFromSelectedItem(
+			@UIEventTopic(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT) String text) {
 		List<Attribute> tempList = new ArrayList<Attribute>();
 		for (Attribute attr : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
 			tempList.add(attr);
@@ -83,9 +85,10 @@ public class TreeViewController {
 
 	@Optional
 	@Inject
-	public void reopenItem(@UIEventTopic("ReopenItemEvent") boolean bool) {
-		services.eventBroker.send("EmptyPropertiesTableEvent", true);
-		services.eventBroker.send("NodePropertiesEvent", treeView.getSelectionModel().getSelectedItem().getValue());
+	public void reopenItem(@UIEventTopic(DataStructuresEditorST.REOPEN_ITEM_EVENT) boolean bool) {
+		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
+		services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
+				treeView.getSelectionModel().getSelectedItem().getValue());
 	}
 
 	private void initializeTree(Tree tree) {
@@ -99,14 +102,12 @@ public class TreeViewController {
 		treeView.setShowRoot(true);
 		TreeViewUtilities.fillTreeView(tree.getRoot(), treeView.getRoot());
 		addListener();
-		// totalNodeAmount
-		// .setText("Total Node Amount: " +
-		// TreeViewUtilities.searchTreeItem(treeView.getRoot(), "").size());
 		displayTotalNodeAmount();
 	}
 
 	private void displayTotalNodeAmount() {
-		totalNodeAmount.setText("Total Node Amount: " + (treeView.getRoot().getChildren().size() + 1));
+		totalNodeAmount.setText("Total node amount: "
+				+ (treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())).size());
 		treeView.refresh();
 	}
 
@@ -124,7 +125,7 @@ public class TreeViewController {
 
 	@Optional
 	@Inject
-	public void openTree(@UIEventTopic("OpenTreeEvent") Tree tree) {
+	public void openTree(@UIEventTopic(DataStructuresEditorST.OPEN_TREE_EVENT) Tree tree) {
 		initializeTree(tree);
 	}
 
@@ -133,9 +134,9 @@ public class TreeViewController {
 		String attrName = TreeViewUtilities.getInput("Enter attribute name");
 		if (attrName != null) {
 			String attrValue = TreeViewUtilities.getInput("Enter attribute value");
-			if(attrValue != null) {
-			treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attrName, attrValue);
-			reopenItem(true);
+			if (attrValue != null) {
+				treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attrName, attrValue);
+				reopenItem(true);
 			}
 		}
 		treeView.refresh();
@@ -148,8 +149,8 @@ public class TreeViewController {
 	void addChildNode() {
 		TreeItem<AbstractNode> newChild = new TreeItem<AbstractNode>();
 		String childName = TreeViewUtilities.getInput("Enter child name");
-		if(childName != null) {
-			newChild.setValue(new NodeImpl("DummyNode"));
+		if (childName != null) {
+			newChild.setValue(new NodeImpl(childName));
 			newChild.getValue().addAttribute("name", childName);
 		} else {
 			return;
@@ -197,8 +198,9 @@ public class TreeViewController {
 	 */
 	@FXML
 	void renameNode() {
-		if(treeView.getSelectionModel().getSelectedItems().size() > 1) {
-			TreeViewUtilities.informationAlert("Multiple items selected. Rename can only be applied to one item at a time");						
+		if (treeView.getSelectionModel().getSelectedItems().size() > 1) {
+			TreeViewUtilities
+					.informationAlert("Multiple items selected. Rename can only be applied to one item at a time");
 			return;
 		} else {
 			String newName = TreeViewUtilities.getInput("Enter new name");
@@ -210,7 +212,7 @@ public class TreeViewController {
 				}
 				addAttribute("name", newName);
 				treeView.refresh();
-				services.eventBroker.send("NodePropertiesEvent",
+				services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
 		}
@@ -247,7 +249,10 @@ public class TreeViewController {
 	@FXML
 	void closeFile() {
 		treeView.setRoot(null);
-		services.eventBroker.send("EmptyPropertiesTableEvent", true);
+		hitCount.setText("");
+		searchCounter = 0;
+		currentSearchText = null;
+		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
 	}
 
 	@FXML
@@ -279,7 +284,7 @@ public class TreeViewController {
 	@FXML
 	void selectAllNodes() {
 		treeView.getSelectionModel().selectAll();
-		services.eventBroker.send("EmptyPropertiesTableEvent", true);
+		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
 	}
 
 	/**
@@ -288,43 +293,49 @@ public class TreeViewController {
 	@FXML
 	void unselectAllNodes() {
 		treeView.getSelectionModel().clearSelection();
-		services.eventBroker.send("EmptyPropertiesTableEvent", true);
+		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
 	}
 
 	/**
 	 * search the text given in the searchfield
 	 */
-	@FXML
 	void searchForNode() {
 //		TreeViewUtilities.searchList.clear();
 		List<TreeItem<AbstractNode>> searchList = new ArrayList<TreeItem<AbstractNode>>();
 		treeView.getSelectionModel().clearSelection();
 		List<TreeItem<AbstractNode>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
-				searchTextField.getText(), searchList);
-		treeView.getSelectionModel().select(TreeViewUtilities.getCurrentSearchItem(resultList));
+				searchTextField.getText().toLowerCase(), searchList);
+		if (searchCounter >= resultList.size()) {
+			searchCounter = 0;
+		}
+		treeView.getSelectionModel().select(resultList.get(searchCounter));
 		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-		hitCount.setText(TreeViewUtilities.getSearchCounter() + "/" + resultList.size());
+		hitCount.setText((searchCounter + 1) + "/" + resultList.size());
 		resultList.clear();
 	}
 
 	@FXML
-	void startSearch(ActionEvent event) {
-		if (currentSearchText == null) { //Used for inital search string 
+	void startSearch() {
+		if (currentSearchText == null) { // Used for inital search string
 			currentSearchText = searchTextField.getText();
 			searchForNode();
-		} else { //Used if second click on searchButton or enter occured
-			if (currentSearchText.equals(searchTextField.getText())) { //Used if second call is with the same string
+		} else { // Used if second click on searchButton or enter occured
+			if (currentSearchText.equalsIgnoreCase(searchTextField.getText())) { // Used if second call is with the same
+																					// string
+				searchCounter++;
 				searchForNode();
 			} else { // Used if second call is with another string than the initial one
-				TreeViewUtilities.setSearchCounter(0);
+				searchCounter = 0;
 				searchForNode();
 				currentSearchText = searchTextField.getText();
 			}
 		}
 	}
-	
+
 	/**
-	 * Adds a listener to the TreeView so that PropertiesTable of a highlighted node is displayed
+	 * Adds a listener to the TreeView so that PropertiesTable of a highlighted node
+	 * is displayed
+	 * 
 	 * @param treeView
 	 * @param services
 	 * @return
@@ -333,54 +344,56 @@ public class TreeViewController {
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
 				TreeViewUtilities.switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
-				services.eventBroker.send("NodePropertiesEvent",
+				services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
 		});
 	}
+
 	@FXML
 	public void expandAllItems() {
-		for(TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
+		for (TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
 			ti.setExpanded(true);
 		}
 	}
-	
+
 	@FXML
 	public void collapseAllItems() {
-		for(TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
+		for (TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
 			ti.setExpanded(false);
 		}
 	}
-	
-	public List<TreeItem<AbstractNode>> treeViewToList(TreeItem<AbstractNode> item, List<TreeItem<AbstractNode>> treeViewList) {
-		if(item.getValue().isRoot()) {
+
+	public List<TreeItem<AbstractNode>> treeViewToList(TreeItem<AbstractNode> item,
+			List<TreeItem<AbstractNode>> treeViewList) {
+		if (item.getValue().isRoot()) {
 			treeViewList.add(item);
 		}
-		for(TreeItem<AbstractNode> ti : item.getChildren()) {
+		for (TreeItem<AbstractNode> ti : item.getChildren()) {
 			treeViewList.add(ti);
-			if(!ti.isLeaf()) {
+			if (!ti.isLeaf()) {
 				treeViewToList(ti, treeViewList);
 			}
 		}
 		return treeViewList;
 	}
-	
+
 	@FXML
 	public void expandSelectedItems() {
-		//tempList necessary because we wanted to select all childs, too
-		List<TreeItem<AbstractNode>> tempList = new ArrayList<TreeItem<AbstractNode>>(); 
-		for(TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+		// tempList necessary because we wanted to select all childs, too
+		List<TreeItem<AbstractNode>> tempList = new ArrayList<TreeItem<AbstractNode>>();
+		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
 			tempList.addAll(TreeViewUtilities.getSubTreeAsList(ti, new ArrayList<TreeItem<AbstractNode>>()));
 		}
-		for(TreeItem<AbstractNode> ti : tempList) {
+		for (TreeItem<AbstractNode> ti : tempList) {
 			ti.setExpanded(true);
 			treeView.getSelectionModel().select(ti);
 		}
 	}
-	
+
 	@FXML
 	public void collapseSelectedItems() {
-		for(TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
 			ti.setExpanded(false);
 		}
 	}
