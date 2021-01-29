@@ -7,19 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
-import org.eclipse.e4.ui.di.UIEventTopic;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
@@ -41,7 +37,7 @@ public final class TreeViewUtilities {
 
 	public static final Image rootImage = new Image("icons/rootSmall.png");
 
-	//private static int searchCounter = 0;
+	// private static int searchCounter = 0;
 
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
@@ -50,8 +46,8 @@ public final class TreeViewUtilities {
 	/**
 	 * Adds a nodes children to the respective TreeItem as children recursively
 	 * 
-	 * @param	node
-	 * @param	parent
+	 * @param node
+	 * @param parent
 	 */
 	public static void fillTreeView(Node node, TreeItem<AbstractNode> parent) {
 		for (Node n : node.getChildren()) {
@@ -64,13 +60,17 @@ public final class TreeViewUtilities {
 	}
 
 	/**
-	 * Builds a list of TreeItems which contain the given string based on a given root item
-	 * @param	item	Start node for the search (should contain all children, which are to be included in the search) 
-	 * @param	name	String to be searched for 
-	 * @param	searchList	to store the search results
-	 * @return	List	with all search results
+	 * Builds a list of TreeItems which contain the given string based on a given
+	 * root item
+	 * 
+	 * @param item       Start node for the search (should contain all children,
+	 *                   which are to be included in the search)
+	 * @param name       String to be searched for
+	 * @param searchList to store the search results
+	 * @return List with all search results
 	 */
-	public static List<TreeItem<AbstractNode>> searchTreeItem(TreeItem<AbstractNode> item, String name, List<TreeItem<AbstractNode>> searchList) {
+	public static List<TreeItem<AbstractNode>> searchTreeItem(TreeItem<AbstractNode> item, String name,
+			List<TreeItem<AbstractNode>> searchList) {
 		if (item.getValue().toString().toLowerCase().contains(name)) {
 			searchList.add(item);
 		}
@@ -83,7 +83,7 @@ public final class TreeViewUtilities {
 		}
 		return searchList;
 	}
-    
+
 	/**
 	 * 
 	 * @param treeView
@@ -92,7 +92,7 @@ public final class TreeViewUtilities {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
 		writeToFile(file, treeView);
 	}
-	
+
 	/**
 	 * 
 	 * @param treeView
@@ -115,7 +115,7 @@ public final class TreeViewUtilities {
 		try {
 			FileWriter writer = new FileWriter(file);
 			for (TreeItem<AbstractNode> node : tempList) {
-				if(node.getValue().getNodeType().equals("LINE")) {
+				if (node.getValue().getNodeType().equals("LINE")) {
 					continue;
 				}
 				writer.write(node.getValue().toString());
@@ -127,8 +127,9 @@ public final class TreeViewUtilities {
 			informationAlert(String.format(DataStructuresEditorST.EXCEPTION_MESSAGE, e));
 		}
 	}
-	
-	public static List<TreeItem<AbstractNode>> getSubTreeAsList(TreeItem<AbstractNode> item, List<TreeItem<AbstractNode>> tempList) {
+
+	public static List<TreeItem<AbstractNode>> getSubTreeAsList(TreeItem<AbstractNode> item,
+			List<TreeItem<AbstractNode>> tempList) {
 		tempList.add(item);
 		for (TreeItem<AbstractNode> ti : item.getChildren()) {
 			if (!ti.isLeaf()) {
@@ -137,13 +138,14 @@ public final class TreeViewUtilities {
 				tempList.add(ti);
 			}
 		}
-		return tempList;		
+		return tempList;
 	}
 
 	/**
 	 * Opens a TextInputDialog to get input from the user
-	 * @param	displayedDialog	String which specify the displayed dialog
-	 * @return	User input
+	 * 
+	 * @param displayedDialog String which specify the displayed dialog
+	 * @return User input
 	 */
 	public static String getInput(String displayedDialog) {
 		TextInputDialog td = new TextInputDialog();
@@ -151,20 +153,20 @@ public final class TreeViewUtilities {
 		td.setGraphic(null);
 		td.setTitle("Dialog");
 		Stage stage = (Stage) td.getDialogPane().getScene().getWindow();
+		td.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION,
+				event -> td.getEditor().setText(null));
 		stage.setAlwaysOnTop(true);
-		Button closeButton = (Button) td.getDialogPane().lookupButton(ButtonType.CLOSE);
-		Button cancelButton = (Button) td.getDialogPane().lookupButton(ButtonType.CANCEL);
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			if(confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
+			if (confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
 				return null;
 			} else {
 				getInput(displayedDialog);
 			}
 		}
-		//Important because of overwriting returns in case of a recursion
-		if (s.equals("") || s.equals(null) || closeButton.isPressed() || cancelButton.isPressed()) {
+		// Important because of overwriting returns in case of a recursion
+		if (s.equals("") || s.equals(null)) {
 			return null;
 		} else {
 			return s;
@@ -186,7 +188,7 @@ public final class TreeViewUtilities {
 			FileWriter writer = new FileWriter(file);
 			TreeItem<AbstractNode> rootItem = treeView.getRoot();
 			for (TreeItem<AbstractNode> node : rootItem.getChildren()) {
-				if(node.getValue().getNodeType().equals("LINE")) {
+				if (node.getValue().getNodeType().equals("LINE")) {
 					continue;
 				}
 				writer.write(node.getValue().toString());

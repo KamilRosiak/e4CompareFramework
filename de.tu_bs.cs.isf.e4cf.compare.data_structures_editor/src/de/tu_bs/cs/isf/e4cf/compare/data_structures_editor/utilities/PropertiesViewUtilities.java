@@ -7,10 +7,10 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -55,33 +55,33 @@ public class PropertiesViewUtilities {
 		td.setGraphic(null);
 		td.setTitle("Dialog");
 		Stage stage = (Stage) td.getDialogPane().getScene().getWindow();
+		td.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION,
+				event -> td.getEditor().setText(null));
 		stage.setAlwaysOnTop(true);
-		Button closeButton = (Button) td.getDialogPane().lookupButton(ButtonType.CLOSE);
-		Button cancelButton = (Button) td.getDialogPane().lookupButton(ButtonType.CANCEL);
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			if(confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
+			if (confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
 				return null;
 			} else {
 				getInput(displayedDialog);
 			}
 		}
-		//Important because of overwriting returns in case of a recursion
-		if (s.equals("") || s.equals(null) || closeButton.isPressed() || cancelButton.isPressed()) {
+		// Important because of overwriting returns in case of a recursion
+		if (s.equals("") || s.equals(null)) {
 			return null;
 		} else {
 			return s;
 		}
 	}
-	
+
 	public static boolean confirmationAlert(String outputText) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
 		alert.setTitle(DataStructuresEditorST.CONFIRMATION_REQUIRED);
 		Optional<ButtonType> result = alert.showAndWait();
-		if(result.get() == ButtonType.OK) {
+		if (result.get() == ButtonType.OK) {
 			return true;
 		}
 		return false;
