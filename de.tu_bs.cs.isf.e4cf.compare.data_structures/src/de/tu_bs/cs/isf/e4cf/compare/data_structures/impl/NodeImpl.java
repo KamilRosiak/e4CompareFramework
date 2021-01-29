@@ -16,6 +16,11 @@ public class NodeImpl extends AbstractNode {
 	 */
 	private static final long serialVersionUID = 2646668251637650151L;
 
+	
+	public NodeImpl() {
+		
+	}
+	
 	/**
 	 * This constructor initializes a node without a parent , e.g, the root node.
 	 * @param nodeType is the type of the node , e.g , statement, method, class
