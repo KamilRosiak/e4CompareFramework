@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import javax.inject.Inject;
 
@@ -12,6 +13,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.AddChildNodeAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.RenameNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -61,6 +65,9 @@ public class TreeViewController {
 	private String currentSearchText;
 
 	private List<TreeItem<AbstractNode>> copyList = new ArrayList<TreeItem<AbstractNode>>();
+	
+	CommandManager TreeManager = new CommandManager();
+
 
 	@Optional
 	@Inject
@@ -117,7 +124,7 @@ public class TreeViewController {
 		displayTotalNodeAmount();
 		treeView.refresh();
 	}
-
+	
 	void addAtrrOnIndex() {
 		int place = Integer.parseInt(TreeViewUtilities.getInput("Enter Place"));
 		AbstractAttribute attribute = (AbstractAttribute) treeView.getSelectionModel().getSelectedItem().getValue()
@@ -131,6 +138,7 @@ public class TreeViewController {
 		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
 		treeView.refresh();
 	}
+	
 
 	@Optional
 	@Inject
@@ -151,7 +159,7 @@ public class TreeViewController {
 	 * 
 	 */
 	@FXML
-	void addChildNode() {
+	void addChildNode() {		
 		TreeItem<AbstractNode> newChild = new TreeItem<AbstractNode>();
 		newChild.setValue(new NodeImpl("DummyNode"));
 		try {
@@ -165,6 +173,7 @@ public class TreeViewController {
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(newChild);
 		displayTotalNodeAmount();
 		treeView.refresh();
+		TreeManager.execute(new AddChildNodeAction("addChildNode", newChild, treeView));
 	}
 
 	/**
@@ -197,17 +206,23 @@ public class TreeViewController {
 		}
 
 	}
+	
 
 	/**
 	 * 
 	 */
 	@FXML
 	void renameNode() {
+		Attribute atr = null; 
+//		String prevName = treeView.getSelectionModel().getSelectedItem().getValue().getAttributeForKey("name").toString();
+//		System.out.println(treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().toString());
 		for (Attribute attribute : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
 			if (attribute.getAttributeKey().toLowerCase().equals("name")) {
 				attribute.getAttributeValues().clear();
+				atr=attribute;
 			}
-		}
+		} //atm noch hardcoded, bessere Version steht oben, funktioniert aber noch nicht
+		TreeManager.execute(new RenameNodeAction("renameNode",treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().get(0).getAttributeValues().toString() , atr, treeView, treeView.getSelectionModel().getSelectedItem().getValue()));
 		addAttribute("name", TreeViewUtilities.getInput("Enter new name"));
 		treeView.refresh();
 		services.eventBroker.send("NodePropertiesEvent", treeView.getSelectionModel().getSelectedItem().getValue());
@@ -254,7 +269,7 @@ public class TreeViewController {
 
 	@FXML
 	void undoAction() {
-		System.out.println("UNDO");
+		TreeManager.undo();
 	}
 
 	@FXML
