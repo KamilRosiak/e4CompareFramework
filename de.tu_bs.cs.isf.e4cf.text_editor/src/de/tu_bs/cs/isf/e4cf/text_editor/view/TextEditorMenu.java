@@ -1,19 +1,21 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
+import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
 
 import javafx.fxml.FXML;
@@ -86,13 +88,14 @@ public class TextEditorMenu implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		createNewFileItems(getContributedFileFormats());
-	
+
 	}
-	
+
 	private List<String> getContributedFileFormats() {
-		IConfigurationElement[] configs = RCPContentProvider.getIConfigurationElements("de.tu_bs.cs.isf.e4cf.text_editor.file_format");	
+		IConfigurationElement[] configs = RCPContentProvider
+				.getIConfigurationElements("de.tu_bs.cs.isf.e4cf.text_editor.file_format");
 		List<String> fileExtensions = new ArrayList<>();
-		for(IConfigurationElement config : configs) {
+		for (IConfigurationElement config : configs) {
 			try {
 				String fileExtension = config.getAttribute("file_extension");
 				fileExtensions.add(fileExtension);
@@ -101,13 +104,13 @@ public class TextEditorMenu implements Initializable {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return fileExtensions;
 	}
 
 	public void setScene(Scene scene) {
 		this.scene = scene;
-		textEditorViewController.initFileUtils(scene);
+		textEditorViewController.setScene(scene);
 	}
 
 	/**
@@ -144,9 +147,13 @@ public class TextEditorMenu implements Initializable {
 	 */
 	@FXML
 	private void initOpenFileAction() {
-		String[] fileInfo = textEditorViewController.fileUtils.openFile();
-		if (!(fileInfo[1].isEmpty())) {
-			textEditorViewController.loadTab(fileInfo[0], fileInfo[1]);
+		// String[] fileInfo = textEditorViewController.fileUtils.openFile();
+		String content = "";
+		String filePath = RCPMessageProvider.getFilePathDialog(EditorST.OPEN_FILE_DIALOG,
+				RCPContentProvider.getCurrentWorkspacePath());
+		if (!(filePath.equals(""))) {
+			content = FileStreamUtil.readLineByLine(Paths.get(filePath));
+			textEditorViewController.loadTab(filePath, content);
 		}
 	}
 
@@ -158,13 +165,13 @@ public class TextEditorMenu implements Initializable {
 	 */
 	@FXML
 	private void initSaveAction() {
-		String fileName = (String) textEditorViewController.getCurrentTab().getUserData();
-		if (fileName.startsWith(EditorST.NEW_TAB_TITLE)) {
-			String newpath = textEditorViewController.fileUtils.saveAs(textEditorViewController.getCurrentText());
-			textEditorViewController.setCurrentTabUserData(newpath);
+		String filePath = (String) textEditorViewController.getCurrentTab().getUserData();
+		if (filePath.startsWith(EditorST.NEW_TAB_TITLE)) {
+			initSaveAsAction();
 		} else {
-			textEditorViewController.fileUtils.save((String) textEditorViewController.getCurrentTab().getUserData(),
-					textEditorViewController.getCurrentText());
+			FileStreamUtil.writeTextToFile(filePath, textEditorViewController.getCurrentText());
+//			textEditorViewController.fileUtils.save((String) textEditorViewController.getCurrentTab().getUserData(),
+//					textEditorViewController.getCurrentText());
 		}
 	}
 
@@ -176,8 +183,14 @@ public class TextEditorMenu implements Initializable {
 	 */
 	@FXML
 	private void initSaveAsAction() {
-		String newpath = textEditorViewController.fileUtils.saveAs(textEditorViewController.getCurrentText());
-		textEditorViewController.setCurrentTabUserData(newpath);
+		final FileDialog dialog = new FileDialog(new Shell(), SWT.SAVE);
+		dialog.setText(EditorST.SAVE_AS_FILE_DIALOG);
+		dialog.setFilterPath(RCPContentProvider.getCurrentWorkspacePath());
+		String filePath = dialog.open();
+		if (filePath != null) {
+			FileStreamUtil.writeTextToFile(filePath, textEditorViewController.getCurrentText());
+			textEditorViewController.setCurrentTabUserData(filePath);
+		}
 	}
 
 	/**
@@ -367,4 +380,5 @@ public class TextEditorMenu implements Initializable {
 						+ "It can do all the things one would expect from such an editor.");
 		textEditorViewController.alert.showAndWait();
 	}
+
 }

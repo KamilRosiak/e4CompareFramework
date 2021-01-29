@@ -15,8 +15,8 @@ import javax.inject.Inject;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 import de.tu_bs.cs.isf.e4cf.text_editor.FileFormatContainer;
-import de.tu_bs.cs.isf.e4cf.text_editor.FileUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.WordCountUtils;
 import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IFormatting;
 import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IHighlighting;
@@ -50,7 +50,7 @@ public class TextEditor implements Initializable {
 	protected Label wordCount;
 	@FXML
 	protected Label rowCount;
-	
+
 	Clipboard systemClipboard = Clipboard.getSystemClipboard();
 
 	@FXML
@@ -59,11 +59,9 @@ public class TextEditor implements Initializable {
 	@Inject
 	protected ServiceContainer services;
 
-	// Utils class to handle file operations
-	protected FileUtils fileUtils;
-	
+
 	private Scene scene;
-	
+
 	private Map<String, FileFormatContainer> fileExtensions;
 
 	Alert alert;
@@ -121,26 +119,20 @@ public class TextEditor implements Initializable {
 	 */
 	protected void saveChanges() {
 		String content = getCurrentText();
-		if (content.hashCode() != fileUtils.getLastRevision()) {
-			if (RCPMessageProvider.questionMessage("Save...", "Would you like to save the changes in this file?")) {
-				fileUtils.save((String) getCurrentTab().getUserData(), content);
-			}
+		if (RCPMessageProvider.questionMessage("Save...", "Would you like to save the changes in this file?")) {
+			FileStreamUtil.writeTextToFile((String) getCurrentTab().getUserData(), content);
 		}
 	}
 
 	/**
-	 * Initializes the FileUtils instance of this object with the window obtained
-	 * from scene.
+	 * Sets the Scene for this Window.
 	 * 
 	 * @param scene The scene that this object is part of
 	 * 
 	 * @author Lukas Cronauer
 	 */
-	public void initFileUtils(Scene scene) {
+	public void setScene(Scene scene) {
 		this.scene = scene;
-		if (scene != null) {
-			fileUtils = new FileUtils(scene.getWindow());
-		}
 		fileExtensions = getContributedFileFormats();
 	}
 
@@ -198,7 +190,7 @@ public class TextEditor implements Initializable {
 	 * @author Lukas Cronauer, Cedric Kapalla, Soeren Christmann, Erwin Wijaya
 	 */
 	public void loadTab(String filePath, String content) {
-		String fileName = fileUtils.parseFileNameFromPath(filePath);
+		String fileName = parseFileNameFromPath(filePath);
 		String fileEnding = "";
 		for (Tab t : tabPane.getTabs()) {
 			if (t.getUserData().equals(filePath)) {
@@ -238,13 +230,13 @@ public class TextEditor implements Initializable {
 	 */
 	protected void setCurrentTabUserData(String path) {
 		getCurrentTab().setUserData(path);
-		getCurrentTab().setText(fileUtils.parseFileNameFromPath(path));
+		getCurrentTab().setText(parseFileNameFromPath(path));
 	}
-	
+
 	private Map<String, FileFormatContainer> getContributedFileFormats() {
-		IConfigurationElement[] configs = RCPContentProvider.getIConfigurationElements(EditorST.EXTP_ID);	
+		IConfigurationElement[] configs = RCPContentProvider.getIConfigurationElements(EditorST.EXTP_ID);
 		Map<String, FileFormatContainer> fileExtensions = new HashMap<>();
-		for(IConfigurationElement config : configs) {
+		for (IConfigurationElement config : configs) {
 			Object highlighter = null, indenter = null, formatter = null;
 			try {
 				String[] allAttributes = config.getAttributeNames();
@@ -266,9 +258,11 @@ public class TextEditor implements Initializable {
 						if (styleUrl.endsWith(".css")) {
 							scene.getStylesheets().add(styleUrl);
 						} else {
-							throw new IOException("Invalid file format for css style-sheet. Must be '.css'. Contributor: " + contributor);
+							throw new IOException(
+									"Invalid file format for css style-sheet. Must be '.css'. Contributor: "
+											+ contributor);
 						}
-						
+
 					}
 				}
 				String fileExtension = config.getAttribute(EditorST.EXTP_EXTENSION);
@@ -278,7 +272,39 @@ public class TextEditor implements Initializable {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return fileExtensions;
+	}
+
+	/**
+	 * Extracts the fileName from a string containing a file path.
+	 * 
+	 * @param path A filePath ending in a file
+	 * @return The fileName with extension (e.g. name.extension)
+	 * @author Lukas Cronauer
+	 */
+	public static String parseFileNameFromPath(String path) {
+		String fileName = path;
+		String[] splittedPath;
+		if (!path.startsWith(EditorST.NEW_TAB_TITLE)) {
+			if (System.getProperty("os.name").startsWith("Windows")) {
+				splittedPath = path.split("\\\\");
+			} else {
+				splittedPath = path.split("/");
+			}
+
+			try {
+				if (splittedPath[splittedPath.length - 1].matches(EditorST.FILE_REGEX)) {
+					fileName = splittedPath[splittedPath.length - 1];
+				} else {
+					throw new ArrayIndexOutOfBoundsException("Invalid filename");
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.out.println(e.getMessage());
+				fileName = EditorST.NEW_TAB_TITLE;
+			}
+		}
+
+		return fileName;
 	}
 }
