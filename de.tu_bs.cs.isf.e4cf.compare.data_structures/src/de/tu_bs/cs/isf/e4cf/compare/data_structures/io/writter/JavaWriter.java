@@ -44,23 +44,23 @@ public class JavaWriter extends AbstractArtifactWriter {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Creates a new file by converting the tree back to source code. The algorithm
+	 * starts at the tree's root.
+	 * <p>
+	 * The file will be created at parameter <code>path</code>. The file ending
+	 * {@link JavaWriter#FILE_ENDING} is automatically added to <code>path</code>.
+	 * 
+	 * @see {@link FileStreamUtil#writeTextToFile(String, String)} for more
+	 *      information about this method's behavior
+	 * @param tree Tree, which will be converted to source code
+	 * @param path Where to create the new file
 	 */
 	@Override
 	public void writeArtifact(Tree tree, String path) {
 		if (tree.getArtifactType().equals(NODE_TYPE_TREE)) {
-			FileStreamUtil.writeTextToFile(path + "." + FILE_ENDING, createFileContent(tree.getRoot()));
+			JavaWriterUtil javaWriterUtil = new JavaWriterUtil();
+			FileStreamUtil.writeTextToFile(path + "." + FILE_ENDING,
+					javaWriterUtil.visitWriter(tree.getRoot()).toString());
 		}
-	}
-
-	/**
-	 * Generates the contents of a java source file recursively.
-	 * 
-	 * @param root Node of the syntax tree.
-	 * @return Contents of a file
-	 */
-	private String createFileContent(Node root) {	
-		JavaWriterUtil javaWriterUtil = new JavaWriterUtil();
-		return javaWriterUtil.visitWriter(root).toString();
 	}
 }
