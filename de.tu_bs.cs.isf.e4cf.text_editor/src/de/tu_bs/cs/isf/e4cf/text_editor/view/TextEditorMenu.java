@@ -1,10 +1,14 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -152,26 +156,34 @@ public class TextEditorMenu implements Initializable {
 	}
 
 	/**
-	 * Sets the actions of the Open item in the File menu. Open a File with a
-	 * extension set in @FileUtils fileChooser fileExtensions
+	 * Sets the actions of the Open item in the File menu. Retrieves the file's Path,
+	 * then reads it with a StringBuilder. The charset used is ISO_8859_1
+	 * because UTF_8 is unable to parse umlauts and crashes whenever one is in a
+	 * to-be-opened file.
 	 * 
-	 * @author Lukas Cronauer, Erwin Wijaya
+	 * @author Lukas Cronauer, Erwin Wijaya, Cedric Kapalla, Soeren Christmann
 	 */
 	@FXML
 	private void openFileAction() {
-		// String[] fileInfo = textEditorViewController.fileUtils.openFile();
 		String content = "";
 		String filePath = RCPMessageProvider.getFilePathDialog(EditorST.OPEN_FILE_DIALOG,
 				RCPContentProvider.getCurrentWorkspacePath());
 		if (!(filePath.equals(""))) {
-			content = FileStreamUtil.readLineByLine(Paths.get(filePath));
+			StringBuilder contentBuilder = new StringBuilder();
+
+			try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.ISO_8859_1)) {
+				stream.forEach(s -> contentBuilder.append(s).append("\n"));
+				content = contentBuilder.toString();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			textEditorViewController.loadTab(filePath, content);
 		}
 	}
 
 	/**
 	 * Sets the actions of the Save item in the File menu. Saving the text into
-	 * current File
+	 * current File.
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
@@ -182,14 +194,12 @@ public class TextEditorMenu implements Initializable {
 			saveAsAction();
 		} else {
 			FileStreamUtil.writeTextToFile(filePath, textEditorViewController.getCurrentText());
-//			textEditorViewController.fileUtils.save((String) textEditorViewController.getCurrentTab().getUserData(),
-//					textEditorViewController.getCurrentText());
 		}
 	}
 
 	/**
-	 * Sets the actions of the SaveAs item in the File menu. Make a copy of the file
-	 * in another file directory Or make a copy of the file with another name
+	 * Sets actions of the SaveAs item in the File menu. Creates copy of file
+	 * in another file directory, or creates copy of the file with another name
 	 * 
 	 * @author Lukas Cronauer, Erwin Wijaya
 	 */
