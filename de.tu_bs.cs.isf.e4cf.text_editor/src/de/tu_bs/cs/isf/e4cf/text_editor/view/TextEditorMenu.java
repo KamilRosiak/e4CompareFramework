@@ -90,7 +90,14 @@ public class TextEditorMenu implements Initializable {
 		createNewFileItems(getContributedFileFormats());
 
 	}
-
+	
+	/**
+	 * Adds all file extensions of contributing extensions for the
+	 * 'file_format' extension point to a list
+	 * (e.g. java, txt, xml, ...)
+	 * 
+	 * @return List with all registered file extensions
+	 */
 	private List<String> getContributedFileFormats() {
 		IConfigurationElement[] configs = RCPContentProvider
 				.getIConfigurationElements("de.tu_bs.cs.isf.e4cf.text_editor.file_format");
@@ -107,7 +114,12 @@ public class TextEditorMenu implements Initializable {
 
 		return fileExtensions;
 	}
-
+	
+	/**
+	 * Sets the scene for the TextEditorMenu
+	 * 
+	 * @param scene Scene object for the Object
+	 */
 	public void setScene(Scene scene) {
 		this.scene = scene;
 		textEditorViewController.setScene(scene);

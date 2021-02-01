@@ -2,15 +2,21 @@ package de.tu_bs.cs.isf.e4cf.text_editor.format;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IHighlighting;
+import de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IIndenting;
+import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
-public class XmlFormat implements IHighlighting {
+public class XmlFormat implements IHighlighting, IIndenting {
 
 	/**
 	 * Regular expressions for this file type.
@@ -101,4 +107,32 @@ public class XmlFormat implements IHighlighting {
 			return spansBuilder.create();
 		}
 	}
+	
+	private String whiteSpaceRegex = "^\\s+";
+    private String endtagRegex = ">\\s*$";
+    private String closetagRegex = "(</.*\\s*>)$";
+
+    public void applyIndentation(CodeArea codeArea) {
+        Pattern whiteSpace = Pattern.compile(whiteSpaceRegex);
+        Pattern tag = Pattern.compile(endtagRegex);
+        Pattern endtag = Pattern.compile(closetagRegex);
+        codeArea.addEventFilter(KeyEvent.KEY_PRESSED, KE -> {
+            if (KE.getCode() == KeyCode.ENTER) {
+                List<String> segments = codeArea.getParagraph(codeArea.getCurrentParagraph()).getSegments();
+                Matcher whiteSpaceInFront = whiteSpace.matcher(segments.get(0));
+                Matcher newTag = tag.matcher(segments.get(segments.size() - 1));
+                Matcher newEndtag = endtag.matcher(segments.get(segments.size() - 1));
+                
+               if (newTag.find() && !newEndtag.find()) {
+                    // indent with one tab
+                	Platform.runLater(() -> codeArea.insertText(codeArea.getCaretPosition(), "  "));           	                 
+                }
+
+                if (whiteSpaceInFront.find()) {
+                    // add indentation of the previous line to the new line
+                    Platform.runLater(() -> codeArea.insertText(codeArea.getCaretPosition(), whiteSpaceInFront.group()));
+                }
+            }
+        });
+    }
 }

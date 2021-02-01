@@ -1,10 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.text_editor.view;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -221,17 +217,28 @@ public class TextEditor implements Initializable {
 		getCurrentTab().setUserData(path);
 		getCurrentTab().setText(parseFileNameFromPath(path));
 	}
-
+	
+	/**
+	 * Parses all contributed extensions for the 'file_format' extension point and
+	 * adds them to a FileFormatContainer
+	 * 
+	 * @return Map with file extension as keys and the corresponding FileFormatContainer as the value
+	 */
 	private Map<String, FileFormatContainer> getContributedFileFormats() {
 		IConfigurationElement[] configs = RCPContentProvider.getIConfigurationElements(EditorST.EXTP_ID);
 		Map<String, FileFormatContainer> fileExtensions = new HashMap<>();
+		
 		for (IConfigurationElement config : configs) {
 			Object highlighter = null, indenter = null, formatter = null;
+			
 			try {
 				String[] allAttributes = config.getAttributeNames();
+				
 				for (String attribute : allAttributes) {
-					if (!attribute.equals(EditorST.EXTP_EXTENSION) && !attribute.equals("css")) {
+					if (!attribute.equals(EditorST.EXTP_EXTENSION) && !attribute.equals(EditorST.EXTP_STYLE)) {
 						final Object extension = config.createExecutableExtension(attribute);
+						
+						// add all implementations of the current extension 
 						if (attribute.equals(EditorST.EXTP_HIGHLIGHT) && extension instanceof IHighlighting) {
 							highlighter = extension;
 						} else if (attribute.equals(EditorST.EXTP_INDENT) && extension instanceof IIndenting) {
@@ -240,7 +247,8 @@ public class TextEditor implements Initializable {
 							formatter = extension;
 						}
 					}
-					if (attribute.equals("css")) {
+					
+					if (attribute.equals(EditorST.EXTP_STYLE)) { // add css stylesheet with highlighting styles to the scene
 						String contributor = config.getContributor().getName();
 						String relPath = config.getAttribute(attribute);
 						String styleUrl = new URL("platform:/plugin/" + contributor + "/" + relPath).toExternalForm();
@@ -254,8 +262,10 @@ public class TextEditor implements Initializable {
 
 					}
 				}
+				
 				String fileExtension = config.getAttribute(EditorST.EXTP_EXTENSION);
 				fileExtensions.put(fileExtension, new FileFormatContainer(highlighter, indenter, formatter));
+				
 			} catch (InvalidRegistryObjectException | CoreException | IOException e) {
 				System.out.println(e.getMessage());
 				e.printStackTrace();

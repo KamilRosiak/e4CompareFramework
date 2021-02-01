@@ -29,22 +29,20 @@
    <extension
          point="de.tu_bs.cs.isf.e4cf.text_editor.file_format">
       <file_format
+            file_extension="txt">
+      </file_format>
+      <file_format
             css="ui/view/style/java-keyword.css"
             file_extension="java"
             formatting="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat"
             highlighting="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat"
-            identation="de.tu_bs.cs.isf.e4cf.text_editor.indentation.JavaIndentation"
             indentation="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat">
       </file_format>
       <file_format
             css="ui/view/style/xml-keyword.css"
             file_extension="xml"
             highlighting="de.tu_bs.cs.isf.e4cf.text_editor.format.XmlFormat"
-            identation="de.tu_bs.cs.isf.e4cf.text_editor.indentation.XMLIndentation"
-            indentation="de.tu_bs.cs.isf.e4cf.text_editor.indentation.XMLIndentation">
-      </file_format>
-      <file_format
-            file_extension="txt">
+            indentation="de.tu_bs.cs.isf.e4cf.text_editor.format.XmlFormat">
       </file_format>
    </extension>
 

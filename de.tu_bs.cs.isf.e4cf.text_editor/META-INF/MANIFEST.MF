@@ -16,4 +16,5 @@ Require-Bundle: org.apache.commons.lang3;bundle-version="3.1.0",
  de.tu_bs.cs.isf.e4cf.core
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.text.editor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.tu_bs.cs.isf.e4cf.text_editor.interfaces
+Export-Package: de.tu_bs.cs.isf.e4cf.text_editor.highlighter,
+ de.tu_bs.cs.isf.e4cf.text_editor.interfaces

@@ -110,6 +110,13 @@ public class EditorTab extends Tab {
 		}
 	}
 	
+	/**
+	 * Executes a method of an extension as an ISafeRunnable to catch any
+	 * potential exceptions during execution
+	 * 
+	 * @param extension Object of an extension implementation
+	 * @param action Enum Action object indicating the desired method
+	 */
 	private void runSafe(Object extension, Action action) {
 		ISafeRunnable runnable = new ISafeRunnable() {
 	            @Override

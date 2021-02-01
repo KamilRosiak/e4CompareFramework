@@ -16,8 +16,8 @@ import de.tu_bs.cs.isf.e4cf.text_editor.stringtable.EditorST;
  *
  */
 public interface ITextEditorProjectExplorerExtension extends IProjectExplorerExtension {
-
-	public Image getIcon(RCPImageService imageService);
+	
+	Image getIcon(RCPImageService imageService);
 
 	@Override
 	public default void execute(ServiceContainer container) {
