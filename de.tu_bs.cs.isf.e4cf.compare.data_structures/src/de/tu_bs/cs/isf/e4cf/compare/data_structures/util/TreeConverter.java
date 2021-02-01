@@ -11,12 +11,16 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
  * @author Paulo Haas
  *
  */
-public class TreeConverter {	
+public class TreeConverter {
 	/**
-	 * Converts a Tree to Dot code
+	 * Converts a Tree to DOT code
 	 * 
+	 * @no
+	 * @see <a href=
+	 *      "https://en.wikipedia.org/wiki/DOT_%28graph_description_language%29">Wikipedia
+	 *      - DOT (Graph Description Language)</a>
 	 * @param t Tree
-	 * @return Dot Code
+	 * @return DOT Code
 	 */
 	public static String treeToDot(Tree t) {
 		return "digraph G {\n" + dotBuilder(t.getRoot()) + "}";
@@ -29,15 +33,29 @@ public class TreeConverter {
 	 * @return Partial Dot code for Node
 	 */
 	private static String dotBuilder(Node n) {
-		String s = new String();
+		String s = new String(); // s will be the output
 		for (Node c : n.getChildren()) {
+			/*
+			 * Append s by the dot code of every child recursively and connect the param
+			 * node with the child. The dot node IDs are created by their hash codes.
+			 */
 			s += dotBuilder(c);
-			s += n.hashCode() + " -> " + c.hashCode() + ";\n";
+			s += "\t" + n.hashCode() + " -> " + c.hashCode() + ";\n";
 		}
-		s += n.hashCode() + "[label=\"" + n.getNodeType().replace("\r\n", " \\n ");
+		/*
+		 * When all children are done, convert the param node. Append s by it's ID
+		 * (hashcode) and label the node by it's type. Replace line breaks in the type
+		 * with equivalent control character.
+		 */
+		s += "\t" + n.hashCode() + "[label=\"" + n.getNodeType().replace("\r\n", " \\n ");
 		for (Attribute a : n.getAttributes()) {
-			s += "\\nAttribute: " + a.getAttributeKey().replace("\r\n", " \\n ") + " --- " + a.getAttributeValues().toString().replace("\"", "\\\"").replace("\n", " \\n ");
+			/*
+			 * Then add all attributes to the label of the node. Every attribute gets their
+			 * own line. Line breaks and quotation marks need to be replaced.
+			 */
+			s += "\\nAttribute: " + a.getAttributeKey().replace("\r\n", " \\n ") + " --- "
+					+ a.getAttributeValues().toString().replace("\"", "\\\"").replace("\n", " \\n ");
 		}
-		return s + "\"];\n";
+		return s + "\"];\n"; // return output and close the node stmt
 	}
 }
