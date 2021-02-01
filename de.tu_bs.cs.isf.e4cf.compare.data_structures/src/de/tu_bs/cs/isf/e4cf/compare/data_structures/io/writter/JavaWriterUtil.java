@@ -1,22 +1,17 @@
 
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
 
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.comments.BlockComment;
-import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.comments.JavadocComment;
-import com.github.javaparser.ast.comments.LineComment;
+import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
-import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.*;
 
@@ -62,7 +57,8 @@ public class JavaWriterUtil {
 
 		/*
 		 * Create a new jp node based on e4cf node type and set specific values for the
-		 * new node
+		 * new node. Take a look at JavaVisitor for more information about the
+		 * conversion.
 		 */
 		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
 			jpNode = new CompilationUnit();
@@ -74,7 +70,7 @@ public class JavaWriterUtil {
 			jpNode = new AnnotationMemberDeclaration(attributes.getModifier(), attributes.getAnnotation(),
 					attributes.getType(), new SimpleName(attributes.getName()), attributes.getValue());
 		} else if (isOfType(n, JavaNodeTypes.Argument)) {
-			processArgument(attributes, p);
+			processArgument(attributes, p, n);
 		} else if (isOfType(n, ArrayAccessExpr.class)) {
 			jpNode = new ArrayAccessExpr(StaticJavaParser.parseExpression(attributes.getName()), attributes.getValue());
 		} else if (isOfType(n, ArrayCreationExpr.class)) {
@@ -102,8 +98,14 @@ public class JavaWriterUtil {
 			jpNode = new BlockComment(attributes.getComment());
 		} else if (isOfType(n, BlockStmt.class) || isOfType(n, JavaNodeTypes.Body)) {
 			if (p instanceof BlockStmt) {
+				/*
+				 * Some conversions might create block stmts themselves but have block stmts as
+				 * a child. An example for this behavior is JavaNodeTypes.Else. This check
+				 * prevents duplicate block stmts.
+				 */
 				jpNode = p;
 			} else {
+				// Otherwise create a new block stmt
 				jpNode = new BlockStmt();
 			}
 		} else if (isOfType(n, BooleanLiteralExpr.class)) {
@@ -155,7 +157,6 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, DoubleLiteralExpr.class)) {
 			jpNode = new DoubleLiteralExpr(attributes.getValue().toString());
 		} else if (isOfType(n, JavaNodeTypes.Else)) {
-			BlockStmt elseStmt = new BlockStmt();
 			/*
 			 * In the JavaParser if-elif-else branches are nested; in the e4cf framework the
 			 * if-elif-else branches are flat. To reconstruct the depth, the else branches
@@ -166,9 +167,9 @@ public class JavaWriterUtil {
 			while (ifStmt.hasElseBranch()) {
 				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
 			}
-			ifStmt.setElseStmt(elseStmt);
+			ifStmt.setElseStmt(new BlockStmt());
 			p = null;
-			jpNode = elseStmt;
+			jpNode = ifStmt.getElseStmt().get();
 		} else if (isOfType(n, EmptyStmt.class)) {
 			jpNode = new EmptyStmt();
 		} else if (isOfType(n, EnclosedExpr.class)) {
@@ -188,6 +189,12 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, FieldAccessExpr.class)) {
 			jpNode = new FieldAccessExpr();
 		} else if (isOfType(n, FieldDeclaration.class)) {
+			/*
+			 * Create a new field declaration with modfiers and afterwards create the
+			 * variable declarator and populate it. Finally add the variable declarator to
+			 * the field declaration. This looks pretty complicated but there seems to be no
+			 * simpler way.
+			 */
 			FieldDeclaration fd = new FieldDeclaration().setModifiers(attributes.getModifier());
 			VariableDeclarator vd = new VariableDeclarator().setType(attributes.getType())
 					.setName(attributes.getName());
@@ -218,8 +225,7 @@ public class JavaWriterUtil {
 			jpNode = createClassOrInterfaceDeclaration(attributes, p);
 		} else if (isOfType(n, IntersectionType.class)) {
 			// TODO fill arguments
-			// IntersectionType obj = new IntersectionType();
-			// jpNode = obj;
+			// jpNode = new IntersectionType();
 		} else if (isOfType(n, LabeledStmt.class)) {
 			jpNode = new LabeledStmt();
 		} else if (isOfType(n, LambdaExpr.class)) {
@@ -246,7 +252,6 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, NameExpr.class)) {
 			jpNode = new NameExpr();
 		} else if (isOfType(n, NormalAnnotationExpr.class)) {
-			// Create a new normal annotation expr, set its name and add it to p.
 			jpNode = new NormalAnnotationExpr(new Name(attributes.getName()), new NodeList<MemberValuePair>());
 		} else if (isOfType(n, NullLiteralExpr.class)) {
 			jpNode = new NullLiteralExpr();
@@ -255,6 +260,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, Parameter.class)) {
 			Parameter obj = new Parameter(new UnknownType(), attributes.getName());
 			if (attributes.getType() != null) {
+				// Replace unknown type if there is a more specific type for the parameter.
 				obj.setType(attributes.getType());
 			}
 			jpNode = obj;
@@ -273,6 +279,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, SwitchEntry.class)) {
 			SwitchEntry obj = new SwitchEntry().setType(SwitchEntry.Type.valueOf(attributes.getType().toString()));
 			if (!attributes.isDefault()) {
+				// If the switch entry is not "default:" (but "case xxx:") add a condition
 				obj.setLabels(attributes.getCondition());
 			}
 			jpNode = obj;
@@ -285,18 +292,28 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, TextBlockLiteralExpr.class)) {
 			jpNode = new TextBlockLiteralExpr();
 		} else if (isOfType(n, JavaNodeTypes.Then)) {
-			IfStmt ifStmt = (IfStmt) p;
-			int counter = 0;
+			IfStmt ifStmt = (IfStmt) p; // Parent of then is always if
+			int counter = 0; // Flag for has else branch
 			while (ifStmt.hasElseBranch()) {
+				/*
+				 * p is the top most if stmt. Traverse the else branches down to the bottom, to
+				 * convert the flat structure back to the deep structure. Also set the flag
+				 * "counter".
+				 */
 				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
 				counter++;
 			}
-			NodeList<Expression> conditions = attributes.getCondition();
 			if (counter != 0 || !ifStmt.getCondition().equals(new BooleanLiteralExpr(false))) {
+				/*
+				 * If we went down the branches (condition 1) or the if stmt if freshly created,
+				 * then it's condition is "false" (condition 2). (Condition 2) assumes that
+				 * "if(false)" never occurs in a real serious program, as it is just dead code.
+				 * If any condition is true, create a new if stmt in the else branch.
+				 */
 				ifStmt.setElseStmt(new IfStmt());
 				ifStmt = (IfStmt) ifStmt.getElseStmt().get();
 			}
-			ifStmt.setCondition(conditions.getFirst().get());
+			ifStmt.setCondition(attributes.getCondition().getFirst().get());
 			jpNode = ifStmt;
 		} else if (isOfType(n, ThisExpr.class)) {
 			jpNode = new ThisExpr();
@@ -321,6 +338,10 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, VariableDeclarator.class)) {
 			VariableDeclarator obj = new VariableDeclarator(attributes.getType(), attributes.getName());
 			if (attributes.getInitilization().isNonEmpty()) {
+				/*
+				 * Variable declarators don't need an initialiations (e.g. they are just
+				 * declared). So check if there's any, if so add it.
+				 */
 				obj.setInitializer(attributes.getInitilization().getFirst().get());
 			}
 			jpNode = obj;
@@ -353,79 +374,100 @@ public class JavaWriterUtil {
 
 		setParent(p, jpNode);
 
-		/*
-		 * set jpNode as parent to all the nodes, that are generated from the children
-		 */
 		for (Node nChild : n.getChildren()) {
+			// Visit all children
 			com.github.javaparser.ast.Node jpChild = visitWriter(nChild, Optional.ofNullable(jpNode).orElse(p));
 		}
 
 		return jpNode;
 	}
 
-	private void setParent(com.github.javaparser.ast.Node p, com.github.javaparser.ast.Node jpNode)
+	/**
+	 * This method adds the child to the children of the parent node. The types of
+	 * the nodes are also considered to make the changes effective.
+	 * 
+	 * @param parentNode Parent Node
+	 * @param childNode  Child Node
+	 * @throws UnsupportedOperationException Implementations of special combinations
+	 *                                       of node types might be missing. When
+	 *                                       this happens an exception is thrown,
+	 *                                       with the specific combination. The
+	 *                                       missing implementation must be
+	 *                                       implemented, otherwise the results of
+	 *                                       the conversion could be unexspected.
+	 */
+	private void setParent(com.github.javaparser.ast.Node parentNode, com.github.javaparser.ast.Node childNode)
 			throws UnsupportedOperationException {
-		if (p instanceof com.github.javaparser.ast.Node && jpNode instanceof com.github.javaparser.ast.Node
-				&& !p.equals(jpNode)) {
-			jpNode.setParentNode(p);
+		if (parentNode instanceof com.github.javaparser.ast.Node && childNode instanceof com.github.javaparser.ast.Node
+				&& !parentNode.equals(childNode)) {
+			/*
+			 * Just set the parent of the child node generally. This doesn't seem to affect
+			 * anything.
+			 */
+			childNode.setParentNode(parentNode);
 
-			if (p instanceof CompilationUnit) {
-				// If p instanceof CompilationUnit -> handled in e4cf Node CompilationUnit If
-			} else if (p instanceof TypeDeclaration && jpNode instanceof BodyDeclaration) {
-				((TypeDeclaration) p).addMember((BodyDeclaration) jpNode);
-			} else if (p instanceof NodeWithAnnotations && jpNode instanceof AnnotationExpr) {
-				((NodeWithAnnotations) p).addAnnotation((AnnotationExpr) jpNode);
-			} else if (p instanceof SwitchStmt && jpNode instanceof SwitchEntry) {
-				NodeList<SwitchEntry> entries = ((SwitchStmt) p).getEntries();
-				entries.add((SwitchEntry) jpNode);
-				((SwitchStmt) p).setEntries(entries);
-			} else if (p instanceof NodeWithTypeParameters && jpNode instanceof TypeParameter) {
-				((NodeWithTypeParameters) p).addTypeParameter((TypeParameter) jpNode);
-			} else if (jpNode instanceof Comment) {
-				p.addOrphanComment((Comment) jpNode);
-			} else if (p instanceof CatchClause && jpNode instanceof Parameter) {
-				((CatchClause) p).setParameter((Parameter) jpNode);
-			} else if (p instanceof NodeWithBody && jpNode instanceof Statement) {
-				((NodeWithBody) p).setBody((Statement) jpNode);
-			} else if (p instanceof NodeWithBody && jpNode instanceof Expression) {
-				((NodeWithBody) p).setBody(new ExpressionStmt((Expression) jpNode));
-			} else if (p instanceof EnclosedExpr && jpNode instanceof Expression) {
-				((EnclosedExpr) p).setInner((Expression) jpNode);
-			} else if (p instanceof NodeWithStatements && jpNode instanceof VariableDeclarator) {
-				((NodeWithStatements) p).addStatement(new VariableDeclarationExpr((VariableDeclarator) jpNode));
-			} else if (p instanceof NodeWithStatements && jpNode instanceof Statement) {
-				((NodeWithStatements) p).addStatement((Statement) jpNode);
-			} else if (p instanceof NodeWithStatements && jpNode instanceof Expression) {
-				((NodeWithStatements) p).addStatement((Expression) jpNode);
-			} else if (p instanceof NodeWithParameters && jpNode instanceof Parameter) {
-				((NodeWithParameters) p).addParameter((Parameter) jpNode);
-			} else if (p instanceof NodeWithMembers && jpNode instanceof MethodDeclaration) {
-				((NodeWithMembers) p).addMember((MethodDeclaration) jpNode);
-			} else if (p instanceof NormalAnnotationExpr && jpNode instanceof MemberValuePair) {
-				NodeList<MemberValuePair> paris = ((NormalAnnotationExpr) p).getPairs();
-				paris.add((MemberValuePair) jpNode);
-				((NormalAnnotationExpr) p).setPairs(paris);
-			} else if (p instanceof TryStmt && jpNode instanceof CatchClause) {
-				NodeList<CatchClause> clauses = ((TryStmt) p).getCatchClauses();
-				clauses.add((CatchClause) jpNode);
-				((TryStmt) p).setCatchClauses(clauses);
-			} else if (p instanceof NodeWithOptionalBlockStmt && jpNode instanceof BlockStmt) {
-				((NodeWithOptionalBlockStmt) p).setBody((BlockStmt) jpNode);
-			} else if (p instanceof NodeWithBlockStmt && jpNode instanceof BlockStmt) {
-				((NodeWithBlockStmt) p).setBody((BlockStmt) jpNode);
-			} else if (p instanceof TryStmt && jpNode instanceof BlockStmt) {
-				((TryStmt) p).setTryBlock((BlockStmt) jpNode);
-			} else if (p instanceof IfStmt && jpNode instanceof IfStmt) {
-				// IfStmt logic is in then and else
-			} else if (p instanceof IfStmt && jpNode instanceof Statement) {
-				((IfStmt) p).setThenStmt((Statement) jpNode);
-			} else if (p instanceof IfStmt && jpNode instanceof Expression) {
-				((IfStmt) p).setThenStmt(new ExpressionStmt((Expression) jpNode));
+			/*
+			 * The real magic is done here. Check their types and add the child specifically. 
+			 */
+			if (parentNode instanceof CompilationUnit) {
+				// If p instanceof CompilationUnit -> handled in e4cf Node CompilationUnit
+			} else if (parentNode instanceof TypeDeclaration && childNode instanceof BodyDeclaration) {
+				((TypeDeclaration) parentNode).addMember((BodyDeclaration) childNode);
+			} else if (parentNode instanceof NodeWithAnnotations && childNode instanceof AnnotationExpr) {
+				((NodeWithAnnotations) parentNode).addAnnotation((AnnotationExpr) childNode);
+			} else if (parentNode instanceof SwitchStmt && childNode instanceof SwitchEntry) {
+				NodeList<SwitchEntry> entries = ((SwitchStmt) parentNode).getEntries();
+				entries.add((SwitchEntry) childNode);
+				((SwitchStmt) parentNode).setEntries(entries);
+			} else if (parentNode instanceof NodeWithTypeParameters && childNode instanceof TypeParameter) {
+				((NodeWithTypeParameters) parentNode).addTypeParameter((TypeParameter) childNode);
+			} else if (childNode instanceof Comment) {
+				parentNode.addOrphanComment((Comment) childNode);
+			} else if (parentNode instanceof CatchClause && childNode instanceof Parameter) {
+				((CatchClause) parentNode).setParameter((Parameter) childNode);
+			} else if (parentNode instanceof NodeWithBody && childNode instanceof Statement) {
+				((NodeWithBody) parentNode).setBody((Statement) childNode);
+			} else if (parentNode instanceof NodeWithBody && childNode instanceof Expression) {
+				((NodeWithBody) parentNode).setBody(new ExpressionStmt((Expression) childNode));
+			} else if (parentNode instanceof EnclosedExpr && childNode instanceof Expression) {
+				((EnclosedExpr) parentNode).setInner((Expression) childNode);
+			} else if (parentNode instanceof NodeWithStatements && childNode instanceof VariableDeclarator) {
+				((NodeWithStatements) parentNode)
+						.addStatement(new VariableDeclarationExpr((VariableDeclarator) childNode));
+			} else if (parentNode instanceof NodeWithStatements && childNode instanceof Statement) {
+				((NodeWithStatements) parentNode).addStatement((Statement) childNode);
+			} else if (parentNode instanceof NodeWithStatements && childNode instanceof Expression) {
+				((NodeWithStatements) parentNode).addStatement((Expression) childNode);
+			} else if (parentNode instanceof NodeWithParameters && childNode instanceof Parameter) {
+				((NodeWithParameters) parentNode).addParameter((Parameter) childNode);
+			} else if (parentNode instanceof NodeWithMembers && childNode instanceof MethodDeclaration) {
+				((NodeWithMembers) parentNode).addMember((MethodDeclaration) childNode);
+			} else if (parentNode instanceof NormalAnnotationExpr && childNode instanceof MemberValuePair) {
+				NodeList<MemberValuePair> paris = ((NormalAnnotationExpr) parentNode).getPairs();
+				paris.add((MemberValuePair) childNode);
+				((NormalAnnotationExpr) parentNode).setPairs(paris);
+			} else if (parentNode instanceof TryStmt && childNode instanceof CatchClause) {
+				NodeList<CatchClause> clauses = ((TryStmt) parentNode).getCatchClauses();
+				clauses.add((CatchClause) childNode);
+				((TryStmt) parentNode).setCatchClauses(clauses);
+			} else if (parentNode instanceof NodeWithOptionalBlockStmt && childNode instanceof BlockStmt) {
+				((NodeWithOptionalBlockStmt) parentNode).setBody((BlockStmt) childNode);
+			} else if (parentNode instanceof NodeWithBlockStmt && childNode instanceof BlockStmt) {
+				((NodeWithBlockStmt) parentNode).setBody((BlockStmt) childNode);
+			} else if (parentNode instanceof TryStmt && childNode instanceof BlockStmt) {
+				((TryStmt) parentNode).setTryBlock((BlockStmt) childNode);
+			} else if (parentNode instanceof IfStmt && childNode instanceof IfStmt) {
+				// IfStmt logic is done in then and else
+			} else if (parentNode instanceof IfStmt && childNode instanceof Statement) {
+				((IfStmt) parentNode).setThenStmt((Statement) childNode);
+			} else if (parentNode instanceof IfStmt && childNode instanceof Expression) {
+				((IfStmt) parentNode).setThenStmt(new ExpressionStmt((Expression) childNode));
 			}
 
 			else {
-				throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName()
-						+ ". Child node is of type " + jpNode.getClass().getSimpleName());
+				throw new UnsupportedOperationException(
+						"Parent node is of type " + parentNode.getClass().getSimpleName() + ". Child node is of type "
+								+ childNode.getClass().getSimpleName());
 			}
 
 		}
@@ -447,9 +489,9 @@ public class JavaWriterUtil {
 			CompilationUnit cuOpt = p.findCompilationUnit().get();
 			if (!attributes.getName().isEmpty()) {
 				/*
-				 * If name is not empty, then given attributes can construct a valid import
+				 * If name is not empty, then the given attributes can construct a valid import
 				 * declaration. If the name is empty, it was the import node with meta info
-				 * number of children.
+				 * about the number of children.
 				 */
 				cuOpt.addImport(
 						new ImportDeclaration(attributes.getName(), attributes.isStatic(), attributes.isAsteriks()));
@@ -468,15 +510,12 @@ public class JavaWriterUtil {
 	private void processBound(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
 			throws UnsupportedOperationException {
 		if (p instanceof TypeParameter) {
-			// Cast p to type parameter for easier reuse
-			TypeParameter tp = (TypeParameter) p;
-			// Get current bounds of p
-			NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound();
+			TypeParameter tp = (TypeParameter) p; // Cast for easier reuse
+			NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound(); // Get current bounds
 			// Add the bound to the current list of bounds
 			getTypeBound.add(new ClassOrInterfaceType().setName(attributes.getName())
 					.setAnnotations(attributes.getAnnotation()).setTypeArguments(attributes.getTypeParameterBound()));
-			// Set the new bound list
-			tp.setTypeBound(getTypeBound);
+			tp.setTypeBound(getTypeBound); // Save changes
 		} else {
 			// there is missing a case
 			throw new UnsupportedOperationException("Parent node is of type " + p.getClass().getSimpleName());
@@ -526,14 +565,14 @@ public class JavaWriterUtil {
 			com.github.javaparser.ast.Node p) throws UnsupportedOperationException {
 		ClassOrInterfaceDeclaration coid = new ClassOrInterfaceDeclaration(attributes.getModifier(),
 				attributes.isInterface(), attributes.getName());
-		// Extends a class?
 		if (!attributes.getSuperclass().isEmpty()) {
+			// coid extends another class
 			coid.addExtendedType(attributes.getSuperclass());
 		}
-		// Implemented types
+		// coid implements other class
 		coid.setImplementedTypes(attributes.getInterface());
-		// Add new node to parent node
 		if (p instanceof CompilationUnit) {
+			// Add new node to parent node
 			CompilationUnit cu = (CompilationUnit) p;
 			cu.addType(coid);
 
@@ -556,15 +595,14 @@ public class JavaWriterUtil {
 	 */
 	private AnnotationDeclaration createAnnotationDeclaration(JavaWriterAttributeCollector attributes,
 			com.github.javaparser.ast.Node p) {
-		// Declare the compilation unit
 		CompilationUnit cu;
 		if (p instanceof CompilationUnit) {
-			// Is the parent the compilation unit?
+			// Parent is compilation unit
 			cu = (CompilationUnit) p;
 		} else {
 			/*
-			 * Otherwise find the compilation unit and get it. There is always a compilation
-			 * unit.
+			 * Otherwise find the compilation unit and get it. There should always be a
+			 * compilation unit.
 			 */
 			cu = p.findCompilationUnit().get();
 		}
@@ -576,17 +614,22 @@ public class JavaWriterUtil {
 		Modifier.Keyword[] keywords = new Modifier.Keyword[attributes.getModifier().size()];
 		/*
 		 * Add the annotation declaration to the compilation unit, with its respective
-		 * attributes. This step creates a new annotation declaration.
+		 * attributes. This step creates a new annotation declaration and also returns
+		 * it.
 		 */
-		cu.addAnnotationDeclaration(attributes.getName(), attributes.getModifier().toArray(keywords));
-
-		// return the newly created annotation declaration
-		return cu.getAnnotationDeclarationByName(attributes.getName()).get();
+		return cu.addAnnotationDeclaration(attributes.getName(), attributes.getModifier().toArray(keywords));
 	}
 
-	private void processArgument(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p) {
+	/**
+	 * This method processes arguments and adds them to the parent.
+	 * 
+	 * @param attributes Attributes of the argument
+	 * @param p          Parent node, which owns the argument
+	 * @param n          Argument node
+	 */
+	private void processArgument(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p, Node n) {
 		if (p == null || attributes.getChildren() > 0) {
-			// Do nothing, e.g. parent of concrete arg was arg
+			// Do nothing, e.g. parent of concrete arg was arg with meta info
 		} else if (attributes.getType() != null && attributes.getName() != null) {
 			// Parameter with type and name and eventually modifiers, e.g. method decl
 			((NodeWithParameters) p).addParameter(
@@ -597,18 +640,23 @@ public class JavaWriterUtil {
 		} else if (attributes.getValue() != null) {
 			// Some arguments have no name but a value instead
 			((NodeWithArguments) p).addArgument(attributes.getValue());
+
 		} else if (attributes.getChildren() == 0) {
-			// TODO check if this is dead code
 			/*
-			 * for (Node nChild : n.getChildren()) { com.github.javaparser.ast.Node jpChild
-			 * = visitWriter(nChild, null);
-			 * 
-			 * if (p instanceof NodeWithArguments && jpChild instanceof Expression) {
-			 * ((NodeWithArguments) p).addArgument((Expression) jpChild); } else { throw new
-			 * UnsupportedOperationException("p is " + p.getClass().getSimpleName() +
-			 * " and jpChild is " + jpChild.getClass().getSimpleName()); } }
+			 * There could be cases where an argument is defined by it's children. The
+			 * conversion is done in this step. As jpNode isn't set, the children don't need
+			 * to be removed.
 			 */
+			for (Node nChild : n.getChildren()) {
+				com.github.javaparser.ast.Node jpChild = visitWriter(nChild, null);
+
+				if (p instanceof NodeWithArguments && jpChild instanceof Expression) {
+					((NodeWithArguments) p).addArgument((Expression) jpChild);
+				} else {
+					throw new UnsupportedOperationException("p is " + p.getClass().getSimpleName() + " and jpChild is "
+							+ jpChild.getClass().getSimpleName());
+				}
+			}
 		}
 	}
-
 }
