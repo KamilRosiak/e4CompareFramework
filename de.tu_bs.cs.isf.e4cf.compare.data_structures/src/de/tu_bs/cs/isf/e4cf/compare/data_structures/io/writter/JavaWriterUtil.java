@@ -72,8 +72,7 @@ public class JavaWriterUtil {
 			jpNode = createAnnotationDeclaration(attributes, p);
 		} else if (isOfType(n, AnnotationMemberDeclaration.class)) {
 			jpNode = new AnnotationMemberDeclaration(attributes.getModifier(), attributes.getAnnotation(),
-					attributes.getType(), new SimpleName(attributes.getName()),
-					attributes.getValue());
+					attributes.getType(), new SimpleName(attributes.getName()), attributes.getValue());
 		} else if (isOfType(n, JavaNodeTypes.Argument)) {
 			processArgument(attributes, p);
 		} else if (isOfType(n, ArrayAccessExpr.class)) {
@@ -124,9 +123,7 @@ public class JavaWriterUtil {
 			}
 			jpNode = obj;
 		} else if (isOfType(n, CastExpr.class)) {
-			CastExpr obj = new CastExpr();
-			obj.setType(attributes.getType());
-			jpNode = obj;
+			jpNode = new CastExpr().setType(attributes.getType());
 		} else if (isOfType(n, CatchClause.class)) {
 			jpNode = new CatchClause();
 		} else if (isOfType(n, CharLiteralExpr.class)) {
@@ -139,12 +136,8 @@ public class JavaWriterUtil {
 			jpNode = new ConditionalExpr(attributes.getCondition().getFirst().get(), attributes.getThen(),
 					attributes.getElse());
 		} else if (isOfType(n, ConstructorDeclaration.class)) {
-			// TODO fill constructor params
-			ConstructorDeclaration obj = new ConstructorDeclaration();
-			obj.setModifiers(attributes.getModifier());
-			obj.setName(attributes.getName());
-			obj.setAnnotations(attributes.getAnnotation());
-			jpNode = obj;
+			jpNode = new ConstructorDeclaration().setModifiers(attributes.getModifier()).setName(attributes.getName())
+					.setAnnotations(attributes.getAnnotation());
 		} else if (isOfType(n, ContinueStmt.class)) {
 			ContinueStmt obj = new ContinueStmt();
 			/*
@@ -158,9 +151,7 @@ public class JavaWriterUtil {
 			}
 			jpNode = obj;
 		} else if (isOfType(n, DoStmt.class)) {
-			DoStmt obj = new DoStmt();
-			obj.setCondition(attributes.getCondition().getFirst().get());
-			jpNode = obj;
+			jpNode = new DoStmt().setCondition(attributes.getCondition().getFirst().get());
 		} else if (isOfType(n, DoubleLiteralExpr.class)) {
 			jpNode = new DoubleLiteralExpr(attributes.getValue().toString());
 		} else if (isOfType(n, JavaNodeTypes.Else)) {
@@ -197,12 +188,9 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, FieldAccessExpr.class)) {
 			jpNode = new FieldAccessExpr();
 		} else if (isOfType(n, FieldDeclaration.class)) {
-			FieldDeclaration fd = new FieldDeclaration();
-			fd.setModifiers(attributes.getModifier());
-
-			VariableDeclarator vd = new VariableDeclarator();
-			vd.setType(attributes.getType());
-			vd.setName(attributes.getName());
+			FieldDeclaration fd = new FieldDeclaration().setModifiers(attributes.getModifier());
+			VariableDeclarator vd = new VariableDeclarator().setType(attributes.getType())
+					.setName(attributes.getName());
 			if (!attributes.getInitilization().isEmpty()) {
 				vd.setInitializer(attributes.getInitilization().getFirst().get());
 			}
@@ -210,17 +198,11 @@ public class JavaWriterUtil {
 			fd.addVariable(vd);
 			jpNode = fd;
 		} else if (isOfType(n, ForEachStmt.class)) {
-			ForEachStmt obj = new ForEachStmt();
-			obj.setIterable(attributes.getIterator());
-			obj.setVariable(new VariableDeclarationExpr(attributes.getType(),
-					attributes.getInitilization().getFirst().get().toString()));
-			jpNode = obj;
+			jpNode = new ForEachStmt().setIterable(attributes.getIterator()).setVariable(new VariableDeclarationExpr(
+					attributes.getType(), attributes.getInitilization().getFirst().get().toString()));
 		} else if (isOfType(n, ForStmt.class)) {
-			ForStmt obj = new ForStmt();
-			obj.setInitialization(attributes.getInitilization());
-			obj.setCompare(attributes.getComparison());
-			obj.setUpdate(attributes.getUpdate());
-			jpNode = obj;
+			jpNode = new ForStmt().setInitialization(attributes.getInitilization())
+					.setCompare(attributes.getComparison()).setUpdate(attributes.getUpdate());
 		} else if (isOfType(n, IfStmt.class)) {
 			// Just add the first if stmt, the logic is in THEN and ELSE.
 			jpNode = new IfStmt();
@@ -256,8 +238,9 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, MethodCallExpr.class)) {
 			jpNode = new MethodCallExpr(attributes.getScope(), attributes.getName());
 		} else if (isOfType(n, MethodDeclaration.class)) {
-			jpNode = new MethodDeclaration(attributes.getModifier(), attributes.getName(),
-					attributes.getReturnType(), new NodeList<Parameter>()).setThrownExceptions(attributes.getThrows()).setAnnotations(attributes.getAnnotation());
+			jpNode = new MethodDeclaration(attributes.getModifier(), attributes.getName(), attributes.getReturnType(),
+					new NodeList<Parameter>()).setThrownExceptions(attributes.getThrows())
+							.setAnnotations(attributes.getAnnotation());
 		} else if (isOfType(n, MethodReferenceExpr.class)) {
 			jpNode = new MethodReferenceExpr();
 		} else if (isOfType(n, NameExpr.class)) {
@@ -270,13 +253,10 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ObjectCreationExpr.class)) {
 			jpNode = new ObjectCreationExpr();
 		} else if (isOfType(n, Parameter.class)) {
-			Parameter obj = new Parameter();
+			Parameter obj = new Parameter(new UnknownType(), attributes.getName());
 			if (attributes.getType() != null) {
 				obj.setType(attributes.getType());
-			} else {
-				obj.setType(new UnknownType());
 			}
-			obj.setName(attributes.getName());
 			jpNode = obj;
 		} else if (isOfType(n, PrimitiveType.class)) {
 			jpNode = new PrimitiveType();
@@ -285,15 +265,13 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ReturnStmt.class)) {
 			jpNode = new ReturnStmt(attributes.getValue());
 		} else if (isOfType(n, SingleMemberAnnotationExpr.class)) {
-			jpNode = new SingleMemberAnnotationExpr(new Name(attributes.getName()),
-					attributes.getValue());
+			jpNode = new SingleMemberAnnotationExpr(new Name(attributes.getName()), attributes.getValue());
 		} else if (isOfType(n, StringLiteralExpr.class)) {
 			jpNode = new StringLiteralExpr();
 		} else if (isOfType(n, SuperExpr.class)) {
 			jpNode = new SuperExpr();
 		} else if (isOfType(n, SwitchEntry.class)) {
-			SwitchEntry obj = new SwitchEntry();
-			obj.setType(SwitchEntry.Type.valueOf(attributes.getType().toString()));
+			SwitchEntry obj = new SwitchEntry().setType(SwitchEntry.Type.valueOf(attributes.getType().toString()));
 			if (!attributes.isDefault()) {
 				obj.setLabels(attributes.getCondition());
 			}
@@ -329,11 +307,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, TypeExpr.class)) {
 			jpNode = new TypeExpr();
 		} else if (isOfType(n, TypeParameter.class)) {
-			TypeParameter obj = new TypeParameter(attributes.getName());
-			if (attributes.getAnnotation().isNonEmpty()) {
-				obj.setAnnotations(attributes.getAnnotation());
-			}
-			jpNode = obj;
+			jpNode = new TypeParameter(attributes.getName()).setAnnotations(attributes.getAnnotation());
 		} else if (isOfType(n, UnaryExpr.class)) {
 			jpNode = new UnaryExpr(attributes.getExpression(), UnaryExpr.Operator.valueOf(attributes.getOperator()));
 		} else if (isOfType(n, UnionType.class)) {
@@ -391,9 +365,10 @@ public class JavaWriterUtil {
 
 	private void setParent(com.github.javaparser.ast.Node p, com.github.javaparser.ast.Node jpNode)
 			throws UnsupportedOperationException {
-		if (p instanceof com.github.javaparser.ast.Node && jpNode instanceof com.github.javaparser.ast.Node && !p.equals(jpNode)) {
+		if (p instanceof com.github.javaparser.ast.Node && jpNode instanceof com.github.javaparser.ast.Node
+				&& !p.equals(jpNode)) {
 			jpNode.setParentNode(p);
-			
+
 			if (p instanceof CompilationUnit) {
 				// If p instanceof CompilationUnit -> handled in e4cf Node CompilationUnit If
 			} else if (p instanceof TypeDeclaration && jpNode instanceof BodyDeclaration) {
@@ -497,16 +472,9 @@ public class JavaWriterUtil {
 			TypeParameter tp = (TypeParameter) p;
 			// Get current bounds of p
 			NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound();
-			// Create a new bound
-			ClassOrInterfaceType bound = new ClassOrInterfaceType();
-			// Set the name
-			bound.setName(attributes.getName());
-			// Set the annotations
-			bound.setAnnotations(attributes.getAnnotation());
-			// Set the generics of the bound (bound of bound :-))
-			bound.setTypeArguments(attributes.getTypeParameterBound());
 			// Add the bound to the current list of bounds
-			getTypeBound.add(bound);
+			getTypeBound.add(new ClassOrInterfaceType().setName(attributes.getName())
+					.setAnnotations(attributes.getAnnotation()).setTypeArguments(attributes.getTypeParameterBound()));
 			// Set the new bound list
 			tp.setTypeBound(getTypeBound);
 		} else {
@@ -621,9 +589,8 @@ public class JavaWriterUtil {
 			// Do nothing, e.g. parent of concrete arg was arg
 		} else if (attributes.getType() != null && attributes.getName() != null) {
 			// Parameter with type and name and eventually modifiers, e.g. method decl
-			Parameter param = new Parameter(attributes.getType(), attributes.getName());
-			param.setModifiers(attributes.getModifier());
-			((NodeWithParameters) p).addParameter(param);
+			((NodeWithParameters) p).addParameter(
+					new Parameter(attributes.getType(), attributes.getName()).setModifiers(attributes.getModifier()));
 		} else if (!attributes.getName().isEmpty()) {
 			// Argument without type but name, e.g. method call expr
 			((NodeWithArguments) p).addArgument(attributes.getName());
