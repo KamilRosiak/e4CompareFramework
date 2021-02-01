@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import com.github.javaparser.ast.visitor.*;
 import com.github.javaparser.ast.body.*;
@@ -34,7 +35,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	private void visitor(com.github.javaparser.ast.Node n, Node arg) {
 		if (n.getComment().isPresent()) {
-			JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Comment, n.getComment().get().getContent());
+			arg.addAttribute(JavaAttributesTypes.Comment.name(), n.getComment().get().getContent());
 		}
 		n.getChildNodes().forEach(c -> c.accept(this, arg));
 	}
@@ -62,12 +63,12 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(CompilationUnit n, Node arg) {
-		Node cu = JavaVisitorUtil.createNode(n, arg);
+		Node cu = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Imports
-		Node imports = JavaVisitorUtil.createNode(JavaNodeTypes.Import, cu);
+		Node imports = new NodeImpl(JavaNodeTypes.Import.name(), cu);
 		int importSize = n.getImports().size();
-		JavaVisitorUtil.addAttribute(imports, JavaAttributesTypes.Children, String.valueOf(importSize));
+		imports.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(importSize));
 		for (int i = 0; i < importSize; i++) {
 			ImportDeclaration c = n.getImport(0);
 			visit(c, imports);
@@ -112,30 +113,30 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(MethodDeclaration n, Node arg) {
-		Node p = JavaVisitorUtil.createNode(n, arg);
+		Node p = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Throws
 		for (int i = n.getThrownExceptions().size(); i > 0; i--) {
 			ReferenceType referenceType = n.getThrownException(0);
-			JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Throws, referenceType.asString());
+			p.addAttribute(JavaAttributesTypes.Throws.name(), referenceType.asString());
 			referenceType.removeForced();
 		}
 
 		// Arguments
-		Node args = JavaVisitorUtil.createNode(JavaNodeTypes.Argument, p);
+		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), p);
 		int argList = n.getParameters().size();
-		JavaVisitorUtil.addAttribute(args, JavaAttributesTypes.Children, String.valueOf(argList));
+		args.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(argList));
 		for (int i = 0; i < argList; i++) {
 			Parameter concreteParameter = n.getParameter(0);
-			Node argNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Argument, i, args);
-			JavaVisitorUtil.addAttribute(argNode, JavaAttributesTypes.Type, concreteParameter.getTypeAsString());
-			JavaVisitorUtil.addAttribute(argNode, JavaAttributesTypes.Name, concreteParameter.getNameAsString());
+			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
+			argNode.addAttribute(JavaAttributesTypes.Type.name(), concreteParameter.getTypeAsString());
+			argNode.addAttribute(JavaAttributesTypes.Name.name(), concreteParameter.getNameAsString());
 			concreteParameter.getModifiers().forEach(modif -> modif.accept(this, argNode));
 			concreteParameter.removeForced();
 		}
 
 		// Return type
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.ReturnType, n.getTypeAsString());
+		p.addAttribute(JavaAttributesTypes.ReturnType.name(), n.getTypeAsString());
 
 		/*
 		 * Return type cannot be removed, so just ignore it, but visit all other
@@ -160,7 +161,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(Modifier n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Modifier, n.getKeyword().name());
+		arg.addAttribute(JavaAttributesTypes.Modifier.name(), n.getKeyword().name());
 	}
 
 	/**
@@ -180,7 +181,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(SimpleName n, Node arg) {
 		if (!(n.getParentNode().get() instanceof ClassOrInterfaceDeclaration)) {
-			JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Name, n.toString());
+			arg.addAttribute(JavaAttributesTypes.Name.name(), n.toString());
 		}
 	}
 
@@ -219,17 +220,17 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	public void visit(ClassOrInterfaceDeclaration n, Node arg) {
 		Node classOrInterfaceDeclarationNode = arg;
 		if (!n.getParentNode().isPresent() || !(n.getParentNode().get() instanceof CompilationUnit)) {
-			classOrInterfaceDeclarationNode = JavaVisitorUtil
-					.createNode(n.isInterface() ? JavaNodeTypes.Interface : JavaNodeTypes.Class, arg);
+			classOrInterfaceDeclarationNode = new NodeImpl(
+					n.isInterface() ? JavaNodeTypes.Interface.name() : JavaNodeTypes.Class.name(), arg);
 		}
 
 		// Class or Interface?
-		JavaVisitorUtil.addAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.IsInterface,
+		classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.IsInterface.name(),
 				String.valueOf(n.isInterface()));
 
 		// Name
 		SimpleName simpleName = n.getName();
-		JavaVisitorUtil.addAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Name, simpleName.asString());
+		classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Name.name(), simpleName.asString());
 		// simpleName.removeForced(); // SimpleName is unremovable -> Solution cf.
 		// visit(SimpleName,Node)
 
@@ -237,7 +238,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		if (n.getExtendedTypes().size() > 0) {
 			// Only a single class can be inherited!
 			ClassOrInterfaceType superclass = n.getExtendedTypes(0);
-			JavaVisitorUtil.addAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Superclass,
+			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Superclass.name(),
 					superclass.getNameAsString());
 			superclass.removeForced();
 		}
@@ -247,7 +248,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		for (int i = 0; i < interfaceSize; i++) {
 			// Multiple classes can be implemented
 			ClassOrInterfaceType implemented = n.getImplementedTypes(0);
-			JavaVisitorUtil.addAttribute(classOrInterfaceDeclarationNode, JavaAttributesTypes.Interface,
+			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Interface.name(),
 					implemented.getNameAsString());
 			implemented.removeForced();
 		}
@@ -281,7 +282,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(AnnotationDeclaration n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -297,7 +298,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -311,7 +312,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ArrayAccessExpr n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -326,7 +327,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ArrayCreationExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
@@ -340,7 +341,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ArrayCreationLevel n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -356,7 +357,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ArrayInitializerExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
@@ -371,7 +372,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ArrayType n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Type, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Type.name(), n.toString());
 	}
 
 	/**
@@ -388,10 +389,10 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(AssertStmt n, Node arg) {
-		Node parent = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(parent, JavaAttributesTypes.Check, n.getCheck().toString());
+		Node parent = new NodeImpl(n.getClass().getSimpleName(), arg);
+		parent.addAttribute(JavaAttributesTypes.Check.name(), n.getCheck().toString());
 		if (n.getMessage().isPresent()) {
-			JavaVisitorUtil.addAttribute(parent, JavaAttributesTypes.Message, n.getMessage().get().toString());
+			parent.addAttribute(JavaAttributesTypes.Message.name(), n.getMessage().get().toString());
 		}
 	}
 
@@ -414,10 +415,10 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(AssignExpr n, Node arg) {
-		Node assignment = JavaVisitorUtil.createNode(JavaNodeTypes.Assignment, arg);
-		JavaVisitorUtil.addAttribute(assignment, JavaAttributesTypes.Target, n.getTarget().toString());
-		JavaVisitorUtil.addAttribute(assignment, JavaAttributesTypes.Value, n.getValue().toString());
-		JavaVisitorUtil.addAttribute(assignment, JavaAttributesTypes.Operator, n.getOperator().name());
+		Node assignment = new NodeImpl(JavaNodeTypes.Assignment.name(), arg);
+		assignment.addAttribute(JavaAttributesTypes.Target.name(), n.getTarget().toString());
+		assignment.addAttribute(JavaAttributesTypes.Value.name(), n.getValue().toString());
+		assignment.addAttribute(JavaAttributesTypes.Operator.name(), n.getOperator().name());
 	}
 
 	/**
@@ -432,7 +433,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(BinaryExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
@@ -447,7 +448,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(BlockStmt n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(JavaNodeTypes.Body, arg));
+		visitor(n, new NodeImpl(JavaNodeTypes.Body.name(), arg));
 	}
 
 	/**
@@ -462,7 +463,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(BooleanLiteralExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
@@ -478,9 +479,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(BreakStmt n, Node arg) {
-		Node breakNode = JavaVisitorUtil.createNode(JavaNodeTypes.Break, arg);
+		Node breakNode = new NodeImpl(JavaNodeTypes.Break.name(), arg);
 		if (n.getLabel().isPresent()) {
-			JavaVisitorUtil.addAttribute(breakNode, JavaAttributesTypes.Target, n.getLabel().get().toString());
+			breakNode.addAttribute(JavaAttributesTypes.Target.name(), n.getLabel().get().toString());
 		}
 	}
 
@@ -497,8 +498,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(CastExpr n, Node arg) {
-		Node node = JavaVisitorUtil.createNode(JavaNodeTypes.Cast, arg);
-		JavaVisitorUtil.addAttribute(node, JavaAttributesTypes.Type, n.getTypeAsString());
+		Node node = new NodeImpl(JavaNodeTypes.Cast.name(), arg);
+		node.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
 		n.getExpression().accept(this, node);
 	}
 
@@ -514,7 +515,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(CatchClause n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -529,15 +530,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(CharLiteralExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
 	 * creates a new node of type {@link ClassExpr} and adds the class expr as a
 	 * string as attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/ClassExpr.html">JavaParser
 	 *      Docs - ClassExpr</a>
@@ -546,7 +545,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ClassExpr n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
@@ -564,10 +563,10 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ConditionalExpr n, Node arg) {
-		Node p = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Condition, n.getCondition().toString());
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Then, n.getThenExpr().toString());
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Else, n.getElseExpr().toString());
+		Node p = new NodeImpl(n.getClass().getSimpleName(), arg);
+		p.addAttribute(JavaAttributesTypes.Condition.name(), n.getCondition().toString());
+		p.addAttribute(JavaAttributesTypes.Then.name(), n.getThenExpr().toString());
+		p.addAttribute(JavaAttributesTypes.Else.name(), n.getElseExpr().toString());
 	}
 
 	/**
@@ -582,7 +581,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(PackageDeclaration n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Package, n.getNameAsString());
+		arg.addAttribute(JavaAttributesTypes.Package.name(), n.getNameAsString());
 	}
 
 	/**
@@ -602,10 +601,10 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ImportDeclaration n, Node arg) {
-		Node leaf = JavaVisitorUtil.createNode(JavaNodeTypes.Import, arg);
-		JavaVisitorUtil.addAttribute(leaf, JavaAttributesTypes.Asterisks, String.valueOf(n.isAsterisk()));
-		JavaVisitorUtil.addAttribute(leaf, JavaAttributesTypes.Static, String.valueOf(n.isStatic()));
-		JavaVisitorUtil.addAttribute(leaf, JavaAttributesTypes.Name, String.valueOf(n.getName()));
+		Node leaf = new NodeImpl(JavaNodeTypes.Import.name(), arg);
+		leaf.addAttribute(JavaAttributesTypes.Asterisks.name(), String.valueOf(n.isAsterisk()));
+		leaf.addAttribute(JavaAttributesTypes.Static.name(), String.valueOf(n.isStatic()));
+		leaf.addAttribute(JavaAttributesTypes.Name.name(), String.valueOf(n.getName()));
 	}
 
 	/**
@@ -621,8 +620,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(FieldAccessExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Scope, n.getScope().toString());
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
+		arg.addAttribute(JavaAttributesTypes.Scope.name(), n.getScope().toString());
+		arg.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
 	}
 
 	/**
@@ -637,7 +636,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(FieldDeclaration n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -652,7 +651,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(LambdaExpr n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -668,7 +667,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(LocalClassDeclarationStmt n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -683,7 +682,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(LongLiteralExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
@@ -699,7 +698,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(MarkerAnnotationExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Annotation, n.getNameAsString());
+		arg.addAttribute(JavaAttributesTypes.Annotation.name(), n.getNameAsString());
 	}
 
 	/**
@@ -716,9 +715,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(MemberValuePair n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Key, n.getNameAsString());
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Value, n.getValue().toString());
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaAttributesTypes.Key.name(), n.getNameAsString());
+		c.addAttribute(JavaAttributesTypes.Value.name(), n.getValue().toString());
 	}
 
 	/**
@@ -744,30 +743,30 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(MethodCallExpr n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Scope
 		if (n.getScope().isPresent()) {
-			JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Scope, n.getScope().get().toString());
+			c.addAttribute(JavaAttributesTypes.Scope.name(), n.getScope().get().toString());
 		}
 
 		// TypeArguments
 		if (n.getTypeArguments().isPresent()) {
 			for (Type typeArgumentExpr : n.getTypeArguments().get()) {
-				JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.TypeArgument, typeArgumentExpr.toString());
+				c.addAttribute(JavaAttributesTypes.TypeArgument.name(), typeArgumentExpr.toString());
 			}
 		}
 
 		// Name
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
+		c.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
 
 		// Arguments
-		Node args = JavaVisitorUtil.createNode(JavaNodeTypes.Argument, c);
+		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), c);
 		int argSize = n.getArguments().size();
-		JavaVisitorUtil.addAttribute(args, JavaAttributesTypes.Children, String.valueOf(argSize));
+		args.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(argSize));
 		for (int i = 0; i < argSize; i++) {
 			Expression argumentExpr = n.getArgument(i);
-			Node argNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Argument, i, args);
+			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
 			argumentExpr.accept(this, argNode);
 		}
 	}
@@ -792,18 +791,18 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(MethodReferenceExpr n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Identifier
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Identifier, n.getIdentifier());
+		c.addAttribute(JavaAttributesTypes.Identifier.name(), n.getIdentifier());
 
 		// Scope
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Scope, n.getScope().toString());
+		c.addAttribute(JavaAttributesTypes.Scope.name(), n.getScope().toString());
 
 		// Type
 		if (n.getTypeArguments().isPresent()) {
 			n.getTypeArguments().get()
-					.forEach(typeArg -> JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Type, typeArg.toString()));
+					.forEach(typeArg -> c.addAttribute(JavaAttributesTypes.Type.name(), typeArg.toString()));
 		}
 
 	}
@@ -820,7 +819,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(Name n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Name, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Name.name(), n.toString());
 	}
 
 	/**
@@ -835,7 +834,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(NameExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
+		arg.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
 	}
 
 	/**
@@ -851,7 +850,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(NormalAnnotationExpr n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -866,7 +865,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(NullLiteralExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
@@ -894,22 +893,22 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ObjectCreationExpr n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Type
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
+		c.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
 
 		// Arguments
-		Node arguments = JavaVisitorUtil.createNode(JavaNodeTypes.Argument, c);
-		JavaVisitorUtil.addAttribute(arguments, JavaAttributesTypes.Children, String.valueOf(n.getArguments().size()));
+		Node arguments = new NodeImpl(JavaNodeTypes.Argument.name(), c);
+		arguments.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(n.getArguments().size()));
 		for (int i = 0; i < n.getArguments().size(); i++) {
-			Node argNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Argument, i, arguments);
+			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, arguments);
 			n.getArgument(i).accept(this, argNode);
 		}
 
 		// Anonymous Class Body
 		if (n.getAnonymousClassBody().isPresent()) {
-			Node anonClassBody = JavaVisitorUtil.createNode(JavaNodeTypes.Body, c);
+			Node anonClassBody = new NodeImpl(JavaNodeTypes.Body.name(), c);
 			n.getAnonymousClassBody().get().forEach(decl -> decl.accept(this, anonClassBody));
 		}
 	}
@@ -929,11 +928,11 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(Parameter n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 		if (!n.getTypeAsString().isEmpty()) {
-			JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Type, n.getTypeAsString());
+			c.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
 		}
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
+		c.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
 	}
 
 	/**
@@ -948,7 +947,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(PrimitiveType n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Type, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Type.name(), n.toString());
 	}
 
 	/**
@@ -965,8 +964,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ReceiverParameter n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Type, n.getType().toString());
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaAttributesTypes.Type.name(), n.getType().toString());
 		visitor(n, c);
 	}
 
@@ -982,8 +981,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ReturnStmt n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
-		n.getExpression().ifPresent(expr -> JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Value, expr.toString()));
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		n.getExpression().ifPresent(expr -> c.addAttribute(JavaAttributesTypes.Value.name(), expr.toString()));
 	}
 
 	/**
@@ -1001,9 +1000,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(SingleMemberAnnotationExpr n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Name, n.getNameAsString());
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Value, n.getMemberValue().toString());
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
+		c.addAttribute(JavaAttributesTypes.Value.name(), n.getMemberValue().toString());
 	}
 
 	/**
@@ -1018,7 +1017,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(StringLiteralExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
@@ -1033,7 +1032,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(SuperExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.SuperExpr, n.toString());
+		arg.addAttribute(JavaAttributesTypes.SuperExpr.name(), n.toString());
 	}
 
 	/**
@@ -1058,17 +1057,16 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(SwitchEntry n, Node arg) {
-		Node parent = JavaVisitorUtil.createNode(n, arg);
+		Node parent = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Label
-		n.getLabels().forEach(
-				label -> JavaVisitorUtil.addAttribute(parent, JavaAttributesTypes.Condition, label.toString()));
+		n.getLabels().forEach(label -> parent.addAttribute(JavaAttributesTypes.Condition.name(), label.toString()));
 		if (n.getLabels().size() == 0) {
-			JavaVisitorUtil.addAttribute(parent, JavaAttributesTypes.Default, String.valueOf(true));
+			parent.addAttribute(JavaAttributesTypes.Default.name(), String.valueOf(true));
 		}
 
 		// Type
-		JavaVisitorUtil.addAttribute(parent, JavaAttributesTypes.Type, n.getType().name());
+		parent.addAttribute(JavaAttributesTypes.Type.name(), n.getType().name());
 
 		// Statements
 		n.getStatements().forEach(stmt -> stmt.accept(this, parent));
@@ -1090,8 +1088,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(SwitchExpr n, Node arg) {
-		Node parent = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(parent, JavaAttributesTypes.Selector, n.getSelector().toString());
+		Node parent = new NodeImpl(n.getClass().getSimpleName(), arg);
+		parent.addAttribute(JavaAttributesTypes.Selector.name(), n.getSelector().toString());
 		n.getEntries().forEach(entry -> entry.accept(this, parent));
 	}
 
@@ -1111,8 +1109,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(SwitchStmt n, Node arg) {
-		Node parent = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(parent, JavaAttributesTypes.Selector, n.getSelector().toString());
+		Node parent = new NodeImpl(n.getClass().getSimpleName(), arg);
+		parent.addAttribute(JavaAttributesTypes.Selector.name(), n.getSelector().toString());
 		n.getEntries().forEach(entry -> entry.accept(this, parent));
 	}
 
@@ -1133,8 +1131,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(SynchronizedStmt n, Node arg) {
-		Node sync = JavaVisitorUtil.createNode(JavaNodeTypes.Synchronized, arg);
-		JavaVisitorUtil.addAttribute(sync, JavaAttributesTypes.Expression, n.getExpression().toString());
+		Node sync = new NodeImpl(JavaNodeTypes.Synchronized.name(), arg);
+		sync.addAttribute(JavaAttributesTypes.Expression.name(), n.getExpression().toString());
 		n.getBody().accept(this, sync);
 	}
 
@@ -1142,8 +1140,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * Creates a new node of type {@link TextLiteralExpr} and adds the text literal
 	 * expr as a string as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/TextBlockLiteralExpr.html">JavaParser
 	 *      Docs - TextBlockLiteralExpr</a>
@@ -1153,15 +1149,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(TextBlockLiteralExpr n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
 	 * Creates a new node of type {@link ThisExpr} and adds the this expr as a
 	 * string as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/ThisExpr.html">JavaParser
 	 *      Docs - ThisExpr</a>
@@ -1170,15 +1164,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ThisExpr n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
 	 * Creates a new node of type {@link ThrowStmt} and adds the throw statement as
 	 * a string as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/ThrowStmt.html">JavaParser
 	 *      Docs - ThrowStmt</a>
@@ -1187,7 +1179,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ThrowStmt n, Node arg) {
-		JavaVisitorUtil.addAttribute(JavaVisitorUtil.createNode(n, arg), JavaAttributesTypes.Statement, n.toString());
+		Node throwStmt = new NodeImpl(n.getClass().getSimpleName(), arg);
+		throwStmt.addAttribute(JavaAttributesTypes.Statement.name(), n.toString());
 	}
 
 	/**
@@ -1202,15 +1195,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(TryStmt n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
 	 * Creates a new node of type {@link TypeExpr} and adds the type expression as a
 	 * string as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/TypeExpr.html">JavaParser
 	 *      Docs - TypeExpr</a>
@@ -1219,7 +1210,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(TypeExpr n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
@@ -1247,25 +1238,26 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(TypeParameter n, Node arg) {
-		Node p = JavaVisitorUtil.createNode(n, arg);
+		Node p = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Name
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Name, n.getNameAsString());
+		p.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
 
 		// Annotations
 		for (AnnotationExpr annotationExpr : n.getAnnotations()) {
-			JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Annotation, annotationExpr.getNameAsString());
+			p.addAttribute(JavaAttributesTypes.Annotation.name(), annotationExpr.getNameAsString());
 		}
 
 		// Bounds
 		int boundCounter = 0;
 		for (ClassOrInterfaceType bound : n.getTypeBound()) {
-			Node boundNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Bound, boundCounter++, p);
+			Node boundNode = new NodeImpl(JavaNodeTypes.Bound.name() + boundCounter++, p);
 			bound.getAnnotations().forEach(ad -> ad.accept(this, boundNode));
 			bound.getName().accept(this, boundNode);
-			bound.getTypeArguments().ifPresent(args -> args.forEach(targ -> JavaVisitorUtil.addAttribute(boundNode, JavaAttributesTypes.TypeParameterBound, targ.toString())));
+			bound.getTypeArguments().ifPresent(args -> args.forEach(
+					targ -> boundNode.addAttribute(JavaAttributesTypes.TypeParameterBound.name(), targ.toString())));
 		}
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Bound, String.valueOf(n.getTypeBound().size()));
+		p.addAttribute(JavaAttributesTypes.Bound.name(), String.valueOf(n.getTypeBound().size()));
 	}
 
 	/**
@@ -1276,8 +1268,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * operation is saved.
 	 * 
 	 * @see com.github.javaparser.ast.expr.UnaryExpr.Operator
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/UnaryExpr.html">JavaParser
 	 *      Docs - UnaryExpr</a>
@@ -1286,9 +1276,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(UnaryExpr n, Node arg) {
-		Node unaryExprNode = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(unaryExprNode, JavaAttributesTypes.Expression, n.getExpression().toString());
-		JavaVisitorUtil.addAttribute(unaryExprNode, JavaAttributesTypes.Operator, n.getOperator().name());
+		Node unaryExprNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		unaryExprNode.addAttribute(JavaAttributesTypes.Expression.name(), n.getExpression().toString());
+		unaryExprNode.addAttribute(JavaAttributesTypes.Operator.name(), n.getOperator().name());
 	}
 
 	/**
@@ -1304,17 +1294,14 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(UnionType n, Node arg) {
-		Node unionTypeNode = JavaVisitorUtil.createNode(n, arg);
-		n.getElements().forEach(
-				elem -> JavaVisitorUtil.addAttribute(unionTypeNode, JavaAttributesTypes.Type, elem.toString()));
+		Node unionTypeNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		n.getElements().forEach(elem -> unionTypeNode.addAttribute(JavaAttributesTypes.Type.name(), elem.toString()));
 	}
 
 	/**
 	 * Creates a new node of type {@link UnknownType} and adds the unknown type as a
 	 * string as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/UnknownType.html">JavaParser
 	 *      Docs - UnknownType</a>
@@ -1323,15 +1310,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(UnknownType n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
 	 * Creates a new node of type {@link UnparsableStmt} and adds the unparsable
 	 * statement as a string as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/UnparsableStmt.html">JavaParser
 	 *      Docs - UnparsableStmt</a>
@@ -1340,7 +1325,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(UnparsableStmt n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
@@ -1359,7 +1344,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	public void visit(VariableDeclarationExpr n, Node arg) {
 		for (int childNodeCounter = 0; childNodeCounter < n.getChildNodes().size(); childNodeCounter++) {
 			com.github.javaparser.ast.Node child = n.getChildNodes().get(childNodeCounter);
-			Node childNode = JavaVisitorUtil.createNode(child, arg);
+			Node childNode = new NodeImpl(child.getClass().getSimpleName(), arg);
 			n.getChildNodes().get(childNodeCounter).accept(this, childNode);
 		}
 	}
@@ -1382,14 +1367,14 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(VariableDeclarator n, Node arg) {
 		// Type
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Type, n.getTypeAsString());
+		arg.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
 
 		// Name
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Name, n.getNameAsString());
+		arg.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
 
 		// Initializer
 		if (n.getInitializer().isPresent()) {
-			JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Initilization, n.getInitializer().get().toString());
+			arg.addAttribute(JavaAttributesTypes.Initilization.name(), n.getInitializer().get().toString());
 		}
 	}
 
@@ -1397,8 +1382,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * Creates a new node of type {@link VarType} and adds the var type as a string
 	 * as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/VarType.html">JavaParser
 	 *      Docs - VarType</a>
@@ -1407,7 +1390,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(VarType n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
@@ -1424,14 +1407,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(VoidType n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
 	}
 
 	/**
 	 * Creates a new node of type {@link WhileStmt} and visits all children of the
 	 * while statement.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/WhileStmt.html">JavaParser
 	 *      Docs - WhileStmt</a>
@@ -1440,15 +1422,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(WhileStmt n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
 	 * Creates a new node of type {@link WildcardType} and adds the wildcard type as
 	 * a string as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/WildcardType.html">JavaParser
 	 *      Docs - WildcardType</a>
@@ -1457,14 +1437,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(WildcardType n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
 	 * Creates a new node of type {@link YieldStmt} and visits all children of the
 	 * yield statement.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/YieldStmt.html">JavaParser
 	 *      Docs - YieldStmt</a>
@@ -1473,14 +1452,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(YieldStmt n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
 	 * Creates a new node of type {@link ConstructorDeclaration} and visits all
 	 * children of the constructor declaration.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/ConstructorDeclaration.html">JavaParser
 	 *      Docs - ConstructorDeclaration</a>
@@ -1490,7 +1468,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ConstructorDeclaration n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -1506,9 +1484,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ContinueStmt n, Node arg) {
-		Node continueNode = JavaVisitorUtil.createNode(JavaNodeTypes.Continue, arg);
+		Node continueNode = new NodeImpl(JavaNodeTypes.Continue.name(), arg);
 		if (n.getLabel().isPresent()) {
-			JavaVisitorUtil.addAttribute(continueNode, JavaAttributesTypes.Target, n.getLabel().get().toString());
+			continueNode.addAttribute(JavaAttributesTypes.Target.name(), n.getLabel().get().toString());
 		}
 	}
 
@@ -1516,7 +1494,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * Creates a new node of type {@link DoStmt} and visits all children of the do
 	 * stmt.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/DoStmt.html">JavaParser
 	 *      Docs - DoStmt</a>
@@ -1525,8 +1502,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(DoStmt n, Node arg) {
-		Node doNode = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(doNode, JavaAttributesTypes.Condition, n.getCondition().toString());
+		Node doNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		doNode.addAttribute(JavaAttributesTypes.Condition.name(), n.getCondition().toString());
 		n.getCondition().removeForced();
 		visitor(n, doNode);
 
@@ -1536,8 +1513,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * Creates a new node of type {@link EmptyStmt} and adds the empty statement as
 	 * a string as an attribute {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/EmptyStmt.html">JavaParser
 	 *      Docs - EmptyStmt</a>
@@ -1546,7 +1521,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(EmptyStmt n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
@@ -1554,8 +1529,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * literal expression as a string as an attribute
 	 * {@link JavaAttributesTypes#Value}.
 	 * 
-	 * @see JavaVisitorUtil#createNodeWithValue(com.github.javaparser.ast.Node,
-	 *      Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/DoubleLiteralExpr.html">JavaParser
 	 *      Docs - DoubleLiteralExpr</a>
@@ -1564,14 +1537,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(DoubleLiteralExpr n, Node arg) {
-		JavaVisitorUtil.createNodeWithValue(n, arg);
+		createNodeWithValue(n, arg);
 	}
 
 	/**
 	 * Creates a new node of type {@link EnclosedExpr} and visits all children of
 	 * the enclosed expression.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/EnclosedExpr.html">JavaParser
 	 *      Docs - EnclosedExpr</a>
@@ -1580,14 +1552,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(EnclosedExpr n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
 	 * Creates a new node of type {@link EnumConstantDeclaration} and visits all
 	 * children of the enum constant declaration.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumConstantDeclaration.html">JavaParser
 	 *      Docs - EnumConstantDeclaration</a>
@@ -1597,14 +1568,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(EnumConstantDeclaration n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
 	 * Creates a new node of type {@link EnumDeclaration} and visits all children of
 	 * the enum declaration.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumDeclaration.html">JavaParser
 	 *      Docs - EnumDeclaration</a>
@@ -1614,7 +1584,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(EnumDeclaration n, Node arg) {
 
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -1640,22 +1610,22 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ExplicitConstructorInvocationStmt n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// TypeArguments
 		if (n.getTypeArguments().isPresent()) {
 			for (Type typeArgumentExpr : n.getTypeArguments().get()) {
-				JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.TypeArgument, typeArgumentExpr.toString());
+				c.addAttribute(JavaAttributesTypes.TypeArgument.name(), typeArgumentExpr.toString());
 			}
 		}
 
 		// Arguments
-		Node args = JavaVisitorUtil.createNode(JavaNodeTypes.Argument, c);
+		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), c);
 		int argSize = n.getArguments().size();
-		JavaVisitorUtil.addAttribute(args, JavaAttributesTypes.Children, String.valueOf(argSize));
+		args.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(argSize));
 		for (int i = 0; i < argSize; i++) {
 			Expression argumentExpr = n.getArgument(0);
-			Node argNode = JavaVisitorUtil.createNodeWithIndex(JavaNodeTypes.Argument, i, args);
+			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
 			argumentExpr.accept(this, argNode);
 		}
 	}
@@ -1682,14 +1652,14 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ForEachStmt n, Node arg) {
-		Node p = JavaVisitorUtil.createNode(n, arg);
+		Node p = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Iterator
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Iterator, n.getIterable().toString());
+		p.addAttribute(JavaAttributesTypes.Iterator.name(), n.getIterable().toString());
 
 		// Initilization
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Initilization, n.getVariableDeclarator().getNameAsString());
-		JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Type, n.getVariableDeclarator().getTypeAsString());
+		p.addAttribute(JavaAttributesTypes.Initilization.name(), n.getVariableDeclarator().getNameAsString());
+		p.addAttribute(JavaAttributesTypes.Type.name(), n.getVariableDeclarator().getTypeAsString());
 
 		// Block
 		n.getBody().accept(this, p);
@@ -1722,11 +1692,11 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ForStmt n, Node arg) {
-		Node p = JavaVisitorUtil.createNode(n, arg);
+		Node p = new NodeImpl(n.getClass().getSimpleName(), arg);
 
 		// Comparison
 		if (n.getCompare().isPresent()) {
-			JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Comparison, n.getCompare().get().toString());
+			p.addAttribute(JavaAttributesTypes.Comparison.name(), n.getCompare().get().toString());
 		}
 		n.removeCompare(); // rm bc visited
 
@@ -1734,7 +1704,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		int initializations = n.getInitialization().size();
 		for (int i = 0; i < initializations; i++) {
 			Expression initExpr = n.getInitialization().get(0);
-			JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Initilization, initExpr.toString());
+			p.addAttribute(JavaAttributesTypes.Initilization.name(), initExpr.toString());
 			initExpr.removeForced();
 		}
 
@@ -1742,7 +1712,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		int updates = n.getUpdate().size();
 		for (int i = 0; i < updates; i++) {
 			Expression updateExpr = n.getUpdate().get(0);
-			JavaVisitorUtil.addAttribute(p, JavaAttributesTypes.Update, updateExpr.toString());
+			p.addAttribute(JavaAttributesTypes.Update.name(), updateExpr.toString());
 			updateExpr.removeForced();
 		}
 
@@ -1764,7 +1734,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(IfStmt n, Node arg) {
-		Node p = JavaVisitorUtil.createNode(n, arg);
+		Node p = new NodeImpl(n.getClass().getSimpleName(), arg);
 		this.visitIfStmt(n, p);
 	}
 
@@ -1787,8 +1757,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	private void visitIfStmt(IfStmt n, Node arg) {
 		// Fall through
 		Statement thenStmt = n.getThenStmt();
-		Node thenNode = JavaVisitorUtil.createNode(JavaNodeTypes.Then, arg);
-		JavaVisitorUtil.addAttribute(thenNode, JavaAttributesTypes.Condition, n.getCondition().toString());
+		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), arg);
+		thenNode.addAttribute(JavaAttributesTypes.Condition.name(), n.getCondition().toString());
 		thenStmt.accept(this, thenNode);
 		n.remove(thenStmt);
 
@@ -1798,7 +1768,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 			if (elseStmt instanceof IfStmt) {
 				visitIfStmt((IfStmt) elseStmt, arg);
 			} else {
-				Node elseNode = JavaVisitorUtil.createNode(JavaNodeTypes.Else, arg);
+				Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), arg);
 				elseStmt.accept(this, elseNode);
 			}
 		}
@@ -1808,7 +1778,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * Creates a new node of type {@link InitializerDeclaration} and visits all
 	 * children of the initializer declaration.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/decl/InitializerDeclaration.html">JavaParser
 	 *      Docs - InitializerDeclaration</a>
@@ -1818,7 +1787,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(InitializerDeclaration n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -1837,9 +1806,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(InstanceOfExpr n, Node arg) {
-		Node c = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Type, n.getType().toString());
-		JavaVisitorUtil.addAttribute(c, JavaAttributesTypes.Expression, n.getExpression().toString());
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaAttributesTypes.Type.name(), n.getType().toString());
+		c.addAttribute(JavaAttributesTypes.Expression.name(), n.getExpression().toString());
 	}
 
 	/**
@@ -1854,7 +1823,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(IntegerLiteralExpr n, Node arg) {
-		JavaVisitorUtil.addAttribute(arg, JavaAttributesTypes.Value, n.asNumber().toString());
+		arg.addAttribute(JavaAttributesTypes.Value.name(), n.asNumber().toString());
 
 	}
 
@@ -1862,7 +1831,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * Creates a new node of type {@link IntersectionType} and visits all children
 	 * of the intersection type.
 	 * 
-	 * @see JavaVisitorUtil#createNode(com.github.javaparser.ast.Node,Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/IntersectionType.html">JavaParser
 	 *      Docs - IntersectionType</a>
@@ -1871,7 +1839,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(IntersectionType n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
 	}
 
 	/**
@@ -1880,7 +1848,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * The content of the comment ({@link Comment#getContent()} is saved in an
 	 * attributes {@link JavaAttributesTypes#Comment}.
 	 * 
-	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/LineComment.html">JavaParser
 	 *      Docs - LineComment</a>
@@ -1889,8 +1856,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(LineComment n, Node arg) {
-		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.LineComment, arg);
-		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
+		Node com = new NodeImpl(JavaNodeTypes.LineComment.name(), arg);
+		com.addAttribute(JavaAttributesTypes.Comment.name(), n.getContent());
 	}
 
 	/**
@@ -1899,7 +1866,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * The content of the comment ({@link Comment#getContent()} is saved in an
 	 * attributes {@link JavaAttributesTypes#Comment}.
 	 * 
-	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/BlockComment.html">JavaParser
 	 *      Docs - BlockComment</a>
@@ -1908,8 +1874,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(BlockComment n, Node arg) {
-		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.BlockComment, arg);
-		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
+		Node com = new NodeImpl(JavaNodeTypes.BlockComment.name(), arg);
+		com.addAttribute(JavaAttributesTypes.Comment.name(), n.getContent());
 	}
 
 	/**
@@ -1918,7 +1884,6 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * The content of the comment ({@link Comment#getContent()} is saved in an
 	 * attributes {@link JavaAttributesTypes#Comment}.
 	 * 
-	 * @see JavaVisitorUtil#createNode(JavaNodeTypes, Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/JavadocComment.html">JavaParser
 	 *      Docs - JavadocComment</a>
@@ -1927,8 +1892,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(JavadocComment n, Node arg) {
-		Node com = JavaVisitorUtil.createNode(JavaNodeTypes.JavadocComment, arg);
-		JavaVisitorUtil.addAttribute(com, JavaAttributesTypes.Comment, n.getContent());
+		Node com = new NodeImpl(JavaNodeTypes.JavadocComment.name(), arg);
+		com.addAttribute(JavaAttributesTypes.Comment.name(), n.getContent());
 	}
 
 	@Override
@@ -1988,5 +1953,21 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	public void visit(PatternExpr n, Node arg) {
 		// TODO Auto-generated method stub
 		visitor(n, arg);
+	}
+
+	/**
+	 * Creates a new node with attribute key "Value" (of type
+	 * {@link JavaAttributesTypes} as string) and n converted to string as a value.
+	 * <p>
+	 * The new node has the simple name of the specific class of the JP Node as
+	 * type.
+	 * 
+	 * @param n   JavaParser Node
+	 * @param arg Parent Node
+	 */
+	private Node createNodeWithValue(com.github.javaparser.ast.Node n, Node arg) {
+		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
+		c.addAttribute(JavaAttributesTypes.Value.name(), n.toString());
+		return c;
 	}
 }
