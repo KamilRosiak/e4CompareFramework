@@ -50,16 +50,7 @@ public class JavaReader extends AbstractArtifactReader {
 			JavaVisitor visitor = new JavaVisitor();
 			visitor.visit(cu, rootNode);
 			tree = new TreeImpl(fileName, rootNode);
-
-			// Remove these lines after debug
-			System.out.print("\n\n--- JAVA PARSER AST BEGIN ---\n\n");
-			System.out.print(new DotPrinter(true).output(cu).replace("\n", "\\n"));
-			System.out.print("\n\n--- JAVA PARSER AST END ---\n\n");
-			System.out.print("\n\n--- FRAMEWORK TREE BEGIN ---\n\n");
-			System.out.println(TreeConverter.treeToDot(tree));
-			System.out.print("\n\n--- FRAMEWORK TREE END ---\n\n");
 		}
-
 		return tree;
 	}
 }

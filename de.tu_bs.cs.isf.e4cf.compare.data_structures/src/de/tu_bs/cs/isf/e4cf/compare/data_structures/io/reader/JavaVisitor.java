@@ -1287,7 +1287,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(UnaryExpr n, Node arg) {
 		Node unaryExprNode = JavaVisitorUtil.createNode(n, arg);
-		JavaVisitorUtil.addAttribute(unaryExprNode, JavaAttributesTypes.Name, n.getExpression().toString());
+		JavaVisitorUtil.addAttribute(unaryExprNode, JavaAttributesTypes.Expression, n.getExpression().toString());
 		JavaVisitorUtil.addAttribute(unaryExprNode, JavaAttributesTypes.Operator, n.getOperator().name());
 	}
 
@@ -1525,7 +1525,10 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(DoStmt n, Node arg) {
-		visitor(n, JavaVisitorUtil.createNode(n, arg));
+		Node doNode = JavaVisitorUtil.createNode(n, arg);
+		JavaVisitorUtil.addAttribute(doNode, JavaAttributesTypes.Condition, n.getCondition().toString());
+		n.getCondition().removeForced();
+		visitor(n, doNode);
 
 	}
 
