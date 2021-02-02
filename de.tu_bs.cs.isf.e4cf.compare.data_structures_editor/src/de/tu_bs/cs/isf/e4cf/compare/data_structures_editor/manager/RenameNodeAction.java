@@ -9,23 +9,15 @@ public class RenameNodeAction implements UndoAction {
 
 	private String name;
 	private String nodeName;
-	private Attribute attribute;
 	private TreeView<AbstractNode> treeView;
 	private TreeItem<AbstractNode> treeItem;
 
-	public RenameNodeAction(String name, String nodeName, Attribute attribute, TreeView<AbstractNode> treeView,
-			AbstractNode treeItem) {
+	public RenameNodeAction(String name, String nodeName, TreeView<AbstractNode> treeView, AbstractNode treeItem) {
 		this.name = name;
 		this.nodeName = nodeName;
-		this.attribute = attribute;
 		this.treeView = treeView;
 		this.treeItem = new TreeItem<AbstractNode>(treeItem);
 
-	}
-
-	@Override
-	public void execute() {
-		System.out.println("Executing Action 1");
 	}
 
 	@Override
@@ -38,7 +30,7 @@ public class RenameNodeAction implements UndoAction {
 				break;
 			}
 		}
-		treeItem.getValue().addAttribute("name", nodeName.toString());
+		treeItem.getValue().addAttribute("name", nodeName);
 		treeView.refresh();
 	}
 }

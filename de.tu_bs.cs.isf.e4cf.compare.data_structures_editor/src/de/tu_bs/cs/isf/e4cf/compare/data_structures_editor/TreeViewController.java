@@ -12,8 +12,10 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.AddAttributeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.AddChildNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DeleteNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.RenameNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
@@ -119,6 +121,8 @@ public class TreeViewController {
 	}
 
 	void deleteNode() {
+		TreeManager.execute(new DeleteNodeAction("deleteNode", treeView.getSelectionModel().getSelectedItem(),
+				treeView.getSelectionModel().getSelectedItem().getParent()));
 		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
 				.remove(treeView.getSelectionModel().getSelectedItem());
 		displayTotalNodeAmount();
@@ -138,6 +142,10 @@ public class TreeViewController {
 
 	@FXML
 	void addNodeAttribute() {
+		List<Attribute> attributeList = new ArrayList<Attribute>();
+		attributeList.addAll(treeView.getSelectionModel().getSelectedItem().getValue().getAttributes());
+		TreeItem<AbstractNode> treeItem = treeView.getSelectionModel().getSelectedItem();
+		TreeManager.execute(new AddAttributeAction("addAttribute", treeItem.getValue(), attributeList));
 		String attrName = TreeViewUtilities.getInput("Enter attribute name");
 		if (attrName != null) {
 			String attrValue = TreeViewUtilities.getInput("Enter attribute value");
@@ -206,10 +214,9 @@ public class TreeViewController {
 	 */
 	@FXML
 	void renameNode() {
-		Attribute atr = null;
-		// String prevName =
-		// treeView.getSelectionModel().getSelectedItem().getValue().getAttributeForKey("name").toString();
-		// System.out.println(treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().toString());
+		String prevName = treeView.getSelectionModel().getSelectedItem().getValue().getAttributeForKey("name")
+				.getAttributeValues().toString();
+		prevName = prevName.substring(1, prevName.length() - 1);
 		if (treeView.getSelectionModel().getSelectedItems().size() > 1) {
 			TreeViewUtilities
 					.informationAlert("Multiple items selected. Rename can only be applied to one item at a time");
@@ -220,13 +227,10 @@ public class TreeViewController {
 				for (Attribute attribute : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
 					if (attribute.getAttributeKey().toLowerCase().equals("name")) {
 						attribute.getAttributeValues().clear();
-						atr = attribute;
 					}
-				} // atm noch hardcoded, bessere Version steht oben, funktioniert aber noch nicht
-				TreeManager.execute(new RenameNodeAction("renameNode",
-						treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().get(0)
-								.getAttributeValues().toString(),
-						atr, treeView, treeView.getSelectionModel().getSelectedItem().getValue()));
+				}
+				TreeManager.execute(new RenameNodeAction("renameNode", prevName, treeView,
+						treeView.getSelectionModel().getSelectedItem().getValue()));
 				addAttribute("name", newName);
 				treeView.refresh();
 				services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
@@ -243,8 +247,9 @@ public class TreeViewController {
 
 	@FXML
 	void extractToFile() {
-		if(treeView.getSelectionModel().getSelectedItems().contains(treeView.getRoot())) {
-			if(!TreeViewUtilities.confirmationAlert("Root is selected.\nIn that case the whole treeview gets extracted.\nDo you want to continue?")) {
+		if (treeView.getSelectionModel().getSelectedItems().contains(treeView.getRoot())) {
+			if (!TreeViewUtilities.confirmationAlert(
+					"Root is selected.\nIn that case the whole treeview gets extracted.\nDo you want to continue?")) {
 				return;
 			}
 		}
@@ -259,7 +264,7 @@ public class TreeViewController {
 			extractList.addAll(treeView.getSelectionModel().getSelectedItems());
 			file = TreeViewUtilities.writeToFile(extractList, file);
 			collapseSelectedItems();
-			
+
 		}
 	}
 
@@ -285,7 +290,8 @@ public class TreeViewController {
 	@FXML
 	void saveFile() {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + TreeViewUtilities.treeName);
-		List<TreeItem<AbstractNode>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>());
+		List<TreeItem<AbstractNode>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(),
+				new ArrayList<TreeItem<AbstractNode>>());
 		listWithoutRoot.remove(0);
 		file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
 	}
@@ -294,11 +300,12 @@ public class TreeViewController {
 	void saveAs() {
 		String fileName = TreeViewUtilities.getInput("Please enter desired file name");
 		if (fileName != null) {
-			if(!(fileName.length() > 3 && fileName.substring(fileName.length() - 4).equals(".txt"))) {
+			if (!(fileName.length() > 3 && fileName.substring(fileName.length() - 4).equals(".txt"))) {
 				fileName += ".txt";
 			}
 			File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + fileName);
-			List<TreeItem<AbstractNode>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>());
+			List<TreeItem<AbstractNode>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(),
+					new ArrayList<TreeItem<AbstractNode>>());
 			listWithoutRoot.remove(0);
 			file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
 		}
@@ -307,11 +314,6 @@ public class TreeViewController {
 	@FXML
 	void undoAction() {
 		TreeManager.undo();
-	}
-
-	@FXML
-	void redoAction() {
-		System.out.println("REDO");
 	}
 
 	/**

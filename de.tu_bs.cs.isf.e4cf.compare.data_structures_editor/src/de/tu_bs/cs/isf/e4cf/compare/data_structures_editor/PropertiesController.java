@@ -31,6 +31,8 @@ public class PropertiesController {
 	@FXML
 	private TableView<Attribute> propertiesTable;
 
+	// CommandManager TreeManager = new CommandManager();
+
 	/**
 	 * 
 	 * @param bool
@@ -52,7 +54,7 @@ public class PropertiesController {
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
 	}
-	
+
 	private void refreshGUI() {
 		services.eventBroker.send(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT, true);
 		services.eventBroker.send(DataStructuresEditorST.REOPEN_ITEM_EVENT, true);
@@ -74,31 +76,33 @@ public class PropertiesController {
 
 	@FXML
 	public void editNodeValue() {
+		// String a = getSelectedItem().getAttributeValues().toString();
 		String s = PropertiesViewUtilities.getInput("Please enter new Value");
-		if(s != null) {
+		if (s != null) {
 			getSelectedItem().getAttributeValues().clear();
 			getSelectedItem().getAttributeValues().add(s);
 			refreshGUI();
 		}
+		// TreeManager.execute(new PropertiesAction("properties", a,s));
 	}
 
 	@FXML
 	public void removeNodeAttribute() {
 		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
-			services.eventBroker.send(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem().getAttributeKey().toString());
+			services.eventBroker.send(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT,
+					getSelectedItem().getAttributeKey().toString());
 			refreshGUI();
 		}
-		
+
 	}
 
 	@FXML
 	public void AddNodeValue() {
 		String s = PropertiesViewUtilities.getInput("Please enter another Value");
-		if(s != null) {
+		if (s != null) {
 			getSelectedItem().getAttributeValues().add(s);
 			refreshGUI();
 		}
 	}
 
-	
 }

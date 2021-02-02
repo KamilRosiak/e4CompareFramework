@@ -17,11 +17,6 @@ public class AddChildNodeAction implements UndoAction {
 	}
 
 	@Override
-	public void execute() {
-		System.out.println("Executing Action 1");
-	}
-
-	@Override
 	public void undo() {
 		treeView.getSelectionModel().clearSelection();
 		treeView.getSelectionModel().select(childNode);

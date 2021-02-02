@@ -26,7 +26,6 @@
         <Menu mnemonicParsing="false" text="Edit">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#undoAction" text="Undo" />
-            <MenuItem mnemonicParsing="false" onAction="#redoAction" text="Redo" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#selectAllNodes" text="Select All" />
             <MenuItem mnemonicParsing="false" onAction="#unselectAllNodes" text="Unselect All" />
@@ -44,7 +43,7 @@
 				<MenuItem mnemonicParsing="false" onAction="#addNodeAttribute" text="Add Attribute" />
 				<MenuItem mnemonicParsing="false" onAction="#addChildNode" text="Add Child" />
 				<MenuItem mnemonicParsing="false" onAction="#expandSelectedItems" text="Expand selected Items" />
-				<MenuItem mnemonicParsing="false" onAction="#collapseSelectedItems" text="Collaps selected Items" />
+				<MenuItem mnemonicParsing="false" onAction="#collapseSelectedItems" text="Collapse selected Items" />
 				<MenuItem mnemonicParsing="false" onAction="#copyNode" text="Copy" />
 				<MenuItem mnemonicParsing="false" onAction="#pasteNode" text="Paste" />
                 <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />

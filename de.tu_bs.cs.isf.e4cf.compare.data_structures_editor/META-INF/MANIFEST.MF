@@ -14,7 +14,9 @@ Require-Bundle: org.eclipse.e4.ui.di,
  org.eclipse.e4.core.di.annotations;bundle-version="1.6.600",
  org.eclipse.e4.ui.workbench,
  de.tu_bs.cs.isf.e4cf.core,
- de.tu_bs.cs.isf.e4cf.graph.model
+ de.tu_bs.cs.isf.e4cf.graph.model,
+ org.eclipse.ui.ide,
+ org.eclipse.core.resources
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.data.structures.editor.singleton.true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
