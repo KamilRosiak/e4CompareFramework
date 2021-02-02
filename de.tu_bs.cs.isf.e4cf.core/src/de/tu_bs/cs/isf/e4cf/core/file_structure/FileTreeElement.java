@@ -13,41 +13,41 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.util.TreeVisitor;
 
 public interface FileTreeElement {
 
-	FileTreeElement delete(DeleteOperation deleteOp) throws IOException;
+    FileTreeElement delete(DeleteOperation deleteOp) throws IOException;
 
-	FileTreeElement create(CreateOperation createOp) throws IOException;
+    FileTreeElement create(CreateOperation createOp) throws IOException;
 
-	void copy(CopyOperation copyOp);
+    void copy(CopyOperation copyOp);
 
-	void move(MoveOperation moveOp) throws IOException;
+    void move(MoveOperation moveOp) throws IOException;
 
-	void save(SaveOperation saveOp);
+    void save(SaveOperation saveOp);
 
-	<T> T getContent(LoadOperation<T> loadOp);
+    <T> T getContent(LoadOperation<T> loadOp);
 
-	public boolean equals(FileTreeElement element);
+    public boolean equals(FileTreeElement element);
 
-	public boolean isDirectory();
+    public boolean isDirectory();
 
-	public boolean exists();
+    public boolean exists();
 
-	public String getExtension();
+    public String getExtension();
 
-	public String getAbsolutePath();
+    public String getAbsolutePath();
 
-	public String getRelativePath();
+    public String getRelativePath();
 
-	public long getSize();
+    public long getSize();
 
-	FileTreeElement getParent();
+    FileTreeElement getParent();
 
-	void setParent(FileTreeElement parent);
+    void setParent(FileTreeElement parent);
 
-	List<FileTreeElement> getChildren();
+    List<FileTreeElement> getChildren();
 
-	void accept(TreeVisitor visitor);
+    void accept(TreeVisitor visitor);
 
-	void setDisplayLongPath(Boolean display);
+    void setDisplayLongPath(Boolean display);
 
-	String getFileName();
+    String getFileName();
 }

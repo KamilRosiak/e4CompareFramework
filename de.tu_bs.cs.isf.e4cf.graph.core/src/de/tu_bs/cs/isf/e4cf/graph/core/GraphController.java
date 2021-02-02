@@ -28,88 +28,86 @@ import javafx.scene.Scene;
 public class GraphController {
 
 	private static final double LAYOUT_CLUSTER_PADDING = 200.0;
-	
+
 	private HistoricizingDomain domain;
 	private ServiceContainer services;
-	
+
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services) {
 		this.services = services;
 		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
 		canvas.setScene(start());
 	}
-	
-    public Scene start() {
-        SimpleGraphMapModule module = new SimpleGraphMapModule();
-        // create domain using guice
-        this.domain = (HistoricizingDomain) Guice.createInjector(module).getInstance(IDomain.class);
-        // create viewers
-        Scene scene = hookViewers();
-        // activate domain
-        domain.activate();
-        // load contents
-        populateViewerContents();
-        
-        
-        
-        
-        return scene;
-    }
 
-    /**
-     * Returns the content viewer of the domain
-     *
-     * @return
-     */
-    private IViewer getContentViewer() {
-        return domain.getAdapter(AdapterKey.get(IViewer.class, IDomain.CONTENT_VIEWER_ROLE));
-    }
+	public Scene start() {
+		SimpleGraphMapModule module = new SimpleGraphMapModule();
+		// create domain using guice
+		this.domain = (HistoricizingDomain) Guice.createInjector(module).getInstance(IDomain.class);
+		// create viewers
+		Scene scene = hookViewers();
+		// activate domain
+		domain.activate();
+		// load contents
+		populateViewerContents();
 
-    /**
-     * Creating JavaFX widgets and set them to the stage.
-     */
-    private Scene hookViewers() {
-        Scene scene = new Scene(getContentViewer().getCanvas());
-        return scene;
-    }
+		return scene;
+	}
 
-    /**
-     * Creates the example mind map and sets it as content to the viewer.
-     */
-    private void populateViewerContents() {
-        SimpleGraphExampleFactory fac = new SimpleGraphExampleFactory();
+	/**
+	 * Returns the content viewer of the domain
+	 *
+	 * @return
+	 */
+	private IViewer getContentViewer() {
+		return domain.getAdapter(AdapterKey.get(IViewer.class, IDomain.CONTENT_VIEWER_ROLE));
+	}
 
-        SimpleGraph graph = fac.createComplexExample();
+	/**
+	 * Creating JavaFX widgets and set them to the stage.
+	 */
+	private Scene hookViewers() {
+		Scene scene = new Scene(getContentViewer().getCanvas());
+		return scene;
+	}
 
-        loadGraph(graph);
-    }
-    
-    private SimpleGraphPart getGraphPart() {
-    	IRootPart<?> rootPart = getContentViewer().getRootPart();
-    	for (IVisualPart<?> part : rootPart.getContentPartChildren()) {
-    		if (part instanceof SimpleGraphPart) {
+	/**
+	 * Creates the example mind map and sets it as content to the viewer.
+	 */
+	private void populateViewerContents() {
+		SimpleGraphExampleFactory fac = new SimpleGraphExampleFactory();
+
+		SimpleGraph graph = fac.createComplexExample();
+
+		loadGraph(graph);
+	}
+
+	private SimpleGraphPart getGraphPart() {
+		IRootPart<?> rootPart = getContentViewer().getRootPart();
+		for (IVisualPart<?> part : rootPart.getContentPartChildren()) {
+			if (part instanceof SimpleGraphPart) {
 				SimpleGraphPart graphPart = (SimpleGraphPart) part;
 				return graphPart;
 			}
-    	}
-    	return null;
-    }
-    
-	@Optional
-	@Inject 
-	public void loadGraph(@UIEventTopic(GraphEvents.LOAD_GRAPH_MODEL) SimpleGraph model) {
-        IViewer viewer = getContentViewer();
-        viewer.getContents().clear();
-        if (viewer.getAdapter(ServiceContainer.class) == null) viewer.setAdapter(services);
-        viewer.getContents().setAll(model);
-        
-        formatGraph();
+		}
+		return null;
 	}
 
 	@Optional
-	@Inject 
+	@Inject
+	public void loadGraph(@UIEventTopic(GraphEvents.LOAD_GRAPH_MODEL) SimpleGraph model) {
+		IViewer viewer = getContentViewer();
+		viewer.getContents().clear();
+		if (viewer.getAdapter(ServiceContainer.class) == null)
+			viewer.setAdapter(services);
+		viewer.getContents().setAll(model);
+
+		formatGraph();
+	}
+
+	@Optional
+	@Inject
 	public void formatGraph(@UIEventTopic(GraphEvents.LOAD_GRAPH_MODEL) Object obj) {
-		
+
 	}
 
 	private void formatGraph() {
