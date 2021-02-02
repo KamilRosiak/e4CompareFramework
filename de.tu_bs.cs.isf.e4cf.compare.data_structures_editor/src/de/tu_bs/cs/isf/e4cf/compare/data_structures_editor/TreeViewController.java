@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManage
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.RenameNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -61,7 +63,7 @@ public class TreeViewController {
 
 	private String currentSearchText;
 
-	public int searchCounter;
+	private int searchCounter;
 
 	private List<TreeItem<AbstractNode>> copyList = new ArrayList<TreeItem<AbstractNode>>();
 
@@ -241,13 +243,23 @@ public class TreeViewController {
 
 	@FXML
 	void extractToFile() {
+		if(treeView.getSelectionModel().getSelectedItems().contains(treeView.getRoot())) {
+			if(!TreeViewUtilities.confirmationAlert("Root is selected.\nIn that case the whole treeview gets extracted.\nDo you want to continue?")) {
+				return;
+			}
+		}
 		String fileName = TreeViewUtilities.getInput("Please enter desired file name");
 		if (fileName != null) {
+			if (fileName.length() <= 3 || !(fileName.substring(fileName.length() - 4).equals(".txt"))) {
+				fileName += ".txt";
+			}
+			File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + fileName);
 			List<TreeItem<AbstractNode>> extractList = new ArrayList<TreeItem<AbstractNode>>();
 			expandSelectedItems();
 			extractList.addAll(treeView.getSelectionModel().getSelectedItems());
-			TreeViewUtilities.extractTree(treeView, fileName, extractList);
+			file = TreeViewUtilities.writeToFile(extractList, file);
 			collapseSelectedItems();
+			
 		}
 	}
 
@@ -272,14 +284,23 @@ public class TreeViewController {
 
 	@FXML
 	void saveFile() {
-		TreeViewUtilities.serializesTree(treeView);
+		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + TreeViewUtilities.treeName);
+		List<TreeItem<AbstractNode>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>());
+		listWithoutRoot.remove(0);
+		file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
 	}
 
 	@FXML
 	void saveAs() {
 		String fileName = TreeViewUtilities.getInput("Please enter desired file name");
 		if (fileName != null) {
-			TreeViewUtilities.serializesTree(treeView, fileName);
+			if(!(fileName.length() > 3 && fileName.substring(fileName.length() - 4).equals(".txt"))) {
+				fileName += ".txt";
+			}
+			File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + fileName);
+			List<TreeItem<AbstractNode>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>());
+			listWithoutRoot.remove(0);
+			file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
 		}
 	}
 
@@ -394,6 +415,13 @@ public class TreeViewController {
 	}
 
 	@FXML
+	public void collapseSelectedItems() {
+		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+			ti.setExpanded(false);
+		}
+	}
+
+	@FXML
 	public void expandSelectedItems() {
 		// tempList necessary because we wanted to select all children, too
 		List<TreeItem<AbstractNode>> tempList = new ArrayList<TreeItem<AbstractNode>>();
@@ -403,13 +431,6 @@ public class TreeViewController {
 		for (TreeItem<AbstractNode> ti : tempList) {
 			ti.setExpanded(true);
 			treeView.getSelectionModel().select(ti);
-		}
-	}
-
-	@FXML
-	public void collapseSelectedItems() {
-		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
-			ti.setExpanded(false);
 		}
 	}
 }

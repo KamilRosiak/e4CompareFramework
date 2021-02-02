@@ -37,8 +37,6 @@ public final class TreeViewUtilities {
 
 	public static final Image rootImage = new Image("icons/rootSmall.png");
 
-	// private static int searchCounter = 0;
-
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
 	}
@@ -46,8 +44,8 @@ public final class TreeViewUtilities {
 	/**
 	 * Adds a nodes children to the respective TreeItem as children recursively
 	 * 
-	 * @param node
-	 * @param parent
+	 * @param node	trees root object in first method call
+	 * @param parent	treeViews root object in first method call 
 	 */
 	public static void fillTreeView(Node node, TreeItem<AbstractNode> parent) {
 		for (Node n : node.getChildren()) {
@@ -86,35 +84,28 @@ public final class TreeViewUtilities {
 
 	/**
 	 * 
-	 * @param treeView
-	 */
-	public static void serializesTree(TreeView<AbstractNode> treeView) {
-		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + treeName);
-		writeToFile(file, treeView);
-	}
-
-	/**
 	 * 
 	 * @param treeView
 	 * @param newFileName
 	 */
 	public static void serializesTree(TreeView<AbstractNode> treeView, String newFileName) {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
-		writeToFile(file, treeView);
+		List<TreeItem<AbstractNode>> listWithoutRoot = getSubTreeAsList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>());
+		listWithoutRoot.remove(0);
+		writeToFile(listWithoutRoot, file);
 	}
 
 	/**
+	 * Writes a given list of treeItems to a given file
 	 * 
-	 * @param treeView
-	 * @param newFileName
-	 * @param tempList
+	 * @param list	Should contain all items that should be written to file
+	 * @param file	Specifies the file to be written
+	 * @return	Built file or null in case of IOException
 	 */
-	public static void extractTree(TreeView<AbstractNode> treeView, String newFileName,
-			List<TreeItem<AbstractNode>> tempList) {
-		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
+	public static File writeToFile(List<TreeItem<AbstractNode>> list, File file) {
 		try {
 			FileWriter writer = new FileWriter(file);
-			for (TreeItem<AbstractNode> node : tempList) {
+			for (TreeItem<AbstractNode> node : list) {
 				if (node.getValue().getNodeType().equals("LINE")) {
 					continue;
 				}
@@ -122,36 +113,47 @@ public final class TreeViewUtilities {
 				writer.write("\n");
 			}
 			writer.close();
-			informationAlert(String.format("Tree %s successfully stored at %s", newFileName, file.getAbsolutePath()));
+			informationAlert(String.format("Tree %s successfully stored at %s", file.getName(), file.getAbsolutePath()));
+			return file;
 		} catch (IOException e) {
 			informationAlert(String.format(DataStructuresEditorST.EXCEPTION_MESSAGE, e));
+			return null;
 		}
 	}
 
+	/**
+	 * Builds a list recursively, which contains item, items children and all grandchildren
+	 *   
+	 * @param item	Start item from which the list should be built
+	 * @param subTreeList	Initially empty list to be filled	
+	 * @return	Built subTreeList
+	 */
 	public static List<TreeItem<AbstractNode>> getSubTreeAsList(TreeItem<AbstractNode> item,
-			List<TreeItem<AbstractNode>> tempList) {
-		tempList.add(item);
+			List<TreeItem<AbstractNode>> subTreeList) {
+		subTreeList.add(item);
 		for (TreeItem<AbstractNode> ti : item.getChildren()) {
 			if (!ti.isLeaf()) {
-				getSubTreeAsList(ti, tempList);
+				getSubTreeAsList(ti, subTreeList);
 			} else {
-				tempList.add(ti);
+				subTreeList.add(ti);
 			}
 		}
-		return tempList;
+		return subTreeList;
 	}
 
 	/**
 	 * Opens a TextInputDialog to get input from the user
 	 * 
-	 * @param displayedDialog String which specify the displayed dialog
-	 * @return User input
+	 * @param displayedDialog	String which specify the displayed dialog
+	 * @return User input as string or null in case of invalid input 
 	 */
 	public static String getInput(String displayedDialog) {
+		//Initialize textInputDialogWindow
 		TextInputDialog td = new TextInputDialog();
 		td.setHeaderText(displayedDialog);
 		td.setGraphic(null);
 		td.setTitle("Dialog");
+		//EventListener for cancel button - needed for clearing input in event of an abort
 		td.getDialogPane().lookupButton(ButtonType.CANCEL).addEventFilter(ActionEvent.ACTION,
 				event -> td.getEditor().setText(null));
 		Stage stage = (Stage) td.getDialogPane().getScene().getWindow();
@@ -163,6 +165,7 @@ public final class TreeViewUtilities {
 		stage.setAlwaysOnTop(true);
 		td.showAndWait();
 		String s = td.getEditor().getText();
+		//Checks for invalid input 
 		if (s.equals("") || s.equals(null)) {
 			if (confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
 				return null;
@@ -180,32 +183,10 @@ public final class TreeViewUtilities {
 	}
 
 	/**
+	 * Opens informative window to communicate with user
 	 * 
-	 * @param file
-	 * @param treeView
+	 * @param outputText	Text that should be displayed
 	 */
-	public static void writeToFile(File file, TreeView<AbstractNode> treeView) {
-		if (file.getName().equals(treeName)) {
-			file.delete();
-		}
-
-		try {
-			FileWriter writer = new FileWriter(file);
-			TreeItem<AbstractNode> rootItem = treeView.getRoot();
-			for (TreeItem<AbstractNode> node : rootItem.getChildren()) {
-				if (node.getValue().getNodeType().equals("LINE")) {
-					continue;
-				}
-				writer.write(node.getValue().toString());
-				writer.write("\n");
-			}
-			writer.close();
-			System.out.println("Tree: " + file.getAbsolutePath() + " stored.");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public static void informationAlert(String outputText) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setHeaderText(null);
@@ -214,6 +195,12 @@ public final class TreeViewUtilities {
 		alert.showAndWait();
 	}
 
+	/**
+	 * Opens dialog window to get a users confirmation for given action
+	 * 
+	 * @param outputText	Text that should be displayed
+	 * @return	true if user clicks ok, false otherwise
+	 */
 	public static boolean confirmationAlert(String outputText) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText(null);
