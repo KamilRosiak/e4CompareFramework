@@ -61,13 +61,13 @@ public class JavaWriterUtil {
 		 * conversion.
 		 */
 		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
-			jpNode =	new CompilationUnit(); 
+			jpNode = new CompilationUnit();
 		} else if (isOfType(n, CompilationUnit.class)) {
 			// Add package to CU created previously
 			if (p instanceof CompilationUnit && !attributes.getPackage().isEmpty()) {
 				((CompilationUnit) p).setPackageDeclaration(attributes.getPackage());
 			}
-			
+
 			/*
 			 * When the compilation unit is class or interface create a new class or
 			 * interface declaration. Otherwise it is an enum declaration.
@@ -424,9 +424,9 @@ public class JavaWriterUtil {
 			 * specifically.
 			 */
 			if (parentNode instanceof CompilationUnit && childNode instanceof TypeDeclaration) {
-				((CompilationUnit)parentNode).addType((TypeDeclaration) childNode);
+				((CompilationUnit) parentNode).addType((TypeDeclaration) childNode);
 			} else if (parentNode instanceof EnumDeclaration && childNode instanceof EnumConstantDeclaration) {
-				((EnumDeclaration)parentNode).addEntry((EnumConstantDeclaration) childNode);
+				((EnumDeclaration) parentNode).addEntry((EnumConstantDeclaration) childNode);
 			} else if (parentNode instanceof TypeDeclaration && childNode instanceof BodyDeclaration) {
 				((TypeDeclaration) parentNode).addMember((BodyDeclaration) childNode);
 			} else if (parentNode instanceof NodeWithAnnotations && childNode instanceof AnnotationExpr) {
@@ -439,7 +439,7 @@ public class JavaWriterUtil {
 				((NodeWithTypeParameters) parentNode).addTypeParameter((TypeParameter) childNode);
 			} else if (childNode instanceof Comment) {
 				parentNode.addOrphanComment((Comment) childNode);
-			}else if (parentNode instanceof CatchClause && childNode instanceof Parameter) {
+			} else if (parentNode instanceof CatchClause && childNode instanceof Parameter) {
 				((CatchClause) parentNode).setParameter((Parameter) childNode);
 			} else if (parentNode instanceof NodeWithBody && childNode instanceof Statement) {
 				((NodeWithBody) parentNode).setBody((Statement) childNode);
@@ -518,6 +518,9 @@ public class JavaWriterUtil {
 	/**
 	 * Adds a bound to a type parameter.
 	 * 
+	 * @implNote The new bound might get an additional empty diamond operators, but
+	 *           there are no semantical differences (e.g. <code>T</code> and
+	 *           <code>T<></code> are virtually identical).
 	 * @param attributes Attributes of the bound
 	 * @param p          Node with the bound
 	 * @throws UnsupportedOperationException When p is not a {@link TypeParameter},
