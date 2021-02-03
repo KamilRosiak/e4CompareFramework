@@ -61,9 +61,22 @@ public class JavaWriterUtil {
 		 * conversion.
 		 */
 		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
-			jpNode = new CompilationUnit();
+			jpNode =	new CompilationUnit(); 
 		} else if (isOfType(n, CompilationUnit.class)) {
-			jpNode = createClassOrInterfaceDeclaration(attributes, p);
+			// Add package to CU created previously
+			if (p instanceof CompilationUnit && !attributes.getPackage().isEmpty()) {
+				((CompilationUnit) p).setPackageDeclaration(attributes.getPackage());
+			}
+			
+			/*
+			 * When the compilation unit is class or interface create a new class or
+			 * interface declaration. Otherwise it is an enum declaration.
+			 */
+			if (!attributes.isEnum()) {
+				jpNode = createClassOrInterfaceDeclaration(attributes, p);
+			} else {
+				jpNode = new EnumDeclaration(attributes.getModifier(), attributes.getName());
+			}
 		} else if (isOfType(n, AnnotationDeclaration.class)) {
 			jpNode = createAnnotationDeclaration(attributes, p);
 		} else if (isOfType(n, AnnotationMemberDeclaration.class)) {
@@ -179,7 +192,7 @@ public class JavaWriterUtil {
 			 */
 			jpNode = new EnclosedExpr();
 		} else if (isOfType(n, EnumConstantDeclaration.class)) {
-			jpNode = new EnumConstantDeclaration();
+			jpNode = new EnumConstantDeclaration(attributes.getName());
 		} else if (isOfType(n, EnumDeclaration.class)) {
 			jpNode = new EnumDeclaration();
 		} else if (isOfType(n, ExplicitConstructorInvocationStmt.class)) {
@@ -407,10 +420,13 @@ public class JavaWriterUtil {
 			childNode.setParentNode(parentNode);
 
 			/*
-			 * The real magic is done here. Check their types and add the child specifically. 
+			 * The real magic is done here. Check their types and add the child
+			 * specifically.
 			 */
-			if (parentNode instanceof CompilationUnit) {
-				// If p instanceof CompilationUnit -> handled in e4cf Node CompilationUnit
+			if (parentNode instanceof CompilationUnit && childNode instanceof TypeDeclaration) {
+				((CompilationUnit)parentNode).addType((TypeDeclaration) childNode);
+			} else if (parentNode instanceof EnumDeclaration && childNode instanceof EnumConstantDeclaration) {
+				((EnumDeclaration)parentNode).addEntry((EnumConstantDeclaration) childNode);
 			} else if (parentNode instanceof TypeDeclaration && childNode instanceof BodyDeclaration) {
 				((TypeDeclaration) parentNode).addMember((BodyDeclaration) childNode);
 			} else if (parentNode instanceof NodeWithAnnotations && childNode instanceof AnnotationExpr) {
@@ -423,7 +439,7 @@ public class JavaWriterUtil {
 				((NodeWithTypeParameters) parentNode).addTypeParameter((TypeParameter) childNode);
 			} else if (childNode instanceof Comment) {
 				parentNode.addOrphanComment((Comment) childNode);
-			} else if (parentNode instanceof CatchClause && childNode instanceof Parameter) {
+			}else if (parentNode instanceof CatchClause && childNode instanceof Parameter) {
 				((CatchClause) parentNode).setParameter((Parameter) childNode);
 			} else if (parentNode instanceof NodeWithBody && childNode instanceof Statement) {
 				((NodeWithBody) parentNode).setBody((Statement) childNode);
@@ -571,17 +587,6 @@ public class JavaWriterUtil {
 		}
 		// coid implements other class
 		coid.setImplementedTypes(attributes.getInterface());
-		if (p instanceof CompilationUnit) {
-			// Add new node to parent node
-			CompilationUnit cu = (CompilationUnit) p;
-			cu.addType(coid);
-
-			// Set package of compilation unit
-			if (!attributes.getPackage().isEmpty()) {
-				cu.setPackageDeclaration(attributes.getPackage());
-			}
-		}
-
 		return coid;
 	}
 

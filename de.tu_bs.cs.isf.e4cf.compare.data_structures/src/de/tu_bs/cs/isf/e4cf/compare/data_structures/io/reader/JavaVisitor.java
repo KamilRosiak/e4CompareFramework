@@ -1572,8 +1572,12 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	}
 
 	/**
-	 * Creates a new node of type {@link EnumDeclaration} and visits all children of
-	 * the enum declaration.
+	 * If the parent node is the compilation unit an attribute
+	 * {@link JavaAttributesTypes#IsEnum} with value <code>true</true> is added to
+	 * the compilation unit. Otherwise, if the parent node is not the compilation
+	 * unit, then a new node of type {@link EnumDeclaration} is created.
+	 * <p>
+	 * Then all children of the enum declaration are visited.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/body/EnumDeclaration.html">JavaParser
@@ -1583,8 +1587,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(EnumDeclaration n, Node arg) {
-
-		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
+		Node enumNode = arg;
+		if (!n.getParentNode().isPresent() || !(n.getParentNode().get() instanceof CompilationUnit)) {
+			new NodeImpl(n.getClass().getSimpleName(), arg);
+		} else {
+			enumNode.addAttribute(JavaAttributesTypes.IsEnum.name(), String.valueOf(true));
+		}
+		visitor(n, enumNode);
 	}
 
 	/**

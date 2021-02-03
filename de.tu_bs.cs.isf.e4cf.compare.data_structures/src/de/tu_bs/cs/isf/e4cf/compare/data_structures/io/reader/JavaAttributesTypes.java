@@ -112,6 +112,10 @@ public enum JavaAttributesTypes {
 	 */
 	Interface,
 	/**
+	 * This attribute contains true if the compilation unit is an enum.
+	 */
+	IsEnum,
+	/**
 	 * This attribute contains meta information about the type of an class or
 	 * interface node.
 	 * 
