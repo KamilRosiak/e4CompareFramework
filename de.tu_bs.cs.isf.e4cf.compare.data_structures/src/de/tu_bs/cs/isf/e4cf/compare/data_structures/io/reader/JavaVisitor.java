@@ -34,9 +34,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * @param arg e4cf Parent Node
 	 */
 	private void visitor(com.github.javaparser.ast.Node n, Node arg) {
-		if (n.getComment().isPresent()) {
-			arg.addAttribute(JavaAttributesTypes.Comment.name(), n.getComment().get().getContent());
-		}
+		// Comments are no child nodes. Therefore they are added explicitly.
+		n.getComment().ifPresent(comment -> arg.addAttribute(JavaAttributesTypes.Comment.name(), comment.getContent()));
 		n.getChildNodes().forEach(c -> c.accept(this, arg));
 	}
 
@@ -137,6 +136,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 
 		// Return type
 		p.addAttribute(JavaAttributesTypes.ReturnType.name(), n.getTypeAsString());
+
+		// Comment must be added explicitly as comment isn't child node.
+		n.getComment().ifPresent(comment -> p.addAttribute(JavaAttributesTypes.Comment.name(), comment.getContent()));
 
 		/*
 		 * Return type cannot be removed, so just ignore it, but visit all other
