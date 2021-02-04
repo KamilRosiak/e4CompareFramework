@@ -1629,6 +1629,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	public void visit(ExplicitConstructorInvocationStmt n, Node arg) {
 		Node c = new NodeImpl(n.getClass().getSimpleName(), arg);
 
+		// This or super?
+		c.addAttribute(JavaAttributesTypes.IsThis.name(), String.valueOf(n.isThis()));
+		
 		// TypeArguments
 		if (n.getTypeArguments().isPresent()) {
 			for (Type typeArgumentExpr : n.getTypeArguments().get()) {
@@ -1641,7 +1644,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		int argSize = n.getArguments().size();
 		args.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(argSize));
 		for (int i = 0; i < argSize; i++) {
-			Expression argumentExpr = n.getArgument(0);
+			Expression argumentExpr = n.getArgument(i);
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
 			argumentExpr.accept(this, argNode);
 		}

@@ -38,6 +38,7 @@ public class JavaWriterAttributeCollector {
 	private NodeList<ClassOrInterfaceType> _interface = new NodeList<ClassOrInterfaceType>();
 	private boolean _isEnum = false;
 	private boolean _isinterface = false;
+	private boolean _isThis = true;
 	private Expression _iterator = null;
 	private String _key = new String();
 	private Expression _message = null;
@@ -130,6 +131,8 @@ public class JavaWriterAttributeCollector {
 				_isEnum = Boolean.valueOf(singleVal);
 			} else if (key.equals(JavaAttributesTypes.IsInterface.name())) {
 				_isinterface = Boolean.valueOf(singleVal);
+			} else if (key.equals(JavaAttributesTypes.IsThis.name())) {
+				_isThis = Boolean.valueOf(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Iterator.name())) {
 				_iterator = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Key.name())) {
@@ -247,6 +250,10 @@ public class JavaWriterAttributeCollector {
 
 	public boolean isInterface() {
 		return _isinterface;
+	}
+	
+	public boolean isThis() {
+		return _isThis;
 	}
 
 	public Expression getIterator() {

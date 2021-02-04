@@ -196,7 +196,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, EnumDeclaration.class)) {
 			jpNode = new EnumDeclaration(attributes.getModifier(), attributes.getName());
 		} else if (isOfType(n, ExplicitConstructorInvocationStmt.class)) {
-			jpNode = new ExplicitConstructorInvocationStmt();
+			jpNode = new ExplicitConstructorInvocationStmt().setThis(attributes.isThis());
 		} else if (isOfType(n, ExpressionStmt.class)) {
 			jpNode = new ExpressionStmt();
 		} else if (isOfType(n, FieldAccessExpr.class)) {

@@ -123,6 +123,12 @@ public enum JavaAttributesTypes {
 	 */
 	IsInterface,
 	/**
+	 * This attribute contains true if an {@link ExplicitConstructorInvocationStmt}
+	 * refers to this. If this attribute contains false, then it refers to a super
+	 * call.
+	 */
+	IsThis,
+	/**
 	 * An expr which contains the iterable of an for each stmt.
 	 * 
 	 * @see ForEachStmt
