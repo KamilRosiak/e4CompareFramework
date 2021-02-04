@@ -427,6 +427,8 @@ public class JavaWriterUtil {
 				((CompilationUnit) parentNode).addType((TypeDeclaration) childNode);
 			} else if (parentNode instanceof EnumDeclaration && childNode instanceof EnumConstantDeclaration) {
 				((EnumDeclaration) parentNode).addEntry((EnumConstantDeclaration) childNode);
+			} else if (parentNode instanceof LambdaExpr && childNode instanceof Statement) {
+				((LambdaExpr) parentNode).setBody((Statement) childNode);
 			} else if (parentNode instanceof TypeDeclaration && childNode instanceof BodyDeclaration) {
 				((TypeDeclaration) parentNode).addMember((BodyDeclaration) childNode);
 			} else if (parentNode instanceof NodeWithAnnotations && childNode instanceof AnnotationExpr) {
