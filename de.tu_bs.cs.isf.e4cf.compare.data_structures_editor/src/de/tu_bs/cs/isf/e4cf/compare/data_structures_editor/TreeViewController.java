@@ -69,7 +69,7 @@ public class TreeViewController {
 
 	private List<TreeItem<AbstractNode>> copyList = new ArrayList<TreeItem<AbstractNode>>();
 
-	CommandManager TreeManager = new CommandManager();
+	CommandManager treeManager = new CommandManager();
 
 	@Optional
 	@Inject
@@ -122,7 +122,7 @@ public class TreeViewController {
 
 	void deleteNode() {
 		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
-			TreeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
+			treeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
 			ti.getParent().getChildren().remove(ti);
 		}
 		displayTotalNodeAmount();
@@ -145,7 +145,7 @@ public class TreeViewController {
 		List<Attribute> attributeList = new ArrayList<Attribute>();
 		attributeList.addAll(treeView.getSelectionModel().getSelectedItem().getValue().getAttributes());
 		TreeItem<AbstractNode> treeItem = treeView.getSelectionModel().getSelectedItem();
-		TreeManager.execute(new AddAttributeAction("addAttribute", treeItem.getValue(), attributeList));
+		treeManager.execute(new AddAttributeAction("addAttribute", treeItem.getValue(), attributeList));
 		String attrName = TreeViewUtilities.getInput("Enter attribute name");
 		if (attrName != null) {
 			String attrValue = TreeViewUtilities.getInput("Enter attribute value");
@@ -176,7 +176,7 @@ public class TreeViewController {
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(newChild);
 		displayTotalNodeAmount();
 		treeView.refresh();
-		TreeManager.execute(new AddChildNodeAction("addChildNode", newChild, treeView));
+		treeManager.execute(new AddChildNodeAction("addChildNode", newChild, treeView));
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class TreeViewController {
 						attribute.getAttributeValues().clear();
 					}
 				}
-				TreeManager.execute(new RenameNodeAction("renameNode", prevName, treeView,
+				treeManager.execute(new RenameNodeAction("renameNode", prevName, treeView,
 						treeView.getSelectionModel().getSelectedItem().getValue()));
 				addAttribute("name", newName);
 				treeView.refresh();
@@ -313,7 +313,7 @@ public class TreeViewController {
 
 	@FXML
 	void undoAction() {
-		TreeManager.undo();
+		treeManager.undo();
 	}
 
 	/**

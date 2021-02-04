@@ -1,27 +1,25 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager;
 
+import java.util.Set;
+
 public class PropertiesAction implements UndoAction {
 
 	private String name;
-	private String oldAttributeValue;
-	private String newAttributeValue;
+	private Set<String> oldAttributeValues;
+	private Set<String> newAttributeValues;
 
-	public PropertiesAction(String name, String oldAttributeValue, String newAttributeValue) {
+	public PropertiesAction(String name, Set<String> oldAttributeValues, Set<String> newAttributeValues) {
 		this.name = name;
-		this.oldAttributeValue = oldAttributeValue;
-		this.newAttributeValue = newAttributeValue;
+		this.oldAttributeValues = oldAttributeValues;
+		this.newAttributeValues = newAttributeValues;
 	}
 
 	@Override
 	public void undo() {
-		System.out.println(newAttributeValue);
-		System.out.println(oldAttributeValue);
-		newAttributeValue = oldAttributeValue;
+		newAttributeValues.clear();
+		for (String value : oldAttributeValues) {
+			newAttributeValues.add(value);
+		}
 	}
 
-//	@Optional
-//	@Inject
-//	public void refreshTreeView(@UIEventTopic("SendCurrentNodeEvent") Node node) {
-//		this.node=node;
-//	}
 }

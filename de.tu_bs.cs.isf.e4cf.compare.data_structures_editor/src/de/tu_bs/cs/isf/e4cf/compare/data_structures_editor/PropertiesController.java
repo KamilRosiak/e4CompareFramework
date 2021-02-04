@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -7,6 +10,9 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.PropertiesAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.RenamePropertyAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.PropertiesViewUtilities;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
@@ -31,7 +37,7 @@ public class PropertiesController {
 	@FXML
 	private TableView<Attribute> propertiesTable;
 
-	// CommandManager TreeManager = new CommandManager();
+	CommandManager propertiesManager = new CommandManager();
 
 	/**
 	 * 
@@ -65,25 +71,32 @@ public class PropertiesController {
 	}
 
 	@FXML
-	public void editNodeAttribute() {
+	public void editNodeProperty() {
 		String s = PropertiesViewUtilities.getInput("Please enter new property designation");
+		String oldName = "";
 		if (s != null) {
 			AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
+			oldName = getSelectedItem().getAttributeKey();
 			attr.setAttributeKey(s);
+			propertiesManager.execute(
+					new RenamePropertyAction("renameProperty", oldName, (AbstractAttribute) getSelectedItem()));
 			refreshGUI();
 		}
 	}
 
 	@FXML
 	public void editNodeValue() {
-		// String a = getSelectedItem().getAttributeValues().toString();
-		String s = PropertiesViewUtilities.getInput("Please enter new Value");
-		if (s != null) {
+		Set<String> oldAttributeValues = getCurrentAttributeValues();
+		String newValue = PropertiesViewUtilities.getInput("Please enter new Value");
+		Set<String> newAttributeValues;
+
+		if (newValue != null) {
 			getSelectedItem().getAttributeValues().clear();
-			getSelectedItem().getAttributeValues().add(s);
+			getSelectedItem().getAttributeValues().add(newValue);
+			newAttributeValues = getSelectedItem().getAttributeValues();
+			propertiesManager.execute(new PropertiesAction("properties", oldAttributeValues, newAttributeValues));
 			refreshGUI();
 		}
-		// TreeManager.execute(new PropertiesAction("properties", a,s));
 	}
 
 	@FXML
@@ -97,12 +110,31 @@ public class PropertiesController {
 	}
 
 	@FXML
-	public void AddNodeValue() {
+	public void addNodeValue() {
+		Set<String> oldAttributeValues = getCurrentAttributeValues();
+		Set<String> newAttributeValues;
 		String s = PropertiesViewUtilities.getInput("Please enter another Value");
 		if (s != null) {
 			getSelectedItem().getAttributeValues().add(s);
+			newAttributeValues = getSelectedItem().getAttributeValues();
+			propertiesManager.execute(new PropertiesAction("properties", oldAttributeValues, newAttributeValues));
 			refreshGUI();
 		}
+	}
+
+	@FXML
+	void undoProperties() {
+		propertiesManager.undo();
+		refreshGUI();
+	}
+
+	Set<String> getCurrentAttributeValues() {
+		Set<String> oldAttributeValues = new HashSet<String>();
+		// save the old attribute values
+		for (String value : getSelectedItem().getAttributeValues()) {
+			oldAttributeValues.add(value);
+		}
+		return oldAttributeValues;
 	}
 
 }
