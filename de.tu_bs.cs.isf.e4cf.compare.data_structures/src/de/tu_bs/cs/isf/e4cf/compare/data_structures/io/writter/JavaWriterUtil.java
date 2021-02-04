@@ -302,8 +302,8 @@ public class JavaWriterUtil {
 			jpNode = new SwitchExpr();
 		} else if (isOfType(n, SwitchStmt.class)) {
 			jpNode = new SwitchStmt(attributes.getSelector(), new NodeList<SwitchEntry>());
-		} else if (isOfType(n, SynchronizedStmt.class)) {
-			jpNode = new SynchronizedStmt();
+		} else if (isOfType(n, SynchronizedStmt.class) || isOfType(n, JavaNodeTypes.Synchronized)) {
+			jpNode = new SynchronizedStmt().setExpression(attributes.getExpression());
 		} else if (isOfType(n, TextBlockLiteralExpr.class)) {
 			jpNode = new TextBlockLiteralExpr();
 		} else if (isOfType(n, JavaNodeTypes.Then)) {
@@ -435,6 +435,8 @@ public class JavaWriterUtil {
 				((CompilationUnit) parentNode).addType((TypeDeclaration) childNode);
 			} else if (parentNode instanceof EnumDeclaration && childNode instanceof EnumConstantDeclaration) {
 				((EnumDeclaration) parentNode).addEntry((EnumConstantDeclaration) childNode);
+			} else if (parentNode instanceof SynchronizedStmt && childNode instanceof BlockStmt) {
+				((SynchronizedStmt) parentNode).setBody((BlockStmt) childNode);
 			} else if (parentNode instanceof LambdaExpr && childNode instanceof Statement) {
 				((LambdaExpr) parentNode).setBody((Statement) childNode);
 			} else if (parentNode instanceof LambdaExpr && childNode instanceof Expression) {
