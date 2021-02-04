@@ -1,6 +1,7 @@
 
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
+import java.lang.Thread.State;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -240,7 +241,7 @@ public class JavaWriterUtil {
 			// TODO fill arguments
 			// jpNode = new IntersectionType();
 		} else if (isOfType(n, LabeledStmt.class)) {
-			jpNode = new LabeledStmt();
+			jpNode = new LabeledStmt().setLabel(new SimpleName(attributes.getName()));
 		} else if (isOfType(n, LambdaExpr.class)) {
 			// Just add a lambda expr, the logic is done in the children.
 			jpNode = new LambdaExpr();
@@ -437,6 +438,10 @@ public class JavaWriterUtil {
 				((EnumDeclaration) parentNode).addEntry((EnumConstantDeclaration) childNode);
 			} else if (parentNode instanceof SynchronizedStmt && childNode instanceof BlockStmt) {
 				((SynchronizedStmt) parentNode).setBody((BlockStmt) childNode);
+			} else if (parentNode instanceof LabeledStmt && childNode instanceof Statement) {
+				((LabeledStmt) parentNode).setStatement((Statement) childNode);
+			} else if (parentNode instanceof LabeledStmt && childNode instanceof Expression) {
+				((LabeledStmt) parentNode).setStatement(new ExpressionStmt((Expression) childNode));
 			} else if (parentNode instanceof LambdaExpr && childNode instanceof Statement) {
 				((LambdaExpr) parentNode).setBody((Statement) childNode);
 			} else if (parentNode instanceof LambdaExpr && childNode instanceof Expression) {

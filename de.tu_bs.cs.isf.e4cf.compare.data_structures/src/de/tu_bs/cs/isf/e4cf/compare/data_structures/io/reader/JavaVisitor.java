@@ -1929,8 +1929,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 
 	@Override
 	public void visit(LabeledStmt n, Node arg) {
-		// TODO Auto-generated method stub
-		visitor(n, arg);
+		Node labeledStmt = new NodeImpl(n.getClass().getSimpleName(), arg);
+		labeledStmt.addAttribute(JavaAttributesTypes.Name.name(), n.getLabel().asString());
+		visitor(n, labeledStmt);
 	}
 
 	@Override
