@@ -151,8 +151,7 @@ public class JavaWriterUtil {
 			jpNode = new ConditionalExpr(attributes.getCondition().getFirst().get(), attributes.getThen(),
 					attributes.getElse());
 		} else if (isOfType(n, ConstructorDeclaration.class)) {
-			jpNode = new ConstructorDeclaration().setModifiers(attributes.getModifier()).setName(attributes.getName())
-					.setAnnotations(attributes.getAnnotation());
+			jpNode = new ConstructorDeclaration(attributes.getName()).setModifiers(attributes.getModifier()).setAnnotations(attributes.getAnnotation());
 		} else if (isOfType(n, ContinueStmt.class)) {
 			ContinueStmt obj = new ContinueStmt();
 			/*
