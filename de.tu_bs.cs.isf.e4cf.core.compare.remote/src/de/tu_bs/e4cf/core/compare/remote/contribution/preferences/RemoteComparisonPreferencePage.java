@@ -23,7 +23,7 @@ public class RemoteComparisonPreferencePage implements IPreferencePage {
 	private KeyValueNode portConfiguration;
 	private Text textFieldIp;
 	private Text textFieldPort;
-	
+
 	@Override
 	public void createPage(CTabFolder parent, ServiceContainer services) {
 		CTabItem tab = new CTabItem(parent, SWT.NONE);
@@ -55,7 +55,7 @@ public class RemoteComparisonPreferencePage implements IPreferencePage {
 
 		Label uriLabel = new Label(group, SWT.NONE);
 		uriLabel.setText(label);
-		uriLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		uriLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 
 		Text textField = new Text(group, SWT.SINGLE | SWT.BORDER);
 		textField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
@@ -63,7 +63,7 @@ public class RemoteComparisonPreferencePage implements IPreferencePage {
 		textField.setText(keyValueNode.getStringValue());
 		return textField;
 	}
-	
+
 	public KeyValueNode getIpValue() {
 		ipConfiguration.setValue(textFieldIp.getText());
 		return ipConfiguration;
@@ -73,7 +73,7 @@ public class RemoteComparisonPreferencePage implements IPreferencePage {
 		portConfiguration.setValue(textFieldPort.getText());
 		return portConfiguration;
 	}
-	
+
 	@Override
 	public void store() {
 		PreferencesUtil.storeKeyValueNode(getIpValue());
