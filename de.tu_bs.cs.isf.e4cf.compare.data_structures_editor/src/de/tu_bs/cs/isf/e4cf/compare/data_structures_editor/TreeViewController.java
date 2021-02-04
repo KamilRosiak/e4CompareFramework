@@ -121,10 +121,10 @@ public class TreeViewController {
 	}
 
 	void deleteNode() {
-		TreeManager.execute(new DeleteNodeAction("deleteNode", treeView.getSelectionModel().getSelectedItem(),
-				treeView.getSelectionModel().getSelectedItem().getParent()));
-		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
-				.remove(treeView.getSelectionModel().getSelectedItem());
+		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+			TreeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
+			ti.getParent().getChildren().remove(ti);
+		}
 		displayTotalNodeAmount();
 		treeView.refresh();
 	}

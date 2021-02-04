@@ -18,16 +18,16 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#saveFile" text="Save" />
-            <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As…" />
-             <MenuItem mnemonicParsing="false" onAction="#closeFile" text="Close" />
+            <MenuItem mnemonicParsing="false" onAction="#saveFile" text="Save" accelerator="Shortcut+s"/>
+            <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As…"  />
+             <MenuItem mnemonicParsing="false" onAction="#closeFile" text="Close" accelerator="Shortcut+w" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#undoAction" text="Undo" />
+            <MenuItem mnemonicParsing="false" onAction="#undoAction" text="Undo" accelerator="Shortcut+z"/>
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#selectAllNodes" text="Select All" />
+            <MenuItem mnemonicParsing="false" onAction="#selectAllNodes" text="Select All" accelerator="Shortcut+a"/>
             <MenuItem mnemonicParsing="false" onAction="#unselectAllNodes" text="Unselect All" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#expandAllItems" text="Expand All" />
@@ -44,12 +44,12 @@
 				<MenuItem mnemonicParsing="false" onAction="#addChildNode" text="Add Child" />
 				<MenuItem mnemonicParsing="false" onAction="#expandSelectedItems" text="Expand selected Items" />
 				<MenuItem mnemonicParsing="false" onAction="#collapseSelectedItems" text="Collapse selected Items" />
-				<MenuItem mnemonicParsing="false" onAction="#copyNode" text="Copy" />
-				<MenuItem mnemonicParsing="false" onAction="#pasteNode" text="Paste" />
+				<MenuItem mnemonicParsing="false" onAction="#copyNode" text="Copy" accelerator="Shortcut+c" />
+				<MenuItem mnemonicParsing="false" onAction="#pasteNode" text="Paste" accelerator="Shortcut+v"/>
                 <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
-                <MenuItem mnemonicParsing="false" onAction="#cutNode" text="Cut" />
+                <MenuItem mnemonicParsing="false" onAction="#cutNode" text="Cut" accelerator="Shortcut+x"/>
 				<MenuItem mnemonicParsing="false" onAction="#extractToFile" text="Extract to file" />
-                <MenuItem mnemonicParsing="false" onAction="#deleteNodeFXML" text="Delete" />
+                <MenuItem mnemonicParsing="false" onAction="#deleteNodeFXML" text="Delete" accelerator="Del" />
               </items>
             </ContextMenu>
          </contextMenu></TreeView> 
