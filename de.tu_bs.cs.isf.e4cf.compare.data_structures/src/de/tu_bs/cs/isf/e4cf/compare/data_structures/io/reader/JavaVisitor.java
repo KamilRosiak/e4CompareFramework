@@ -1591,7 +1591,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	public void visit(EnumDeclaration n, Node arg) {
 		Node enumNode = arg;
 		if (!n.getParentNode().isPresent() || !(n.getParentNode().get() instanceof CompilationUnit)) {
-			new NodeImpl(n.getClass().getSimpleName(), arg);
+			enumNode = new NodeImpl(n.getClass().getSimpleName(), arg);
 		} else {
 			enumNode.addAttribute(JavaAttributesTypes.IsEnum.name(), String.valueOf(true));
 		}
