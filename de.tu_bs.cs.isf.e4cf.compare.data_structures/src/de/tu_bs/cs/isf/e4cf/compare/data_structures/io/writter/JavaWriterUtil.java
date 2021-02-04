@@ -251,7 +251,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, LongLiteralExpr.class)) {
 			jpNode = new LongLiteralExpr();
 		} else if (isOfType(n, MarkerAnnotationExpr.class)) {
-			jpNode = new MarkerAnnotationExpr();
+			jpNode = attributes.getAnnotation().getFirst().get().asMarkerAnnotationExpr();
 		} else if (isOfType(n, MemberValuePair.class)) {
 			jpNode = new MemberValuePair(attributes.getKey(), attributes.getValue());
 		} else if (isOfType(n, MethodCallExpr.class)) {
@@ -284,7 +284,9 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ReturnStmt.class)) {
 			jpNode = new ReturnStmt(attributes.getValue());
 		} else if (isOfType(n, SingleMemberAnnotationExpr.class)) {
-			jpNode = new SingleMemberAnnotationExpr(new Name(attributes.getName()), attributes.getValue());
+			if (!attributes.getName().isEmpty()) {
+				jpNode = new SingleMemberAnnotationExpr(new Name(attributes.getName()), attributes.getValue());
+			}
 		} else if (isOfType(n, StringLiteralExpr.class)) {
 			jpNode = new StringLiteralExpr();
 		} else if (isOfType(n, SuperExpr.class)) {
@@ -427,7 +429,9 @@ public class JavaWriterUtil {
 			 * The real magic is done here. Check their types and add the child
 			 * specifically.
 			 */
-			if (parentNode instanceof CompilationUnit && childNode instanceof TypeDeclaration) {
+			if (childNode instanceof AnnotationDeclaration) {
+				// see createAnnotationDeclaration
+			} else if (parentNode instanceof CompilationUnit && childNode instanceof TypeDeclaration) {
 				((CompilationUnit) parentNode).addType((TypeDeclaration) childNode);
 			} else if (parentNode instanceof EnumDeclaration && childNode instanceof EnumConstantDeclaration) {
 				((EnumDeclaration) parentNode).addEntry((EnumConstantDeclaration) childNode);

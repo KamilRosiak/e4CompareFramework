@@ -300,7 +300,13 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
-		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
+		Node annotationMemberDeclaration = new NodeImpl(n.getClass().getSimpleName(), arg);
+		annotationMemberDeclaration.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
+		n.getChildNodes().forEach(child -> {
+			if (!child.equals(n.getType())) {
+				child.accept(this, annotationMemberDeclaration);
+			}
+		});
 	}
 
 	/**
