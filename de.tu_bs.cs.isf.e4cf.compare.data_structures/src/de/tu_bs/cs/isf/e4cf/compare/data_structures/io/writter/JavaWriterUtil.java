@@ -388,7 +388,11 @@ public class JavaWriterUtil {
 		setParent(p, jpNode);
 
 		for (Node nChild : n.getChildren()) {
-			// Visit all children
+			/*
+			 * Visit all children. In nodes with only meta information, jpNode stays null.
+			 * When that happens, use p as argument again, so the child nodes of the meta
+			 * info node can be directly added to the original parent.
+			 */
 			com.github.javaparser.ast.Node jpChild = visitWriter(nChild, Optional.ofNullable(jpNode).orElse(p));
 		}
 
@@ -429,6 +433,8 @@ public class JavaWriterUtil {
 				((EnumDeclaration) parentNode).addEntry((EnumConstantDeclaration) childNode);
 			} else if (parentNode instanceof LambdaExpr && childNode instanceof Statement) {
 				((LambdaExpr) parentNode).setBody((Statement) childNode);
+			} else if (parentNode instanceof LambdaExpr && childNode instanceof Expression) {
+				((LambdaExpr) parentNode).setBody(new ExpressionStmt((Expression) childNode));
 			} else if (parentNode instanceof TypeDeclaration && childNode instanceof BodyDeclaration) {
 				((TypeDeclaration) parentNode).addMember((BodyDeclaration) childNode);
 			} else if (parentNode instanceof NodeWithAnnotations && childNode instanceof AnnotationExpr) {
@@ -653,22 +659,6 @@ public class JavaWriterUtil {
 			// Some arguments have no name but a value instead
 			((NodeWithArguments) p).addArgument(attributes.getValue());
 
-		} else if (attributes.getChildren() == 0) {
-			/*
-			 * There could be cases where an argument is defined by it's children. The
-			 * conversion is done in this step. As jpNode isn't set, the children don't need
-			 * to be removed.
-			 */
-			for (Node nChild : n.getChildren()) {
-				com.github.javaparser.ast.Node jpChild = visitWriter(nChild, null);
-
-				if (p instanceof NodeWithArguments && jpChild instanceof Expression) {
-					((NodeWithArguments) p).addArgument((Expression) jpChild);
-				} else {
-					throw new UnsupportedOperationException("p is " + p.getClass().getSimpleName() + " and jpChild is "
-							+ jpChild.getClass().getSimpleName());
-				}
-			}
 		}
 	}
 }
