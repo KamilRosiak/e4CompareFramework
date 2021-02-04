@@ -151,8 +151,9 @@ public class JavaWriterUtil {
 			jpNode = new ConditionalExpr(attributes.getCondition().getFirst().get(), attributes.getThen(),
 					attributes.getElse());
 		} else if (isOfType(n, ConstructorDeclaration.class)) {
-			jpNode = new ConstructorDeclaration(attributes.getName()).setModifiers(attributes.getModifier()).setAnnotations(attributes.getAnnotation());
-		} else if (isOfType(n, ContinueStmt.class)) {
+			jpNode = new ConstructorDeclaration(attributes.getName()).setModifiers(attributes.getModifier())
+					.setAnnotations(attributes.getAnnotation());
+		} else if (isOfType(n, ContinueStmt.class) || isOfType(n, JavaNodeTypes.Continue)) {
 			ContinueStmt obj = new ContinueStmt();
 			/*
 			 * If there is an optional label for the continue stmt, then set it; otherwise
