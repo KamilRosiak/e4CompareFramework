@@ -21,6 +21,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -37,6 +38,10 @@ public final class TreeViewUtilities {
 
 	public static final Image rootImage = new Image("icons/rootSmall.png");
 
+	public static final Image lineImage = new Image("icons/line.png");
+
+	public static final Image defaultImage = new Image("icons/totallynewimage.png");
+
 	public static void switchToPart(String path, ServiceContainer services) {
 		services.partService.showPart(path);
 	}
@@ -49,12 +54,30 @@ public final class TreeViewUtilities {
 	 */
 	public static void fillTreeView(Node node, TreeItem<AbstractNode> parent) {
 		for (Node n : node.getChildren()) {
-			TreeItem<AbstractNode> ti = new TreeItem<AbstractNode>(new NodeImpl(n));
+			// TreeItem<AbstractNode> ti = new TreeItem<AbstractNode>(new NodeImpl(n));
+			TreeItem<AbstractNode> ti = nodeToTreeItem(n);
 			parent.getChildren().add(ti);
 			if (!n.isLeaf()) {
 				fillTreeView(n, ti);
 			}
 		}
+	}
+
+	public static TreeItem<AbstractNode> nodeToTreeItem(Node node) {
+		TreeItem<AbstractNode> ti = new TreeItem<AbstractNode>(new NodeImpl(node));
+		switch (ti.getValue().getNodeType()) {
+
+		case "WORD":
+			ti.setGraphic(new ImageView(nodeImage));
+			break;
+		case "LINE":
+			ti.setGraphic(new ImageView(lineImage));
+			break;
+		default:
+			ti.setGraphic(new ImageView(defaultImage));
+			break;
+		}
+		return ti;
 	}
 
 	/**
@@ -196,6 +219,8 @@ public final class TreeViewUtilities {
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
 		alert.setTitle(DataStructuresEditorST.ATTENTION_REQUIRED);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setAlwaysOnTop(true);
 		alert.showAndWait();
 	}
 
@@ -210,6 +235,8 @@ public final class TreeViewUtilities {
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
 		alert.setTitle(DataStructuresEditorST.CONFIRMATION_REQUIRED);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.setAlwaysOnTop(true);
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
 			return true;

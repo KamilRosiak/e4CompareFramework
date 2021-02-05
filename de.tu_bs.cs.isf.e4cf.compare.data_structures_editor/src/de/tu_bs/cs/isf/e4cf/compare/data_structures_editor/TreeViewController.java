@@ -100,6 +100,7 @@ public class TreeViewController {
 		TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
 		closeFile();
 		treeView.setRoot(new TreeItem<AbstractNode>(new NodeImpl(tree.getRoot())));
+		treeView.getRoot().setGraphic(new ImageView(TreeViewUtilities.rootImage));
 		treeView.getRoot().setExpanded(true);
 		treeView.setShowRoot(true);
 		TreeViewUtilities.fillTreeView(tree.getRoot(), treeView.getRoot());
@@ -114,10 +115,12 @@ public class TreeViewController {
 	}
 
 	void deleteNode() {
-		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
-			treeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
-			ti.getParent().getChildren().remove(ti);
-		}
+
+		TreeItem<AbstractNode> ti = treeView.getSelectionModel().getSelectedItem();
+		treeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
+		ti.getParent().getChildren().remove(ti);
+
+		unselectAllNodes();
 		displayTotalNodeAmount();
 		treeView.refresh();
 	}
@@ -162,16 +165,13 @@ public class TreeViewController {
 	 */
 	@FXML
 	void addChildNode() {
-		TreeItem<AbstractNode> newChild = new TreeItem<AbstractNode>();
+		TreeItem<AbstractNode> newChild = TreeViewUtilities.nodeToTreeItem(new NodeImpl("newChild"));
 		String childName = TreeViewUtilities.getInput("Enter child name");
 		if (childName != null) {
 			newChild.setValue(new NodeImpl(childName));
 			newChild.getValue().addAttribute("name", childName);
 		} else {
 			return;
-		}
-		if (newChild.getValue().getAttributes().get(0).getAttributeKey().equals("TEXT")) {
-			newChild.setGraphic(new ImageView(TreeViewUtilities.nodeImage));
 		}
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(newChild);
 		displayTotalNodeAmount();
@@ -270,7 +270,11 @@ public class TreeViewController {
 
 	@FXML
 	void deleteNodeFXML() {
-		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
+		if (treeView.getSelectionModel().getSelectedItems().size() > 1) {
+			TreeViewUtilities.informationAlert("Attention! Multiple Items selected. Cancelling now.");
+			unselectAllNodes();
+			return;
+		} else if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
 			deleteNode();
 		}
 	}
@@ -314,6 +318,8 @@ public class TreeViewController {
 	@FXML
 	void undoAction() {
 		treeManager.undo();
+		displayTotalNodeAmount();
+		treeView.refresh();
 	}
 
 	/**
