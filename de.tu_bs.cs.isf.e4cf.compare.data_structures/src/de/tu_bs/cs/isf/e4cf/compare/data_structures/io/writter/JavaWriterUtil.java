@@ -271,7 +271,8 @@ public class JavaWriterUtil {
 			jpNode = new ObjectCreationExpr(attributes.getScope(), attributes.getType().asClassOrInterfaceType(),
 					new NodeList<Expression>());
 		} else if (isOfType(n, Parameter.class)) {
-			Parameter obj = new Parameter(new UnknownType(), attributes.getName()).setModifiers(attributes.getModifier());
+			Parameter obj = new Parameter(new UnknownType(), attributes.getName())
+					.setModifiers(attributes.getModifier());
 			if (attributes.getType() != null) {
 				// Replace unknown type if there is a more specific type for the parameter.
 				obj.setType(attributes.getType());
@@ -347,7 +348,8 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, UnparsableStmt.class)) {
 			jpNode = new UnparsableStmt();
 		} else if (isOfType(n, VariableDeclarationExpr.class)) {
-			jpNode = new VariableDeclarationExpr().setModifiers(attributes.getModifier()).setAnnotations(attributes.getAnnotation());
+			jpNode = new VariableDeclarationExpr().setModifiers(attributes.getModifier())
+					.setAnnotations(attributes.getAnnotation());
 		} else if (isOfType(n, VariableDeclarator.class)) {
 			VariableDeclarator obj = new VariableDeclarator(attributes.getType(), attributes.getName());
 			/*
@@ -663,7 +665,13 @@ public class JavaWriterUtil {
 					new Parameter(attributes.getType(), attributes.getName()).setModifiers(attributes.getModifier()));
 		} else if (!attributes.getName().isEmpty()) {
 			// Argument without type but name, e.g. method call expr
-			((NodeWithArguments) p).addArgument(attributes.getName());
+			Expression arg;
+			if (attributes.getScope() == null) {
+				arg = new NameExpr(attributes.getName());
+			} else {
+				arg = new FieldAccessExpr(attributes.getScope(), attributes.getName());
+			}
+			((NodeWithArguments) p).addArgument(arg);
 		} else if (attributes.getValue() != null) {
 			// Some arguments have no name but a value instead
 			((NodeWithArguments) p).addArgument(attributes.getValue());
