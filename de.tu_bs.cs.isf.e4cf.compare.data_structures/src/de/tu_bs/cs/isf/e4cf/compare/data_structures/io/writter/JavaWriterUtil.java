@@ -347,7 +347,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, UnparsableStmt.class)) {
 			jpNode = new UnparsableStmt();
 		} else if (isOfType(n, VariableDeclarationExpr.class)) {
-			jpNode = new VariableDeclarationExpr();
+			jpNode = new VariableDeclarationExpr().setModifiers(attributes.getModifier()).setAnnotations(attributes.getAnnotation());
 		} else if (isOfType(n, VariableDeclarator.class)) {
 			VariableDeclarator obj = new VariableDeclarator(attributes.getType(), attributes.getName());
 			/*
@@ -453,8 +453,6 @@ public class JavaWriterUtil {
 				((SwitchStmt) parentNode).setEntries(entries);
 			} else if (parentNode instanceof NodeWithTypeParameters && childNode instanceof TypeParameter) {
 				((NodeWithTypeParameters) parentNode).addTypeParameter((TypeParameter) childNode);
-			} else if (parentNode instanceof MethodCallExpr && childNode instanceof Expression) {
-				((MethodCallExpr) parentNode).addArgument((Expression) childNode);
 			} else if (childNode instanceof Comment) {
 				parentNode.addOrphanComment((Comment) childNode);
 			} else if (parentNode instanceof CatchClause && childNode instanceof Parameter) {

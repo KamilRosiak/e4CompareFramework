@@ -144,7 +144,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 
 		// Return type
 		p.addAttribute(JavaAttributesTypes.ReturnType.name(), n.getTypeAsString());
-		
+
 		visitor(n, p, n.getType());
 	}
 
@@ -237,8 +237,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		if (n.getExtendedTypes().size() > 0) {
 			// Only a single class can be inherited!
 			ClassOrInterfaceType superclass = n.getExtendedTypes(0);
-			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Superclass.name(),
-					superclass.toString());
+			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Superclass.name(), superclass.toString());
 			superclass.removeForced();
 		}
 
@@ -247,8 +246,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		for (int i = 0; i < interfaceSize; i++) {
 			// Multiple classes can be implemented
 			ClassOrInterfaceType implemented = n.getImplementedTypes(0);
-			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Interface.name(),
-					implemented.toString());
+			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Interface.name(), implemented.toString());
 			implemented.removeForced();
 		}
 		visitor(n, classOrInterfaceDeclarationNode);
@@ -653,7 +651,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(LambdaExpr n, Node arg) {
 		Node lambdaExprNode = new NodeImpl(n.getClass().getSimpleName(), arg);
-		lambdaExprNode.addAttribute(JavaAttributesTypes.isEnclosingParameters.name(), String.valueOf(n.isEnclosingParameters()));
+		lambdaExprNode.addAttribute(JavaAttributesTypes.isEnclosingParameters.name(),
+				String.valueOf(n.isEnclosingParameters()));
 		visitor(n, lambdaExprNode);
 	}
 
@@ -903,7 +902,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 
 		// Scope
 		n.getScope().ifPresent(scope -> c.addAttribute(JavaAttributesTypes.Scope.name(), scope.toString()));
-		
+
 		// Arguments
 		Node arguments = new NodeImpl(JavaNodeTypes.Argument.name(), c);
 		arguments.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(n.getArguments().size()));
@@ -1336,9 +1335,10 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	}
 
 	/**
-	 * For every child node of the {@link VariableDeclarationExpr} a new node is
-	 * created with the child's class as a type. Each child is then visited with
-	 * it's new node as a parent.
+	 * Visits all children of the {@link VariableDeclarationExpr}.
+	 * <p>
+	 * If the parent of the variable decl expr is an {@link FieldDeclaration}, this
+	 * method creates a new node, to provide a place for the attributes modifier.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/VariableDeclarationExpr.html">JavaParser
@@ -1349,7 +1349,11 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(VariableDeclarationExpr n, Node arg) {
-		visitor(n, arg);
+		Node varDeclExprNode = arg;
+		if (!(n.getParentNode().get() instanceof FieldDeclaration)) {
+			varDeclExprNode = new NodeImpl(VariableDeclarationExpr.class.getSimpleName(), arg);
+		}
+		visitor(n, varDeclExprNode);
 	}
 
 	/**
@@ -1370,13 +1374,14 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(VariableDeclarator n, Node arg) {
 		Node variableDeclaratorNode = new NodeImpl(VariableDeclarator.class.getSimpleName(), arg);
-		
+
 		// Type
 		variableDeclaratorNode.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
 
 		// Initializer
-		n.getInitializer().ifPresent(init -> variableDeclaratorNode.addAttribute(JavaAttributesTypes.Initilization.name(), init.toString()));
-		
+		n.getInitializer().ifPresent(
+				init -> variableDeclaratorNode.addAttribute(JavaAttributesTypes.Initilization.name(), init.toString()));
+
 		visitor(n, variableDeclaratorNode, n.getType(), n.getInitializer().orElse(null));
 	}
 
