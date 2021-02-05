@@ -534,9 +534,6 @@ public class JavaWriterUtil {
 	/**
 	 * Adds a bound to a type parameter.
 	 * 
-	 * @implNote The new bound might get an additional empty diamond operators, but
-	 *           there are no semantical differences (e.g. <code>T</code> and
-	 *           <code>T<></code> are virtually identical).
 	 * @param attributes Attributes of the bound
 	 * @param p          Node with the bound
 	 * @throws UnsupportedOperationException When p is not a {@link TypeParameter},
@@ -545,11 +542,15 @@ public class JavaWriterUtil {
 	private void processBound(JavaWriterAttributeCollector attributes, com.github.javaparser.ast.Node p)
 			throws UnsupportedOperationException {
 		if (p instanceof TypeParameter) {
+			// There doesn't seem to be a better way for this
 			TypeParameter tp = (TypeParameter) p; // Cast for easier reuse
 			NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound(); // Get current bounds
-			// Add the bound to the current list of bounds
-			getTypeBound.add(new ClassOrInterfaceType().setName(attributes.getName())
-					.setAnnotations(attributes.getAnnotation()).setTypeArguments(attributes.getTypeParameterBound()));
+			ClassOrInterfaceType bound = new ClassOrInterfaceType().setName(attributes.getName())
+			.setAnnotations(attributes.getAnnotation());
+			if (attributes.getTypeParameterBound().size() > 0) {
+				bound.setTypeArguments(attributes.getTypeParameterBound());
+			}
+			getTypeBound.add(bound); // Add bound
 			tp.setTypeBound(getTypeBound); // Save changes
 		} else {
 			// there is missing a case
