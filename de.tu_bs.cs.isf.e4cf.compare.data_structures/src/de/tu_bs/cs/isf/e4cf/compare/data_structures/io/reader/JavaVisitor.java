@@ -238,7 +238,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 			// Only a single class can be inherited!
 			ClassOrInterfaceType superclass = n.getExtendedTypes(0);
 			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Superclass.name(),
-					superclass.getNameAsString());
+					superclass.toString());
 			superclass.removeForced();
 		}
 
@@ -248,7 +248,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 			// Multiple classes can be implemented
 			ClassOrInterfaceType implemented = n.getImplementedTypes(0);
 			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Interface.name(),
-					implemented.getNameAsString());
+					implemented.toString());
 			implemented.removeForced();
 		}
 		visitor(n, classOrInterfaceDeclarationNode);
