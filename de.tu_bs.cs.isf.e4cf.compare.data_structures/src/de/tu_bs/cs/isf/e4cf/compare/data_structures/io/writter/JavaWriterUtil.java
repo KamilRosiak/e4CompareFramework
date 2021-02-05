@@ -258,9 +258,14 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, MethodCallExpr.class)) {
 			jpNode = new MethodCallExpr(attributes.getScope(), attributes.getName());
 		} else if (isOfType(n, MethodDeclaration.class)) {
+			/*
+			 * The bodies of the method declaration are removed by default in this step. If
+			 * a method is not abstract the body will be defined in the child nodes
+			 * otherwise it stays empty.
+			 */
 			jpNode = new MethodDeclaration(attributes.getModifier(), attributes.getName(), attributes.getReturnType(),
 					new NodeList<Parameter>()).setThrownExceptions(attributes.getThrows())
-							.setAnnotations(attributes.getAnnotation());
+							.setAnnotations(attributes.getAnnotation()).removeBody();
 		} else if (isOfType(n, MethodReferenceExpr.class)) {
 			jpNode = new MethodReferenceExpr();
 		} else if (isOfType(n, NameExpr.class)) {
