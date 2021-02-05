@@ -282,9 +282,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ReturnStmt.class)) {
 			jpNode = new ReturnStmt(attributes.getValue());
 		} else if (isOfType(n, SingleMemberAnnotationExpr.class)) {
-			if (!attributes.getName().isEmpty()) {
-				jpNode = new SingleMemberAnnotationExpr(new Name(attributes.getName()), attributes.getValue());
-			}
+			jpNode = new SingleMemberAnnotationExpr(new Name(attributes.getName()), attributes.getValue());
 		} else if (isOfType(n, StringLiteralExpr.class)) {
 			jpNode = new StringLiteralExpr();
 		} else if (isOfType(n, SuperExpr.class)) {
