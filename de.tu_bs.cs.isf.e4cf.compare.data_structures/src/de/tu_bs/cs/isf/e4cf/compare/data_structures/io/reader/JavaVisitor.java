@@ -1190,9 +1190,16 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	}
 
 	/**
-	 * Creates a new node of type {@link TryStmt} and visits all children of the try
-	 * stmt.
+	 * Creates a new node of type {@link TryStmt}.
+	 * <p>
+	 * If a finally block is present, then a node of type
+	 * {@link JavaNodeTypes#Finally} is added to the try stmt. The finally block
+	 * then accepts this visitor with the finally node as an argument. A finally
+	 * block is always a {@link BlockStmt}.
+	 * <p>
+	 * Then the children of the try stmt are visited (except for the finally block).
 	 * 
+	 * @see JavaVisitor#visit(BlockStmt, Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/TryStmt.html">JavaParser
 	 *      Docs - TryStmt</a>
