@@ -267,7 +267,9 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, NullLiteralExpr.class)) {
 			jpNode = new NullLiteralExpr();
 		} else if (isOfType(n, ObjectCreationExpr.class)) {
-			jpNode = new ObjectCreationExpr();
+			// Creates a new object creation expr, with scope, type and empty arguments list
+			jpNode = new ObjectCreationExpr(attributes.getScope(), attributes.getType().asClassOrInterfaceType(),
+					new NodeList<Expression>());
 		} else if (isOfType(n, Parameter.class)) {
 			Parameter obj = new Parameter(new UnknownType(), attributes.getName());
 			if (attributes.getType() != null) {
@@ -494,6 +496,8 @@ public class JavaWriterUtil {
 				((IfStmt) parentNode).setThenStmt((Statement) childNode);
 			} else if (parentNode instanceof IfStmt && childNode instanceof Expression) {
 				((IfStmt) parentNode).setThenStmt(new ExpressionStmt((Expression) childNode));
+			} else if (parentNode instanceof NodeWithArguments && childNode instanceof Expression) {
+				// see processArgument
 			}
 
 			else {
@@ -546,7 +550,7 @@ public class JavaWriterUtil {
 			TypeParameter tp = (TypeParameter) p; // Cast for easier reuse
 			NodeList<ClassOrInterfaceType> getTypeBound = tp.getTypeBound(); // Get current bounds
 			ClassOrInterfaceType bound = new ClassOrInterfaceType().setName(attributes.getName())
-			.setAnnotations(attributes.getAnnotation());
+					.setAnnotations(attributes.getAnnotation());
 			if (attributes.getTypeParameterBound().size() > 0) {
 				bound.setTypeArguments(attributes.getTypeParameterBound());
 			}
@@ -665,7 +669,10 @@ public class JavaWriterUtil {
 		} else if (attributes.getValue() != null) {
 			// Some arguments have no name but a value instead
 			((NodeWithArguments) p).addArgument(attributes.getValue());
-
+		} else {
+			for (Node childNode : n.getChildren()) {
+				((NodeWithArguments) p).addArgument((Expression) visitWriter(childNode));
+			}
 		}
 	}
 }

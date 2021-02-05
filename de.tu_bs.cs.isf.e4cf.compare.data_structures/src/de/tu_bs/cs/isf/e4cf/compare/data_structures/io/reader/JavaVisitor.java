@@ -901,6 +901,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		// Type
 		c.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
 
+		// Scope
+		n.getScope().ifPresent(scope -> c.addAttribute(JavaAttributesTypes.Scope.name(), scope.toString()));
+		
 		// Arguments
 		Node arguments = new NodeImpl(JavaNodeTypes.Argument.name(), c);
 		arguments.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(n.getArguments().size()));
