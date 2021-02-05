@@ -16,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.AddAttributeA
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.AddChildNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DeleteNodeAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.NodeAttributePair;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.RenameNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
@@ -80,16 +81,8 @@ public class TreeViewController {
 	@Optional
 	@Inject
 	public void removeNodeAttributeFromSelectedItem(
-			@UIEventTopic(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT) String text) {
-		List<Attribute> tempList = new ArrayList<Attribute>();
-		for (Attribute attr : treeView.getSelectionModel().getSelectedItem().getValue().getAttributes()) {
-			tempList.add(attr);
-		}
-		for (Attribute attribute : tempList) {
-			if (attribute.getAttributeKey().equals(text)) {
-				treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().remove(attribute);
-			}
-		}
+			@UIEventTopic(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT) Attribute attribute) {
+		treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().remove(attribute);
 	}
 
 	@Optional
@@ -126,6 +119,13 @@ public class TreeViewController {
 			ti.getParent().getChildren().remove(ti);
 		}
 		displayTotalNodeAmount();
+		treeView.refresh();
+	}
+
+	@Optional
+	@Inject
+	private void addAttribute(@UIEventTopic(DataStructuresEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
+		pair.getOwner().getAttributes().add(pair.getAttribute());
 		treeView.refresh();
 	}
 
@@ -434,5 +434,12 @@ public class TreeViewController {
 			ti.setExpanded(true);
 			treeView.getSelectionModel().select(ti);
 		}
+	}
+
+	@Optional
+	@Inject
+	public void askForSelectedItem(@UIEventTopic(DataStructuresEditorST.ASK_FOR_SELECTED_ITEM_EVENT) boolean bool) {
+		services.eventBroker.send(DataStructuresEditorST.RECEIVE_SELECTED_NODE_EVENT,
+				treeView.getSelectionModel().getSelectedItem().getValue());
 	}
 }

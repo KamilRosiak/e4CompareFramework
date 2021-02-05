@@ -5,13 +5,11 @@ import java.util.List;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 
-
 public class AddAttributeAction implements UndoAction {
-	
+
 	private String name;
 	private AbstractNode treeItem;
 	private List<Attribute> list;
-
 
 	public AddAttributeAction(String name, AbstractNode treeItem, List<Attribute> list) {
 		this.name = name;

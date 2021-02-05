@@ -22,9 +22,9 @@
 						<MenuItem mnemonicParsing="false"
 							onAction="#removeNodeAttribute" text="Remove Attribute" />
 						<MenuItem mnemonicParsing="false"
-							onAction="#addNodeValue" text="Add Value" />
+							onAction="#addNodeValue" text="Add Value" />	
 						<MenuItem mnemonicParsing="false"
-							onAction="#undoProperties" text="Undo" />	
+							onAction="#undoProperties" text="Undo" accelerator="Shortcut+Z" />	
 					</items>
 				</ContextMenu>
 			</contextMenu>

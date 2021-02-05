@@ -10,7 +10,10 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DeleteAttributeAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.NodeAttributePair;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.PropertiesAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.RenamePropertyAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
@@ -36,6 +39,8 @@ public class PropertiesController {
 
 	@FXML
 	private TableView<Attribute> propertiesTable;
+
+	private Node selectedNode;
 
 	CommandManager propertiesManager = new CommandManager();
 
@@ -102,8 +107,11 @@ public class PropertiesController {
 	@FXML
 	public void removeNodeAttribute() {
 		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
-			services.eventBroker.send(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT,
-					getSelectedItem().getAttributeKey().toString());
+			Attribute deletedAttribute = getSelectedItem();
+			services.eventBroker.send(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
+			services.eventBroker.send(DataStructuresEditorST.ASK_FOR_SELECTED_ITEM_EVENT, true);
+			NodeAttributePair pair = new NodeAttributePair(selectedNode, deletedAttribute);
+			propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
 			refreshGUI();
 		}
 
@@ -135,6 +143,12 @@ public class PropertiesController {
 			oldAttributeValues.add(value);
 		}
 		return oldAttributeValues;
+	}
+
+	@Optional
+	@Inject
+	public void receiveSelectedNode(@UIEventTopic(DataStructuresEditorST.RECEIVE_SELECTED_NODE_EVENT) Node node) {
+		selectedNode = node;
 	}
 
 }

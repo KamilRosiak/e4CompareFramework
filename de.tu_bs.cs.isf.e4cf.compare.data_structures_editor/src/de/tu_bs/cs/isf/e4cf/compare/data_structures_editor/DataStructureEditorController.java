@@ -2,12 +2,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -38,21 +35,6 @@ public class DataStructureEditorController {
 
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);
-
-	}
-
-	@PreDestroy
-	public void preDestroy() {
-
-	}
-
-	@Focus
-	public void onFocus() {
-
-	}
-
-	@Persist
-	public void save() {
 
 	}
 
