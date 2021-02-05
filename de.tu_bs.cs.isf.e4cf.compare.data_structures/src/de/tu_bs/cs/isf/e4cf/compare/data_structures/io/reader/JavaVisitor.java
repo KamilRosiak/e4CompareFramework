@@ -1423,7 +1423,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(WhileStmt n, Node arg) {
-		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
+		Node whileStmtNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		whileStmtNode.addAttribute(JavaAttributesTypes.Condition.name(), n.getCondition().toString());
+		visitor(n, whileStmtNode, n.getCondition());
 	}
 
 	/**

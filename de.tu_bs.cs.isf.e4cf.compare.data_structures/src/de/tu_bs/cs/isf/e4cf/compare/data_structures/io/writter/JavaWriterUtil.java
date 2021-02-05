@@ -361,7 +361,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, VoidType.class)) {
 			jpNode = new VoidType();
 		} else if (isOfType(n, WhileStmt.class)) {
-			jpNode = new WhileStmt().setCondition(attributes.getValue());
+			jpNode = new WhileStmt().setCondition(attributes.getCondition().getFirst().get());
 		} else if (isOfType(n, WildcardType.class)) {
 			jpNode = new WildcardType();
 		} else if (isOfType(n, YieldStmt.class)) {
