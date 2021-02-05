@@ -203,21 +203,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, FieldAccessExpr.class)) {
 			jpNode = new FieldAccessExpr();
 		} else if (isOfType(n, FieldDeclaration.class)) {
-			/*
-			 * Create a new field declaration with modfiers and afterwards create the
-			 * variable declarator and populate it. Finally add the variable declarator to
-			 * the field declaration. This looks pretty complicated but there seems to be no
-			 * simpler way.
-			 */
-			FieldDeclaration fd = new FieldDeclaration().setModifiers(attributes.getModifier());
-			VariableDeclarator vd = new VariableDeclarator().setType(attributes.getType())
-					.setName(attributes.getName());
-			if (!attributes.getInitilization().isEmpty()) {
-				vd.setInitializer(attributes.getInitilization().getFirst().get());
-			}
-
-			fd.addVariable(vd);
-			jpNode = fd;
+			jpNode = new FieldDeclaration().setModifiers(attributes.getModifier());
 		} else if (isOfType(n, ForEachStmt.class)) {
 			jpNode = new ForEachStmt().setIterable(attributes.getIterator()).setVariable(new VariableDeclarationExpr(
 					attributes.getType(), attributes.getInitilization().getFirst().get().toString()));
@@ -358,13 +344,11 @@ public class JavaWriterUtil {
 			jpNode = new VariableDeclarationExpr();
 		} else if (isOfType(n, VariableDeclarator.class)) {
 			VariableDeclarator obj = new VariableDeclarator(attributes.getType(), attributes.getName());
-			if (attributes.getInitilization().isNonEmpty()) {
-				/*
-				 * Variable declarators don't need an initialiations (e.g. they are just
-				 * declared). So check if there's any, if so add it.
-				 */
-				obj.setInitializer(attributes.getInitilization().getFirst().get());
-			}
+			/*
+			 * Variable declarators don't need an initialiations (e.g. they are just
+			 * declared). So check if there's any, if so add it.
+			 */
+			attributes.getInitilization().getFirst().ifPresent(init -> obj.setInitializer(init));
 			jpNode = obj;
 		} else if (isOfType(n, VarType.class)) {
 			jpNode = new VarType();
@@ -445,6 +429,8 @@ public class JavaWriterUtil {
 				((SynchronizedStmt) parentNode).setBody((BlockStmt) childNode);
 			} else if (parentNode instanceof LabeledStmt && childNode instanceof Statement) {
 				((LabeledStmt) parentNode).setStatement((Statement) childNode);
+			} else if (parentNode instanceof NodeWithVariables && childNode instanceof VariableDeclarator) {
+				((NodeWithVariables) parentNode).addVariable((VariableDeclarator) childNode);
 			} else if (parentNode instanceof LabeledStmt && childNode instanceof Expression) {
 				((LabeledStmt) parentNode).setStatement(new ExpressionStmt((Expression) childNode));
 			} else if (parentNode instanceof LambdaExpr && childNode instanceof Statement) {

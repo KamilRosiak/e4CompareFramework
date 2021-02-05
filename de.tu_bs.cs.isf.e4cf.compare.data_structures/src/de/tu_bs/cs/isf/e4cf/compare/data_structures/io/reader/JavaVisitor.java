@@ -10,6 +10,8 @@ import com.github.javaparser.ast.modules.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 
+import java.util.Arrays;
+
 import com.github.javaparser.ast.*;
 
 /**
@@ -28,15 +30,21 @@ import com.github.javaparser.ast.*;
  */
 public class JavaVisitor implements VoidVisitor<Node> {
 	/**
-	 * Visits all children of the node n.
+	 * Visits all children but specified exceptions of the node n.
 	 * 
-	 * @param n   JavaParser Node
-	 * @param arg e4cf Parent Node
+	 * @param n          JavaParser Node
+	 * @param arg        e4cf Parent Node
+	 * @param exceptions Nodes that should not be visited
 	 */
-	private void visitor(com.github.javaparser.ast.Node n, Node arg) {
+	private void visitor(com.github.javaparser.ast.Node n, Node arg, com.github.javaparser.ast.Node... exceptions) {
 		// Comments are no child nodes. Therefore they are added explicitly.
 		n.getComment().ifPresent(comment -> arg.addAttribute(JavaAttributesTypes.Comment.name(), comment.getContent()));
-		n.getChildNodes().forEach(c -> c.accept(this, arg));
+		NodeList<com.github.javaparser.ast.Node> exceptionList = NodeList.nodeList(exceptions);
+		for (com.github.javaparser.ast.Node childNode : n.getChildNodes()) {
+			if (!exceptionList.contains(childNode)) {
+				childNode.accept(this, arg);
+			}
+		}
 	}
 
 	/**
@@ -136,19 +144,8 @@ public class JavaVisitor implements VoidVisitor<Node> {
 
 		// Return type
 		p.addAttribute(JavaAttributesTypes.ReturnType.name(), n.getTypeAsString());
-
-		// Comment must be added explicitly as comment isn't child node.
-		n.getComment().ifPresent(comment -> p.addAttribute(JavaAttributesTypes.Comment.name(), comment.getContent()));
-
-		/*
-		 * Return type cannot be removed, so just ignore it, but visit all other
-		 * children.
-		 */
-		n.getChildNodes().forEach(child -> {
-			if (!child.equals(n.getType())) {
-				child.accept(this, p);
-			}
-		});
+		
+		visitor(n, p, n.getType());
 	}
 
 	/**
@@ -302,11 +299,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	public void visit(AnnotationMemberDeclaration n, Node arg) {
 		Node annotationMemberDeclaration = new NodeImpl(n.getClass().getSimpleName(), arg);
 		annotationMemberDeclaration.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
-		n.getChildNodes().forEach(child -> {
-			if (!child.equals(n.getType())) {
-				child.accept(this, annotationMemberDeclaration);
-			}
-		});
+		visitor(n, annotationMemberDeclaration, n.getType());
 	}
 
 	/**
@@ -1350,11 +1343,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(VariableDeclarationExpr n, Node arg) {
-		for (int childNodeCounter = 0; childNodeCounter < n.getChildNodes().size(); childNodeCounter++) {
-			com.github.javaparser.ast.Node child = n.getChildNodes().get(childNodeCounter);
-			Node childNode = new NodeImpl(child.getClass().getSimpleName(), arg);
-			n.getChildNodes().get(childNodeCounter).accept(this, childNode);
-		}
+		visitor(n, arg);
 	}
 
 	/**
@@ -1374,16 +1363,15 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(VariableDeclarator n, Node arg) {
+		Node variableDeclaratorNode = new NodeImpl(VariableDeclarator.class.getSimpleName(), arg);
+		
 		// Type
-		arg.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
-
-		// Name
-		arg.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
+		variableDeclaratorNode.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
 
 		// Initializer
-		if (n.getInitializer().isPresent()) {
-			arg.addAttribute(JavaAttributesTypes.Initilization.name(), n.getInitializer().get().toString());
-		}
+		n.getInitializer().ifPresent(init -> variableDeclaratorNode.addAttribute(JavaAttributesTypes.Initilization.name(), init.toString()));
+		
+		visitor(n, variableDeclaratorNode, n.getType(), n.getInitializer().orElse(null));
 	}
 
 	/**
@@ -1631,7 +1619,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 
 		// This or super?
 		c.addAttribute(JavaAttributesTypes.IsThis.name(), String.valueOf(n.isThis()));
-		
+
 		// TypeArguments
 		if (n.getTypeArguments().isPresent()) {
 			for (Type typeArgumentExpr : n.getTypeArguments().get()) {
