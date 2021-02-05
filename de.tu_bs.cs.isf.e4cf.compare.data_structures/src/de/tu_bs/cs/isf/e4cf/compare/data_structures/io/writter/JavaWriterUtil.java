@@ -4,6 +4,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 import java.lang.Thread.State;
 import java.util.Optional;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
 
@@ -204,6 +205,18 @@ public class JavaWriterUtil {
 			jpNode = new FieldAccessExpr();
 		} else if (isOfType(n, FieldDeclaration.class)) {
 			jpNode = new FieldDeclaration().setModifiers(attributes.getModifier());
+		} else if (isOfType(n, JavaNodeTypes.Finally)) {
+			/*
+			 * If the types are correct (parent if try stmt and finally if really block,
+			 * then set finally block. Set parent and node to (virtually) null, so rest of
+			 * the method (setParent and visiting) is not done.
+			 */
+			if (p instanceof TryStmt && isOfType(n.getChildren().get(0), JavaNodeTypes.Body)) {
+				jpNode = visitWriter(n.getChildren().get(0));
+				((TryStmt) p).setFinallyBlock((BlockStmt) jpNode);
+				p = null;
+				n = new NodeImpl("");
+			}
 		} else if (isOfType(n, ForEachStmt.class)) {
 			jpNode = new ForEachStmt().setIterable(attributes.getIterator()).setVariable(new VariableDeclarationExpr(
 					attributes.getType(), attributes.getInitilization().getFirst().get().toString()));

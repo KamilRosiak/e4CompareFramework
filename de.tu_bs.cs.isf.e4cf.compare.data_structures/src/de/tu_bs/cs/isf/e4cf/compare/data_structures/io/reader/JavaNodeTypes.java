@@ -76,6 +76,12 @@ public enum JavaNodeTypes {
 	 */
 	Else,
 	/**
+	 * Node type for the finally block of a try stmt
+	 * 
+	 * @see TryStmt
+	 */
+	Finally,
+	/**
 	 * Node type for an import
 	 * 
 	 * @see ImportDeclaration

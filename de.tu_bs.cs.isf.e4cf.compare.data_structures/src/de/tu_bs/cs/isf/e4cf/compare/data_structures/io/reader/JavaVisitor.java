@@ -1201,7 +1201,12 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(TryStmt n, Node arg) {
-		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
+		Node tryStmtNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		if (n.getFinallyBlock().isPresent()) {
+			Node finallyBlockNode = new NodeImpl(JavaNodeTypes.Finally.name(), tryStmtNode);
+			n.getFinallyBlock().get().accept(this, finallyBlockNode);
+		}
+		visitor(n, tryStmtNode, n.getFinallyBlock().orElse(null));
 	}
 
 	/**
