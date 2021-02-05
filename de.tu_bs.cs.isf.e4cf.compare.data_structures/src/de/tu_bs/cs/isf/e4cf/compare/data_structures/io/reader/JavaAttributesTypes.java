@@ -112,6 +112,13 @@ public enum JavaAttributesTypes {
 	 */
 	Interface,
 	/**
+	 * This attribute contains true if the parameters of an lambda expression are
+	 * enclosed.
+	 * 
+	 * @see LambdaExpr
+	 */
+	isEnclosingParameters,
+	/**
 	 * This attribute contains true if the compilation unit is an enum.
 	 */
 	IsEnum,

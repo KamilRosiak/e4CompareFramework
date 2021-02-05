@@ -652,7 +652,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(LambdaExpr n, Node arg) {
-		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
+		Node lambdaExprNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		lambdaExprNode.addAttribute(JavaAttributesTypes.isEnclosingParameters.name(), String.valueOf(n.isEnclosingParameters()));
+		visitor(n, lambdaExprNode);
 	}
 
 	/**

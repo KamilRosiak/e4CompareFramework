@@ -229,8 +229,14 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, LabeledStmt.class)) {
 			jpNode = new LabeledStmt().setLabel(new SimpleName(attributes.getName()));
 		} else if (isOfType(n, LambdaExpr.class)) {
-			// Just add a lambda expr, the logic is done in the children.
-			jpNode = new LambdaExpr();
+			/*
+			 * In some cases, e.g. binary expr, the lambda expr might contain the attribute
+			 * value. In this case the attribute contains the body of the lambda expr.
+			 */
+			jpNode = new LambdaExpr().setEnclosingParameters(attributes.isEnclosingParameters());
+			if (attributes.getValue() != null) {
+				((LambdaExpr) jpNode).setBody(new ExpressionStmt(attributes.getValue()));
+			}
 		} else if (isOfType(n, LineComment.class)) {
 			jpNode = new LineComment(attributes.getComment());
 		} else if (isOfType(n, LocalClassDeclarationStmt.class)) {
