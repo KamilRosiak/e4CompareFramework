@@ -921,10 +921,11 @@ public class JavaVisitor implements VoidVisitor<Node> {
 
 	/**
 	 * Creates a new node for the parameter of type {@link Parameter} and adds the
-	 * parameter's type and name as attributes {@link JavaAttributesTypes#Type} and
-	 * {@link JavaAttributesTypes#Name}.
+	 * parameter's type as an attribute {@link JavaAttributesTypes#Type}.
 	 * <p>
 	 * If the parameter is has no type, then the attribute is omitted.
+	 * <p>
+	 * Then visits all children except the type of the parameter.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/type/Parameter.html">JavaParser
@@ -938,7 +939,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		if (!n.getTypeAsString().isEmpty()) {
 			c.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
 		}
-		c.addAttribute(JavaAttributesTypes.Name.name(), n.getNameAsString());
+		visitor(n, c, n.getType());
 	}
 
 	/**

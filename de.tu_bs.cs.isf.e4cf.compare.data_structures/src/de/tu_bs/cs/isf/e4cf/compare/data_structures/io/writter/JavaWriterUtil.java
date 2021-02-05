@@ -271,7 +271,7 @@ public class JavaWriterUtil {
 			jpNode = new ObjectCreationExpr(attributes.getScope(), attributes.getType().asClassOrInterfaceType(),
 					new NodeList<Expression>());
 		} else if (isOfType(n, Parameter.class)) {
-			Parameter obj = new Parameter(new UnknownType(), attributes.getName());
+			Parameter obj = new Parameter(new UnknownType(), attributes.getName()).setModifiers(attributes.getModifier());
 			if (attributes.getType() != null) {
 				// Replace unknown type if there is a more specific type for the parameter.
 				obj.setType(attributes.getType());
