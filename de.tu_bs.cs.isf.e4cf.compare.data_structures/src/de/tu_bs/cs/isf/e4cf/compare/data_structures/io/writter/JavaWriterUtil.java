@@ -145,10 +145,10 @@ public class JavaWriterUtil {
 			jpNode = new CatchClause();
 		} else if (isOfType(n, CharLiteralExpr.class)) {
 			jpNode = new CharLiteralExpr(attributes.getValue().toString());
+		} else if (isOfType(n, ClassExpr.class)) {
+			jpNode = attributes.getValue();
 		} else if (isOfType(n, JavaNodeTypes.Class)) {
 			jpNode = createClassOrInterfaceDeclaration(attributes, p);
-		} else if (isOfType(n, ClassExpr.class)) {
-			jpNode = new ClassExpr(attributes.getType());
 		} else if (isOfType(n, ConditionalExpr.class)) {
 			jpNode = new ConditionalExpr(attributes.getCondition().getFirst().get(), attributes.getThen(),
 					attributes.getElse());
