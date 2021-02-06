@@ -1,4 +1,4 @@
-package de.tu_bs.e4cf.core.compare.remote.contribution.preferences;
+package de.tu_bs.e4cf.core.compare.remote.preferences;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -18,7 +18,14 @@ import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.key_value.KeyValueNode;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
+/**
+ * Create a preference pane, to set the remote server.
+ * 
+ * @author Team 6
+ *
+ */
 public class RemoteComparisonPreferencePage implements IPreferencePage {
+	
 	private KeyValueNode ipConfiguration;
 	private KeyValueNode portConfiguration;
 	private Text textFieldIp;
@@ -37,6 +44,11 @@ public class RemoteComparisonPreferencePage implements IPreferencePage {
 		tab.setControl(page);
 	}
 
+	/**
+	 * Create control elements.
+	 * 
+	 * @param parent The preference root pane.
+	 */
 	private void createControl(Composite parent) {
 		Group group = new Group(parent, SWT.None);
 		group.setText("Connection");
@@ -51,6 +63,14 @@ public class RemoteComparisonPreferencePage implements IPreferencePage {
 		textFieldPort = createTextField(group, "Port", portConfiguration);
 	}
 
+	/**
+	 * Allow creation of text field with preceding label.
+	 * 
+	 * @param group Pane to attach elements.
+	 * @param label Context of label.
+	 * @param keyValueNode Node where data shoul be safed.
+	 * @return created text field.
+	 */
 	private Text createTextField(Group group, String label, KeyValueNode keyValueNode) {
 
 		Label uriLabel = new Label(group, SWT.NONE);
@@ -64,11 +84,19 @@ public class RemoteComparisonPreferencePage implements IPreferencePage {
 		return textField;
 	}
 
+	/**
+	 * Get Value for the set ip.
+	 * @return ValueNode.
+	 */
 	public KeyValueNode getIpValue() {
 		ipConfiguration.setValue(textFieldIp.getText());
 		return ipConfiguration;
 	}
 
+	/**
+	 * Get Value for the set port.
+	 * @return ValueNode.
+	 */
 	public KeyValueNode getPortValue() {
 		portConfiguration.setValue(textFieldPort.getText());
 		return portConfiguration;

@@ -20,7 +20,8 @@ Export-Package:
   de.tu_bs.cs.isf.e4cf.core.file_structure.components,
   de.tu_bs.cs.isf.e4cf.core.file_structure.components.operations,
   de.tu_bs.cs.isf.e4cf.core.file_structure.tree.sync,
-  de.tu_bs.cs.isf.e4cf.core.file_structure.tree.util,de.tu_bs.cs.isf.e4cf.core.file_structure.util,
+  de.tu_bs.cs.isf.e4cf.core.file_structure.tree.util,
+  de.tu_bs.cs.isf.e4cf.core.file_structure.util,
   de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates,
   de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util,
   de.tu_bs.cs.isf.e4cf.core.gui.swt.dialogs,
@@ -45,7 +46,8 @@ Export-Package:
   org.eclipse.fx.ui.di,
   org.eclipse.wb.swt,
   org.fxmisc.richtext,
-  org.fxmisc.richtext.event,org.fxmisc.richtext.model,org.reactfx
+  org.fxmisc.richtext.event,org.fxmisc.richtext.model,
+  org.reactfx
 Require-Bundle: org.eclipse.equinox.p2.engine,
  org.eclipse.equinox.p2.core,
  org.eclipse.core.runtime;bundle-version="0.0.0",
