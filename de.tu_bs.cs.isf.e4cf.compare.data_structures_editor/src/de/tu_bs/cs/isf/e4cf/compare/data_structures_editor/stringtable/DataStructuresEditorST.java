@@ -1,5 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable;
 
+/**
+ * String Table for Data Structures Editor
+ * 
+ * @author Team05
+ *
+ */
+
 public class DataStructuresEditorST {
 
 	public static final String TREE_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view";

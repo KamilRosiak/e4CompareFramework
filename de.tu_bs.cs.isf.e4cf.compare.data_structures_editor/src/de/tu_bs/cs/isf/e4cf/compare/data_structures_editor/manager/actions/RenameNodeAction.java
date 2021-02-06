@@ -1,9 +1,17 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+
+/**
+ * Implementation of UndoAction for RenameNode
+ * 
+ * @author Team05
+ *
+ */
 
 public class RenameNodeAction implements UndoAction {
 
@@ -26,7 +34,6 @@ public class RenameNodeAction implements UndoAction {
 		for (Attribute attribute : treeItem.getValue().getAttributes()) {
 			if (attribute.getAttributeKey().toLowerCase().equals("name")) {
 				attribute.getAttributeValues().clear();
-				System.out.println(nodeName);
 				break;
 			}
 		}

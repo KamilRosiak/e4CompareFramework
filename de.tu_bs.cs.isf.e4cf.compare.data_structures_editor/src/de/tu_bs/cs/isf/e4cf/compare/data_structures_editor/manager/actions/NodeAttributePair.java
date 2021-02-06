@@ -1,11 +1,12 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
+ * Encapsulates an attribute and its owner.
  * 
- * @author Team05 Encapsulates an attribute and its owner.
+ * @author Team05
  *
  */
 public class NodeAttributePair {

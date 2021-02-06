@@ -12,12 +12,12 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.AddAttributeAction;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.AddChildNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DeleteNodeAction;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.NodeAttributePair;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.RenameNodeAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddAttributeAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddChildNodeAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.DeleteNodeAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeAttributePair;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.RenameNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
@@ -34,6 +34,13 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+
+/**
+ * Class to give functions to FXML Elements
+ * 
+ * @author Team05
+ *
+ */
 
 public class TreeViewController {
 
@@ -72,12 +79,22 @@ public class TreeViewController {
 
 	CommandManager treeManager = new CommandManager();
 
+	/**
+	 * Event for refreshing the treeView
+	 * 
+	 * @param bool
+	 */
 	@Optional
 	@Inject
 	public void refreshTreeView(@UIEventTopic(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT) boolean bool) {
 		treeView.refresh();
 	}
 
+	/**
+	 * Event to remove attributes
+	 * 
+	 * @param attribute
+	 */
 	@Optional
 	@Inject
 	public void removeNodeAttributeFromSelectedItem(
@@ -85,6 +102,10 @@ public class TreeViewController {
 		treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().remove(attribute);
 	}
 
+	/**
+	 * 
+	 * @param bool
+	 */
 	@Optional
 	@Inject
 	public void reopenItem(@UIEventTopic(DataStructuresEditorST.REOPEN_ITEM_EVENT) boolean bool) {
@@ -93,6 +114,11 @@ public class TreeViewController {
 				treeView.getSelectionModel().getSelectedItem().getValue());
 	}
 
+	/**
+	 * Method to initialize the treeView from a given Tree
+	 * 
+	 * @param tree
+	 */
 	private void initializeTree(Tree tree) {
 		treeView.setContextMenu(contextMenu);
 		background.setOnMouseEntered(event -> contextMenu.hide());
@@ -108,13 +134,19 @@ public class TreeViewController {
 		displayTotalNodeAmount();
 	}
 
+	/**
+	 * Method to display the total amount of nodes
+	 */
 	private void displayTotalNodeAmount() {
 		totalNodeAmount.setText("Total node amount: "
 				+ (treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())).size());
 		treeView.refresh();
 	}
 
-	void deleteNode() {
+	/**
+	 * Method to delete a Node
+	 */
+	private void deleteNode() {
 
 		TreeItem<AbstractNode> ti = treeView.getSelectionModel().getSelectedItem();
 		treeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
@@ -125,6 +157,11 @@ public class TreeViewController {
 		treeView.refresh();
 	}
 
+	/**
+	 * Event to add an attribute again after removal
+	 * 
+	 * @param pair
+	 */
 	@Optional
 	@Inject
 	private void addAttribute(@UIEventTopic(DataStructuresEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
@@ -132,17 +169,31 @@ public class TreeViewController {
 		treeView.refresh();
 	}
 
+	/**
+	 * Method to add a new Attribute
+	 * 
+	 * @param attributeName
+	 * @param attributeValue
+	 */
 	private void addAttribute(String attributeName, String attributeValue) {
 		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
 		treeView.refresh();
 	}
 
+	/**
+	 * Event to initialize treeView from given Tree
+	 * 
+	 * @param tree
+	 */
 	@Optional
 	@Inject
 	public void openTree(@UIEventTopic(DataStructuresEditorST.OPEN_TREE_EVENT) Tree tree) {
 		initializeTree(tree);
 	}
 
+	/**
+	 * Method to add an Attribute to a Node
+	 */
 	@FXML
 	void addNodeAttribute() {
 		List<Attribute> attributeList = new ArrayList<Attribute>();
@@ -161,7 +212,7 @@ public class TreeViewController {
 	}
 
 	/**
-	 * 
+	 * Method to add a Child to a Node
 	 */
 	@FXML
 	void addChildNode() {
@@ -180,7 +231,7 @@ public class TreeViewController {
 	}
 
 	/**
-	 * 
+	 * Method to copy the selected Items
 	 */
 	@FXML
 	void copyNode() {
@@ -188,6 +239,9 @@ public class TreeViewController {
 		copyList.addAll(new ArrayList<TreeItem<AbstractNode>>(treeView.getSelectionModel().getSelectedItems()));
 	}
 
+	/**
+	 * Method to paste the copied Items
+	 */
 	@FXML
 	void pasteNode() {
 		try {
@@ -210,7 +264,7 @@ public class TreeViewController {
 	}
 
 	/**
-	 * 
+	 * Method to rename a Node
 	 */
 	@FXML
 	void renameNode() {
@@ -239,12 +293,18 @@ public class TreeViewController {
 		}
 	}
 
+	/**
+	 * Method to cut
+	 */
 	@FXML
 	void cutNode() {
 		copyNode();
 		deleteNode();
 	}
 
+	/**
+	 * Method to extract the selected Items into a new File
+	 */
 	@FXML
 	void extractToFile() {
 		if (treeView.getSelectionModel().getSelectedItems().contains(treeView.getRoot())) {
@@ -268,6 +328,9 @@ public class TreeViewController {
 		}
 	}
 
+	/**
+	 * give function to the FXML Element delete
+	 */
 	@FXML
 	void deleteNodeFXML() {
 		if (treeView.getSelectionModel().getSelectedItems().size() > 1) {
@@ -291,6 +354,9 @@ public class TreeViewController {
 		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
 	}
 
+	/**
+	 * Method to save the treeView
+	 */
 	@FXML
 	void saveFile() {
 		File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + TreeViewUtilities.treeName);
@@ -300,6 +366,9 @@ public class TreeViewController {
 		file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
 	}
 
+	/**
+	 * Method to save the treeView as a new file type
+	 */
 	@FXML
 	void saveAs() {
 		String fileName = TreeViewUtilities.getInput("Please enter desired file name");
@@ -315,6 +384,9 @@ public class TreeViewController {
 		}
 	}
 
+	/**
+	 * Undoes the last action
+	 */
 	@FXML
 	void undoAction() {
 		treeManager.undo();
@@ -358,6 +430,9 @@ public class TreeViewController {
 		resultList.clear();
 	}
 
+	/**
+	 * is called when the user presses the search button
+	 */
 	@FXML
 	void startSearch() {
 		if (currentSearchText == null) { // Used for inital search string
@@ -394,6 +469,9 @@ public class TreeViewController {
 		});
 	}
 
+	/**
+	 * expands all items
+	 */
 	@FXML
 	public void expandAllItems() {
 		for (TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
@@ -401,6 +479,9 @@ public class TreeViewController {
 		}
 	}
 
+	/**
+	 * collapses all items
+	 */
 	@FXML
 	public void collapseAllItems() {
 		for (TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
@@ -408,6 +489,13 @@ public class TreeViewController {
 		}
 	}
 
+	/**
+	 * fills a list with all items currently in the treeView
+	 * 
+	 * @param item
+	 * @param treeViewList
+	 * @return list with treeItems
+	 */
 	public List<TreeItem<AbstractNode>> treeViewToList(TreeItem<AbstractNode> item,
 			List<TreeItem<AbstractNode>> treeViewList) {
 		if (item.getValue().isRoot()) {
@@ -422,6 +510,9 @@ public class TreeViewController {
 		return treeViewList;
 	}
 
+	/**
+	 * collapses all selected items
+	 */
 	@FXML
 	public void collapseSelectedItems() {
 		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
@@ -429,6 +520,9 @@ public class TreeViewController {
 		}
 	}
 
+	/**
+	 * expands all selected items
+	 */
 	@FXML
 	public void expandSelectedItems() {
 		// tempList necessary because we wanted to select all children, too
@@ -442,6 +536,11 @@ public class TreeViewController {
 		}
 	}
 
+	/**
+	 * Event to get the selected items value
+	 * 
+	 * @param bool
+	 */
 	@Optional
 	@Inject
 	public void askForSelectedItem(@UIEventTopic(DataStructuresEditorST.ASK_FOR_SELECTED_ITEM_EVENT) boolean bool) {

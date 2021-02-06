@@ -16,10 +16,12 @@ import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
 /**
+ * Class to load the FXML File for TreeView
  * 
  * @author Team05
  *
  */
+
 public class DataStructureEditorController {
 
 	@Inject

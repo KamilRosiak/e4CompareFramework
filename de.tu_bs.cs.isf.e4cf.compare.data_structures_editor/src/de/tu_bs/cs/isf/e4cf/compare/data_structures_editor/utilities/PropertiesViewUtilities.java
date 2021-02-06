@@ -49,6 +49,10 @@ public class PropertiesViewUtilities {
 		return tableView;
 	}
 
+	/**
+	 * @param displayedDialog
+	 * @return the given input
+	 */
 	public static String getInput(String displayedDialog) {
 		TextInputDialog td = new TextInputDialog();
 		td.setHeaderText(displayedDialog);
@@ -80,6 +84,10 @@ public class PropertiesViewUtilities {
 		}
 	}
 
+	/**
+	 * @param outputText
+	 * @return true if button ok is pressed, false if it isn't
+	 */
 	public static boolean confirmationAlert(String outputText) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText(null);

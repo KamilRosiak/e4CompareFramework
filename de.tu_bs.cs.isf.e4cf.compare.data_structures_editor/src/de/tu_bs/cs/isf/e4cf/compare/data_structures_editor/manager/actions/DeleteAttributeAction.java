@@ -1,7 +1,15 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+
+/**
+ * Implementation of UndoAction for DeleteAttribute
+ * 
+ * @author Team05
+ *
+ */
 
 public class DeleteAttributeAction implements UndoAction {
 

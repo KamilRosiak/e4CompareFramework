@@ -14,6 +14,13 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
+/**
+ * Class to load the FXML File for PropertiesView
+ * 
+ * @author Team05
+ *
+ */
+
 public class DataStructuresPropertiesController {
 
 	@Inject

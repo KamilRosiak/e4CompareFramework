@@ -2,6 +2,13 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager;
 
 import java.util.Stack;
 
+/**
+ * Manager for Undo
+ * 
+ * @author Team05
+ *
+ */
+
 public class CommandManager {
 
 	private Stack<UndoAction> queueStackNormal;

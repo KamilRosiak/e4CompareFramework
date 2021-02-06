@@ -12,10 +12,10 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DeleteAttributeAction;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.NodeAttributePair;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.PropertiesAction;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.RenamePropertyAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.DeleteAttributeAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.ModifyValuesAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeAttributePair;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.RenamePropertyAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.PropertiesViewUtilities;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
@@ -45,6 +45,7 @@ public class PropertiesController {
 	CommandManager propertiesManager = new CommandManager();
 
 	/**
+	 * empties the properties table
 	 * 
 	 * @param bool
 	 */
@@ -66,15 +67,24 @@ public class PropertiesController {
 		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
 	}
 
+	/**
+	 * refreshes views
+	 */
 	private void refreshGUI() {
 		services.eventBroker.send(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT, true);
 		services.eventBroker.send(DataStructuresEditorST.REOPEN_ITEM_EVENT, true);
 	}
 
+	/**
+	 * @return the currently selected item
+	 */
 	private Attribute getSelectedItem() {
 		return propertiesTable.getSelectionModel().getSelectedItem();
 	}
 
+	/**
+	 * Method to edit the name of a property
+	 */
 	@FXML
 	public void editNodeProperty() {
 		String s = PropertiesViewUtilities.getInput("Please enter new property designation");
@@ -89,6 +99,9 @@ public class PropertiesController {
 		}
 	}
 
+	/**
+	 * edits the selected Nodes Value
+	 */
 	@FXML
 	public void editNodeValue() {
 		Set<String> oldAttributeValues = getCurrentAttributeValues();
@@ -99,11 +112,14 @@ public class PropertiesController {
 			getSelectedItem().getAttributeValues().clear();
 			getSelectedItem().getAttributeValues().add(newValue);
 			newAttributeValues = getSelectedItem().getAttributeValues();
-			propertiesManager.execute(new PropertiesAction("properties", oldAttributeValues, newAttributeValues));
+			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
 			refreshGUI();
 		}
 	}
 
+	/**
+	 * removes the selected attribute
+	 */
 	@FXML
 	public void removeNodeAttribute() {
 		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
@@ -117,6 +133,9 @@ public class PropertiesController {
 
 	}
 
+	/**
+	 * adds a new Value to the selected attribute
+	 */
 	@FXML
 	public void addNodeValue() {
 		Set<String> oldAttributeValues = getCurrentAttributeValues();
@@ -125,17 +144,23 @@ public class PropertiesController {
 		if (s != null) {
 			getSelectedItem().getAttributeValues().add(s);
 			newAttributeValues = getSelectedItem().getAttributeValues();
-			propertiesManager.execute(new PropertiesAction("properties", oldAttributeValues, newAttributeValues));
+			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
 			refreshGUI();
 		}
 	}
 
+	/**
+	 * undoes the last action made in the properties view
+	 */
 	@FXML
 	void undoProperties() {
 		propertiesManager.undo();
 		refreshGUI();
 	}
 
+	/**
+	 * @return the current attributes values before changes are made
+	 */
 	Set<String> getCurrentAttributeValues() {
 		Set<String> oldAttributeValues = new HashSet<String>();
 		// save the old attribute values
@@ -145,6 +170,11 @@ public class PropertiesController {
 		return oldAttributeValues;
 	}
 
+	/**
+	 * Event to receive the node which is currently selected in the treeView
+	 * 
+	 * @param node
+	 */
 	@Optional
 	@Inject
 	public void receiveSelectedNode(@UIEventTopic(DataStructuresEditorST.RECEIVE_SELECTED_NODE_EVENT) Node node) {

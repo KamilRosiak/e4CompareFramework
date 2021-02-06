@@ -38,6 +38,11 @@ public class NodeImpl extends AbstractNode {
 		setVariabilityClass(varClass);
 	}
 
+	/**
+	 * initializes a node with the mandatory attributes variability class and name
+	 * 
+	 * @param node
+	 */
 	private void initializeMandatoryAttributes(Node node) {
 		if (node.isRoot()) {
 			node.addAttribute("name", "root");
@@ -51,6 +56,11 @@ public class NodeImpl extends AbstractNode {
 		node.addAttribute("VariabilityClass", getVariabilityClass().toString());
 	}
 
+	/**
+	 * @param node
+	 * @param key
+	 * @return true when the attribute exists, false if it doesn't
+	 */
 	public boolean attributeExists(Node node, String key) {
 		for (Attribute attr : node.getAttributes()) {
 			if (attr.getAttributeKey().equals(key)) {

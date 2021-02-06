@@ -4,6 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Class to initialize a List for Undo Actions and its operations
+ * 
+ * @author Team05
+ *
+ */
+
 public class QueueStack<T> {
 
 	private List<T> dataCollection;
@@ -22,9 +29,4 @@ public class QueueStack<T> {
 		else
 			return Optional.empty();
 	}
-
-	void clear() {
-		dataCollection.clear();
-	}
-
 }

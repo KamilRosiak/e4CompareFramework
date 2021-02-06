@@ -1,6 +1,14 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
+
+/**
+ * Implementation of UndoAction for RenameProperty
+ * 
+ * @author Team05
+ *
+ */
 
 public class RenamePropertyAction implements UndoAction {
 	private String name;
@@ -15,9 +23,6 @@ public class RenamePropertyAction implements UndoAction {
 
 	@Override
 	public void undo() {
-		System.out.println("UNDO");
-		System.out.println(oldName);
-		System.out.println(attr);
 		attr.setAttributeKey(oldName);
 	}
 }

@@ -54,7 +54,6 @@ public final class TreeViewUtilities {
 	 */
 	public static void fillTreeView(Node node, TreeItem<AbstractNode> parent) {
 		for (Node n : node.getChildren()) {
-			// TreeItem<AbstractNode> ti = new TreeItem<AbstractNode>(new NodeImpl(n));
 			TreeItem<AbstractNode> ti = nodeToTreeItem(n);
 			parent.getChildren().add(ti);
 			if (!n.isLeaf()) {
