@@ -511,8 +511,11 @@ public class JavaWriterUtil {
 				((IfStmt) parentNode).setThenStmt(new ExpressionStmt((Expression) childNode));
 			} else if (parentNode instanceof NodeWithArguments && childNode instanceof Expression) {
 				// see processArgument
+			} else if (parentNode instanceof ObjectCreationExpr && childNode instanceof BodyDeclaration) {
+				((ObjectCreationExpr) parentNode).addAnonymousClassBody((BodyDeclaration) childNode);
 			}
-
+			
+			
 			else {
 				throw new UnsupportedOperationException(
 						"Parent node is of type " + parentNode.getClass().getSimpleName() + ". Child node is of type "

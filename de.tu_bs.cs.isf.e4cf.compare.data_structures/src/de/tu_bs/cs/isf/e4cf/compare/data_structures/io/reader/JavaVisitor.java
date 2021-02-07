@@ -877,15 +877,21 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * This node has an attribute {@link JavaAttributesTypes#Type} containing the
 	 * type, which should be instantiated.
 	 * <p>
+	 * If the object creation expr has a scope, then the scope is added as an
+	 * attribute {@link JavaAttributesTypes#Scope}.
+	 * <p>
 	 * This node gets a child node {@link JavaNodeTypes#Argument} with the attribute
 	 * {@link JavaAttributesTypes#Children} containing the number of children. For
 	 * every argument a new node {@link JavaNodeTypes#Argument} with an index is
 	 * added to the argument node. The arguments are then visited with the indexed
-	 * nodes as their parent.
+	 * nodes as their parent. After an argument is visited, it is removed, to not
+	 * interfere with the later visiting.
 	 * <p>
-	 * If an anonymoud class body is present an child node
-	 * {@link JavaNodeTypes#Body} is added to the object creation node, which is the
-	 * parent node for each statement of the anonymous class body.
+	 * If an anonymous class body is present an child node, then every
+	 * {@link BodyDeclaration} of the body is visited and added to the object
+	 * creation node as a child node. After a body decl was visited, it is removed.
+	 * <p>
+	 * At the end the remaining child nodes of the object creation expr are visited.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/ObjectCreationExpr.html">JavaParser
@@ -906,16 +912,26 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		// Arguments
 		Node arguments = new NodeImpl(JavaNodeTypes.Argument.name(), c);
 		arguments.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(n.getArguments().size()));
-		for (int i = 0; i < n.getArguments().size(); i++) {
+		int argSize = n.getArguments().size();
+		for (int i = 0; i < argSize; i++) {
+			Expression concreteArg = n.getArgument(0);
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, arguments);
-			n.getArgument(i).accept(this, argNode);
+			concreteArg.accept(this, argNode);
+			concreteArg.removeForced();
 		}
 
 		// Anonymous Class Body
 		if (n.getAnonymousClassBody().isPresent()) {
-			Node anonClassBody = new NodeImpl(JavaNodeTypes.Body.name(), c);
-			n.getAnonymousClassBody().get().forEach(decl -> decl.accept(this, anonClassBody));
+			NodeList<BodyDeclaration<?>> anonymousClassBodyList = n.getAnonymousClassBody().get();
+			int anonymousClassBodySize = anonymousClassBodyList.size();
+			for (int i = 0; i < anonymousClassBodySize; i++) {
+				BodyDeclaration<?> anonClassBody = anonymousClassBodyList.get(0);
+				anonClassBody.accept(this, c);
+				anonClassBody.removeForced();
+			}
 		}
+
+		visitor(n, c, n.getType(), n.getScope().orElse(null));
 	}
 
 	/**
