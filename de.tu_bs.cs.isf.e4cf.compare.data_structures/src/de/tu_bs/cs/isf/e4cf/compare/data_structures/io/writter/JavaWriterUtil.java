@@ -72,12 +72,16 @@ public class JavaWriterUtil {
 
 			/*
 			 * When the compilation unit is class or interface create a new class or
-			 * interface declaration. Otherwise it is an enum declaration.
+			 * interface declaration. Otherwise it is an enum declaration. The name
+			 * attribute is empty, if the compilation unit only consists of a package
+			 * declaration.
 			 */
-			if (!attributes.isEnum()) {
-				jpNode = createClassOrInterfaceDeclaration(attributes, p);
-			} else {
-				jpNode = new EnumDeclaration(attributes.getModifier(), attributes.getName());
+			if (!attributes.getName().isEmpty()) {
+				if (!attributes.isEnum()) {
+					jpNode = createClassOrInterfaceDeclaration(attributes, p);
+				} else {
+					jpNode = new EnumDeclaration(attributes.getModifier(), attributes.getName());
+				}
 			}
 		} else if (isOfType(n, AnnotationDeclaration.class)) {
 			jpNode = createAnnotationDeclaration(attributes, p);
@@ -514,8 +518,7 @@ public class JavaWriterUtil {
 			} else if (parentNode instanceof ObjectCreationExpr && childNode instanceof BodyDeclaration) {
 				((ObjectCreationExpr) parentNode).addAnonymousClassBody((BodyDeclaration) childNode);
 			}
-			
-			
+
 			else {
 				throw new UnsupportedOperationException(
 						"Parent node is of type " + parentNode.getClass().getSimpleName() + ". Child node is of type "
