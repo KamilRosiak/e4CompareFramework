@@ -80,41 +80,6 @@ public class TreeViewController {
 	CommandManager treeManager = new CommandManager();
 
 	/**
-	 * Event for refreshing the treeView
-	 * 
-	 * @param bool
-	 */
-	@Optional
-	@Inject
-	public void refreshTreeView(@UIEventTopic(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT) boolean bool) {
-		treeView.refresh();
-	}
-
-	/**
-	 * Event to remove attributes
-	 * 
-	 * @param attribute
-	 */
-	@Optional
-	@Inject
-	public void removeNodeAttributeFromSelectedItem(
-			@UIEventTopic(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT) Attribute attribute) {
-		treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().remove(attribute);
-	}
-
-	/**
-	 * 
-	 * @param bool
-	 */
-	@Optional
-	@Inject
-	public void reopenItem(@UIEventTopic(DataStructuresEditorST.REOPEN_ITEM_EVENT) boolean bool) {
-		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
-		services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
-				treeView.getSelectionModel().getSelectedItem().getValue());
-	}
-
-	/**
 	 * Method to initialize the treeView from a given Tree
 	 * 
 	 * @param tree
@@ -158,18 +123,6 @@ public class TreeViewController {
 	}
 
 	/**
-	 * Event to add an attribute again after removal
-	 * 
-	 * @param pair
-	 */
-	@Optional
-	@Inject
-	private void addAttribute(@UIEventTopic(DataStructuresEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
-		pair.getOwner().getAttributes().add(pair.getAttribute());
-		treeView.refresh();
-	}
-
-	/**
 	 * Method to add a new Attribute
 	 * 
 	 * @param attributeName
@@ -181,14 +134,59 @@ public class TreeViewController {
 	}
 
 	/**
-	 * Event to initialize treeView from given Tree
-	 * 
-	 * @param tree
+	 * search the text given in the searchfield
 	 */
-	@Optional
-	@Inject
-	public void openTree(@UIEventTopic(DataStructuresEditorST.OPEN_TREE_EVENT) Tree tree) {
-		initializeTree(tree);
+	void searchForNode() {
+		List<TreeItem<AbstractNode>> searchList = new ArrayList<TreeItem<AbstractNode>>();
+		treeView.getSelectionModel().clearSelection();
+		List<TreeItem<AbstractNode>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
+				searchTextField.getText().toLowerCase(), searchList);
+		if (searchCounter >= resultList.size()) {
+			searchCounter = 0;
+		}
+		treeView.getSelectionModel().select(resultList.get(searchCounter));
+		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+		hitCount.setText((searchCounter + 1) + "/" + resultList.size());
+		resultList.clear();
+	}
+
+	/**
+	 * fills a list with all items currently in the treeView
+	 * 
+	 * @param item
+	 * @param treeViewList
+	 * @return list with treeItems
+	 */
+	public List<TreeItem<AbstractNode>> treeViewToList(TreeItem<AbstractNode> item,
+			List<TreeItem<AbstractNode>> treeViewList) {
+		if (item.getValue().isRoot()) {
+			treeViewList.add(item);
+		}
+		for (TreeItem<AbstractNode> ti : item.getChildren()) {
+			treeViewList.add(ti);
+			if (!ti.isLeaf()) {
+				treeViewToList(ti, treeViewList);
+			}
+		}
+		return treeViewList;
+	}
+
+	/**
+	 * Adds a listener to the TreeView so that PropertiesTable of a highlighted node
+	 * is displayed
+	 * 
+	 * @param treeView
+	 * @param services
+	 * @return
+	 */
+	public void addListener() {
+		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
+				TreeViewUtilities.switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
+				services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
+						treeView.getSelectionModel().getSelectedItem().getValue());
+			}
+		});
 	}
 
 	/**
@@ -413,24 +411,6 @@ public class TreeViewController {
 	}
 
 	/**
-	 * search the text given in the searchfield
-	 */
-	void searchForNode() {
-//		TreeViewUtilities.searchList.clear();
-		List<TreeItem<AbstractNode>> searchList = new ArrayList<TreeItem<AbstractNode>>();
-		treeView.getSelectionModel().clearSelection();
-		List<TreeItem<AbstractNode>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
-				searchTextField.getText().toLowerCase(), searchList);
-		if (searchCounter >= resultList.size()) {
-			searchCounter = 0;
-		}
-		treeView.getSelectionModel().select(resultList.get(searchCounter));
-		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-		hitCount.setText((searchCounter + 1) + "/" + resultList.size());
-		resultList.clear();
-	}
-
-	/**
 	 * is called when the user presses the search button
 	 */
 	@FXML
@@ -452,24 +432,6 @@ public class TreeViewController {
 	}
 
 	/**
-	 * Adds a listener to the TreeView so that PropertiesTable of a highlighted node
-	 * is displayed
-	 * 
-	 * @param treeView
-	 * @param services
-	 * @return
-	 */
-	public void addListener() {
-		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
-				TreeViewUtilities.switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
-				services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
-						treeView.getSelectionModel().getSelectedItem().getValue());
-			}
-		});
-	}
-
-	/**
 	 * expands all items
 	 */
 	@FXML
@@ -487,27 +449,6 @@ public class TreeViewController {
 		for (TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
 			ti.setExpanded(false);
 		}
-	}
-
-	/**
-	 * fills a list with all items currently in the treeView
-	 * 
-	 * @param item
-	 * @param treeViewList
-	 * @return list with treeItems
-	 */
-	public List<TreeItem<AbstractNode>> treeViewToList(TreeItem<AbstractNode> item,
-			List<TreeItem<AbstractNode>> treeViewList) {
-		if (item.getValue().isRoot()) {
-			treeViewList.add(item);
-		}
-		for (TreeItem<AbstractNode> ti : item.getChildren()) {
-			treeViewList.add(ti);
-			if (!ti.isLeaf()) {
-				treeViewToList(ti, treeViewList);
-			}
-		}
-		return treeViewList;
 	}
 
 	/**
@@ -534,6 +475,64 @@ public class TreeViewController {
 			ti.setExpanded(true);
 			treeView.getSelectionModel().select(ti);
 		}
+	}
+
+	/**
+	 * Event for refreshing the treeView
+	 * 
+	 * @param bool
+	 */
+	@Optional
+	@Inject
+	public void refreshTreeView(@UIEventTopic(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT) boolean bool) {
+		treeView.refresh();
+	}
+
+	/**
+	 * Event to remove attributes
+	 * 
+	 * @param attribute
+	 */
+	@Optional
+	@Inject
+	public void removeNodeAttributeFromSelectedItem(
+			@UIEventTopic(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT) Attribute attribute) {
+		treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().remove(attribute);
+	}
+
+	/**
+	 * 
+	 * @param bool
+	 */
+	@Optional
+	@Inject
+	public void reopenItem(@UIEventTopic(DataStructuresEditorST.REOPEN_ITEM_EVENT) boolean bool) {
+		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
+		services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
+				treeView.getSelectionModel().getSelectedItem().getValue());
+	}
+
+	/**
+	 * Event to add an attribute again after removal
+	 * 
+	 * @param pair
+	 */
+	@Optional
+	@Inject
+	private void addAttribute(@UIEventTopic(DataStructuresEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
+		pair.getOwner().getAttributes().add(pair.getAttribute());
+		treeView.refresh();
+	}
+
+	/**
+	 * Event to initialize treeView from given Tree
+	 * 
+	 * @param tree
+	 */
+	@Optional
+	@Inject
+	public void openTree(@UIEventTopic(DataStructuresEditorST.OPEN_TREE_EVENT) Tree tree) {
+		initializeTree(tree);
 	}
 
 	/**

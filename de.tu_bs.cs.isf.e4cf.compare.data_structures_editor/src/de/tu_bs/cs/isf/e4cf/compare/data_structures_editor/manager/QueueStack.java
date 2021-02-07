@@ -19,10 +19,20 @@ public class QueueStack<T> {
 		dataCollection = new LinkedList<>();
 	}
 
+	/**
+	 * Pushes an item on to the stack
+	 * 
+	 * @param item
+	 */
 	void push(T item) {
 		dataCollection.add(0, item);
 	}
 
+	/**
+	 * Pops an item from the stack
+	 * 
+	 * @return item which was popped
+	 */
 	Optional<T> pop() {
 		if (dataCollection.size() > 0)
 			return Optional.of(dataCollection.remove(dataCollection.size() - 1));

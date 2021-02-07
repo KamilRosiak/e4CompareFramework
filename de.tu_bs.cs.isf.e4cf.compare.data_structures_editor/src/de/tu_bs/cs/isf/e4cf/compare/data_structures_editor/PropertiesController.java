@@ -45,34 +45,23 @@ public class PropertiesController {
 	CommandManager propertiesManager = new CommandManager();
 
 	/**
-	 * empties the properties table
-	 * 
-	 * @param bool
-	 */
-	@Optional
-	@Inject
-	public void emptyPropertiesTable(@UIEventTopic(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT) boolean bool) {
-		propertiesTable.getItems().clear();
-	}
-
-	/**
-	 * 
-	 * @param node to be shown in the properties table
-	 */
-	@Optional
-	@Inject
-	public void showProperties(@UIEventTopic(DataStructuresEditorST.NODE_PROPERTIES_EVENT) NodeImpl node) {
-		propertiesTable.getColumns().clear();
-		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
-		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
-	}
-
-	/**
 	 * refreshes views
 	 */
 	private void refreshGUI() {
 		services.eventBroker.send(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT, true);
 		services.eventBroker.send(DataStructuresEditorST.REOPEN_ITEM_EVENT, true);
+	}
+
+	/**
+	 * @return the current attributes values before changes are made
+	 */
+	Set<String> getCurrentAttributeValues() {
+		Set<String> oldAttributeValues = new HashSet<String>();
+		// save the old attribute values
+		for (String value : getSelectedItem().getAttributeValues()) {
+			oldAttributeValues.add(value);
+		}
+		return oldAttributeValues;
 	}
 
 	/**
@@ -159,18 +148,6 @@ public class PropertiesController {
 	}
 
 	/**
-	 * @return the current attributes values before changes are made
-	 */
-	Set<String> getCurrentAttributeValues() {
-		Set<String> oldAttributeValues = new HashSet<String>();
-		// save the old attribute values
-		for (String value : getSelectedItem().getAttributeValues()) {
-			oldAttributeValues.add(value);
-		}
-		return oldAttributeValues;
-	}
-
-	/**
 	 * Event to receive the node which is currently selected in the treeView
 	 * 
 	 * @param node
@@ -179,6 +156,29 @@ public class PropertiesController {
 	@Inject
 	public void receiveSelectedNode(@UIEventTopic(DataStructuresEditorST.RECEIVE_SELECTED_NODE_EVENT) Node node) {
 		selectedNode = node;
+	}
+
+	/**
+	 * empties the properties table
+	 * 
+	 * @param bool
+	 */
+	@Optional
+	@Inject
+	public void emptyPropertiesTable(@UIEventTopic(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT) boolean bool) {
+		propertiesTable.getItems().clear();
+	}
+
+	/**
+	 * 
+	 * @param node to be shown in the properties table
+	 */
+	@Optional
+	@Inject
+	public void showProperties(@UIEventTopic(DataStructuresEditorST.NODE_PROPERTIES_EVENT) NodeImpl node) {
+		propertiesTable.getColumns().clear();
+		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
+		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
 	}
 
 }

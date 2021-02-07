@@ -17,10 +17,18 @@ public class CommandManager {
 		queueStackNormal = new Stack<>();
 	}
 
+	/**
+	 * Pushes an action on to the stack
+	 * 
+	 * @param action
+	 */
 	public void execute(UndoAction action) {
 		queueStackNormal.push(action);
 	}
 
+	/**
+	 * Invokes the action last pushed on to the stack
+	 */
 	public void undo() {
 		queueStackNormal.pop().undo();
 	}

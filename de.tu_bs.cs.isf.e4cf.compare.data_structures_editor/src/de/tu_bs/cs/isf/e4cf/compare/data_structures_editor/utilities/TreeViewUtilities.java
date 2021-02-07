@@ -62,6 +62,12 @@ public final class TreeViewUtilities {
 		}
 	}
 
+	/**
+	 * Creates TreeItem from a node, assigns an icon
+	 * 
+	 * @param node to be transformed
+	 * @return TreeItem created from the node
+	 */
 	public static TreeItem<AbstractNode> nodeToTreeItem(Node node) {
 		TreeItem<AbstractNode> ti = new TreeItem<AbstractNode>(new NodeImpl(node));
 		switch (ti.getValue().getNodeType()) {
@@ -105,7 +111,7 @@ public final class TreeViewUtilities {
 	}
 
 	/**
-	 * 
+	 * Saves the tree to a file with given name
 	 * 
 	 * @param treeView
 	 * @param newFileName
