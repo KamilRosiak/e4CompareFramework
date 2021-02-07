@@ -301,7 +301,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	}
 
 	/**
-	 * Creates a new node for the array access expression and visits it's children.
+	 * Creates a new node for the array access expression and adds the index as an attribute {@link JavaAttributesTypes#Value}. Then all children except for the index are visited.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/ArrayAccessExpr.html">JavaParser
@@ -311,7 +311,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ArrayAccessExpr n, Node arg) {
-		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
+		Node arrayAccessExprNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		arrayAccessExprNode.addAttribute(JavaAttributesTypes.Value.name(), n.getIndex().toString());
+		visitor(n, arrayAccessExprNode, n.getIndex());
 	}
 
 	/**
