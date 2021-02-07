@@ -347,7 +347,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ThrowStmt.class)) {
 			jpNode = attributes.getStatement().asThrowStmt();
 		} else if (isOfType(n, TryStmt.class)) {
-			jpNode = new TryStmt();
+			jpNode = new TryStmt().setResources(attributes.getResource());
 		} else if (isOfType(n, TypeExpr.class)) {
 			jpNode = new TypeExpr();
 		} else if (isOfType(n, TypeParameter.class)) {

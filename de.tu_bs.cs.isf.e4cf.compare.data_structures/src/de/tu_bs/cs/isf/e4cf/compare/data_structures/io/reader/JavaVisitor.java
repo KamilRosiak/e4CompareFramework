@@ -1213,6 +1213,11 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * then accepts this visitor with the finally node as an argument. A finally
 	 * block is always a {@link BlockStmt}.
 	 * <p>
+	 * For each present expression of the resources of the try stmt an attribute
+	 * {@link JavaAttributesTypes#Resource} is added to the new node with the expr
+	 * as a string as value. The expression is then removed from the resource, to
+	 * not interfere with the later visiting.
+	 * <p>
 	 * Then the children of the try stmt are visited (except for the finally block).
 	 * 
 	 * @see JavaVisitor#visit(BlockStmt, Node)
@@ -1225,10 +1230,21 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(TryStmt n, Node arg) {
 		Node tryStmtNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+
+		// Finally Block
 		if (n.getFinallyBlock().isPresent()) {
 			Node finallyBlockNode = new NodeImpl(JavaNodeTypes.Finally.name(), tryStmtNode);
 			n.getFinallyBlock().get().accept(this, finallyBlockNode);
 		}
+
+		// Resources
+		int resourcesSize = n.getResources().size();
+		for (int i = 0; i < resourcesSize; i++) {
+			Expression expr = n.getResources().get(0);
+			tryStmtNode.addAttribute(JavaAttributesTypes.Resource.name(), expr.toString());
+			expr.removeForced();
+		}
+
 		visitor(n, tryStmtNode, n.getFinallyBlock().orElse(null));
 	}
 

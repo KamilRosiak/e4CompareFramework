@@ -47,6 +47,7 @@ public class JavaWriterAttributeCollector {
 	private String _name = new String();
 	private String _operator = new String();
 	private String _package = new String();
+	private NodeList<Expression> _resource = new NodeList<Expression>();
 	private Type _returnType = null;
 	private Expression _scope = null;
 	private Expression _selector = null;
@@ -151,6 +152,8 @@ public class JavaWriterAttributeCollector {
 				_operator = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Package.name())) {
 				_package = singleVal;
+			} else if (key.equals(JavaAttributesTypes.Resource.name())) {
+				attribute.getAttributeValues().forEach(val -> _resource.add(StaticJavaParser.parseVariableDeclarationExpr(val)));
 			} else if (key.equals(JavaAttributesTypes.ReturnType.name())) {
 				_returnType = StaticJavaParser.parseType(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Scope.name())) {
@@ -291,6 +294,10 @@ public class JavaWriterAttributeCollector {
 		return _package;
 	}
 
+	public NodeList<Expression> getResource() {
+		return _resource;
+	}
+	
 	public Type getReturnType() {
 		return _returnType;
 	}
