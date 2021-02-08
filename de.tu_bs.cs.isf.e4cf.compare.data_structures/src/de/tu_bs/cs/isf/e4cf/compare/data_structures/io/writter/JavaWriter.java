@@ -1,15 +1,10 @@
 
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
-import java.util.Set;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriterUtil;
-
-import com.github.javaparser.ast.*;
-import com.github.javaparser.ast.body.*;
+import com.github.javaparser.printer.PrettyPrinterConfiguration;
+import com.github.javaparser.printer.PrettyPrinterConfiguration.IndentType;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactWriter;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
@@ -58,9 +53,12 @@ public class JavaWriter extends AbstractArtifactWriter {
 	@Override
 	public void writeArtifact(Tree tree, String path) {
 		if (tree.getArtifactType().equals(NODE_TYPE_TREE)) {
-			JavaWriterUtil javaWriterUtil = new JavaWriterUtil();
+			JavaWriterUtil jwu = new JavaWriterUtil();
+			PrettyPrinterConfiguration ppc = new PrettyPrinterConfiguration();
+			ppc.setIndentType(IndentType.TABS); // Default is spaces
+			ppc.setIndentSize(1); // Only one tab to indent
 			FileStreamUtil.writeTextToFile(path + "." + FILE_ENDING,
-					javaWriterUtil.visitWriter(tree.getRoot()).toString());
+					jwu.visitWriter(tree.getRoot()).toString(ppc));
 		}
 	}
 }
