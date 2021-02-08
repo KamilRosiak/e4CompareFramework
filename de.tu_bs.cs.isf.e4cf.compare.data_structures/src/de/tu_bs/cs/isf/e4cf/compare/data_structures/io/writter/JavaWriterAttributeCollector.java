@@ -3,12 +3,8 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.expr.UnaryExpr.Operator;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
-import com.github.javaparser.ast.visitor.GenericVisitor;
-import com.github.javaparser.ast.visitor.VoidVisitor;
-import com.github.javaparser.resolution.types.ResolvedType;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -47,6 +43,7 @@ public class JavaWriterAttributeCollector {
 	private String _name = new String();
 	private String _operator = new String();
 	private String _package = new String();
+	private NodeList<Expression> _resource = new NodeList<Expression>();
 	private Type _returnType = null;
 	private Expression _scope = null;
 	private Expression _selector = null;
@@ -151,10 +148,21 @@ public class JavaWriterAttributeCollector {
 				_operator = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Package.name())) {
 				_package = singleVal;
+			} else if (key.equals(JavaAttributesTypes.Resource.name())) {
+				attribute.getAttributeValues()
+						.forEach(val -> _resource.add(StaticJavaParser.parseVariableDeclarationExpr(val)));
 			} else if (key.equals(JavaAttributesTypes.ReturnType.name())) {
 				_returnType = StaticJavaParser.parseType(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Scope.name())) {
-				_scope = StaticJavaParser.parseExpression(singleVal);
+				if (singleVal.equals("super")) {
+					/*
+					 * When the scope is "super" the JavaParser can't parse the expression (v3.18.0)
+					 * so the superexpr is created manually.
+					 */
+					_scope = new SuperExpr();
+				} else {
+					_scope = StaticJavaParser.parseExpression(singleVal);
+				}
 			} else if (key.equals(JavaAttributesTypes.Selector.name())) {
 				_selector = StaticJavaParser.parseExpression(singleVal);
 			} else if (key.equals(JavaAttributesTypes.Statement.name())) {
@@ -183,12 +191,30 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
 				_typeargument = StaticJavaParser.parseTypeParameter(singleVal);
 			} else if (key.equals(JavaAttributesTypes.TypeParameterBound.name())) {
-				attribute.getAttributeValues()
-						.forEach(val -> _typeParameterBound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
+				attribute.getAttributeValues().forEach(val -> {
+					if (val.equals("?")) {
+						// Question mark type seems unparseable, so this is done manually
+						_typeParameterBound.add(new ClassOrInterfaceType("?"));
+					} else {
+						_typeParameterBound.add(StaticJavaParser.parseClassOrInterfaceType(val));
+					}
+				});
 			} else if (key.equals(JavaAttributesTypes.Update.name())) {
 				attribute.getAttributeValues().forEach(val -> _update.add(StaticJavaParser.parseExpression(val)));
 			} else if (key.equals(JavaAttributesTypes.Value.name())) {
-				_value = StaticJavaParser.parseExpression(singleVal);
+				/*
+				 * The value can be an array initializer expr, e.g. "{0, 1, 2}", which cannot be parsed. This
+				 * needs some manual work.
+				 */
+				if (singleVal.startsWith("{") && singleVal.endsWith("}")) {
+					NodeList<Expression> values = new NodeList<Expression>();
+					for (String v : singleVal.substring(1,singleVal.length()-1).split(",")) {
+						values.add(StaticJavaParser.parseExpression(v));
+					}
+					_value = new ArrayInitializerExpr(values);
+				} else {
+					_value = StaticJavaParser.parseExpression(singleVal);
+				}
 			} else {
 				throw new UnsupportedOperationException(key + " has not been implemented.");
 			}
@@ -254,11 +280,11 @@ public class JavaWriterAttributeCollector {
 	public boolean isEnclosingParameters() {
 		return _isEnclosingParameters;
 	}
-	
+
 	public boolean isInterface() {
 		return _isinterface;
 	}
-	
+
 	public boolean isThis() {
 		return _isThis;
 	}
@@ -289,6 +315,10 @@ public class JavaWriterAttributeCollector {
 
 	public String getPackage() {
 		return _package;
+	}
+
+	public NodeList<Expression> getResource() {
+		return _resource;
 	}
 
 	public Type getReturnType() {
@@ -342,7 +372,7 @@ public class JavaWriterAttributeCollector {
 	public TypeParameter getTypeArgument() {
 		return _typeargument;
 	}
-	
+
 	public NodeList<Type> getTypeParameterBound() {
 		return _typeParameterBound;
 	}

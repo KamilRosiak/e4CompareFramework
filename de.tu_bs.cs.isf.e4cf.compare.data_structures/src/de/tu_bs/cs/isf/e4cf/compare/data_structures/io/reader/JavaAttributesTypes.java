@@ -180,6 +180,12 @@ public enum JavaAttributesTypes {
 	 */
 	Package,
 	/**
+	 * The resources of a try stmt
+	 * 
+	 * @see TryStmt
+	 */
+	Resource,
+	/**
 	 * The return type of a method.
 	 */
 	ReturnType,

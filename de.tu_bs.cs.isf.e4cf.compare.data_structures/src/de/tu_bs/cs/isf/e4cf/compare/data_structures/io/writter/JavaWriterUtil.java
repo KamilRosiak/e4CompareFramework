@@ -1,9 +1,9 @@
 
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
-import java.lang.Thread.State;
 import java.util.Optional;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
 
@@ -71,12 +71,16 @@ public class JavaWriterUtil {
 
 			/*
 			 * When the compilation unit is class or interface create a new class or
-			 * interface declaration. Otherwise it is an enum declaration.
+			 * interface declaration. Otherwise it is an enum declaration. The name
+			 * attribute is empty, if the compilation unit only consists of a package
+			 * declaration.
 			 */
-			if (!attributes.isEnum()) {
-				jpNode = createClassOrInterfaceDeclaration(attributes, p);
-			} else {
-				jpNode = new EnumDeclaration(attributes.getModifier(), attributes.getName());
+			if (!attributes.getName().isEmpty()) {
+				if (!attributes.isEnum()) {
+					jpNode = createClassOrInterfaceDeclaration(attributes, p);
+				} else {
+					jpNode = new EnumDeclaration(attributes.getModifier(), attributes.getName());
+				}
 			}
 		} else if (isOfType(n, AnnotationDeclaration.class)) {
 			jpNode = createAnnotationDeclaration(attributes, p);
@@ -138,16 +142,16 @@ public class JavaWriterUtil {
 				obj.removeLabel();
 			}
 			jpNode = obj;
-		} else if (isOfType(n, CastExpr.class)) {
-			jpNode = new CastExpr().setType(attributes.getType());
+		} else if (isOfType(n, CastExpr.class) || isOfType(n, JavaNodeTypes.Cast)) {
+			jpNode = new CastExpr(attributes.getType(), attributes.getExpression());
 		} else if (isOfType(n, CatchClause.class)) {
 			jpNode = new CatchClause();
 		} else if (isOfType(n, CharLiteralExpr.class)) {
 			jpNode = new CharLiteralExpr(attributes.getValue().toString());
+		} else if (isOfType(n, ClassExpr.class)) {
+			jpNode = attributes.getValue();
 		} else if (isOfType(n, JavaNodeTypes.Class)) {
 			jpNode = createClassOrInterfaceDeclaration(attributes, p);
-		} else if (isOfType(n, ClassExpr.class)) {
-			jpNode = new ClassExpr(attributes.getType());
 		} else if (isOfType(n, ConditionalExpr.class)) {
 			jpNode = new ConditionalExpr(attributes.getCondition().getFirst().get(), attributes.getThen(),
 					attributes.getElse());
@@ -204,6 +208,18 @@ public class JavaWriterUtil {
 			jpNode = new FieldAccessExpr();
 		} else if (isOfType(n, FieldDeclaration.class)) {
 			jpNode = new FieldDeclaration().setModifiers(attributes.getModifier());
+		} else if (isOfType(n, JavaNodeTypes.Finally)) {
+			/*
+			 * If the types are correct (parent if try stmt and finally if really block,
+			 * then set finally block. Set parent and node to (virtually) null, so rest of
+			 * the method (setParent and visiting) is not done.
+			 */
+			if (p instanceof TryStmt && isOfType(n.getChildren().get(0), JavaNodeTypes.Body)) {
+				jpNode = visitWriter(n.getChildren().get(0));
+				((TryStmt) p).setFinallyBlock((BlockStmt) jpNode);
+				p = null;
+				n = new NodeImpl("");
+			}
 		} else if (isOfType(n, ForEachStmt.class)) {
 			jpNode = new ForEachStmt().setIterable(attributes.getIterator()).setVariable(new VariableDeclarationExpr(
 					attributes.getType(), attributes.getInitilization().getFirst().get().toString()));
@@ -271,7 +287,8 @@ public class JavaWriterUtil {
 			jpNode = new ObjectCreationExpr(attributes.getScope(), attributes.getType().asClassOrInterfaceType(),
 					new NodeList<Expression>());
 		} else if (isOfType(n, Parameter.class)) {
-			Parameter obj = new Parameter(new UnknownType(), attributes.getName()).setModifiers(attributes.getModifier());
+			Parameter obj = new Parameter(new UnknownType(), attributes.getName())
+					.setModifiers(attributes.getModifier());
 			if (attributes.getType() != null) {
 				// Replace unknown type if there is a more specific type for the parameter.
 				obj.setType(attributes.getType());
@@ -333,7 +350,7 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, ThrowStmt.class)) {
 			jpNode = attributes.getStatement().asThrowStmt();
 		} else if (isOfType(n, TryStmt.class)) {
-			jpNode = new TryStmt();
+			jpNode = new TryStmt().setResources(attributes.getResource());
 		} else if (isOfType(n, TypeExpr.class)) {
 			jpNode = new TypeExpr();
 		} else if (isOfType(n, TypeParameter.class)) {
@@ -347,7 +364,8 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, UnparsableStmt.class)) {
 			jpNode = new UnparsableStmt();
 		} else if (isOfType(n, VariableDeclarationExpr.class)) {
-			jpNode = new VariableDeclarationExpr().setModifiers(attributes.getModifier()).setAnnotations(attributes.getAnnotation());
+			jpNode = new VariableDeclarationExpr().setModifiers(attributes.getModifier())
+					.setAnnotations(attributes.getAnnotation());
 		} else if (isOfType(n, VariableDeclarator.class)) {
 			VariableDeclarator obj = new VariableDeclarator(attributes.getType(), attributes.getName());
 			/*
@@ -496,6 +514,12 @@ public class JavaWriterUtil {
 				((IfStmt) parentNode).setThenStmt(new ExpressionStmt((Expression) childNode));
 			} else if (parentNode instanceof NodeWithArguments && childNode instanceof Expression) {
 				// see processArgument
+			} else if (parentNode instanceof ObjectCreationExpr && childNode instanceof BodyDeclaration) {
+				((ObjectCreationExpr) parentNode).addAnonymousClassBody((BodyDeclaration<?>) childNode);
+			} else if (parentNode instanceof EnumConstantDeclaration && childNode instanceof BodyDeclaration) {
+				NodeList<BodyDeclaration<?>> classBody = ((EnumConstantDeclaration)parentNode).getClassBody();
+				classBody.add((BodyDeclaration<?>) childNode);
+				((EnumConstantDeclaration) parentNode).setClassBody(classBody);
 			}
 
 			else {
@@ -663,7 +687,13 @@ public class JavaWriterUtil {
 					new Parameter(attributes.getType(), attributes.getName()).setModifiers(attributes.getModifier()));
 		} else if (!attributes.getName().isEmpty()) {
 			// Argument without type but name, e.g. method call expr
-			((NodeWithArguments) p).addArgument(attributes.getName());
+			Expression arg;
+			if (attributes.getScope() == null) {
+				arg = new NameExpr(attributes.getName());
+			} else {
+				arg = new FieldAccessExpr(attributes.getScope(), attributes.getName());
+			}
+			((NodeWithArguments) p).addArgument(arg);
 		} else if (attributes.getValue() != null) {
 			// Some arguments have no name but a value instead
 			((NodeWithArguments) p).addArgument(attributes.getValue());

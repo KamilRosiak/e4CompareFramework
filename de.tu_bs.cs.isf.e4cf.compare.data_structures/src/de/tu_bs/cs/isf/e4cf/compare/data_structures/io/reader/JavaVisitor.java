@@ -2,17 +2,15 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import com.github.javaparser.ast.visitor.*;
+
+import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.modules.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
-
-import java.util.Arrays;
-
-import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.visitor.*;
 
 /**
  * Custom visitor class extending {@link VoidVisitor} creating a {@link Node}
@@ -301,7 +299,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	}
 
 	/**
-	 * Creates a new node for the array access expression and visits it's children.
+	 * Creates a new node for the array access expression and adds the index as an attribute {@link JavaAttributesTypes#Value}. Then all children except for the index are visited.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/ArrayAccessExpr.html">JavaParser
@@ -311,7 +309,9 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(ArrayAccessExpr n, Node arg) {
-		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
+		Node arrayAccessExprNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+		arrayAccessExprNode.addAttribute(JavaAttributesTypes.Value.name(), n.getIndex().toString());
+		visitor(n, arrayAccessExprNode, n.getIndex());
 	}
 
 	/**
@@ -499,7 +499,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	public void visit(CastExpr n, Node arg) {
 		Node node = new NodeImpl(JavaNodeTypes.Cast.name(), arg);
 		node.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
-		n.getExpression().accept(this, node);
+		node.addAttribute(JavaAttributesTypes.Expression.name(), n.getExpression().toString());
 	}
 
 	/**
@@ -877,15 +877,21 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * This node has an attribute {@link JavaAttributesTypes#Type} containing the
 	 * type, which should be instantiated.
 	 * <p>
+	 * If the object creation expr has a scope, then the scope is added as an
+	 * attribute {@link JavaAttributesTypes#Scope}.
+	 * <p>
 	 * This node gets a child node {@link JavaNodeTypes#Argument} with the attribute
 	 * {@link JavaAttributesTypes#Children} containing the number of children. For
 	 * every argument a new node {@link JavaNodeTypes#Argument} with an index is
 	 * added to the argument node. The arguments are then visited with the indexed
-	 * nodes as their parent.
+	 * nodes as their parent. After an argument is visited, it is removed, to not
+	 * interfere with the later visiting.
 	 * <p>
-	 * If an anonymoud class body is present an child node
-	 * {@link JavaNodeTypes#Body} is added to the object creation node, which is the
-	 * parent node for each statement of the anonymous class body.
+	 * If an anonymous class body is present an child node, then every
+	 * {@link BodyDeclaration} of the body is visited and added to the object
+	 * creation node as a child node. After a body decl was visited, it is removed.
+	 * <p>
+	 * At the end the remaining child nodes of the object creation expr are visited.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/expr/ObjectCreationExpr.html">JavaParser
@@ -906,16 +912,26 @@ public class JavaVisitor implements VoidVisitor<Node> {
 		// Arguments
 		Node arguments = new NodeImpl(JavaNodeTypes.Argument.name(), c);
 		arguments.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(n.getArguments().size()));
-		for (int i = 0; i < n.getArguments().size(); i++) {
+		int argSize = n.getArguments().size();
+		for (int i = 0; i < argSize; i++) {
+			Expression concreteArg = n.getArgument(0);
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, arguments);
-			n.getArgument(i).accept(this, argNode);
+			concreteArg.accept(this, argNode);
+			concreteArg.removeForced();
 		}
 
 		// Anonymous Class Body
 		if (n.getAnonymousClassBody().isPresent()) {
-			Node anonClassBody = new NodeImpl(JavaNodeTypes.Body.name(), c);
-			n.getAnonymousClassBody().get().forEach(decl -> decl.accept(this, anonClassBody));
+			NodeList<BodyDeclaration<?>> anonymousClassBodyList = n.getAnonymousClassBody().get();
+			int anonymousClassBodySize = anonymousClassBodyList.size();
+			for (int i = 0; i < anonymousClassBodySize; i++) {
+				BodyDeclaration<?> anonClassBody = anonymousClassBodyList.get(0);
+				anonClassBody.accept(this, c);
+				anonClassBody.removeForced();
+			}
 		}
+
+		visitor(n, c, n.getType(), n.getScope().orElse(null));
 	}
 
 	/**
@@ -1190,9 +1206,21 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	}
 
 	/**
-	 * Creates a new node of type {@link TryStmt} and visits all children of the try
-	 * stmt.
+	 * Creates a new node of type {@link TryStmt}.
+	 * <p>
+	 * If a finally block is present, then a node of type
+	 * {@link JavaNodeTypes#Finally} is added to the try stmt. The finally block
+	 * then accepts this visitor with the finally node as an argument. A finally
+	 * block is always a {@link BlockStmt}.
+	 * <p>
+	 * For each present expression of the resources of the try stmt an attribute
+	 * {@link JavaAttributesTypes#Resource} is added to the new node with the expr
+	 * as a string as value. The expression is then removed from the resource, to
+	 * not interfere with the later visiting.
+	 * <p>
+	 * Then the children of the try stmt are visited (except for the finally block).
 	 * 
+	 * @see JavaVisitor#visit(BlockStmt, Node)
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/TryStmt.html">JavaParser
 	 *      Docs - TryStmt</a>
@@ -1201,7 +1229,23 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(TryStmt n, Node arg) {
-		visitor(n, new NodeImpl(n.getClass().getSimpleName(), arg));
+		Node tryStmtNode = new NodeImpl(n.getClass().getSimpleName(), arg);
+
+		// Finally Block
+		if (n.getFinallyBlock().isPresent()) {
+			Node finallyBlockNode = new NodeImpl(JavaNodeTypes.Finally.name(), tryStmtNode);
+			n.getFinallyBlock().get().accept(this, finallyBlockNode);
+		}
+
+		// Resources
+		int resourcesSize = n.getResources().size();
+		for (int i = 0; i < resourcesSize; i++) {
+			Expression expr = n.getResources().get(0);
+			tryStmtNode.addAttribute(JavaAttributesTypes.Resource.name(), expr.toString());
+			expr.removeForced();
+		}
+
+		visitor(n, tryStmtNode, n.getFinallyBlock().orElse(null));
 	}
 
 	/**
@@ -1519,8 +1563,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	}
 
 	/**
-	 * Creates a new node of type {@link EmptyStmt} and adds the empty statement as
-	 * a string as an attribute {@link JavaAttributesTypes#Value}.
+	 * Creates a new node of type {@link EmptyStmt}.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/EmptyStmt.html">JavaParser
@@ -1530,7 +1573,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(EmptyStmt n, Node arg) {
-		createNodeWithValue(n, arg);
+		new NodeImpl(EmptyStmt.class.getSimpleName(), arg);
 	}
 
 	/**
