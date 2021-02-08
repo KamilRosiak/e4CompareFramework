@@ -22,7 +22,7 @@ public class DataStructuresEditorST {
 	public static final String REFRESH_TREEVIEW_EVENT = "RefreshTreeViewEvent";
 	public static final String DELETE_ATTRIBUTE_EVENT = "DeleteAttributeEvent";
 	public static final String REOPEN_ITEM_EVENT = "ReopenItemEvent";
-	public static final String OPEN_TREE_EVENT = "OpenTreeEvent";
+	public static final String INITIALIZE_TREE_EVENT = "InitializeTreeEvent";
 	public static final String ADD_ATTRIBUTE_EVENT = "AddAttributeEvent";
 	public static final String ASK_FOR_SELECTED_ITEM_EVENT = "AskForSelectedItemEvent";
 	public static final String RECEIVE_SELECTED_NODE_EVENT = "ReceiveSelectedNodeEvent";

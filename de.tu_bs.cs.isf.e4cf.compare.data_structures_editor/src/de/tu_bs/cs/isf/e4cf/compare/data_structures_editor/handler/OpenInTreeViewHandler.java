@@ -23,7 +23,7 @@ public class OpenInTreeViewHandler {
 		if (element.getExtension().equals("txt")) {
 			TextReader reader = new TextReader();
 			services.partService.showPart(DataStructuresEditorST.TREE_VIEW_ID);
-			services.eventBroker.send("OpenTreeEvent", reader.readArtifact(element));
+			services.eventBroker.send(DataStructuresEditorST.INITIALIZE_TREE_EVENT, reader.readArtifact(element));
 		}
 	}
 }

@@ -84,7 +84,9 @@ public class TreeViewController {
 	 * 
 	 * @param tree
 	 */
-	private void initializeTree(Tree tree) {
+	@Optional
+	@Inject
+	public void initializeTree(@UIEventTopic(DataStructuresEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
 		treeView.setContextMenu(contextMenu);
 		background.setOnMouseEntered(event -> contextMenu.hide());
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -234,7 +236,9 @@ public class TreeViewController {
 	@FXML
 	void copyNode() {
 		copyList.clear();
-		copyList.addAll(new ArrayList<TreeItem<AbstractNode>>(treeView.getSelectionModel().getSelectedItems()));
+		for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+			copyList.add(ti);
+		}
 	}
 
 	/**
@@ -243,15 +247,12 @@ public class TreeViewController {
 	@FXML
 	void pasteNode() {
 		try {
-			for (int i = copyList.size() - 1; i >= 0; i--) {
-				TreeItem<AbstractNode> copiedNode = copyList.get(i);
-				TreeItem<AbstractNode> tempNode = new TreeItem<AbstractNode>();
-				tempNode.setValue(copiedNode.getValue());
+			for (TreeItem<AbstractNode> ti : copyList) {
+				TreeItem<AbstractNode> tempNode = TreeViewUtilities.nodeToTreeItem(ti.getValue());
 				// Idee: Index verwalten über expand/collapse All
-				treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
-						.add(treeView.getSelectionModel().getSelectedIndex(), tempNode);
-				for (TreeItem<AbstractNode> child : copiedNode.getChildren()) {
-					tempNode.getChildren().add(child);
+				treeView.getSelectionModel().getSelectedItem().getChildren().add(tempNode);
+				for (TreeItem<AbstractNode> child : ti.getChildren()) {
+					tempNode.getChildren().add(TreeViewUtilities.nodeToTreeItem(child.getValue()));
 				}
 				displayTotalNodeAmount();
 			}
@@ -522,17 +523,6 @@ public class TreeViewController {
 	private void addAttribute(@UIEventTopic(DataStructuresEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
 		pair.getOwner().getAttributes().add(pair.getAttribute());
 		treeView.refresh();
-	}
-
-	/**
-	 * Event to initialize treeView from given Tree
-	 * 
-	 * @param tree
-	 */
-	@Optional
-	@Inject
-	public void openTree(@UIEventTopic(DataStructuresEditorST.OPEN_TREE_EVENT) Tree tree) {
-		initializeTree(tree);
 	}
 
 	/**
