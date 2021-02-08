@@ -18,8 +18,22 @@ import de.tu_bs.cs.isf.e4cf.core.compare.remote.config.RemoteComparisonStringTab
 import de.tu_bs.cs.isf.e4cf.core.compare.remote.util.TreeInstanceCreator;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 
+
+
+/**
+ * Collection of functions to create requests to the remote comparison backend.
+ * 
+ * @author Team 6
+ */
 public class RemoteComparisonFactory {
 
+	/**
+	 * Create a compare request to the backend.
+	 * 
+	 * @param tree1 First Tree.
+	 * @param tree2 Second Tree.
+	 * @return Status of the Comparison.
+	 */
 	public static RemoteComparisonStatus createComparisonRequest(TreeImpl tree1, TreeImpl tree2) {
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -44,6 +58,12 @@ public class RemoteComparisonFactory {
 		return status;
 	}
 
+	/**
+	 * Check status of a running remote comparison.
+	 *  
+	 * @param uuid Identifier of the comparison.
+	 * @return Status of the comparison.
+	 */
 	public static RemoteComparisonStatus getComparisonStatus(String uuid) {
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -64,6 +84,12 @@ public class RemoteComparisonFactory {
 		return status;
 	}
 
+	/**
+	 * Allows to get the merged tree after a successful comparison. 
+	 *
+	 * @param uuid Identifier of the running comparison.
+	 * @return Result tree.
+	 */
 	public static TreeImpl getComparisonResult(String uuid) {
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -86,26 +112,14 @@ public class RemoteComparisonFactory {
 
 	}
 
-	private static void reconstructTree(Node node) {
-		if (node == null || node.getChildren() == null)
-			return;
-		for (Node children : node.getChildren()) {
-			children.setParent(node);
-			reconstructTree(children);
-		}
-	}
-
-	private static String createJSON(Object object, GsonBuilder builder) {
-		Gson gson = builder.create();
-		return gson.toJson(object);
-	}
-
-	private static <T> Object readJSON(String jsonString, GsonBuilder builder, Class<T> c) {
-		Gson gson = builder.create();
-		return gson.fromJson(jsonString, c);
-	}
-
-	public static String executeGet(String targetURL) {
+	/**
+	 * Generic method to execute a HTTP GET-Request.
+	 * 
+	 * @param targetURL Address of server.
+	 * 
+	 * @return Result from server.
+	 */
+	private static String executeGet(String targetURL) {
 		HttpURLConnection connection = null;
 		StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
 		try {
@@ -140,7 +154,15 @@ public class RemoteComparisonFactory {
 		return response.toString();
 	}
 
-	public static String executePost(String targetURL, String payload) {
+	/**
+	 * Generic method to execute a HTTP Post-Request.
+	 * 
+	 * @param targetURL Address of server.
+	 * @param payload Data to be send to server.
+	 * 
+	 * @return Result from server.
+	 */
+	private static String executePost(String targetURL, String payload) {
 		HttpURLConnection connection = null;
 		StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
 		try {
@@ -178,6 +200,25 @@ public class RemoteComparisonFactory {
 			}
 		}
 		return response.toString();
+	}
+	
+	private static void reconstructTree(Node node) {
+		if (node == null || node.getChildren() == null)
+			return;
+		for (Node children : node.getChildren()) {
+			children.setParent(node);
+			reconstructTree(children);
+		}
+	}
+
+	private static String createJSON(Object object, GsonBuilder builder) {
+		Gson gson = builder.create();
+		return gson.toJson(object);
+	}
+
+	private static <T> Object readJSON(String jsonString, GsonBuilder builder, Class<T> c) {
+		Gson gson = builder.create();
+		return gson.fromJson(jsonString, c);
 	}
 
 }

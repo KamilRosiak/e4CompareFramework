@@ -1,5 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.core.compare.remote.handler;
 
+/**
+ * Object to map result from remote comparison server
+ * @author Team 6.
+ *
+ */
 public class RemoteComparisonStatus {
 
 	private String status;
@@ -9,7 +14,6 @@ public class RemoteComparisonStatus {
 	private String uuid;
 
 	public RemoteComparisonStatus(String status, int time, String result, String error, String uuid) {
-		super();
 		this.status = status;
 		this.time = time;
 		this.result = result;
