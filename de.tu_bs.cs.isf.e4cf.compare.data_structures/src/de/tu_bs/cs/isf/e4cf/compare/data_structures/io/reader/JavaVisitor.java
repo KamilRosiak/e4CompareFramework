@@ -2,17 +2,15 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import com.github.javaparser.ast.visitor.*;
+
+import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.modules.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
-
-import java.util.Arrays;
-
-import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.visitor.*;
 
 /**
  * Custom visitor class extending {@link VoidVisitor} creating a {@link Node}
@@ -501,7 +499,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	public void visit(CastExpr n, Node arg) {
 		Node node = new NodeImpl(JavaNodeTypes.Cast.name(), arg);
 		node.addAttribute(JavaAttributesTypes.Type.name(), n.getTypeAsString());
-		n.getExpression().accept(this, node);
+		node.addAttribute(JavaAttributesTypes.Expression.name(), n.getExpression().toString());
 	}
 
 	/**
@@ -1565,8 +1563,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	}
 
 	/**
-	 * Creates a new node of type {@link EmptyStmt} and adds the empty statement as
-	 * a string as an attribute {@link JavaAttributesTypes#Value}.
+	 * Creates a new node of type {@link EmptyStmt}.
 	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/EmptyStmt.html">JavaParser
@@ -1576,7 +1573,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 */
 	@Override
 	public void visit(EmptyStmt n, Node arg) {
-		createNodeWithValue(n, arg);
+		new NodeImpl(EmptyStmt.class.getSimpleName(), arg);
 	}
 
 	/**

@@ -1,7 +1,6 @@
 
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
-import java.lang.Thread.State;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
@@ -143,8 +142,8 @@ public class JavaWriterUtil {
 				obj.removeLabel();
 			}
 			jpNode = obj;
-		} else if (isOfType(n, CastExpr.class)) {
-			jpNode = new CastExpr().setType(attributes.getType());
+		} else if (isOfType(n, CastExpr.class) || isOfType(n, JavaNodeTypes.Cast)) {
+			jpNode = new CastExpr(attributes.getType(), attributes.getExpression());
 		} else if (isOfType(n, CatchClause.class)) {
 			jpNode = new CatchClause();
 		} else if (isOfType(n, CharLiteralExpr.class)) {
@@ -516,7 +515,11 @@ public class JavaWriterUtil {
 			} else if (parentNode instanceof NodeWithArguments && childNode instanceof Expression) {
 				// see processArgument
 			} else if (parentNode instanceof ObjectCreationExpr && childNode instanceof BodyDeclaration) {
-				((ObjectCreationExpr) parentNode).addAnonymousClassBody((BodyDeclaration) childNode);
+				((ObjectCreationExpr) parentNode).addAnonymousClassBody((BodyDeclaration<?>) childNode);
+			} else if (parentNode instanceof EnumConstantDeclaration && childNode instanceof BodyDeclaration) {
+				NodeList<BodyDeclaration<?>> classBody = ((EnumConstantDeclaration)parentNode).getClassBody();
+				classBody.add((BodyDeclaration<?>) childNode);
+				((EnumConstantDeclaration) parentNode).setClassBody(classBody);
 			}
 
 			else {
