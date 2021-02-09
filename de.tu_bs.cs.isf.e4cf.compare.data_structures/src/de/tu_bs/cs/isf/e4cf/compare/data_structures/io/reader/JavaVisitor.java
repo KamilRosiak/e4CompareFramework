@@ -8,7 +8,7 @@ import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.modules.*;
-import com.github.javaparser.ast.nodeTypes.NodeWithArguments;
+import com.github.javaparser.ast.nodeTypes.*;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.visitor.*;
@@ -59,7 +59,7 @@ public class JavaVisitor implements VoidVisitor<Node> {
 	 * @param n Node with arguments
 	 * @param p Equivalent framework node of n
 	 */
-	private void visitArguments(com.github.javaparser.ast.nodeTypes.NodeWithArguments n, Node p) {
+	private void visitArguments(NodeWithArguments n, Node p) {
 		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), p);
 		int argSize = n.getArguments().size();
 		args.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(argSize));
