@@ -17,15 +17,15 @@ public class DataStructuresEditorST {
 	public static final String PROPERTIES_VIEW_FXML = "ui/view/DSPropertiesView.fxml";
 	public static final String COMPARATOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
 
-	public static final String EMPTY_PROPERTIES_TABLE_EVENT = "EmptyPropertiesTableEvent";
-	public static final String NODE_PROPERTIES_EVENT = "NodePropertiesEvent";
-	public static final String REFRESH_TREEVIEW_EVENT = "RefreshTreeViewEvent";
-	public static final String DELETE_ATTRIBUTE_EVENT = "DeleteAttributeEvent";
-	public static final String REOPEN_ITEM_EVENT = "ReopenItemEvent";
-	public static final String INITIALIZE_TREE_EVENT = "InitializeTreeEvent";
-	public static final String ADD_ATTRIBUTE_EVENT = "AddAttributeEvent";
-	public static final String ASK_FOR_SELECTED_ITEM_EVENT = "AskForSelectedItemEvent";
-	public static final String RECEIVE_SELECTED_NODE_EVENT = "ReceiveSelectedNodeEvent";
+	public static final String EMPTY_PROPERTIES_TABLE_EVENT = "EMPTY_PROPERTIES_TABLE_EVENT";
+	public static final String NODE_PROPERTIES_EVENT = "NODE_PROPERTIES_EVENT";
+	public static final String REFRESH_TREEVIEW_EVENT = "REFRESH_TREEVIEW_EVENT";
+	public static final String DELETE_ATTRIBUTE_EVENT = "DELETE_ATTRIBUTE_EVENT";
+	public static final String REOPEN_ITEM_EVENT = "REOPEN_ITEM_EVENT";
+	public static final String INITIALIZE_TREE_EVENT = "INITIALIZE_TREE_EVENT";
+	public static final String ADD_ATTRIBUTE_EVENT = "ADD_ATTRIBUTE_EVENT";
+	public static final String ASK_FOR_SELECTED_ITEM_EVENT = "ASK_FOR_SELECTED_ITEM_EVENT";
+	public static final String RECEIVE_SELECTED_NODE_EVENT = "RECEIVE_SELECTED_NODE_EVENT";
 
 	public static final String NO_INPUT_ALERT = "No input detected. Are you sure you want to cancel the action?";
 	public static final String EXCEPTION_MESSAGE = "A %s occured.";
