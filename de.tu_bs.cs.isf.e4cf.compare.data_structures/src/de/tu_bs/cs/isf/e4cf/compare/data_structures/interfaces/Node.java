@@ -12,7 +12,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  * @author Kamil Rosiak
  *
  */
-public interface Node extends Serializable {
+public interface Node {
+	
 
 	/**
 	 * This method returns the type of the node, e.g., class, method, statement. This type has to be defined during the parsing process where.

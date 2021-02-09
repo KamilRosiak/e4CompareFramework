@@ -16,13 +16,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class KeyValuePage extends WizardPage {
-	Map<Label,Text> labelTextMap;
-	Map<String,String> _keyValues;
-	
-	protected KeyValuePage(String pageName, String pageTitle, ImageDescriptor imageDescriptor, Map<String,String> keyValues) {
+	Map<Label, Text> labelTextMap;
+	Map<String, String> _keyValues;
+
+	protected KeyValuePage(String pageName, String pageTitle, ImageDescriptor imageDescriptor,
+			Map<String, String> keyValues) {
 		super("pageName", pageName, imageDescriptor);
 		_keyValues = keyValues;
-		labelTextMap = new HashMap<Label,Text>();
+		labelTextMap = new HashMap<Label, Text>();
 	}
 
 	@Override
@@ -38,16 +39,16 @@ public class KeyValuePage extends WizardPage {
 		mainComposite.setLayoutData(new GridData());
 		return mainComposite;
 	}
-	
+
 	private void intializeKeyValueComponents(Composite parent) {
 		for (Entry<String, String> e : _keyValues.entrySet()) {
-			//create label
+			// create label
 			Label keyLabel = new Label(parent, SWT.NONE);
 			keyLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, true));
 			keyLabel.setText(e.getKey());
-			//create text 
+			// create text
 			Text valueText = new Text(parent, SWT.LEFT | SWT.SINGLE | SWT.H_SCROLL | SWT.BORDER);
-			valueText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true,3, 1));
+			valueText.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 3, 1));
 			valueText.setText(e.getValue());
 			valueText.addModifyListener(new ModifyListener() {
 				@Override
@@ -59,20 +60,20 @@ public class KeyValuePage extends WizardPage {
 			labelTextMap.put(keyLabel, valueText);
 		}
 	}
-	
+
 	public void updateWizard() {
 		getWizard().getContainer().updateButtons();
 	}
-	
+
 	public void checkFinishedStatus() {
 		boolean areAllValuesSet = true;
-		for(Entry<Label,Text> e : labelTextMap.entrySet()) {
+		for (Entry<Label, Text> e : labelTextMap.entrySet()) {
 			_keyValues.put(e.getKey().getText(), e.getValue().getText());
-			if(e.getValue().getText() == "") {
+			if (e.getValue().getText() == "") {
 				areAllValuesSet = false;
 			}
 		}
-		
+
 		setPageComplete(areAllValuesSet);
 	}
 }

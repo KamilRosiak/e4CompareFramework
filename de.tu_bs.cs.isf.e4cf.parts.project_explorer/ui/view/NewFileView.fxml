@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.NewFileViewController"
+	stylesheets="@ui/view/NewFileView.css" styleClass="box">
+	<children>
+		<Text strokeType="OUTSIDE" strokeWidth="0.0"
+			text="Create a new file" />
+		<TextField fx:id="fileNameTextField" promptText="Filename" styleClass="text-input"/>
+		<Text fx:id="notValidText" fill="#e50808" strokeType="OUTSIDE"
+			strokeWidth="0.0"
+			text="Invalid Filename, should only contain -, _and #."
+			visible="false" styleClass="hints" />
+		<Text fx:id="alreadyExitsText" fill="#e50808"
+			strokeType="OUTSIDE" strokeWidth="0.0" text="File already exists"
+			visible="false" styleClass="hints" />
+		<Text fx:id="fileTypeMissingText" fill="#e50808"
+			strokeType="OUTSIDE" strokeWidth="0.0" text="Specify a file type."
+			visible="false" styleClass="hints" />
+	</children>
+</VBox>

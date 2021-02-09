@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface Tree extends Serializable {
-	
-	
 	/**
 	 * @return the root node of this tree.
 	 */
@@ -53,7 +51,4 @@ public interface Tree extends Serializable {
 	 * Moreover, the first Node in this list is the startingNode and the last element is the targetNode.
 	 */
 	public List<Node> getPath(Node startingNode,Node targetNode);
-	
-	
-	
 }

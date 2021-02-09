@@ -49,6 +49,10 @@ public class GraphController {
         domain.activate();
         // load contents
         populateViewerContents();
+        
+        
+        
+        
         return scene;
     }
 

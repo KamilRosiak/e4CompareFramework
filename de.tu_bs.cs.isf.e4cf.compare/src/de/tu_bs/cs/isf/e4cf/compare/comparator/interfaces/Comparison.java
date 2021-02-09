@@ -2,10 +2,18 @@ package de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces;
 
 import java.util.List;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+
 /**
  * data structure for the storage of the comparison between two nodes.
  */
-public interface Comparison<Type> {	
+public interface Comparison<Type> {
+    
+    	/**
+    	 * This method returns a node that is the result of the merge of both compared nodes.
+    	 */
+    	public Node mergeNodes();
+
 	/**
 	 * This method returns the right node of this comparison.
 	 */
@@ -36,7 +44,7 @@ public interface Comparison<Type> {
 	 */
 	public void setSimilarity(float similarity);
 	
-	public Comparison<Type> getParantComparison();
+	public List<Comparison<Type>> getParantComparisons();
 	
 	public List<Comparison<Type>> getChildComparisons();
 	
@@ -48,7 +56,6 @@ public interface Comparison<Type> {
 	    
 	    for(Comparison<Type> child : getChildComparisons()) {
 		childSimilarity += child.updateSimilarity();
-		child.updateSimilarity();
 	    }
 	    
 	    /**
