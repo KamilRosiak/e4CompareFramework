@@ -47,8 +47,4 @@ public class NodeImpl extends AbstractNode {
 		this(nodeString, parent);
 		setVariabilityClass(varClass);
 	}
-
-	public NodeImpl(Node root) {
-	   
-	}
 }

@@ -33,7 +33,6 @@ public class PropertiesViewUtilities {
 	 * @return
 	 */
 	public static TableView<Attribute> getAttributeTable(Node node, TableView<Attribute> tableView) {
-
 		ObservableList<Attribute> data = FXCollections.observableArrayList(node.getAttributes());
 
 		TableColumn<Attribute, String> property = new TableColumn<Attribute, String>("Property");

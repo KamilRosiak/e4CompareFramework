@@ -10,8 +10,8 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddAttributeAction;
@@ -20,6 +20,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.Delet
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeAttributePair;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.RenameNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -37,8 +38,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 /**
- * This class represents the controller implementation of the data structure editor model view controller implementation.
- * The corresponding view is located at {@link /ui/view/VisualizeTreeView.fxml}.
+ * This class represents the controller implementation of the data structure
+ * editor model view controller implementation. The corresponding view is
+ * located at {@link /ui/view/VisualizeTreeView.fxml}.
  * 
  * @author Team05 , Kamil Rosiak
  *
@@ -65,7 +67,7 @@ public class DSEditorController {
     private Text hitCount, totalNodeAmount;
 
     @FXML
-    private TreeView<AbstractNode> treeView;
+    private TreeView<Node> treeView;
 
     @FXML
     private TextField searchTextField;
@@ -74,12 +76,20 @@ public class DSEditorController {
     private ContextMenu contextMenu;
 
     private String currentSearchText;
-
+    private Tree currentTree;
     private int searchCounter;
 
-    private List<TreeItem<AbstractNode>> copyList = new ArrayList<TreeItem<AbstractNode>>();
+    private List<TreeItem<Node>> copyList = new ArrayList<TreeItem<Node>>();
 
-    CommandManager treeManager = new CommandManager();
+    private CommandManager treeManager = new CommandManager();
+
+    public Tree getCurrentTree() {
+	return currentTree;
+    }
+
+    public void setCurrentTree(Tree currentTree) {
+	this.currentTree = currentTree;
+    }
 
     /**
      * Method to initialize the treeView from a given Tree
@@ -89,13 +99,14 @@ public class DSEditorController {
     @Optional
     @Inject
     public void initializeTree(@UIEventTopic(DataStructuresEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
+	currentTree = tree;
 	treeView.setContextMenu(contextMenu);
 	background.setOnMouseEntered(event -> contextMenu.hide());
 	treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-	TreeViewUtilities.switchToPart(DataStructuresEditorST.TREE_VIEW_ID, services);
+	services.partService.showPart(DataStructuresEditorST.TREE_VIEW_ID);
 	closeFile();
-	treeView.setRoot(new TreeItem<AbstractNode>(new NodeImpl(tree.getRoot())));
-	treeView.getRoot().setGraphic(new ImageView(TreeViewUtilities.rootImage));
+	treeView.setRoot(new TreeItem<Node>(tree.getRoot()));
+	treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
 	treeView.getRoot().setExpanded(true);
 	treeView.setShowRoot(true);
 	TreeViewUtilities.fillTreeView(tree.getRoot(), treeView.getRoot());
@@ -108,7 +119,7 @@ public class DSEditorController {
      */
     private void displayTotalNodeAmount() {
 	totalNodeAmount.setText("Total node amount: "
-		+ (treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())).size());
+		+ (treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<Node>>())).size());
 	treeView.refresh();
     }
 
@@ -116,7 +127,7 @@ public class DSEditorController {
      * Method to delete a Node
      */
     private void deleteNode() {
-	TreeItem<AbstractNode> ti = treeView.getSelectionModel().getSelectedItem();
+	TreeItem<Node> ti = treeView.getSelectionModel().getSelectedItem();
 	treeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
 	ti.getParent().getChildren().remove(ti);
 
@@ -140,9 +151,9 @@ public class DSEditorController {
      * search the text given in the searchfield
      */
     void searchForNode() {
-	List<TreeItem<AbstractNode>> searchList = new ArrayList<TreeItem<AbstractNode>>();
+	List<TreeItem<Node>> searchList = new ArrayList<TreeItem<Node>>();
 	treeView.getSelectionModel().clearSelection();
-	List<TreeItem<AbstractNode>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
+	List<TreeItem<Node>> resultList = TreeViewUtilities.searchTreeItem(treeView.getRoot(),
 		searchTextField.getText().toLowerCase(), searchList);
 	if (searchCounter >= resultList.size()) {
 	    searchCounter = 0;
@@ -160,12 +171,12 @@ public class DSEditorController {
      * @param treeViewList
      * @return list with treeItems
      */
-    public List<TreeItem<AbstractNode>> treeViewToList(TreeItem<AbstractNode> item,
-	    List<TreeItem<AbstractNode>> treeViewList) {
+    public List<TreeItem<Node>> treeViewToList(TreeItem<Node> item,
+	    List<TreeItem<Node>> treeViewList) {
 	if (item.getValue().isRoot()) {
 	    treeViewList.add(item);
 	}
-	for (TreeItem<AbstractNode> ti : item.getChildren()) {
+	for (TreeItem<Node> ti : item.getChildren()) {
 	    treeViewList.add(ti);
 	    if (!ti.isLeaf()) {
 		treeViewToList(ti, treeViewList);
@@ -185,7 +196,7 @@ public class DSEditorController {
     public void addListener() {
 	treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 	    if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
-		TreeViewUtilities.switchToPart(DataStructuresEditorST.PROPERTIES_VIEW_ID, services);
+		services.partService.showPart(DataStructuresEditorST.PROPERTIES_VIEW_ID);
 		services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
 			treeView.getSelectionModel().getSelectedItem().getValue());
 	    }
@@ -199,7 +210,7 @@ public class DSEditorController {
     void addNodeAttribute() {
 	List<Attribute> attributeList = new ArrayList<Attribute>();
 	attributeList.addAll(treeView.getSelectionModel().getSelectedItem().getValue().getAttributes());
-	TreeItem<AbstractNode> treeItem = treeView.getSelectionModel().getSelectedItem();
+	TreeItem<Node> treeItem = treeView.getSelectionModel().getSelectedItem();
 	treeManager.execute(new AddAttributeAction("addAttribute", treeItem.getValue(), attributeList));
 	String attrName = TreeViewUtilities.getInput("Enter attribute name");
 	if (attrName != null) {
@@ -217,7 +228,7 @@ public class DSEditorController {
      */
     @FXML
     void addChildNode() {
-	TreeItem<AbstractNode> newChild = TreeViewUtilities.nodeToTreeItem(new NodeImpl("newChild"));
+	TreeItem<Node> newChild = TreeViewUtilities.nodeToTreeItem(new NodeImpl("newChild"));
 	String childName = TreeViewUtilities.getInput("Enter child name");
 	if (childName != null) {
 	    newChild.setValue(new NodeImpl(childName));
@@ -237,7 +248,7 @@ public class DSEditorController {
     @FXML
     void copyNode() {
 	copyList.clear();
-	for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+	for (TreeItem<Node> ti : treeView.getSelectionModel().getSelectedItems()) {
 	    copyList.add(ti);
 	}
     }
@@ -248,11 +259,11 @@ public class DSEditorController {
     @FXML
     void pasteNode() {
 	try {
-	    for (TreeItem<AbstractNode> ti : copyList) {
-		TreeItem<AbstractNode> tempNode = TreeViewUtilities.nodeToTreeItem(ti.getValue());
+	    for (TreeItem<Node> ti : copyList) {
+		TreeItem<Node> tempNode = TreeViewUtilities.nodeToTreeItem(ti.getValue());
 		// Idee: Index verwalten über expand/collapse All
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(tempNode);
-		for (TreeItem<AbstractNode> child : ti.getChildren()) {
+		for (TreeItem<Node> child : ti.getChildren()) {
 		    tempNode.getChildren().add(TreeViewUtilities.nodeToTreeItem(child.getValue()));
 		}
 		displayTotalNodeAmount();
@@ -319,7 +330,7 @@ public class DSEditorController {
 		fileName += ".txt";
 	    }
 	    File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + fileName);
-	    List<TreeItem<AbstractNode>> extractList = new ArrayList<TreeItem<AbstractNode>>();
+	    List<TreeItem<Node>> extractList = new ArrayList<TreeItem<Node>>();
 	    expandSelectedItems();
 	    extractList.addAll(treeView.getSelectionModel().getSelectedItems());
 	    file = TreeViewUtilities.writeToFile(extractList, file);
@@ -359,11 +370,19 @@ public class DSEditorController {
      */
     @FXML
     void saveFile() {
-	File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + TreeViewUtilities.treeName);
-	List<TreeItem<AbstractNode>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(),
-		new ArrayList<TreeItem<AbstractNode>>());
+	File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + getTreeName());
+	List<TreeItem<Node>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(),
+		new ArrayList<TreeItem<Node>>());
 	listWithoutRoot.remove(0);
 	file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
+    }
+
+    /**
+     * Return the name of the current tree if a tree is available else an empty
+     * string.
+     */
+    private String getTreeName() {
+	return currentTree != null ? getCurrentTree().getTreeName() : "";
     }
 
     /**
@@ -377,8 +396,8 @@ public class DSEditorController {
 		fileName += ".txt";
 	    }
 	    File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + fileName);
-	    List<TreeItem<AbstractNode>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(),
-		    new ArrayList<TreeItem<AbstractNode>>());
+	    List<TreeItem<Node>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(),
+		    new ArrayList<TreeItem<Node>>());
 	    listWithoutRoot.remove(0);
 	    file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
 	}
@@ -438,7 +457,7 @@ public class DSEditorController {
      */
     @FXML
     public void expandAllItems() {
-	for (TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
+	for (TreeItem<Node> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<Node>>())) {
 	    ti.setExpanded(true);
 	}
     }
@@ -448,7 +467,7 @@ public class DSEditorController {
      */
     @FXML
     public void collapseAllItems() {
-	for (TreeItem<AbstractNode> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<AbstractNode>>())) {
+	for (TreeItem<Node> ti : treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<Node>>())) {
 	    ti.setExpanded(false);
 	}
     }
@@ -458,7 +477,7 @@ public class DSEditorController {
      */
     @FXML
     public void collapseSelectedItems() {
-	for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
+	for (TreeItem<Node> ti : treeView.getSelectionModel().getSelectedItems()) {
 	    ti.setExpanded(false);
 	}
     }
@@ -469,11 +488,11 @@ public class DSEditorController {
     @FXML
     public void expandSelectedItems() {
 	// tempList necessary because we wanted to select all children, too
-	List<TreeItem<AbstractNode>> tempList = new ArrayList<TreeItem<AbstractNode>>();
-	for (TreeItem<AbstractNode> ti : treeView.getSelectionModel().getSelectedItems()) {
-	    tempList.addAll(TreeViewUtilities.getSubTreeAsList(ti, new ArrayList<TreeItem<AbstractNode>>()));
+	List<TreeItem<Node>> tempList = new ArrayList<TreeItem<Node>>();
+	for (TreeItem<Node> ti : treeView.getSelectionModel().getSelectedItems()) {
+	    tempList.addAll(TreeViewUtilities.getSubTreeAsList(ti, new ArrayList<TreeItem<Node>>()));
 	}
-	for (TreeItem<AbstractNode> ti : tempList) {
+	for (TreeItem<Node> ti : tempList) {
 	    ti.setExpanded(true);
 	    treeView.getSelectionModel().select(ti);
 	}

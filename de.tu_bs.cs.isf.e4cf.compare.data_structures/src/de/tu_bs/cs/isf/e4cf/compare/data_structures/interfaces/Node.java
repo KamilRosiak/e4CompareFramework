@@ -28,6 +28,12 @@ public interface Node {
 	public List<Attribute> getAttributes();
 	
 	/**
+	 * This method returns all values that are available for this node, e.g. an assignment has values for the left side and right side such as  a = b. 
+	 * In the Values class you can store values that can be identified by their variant.
+	 */
+	public void setAttributes(List<Attribute> list);
+	
+	/**
 	 * This method adds value for a given key, a variant with a respective values.
 	 */
 	public void addAttribute(String key, String value);

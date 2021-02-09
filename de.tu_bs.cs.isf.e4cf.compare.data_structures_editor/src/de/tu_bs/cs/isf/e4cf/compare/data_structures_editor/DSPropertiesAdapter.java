@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
@@ -21,11 +20,6 @@ import javafx.scene.Scene;
  */
 
 public class DSPropertiesAdapter {
-
-	@Inject
-	public DSPropertiesAdapter(Composite parent, ServiceContainer services, IEclipseContext context) {
-		postConstruct(parent, services, context);
-	}
 
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {

@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -14,17 +14,16 @@ import javafx.scene.control.TreeView;
  */
 
 public class RenameNodeAction implements UndoAction {
-
 	private String name;
 	private String nodeName;
-	private TreeView<AbstractNode> treeView;
-	private TreeItem<AbstractNode> treeItem;
+	private TreeView<Node> treeView;
+	private TreeItem<Node> treeItem;
 
-	public RenameNodeAction(String name, String nodeName, TreeView<AbstractNode> treeView, AbstractNode treeItem) {
-		this.name = name;
+	public RenameNodeAction(String name, String nodeName, TreeView<Node> treeView, Node treeItem) {
+		this.setName(name);
 		this.nodeName = nodeName;
 		this.treeView = treeView;
-		this.treeItem = new TreeItem<AbstractNode>(treeItem);
+		this.treeItem = new TreeItem<Node>(treeItem);
 
 	}
 
@@ -39,5 +38,13 @@ public class RenameNodeAction implements UndoAction {
 		}
 		treeItem.getValue().addAttribute("name", nodeName);
 		treeView.refresh();
+	}
+
+	public String getName() {
+	    return name;
+	}
+
+	public void setName(String name) {
+	    this.name = name;
 	}
 }
