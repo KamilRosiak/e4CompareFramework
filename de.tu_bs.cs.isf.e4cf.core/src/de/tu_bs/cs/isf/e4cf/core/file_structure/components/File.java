@@ -49,8 +49,12 @@ public class File extends AbstractFileTreeElement {
 	@Override
 	public String getExtension() {
 		String filename = _file.getFileName().toString();
-		int extensionBeginIndex = filename.indexOf(".");
-		return filename.substring(extensionBeginIndex+1);
+		String extension = "";
+		int extensionBeginIndex = filename.lastIndexOf(".");
+		if (extensionBeginIndex > 0) {
+			extension = filename.substring(extensionBeginIndex+1);			
+		}
+		return extension;
 	}
 
 	private void checkFile(Path path) {
