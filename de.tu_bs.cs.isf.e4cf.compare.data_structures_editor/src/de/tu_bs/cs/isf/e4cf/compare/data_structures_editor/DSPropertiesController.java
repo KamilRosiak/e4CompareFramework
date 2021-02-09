@@ -11,7 +11,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.DeleteAttributeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.ModifyValuesAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeAttributePair;
@@ -42,7 +42,7 @@ public class DSPropertiesController {
 
 	private Node selectedNode;
 
-	CommandManager propertiesManager = new CommandManager();
+	CommandStack propertiesManager = new CommandStack();
 
 	/**
 	 * refreshes views

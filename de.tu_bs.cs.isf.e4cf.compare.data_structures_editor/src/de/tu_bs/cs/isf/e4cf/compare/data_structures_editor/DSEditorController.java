@@ -13,7 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandManager;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddAttributeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddChildNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.DeleteNodeAction;
@@ -81,7 +81,7 @@ public class DSEditorController {
 
     private List<TreeItem<Node>> copyList = new ArrayList<TreeItem<Node>>();
 
-    private CommandManager treeManager = new CommandManager();
+    private CommandStack treeManager = new CommandStack();
 
     public Tree getCurrentTree() {
 	return currentTree;

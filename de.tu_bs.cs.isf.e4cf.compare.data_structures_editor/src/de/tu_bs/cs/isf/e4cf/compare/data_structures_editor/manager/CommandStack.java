@@ -9,11 +9,11 @@ import java.util.Stack;
  *
  */
 
-public class CommandManager {
+public class CommandStack {
 
 	private Stack<UndoAction> queueStackNormal;
 
-	public CommandManager() {
+	public CommandStack() {
 		queueStackNormal = new Stack<>();
 	}
 
