@@ -51,6 +51,7 @@ public class CompareEngine {
 				comparator.compare(leftArtifact, rightArtifact);
 			
 			    }
+			    nodeComparison.updateSimilarity();
 			} else {
 			    comparisons.add(defaultCompare(leftArtifact, rightArtifact));
 			}
