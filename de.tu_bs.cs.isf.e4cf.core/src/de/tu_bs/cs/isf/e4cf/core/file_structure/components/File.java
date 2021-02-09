@@ -51,7 +51,7 @@ public class File extends AbstractFileTreeElement {
 		String filename = _file.getFileName().toString();
 		String extension = "";
 		int extensionBeginIndex = filename.lastIndexOf(".");
-		if (extensionBeginIndex > 0) {
+		if (extensionBeginIndex >= 0) {
 			extension = filename.substring(extensionBeginIndex+1);			
 		}
 		return extension;
