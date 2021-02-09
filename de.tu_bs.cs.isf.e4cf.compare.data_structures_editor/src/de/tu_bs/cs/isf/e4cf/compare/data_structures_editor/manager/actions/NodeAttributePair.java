@@ -10,22 +10,28 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
  *
  */
 public class NodeAttributePair {
+    private Node owner;
+    private Attribute attribute;
 
-	private Node owner;
+    public NodeAttributePair(Node owner, Attribute attribute) {
+	this.owner = owner;
+	this.attribute = attribute;
+    }
 
-	private Attribute attribute;
+    public Node getOwner() {
+	return this.owner;
+    }
 
-	public NodeAttributePair(Node owner, Attribute attribute) {
-		this.owner = owner;
-		this.attribute = attribute;
-	}
+    public void setOwner(Node owner) {
+        this.owner = owner;
+    }
 
-	public Node getOwner() {
-		return this.owner;
-	}
+    public void setAttribute(Attribute attribute) {
+        this.attribute = attribute;
+    }
 
-	public Attribute getAttribute() {
-		return this.attribute;
-	}
+    public Attribute getAttribute() {
+	return this.attribute;
+    }
 
 }

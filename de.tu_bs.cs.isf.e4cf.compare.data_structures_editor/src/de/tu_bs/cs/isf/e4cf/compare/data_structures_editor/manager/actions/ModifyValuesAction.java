@@ -2,8 +2,6 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
 import java.util.Set;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
-
 /**
  * Implementation of UndoAction for Edit and Add Value
  * 
@@ -11,14 +9,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
  *
  */
 
-public class ModifyValuesAction implements UndoAction {
-
-	private String name;
+public class ModifyValuesAction extends AbstractAction {
 	private Set<String> oldAttributeValues;
 	private Set<String> newAttributeValues;
 
 	public ModifyValuesAction(String name, Set<String> oldAttributeValues, Set<String> newAttributeValues) {
-		this.name = name;
+		setName(name);
 		this.oldAttributeValues = oldAttributeValues;
 		this.newAttributeValues = newAttributeValues;
 	}

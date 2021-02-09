@@ -4,7 +4,6 @@ import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
 
 /**
  * Implementation of UndoAction for AddAttribute
@@ -13,28 +12,25 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
  *
  */
 
-public class AddAttributeAction implements UndoAction {
+public class AddAttributeAction extends AbstractAction {
+    private List<Attribute> list;
 
-	private String name;
-	private Node treeItem;
-	private List<Attribute> list;
+    public AddAttributeAction(String name, Node treeItem, List<Attribute> list) {
+	this.setName(name);
+	this.setNode(treeItem);
+	this.list = list;
+    }
 
-	public AddAttributeAction(String name, Node treeItem, List<Attribute> list) {
-		this.setName(name);
-		this.treeItem = treeItem;
-		this.list = list;
-	}
+    @Override
+    public void undo() {
+	getNode().setAttributes(list);
+    }
 
-	@Override
-	public void undo() {
-		treeItem.setAttributes(list);
-	}
+    public List<Attribute> getList() {
+	return list;
+    }
 
-	public String getName() {
-	    return name;
-	}
-
-	public void setName(String name) {
-	    this.name = name;
-	}
+    public void setList(List<Attribute> list) {
+	setList(list);
+    }
 }

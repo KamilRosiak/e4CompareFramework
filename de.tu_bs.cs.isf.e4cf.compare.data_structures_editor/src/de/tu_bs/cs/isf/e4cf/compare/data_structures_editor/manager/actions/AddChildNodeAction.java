@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -12,23 +11,20 @@ import javafx.scene.control.TreeView;
  *
  */
 
-public class AddChildNodeAction implements UndoAction {
-	private String name;
-	private TreeItem<Node> childNode;
-	private TreeView<Node> treeView;
+public class AddChildNodeAction extends AbstractAction {
 
 	public AddChildNodeAction(String name, TreeItem<Node> childNode, TreeView<Node> treeView) {
-		this.name = name;
-		this.childNode = childNode;
-		this.treeView = treeView;
+		this.setName(name);
+		this.setChildNode(childNode);
+		this.setTree(treeView);
 	}
 
 	@Override
 	public void undo() {
-		treeView.getSelectionModel().clearSelection();
-		treeView.getSelectionModel().select(childNode);
-		treeView.getSelectionModel().getSelectedItem().getParent().getChildren()
-				.remove(treeView.getSelectionModel().getSelectedItem());
-		treeView.refresh();
+		getTree().getSelectionModel().clearSelection();
+		getTree().getSelectionModel().select(getChildNode());
+		getTree().getSelectionModel().getSelectedItem().getParent().getChildren()
+				.remove(getTree().getSelectionModel().getSelectedItem());
+		getTree().refresh();
 	}
 }
