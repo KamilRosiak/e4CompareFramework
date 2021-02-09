@@ -66,7 +66,7 @@ public abstract class AbstractNode implements Node {
 
 	@Override
 	public Attribute getAttributeForKey(String key) {
-		return attributes.stream().findAny().filter(e -> e.getAttributeKey().equals(key)).get();
+		return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
 	}
 	
 	@Override

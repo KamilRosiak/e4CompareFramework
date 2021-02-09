@@ -16,4 +16,12 @@ public class StringTable {
 	// element for the extensions
 	public static String WORKSPACE_STR_ATTR = "workspace_structure_attr";
 
+	// Tagging Strings
+	public static String TAG_DIALOG_TITLE = "Manage Tags";
+	public static String TAG_ADD_BUTTON_TEXT = "Add";
+	public static String TAG_UPDATE_BUTTON_TEXT = "Update";
+	public static String TAG_NO_VALID_NAME_TEXT = "No valid Tag name";
+	public static String TAG_NAME_ALREADY_EXISTS_TEXT = "Tag with name: %s already exists";
+
+
 }

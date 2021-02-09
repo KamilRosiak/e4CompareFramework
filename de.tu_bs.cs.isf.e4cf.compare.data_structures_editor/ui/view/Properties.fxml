@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity"
+	xmlns="http://javafx.com/javafx/11.0.1"
+	xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.PropertiesController">
+	<children>
+		<TableView fx:id="propertiesTable" VBox.vgrow="ALWAYS">
+			<contextMenu>
+				<ContextMenu fx:id="contextMenu">
+					<items>
+						<MenuItem mnemonicParsing="false"
+							onAction="#editNodeProperty" text="Edit Property Designation" />
+						<MenuItem mnemonicParsing="false"
+							onAction="#editNodeValue" text="Edit Value" />
+						<MenuItem mnemonicParsing="false"
+							onAction="#removeNodeAttribute" text="Remove Attribute" />
+						<MenuItem mnemonicParsing="false"
+							onAction="#addNodeValue" text="Add Value" />	
+						<MenuItem mnemonicParsing="false"
+							onAction="#undoProperties" text="Undo" accelerator="Shortcut+Z" />	
+					</items>
+				</ContextMenu>
+			</contextMenu>
+		</TableView>
+	</children>
+</VBox>
