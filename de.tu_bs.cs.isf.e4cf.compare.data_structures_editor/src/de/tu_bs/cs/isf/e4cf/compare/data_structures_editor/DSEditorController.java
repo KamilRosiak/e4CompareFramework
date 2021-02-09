@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -36,13 +37,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 /**
- * Class to give functions to FXML Elements
+ * This class represents the controller implementation of the data structure editor model view controller implementation.
+ * The corresponding view is located at {@link /ui/view/VisualizeTreeView.fxml}.
  * 
- * @author Team05
+ * @author Team05 , Kamil Rosiak
  *
  */
 
-public class DataStructureEditorController {
+public class DSEditorController {
 
     @Inject
     private ServiceContainer services;

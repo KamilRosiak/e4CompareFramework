@@ -3,7 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,7 +32,7 @@ public class PropertiesViewUtilities {
 	 * @param tableView
 	 * @return
 	 */
-	public static TableView<Attribute> getAttributeTable(NodeImpl node, TableView<Attribute> tableView) {
+	public static TableView<Attribute> getAttributeTable(Node node, TableView<Attribute> tableView) {
 
 		ObservableList<Attribute> data = FXCollections.observableArrayList(node.getAttributes());
 

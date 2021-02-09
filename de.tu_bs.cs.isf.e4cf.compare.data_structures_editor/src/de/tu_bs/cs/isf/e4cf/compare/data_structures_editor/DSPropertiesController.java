@@ -29,7 +29,7 @@ import javafx.scene.control.TableView;
  * @author Team05
  *
  */
-public class PropertiesController {
+public class DSPropertiesController {
 
 	@Inject
 	private ServiceContainer services;
@@ -175,7 +175,7 @@ public class PropertiesController {
 	 */
 	@Optional
 	@Inject
-	public void showProperties(@UIEventTopic(DataStructuresEditorST.NODE_PROPERTIES_EVENT) NodeImpl node) {
+	public void showProperties(@UIEventTopic(DataStructuresEditorST.NODE_PROPERTIES_EVENT) Node node) {
 		propertiesTable.getColumns().clear();
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());

@@ -9,7 +9,7 @@
 	minHeight="-Infinity" minWidth="-Infinity"
 	xmlns="http://javafx.com/javafx/11.0.1"
 	xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.PropertiesController">
+	fx:controller="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.DSPropertiesController">
 	<children>
 		<TableView fx:id="propertiesTable" VBox.vgrow="ALWAYS">
 			<contextMenu>
