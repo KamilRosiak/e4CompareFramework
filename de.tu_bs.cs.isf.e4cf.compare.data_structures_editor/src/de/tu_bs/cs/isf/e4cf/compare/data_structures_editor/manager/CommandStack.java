@@ -11,7 +11,7 @@ import java.util.Stack;
 
 public class CommandStack {
 
-    private Stack<UndoAction> queueStackNormal;
+    private Stack<Action> queueStackNormal;
 
     public CommandStack() {
 	queueStackNormal = new Stack<>();
@@ -22,7 +22,7 @@ public class CommandStack {
      * 
      * @param action
      */
-    public void execute(UndoAction action) {
+    public void execute(Action action) {
 	queueStackNormal.push(action);
     }
 

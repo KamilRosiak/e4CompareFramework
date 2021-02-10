@@ -18,7 +18,7 @@ public class OpenInTreeViewHandler {
 	@Execute
 	public void execute(ServiceContainer services) {
 		FileTreeElement element = services.rcpSelectionService.getCurrentSelectionFromExplorer();
-		
+		//TODO:EXTENSION POINT FOR AVAIALBE ADAPTER 
 		if (element.getExtension().equals("txt")) {
 			TextReader reader = new TextReader();
 			services.partService.showPart(DataStructuresEditorST.TREE_VIEW_ID);

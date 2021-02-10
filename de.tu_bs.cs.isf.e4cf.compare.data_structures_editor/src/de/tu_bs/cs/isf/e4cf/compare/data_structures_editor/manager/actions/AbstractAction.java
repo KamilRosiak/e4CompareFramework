@@ -1,11 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.UndoAction;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.Action;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-public abstract class AbstractAction implements UndoAction {
+public abstract class AbstractAction implements Action {
 	private String name;
 	private Node node;
 	private TreeItem<Node> childNode;
