@@ -252,6 +252,4 @@ public class JavaFormat implements IHighlighting, IIndenting, IFormatting {
             } 
         });
 	}
-
-
 }

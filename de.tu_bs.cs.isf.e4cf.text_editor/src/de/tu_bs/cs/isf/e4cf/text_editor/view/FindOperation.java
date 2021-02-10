@@ -26,8 +26,6 @@ public class FindOperation implements Initializable {
 	@FXML
 	private TextField searchField;
 
-	private Scene scene;
-
 	// term to be searched in the text
 	private String findTerm = "";
 
@@ -39,14 +37,6 @@ public class FindOperation implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-	}
-	/**
-	 * Sets the scene for the find operation. 
-	 * 
-	 * @param scene The Scene of the Window
-	 */
-	public void setScene(Scene scene) {
-		this.scene = scene;
 	}
 
 	/**
@@ -60,7 +50,6 @@ public class FindOperation implements Initializable {
 		String lookingFor = searchField.getText();
 
 		if (lookingFor == "") {
-			java.awt.Toolkit.getDefaultToolkit().beep();// Gibt Ton zurück
 			return; // do nothing if nothing is in the search-field
 		}
 		if (findings.isEmpty()) {

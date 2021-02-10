@@ -33,7 +33,4 @@ public class EditorST {
 	public static final String JAVA_ICON = "icons/java-icon.png";
 	public static final String XML_ICON = "icons/xml-icon.png";
 	public static final String TXT_ICON = "icons/txt-icon.png";
-	
-	
-
 }

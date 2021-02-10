@@ -27,7 +27,10 @@ import javafx.scene.control.Tab;
  * 
  */
 public class EditorTab extends Tab {
-	private enum Action {HIGHLIGHT, INDENT, FORMAT};
+	private enum Action {
+		HIGHLIGHT, INDENT, FORMAT
+	};
+
 	private String fileEnding;
 	private Timer timer;
 	private CodeArea codeArea;
@@ -54,18 +57,19 @@ public class EditorTab extends Tab {
 	public String getFileEnding() {
 		return fileEnding;
 	}
-	
+
 	@Override
 	public void finalize() {
-		this.canceHighlighting();
+		this.cancelHighlighting();
 	}
-	
+
 	/**
 	 * Schedules highlighting function every 500ms.
 	 * 
 	 * @param codeArea current area for text on active tab
 	 */
 	private void scheduleHighlighting(IHighlighting func) {
+		final int WAIT_TIME = 500;
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
@@ -84,7 +88,7 @@ public class EditorTab extends Tab {
 			}
 		};
 		timer = new Timer();
-		timer.schedule(timerTask, 0, 500);
+		timer.schedule(timerTask, 0, WAIT_TIME);
 	}
 
 	/**
@@ -92,12 +96,18 @@ public class EditorTab extends Tab {
 	 *
 	 * @author Lukas Cronauer
 	 */
-	public void canceHighlighting() {
+	public void cancelHighlighting() {
 		if (timer != null) {
 			timer.cancel();
 		}
 	}
 
+	/**
+	 * Ensures that existing highlighters, indenters, and formatters function
+	 * properly.
+	 * 
+	 * @param container the given FileFormatContainer for a tab.
+	 */
 	public void initDisplayActions(FileFormatContainer container) {
 		if (container.getHighlighter() != null) {
 			runSafe(container.getHighlighter(), Action.HIGHLIGHT);
@@ -109,32 +119,32 @@ public class EditorTab extends Tab {
 			runSafe(container.getFormatter(), Action.FORMAT);
 		}
 	}
-	
+
 	/**
-	 * Executes a method of an extension as an ISafeRunnable to catch any
-	 * potential exceptions during execution
+	 * Executes a method of an extension as an ISafeRunnable to catch any potential
+	 * exceptions during execution
 	 * 
 	 * @param extension Object of an extension implementation
-	 * @param action Enum Action object indicating the desired method
+	 * @param action    Enum Action object indicating the desired method
 	 */
 	private void runSafe(Object extension, Action action) {
 		ISafeRunnable runnable = new ISafeRunnable() {
-	            @Override
-	            public void handleException(Throwable e) {
-	                System.out.println("Exception in " + fileEnding + " extension");
-	                System.out.println(e.getMessage());
-	            }
+			@Override
+			public void handleException(Throwable e) {
+				System.out.println("Exception in " + fileEnding + " extension");
+				System.out.println(e.getMessage());
+			}
 
-	            @Override
-	            public void run() throws Exception {
-	            	if (action == Action.HIGHLIGHT) {
-						scheduleHighlighting(((IHighlighting) extension));
-					} else if (action == Action.INDENT) {
-						((IIndenting) extension).applyIndentation(codeArea);
-					} else if (action == Action.FORMAT) {
-						((IFormatting) extension).format(codeArea);
-					}
-	            }
+			@Override
+			public void run() throws Exception {
+				if (action == Action.HIGHLIGHT) {
+					scheduleHighlighting(((IHighlighting) extension));
+				} else if (action == Action.INDENT) {
+					((IIndenting) extension).applyIndentation(codeArea);
+				} else if (action == Action.FORMAT) {
+					((IFormatting) extension).format(codeArea);
+				}
+			}
 		};
 		SafeRunner.run(runnable);
 	}

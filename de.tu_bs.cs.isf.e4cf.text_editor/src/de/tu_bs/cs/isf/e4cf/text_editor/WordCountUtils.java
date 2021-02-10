@@ -64,5 +64,4 @@ public class WordCountUtils {
 		long countWord = (bufferText.chars().filter(ch -> ch == ' ').count() + 1);
 		return new int[] { (int) countWord, newLineCounter };
 	}
-
 }

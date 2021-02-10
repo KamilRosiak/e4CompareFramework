@@ -25,5 +25,4 @@ public class CodeAreaFactory {
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 		return codeArea;
 	}
-
 }
