@@ -30,6 +30,12 @@ public interface Tree extends Serializable {
 	public String getArtifactType();
 	
 	/**
+	 * Returns the fileExtension of the parsed file.
+	 * @return
+	 */
+	public String getFileExtension();
+	
+	/**
 	 * This method returns all nodes of this tree that have the given type.
 	 */
 	public List<Node> getNodesForType(String nodeType);

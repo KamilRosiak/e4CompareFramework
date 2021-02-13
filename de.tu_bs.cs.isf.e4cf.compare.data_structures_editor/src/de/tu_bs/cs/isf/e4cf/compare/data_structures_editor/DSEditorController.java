@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddAttributeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddChildNodeAction;
@@ -23,6 +23,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStruc
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -109,7 +110,7 @@ public class DSEditorController {
 	treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
 	treeView.getRoot().setExpanded(true);
 	treeView.setShowRoot(true);
-	TreeViewUtilities.fillTreeView(tree.getRoot(), treeView.getRoot());
+	TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot());
 	addListener();
 	displayTotalNodeAmount();
     }
@@ -118,21 +119,8 @@ public class DSEditorController {
      * Method to display the total amount of nodes
      */
     private void displayTotalNodeAmount() {
-	totalNodeAmount.setText("Total node amount: "
-		+ (treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<Node>>())).size());
-	treeView.refresh();
-    }
-
-    /**
-     * Method to delete a Node
-     */
-    private void deleteNode() {
-	TreeItem<Node> ti = treeView.getSelectionModel().getSelectedItem();
-	treeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
-	ti.getParent().getChildren().remove(ti);
-
-	unselectAllNodes();
-	displayTotalNodeAmount();
+	totalNodeAmount.setText(
+		"Total node amount: " + (treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<Node>>())).size());
 	treeView.refresh();
     }
 
@@ -171,8 +159,7 @@ public class DSEditorController {
      * @param treeViewList
      * @return list with treeItems
      */
-    public List<TreeItem<Node>> treeViewToList(TreeItem<Node> item,
-	    List<TreeItem<Node>> treeViewList) {
+    public List<TreeItem<Node>> treeViewToList(TreeItem<Node> item, List<TreeItem<Node>> treeViewList) {
 	if (item.getValue().isRoot()) {
 	    treeViewList.add(item);
 	}
@@ -228,7 +215,7 @@ public class DSEditorController {
      */
     @FXML
     void addChildNode() {
-	TreeItem<Node> newChild = TreeViewUtilities.nodeToTreeItem(new NodeImpl("newChild"));
+	TreeItem<Node> newChild = TreeViewUtilities.createTreeItem(new NodeImpl("newChild"));
 	String childName = TreeViewUtilities.getInput("Enter child name");
 	if (childName != null) {
 	    newChild.setValue(new NodeImpl(childName));
@@ -260,11 +247,11 @@ public class DSEditorController {
     void pasteNode() {
 	try {
 	    for (TreeItem<Node> ti : copyList) {
-		TreeItem<Node> tempNode = TreeViewUtilities.nodeToTreeItem(ti.getValue());
+		TreeItem<Node> tempNode = TreeViewUtilities.createTreeItem(ti.getValue());
 		// Idee: Index verwalten über expand/collapse All
 		treeView.getSelectionModel().getSelectedItem().getChildren().add(tempNode);
 		for (TreeItem<Node> child : ti.getChildren()) {
-		    tempNode.getChildren().add(TreeViewUtilities.nodeToTreeItem(child.getValue()));
+		    tempNode.getChildren().add(TreeViewUtilities.createTreeItem(child.getValue()));
 		}
 		displayTotalNodeAmount();
 	    }
@@ -318,25 +305,7 @@ public class DSEditorController {
      */
     @FXML
     void extractToFile() {
-	if (treeView.getSelectionModel().getSelectedItems().contains(treeView.getRoot())) {
-	    if (!TreeViewUtilities.confirmationAlert(
-		    "Root is selected.\nIn that case the whole treeview gets extracted.\nDo you want to continue?")) {
-		return;
-	    }
-	}
-	String fileName = TreeViewUtilities.getInput("Please enter desired file name");
-	if (fileName != null) {
-	    if (fileName.length() <= 3 || !(fileName.substring(fileName.length() - 4).equals(".txt"))) {
-		fileName += ".txt";
-	    }
-	    File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + fileName);
-	    List<TreeItem<Node>> extractList = new ArrayList<TreeItem<Node>>();
-	    expandSelectedItems();
-	    extractList.addAll(treeView.getSelectionModel().getSelectedItems());
-	    file = TreeViewUtilities.writeToFile(extractList, file);
-	    collapseSelectedItems();
 
-	}
     }
 
     /**
@@ -352,6 +321,22 @@ public class DSEditorController {
 	    deleteNode();
 	}
     }
+    
+    
+    /**
+     * Method to delete a Node
+     */
+    private void deleteNode() {
+	TreeItem<Node> ti = treeView.getSelectionModel().getSelectedItem();
+	treeManager.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
+	ti.getParent().getChildren().remove(ti);
+
+	unselectAllNodes();
+	displayTotalNodeAmount();
+	treeView.refresh();
+    }
+    
+    
 
     /**
      * set treeview and its values to null, then remove it from the background
@@ -370,11 +355,8 @@ public class DSEditorController {
      */
     @FXML
     void saveFile() {
-	File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + getTreeName());
-	List<TreeItem<Node>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(),
-		new ArrayList<TreeItem<Node>>());
-	listWithoutRoot.remove(0);
-	file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
+	ArtifactIOUtil.writeArtifactToFile(currentTree,
+		RCPContentProvider.getCurrentWorkspacePath() + "/" + getTreeName());
     }
 
     /**
@@ -390,17 +372,8 @@ public class DSEditorController {
      */
     @FXML
     void saveAs() {
-	String fileName = TreeViewUtilities.getInput("Please enter desired file name");
-	if (fileName != null) {
-	    if (!(fileName.length() > 3 && fileName.substring(fileName.length() - 4).equals(".txt"))) {
-		fileName += ".txt";
-	    }
-	    File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + fileName);
-	    List<TreeItem<Node>> listWithoutRoot = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(),
-		    new ArrayList<TreeItem<Node>>());
-	    listWithoutRoot.remove(0);
-	    file = TreeViewUtilities.writeToFile(listWithoutRoot, file);
-	}
+	ArtifactIOUtil.writeArtifactToFile(currentTree,
+		RCPMessageProvider.getFilePathDialog("Select Path", RCPContentProvider.getCurrentWorkspacePath()));
     }
 
     /**

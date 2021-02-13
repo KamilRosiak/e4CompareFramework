@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
@@ -35,12 +37,12 @@ public final class TreeViewUtilities {
      * @param node   trees root object in first method call
      * @param parent treeViews root object in first method call
      */
-    public static void fillTreeView(Node node, TreeItem<Node> parent) {
+    public static void createTreeView(Node node, TreeItem<Node> parent) {
 	for (Node n : node.getChildren()) {
-	    TreeItem<Node> ti = nodeToTreeItem(n);
+	    TreeItem<Node> ti = createTreeItem(n);
 	    parent.getChildren().add(ti);
 	    if (!n.isLeaf()) {
-		fillTreeView(n, ti);
+		createTreeView(n, ti);
 	    }
 	}
     }
@@ -51,7 +53,7 @@ public final class TreeViewUtilities {
      * @param node to be transformed
      * @return TreeItem created from the node
      */
-    public static TreeItem<Node> nodeToTreeItem(Node node) {
+    public static TreeItem<Node> createTreeItem(Node node) {
 	TreeItem<Node> ti = new TreeItem<Node>(node);
 	switch (ti.getValue().getNodeType()) {
 
@@ -91,47 +93,6 @@ public final class TreeViewUtilities {
 	    }
 	}
 	return searchList;
-    }
-
-    /**
-     * Saves the tree to a file with given name
-     * 
-     * @param treeView
-     * @param newFileName
-     */
-    public static void serializesTree(TreeView<Node> treeView, String newFileName) {
-	File file = new File(RCPContentProvider.getCurrentWorkspacePath() + "/" + newFileName);
-	List<TreeItem<Node>> listWithoutRoot = getSubTreeAsList(treeView.getRoot(),
-		new ArrayList<TreeItem<Node>>());
-	listWithoutRoot.remove(0);
-	writeToFile(listWithoutRoot, file);
-    }
-
-    /**
-     * Writes a given list of treeItems to a given file
-     * 
-     * @param list Should contain all items that should be written to file
-     * @param file Specifies the file to be written
-     * @return Built file or null in case of IOException
-     */
-    public static File writeToFile(List<TreeItem<Node>> list, File file) {
-	try {
-	    FileWriter writer = new FileWriter(file);
-	    for (TreeItem<Node> node : list) {
-		if (node.getValue().getNodeType().equals("LINE")) {
-		    continue;
-		}
-		writer.write(node.getValue().toString());
-		writer.write("\n");
-	    }
-	    writer.close();
-	    informationAlert(
-		    String.format("Tree %s successfully stored at %s", file.getName(), file.getAbsolutePath()));
-	    return file;
-	} catch (IOException e) {
-	    informationAlert(String.format(DataStructuresEditorST.EXCEPTION_MESSAGE, e));
-	    return null;
-	}
     }
 
     /**

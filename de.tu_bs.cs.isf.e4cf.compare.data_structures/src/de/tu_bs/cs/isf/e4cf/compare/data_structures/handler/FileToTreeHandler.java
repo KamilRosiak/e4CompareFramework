@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.ArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.string_table.DataStructureST;
@@ -18,7 +17,7 @@ public class FileToTreeHandler {
 	@Execute
 	public void execute(ServiceContainer services) {
 		List<Tree> artifactList = new ArrayList<Tree> ();
-		List<AbstractArtifactReader> reader = ArtifactIOUtil.getAllArtifactReader();
+		List<ArtifactReader> reader = ArtifactIOUtil.getAllArtifactReader();
 		
 		for(FileTreeElement file : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
 			for(ArtifactReader read : reader) {

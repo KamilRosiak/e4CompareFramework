@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="NodeIcons" name="Node Icons" schema="schema/NodeIcons.exsd"/>
-
    <extension
-         id="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.fragment"
+         id="id1"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            uri="fragment.e4xmi"
-            apply="always">
+            apply="always"
+            uri="fragment.e4xmi">
       </fragment>
    </extension>
-   <extension
-         id="NodeIcons"
-         name="node_icons"
-         point="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeIcons">
-   </extension>
+
 
 </plugin>
