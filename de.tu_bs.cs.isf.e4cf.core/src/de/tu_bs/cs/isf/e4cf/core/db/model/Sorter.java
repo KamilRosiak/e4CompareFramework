@@ -5,13 +5,13 @@ package de.tu_bs.cs.isf.e4cf.core.db.model;
  * The class which stands for the sorting condition in an sql statement.
  *
  */
-public class Sorting {
+public class Sorter {
 
 	private Condition groupCondition = null;
 	private Condition orderCondition = null;
 	private String orderType = null;
 
-	public Sorting(Condition groupCondition, Condition orderCondition, String orderType) {
+	public Sorter(Condition groupCondition, Condition orderCondition, String orderType) {
 		this.groupCondition = groupCondition;
 		this.orderCondition = orderCondition;
 		this.orderType = orderType;
@@ -30,7 +30,6 @@ public class Sorting {
 			}
 			groupSql = groupSql.substring(0, groupSql.length() - 2);
 		}
-
 		return groupSql;
 	}
 
@@ -46,8 +45,6 @@ public class Sorting {
 				orderSql += " " + orderType;
 			}
 		}
-
 		return orderSql;
 	}
-
 }

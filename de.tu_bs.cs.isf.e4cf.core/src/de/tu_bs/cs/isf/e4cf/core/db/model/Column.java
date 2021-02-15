@@ -14,9 +14,6 @@ public class Column {
 	private boolean autoIncrement = false;
 	private boolean notNull = false;
 
-	public Column() {
-	}
-
 	public Column(final String pName, final String pType, final Boolean pPrimaryKey, final Boolean pUnique,
 			final Boolean pIncrement, final Boolean pNotNull) {
 		name = pName;

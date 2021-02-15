@@ -19,7 +19,7 @@ import java.sql.SQLException;
  */
 public class DatabaseFactory {
 
-	private static DatabaseFactory INSTANCE = null;
+	private static DatabaseFactory INSTANCE = new DatabaseFactory();
 	private final String _JDBC_DRIVER = "org.sqlite.JDBC";
 
 	/**
@@ -31,19 +31,16 @@ public class DatabaseFactory {
 		try {
 			Class.forName(_JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
-			System.err.println("Error while loading JDBC-Driver: " + _JDBC_DRIVER + "." + e.getMessage());
+			System.err.println(Messages._ER_LOAD_JDBC_D + _JDBC_DRIVER + "." + e.getMessage());
 		}
 	}
 
 	/**
-	 * Methode to get the instance of the class.
+	 * Method to get the instance of the class.
 	 * 
 	 * @return ConnectionFactory instance of class
 	 */
 	public synchronized static DatabaseFactory getInstance() {
-		if (null == INSTANCE) {
-			INSTANCE = new DatabaseFactory();
-		}
 		return INSTANCE;
 	}
 
@@ -61,12 +58,12 @@ public class DatabaseFactory {
 			try {
 				final Connection con = DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
 				con.close();
-				System.out.println("Database created: " + pDbName);
+				System.out.println(Messages._DB_CR + pDbName);
 			} catch (SQLException e) {
-				System.err.println("Error while creating database: " + pDbName + ". " + e.getMessage());
+				System.err.println(Messages._ER_CR_DB + pDbName + ". " + e.getMessage());
 			}
 		} else {
-			System.out.println("Database already exists: " + pDbName);
+			System.out.println(Messages._DB_AL_EX + pDbName);
 		}
 	}
 
@@ -82,10 +79,10 @@ public class DatabaseFactory {
 			try {
 				return DriverManager.getConnection("jdbc:sqlite:" + pPath + pDbName);
 			} catch (SQLException e) {
-				System.err.println("Error while getting database: " + pDbName + ". " + e.getMessage());
+				System.err.println(Messages._ER_GT_DB + pDbName + ". " + e.getMessage());
 			}
 		} else {
-			System.out.println("Database does not exist: " + pDbName);
+			System.out.println(Messages._DB_NOT_EX + pDbName);
 		}
 		return null;
 	}
@@ -101,9 +98,9 @@ public class DatabaseFactory {
 	public void deleteDatabase(final String pPath, final String pDbName) {
 		if (databaseExists(pPath, pDbName)) {
 			new File(pPath + pDbName).delete();
-			System.out.println("Database deleted: " + pDbName);
+			System.out.println(Messages._DB_RM + pDbName);
 		} else {
-			System.out.println("Database does not exist: " + pDbName);
+			System.out.println(Messages._DB_NOT_EX + pDbName);
 		}
 	}
 
@@ -118,10 +115,10 @@ public class DatabaseFactory {
 		if (databaseExists(pPath, pOldDbName)) {
 			if (!pOldDbName.equals(pNewDbName)) {
 				new File(pPath + pOldDbName).renameTo(new File(pPath + pNewDbName));
-				System.out.println("Renaming database " + pOldDbName + " to " + pNewDbName);
+				System.out.println(Messages._DB_RN_SUCC + pOldDbName + Messages._TO + pNewDbName);
 			}
 		} else {
-			System.out.println("Database does not exist: " + pOldDbName);
+			System.out.println(Messages._DB_NOT_EX + pOldDbName);
 		}
 	}
 
@@ -139,12 +136,12 @@ public class DatabaseFactory {
 			final Path newdir = Paths.get(pNewPath);
 			try {
 				Files.move(source, newdir.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-				System.out.println(pDbName + " was moved successfully from " + pOldPath + " to " + pNewPath + ".");
+				System.out.println(pDbName + Messages._DB_MV_SUCC + pOldPath + Messages._TO + pNewPath + ".");
 			} catch (IOException e) {
-				System.err.println("Error while moving database: " + pDbName);
+				System.err.println(Messages._ER_DB_MV + pDbName);
 			}
 		} else {
-			System.out.println("Database does not exist: " + pDbName);
+			System.out.println(Messages._DB_NOT_EX + pDbName);
 		}
 	}
 

@@ -5,6 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * 
+ * A helper class for more organisation. It contains methods for the
+ * implementation of the data logic. It is also used for the JUnittests.
+ *
+ */
 public class DataUtilities {
 
 	/**
@@ -13,23 +19,23 @@ public class DataUtilities {
 	 * @param pPath     String the path of the database
 	 * @param pDbName   String the name of the database
 	 * @param tableName String name of the table
-	 * @return int Number of rowd in the table
+	 * @return int Number of rows in the table
 	 */
 	public int getTableNumberRows(final String pPath, final String pDbName, final String pTableName) {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		int rowcounts = 0;
+		int rowCounter = 0;
 		try {
 			final Statement stm = con.createStatement();
-			final ResultSet rs = stm.executeQuery("SELECT * FROM " + pTableName);
-			rowcounts = 0;
+			final ResultSet rs = stm.executeQuery(Messages.SELECT + Messages.STAR + Messages.FROM + pTableName);
+			rowCounter = 0;
 			while (rs.next()) {
-				rowcounts++;
+				rowCounter++;
 			}
 			con.close();
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 		}
-		return rowcounts;
+		return rowCounter;
 	}
 
 	/**
@@ -43,7 +49,7 @@ public class DataUtilities {
 	public void printTable(final String pPath, final String pDbName, final String pTableName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		final Statement stm = con.createStatement();
-		final String sqlStatement = "SELECT * FROM " + pTableName;
+		final String sqlStatement = Messages.SELECT + Messages.STAR + Messages.FROM + pTableName;
 		printResultSet(stm, sqlStatement);
 		con.close();
 	}
@@ -65,7 +71,7 @@ public class DataUtilities {
 	}
 
 	/**
-	 * The main methode to print a table or a ResultSet.
+	 * The main method to print a table or a ResultSet.
 	 * 
 	 * @param stm
 	 * @param sqlStatement
@@ -74,7 +80,7 @@ public class DataUtilities {
 	protected void printResultSet(final Statement stm, final String sqlStatement) throws SQLException {
 		ResultSet rs = stm.executeQuery(sqlStatement);
 		System.out
-				.println("Number of rows in table '" + rs.getMetaData().getTableName(1) + "': " + getSizeResultSet(rs));
+				.println(Messages._TB_NR_ROW + " '" + rs.getMetaData().getTableName(1) + "': " + getSizeResultSet(rs));
 		final String separationLine = getSeparationLine(stm, sqlStatement);
 		System.out.println(getSeparationLine(stm, sqlStatement));
 		System.out.println(getTableHeader(stm, sqlStatement));
