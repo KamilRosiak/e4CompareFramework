@@ -111,5 +111,7 @@ public interface Node {
 	 * This method sets the UUID of this node.
 	 */
 	public void setUUID(UUID uuid);
+
+	public void setNodeType(String nodeType);
 	
 }

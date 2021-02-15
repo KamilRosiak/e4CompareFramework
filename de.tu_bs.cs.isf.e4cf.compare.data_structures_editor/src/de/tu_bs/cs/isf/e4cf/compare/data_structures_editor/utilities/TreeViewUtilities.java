@@ -1,25 +1,18 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
-import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
@@ -85,6 +78,7 @@ public final class TreeViewUtilities {
 	if (item.getValue().toString().toLowerCase().contains(name)) {
 	    searchList.add(item);
 	}
+
 	List<TreeItem<Node>> result = new ArrayList<TreeItem<Node>>();
 	for (TreeItem<Node> child : item.getChildren()) {
 	    result.addAll(searchTreeItem(child, name, searchList));
@@ -154,7 +148,6 @@ public final class TreeViewUtilities {
 	} else {
 	    return s;
 	}
-
     }
 
     /**

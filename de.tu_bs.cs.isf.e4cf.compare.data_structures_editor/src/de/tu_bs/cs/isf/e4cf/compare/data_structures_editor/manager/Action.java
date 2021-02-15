@@ -8,6 +8,12 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager;
  */
 
 public interface Action {
-
-	void undo();
+    	/**
+    	 * This method executes a given action 
+    	 */
+    	public void execute();
+    	/**
+    	 * This method undoes the executed action
+    	 */
+	public void undo();
 }

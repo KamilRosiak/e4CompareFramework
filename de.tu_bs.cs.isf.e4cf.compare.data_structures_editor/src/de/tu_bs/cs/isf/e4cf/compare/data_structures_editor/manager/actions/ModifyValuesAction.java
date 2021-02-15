@@ -9,7 +9,7 @@ import java.util.Set;
  *
  */
 
-public class ModifyValuesAction extends AbstractAction {
+public class ModifyValuesAction extends AbstractTreeAction {
 	private Set<String> oldAttributeValues;
 	private Set<String> newAttributeValues;
 
@@ -25,6 +25,12 @@ public class ModifyValuesAction extends AbstractAction {
 		for (String value : oldAttributeValues) {
 			newAttributeValues.add(value);
 		}
+	}
+
+	@Override
+	public void execute() {
+	    // TODO Auto-generated method stub
+	    
 	}
 
 }

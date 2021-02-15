@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.Action;
 
 /**
  * Implementation of UndoAction for RenameProperty
@@ -10,13 +9,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.Action;
  *
  */
 
-public class RenamePropertyAction implements Action {
-	private String name;
+public class RenamePropertyAction extends AbstractTreeAction {
 	private String oldName;
 	private AbstractAttribute attr;
 
 	public RenamePropertyAction(String name, String oldName, AbstractAttribute attr) {
-		this.name = name;
+		setName(name);
 		this.oldName = oldName;
 		this.attr = attr;
 	}
@@ -24,5 +22,11 @@ public class RenamePropertyAction implements Action {
 	@Override
 	public void undo() {
 		attr.setAttributeKey(oldName);
+	}
+
+	@Override
+	public void execute() {
+	    // TODO Auto-generated method stub
+	    
 	}
 }

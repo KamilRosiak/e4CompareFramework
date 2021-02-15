@@ -1,6 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -11,20 +14,21 @@ import javafx.scene.control.TreeView;
  *
  */
 
-public class AddChildNodeAction extends AbstractAction {
+public class AddChildNodeAction extends AbstractTreeAction {
 
-	public AddChildNodeAction(String name, TreeItem<Node> childNode, TreeView<Node> treeView) {
-		this.setName(name);
-		this.setChildNode(childNode);
-		this.setTree(treeView);
-	}
+    public AddChildNodeAction(TreeView<Node> treeView, TreeItem<Node> parent) {
+	this.setParentNode(parent);
+    }
 
-	@Override
-	public void undo() {
-		getTree().getSelectionModel().clearSelection();
-		getTree().getSelectionModel().select(getChildNode());
-		getTree().getSelectionModel().getSelectedItem().getParent().getChildren()
-				.remove(getTree().getSelectionModel().getSelectedItem());
-		getTree().refresh();
-	}
+    @Override
+    public void undo() {
+	getParentNode().getChildren().remove(getChildNode());
+    }
+
+    @Override
+    public void execute() {
+	setChildNode(TreeViewUtilities
+		.createTreeItem(new NodeImpl(RCPMessageProvider.inputDialog("Create New Child", "Node Type"))));
+	getParentNode().getChildren().add(getChildNode());
+    }
 }

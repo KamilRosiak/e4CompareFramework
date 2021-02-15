@@ -114,11 +114,13 @@ public abstract class AbstractNode implements Node {
 	public void setParent(Node parent) {
 		this.parent = parent;
 	}
-	
+
+	@Override
 	public String getNodeType() {
 		return nodeType;
 	}
 
+	@Override
 	public void setNodeType(String nodeType) {
 		this.nodeType = nodeType;
 	}
@@ -173,4 +175,5 @@ public abstract class AbstractNode implements Node {
 	public void setUUID(UUID uuid) {
 	    this.uuid = uuid;
 	}
+
 }

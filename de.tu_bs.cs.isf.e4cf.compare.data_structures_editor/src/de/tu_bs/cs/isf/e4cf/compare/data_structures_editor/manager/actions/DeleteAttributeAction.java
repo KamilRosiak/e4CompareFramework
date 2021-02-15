@@ -10,7 +10,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
  *
  */
 
-public class DeleteAttributeAction extends AbstractAction {
+public class DeleteAttributeAction extends AbstractTreeAction {
 	private NodeAttributePair pair;
 	private ServiceContainer services;
 
@@ -23,6 +23,12 @@ public class DeleteAttributeAction extends AbstractAction {
 	@Override
 	public void undo() {
 		services.eventBroker.send(DataStructuresEditorST.ADD_ATTRIBUTE_EVENT, pair);
+	}
+
+	@Override
+	public void execute() {
+	    // TODO Auto-generated method stub
+	    
 	}
 
 }

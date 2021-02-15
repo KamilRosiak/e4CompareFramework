@@ -23,6 +23,7 @@ public class CommandStack {
      * @param action
      */
     public void execute(Action action) {
+	action.execute();
 	queueStackNormal.push(action);
     }
 

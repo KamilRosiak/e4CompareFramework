@@ -5,7 +5,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.Action;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-public abstract class AbstractAction implements Action {
+public abstract class AbstractTreeAction implements Action {
 	private String name;
 	private Node node;
 	private TreeItem<Node> childNode;
@@ -33,7 +33,7 @@ public abstract class AbstractAction implements Action {
 	public TreeView<Node> getTree() {
 	    return tree;
 	}
-	public void setTree(TreeView<Node> parent) {
+	public void setTreeView(TreeView<Node> parent) {
 	    this.tree = parent;
 	}
 	public TreeItem<Node> getParentNode() {

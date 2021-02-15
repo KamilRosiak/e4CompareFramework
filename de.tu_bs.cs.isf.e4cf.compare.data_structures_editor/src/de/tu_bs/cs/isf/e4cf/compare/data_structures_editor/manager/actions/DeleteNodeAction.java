@@ -10,7 +10,7 @@ import javafx.scene.control.TreeItem;
  *
  */
 
-public class DeleteNodeAction extends AbstractAction {
+public class DeleteNodeAction extends AbstractTreeAction {
     
     public DeleteNodeAction(String name, TreeItem<Node> treeItem, TreeItem<Node> parent) {
 	this.setName(name);
@@ -21,5 +21,11 @@ public class DeleteNodeAction extends AbstractAction {
     @Override
     public void undo() {
 	getParentNode().getChildren().add(getChildNode());
+    }
+
+    @Override
+    public void execute() {
+	// TODO Auto-generated method stub
+	
     }
 }
