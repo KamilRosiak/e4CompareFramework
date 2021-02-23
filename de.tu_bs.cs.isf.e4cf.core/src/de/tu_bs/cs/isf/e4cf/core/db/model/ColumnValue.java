@@ -1,5 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.core.db.model;
 
+/**
+ * 
+ * Class to represent the value of column in a row.
+ *
+ */
 public class ColumnValue {
 
 	private String columnName;

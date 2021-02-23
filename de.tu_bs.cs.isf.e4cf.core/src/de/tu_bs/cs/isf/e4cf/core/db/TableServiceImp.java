@@ -9,6 +9,11 @@ import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
 
+/**
+ * DAO class for the implementation of the table logic. CRUD methods and other
+ * are implemented hier.
+ *
+ */
 public class TableServiceImp extends TableUtilities implements ITableService {
 
 	/**
@@ -31,18 +36,18 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			// at least one attribute to the table, else SQLFailure
 			if (attributes.length > 0) {
 				if (!tableExists(pPath, pDbName, pTableName)) {
-					String sqlStatement = "CREATE TABLE " + pTableName + "(";
-					String sqlPrimaryKey = "CONSTRAINT " + pTableName + "_pl PRIMARY KEY (";
+					String sqlStatement = Messages.CREATE + Messages.TABLE + pTableName + "(";
+					String sqlPrimaryKey = Messages.CONSTRAINT + pTableName + "_pl PRIMARY KEY (";
 					for (final Column c : attributes) {
 						sqlStatement += c.getName() + " " + c.getType();
 						if (c.isUnique()) {
-							sqlStatement += " UNIQUE";
+							sqlStatement += Messages.UNIQUE;
 						}
 						if (c.isAutoIncrement()) {
-							sqlStatement += " PRIMARY KEY AUTOINCREMENT";
+							sqlStatement += Messages.AUTOINCREMENT;
 						}
 						if (c.isNotNull()) {
-							sqlStatement += " NOT NULL";
+							sqlStatement += Messages.NOTNULL;
 						}
 						if (c.isPrimaryKey()) {
 							sqlPrimaryKey += c.getName() + ", ";
@@ -58,16 +63,16 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 					}
 					// System.out.println("Test SQLStatement: " + sqlStatement);
 					stmt.execute(sqlStatement);
-					System.out.println("Table created: " + pTableName);
+					System.out.println(Messages._TB_CR + pTableName);
 				} else {
-					System.out.println("Table already exists: " + pTableName);
+					System.out.println(Messages._TB_AL_EX + pTableName);
 				}
 			} else {
-				System.err.println("Can not create table without column(s).");
+				System.err.println(Messages._TB_NO_CR);
 			}
 			con.close();
 		} catch (SQLException e) {
-			System.err.println("Error while creating table: " + pTableName + ". " + e.getMessage());
+			System.err.println(Messages._ER_CR_TB + pTableName + ". " + e.getMessage());
 		}
 	}
 
@@ -86,7 +91,7 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			final Statement s = con.createStatement();
 			final String tableName = cls.getSimpleName();
 			if (!tableExists(pPath, pDbName, cls.getSimpleName())) {
-				String sqlStatement = "CREATE TABLE " + tableName + " (";
+				String sqlStatement = Messages.CREATE + Messages.TABLE + tableName + " (";
 				// get all attribute objects from the java-class
 				final Field[] fieldlist = cls.getDeclaredFields();
 				for (final Field aFieldlist : fieldlist) {
@@ -96,15 +101,15 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 				sqlStatement = sqlStatement.substring(0, sqlStatement.length() - 2);
 				sqlStatement += ");";
 				s.execute(sqlStatement);
-				System.out.println("Table created: " + tableName);
+				System.out.println(Messages._TB_CR + tableName);
 			} else {
-				System.out.println("Table already exists: " + tableName);
+				System.out.println(Messages._TB_AL_EX + tableName);
 			}
 			con.close();
 		} catch (SecurityException e) {
-			System.err.println("Security Issue: " + e.getMessage());
+			System.err.println(Messages._ER_SEC + e.getMessage());
 		} catch (SQLException e) {
-			System.err.println("Error while creating table from class: " + cls.getSimpleName() + ". " + e.getMessage());
+			System.err.println(Messages._ER_CR_TB + cls.getSimpleName() + ". " + e.getMessage());
 		}
 	}
 
@@ -121,15 +126,15 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 		try {
 			final Statement s = con.createStatement();
 			if (tableExists(pPath, pDbName, pTableName)) {
-				final String sqlStatement = "DROP TABLE " + pTableName + ";";
+				final String sqlStatement = Messages.DROP + Messages.TABLE + pTableName + ";";
 				s.execute(sqlStatement);
-				System.out.println("Table deleted: " + pTableName);
+				System.out.println(Messages._TB_RM + pTableName);
 			} else {
-				System.out.println("Table does not exist: " + pTableName);
+				System.out.println(Messages._TB_NO_EX + pTableName);
 			}
 			con.close();
 		} catch (SQLException e) {
-			System.err.println("Error while deleting table: " + pTableName + ". " + e.getMessage());
+			System.err.println(Messages._ER_RM_TB + pTableName + ". " + e.getMessage());
 		}
 	}
 
@@ -150,20 +155,20 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			if (tableExists(pPath, pDbName, pTableName)) {
 				if (!tableExists(pPath, pDbName, pNewTableName)) {
 					if (!pTableName.equals(pNewTableName)) {
-						final String sqlStatement = "ALTER TABLE " + pTableName + " " + "RENAME TO " + pNewTableName
-								+ ";";
+						final String sqlStatement = Messages.ALTER + Messages.TABLE + pTableName + Messages.RENAME
+								+ Messages._TO + pNewTableName + ";";
 						s.execute(sqlStatement);
-						System.out.println("Renaming tablename " + pTableName + " to " + pNewTableName);
+						System.out.println(Messages._TB_RN_SUCC + pTableName + Messages._TO + pNewTableName);
 					}
 				} else {
-					System.out.println("Can not Rename table with an existing name: " + pNewTableName);
+					System.out.println(Messages._TB_NO_RN + pNewTableName);
 				}
 			} else {
-				System.out.println("Table does not exist: " + pTableName);
+				System.out.println(Messages._TB_NO_EX + pTableName);
 			}
 			con.close();
 		} catch (SQLException e) {
-			System.err.println("Error while renaming table: " + pTableName + ". " + e.getMessage());
+			System.err.println(Messages._ER_RN_TB + pTableName + ". " + e.getMessage());
 		}
 	}
 
@@ -186,31 +191,31 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 				for (Column c : attributes) {
 					if (!columnExists(pPath, pDbName, pTableName, c.getName())) {
 						try {
-							final String sqlStatement = "ALTER TABLE " + pTableName + " ADD " + c.getName() + " "
-									+ c.getType() + ";";
+							final String sqlStatement = Messages.ALTER + Messages.TABLE + pTableName + Messages.ADD
+									+ c.getName() + " " + c.getType() + ";";
 							stmt.execute(sqlStatement);
 							if (c.isNotNull()) {
-								makeColumnNotNull(pPath, pDbName, pTableName, c.getName());
+								switchColumnNotNull(pPath, pDbName, pTableName, true, c.getName());
 							}
 							if (c.isPrimaryKey()) {
-								makeColumnPrimaryKey(pPath, pDbName, pTableName, c.getName());
+								switchColumnPrimaryKey(pPath, pDbName, pTableName, true, c.getName());
 							}
 							if (c.isUnique()) {
-								makeColumnUnique(pPath, pDbName, pTableName, c.getName());
+								switchColumnUnique(pPath, pDbName, pTableName, true, c.getName());
 							}
 							if (c.isAutoIncrement()) {
-								makeColumnAutoIncrement(pPath, pDbName, pTableName, c.getName());
+								switchColumnAutoIncrement(pPath, pDbName, pTableName, true, c.getName());
 							}
-							System.out.println("Column " + c.getName() + " added to table: " + pTableName);
+							System.out.println(Messages._CLM_ADD_SUCC + c.getName());
 						} catch (Exception e) {
-							System.err.println("Error while adding column: " + c.getName() + ". " + e.getMessage());
+							System.err.println(Messages._ER_AD_CLM + c.getName() + ". " + e.getMessage());
 						}
 					} else {
-						System.out.println("Column already exists: " + c.getName());
+						System.out.println(Messages._CLM_AL_EX + c.getName());
 					}
 				}
 			} else {
-				System.out.println("Table does not exist:" + pTableName);
+				System.out.println(Messages._TB_NO_EX + pTableName);
 			}
 			con.close();
 		} catch (SQLException e) {
@@ -237,27 +242,27 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			if (tableExists(pPath, pDbName, pTableName)) {
 				if (!columnExists(pPath, pDbName, pTableName, pNewColumnName)) {
 					if (columnExists(pPath, pDbName, pTableName, pColumnName)) {
-						final String sqlStatement = "ALTER TABLE " + pTableName + " RENAME COLUMN " + pColumnName
-								+ " TO " + pNewColumnName + ";";
+						final String sqlStatement = Messages.ALTER + Messages.TABLE + pTableName + Messages.RENAME
+								+ Messages.COLUMN + pColumnName + Messages._TO + pNewColumnName + ";";
 						s.execute(sqlStatement);
-						System.out.println("Column renamed from " + pColumnName + " to " + pNewColumnName);
+						System.out.println(Messages._CLM_RN_FR_TO + pColumnName + Messages._TO + pNewColumnName);
 					} else {
-						System.out.println("Column does not exist: " + pColumnName);
+						System.out.println(Messages._CLM_NO_EX + pColumnName);
 					}
 				} else {
-					System.out.println("Can not rename with an existing columnname " + pNewColumnName + ".");
+					System.out.println(Messages._ERR_CLM_RN_EX_NM + pNewColumnName + ".");
 				}
 			} else {
-				System.out.println("Table does not exist:" + pTableName);
+				System.out.println(Messages._TB_NO_EX + pTableName);
 			}
 			con.close();
 		} catch (SQLException e) {
-			System.err.println("Error while renaming column: " + pColumnName + ". " + e.getMessage());
+			System.err.println(Messages._ER_RN_CLM + pColumnName + ". " + e.getMessage());
 		}
 	}
 
 	/**
-	 * Method to delete column form an existing table.
+	 * Method to delete column from an existing table.
 	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
@@ -275,10 +280,10 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			cols = new ArrayList<Column>(cols);
 			for (String c : columns) {
 				if (null == getColumn(cols, c)) {
-					System.out.println("Column does not exist: " + c);
+					System.out.println(Messages._CLM_NO_EX + c);
 				} else {
 					cols.remove(getColumn(cols, c));
-					System.out.println("Column deleted: " + c);
+					System.out.println(Messages._CLM_RM + c);
 				}
 			}
 			Column[] col = new Column[cols.size()];
@@ -286,271 +291,153 @@ public class TableServiceImp extends TableUtilities implements ITableService {
 			createTable(pPath, pDbName, pTableName, col);
 			deleteTable(pPath, pDbName, "old_" + pTableName);
 		} else {
-			System.out.println("Table does not exist: " + pTableName);
+			System.out.println(Messages._TB_NO_EX + pTableName);
 		}
 		con.close();
 	}
 
 	/**
-	 * Method to add primary key constraints to an existing table.
+	 * Method to make or drop primary key constraint of columns.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the columns to which the primary key
-	 *                    will be added
+	 * @param state       true/false
+	 * @param columnNames the name of columns to make them unique or not.
 	 * @throws SQLException
 	 */
 	@Override
-	public void makeColumnPrimaryKey(final String pPath, final String pDbName, final String pTableName,
-			final String... columnNames) throws SQLException {
+	public void switchColumnPrimaryKey(final String pPath, final String pDbName, final String pTableName,
+			final boolean state, final String... columnNames) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, pTableName)) {
 			// Security issue
 			if (!tableHasData(pPath, pDbName, pTableName)) {
-				setColumnPrimaryKey(pPath, pDbName, pTableName, true, columnNames);
+				setColumnConstraint(pPath, pDbName, pTableName, "pk", state, columnNames);
 			} else {
-				System.err.println("Table has already data. Such change could bring an SQLFailure.");
+				System.err.println(Messages._NO_CHANGE_ALLOWED);
 			}
 		} else {
-			System.out.println("Table does not exist: " + pTableName);
+			System.out.println(Messages._TB_NO_EX + pTableName);
 		}
 		con.close();
 	}
 
 	/**
-	 * Method to drop primary key constraints of an existing table.
+	 * Method to make or drop auto increment constraint of columns.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the columns of which the primary key
-	 *                    will be dropped
+	 * @param state       true/false
+	 * @param columnNames the name of columns to make them unique or not.
 	 * @throws SQLException
 	 */
 	@Override
-	public void dropColumnPrimaryKey(final String pPath, final String pDbName, final String pTableName,
-			final String... columnNames) throws SQLException {
+	public void switchColumnAutoIncrement(final String pPath, final String pDbName, final String pTableName,
+			final boolean state, final String columnName) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, pTableName)) {
 			// Security issue
 			if (!tableHasData(pPath, pDbName, pTableName)) {
-				setColumnPrimaryKey(pPath, pDbName, pTableName, false, columnNames);
+				setColumnConstraint(pPath, pDbName, pTableName, "ai", state, columnName);
 			} else {
-				System.err.println("Table has already data. Such change could bring an SQLFailure.");
+				System.err.println(Messages._NO_CHANGE_ALLOWED);
 			}
 		} else {
-			System.out.println("Table does not exist: " + pTableName);
+			System.out.println(Messages._TB_NO_EX + pTableName);
 		}
 		con.close();
 	}
 
 	/**
-	 * Method to make a Column Autoincrement of an existing table, the Prerequisite
-	 * is that we have not Primary key.
+	 * Method to make or drop unique constraint of columns.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the columns of which the primary key
-	 *                    will be dropped
+	 * @param state       true/false
+	 * @param columnNames the name of columns to make them unique or not.
 	 * @throws SQLException
 	 */
 	@Override
-	public void makeColumnAutoIncrement(final String pPath, final String pDbName, final String pTableName,
-			final String columnName) throws SQLException {
+	public void switchColumnUnique(final String pPath, final String pDbName, final String pTableName,
+			final boolean state, final String... columnNames) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, pTableName)) {
 			// Security issue
 			if (!tableHasData(pPath, pDbName, pTableName)) {
-				setColumnAutoIncrement(pPath, pDbName, pTableName, true, columnName);
+				setColumnConstraint(pPath, pDbName, pTableName, "un", state, columnNames);
 			} else {
-				System.err.println("Table has already data. Such change could bring an SQLFailure.");
+				System.err.println(Messages._NO_CHANGE_ALLOWED);
 			}
 		} else {
-			System.out.println("Table does not exist: " + pTableName);
+			System.out.println(Messages._TB_NO_EX + pTableName);
 		}
 		con.close();
 	}
 
 	/**
-	 * Method to drop Autoincrement of column.
+	 * Method to make or drop the nullability of columns.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the columns of which the primary key
-	 *                    will be dropped
+	 * @param state       true/false
+	 * @param columnNames the name of columns to make them NOTNULL or not.
 	 * @throws SQLException
 	 */
 	@Override
-	public void dropColumnAutoIncrement(String pPath, String pDbName, String pTableName, String columnName)
-			throws SQLException {
+	public void switchColumnNotNull(final String pPath, final String pDbName, final String pTableName,
+			final boolean state, final String... columnNames) throws SQLException {
 		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
 		if (tableExists(pPath, pDbName, pTableName)) {
 			// Security issue
 			if (!tableHasData(pPath, pDbName, pTableName)) {
-				setColumnAutoIncrement(pPath, pDbName, pTableName, false, columnName);
+				setColumnConstraint(pPath, pDbName, pTableName, "nn", state, columnNames);
 			} else {
-				System.err.println("Table has already data. Such change could bring an SQLFailure.");
+				System.err.println(Messages._NO_CHANGE_ALLOWED);
 			}
 		} else {
-			System.out.println("Table does not exist: " + pTableName);
-		}
-		con.close();
-	}
-
-	@Override
-	/**
-	 * Method to add unique constraints to an existing table.
-	 * 
-	 * @param pPath       String the path of the database
-	 * @param pDbName     String the name of the database
-	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the column to which the unique
-	 *                    constraints will be added
-	 * @throws SQLException
-	 */
-	public void makeColumnUnique(final String pPath, final String pDbName, final String pTableName,
-			final String columnName) throws SQLException {
-		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		if (tableExists(pPath, pDbName, pTableName)) {
-			// Security issue
-			if (!tableHasData(pPath, pDbName, pTableName)) {
-				setColumnUnique(pPath, pDbName, pTableName, true, columnName);
-			} else {
-				System.err.println("Table has already data. Such change could bring an SQLFailure.");
-			}
-		} else {
-			System.out.println("Table does not exist: " + pTableName);
+			System.out.println(Messages._TB_NO_EX + pTableName);
 		}
 		con.close();
 	}
 
 	/**
-	 * Method to drop unique constraints of a column.
+	 * A method where a type constraint of column(s) would be set on a given state.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the column to which the unique
-	 *                    constraints will be added
-	 * @throws SQLException
+	 * @param constraint  nn for notNull, pk for primary key, un for unique, ai for
+	 *                    auto increment
+	 * @param state       true/false
+	 * @param columnNames the name of columns to modify.
 	 */
-	@Override
-	public void dropColumnUnique(String pPath, String pDbName, String pTableName, String columnName)
-			throws SQLException {
-		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		if (tableExists(pPath, pDbName, pTableName)) {
-			// Security issue
-			if (!tableHasData(pPath, pDbName, pTableName)) {
-				setColumnUnique(pPath, pDbName, pTableName, false, columnName);
-			} else {
-				System.err.println("Table has already data. Such change could bring an SQLFailure.");
-			}
-		} else {
-			System.out.println("Table does not exist: " + pTableName);
-		}
-		con.close();
-	}
-
-	/**
-	 * Method to make a column not nullable.
-	 * 
-	 * @param pPath       String the path of the database
-	 * @param pDbName     String the name of the database
-	 * @param tableName   String the name of the table
-	 * @param columnNames the name of the column to which the NOTNULL will be added
-	 * @throws SQLException
-	 */
-	@Override
-	public void makeColumnNotNull(final String pPath, final String pDbName, final String pTableName,
-			final String... columnNames) throws SQLException {
-		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		if (tableExists(pPath, pDbName, pTableName)) {
-			// Security issue
-			if (!tableHasData(pPath, pDbName, pTableName)) {
-				setColumnNotNull(pPath, pDbName, pTableName, true, columnNames);
-			} else {
-				System.err.println("Table has already data. Such change could bring an SQLFailure.");
-			}
-		} else {
-			System.out.println("Table does not exist: " + pTableName);
-		}
-		con.close();
-	}
-
-	/**
-	 * Method to make a column nullable.
-	 * 
-	 * @param pPath       String the path of the database
-	 * @param pDbName     String the name of the database
-	 * @param tableName   String the name of the table
-	 * @param columnNames the name of the column to which the NOTNULL will be added
-	 * @throws SQLException
-	 */
-	@Override
-	public void dropColumnNotNull(String pPath, String pDbName, String pTableName, String... columnNames)
-			throws SQLException {
-		final Connection con = DatabaseFactory.getInstance().getDatabase(pPath, pDbName);
-		if (tableExists(pPath, pDbName, pTableName)) {
-			// Security issue
-			if (!tableHasData(pPath, pDbName, pTableName)) {
-				setColumnNotNull(pPath, pDbName, pTableName, false, columnNames);
-			} else {
-				System.err.println("Table has already data. Such change could bring an SQLFailure.");
-			}
-		} else {
-			System.out.println("Table does not exist: " + pTableName);
-		}
-		con.close();
-	}
-
-	private void setColumnPrimaryKey(final String pPath, final String pDbName, final String tableName,
-			final boolean state, final String... columnNames) {
+	private void setColumnConstraint(final String pPath, final String pDbName, final String tableName,
+			final String constraint, final boolean state, final String... columnNames) {
 		renameTable(pPath, pDbName, tableName, "old_" + tableName);
 		List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
 		for (final String c : columnNames) {
-			getColumn(columns, c).setPrimaryKey(state);
-		}
-		Column[] col = new Column[columns.size()];
-		col = columns.toArray(col);
-		createTable(pPath, pDbName, tableName, col);
-		deleteTable(pPath, pDbName, "old_" + tableName);
-	}
+			switch (constraint) {
+			case "nn":
+				getColumn(columns, c).setNotNull(state);
+				break;
+			case "pk":
+				getColumn(columns, c).setPrimaryKey(state);
+				break;
+			case "un":
+				getColumn(columns, c).setUnique(state);
+				break;
+			case "ai":
+				getColumn(columns, c).setAutoIncrement(state);
+				getColumn(columns, c).setPrimaryKey(false);
+				break;
+			default:
+				System.err.println(Messages._FALSE_TYPE_CONSTRAINT);
+			}
 
-	private void setColumnAutoIncrement(final String pPath, final String pDbName, final String tableName,
-			final boolean state, final String... columnNames) {
-		renameTable(pPath, pDbName, tableName, "old_" + tableName);
-		List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-		for (final String c : columnNames) {
-			getColumn(columns, c).setAutoIncrement(state);
-		}
-		Column[] col = new Column[columns.size()];
-		col = columns.toArray(col);
-		createTable(pPath, pDbName, tableName, col);
-		deleteTable(pPath, pDbName, "old_" + tableName);
-	}
-
-	private void setColumnUnique(final String pPath, final String pDbName, final String tableName, final boolean state,
-			final String... columnNames) {
-		renameTable(pPath, pDbName, tableName, "old_" + tableName);
-		List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-		for (final String c : columnNames) {
-			getColumn(columns, c).setUnique(state);
-		}
-		Column[] col = new Column[columns.size()];
-		col = columns.toArray(col);
-		createTable(pPath, pDbName, tableName, col);
-		deleteTable(pPath, pDbName, "old_" + tableName);
-	}
-
-	private void setColumnNotNull(final String pPath, final String pDbName, final String tableName, final boolean state,
-			final String... columnNames) {
-		renameTable(pPath, pDbName, tableName, "old_" + tableName);
-		List<Column> columns = getColumnsTable(pPath, pDbName, "old_" + tableName);
-		for (final String c : columnNames) {
-			getColumn(columns, c).setNotNull(state);
 		}
 		Column[] col = new Column[columns.size()];
 		col = columns.toArray(col);

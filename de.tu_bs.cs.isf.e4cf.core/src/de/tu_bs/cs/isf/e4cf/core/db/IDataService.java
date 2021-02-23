@@ -5,8 +5,13 @@ import java.sql.SQLException;
 
 import de.tu_bs.cs.isf.e4cf.core.db.model.ColumnValue;
 import de.tu_bs.cs.isf.e4cf.core.db.model.Condition;
-import de.tu_bs.cs.isf.e4cf.core.db.model.Sorting;
+import de.tu_bs.cs.isf.e4cf.core.db.model.Sorter;
 
+/**
+ * 
+ * Java-Interface for the manipulation of data in databases.
+ *
+ */
 public interface IDataService {
 
 	/**
@@ -22,7 +27,7 @@ public interface IDataService {
 			throws SQLException;
 
 	/**
-	 * Methode to update data.
+	 * Method to update data.
 	 * 
 	 * @param pPath      String the path of the database
 	 * @param pDbName    String the name of the database
@@ -54,7 +59,7 @@ public interface IDataService {
 	 * @return ResultSet
 	 */
 	public ResultSet selectData(final String pPath, final String pDbName, final String pTableName, Condition condition,
-			Sorting sorting, final String... attributes);
+			Sorter sorting, final String... attributes);
 
 	/**
 	 * Method to count rows with special conditions.
@@ -69,7 +74,7 @@ public interface IDataService {
 	 * @return long
 	 */
 	public long count(final String pPath, final String pDbName, final String pTableName, Condition condition,
-			Sorting sorting, final String attributes, final boolean distinct);
+			Sorter sorting, final String attributes, final boolean distinct);
 
 	/**
 	 * Method to count the sum of column rows with special conditions.
@@ -82,7 +87,8 @@ public interface IDataService {
 	 * @param attributes the columns to select
 	 * @param distinct   boolean for distinct counting
 	 * @return long
+	 * @throws SQLException 
 	 */
 	public long sum(final String pPath, final String pDbName, final String pTableName, Condition condition,
-			Sorting sorting, final String attributes, final boolean distinct);
+			Sorter sorting, final String attributes, final boolean distinct) throws SQLException;
 }

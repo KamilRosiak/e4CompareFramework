@@ -4,6 +4,11 @@ import java.sql.SQLException;
 
 import de.tu_bs.cs.isf.e4cf.core.db.model.Column;
 
+/**
+ * 
+ * Java-Interface for the manipulation of tables structure in databases.
+ *
+ */
 public interface ITableService {
 
 	/**
@@ -63,123 +68,79 @@ public interface ITableService {
 	void addColumn(String pPath, String pDbName, String tableName, Column... attributes) throws SQLException;
 
 	/**
-	 *  Method to rename a column.
+	 * Method to rename a column.
 	 * 
-	 * @param pPath			String the path of the database
-	 * @param pDbName		String the name of the database
-	 * @param tableName		String the name of the table
-	 * @param columnName	String the old name of the column
-	 * @param newColumnName	String the new name of the column
+	 * @param pPath         String the path of the database
+	 * @param pDbName       String the name of the database
+	 * @param tableName     String the name of the table
+	 * @param columnName    String the old name of the column
+	 * @param newColumnName String the new name of the column
 	 * @throws SQLException
 	 */
-	void renameColumn(final String pPath, final String pDbName, final String tableName, final String columnName, final String newColumnName) throws SQLException;
-	
+	void renameColumn(final String pPath, final String pDbName, final String tableName, final String columnName,
+			final String newColumnName) throws SQLException;
+
 	/**
 	 * Method to delete column form an existing table.
 	 * 
-	 * @param pPath      String the path of the database
-	 * @param pDbName    String the name of the database
-	 * @param tableName  String the name of the table
-	 * @param columns  	 Columns to delete
+	 * @param pPath     String the path of the database
+	 * @param pDbName   String the name of the database
+	 * @param tableName String the name of the table
+	 * @param columns   Columns to delete
 	 * @throws SQLException
 	 */
 	void deleteColumn(String pPath, String pDbName, String tableName, String... columns) throws SQLException;
 
 	/**
-	 * Method to add primary key constraints to an existing table.
+	 * Method to make or drop the nullability of columns.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the columns to which the primary key
-	 *                    will be added
+	 * @param state       true/false
+	 * @param columnNames the name of columns to make them NOTNULL or not.
 	 * @throws SQLException
 	 */
-	void makeColumnPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames)
+	void switchColumnNotNull(String pPath, String pDbName, String pTableName, boolean state, String... columnNames)
 			throws SQLException;
 
 	/**
-	 * Method to drop primary key constraints of an existing table.
+	 * Method to make or drop unique constraint of columns.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the columns of which the primary key
-	 *                    will be dropped
+	 * @param state       true/false
+	 * @param columnNames the name of columns to make them unique or not.
 	 * @throws SQLException
 	 */
-	void dropColumnPrimaryKey(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
-
-	/**
-	 * Method to make a Column Autoincrement of an existing table.
-	 * 
-	 * @param pPath       String the path of the database
-	 * @param pDbName     String the name of the database
-	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the columns of which the primary key
-	 *                    will be dropped
-	 * @throws SQLException
-	 */
-	void makeColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnNames)
-			throws SQLException;
-	
-	/**
-	 * Method to drop Autoincrement of column.
-	 * 
-	 * @param pPath       String the path of the database
-	 * @param pDbName     String the name of the database
-	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the columns of which the primary key
-	 *                    will be dropped
-	 * @throws SQLException
-	 */
-	void dropColumnAutoIncrement(String pPath, String pDbName, String tableName, String columnName)
+	void switchColumnUnique(String pPath, String pDbName, String pTableName, boolean state, String... columnNames)
 			throws SQLException;
 
 	/**
-	 * Method to drop unique constraints of a column.
+	 * Method to make or drop primary key constraint of columns.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the column to which the unique
-	 *                    constraints will be added
+	 * @param state       true/false
+	 * @param columnNames the name of columns to make them unique or not.
 	 * @throws SQLException
 	 */
-	void dropColumnUnique(String pPath, String pDbName, String tableName, String columnNames) throws SQLException;
+	void switchColumnPrimaryKey(String pPath, String pDbName, String pTableName, boolean state, String... columnNames)
+			throws SQLException;
 
 	/**
-	 * Method to add unique constraints to an existing table.
+	 * Method to make or drop auto increment constraint of columns.
 	 * 
 	 * @param pPath       String the path of the database
 	 * @param pDbName     String the name of the database
 	 * @param tableName   String the name of the table
-	 * @param columnNames String the name of the column to which the unique
-	 *                    constraints will be added
+	 * @param state       true/false
+	 * @param columnNames the name of columns to make them unique or not.
 	 * @throws SQLException
 	 */
-	void makeColumnUnique(String pPath, String pDbName, String tableName, String columnNames) throws SQLException;
-	
-	/**
-	 * Method to make a column not nullable.
-	 * 
-	 * @param pPath       String the path of the database
-	 * @param pDbName     String the name of the database
-	 * @param tableName   String the name of the table
-	 * @param columnNames the name of the column to which the NOTNULL will be added
-	 * @throws SQLException
-	 */
-	void makeColumnNotNull(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
-	
-	/**
-	 * Method to make a column nullable.
-	 * 
-	 * @param pPath       String the path of the database
-	 * @param pDbName     String the name of the database
-	 * @param tableName   String the name of the table
-	 * @param columnNames the name of the column to which the NOTNULL will be added
-	 * @throws SQLException
-	 */
-	void dropColumnNotNull(String pPath, String pDbName, String tableName, String... columnNames) throws SQLException;
+	void switchColumnAutoIncrement(String pPath, String pDbName, String pTableName, boolean state, String columnName)
+			throws SQLException;
 
 }
