@@ -8,7 +8,7 @@ import com.github.javaparser.ast.type.*;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaAttributesTypes;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAttributesTypes;
 
 /**
  * This class collects all attributes of a Node and converts them back to the

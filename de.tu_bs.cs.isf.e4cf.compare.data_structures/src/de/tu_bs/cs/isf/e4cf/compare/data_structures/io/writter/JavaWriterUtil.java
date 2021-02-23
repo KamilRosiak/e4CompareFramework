@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.JavaNodeTypes;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaNodeTypes;
 
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.*;

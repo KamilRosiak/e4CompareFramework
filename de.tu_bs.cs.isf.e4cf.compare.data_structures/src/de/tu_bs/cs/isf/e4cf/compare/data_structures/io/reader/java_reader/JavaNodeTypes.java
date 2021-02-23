@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader;
 
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
