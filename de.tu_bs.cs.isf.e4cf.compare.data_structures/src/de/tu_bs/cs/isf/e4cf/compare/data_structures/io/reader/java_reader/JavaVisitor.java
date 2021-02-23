@@ -1847,11 +1847,11 @@ public class JavaVisitor extends AbstractJavaVisitor {
      *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/comments/LineComment.html">JavaParser
      *      Docs - LineComment</a>
      * @param n   LineComment
-     * @param arg Parent framework node of the LineComment's framework node.
+     * @param parent Parent framework node of the LineComment's framework node.
      */
     @Override
-    public void visit(LineComment n, Node arg) {
-	Node com = new NodeImpl(JavaNodeTypes.LineComment.name(), arg);
+    public void visit(LineComment n, Node parent) {
+	Node com = new NodeImpl(JavaNodeTypes.LineComment.name(), parent);
 	com.addAttribute(JavaAttributesTypes.Comment.name(), n.getContent());
     }
 

@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAttributesTypes;
 
 public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
-    
+
     /**
      * Visits all children but specified exceptions of the node n.
      * 
@@ -35,8 +35,7 @@ public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 	    }
 	}
     }
-    
-    
+
     @Override
     public void visit(NodeList n, Node arg) {
 	// TODO Auto-generated method stub
