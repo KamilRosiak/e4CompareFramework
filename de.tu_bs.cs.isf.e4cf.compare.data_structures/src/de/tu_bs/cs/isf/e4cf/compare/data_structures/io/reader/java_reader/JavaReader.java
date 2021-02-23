@@ -1,20 +1,20 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader;
 
+import java.nio.file.Paths;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.factory.NodeFactory;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.factory.StatementNodeFactory;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeConverter;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import com.github.javaparser.*;
-import com.github.javaparser.ast.*;
-import com.github.javaparser.printer.DotPrinter;
 
 /***
  * This reader converts java files into the generic data structure.
@@ -47,7 +47,7 @@ public class JavaReader extends AbstractArtifactReader {
 			String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
 			CompilationUnit cu = StaticJavaParser.parse(s);
 			Node rootNode = new NodeImpl(JavaWriter.NODE_TYPE_TREE);
-			JavaVisitor visitor = new JavaVisitor();
+			JavaVisitor visitor = new JavaVisitor(new NodeFactory(new StatementNodeFactory()));
 			visitor.visit(cu, rootNode);
 			tree = new TreeImpl(fileName, rootNode);
 		}
