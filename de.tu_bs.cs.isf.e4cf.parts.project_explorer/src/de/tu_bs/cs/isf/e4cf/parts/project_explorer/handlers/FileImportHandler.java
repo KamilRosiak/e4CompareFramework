@@ -26,34 +26,35 @@ import javafx.stage.FileChooser.ExtensionFilter;
  */
 public class FileImportHandler implements IHandler {
 
-	@Execute
-	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
-		Path target = Paths.get(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath());
+    @Execute
+    public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
+	Path target = Paths.get(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath());
 
-		final FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
-		List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
+	final FileChooser fileChooser = new FileChooser();
+	fileChooser.getExtensionFilters().addAll(new ExtensionFilter("All Files", "*.*"));
+	List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
 
-		if (selectedFiles != null && !selectedFiles.isEmpty()) {
-			try {
-				FileTreeElement selection = services.rcpSelectionService.getCurrentSelectionFromExplorer();
-				target = FileHandlingUtility.getPath(selection);
-				for (File file : selectedFiles) {
-					try {
-						services.workspaceFileSystem.copy(file.toPath(), target);
-					} catch (FileAlreadyExistsException faee) {
-						System.out.println("ERROR: Could not import '"+file.getName()+"' because it already exists in that directory!");
-					}  
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	if (selectedFiles != null && !selectedFiles.isEmpty()) {
+	    try {
+		FileTreeElement selection = services.rcpSelectionService.getCurrentSelectionFromExplorer();
+		target = FileHandlingUtility.getPath(selection);
+		for (File file : selectedFiles) {
+		    try {
+			services.workspaceFileSystem.copy(file.toPath(), target);
+		    } catch (FileAlreadyExistsException faee) {
+			System.out.println("ERROR: Could not import '" + file.getName()
+				+ "' because it already exists in that directory!");
+		    }
 		}
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
 	}
+    }
 
-	@CanExecute
-	public boolean canExecute(RCPSelectionService selectionService) {
-		List<FileTreeElement> selections = selectionService.getCurrentSelectionsFromExplorer();
-		return selections != null && selections.size() == 1 && selections.get(0).isDirectory();
-	}
+    @CanExecute
+    public boolean canExecute(RCPSelectionService selectionService) {
+	List<FileTreeElement> selections = selectionService.getCurrentSelectionsFromExplorer();
+	return selections != null && selections.size() == 1 && selections.get(0).isDirectory();
+    }
 }

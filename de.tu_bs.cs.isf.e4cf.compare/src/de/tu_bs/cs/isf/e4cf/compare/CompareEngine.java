@@ -15,33 +15,47 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 public class CompareEngine {
     private Matcher matcher;
     private Metric metric;
-
-    public void compare(Tree firstArtifact, Tree secondArtifact, Metric comparisonMetric, Matcher matcher) {
-	setMetric(comparisonMetric);
+    
+    public CompareEngine(Matcher matcher, Metric comparisonMetric) {
+	setMetric(metric);
 	setMatcher(matcher);
-
-	Set<NodeComparison> comparisons = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
-	NodeComparison root = ComparisonUtil.calculateComparisonGraph(comparisons);
-	root.updateSimilarity();
+    }
+    
+    public Tree compare(Tree firstArtifact, Tree secondArtifact) {
+	//TODO: Compare, Match, Merge
 	
+	
+	Tree a = null;
+	a.getArtifactType();
+	Set<NodeComparison> comparisons = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
+	
+	//NodeComparison root = ComparisonUtil.calculateComparisonGraph(comparisons);
+	//ComparisonUtil.calculateMatchingRecursivly(root, matcher);
+	
+	
+	System.out.println("test");
+	
+	return null;
     }
 
     /**
-     * Compares the first and the second node if all his children
+     * Compares the first and the second node with all his children
      * @param firstNode
      * @param secondNode
      * @return
      */
     public Set<NodeComparison> compare(Node firstNode, Node secondNode) {
+
 	Set<String> nodeTypes = getNodeTypes(firstNode, secondNode);
 	Set<NodeComparison> comparisons = new HashSet<NodeComparison>();
-
+	
 	/**
 	 * Compare only nodes with the same type.
 	 */
 	for (String nodeType : nodeTypes) {
+		System.out.println("test");
 	    // first check if the node type is not ignored
-	    if (metric.isTypeIgnored(nodeType)) {
+	    if (!metric.isTypeIgnored(nodeType)) {
 		// Gather nodes of the same type of both trees
 		List<Node> firstArtifacts = firstNode.getChildrenOfType(nodeType);
 		List<Node> secondArtifacts = secondNode.getChildrenOfType(nodeType);
@@ -51,11 +65,11 @@ public class CompareEngine {
 		// Compare every artifact of the same type with each other
 		for (Node leftArtifact : firstArtifacts) {
 		    for (Node rightArtifact : secondArtifacts) {
+			
 			if (!comparators.isEmpty()) {
 			    NodeComparison nodeComparison = new NodeComparison(leftArtifact, rightArtifact);
 			    for (NodeComparator comparator : comparators) {
 				comparator.compare(leftArtifact, rightArtifact);
-			
 			    }
 			    nodeComparison.updateSimilarity();
 			} else {
@@ -65,6 +79,7 @@ public class CompareEngine {
 		}
 	    }
 	}
+	System.out.println("ja");
 	return comparisons;
     }
 

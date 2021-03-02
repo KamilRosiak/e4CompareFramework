@@ -10,6 +10,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 
 /**
@@ -19,6 +20,18 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
  *
  */
 public class ComparisonUtil {
+    
+    
+    
+    
+    
+    public static Tree compare(List<Tree> trees) {
+	
+	
+	
+	return null;
+    }
+    
 
     /**
      * This method sorts a list of Comparison by their similarity value.
@@ -32,6 +45,10 @@ public class ComparisonUtil {
 	});
     }
 
+    /**
+     * This method compares two nodes based on a string comparison and returns a
+     * NodeComparison which contains a similarity value between both elements.
+     */
     public static NodeComparison defaultNodecompare(Node firstNode, Node secondNode, Matcher matcher) {
 	List<Comparison<Attribute>> comparisons = new ArrayList<Comparison<Attribute>>();
 
@@ -62,10 +79,18 @@ public class ComparisonUtil {
 
     }
 
+    /**
+     * This method removes all left elements out of the given comparison container
+     * and all child elements.
+     */
     public static <K> void removeAllLeftElements(Comparison<K> comparison) {
 	removeAllElementsForSide(true, comparison);
     }
 
+    /**
+     * This method removes all right elements out of the given comparison container
+     * and all child elements.
+     */
     public static <K> void removeAllRightElements(Comparison<K> comparison) {
 	removeAllElementsForSide(false, comparison);
     }
@@ -113,13 +138,16 @@ public class ComparisonUtil {
 	return firstAttr.getAttributeKey().equals(secondAttr.getAttributeKey());
     }
 
+    /**
+     * This method calculates a matching of a given comparison graph
+     */
     public static void calculateMatchingRecursivly(Comparison<Node> comparison, Matcher matcher) {
-	//if the comapriuson has some child elements call this method recursively
+	// if the comparison has some child elements call this method recursively
 	if (!comparison.getChildComparisons().isEmpty()) {
 	    comparison.getChildComparisons().stream().forEach(e -> {
 		calculateMatchingRecursivly(e, matcher);
 	    });
-
+	    // calculate the matching for all child comparisons
 	    matcher.getMatching(comparison.getChildComparisons());
 	    comparison.updateSimilarity();
 	}
@@ -130,8 +158,6 @@ public class ComparisonUtil {
      * This method creates a composition of the used comparisons with a bottom-up
      * approach, which starts with all leaf nodes and connects all comparisons. The
      * returning value is the root comparison.
-     * 
-     * @param comparisons
      */
     public static NodeComparison calculateComparisonGraph(Set<NodeComparison> comparisons) {
 	NodeComparison rootComparison = getRootComparison(comparisons);

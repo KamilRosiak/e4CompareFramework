@@ -10,12 +10,15 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.CompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFiles;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
+import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
+import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
@@ -28,7 +31,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 
 public class CompareEngineView implements Initializable {
@@ -61,6 +63,27 @@ public class CompareEngineView implements Initializable {
 
     }
 
+    // TODO: impl
+    private Metric getSelectedMetric() {
+	return new MetricImpl("test");
+
+    }
+
+    @FXML
+    private void selectMetric() {
+
+    }
+
+    @FXML
+    public void copareArtifacts() {
+	CompareEngine engine = new CompareEngine(getSelectedMatcher(), getSelectedMetric());
+	List<Tree> artifacts = artifactTable.getItems();
+
+	if(artifacts.size() > 1) {
+	    engine.compare(artifacts.get(0), artifacts.get(1));
+	}
+
+    }
 
     /**
      * Add a list of artifacts to the list

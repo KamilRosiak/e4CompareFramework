@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.fx.ui.di-2.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/richtextfx-fat-0.10.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.nebula.widgets.opal.commons_1.0.0.201912241810.jar"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins">
 		<accessrules>
@@ -10,6 +7,9 @@
 			<accessrule kind="accessible" pattern="org/eclipse/e4/ui/internal/workbench/swt/**"/>
 		</accessrules>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.fx.ui.di-2.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/richtextfx-fat-0.10.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.nebula.widgets.opal.commons_1.0.0.201912241810.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/SerialKeyValidator.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/jfxswt.jar"/>

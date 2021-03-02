@@ -20,9 +20,6 @@ public class ProjectExplorerViewAdapter {
 
     @PostConstruct
     public void postConstruct(Composite parent, IEclipseContext context, WorkspaceFileSystem fileSystem) {
-	
-	
-	System.out.println(getClass().getResource("ProjectExplorerView.fxml"));
 	// Create a JavaFX canvas on the SWT Composite parent
 	FXCanvas canvas = new FXCanvas(parent, SWT.None);
 	FXMLLoader<ProjectExplorerViewController> loader = new FXMLLoader<ProjectExplorerViewController>(context,

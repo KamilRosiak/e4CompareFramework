@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Project_explorer
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.parts.project_explorer;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: de.tu_bs.cs.isf.e4cf.parts.project_explorer.Activator
 Export-Package: de.tu_bs.cs.isf.e4cf.parts.project_explorer,
  de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces
 Require-Bundle: javax.inject,
@@ -19,5 +18,5 @@ Require-Bundle: javax.inject,
  org.eclipse.e4.core.di
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.parts.project_explorer
-Import-Package: javax.inject;version="1.0.0"
 Bundle-ActivationPolicy: lazy
+
