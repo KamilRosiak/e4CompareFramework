@@ -1,15 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparator.AttrComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.NodeComparison;
-import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.NodeComparator;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
@@ -23,13 +20,21 @@ public class CompareEngine {
 	setMetric(comparisonMetric);
 	setMatcher(matcher);
 
-	Set<Comparison> comparisons = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
-
+	Set<NodeComparison> comparisons = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
+	NodeComparison root = ComparisonUtil.calculateComparisonGraph(comparisons);
+	root.updateSimilarity();
+	
     }
 
-    public Set<Comparison> compare(Node firstNode, Node secondNode) {
+    /**
+     * Compares the first and the second node if all his children
+     * @param firstNode
+     * @param secondNode
+     * @return
+     */
+    public Set<NodeComparison> compare(Node firstNode, Node secondNode) {
 	Set<String> nodeTypes = getNodeTypes(firstNode, secondNode);
-	Set<Comparison> comparisons = new HashSet<Comparison>();
+	Set<NodeComparison> comparisons = new HashSet<NodeComparison>();
 
 	/**
 	 * Compare only nodes with the same type.
@@ -37,11 +42,12 @@ public class CompareEngine {
 	for (String nodeType : nodeTypes) {
 	    // first check if the node type is not ignored
 	    if (metric.isTypeIgnored(nodeType)) {
-		// Gather nodes of type of both trees
+		// Gather nodes of the same type of both trees
 		List<Node> firstArtifacts = firstNode.getChildrenOfType(nodeType);
 		List<Node> secondArtifacts = secondNode.getChildrenOfType(nodeType);
 		// Get all comparator for this node type
 		List<NodeComparator> comparators = metric.getComparatorForNodeType(nodeType);
+		
 		// Compare every artifact of the same type with each other
 		for (Node leftArtifact : firstArtifacts) {
 		    for (Node rightArtifact : secondArtifacts) {
@@ -53,7 +59,7 @@ public class CompareEngine {
 			    }
 			    nodeComparison.updateSimilarity();
 			} else {
-			    comparisons.add(defaultCompare(leftArtifact, rightArtifact));
+			    comparisons.add(ComparisonUtil.defaultNodecompare(firstNode, secondNode, matcher));
 			}
 		    }
 		}
@@ -74,47 +80,6 @@ public class CompareEngine {
 	    nodeTypes.addAll(node.getAllNodeTypes());
 	}
 	return nodeTypes;
-    }
-
-    private Comparison defaultCompare(Node firstNode, Node secondNode) {
-	List<Comparison> comparisons = new ArrayList<Comparison>();
-
-	for (Attribute first_attr : firstNode.getAttributes()) {
-	    for (Attribute second_attr : secondNode.getAttributes()) {
-		if (isSameAttributeType(first_attr, second_attr)) {
-		    comparisons.add(new AttrComparison(first_attr, second_attr, first_attr.compare(second_attr)));
-		}
-	    }
-	}
-	int maxAttrs = Math.max(firstNode.getAttributes().size(), secondNode.getAttributes().size());
-	float similarity = 0f;
-	comparisons = matcher.getMatching(comparisons);
-	
-	
-	return new NodeComparison(firstNode, secondNode, similarity) {
-	};
-    }
-
-    private List<Comparison> getMatching(List<Comparison> comparisons) {
-	return matcher.getMatching(comparisons);
-    }
-
-    /**
-     * This method compares the attribute keys of two attributes.
-     * 
-     * @return True if types equals else false
-     */
-    private boolean isSameAttributeType(Attribute firstAttr, Attribute secondAttr) {
-	return firstAttr.getAttributeKey().equals(secondAttr.getAttributeKey());
-    }
-
-    /**
-     * This method compares the node type of two nodes.
-     * 
-     * @return True if types equals else false
-     */
-    private boolean isSameNodeType(Node firstNode, Node secondNode) {
-	return firstNode.getNodeType().equals(secondNode.getNodeType());
     }
 
     public Matcher getMatcher() {

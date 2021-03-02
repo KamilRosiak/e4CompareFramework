@@ -35,4 +35,5 @@ public class NodeComparison extends AbstractComparsion<Node>{
     public void addAttributeComparion(AttrComparison attributeComparion) {
 	this.attributeComparions.add(attributeComparion);
     }
+
 }

@@ -114,4 +114,6 @@ public interface Node {
 
 	public void setNodeType(String nodeType);
 	
+	
+	
 }

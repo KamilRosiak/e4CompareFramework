@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
+import org.apache.commons.lang.SerializationUtils;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.AbstractMatcher;
@@ -20,15 +20,15 @@ public class SortingMatcher extends AbstractMatcher {
     }
 
     @Override
-    public List<Comparison> getMatching(List<Comparison> comparisons) {
+    public <K> List<Comparison<K>> getMatching(List<Comparison<K>> comparisons) {
 	ComparisonUtil.sortComparisonBySimilarity(comparisons);
 
-	Iterator<Comparison> comparisonIterator = comparisons.iterator();
+	Iterator<Comparison<K>> comparisonIterator = comparisons.iterator();
 	Set<Object> matchedElements = new HashSet<Object>();
-	List<Comparison> removedComparisons = new ArrayList<Comparison>();
+	List<Comparison<K>> removedComparisons = new ArrayList<Comparison<K>>();
 
 	while (comparisonIterator.hasNext()) {
-	    Comparison nextComparison = comparisonIterator.next();
+	    Comparison<K> nextComparison = comparisonIterator.next();
 	    // Checks if the elements are not marked an if the similarity of the comparison
 	    // is higher than the optional threshold.
 	    if (!matchedElements.contains(nextComparison.getLeftElement())
@@ -47,18 +47,29 @@ public class SortingMatcher extends AbstractMatcher {
 	 * Post Processing all optional elements that are only contained in one of the
 	 * trees.
 	 */
-	for (Comparison comparison : removedComparisons) {
+	for (Comparison<K> comparison : removedComparisons) {
+	    // in the case both artifacts only have one element both are optional
 	    if (comparison.getLeftElement() != null && comparison.getRightElement() != null) {
+		Comparison<K> comparisonCopy = (Comparison<K>) SerializationUtils.clone(comparison);
+		comparison.setSimilarity(0);
+		matchedElements.add(comparison.getLeftElement());
+		matchedElements.add(comparison.getRightElement());
+		ComparisonUtil.removeAllLeftElements(comparison);
+		ComparisonUtil.removeAllRightElements(comparisonCopy);
+		comparisons.add(comparison);
+		comparisons.add(comparisonCopy);
+	    } else if (comparison.getLeftElement() != null) {
 		if (!matchedElements.contains(comparison.getLeftElement())) {
 		    matchedElements.add(comparison.getLeftElement());
 		    comparison.setRightElement(null);
 		    comparison.setSimilarity(0);
-		} else if (!matchedElements.contains(comparison.getRightElement())) {
+		}
+	    } else if (comparison.getRightElement() != null) {
+		if (!matchedElements.contains(comparison.getRightElement())) {
 		    matchedElements.add(comparison.getRightElement());
 		    comparison.setLeftElement(null);
 		    comparison.setSimilarity(0);
 		}
-		comparisons.add(comparison);
 	    }
 	}
 	return comparisons;
