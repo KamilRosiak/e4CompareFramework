@@ -12,7 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.nebula.widgets.opal.commons_1.0.0.201912241810.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/SerialKeyValidator.jar"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/jfxswt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.nebula.widgets.opal.rangeslider_1.0.0.201912241810.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/com.google.guava_27.1.0.v20190517-1946.jar"/>
 	<classpathentry kind="output" path="bin"/>
