@@ -1,5 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.core;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -14,7 +18,7 @@ import org.osgi.framework.BundleListener;
  */
 public class Activator implements BundleActivator, BundleListener {
     private static BundleContext context;
-
+  
     static BundleContext getContext() {
 	return context;
     }
@@ -26,7 +30,6 @@ public class Activator implements BundleActivator, BundleListener {
      * org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
     public void start(BundleContext bundleContext) {
-	
 	// performAuthentification();
 	// bundle management
 	bundleContext.addBundleListener(this);
@@ -35,7 +38,10 @@ public class Activator implements BundleActivator, BundleListener {
     }
 
     private void initialize(BundleContext bundleContext) {
-	Activator.context = bundleContext;
+    	Activator.context = bundleContext;
+    	
+    	  
+    	
     }
 
     /*

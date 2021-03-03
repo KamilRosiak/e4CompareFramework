@@ -18,7 +18,7 @@ public class NodeImpl extends AbstractNode {
 
 	
 	public NodeImpl() {
-		
+		super();
 	}
 	
 	/**

@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 

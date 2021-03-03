@@ -19,7 +19,6 @@ public class LifeCycleManager {
     	//Load Theme Settings
     	KeyValueNode themesValue =  PreferencesUtil.getValueWithDefault(E4CStringTable.DEFAULT_BUNDLE_NAME, E4CStringTable.THEME_KEY, E4CStringTable.DEFAULT_THEME);
     	engine.setTheme(themesValue.getStringValue(), true);
-	
     }
     
     @ProcessAdditions
