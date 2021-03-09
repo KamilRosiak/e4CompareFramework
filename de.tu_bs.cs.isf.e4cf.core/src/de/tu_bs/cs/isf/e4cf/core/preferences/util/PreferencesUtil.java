@@ -32,4 +32,8 @@ public class PreferencesUtil {
 		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(node);
 		return  prefs.get(key, "null");
 	}
+
+	public static KeyValueNode getValueWithDefault(String bundleName, String key, int defaultVal) {
+		return getValueWithDefault(bundleName, key, String.valueOf(defaultVal));
+	}
 }

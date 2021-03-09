@@ -21,6 +21,7 @@ public class CreateFile implements CreateOperation {
 	@Override
 	public FileTreeElement execute(FileTreeElement parentElement) {
 		Path newFilePath = FileHandlingUtility.getPath(parentElement).resolve(_filename);
+
 		if (Files.exists(newFilePath)) {
 			return new File(newFilePath.toString(), parentElement);
 		} else {
