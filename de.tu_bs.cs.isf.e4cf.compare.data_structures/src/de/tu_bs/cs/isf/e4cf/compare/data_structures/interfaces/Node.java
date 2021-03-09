@@ -12,7 +12,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  * @author Kamil Rosiak
  *
  */
-public interface Node extends Serializable {
+public interface Node {
+	
 
 	/**
 	 * This method returns the type of the node, e.g., class, method, statement. This type has to be defined during the parsing process where.
@@ -25,6 +26,12 @@ public interface Node extends Serializable {
 	 * In the Values class you can store values that can be identified by their variant.
 	 */
 	public List<Attribute> getAttributes();
+	
+	/**
+	 * This method returns all values that are available for this node, e.g. an assignment has values for the left side and right side such as  a = b. 
+	 * In the Values class you can store values that can be identified by their variant.
+	 */
+	public void setAttributes(List<Attribute> list);
 	
 	/**
 	 * This method adds value for a given key, a variant with a respective values.
@@ -104,5 +111,9 @@ public interface Node extends Serializable {
 	 * This method sets the UUID of this node.
 	 */
 	public void setUUID(UUID uuid);
+
+	public void setNodeType(String nodeType);
+	
+	
 	
 }

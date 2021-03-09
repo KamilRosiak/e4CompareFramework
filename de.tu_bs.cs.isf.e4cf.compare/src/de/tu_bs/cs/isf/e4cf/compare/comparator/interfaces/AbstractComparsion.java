@@ -85,7 +85,22 @@ public abstract class AbstractComparsion<K> implements Comparison<K> {
     public void setParents(List<Comparison<K>> parents) {
 	this.parents = parents;
     }
-
+    
+    @Override
+    public void removeChildComparison(Comparison<K> child) {
+	getChildComparisons().remove(child);
+    }
+    
+    @Override
+    public void removeParentComparison(Comparison<K> child) {
+	getParantComparisons().remove(child);
+    }
+    
+    @Override
+    public void addParentComparison(Comparison<K> child) {
+	getParantComparisons().add(child);
+    }
+    
     @Override
     public Node mergeNodes() {
 	// TODO Auto-generated method stub

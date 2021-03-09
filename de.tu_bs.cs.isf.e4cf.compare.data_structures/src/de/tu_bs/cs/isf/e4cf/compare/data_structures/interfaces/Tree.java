@@ -30,6 +30,12 @@ public interface Tree extends Serializable {
 	public String getArtifactType();
 	
 	/**
+	 * Returns the fileExtension of the parsed file.
+	 * @return
+	 */
+	public String getFileExtension();
+	
+	/**
 	 * This method returns all nodes of this tree that have the given type.
 	 */
 	public List<Node> getNodesForType(String nodeType);
@@ -50,5 +56,5 @@ public interface Tree extends Serializable {
 	 * This method returns a shortes path between the starting Node and the targetNode. The path is stored in a list ordered by steps. 
 	 * Moreover, the first Node in this list is the startingNode and the last element is the targetNode.
 	 */
-	public List<Node> getPath(Node startingNode,Node targetNode);	
+	public List<Node> getPath(Node startingNode,Node targetNode);
 }

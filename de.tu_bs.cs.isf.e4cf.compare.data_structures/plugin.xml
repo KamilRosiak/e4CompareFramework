@@ -5,13 +5,19 @@
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactReader">
       <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.TextReader">
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.text_reader.TextReader">
+      </artifactReader>
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaReader">
       </artifactReader>
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactWriter">
       <artifactWriter
             artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TextWritter">
+      </artifactWriter>
+	  <artifactWriter
+            artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter">
       </artifactWriter>
    </extension>
 

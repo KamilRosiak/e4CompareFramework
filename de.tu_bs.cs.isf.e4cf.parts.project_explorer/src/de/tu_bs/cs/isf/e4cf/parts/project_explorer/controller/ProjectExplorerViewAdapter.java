@@ -18,20 +18,19 @@ import javafx.scene.Scene;
  */
 public class ProjectExplorerViewAdapter {
 
-	@PostConstruct
-	public void postConstruct(Composite parent, IEclipseContext context, WorkspaceFileSystem fileSystem) {
+    @PostConstruct
+    public void postConstruct(Composite parent, IEclipseContext context, WorkspaceFileSystem fileSystem) {
+	// Create a JavaFX canvas on the SWT Composite parent
+	FXCanvas canvas = new FXCanvas(parent, SWT.None);
+	FXMLLoader<ProjectExplorerViewController> loader = new FXMLLoader<ProjectExplorerViewController>(context,
+		StringTable.BUNDLE_NAME, FileTable.PROJECT_EXPLORER_VIEW_FXML);
 
-		// Create a JavaFX canvas on the SWT Composite parent
-		FXCanvas canvas = new FXCanvas(parent, SWT.None);
-		FXMLLoader<ProjectExplorerViewController> loader = new FXMLLoader<ProjectExplorerViewController>(context,
-				StringTable.BUNDLE_NAME, FileTable.PROJECT_EXPLORER_VIEW_FXML);
+	// Add the scene of the view to the canvas
+	Scene scene = new Scene(loader.getNode());
+	canvas.setScene(scene);
+	
+	loader.getController().initializeView(context, fileSystem, canvas);
 
-		// Add the scene of the view to the canvas
-		Scene scene = new Scene(loader.getNode());
-		canvas.setScene(scene);
-
-		loader.getController().initializeView(context, fileSystem, canvas);
-
-	}
+    }
 
 }

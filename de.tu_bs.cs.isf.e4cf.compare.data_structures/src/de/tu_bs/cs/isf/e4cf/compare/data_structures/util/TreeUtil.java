@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import javafx.collections.FXCollections;
 
 
 /**
@@ -58,7 +59,7 @@ public class TreeUtil {
 			nodes.add(node);
 			//Recursively call of this method for all child nodes
 			for(Node childNode : node.getChildren()) {
-				nodes.addAll(getAllLeaveNodes(childNode));
+				nodes.addAll(getAllInnerNodes(childNode));
 			}
 		} 
 		return nodes;
@@ -74,5 +75,12 @@ public class TreeUtil {
 		}
 		return depth;
 		
+	}
+	
+	public static List<Node> getAllNodes(Node node) {
+	    List<Node> list = FXCollections.observableArrayList();
+	    list.addAll(getAllInnerNodes(node));
+	    list.addAll(getAllLeaveNodes(node));
+	    return list;
 	}
 }

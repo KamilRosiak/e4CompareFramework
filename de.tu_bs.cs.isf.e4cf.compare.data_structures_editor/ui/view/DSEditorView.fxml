@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox fx:id="background" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.DSEditorController">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#saveFile" text="Save" accelerator="Shortcut+s"/>
+            <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As…"  />
+             <MenuItem mnemonicParsing="false" onAction="#closeFile" text="Close" accelerator="Shortcut+w" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#undoAction" text="Undo" accelerator="Shortcut+z"/>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#selectAllNodes" text="Select All" accelerator="Shortcut+a"/>
+            <MenuItem mnemonicParsing="false" onAction="#unselectAllNodes" text="Unselect All" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#expandAllItems" text="Expand All" />
+            <MenuItem mnemonicParsing="false" onAction="#collapseAllItems" text="Collapse All" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+       <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+         <contextMenu>
+            <ContextMenu fx:id="contextMenu">
+              <items>
+				<MenuItem mnemonicParsing="false" onAction="#addNodeAttribute" text="Add Attribute" />
+				<MenuItem mnemonicParsing="false" onAction="#addChildNode" text="Add Child" />
+				<MenuItem mnemonicParsing="false" onAction="#expandSelectedItems" text="Expand selected Items" />
+				<MenuItem mnemonicParsing="false" onAction="#collapseSelectedItems" text="Collapse selected Items" />
+				<MenuItem mnemonicParsing="false" onAction="#copyNode" text="Copy" accelerator="Shortcut+c" />
+				<MenuItem mnemonicParsing="false" onAction="#pasteNode" text="Paste" accelerator="Shortcut+v"/>
+                <MenuItem mnemonicParsing="false" onAction="#renameNode" text="Rename" />
+                <MenuItem mnemonicParsing="false" onAction="#cutNode" text="Cut" accelerator="Shortcut+x"/>
+				<MenuItem mnemonicParsing="false" onAction="#extractToFile" text="Extract to file" />
+                <MenuItem mnemonicParsing="false" onAction="#deleteNodeFXML" text="Delete" />
+              </items>
+            </ContextMenu>
+         </contextMenu></TreeView> 
+      <ToolBar fx:id="toolBar" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
+        <items>
+            <TextField fx:id="searchTextField" alignment="TOP_LEFT" nodeOrientation="LEFT_TO_RIGHT" onAction="#startSearch" />
+            <Text fx:id="hitCount" strokeType="OUTSIDE" strokeWidth="0.0" />
+          <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#startSearch" text="Search" />
+            <Text fx:id="totalNodeAmount" nodeOrientation="LEFT_TO_RIGHT" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="187.6666259765625" />
+        </items>
+      </ToolBar>
+  </children>
+</VBox>

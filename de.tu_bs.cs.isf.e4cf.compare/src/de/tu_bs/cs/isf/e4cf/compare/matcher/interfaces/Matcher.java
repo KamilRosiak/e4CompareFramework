@@ -10,7 +10,7 @@ public interface Matcher {
      * @param comparisons
      * @return
      */
-    public List<Comparison> getMatching(List<Comparison> comparisons);
+    public <K> List<Comparison<K>> getMatching(List<Comparison<K>> comparisons);
     
     /**
      * Returns the name of the matching approach

@@ -80,7 +80,7 @@
                               <Insets left="5.0" right="5.0" />
                            </VBox.margin>
                         </Label>
-                        <Button fx:id="selectMetric" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Select Metric">
+                        <Button onAction="#selectMetric" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Select Metric">
                            <VBox.margin>
                               <Insets left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
@@ -96,7 +96,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </HBox.margin>
                   </Button>
-                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Compare" HBox.hgrow="ALWAYS">
+                  <Button onAction="#copareArtifacts" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Compare" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets bottom="5.0" right="5.0" top="5.0" />
                      </HBox.margin>

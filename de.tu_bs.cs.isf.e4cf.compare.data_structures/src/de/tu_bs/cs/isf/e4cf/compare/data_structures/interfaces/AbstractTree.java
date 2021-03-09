@@ -9,6 +9,7 @@ public class AbstractTree implements Tree {
     private Node root;
     private String treeName;
     private String artifactType;
+    private String fileExtension;
 	
 	
 	@Override
@@ -72,5 +73,13 @@ public class AbstractTree implements Tree {
 
 	public void setArtifactType(String artifactType) {
 		this.artifactType = artifactType;
+	}
+
+	@Override
+	public String getFileExtension() {
+	    return null;
+	}
+	public void setFileExtension(String fileExtension) {
+	    this.fileExtension = fileExtension;
 	}
 }

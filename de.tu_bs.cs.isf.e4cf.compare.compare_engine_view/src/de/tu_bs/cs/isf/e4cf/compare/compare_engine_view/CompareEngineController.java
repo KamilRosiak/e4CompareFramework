@@ -23,7 +23,7 @@ import javafx.scene.Scene;
  */
 public class CompareEngineController {
     private static final String COMPARE_ENGINE_FXML = "/ui/view/CompareEngineView.fxml";
-    public static final String COMPARE_ENGINE_CSS_LOCATION ="css/compare_engine.css";
+    public static final String COMPARE_ENGINE_CSS_LOCATION ="/css/compare_engine.css";
     
     
     @PostConstruct
