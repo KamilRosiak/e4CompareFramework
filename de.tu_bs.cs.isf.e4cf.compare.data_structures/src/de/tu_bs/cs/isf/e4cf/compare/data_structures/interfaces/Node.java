@@ -72,7 +72,7 @@ public interface Node {
 	/**
 	 * This method returns all children nodes of the given type.
 	 */
-	public List<Node> getChildrenOfType(String nodeType);
+	public List<Node> getNodesOfType(String nodeType);
 	
 	/**
 	 * This method adds a child node to the current node and sets the parent.

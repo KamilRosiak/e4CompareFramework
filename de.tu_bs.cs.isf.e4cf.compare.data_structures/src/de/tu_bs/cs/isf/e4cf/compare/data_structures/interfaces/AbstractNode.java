@@ -17,7 +17,6 @@ public abstract class AbstractNode implements Node {
 	private VariabilityClass varClass = VariabilityClass.MANDATORY;
 	private UUID uuid = UUID.randomUUID();
 	
-	
 	public AbstractNode() {
 		initializeNode();
 	}
@@ -84,12 +83,14 @@ public abstract class AbstractNode implements Node {
 	}
 	
 	@Override
-	public List<Node> getChildrenOfType(String nodeType) {
+	public List<Node> getNodesOfType(String nodeType) {
 		List<Node> childrenList = new ArrayList<Node>();
+		if(getNodeType().equals(nodeType)) {
+			childrenList.add(this);
+		}
+		
 		for(Node child : getChildren()) {
-			if(child.getNodeType().equals(nodeType)) {
-				childrenList.add(child);
-			}
+			childrenList.addAll(child.getNodesOfType(nodeType));
 		}
 		return childrenList;
 	}
@@ -153,7 +154,7 @@ public abstract class AbstractNode implements Node {
 	public void setAttributes(List<Attribute> attributes) {
 		this.attributes = attributes;
 	}
-	
+	/**
 	@Override
 	public String toString() {
 		String nodeName = "NodeType: "+getNodeType() +" \n";
@@ -165,7 +166,7 @@ public abstract class AbstractNode implements Node {
 		}
 		return nodeName;
 	}
-	
+	**/
 	@Override
 	public UUID getUUID() {
 	    return uuid;

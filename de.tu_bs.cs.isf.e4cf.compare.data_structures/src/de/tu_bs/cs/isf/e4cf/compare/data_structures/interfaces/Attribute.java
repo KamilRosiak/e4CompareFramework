@@ -1,8 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public interface Attribute {
+public interface Attribute extends Serializable{
     /**
      * Returns the attribute key
      */

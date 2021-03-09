@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,9 +26,20 @@ public class CompareEngine {
 		// TODO: Compare, Match, Merge
 		try {
 			Set<NodeComparison> comparisons = compare(firstArtifact.getRoot(), secondArtifact.getRoot());
-
+			
+			//Get all leaf comparison from the comparison list
+			Set<NodeComparison> leafComparisons = ComparisonUtil.getLeafComparisons(comparisons);
+			//calculate the matching of leafs
+			Set<NodeComparison> matchedLeafSet = new HashSet<NodeComparison>(matcher.getMatching(new ArrayList(leafComparisons)));
+			//all elements that are removed during the matching
+			leafComparisons.removeAll(matchedLeafSet);
+			//remove all unmachted elements from the results
+			comparisons.removeAll(leafComparisons);
+			
 			NodeComparison root = ComparisonUtil.calculateComparisonGraph(comparisons);
+			
 			ComparisonUtil.calculateMatchingRecursivly(root, matcher);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,28 +65,29 @@ public class CompareEngine {
 			// first check if the node type is not ignored
 			if (!metric.isTypeIgnored(nodeType)) {
 				// Gather nodes of the same type of both trees
-				List<Node> firstArtifacts = firstNode.getChildrenOfType(nodeType);
-				List<Node> secondArtifacts = secondNode.getChildrenOfType(nodeType);
+				List<Node> firstArtifacts = firstNode.getNodesOfType(nodeType);
+				List<Node> secondArtifacts = secondNode.getNodesOfType(nodeType);
 				// Get all comparator for this node type
 				List<NodeComparator> comparators = metric.getComparatorForNodeType(nodeType);
 
 				// Compare every artifact of the same type with each other
 				for (Node leftArtifact : firstArtifacts) {
 					for (Node rightArtifact : secondArtifacts) {
-
 						if (!comparators.isEmpty()) {
+							//TODO: add functionality for the comparator usage
 							NodeComparison nodeComparison = new NodeComparison(leftArtifact, rightArtifact);
 							for (NodeComparator comparator : comparators) {
 								comparator.compare(leftArtifact, rightArtifact);
 							}
 							nodeComparison.updateSimilarity();
 						} else {
-							comparisons.add(ComparisonUtil.defaultNodecompare(firstNode, secondNode, matcher));
+							comparisons.add(ComparisonUtil.defaultNodecompare(leftArtifact, rightArtifact, matcher));
 						}
 					}
 				}
 			}
 		}
+		
 		return comparisons;
 	}
 

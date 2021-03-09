@@ -11,30 +11,30 @@ import de.tu_bs.cs.isf.e4cf.core.preferences.util.gui.LabeledSliderGroup;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.key_value.KeyValueNode;
 
 public class OptionalThresholdPref {
-    public static final String OPTIONAL_THRESHOLD ="OPTIONAL_THRESHOLD";
-    public static final String OPTIONAL_THRESHOLD_LABEL = "Optional Threshold";
-    public static final int DEFAULT_THRESHOLD = 40;
-    private KeyValueNode optionThresholdValue;
+	public static final String OPTIONAL_THRESHOLD = "OPTIONAL_THRESHOLD";
+	public static final String OPTIONAL_THRESHOLD_LABEL = "Optional Threshold";
+	public static final int DEFAULT_THRESHOLD = 40;
+	private KeyValueNode optionThresholdValue;
 
-    
-    public OptionalThresholdPref(Composite page) {
-	createControl(page);
-    }
-    
-    private void createControl(Composite parent) {
-	Group group = new Group(parent, SWT.None);
-	group.setText("Optional Threshold");
-	group.setLayout(new GridLayout(1,true));
-	
-	optionThresholdValue =  PreferencesUtil.getValueWithDefault(CompareST.BUNDLE_NAME,OPTIONAL_THRESHOLD, String.valueOf(DEFAULT_THRESHOLD));
-	if(optionThresholdValue == null) {
-	    optionThresholdValue = new KeyValueNode(CompareST.BUNDLE_NAME, OPTIONAL_THRESHOLD, DEFAULT_THRESHOLD);
-	    PreferencesUtil.storeKeyValueNode(optionThresholdValue);
+	public OptionalThresholdPref(Composite page) {
+		createControl(page);
 	}
-	new LabeledSliderGroup(parent, SWT.None, OPTIONAL_THRESHOLD_LABEL, optionThresholdValue);
-}
 
-public KeyValueNode getKeyValueNode() {
-	return optionThresholdValue;
-}
+	private void createControl(Composite parent) {
+		Group group = new Group(parent, SWT.None);
+		group.setText("Optional Threshold");
+		group.setLayout(new GridLayout(1, true));
+
+		optionThresholdValue = PreferencesUtil.getValueWithDefault(CompareST.BUNDLE_NAME, OPTIONAL_THRESHOLD,
+				String.valueOf(DEFAULT_THRESHOLD));
+		if (optionThresholdValue == null) {
+			optionThresholdValue = new KeyValueNode(CompareST.BUNDLE_NAME, OPTIONAL_THRESHOLD, DEFAULT_THRESHOLD);
+			PreferencesUtil.storeKeyValueNode(optionThresholdValue);
+		}
+		new LabeledSliderGroup(parent, SWT.None, OPTIONAL_THRESHOLD_LABEL, optionThresholdValue);
+	}
+
+	public KeyValueNode getKeyValueNode() {
+		return optionThresholdValue;
+	}
 }

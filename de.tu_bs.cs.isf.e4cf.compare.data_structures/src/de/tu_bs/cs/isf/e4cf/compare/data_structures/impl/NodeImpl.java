@@ -26,6 +26,7 @@ public class NodeImpl extends AbstractNode {
 	 * @param nodeType is the type of the node , e.g , statement, method, class
 	 */
 	public NodeImpl(String nodeType) {
+		this();
 		setNodeType(nodeType);
 	}
 	
@@ -46,5 +47,9 @@ public class NodeImpl extends AbstractNode {
 	public NodeImpl(String nodeString , Node parent, VariabilityClass varClass) {
 		this(nodeString, parent);
 		setVariabilityClass(varClass);
+	}
+	
+	public NodeImpl(NodeImpl node) {
+		
 	}
 }

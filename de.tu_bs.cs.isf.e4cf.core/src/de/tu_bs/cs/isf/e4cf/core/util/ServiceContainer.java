@@ -30,7 +30,7 @@ public class ServiceContainer {
 
 	@Inject
 	public ServiceContainer(RCPImageService is, RCPSelectionService ss, RCPPartService ps, RCPDialogService ds,
-			IEventBroker eb, WorkspaceFileSystem wfs, Shell sh, IEclipseContext context) {
+			IEventBroker eb, WorkspaceFileSystem wfs, Shell sh, IEclipseContext context,TagService tagService) {
 		this.imageService = is;
 		this.rcpSelectionService = ss;
 		this.partService = ps;
@@ -39,6 +39,7 @@ public class ServiceContainer {
 		this.workspaceFileSystem = wfs;
 		this.shell = sh;
 		this.context = context;
+		this.tagService = tagService;
 	}
 
 }
