@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.NodeComparator;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 
 public interface Metric extends Serializable {
     
@@ -21,7 +21,7 @@ public interface Metric extends Serializable {
     /**
      * This method give a comparator to the comparator map.
      */
-    public void addComparator(String nodeType, NodeComparator comparator);
+    public void addComparator(String nodeType, Comparator comparator);
     
     /**
      * Returns the name of this metric
@@ -31,12 +31,12 @@ public interface Metric extends Serializable {
     /**
      * This method returns a map with all comparator that are available in this metric.
      */
-    public Map<String,List<NodeComparator>> getAllComparator();
+    public Map<String,List<Comparator>> getAllComparator();
     
     /**
      * This method returns a list of comparator that are created for the specific node type.
      */
-    public List<NodeComparator> getComparatorForNodeType(String nodeType);
+    public List<Comparator> getComparatorForNodeType(String nodeType);
     
     /**
      * Get all types of comparators that are contained in this metric

@@ -5,18 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.NodeComparator;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import javafx.collections.FXCollections;
 
 public class AbstractMetric implements Metric {
 	private static final long serialVersionUID = 2908094055388556104L;
 
 	private String metricName;
-	private Map<String, List<NodeComparator>> comparators;
+	private Map<String, List<Comparator>> comparators;
 	private Map<String, Boolean> nodeIgnorList;
 
 	public AbstractMetric() {
-		setComparator(new HashMap<String, List<NodeComparator>>());
+		setComparator(new HashMap<String, List<Comparator>>());
 		setNodeIgnorList(new HashMap<String, Boolean>());
 	}
 
@@ -31,11 +31,11 @@ public class AbstractMetric implements Metric {
 	}
 
 	@Override
-	public void addComparator(String nodeType, NodeComparator comparator) {
+	public void addComparator(String nodeType, Comparator comparator) {
 		if (comparators.containsKey(nodeType)) {
 			comparators.get(nodeType).add(comparator);
 		} else {
-			comparators.put(nodeType, new ArrayList<NodeComparator>(FXCollections.observableArrayList(comparator)));
+			comparators.put(nodeType, new ArrayList<Comparator>(FXCollections.observableArrayList(comparator)));
 		}
 	}
 
@@ -49,13 +49,13 @@ public class AbstractMetric implements Metric {
 	}
 
 	@Override
-	public Map<String, List<NodeComparator>> getAllComparator() {
+	public Map<String, List<Comparator>> getAllComparator() {
 		return comparators;
 	}
 
 	@Override
-	public List<NodeComparator> getComparatorForNodeType(String nodeType) {
-		return comparators.containsKey(nodeType) ? comparators.get(nodeType) : new ArrayList<NodeComparator>();
+	public List<Comparator> getComparatorForNodeType(String nodeType) {
+		return comparators.containsKey(nodeType) ? comparators.get(nodeType) : new ArrayList<Comparator>();
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class AbstractMetric implements Metric {
 		return nodeIgnorList.containsKey(NodeType) ? nodeIgnorList.get(NodeType) : false;
 	}
 
-	public void setComparator(Map<String, List<NodeComparator>> comparator) {
+	public void setComparator(Map<String, List<Comparator>> comparator) {
 		this.comparators = comparator;
 	}
 }

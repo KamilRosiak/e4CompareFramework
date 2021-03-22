@@ -158,7 +158,17 @@ public enum JavaAttributesTypes {
 	 * 
 	 * @see Modifier
 	 */
-	Modifier,
+	AccessModifier,
+	
+	Modifer,
+	
+	/**
+	 * A list of modifiers for the node.
+	 * 
+	 * @see Modifier
+	 */
+	NonAccessModifier,
+	
 	/**
 	 * The name of a node
 	 * 

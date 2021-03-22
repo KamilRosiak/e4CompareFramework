@@ -2,7 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces;
 
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparison;
+import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 
 public interface Matcher {
     /**

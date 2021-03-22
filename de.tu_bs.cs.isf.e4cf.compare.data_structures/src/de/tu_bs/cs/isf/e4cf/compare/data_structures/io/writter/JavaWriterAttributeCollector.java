@@ -1,10 +1,19 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
-import com.github.javaparser.*;
-import com.github.javaparser.ast.*;
-import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.type.*;
+import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.ArrayInitializerExpr;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.SuperExpr;
+import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.type.TypeParameter;
+import com.github.javaparser.ast.type.UnionType;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -139,7 +148,7 @@ public class JavaWriterAttributeCollector {
 				_key = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Message.name())) {
 				_message = StaticJavaParser.parseExpression(singleVal);
-			} else if (key.equals(JavaAttributesTypes.Modifier.name())) {
+			} else if (key.equals(JavaAttributesTypes.Modifer.name())) {
 				attribute.getAttributeValues()
 						.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf(val))));
 			} else if (key.equals(JavaAttributesTypes.Name.name())) {

@@ -18,81 +18,81 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAt
 
 public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 
-    /**
-     * Visits all children but specified exceptions of the node n.
-     * 
-     * @param n          JavaParser Node
-     * @param arg        e4cf Parent Node
-     * @param exceptions Nodes that should not be visited
-     */
-    protected void visitor(com.github.javaparser.ast.Node n, Node arg, com.github.javaparser.ast.Node... exceptions) {
-	// Comments are no child nodes. Therefore they are added explicitly.
-	n.getComment().ifPresent(comment -> arg.addAttribute(JavaAttributesTypes.Comment.name(), comment.getContent()));
-	NodeList<com.github.javaparser.ast.Node> exceptionList = NodeList.nodeList(exceptions);
-	for (com.github.javaparser.ast.Node childNode : n.getChildNodes()) {
-	    if (!exceptionList.contains(childNode)) {
-		childNode.accept(this, arg);
-	    }
+	/**
+	 * Visits all children but specified exceptions of the node n.
+	 * 
+	 * @param n          JavaParser Node
+	 * @param arg        e4cf Parent Node
+	 * @param exceptions Nodes that should not be visited
+	 */
+	protected void visitor(com.github.javaparser.ast.Node n, Node arg, com.github.javaparser.ast.Node... exceptions) {
+		// Comments are no child nodes. Therefore they are added explicitly.
+		n.getComment().ifPresent(comment -> arg.addAttribute(JavaAttributesTypes.Comment.name(), comment.getContent()));
+		NodeList<com.github.javaparser.ast.Node> exceptionList = NodeList.nodeList(exceptions);
+		for (com.github.javaparser.ast.Node childNode : n.getChildNodes()) {
+			if (!exceptionList.contains(childNode)) {
+				childNode.accept(this, arg);
+			}
+		}
 	}
-    }
 
-    @Override
-    public void visit(NodeList n, Node arg) {
-	// TODO Auto-generated method stub
-    }
+	@Override
+	public void visit(NodeList n, Node arg) {
+		// TODO Auto-generated method stub
+	}
 
-    @Override
-    public void visit(ExpressionStmt n, Node arg) {
-	// TODO Auto-generated method stub
-	visitor(n, arg);
-    }
+	@Override
+	public void visit(ExpressionStmt n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
 
-    @Override
-    public void visit(LabeledStmt n, Node arg) {
-	Node labeledStmt = new NodeImpl(n.getClass().getSimpleName(), arg);
-	labeledStmt.addAttribute(JavaAttributesTypes.Name.name(), n.getLabel().asString());
-	visitor(n, labeledStmt);
-    }
+	@Override
+	public void visit(LabeledStmt n, Node arg) {
+		Node labeledStmt = new NodeImpl(n.getClass().getSimpleName(), arg);
+		labeledStmt.addAttribute(JavaAttributesTypes.Name.name(), n.getLabel().asString());
+		visitor(n, labeledStmt);
+	}
 
-    @Override
-    public void visit(ModuleDeclaration n, Node arg) {
-	// TODO Auto-generated method stub
-	visitor(n, arg);
-    }
+	@Override
+	public void visit(ModuleDeclaration n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
 
-    @Override
-    public void visit(ModuleRequiresDirective n, Node arg) {
-	// TODO Auto-generated method stub
-	visitor(n, arg);
-    }
+	@Override
+	public void visit(ModuleRequiresDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
 
-    @Override
-    public void visit(ModuleExportsDirective n, Node arg) {
-	// TODO Auto-generated method stub
-	visitor(n, arg);
-    }
+	@Override
+	public void visit(ModuleExportsDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
 
-    @Override
-    public void visit(ModuleProvidesDirective n, Node arg) {
-	// TODO Auto-generated method stub
-	visitor(n, arg);
-    }
+	@Override
+	public void visit(ModuleProvidesDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
 
-    @Override
-    public void visit(ModuleUsesDirective n, Node arg) {
-	// TODO Auto-generated method stub
-	visitor(n, arg);
-    }
+	@Override
+	public void visit(ModuleUsesDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
 
-    @Override
-    public void visit(ModuleOpensDirective n, Node arg) {
-	// TODO Auto-generated method stub
-	visitor(n, arg);
-    }
+	@Override
+	public void visit(ModuleOpensDirective n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
 
-    @Override
-    public void visit(PatternExpr n, Node arg) {
-	// TODO Auto-generated method stub
-	visitor(n, arg);
-    }
+	@Override
+	public void visit(PatternExpr n, Node arg) {
+		// TODO Auto-generated method stub
+		visitor(n, arg);
+	}
 }

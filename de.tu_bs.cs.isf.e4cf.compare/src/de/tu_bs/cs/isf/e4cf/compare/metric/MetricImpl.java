@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.metric;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.NodeComparator;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.AbstractMetric;
 
 public class MetricImpl extends AbstractMetric {
@@ -11,7 +11,7 @@ public class MetricImpl extends AbstractMetric {
 		setMetricName(metricName);
 	}
 
-	public MetricImpl(String metricName, NodeComparator... comparators) {
+	public MetricImpl(String metricName, Comparator... comparators) {
 		this(metricName);
 		addComparators(comparators);
 	}
@@ -19,8 +19,8 @@ public class MetricImpl extends AbstractMetric {
 	/**
 	 * This method adds a array of node comparators to this metric.
 	 */
-	private void addComparators(NodeComparator[] comparators) {
-		for (NodeComparator comparator : comparators) {
+	private void addComparators(Comparator[] comparators) {
+		for (Comparator comparator : comparators) {
 			addComparator(comparator.getSupportedNodeType(), comparator);
 		}
 	}
