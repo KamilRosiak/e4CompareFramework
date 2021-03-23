@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
+import java.util.Set;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -47,9 +49,5 @@ public class NodeImpl extends AbstractNode {
 	public NodeImpl(String nodeString , Node parent, VariabilityClass varClass) {
 		this(nodeString, parent);
 		setVariabilityClass(varClass);
-	}
-	
-	public NodeImpl(NodeImpl node) {
-		
 	}
 }

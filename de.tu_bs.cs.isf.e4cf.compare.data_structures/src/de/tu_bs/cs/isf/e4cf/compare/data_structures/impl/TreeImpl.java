@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractTree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 
 public class TreeImpl extends AbstractTree {
 	/**
@@ -23,5 +24,11 @@ public class TreeImpl extends AbstractTree {
 	public TreeImpl(String treeName, Node root) {
 		this(treeName);
 		setRoot(root);
+	}
+	
+	public TreeImpl(Tree first, Tree second, Node root) {
+		this(first.getTreeName()+"_"+second.getTreeName(), root);
+		setArtifactType(first.getArtifactType());
+		setFileExtension(first.getFileExtension());
 	}
 }

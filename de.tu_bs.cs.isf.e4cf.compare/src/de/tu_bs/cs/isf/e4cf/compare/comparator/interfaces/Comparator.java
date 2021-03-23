@@ -21,16 +21,6 @@ public interface Comparator<Type> {
 	/**
 	 * This method compares two nodes of the same type and returns the similarity.
 	 */
-	public void compare(Type firstNode, Type secondNode);
-	
-	/**
-	 * Returns the similarity of this comparison
-	 */
-	public float getSimilarity();
-	
-	/**
-	 * Returns the similarity of this comparison
-	 */
-	public void setSimilarity(float similarity);
+	public ResultElement<Type> compare(Type firstNode, Type secondNode);
 
 }

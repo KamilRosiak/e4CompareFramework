@@ -3,7 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.comparison.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
+import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 
 public abstract class AbstractComparsion<Type> implements Comparison<Type> {
@@ -12,13 +12,13 @@ public abstract class AbstractComparsion<Type> implements Comparison<Type> {
 	private Type rightArtifact;
 	private float similarity;
 	private List<Comparison<Type>> childComparisons;
-	private List<Comparator<Type>> comparators;
+	private List<ResultElement<Type>> results;
 	
 	public AbstractComparsion(Type leftArtifact, Type rightArtifact) {
 		setLeftArtifact(leftArtifact);
 		setRightArtifact(rightArtifact);
 		this.childComparisons = new ArrayList<Comparison<Type>>();
-		this.comparators = new ArrayList<Comparator<Type>>();
+		this.results = new ArrayList<ResultElement<Type>>();
 	}
 	
 	@Override
@@ -61,12 +61,12 @@ public abstract class AbstractComparsion<Type> implements Comparison<Type> {
 	}
 	
 	@Override
-	public void addComparator(Comparator<Type> comparator) {
-		this.comparators.add(comparator);
+	public void addResultElement(ResultElement<Type> result) {
+		this.results.add(result);
 	}
 	
 	@Override
-	public List<Comparator<Type>> getComparators() {
-		return this.comparators;
+	public List<ResultElement<Type>> getResultElements() {
+		return this.results;
 	}
 }

@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFiles;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -74,15 +75,15 @@ public class CompareEngineView implements Initializable {
 	}
 
 	@FXML
-	public void copareArtifacts() {
-		/**
-		CompareEngineNodeWise engine = new CompareEngineNodeWise(getSelectedMatcher(), getSelectedMetric());
+	public void compareArtifacts() {
+		
+		CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
 		List<Tree> artifacts = artifactTable.getItems();
 
 		if (artifacts.size() > 1) {
 			engine.compare(artifacts.get(0), artifacts.get(1));
 		}
-		**/
+
 
 	}
 

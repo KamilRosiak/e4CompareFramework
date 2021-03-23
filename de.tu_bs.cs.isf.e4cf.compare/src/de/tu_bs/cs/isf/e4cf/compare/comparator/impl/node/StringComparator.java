@@ -3,17 +3,18 @@ package de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tu_bs.cs.isf.e4cf.compare.comparator.templates.AbstractNodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 public class StringComparator extends AbstractNodeComparator {
 
-	public StringComparator(String supportedType) {
+	public StringComparator() {
 		super(WILDCARD);
 	}
 
 	@Override
-	public void compare(Node firstNode, Node secondNode) {
+	public NodeResultElement compare(Node firstNode, Node secondNode) {
 		List<Float> similarities = new ArrayList<Float>();
 
 		// compares for every attribute key, which is unique the corresponding values
@@ -28,8 +29,7 @@ public class StringComparator extends AbstractNodeComparator {
 		// calculate the avarage similarity
 		int maxAttributes = Math.max(firstNode.getAttributes().size(), firstNode.getAttributes().size());
 		float similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
-		setSimilarity(similarity);
-
+		return new NodeResultElement(this, similarity);
 	}
 
 	/**

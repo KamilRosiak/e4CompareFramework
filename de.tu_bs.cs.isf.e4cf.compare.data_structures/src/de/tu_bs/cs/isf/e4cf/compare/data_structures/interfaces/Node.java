@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
@@ -36,6 +37,11 @@ public interface Node {
 	 * This method adds value for a given key, a variant with a respective values.
 	 */
 	public void addAttribute(String key, String value);
+	
+	/**
+	 * This method adds values for a given key, a variant with a respective values.
+	 */
+	public void addAttribute(String attributeKey, Set<String> attributeValues);
 	
 	/**
 	 * This method returns the value for the given key.
@@ -112,6 +118,8 @@ public interface Node {
 	public void setUUID(UUID uuid);
 
 	public void setNodeType(String nodeType);
+
+	
 	
 	
 	

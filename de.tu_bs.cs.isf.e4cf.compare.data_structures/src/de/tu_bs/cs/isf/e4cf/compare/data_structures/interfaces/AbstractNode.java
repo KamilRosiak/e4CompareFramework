@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
@@ -16,11 +17,11 @@ public abstract class AbstractNode implements Node {
 	private List<Attribute> attributes;
 	private VariabilityClass varClass = VariabilityClass.MANDATORY;
 	private UUID uuid = UUID.randomUUID();
-	
+
 	public AbstractNode() {
 		initializeNode();
 	}
-	
+
 	/**
 	 * This method initializes all required objects.
 	 */
@@ -28,38 +29,49 @@ public abstract class AbstractNode implements Node {
 		setChildren(new ArrayList<Node>());
 		setAttributes(new ArrayList<Attribute>());
 	}
-	
+
 	@Override
 	public boolean isRoot() {
-		if(parent == null) {
+		if (parent == null) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public boolean isLeaf() {
-		if(children.isEmpty()) {
+		if (children.isEmpty()) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public List<Attribute> getAttributes() {
 		return attributes;
 	}
-	
+
 	@Override
 	public void addAttribute(String key, String value) {
 		Optional<Attribute> attribute = attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny();
-		if(!attribute.isPresent()) {
-			getAttributes().add(new AttributeImpl(key,value));
+		if (!attribute.isPresent()) {
+			getAttributes().add(new AttributeImpl(key, value));
 		} else {
-		    //adds this value as alternative for this attribute.
-		    attribute.get().addAttributeValue(value);
+			// adds this value as alternative for this attribute.
+			attribute.get().addAttributeValue(value);
+		}
+	}
+
+	@Override
+	public void addAttribute(String key, Set<String> values) {
+		Optional<Attribute> attribute = attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny();
+		if (!attribute.isPresent()) {
+			getAttributes().add(new AttributeImpl(key, values));
+		} else {
+			// adds this value as alternative for this attribute.
+			attribute.get().addAttributeValues(values);
 		}
 	}
 
@@ -67,51 +79,51 @@ public abstract class AbstractNode implements Node {
 	public Attribute getAttributeForKey(String key) {
 		return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
 	}
-	
+
 	@Override
 	public int getNumberOfChildren() {
 		int size = 1;
-		
-		if(children.isEmpty()) {
+
+		if (children.isEmpty()) {
 			return size;
 		} else {
-			for(Node child : children) {
+			for (Node child : children) {
 				size += child.getNumberOfChildren();
 			}
 			return size;
 		}
 	}
-	
+
 	@Override
 	public List<Node> getNodesOfType(String nodeType) {
 		List<Node> childrenList = new ArrayList<Node>();
-		if(getNodeType().equals(nodeType)) {
+		if (getNodeType().equals(nodeType)) {
 			childrenList.add(this);
 		}
-		
-		for(Node child : getChildren()) {
+
+		for (Node child : getChildren()) {
 			childrenList.addAll(child.getNodesOfType(nodeType));
 		}
 		return childrenList;
 	}
-	
+
 	@Override
 	public List<String> getAllNodeTypes() {
-	    List<String> nodeTypes = new ArrayList<String>();
-	    nodeTypes.add(getNodeType());
-	    for(Node child : getChildren()) {
-		nodeTypes.addAll(child.getAllNodeTypes());
-	    }
-	    return nodeTypes;
+		List<String> nodeTypes = new ArrayList<String>();
+		nodeTypes.add(getNodeType());
+		for (Node child : getChildren()) {
+			nodeTypes.addAll(child.getAllNodeTypes());
+		}
+		return nodeTypes;
 	}
-	
+
 	/******************************************************
-	 * GETTER AND SETTER 
+	 * GETTER AND SETTER
 	 ******************************************************/
 	public Node getParent() {
 		return parent;
 	}
-	
+
 	public void setParent(Node parent) {
 		this.parent = parent;
 	}
@@ -125,22 +137,22 @@ public abstract class AbstractNode implements Node {
 	public void setNodeType(String nodeType) {
 		this.nodeType = nodeType;
 	}
-	
+
 	@Override
 	public List<Node> getChildren() {
 		return children;
 	}
-	
+
 	@Override
 	public void addChild(Node child) {
 		child.setParent(this);
 		this.children.add(child);
 	}
-	
+
 	public void setChildren(List<Node> children) {
 		this.children = children;
 	}
-	
+
 	@Override
 	public VariabilityClass getVariabilityClass() {
 		return varClass;
@@ -150,31 +162,26 @@ public abstract class AbstractNode implements Node {
 	public void setVariabilityClass(VariabilityClass varClass) {
 		this.varClass = varClass;
 	}
-	
+
 	public void setAttributes(List<Attribute> attributes) {
 		this.attributes = attributes;
 	}
+
 	/**
-	@Override
-	public String toString() {
-		String nodeName = "NodeType: "+getNodeType() +" \n";
-		for(Attribute attr : getAttributes()) {
-			nodeName += "Attrribute Key: "+ attr.getAttributeKey() + "\n";
-			for(String value : attr.getAttributeValues()) {
-				nodeName += "        "+value +"\n";
-			}
-		}
-		return nodeName;
-	}
-	**/
+	 * @Override public String toString() { String nodeName = "NodeType:
+	 *           "+getNodeType() +" \n"; for(Attribute attr : getAttributes()) {
+	 *           nodeName += "Attrribute Key: "+ attr.getAttributeKey() + "\n";
+	 *           for(String value : attr.getAttributeValues()) { nodeName += "
+	 *           "+value +"\n"; } } return nodeName; }
+	 **/
 	@Override
 	public UUID getUUID() {
-	    return uuid;
+		return uuid;
 	}
-	
+
 	@Override
 	public void setUUID(UUID uuid) {
-	    this.uuid = uuid;
+		this.uuid = uuid;
 	}
 
 }

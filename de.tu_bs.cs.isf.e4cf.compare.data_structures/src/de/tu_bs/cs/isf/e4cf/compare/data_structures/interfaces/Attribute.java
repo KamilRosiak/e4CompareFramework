@@ -18,6 +18,12 @@ public interface Attribute extends Serializable {
 	 * Add an value to this attribute
 	 */
 	public void addAttributeValue(String value);
+	
+	
+	/**
+	 * Add an values to this attribute
+	 */
+	public void addAttributeValues(Set<String> value);
 
 	/**
 	 * This method returns the highest similarity value between the given attribute
