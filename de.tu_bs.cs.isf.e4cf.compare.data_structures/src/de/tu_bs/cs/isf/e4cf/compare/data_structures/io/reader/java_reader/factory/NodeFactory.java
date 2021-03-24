@@ -47,17 +47,16 @@ public class NodeFactory {
 
 	public Node createCompilationUnitNode(CompilationUnit compilationUnit, Node parent, JavaVisitor visitor) {
 		Node cu = new NodeImpl(compilationUnit.getClass().getSimpleName(), parent);
-
-		// Imports
-		Node imports = new NodeImpl(JavaNodeTypes.Import.name(), cu);
-		int importSize = compilationUnit.getImports().size();
-		imports.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(importSize));
-		for (int i = 0; i < importSize; i++) {
-			ImportDeclaration importDecl = compilationUnit.getImport(0);
-			attachImportDecl(importDecl, imports, visitor);
-			importDecl.removeForced();
+		
+		// Attach imports if available
+		if(!compilationUnit.getImports().isEmpty()) {
+			Node imports = new NodeImpl(JavaNodeTypes.Import.name(), cu);
+			for(ImportDeclaration importDecl : compilationUnit.getImports()) {
+				attachImportDecl(importDecl, imports, visitor);
+				importDecl.removeForced();
+			}
 		}
-		return imports;
+		return cu;
 	}
 
 	public Node createClassOrInterfaceNode(ClassOrInterfaceDeclaration n, Node parent) {

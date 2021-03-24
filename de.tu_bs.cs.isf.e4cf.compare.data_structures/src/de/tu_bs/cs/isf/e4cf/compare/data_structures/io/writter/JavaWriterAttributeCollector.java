@@ -148,7 +148,7 @@ public class JavaWriterAttributeCollector {
 				_key = singleVal;
 			} else if (key.equals(JavaAttributesTypes.Message.name())) {
 				_message = StaticJavaParser.parseExpression(singleVal);
-			} else if (key.equals(JavaAttributesTypes.Modifer.name())) {
+			} else if (key.contains(JavaAttributesTypes.Modifer.name()) || key.equals(JavaAttributesTypes.AccessModifier.name())) {
 				attribute.getAttributeValues()
 						.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf(val))));
 			} else if (key.equals(JavaAttributesTypes.Name.name())) {
@@ -225,6 +225,7 @@ public class JavaWriterAttributeCollector {
 					_value = StaticJavaParser.parseExpression(singleVal);
 				}
 			} else {
+				System.out.println(key);
 				throw new UnsupportedOperationException(key + " has not been implemented.");
 			}
 		}

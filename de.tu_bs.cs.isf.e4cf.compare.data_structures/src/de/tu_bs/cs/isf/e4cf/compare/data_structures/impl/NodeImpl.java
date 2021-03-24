@@ -1,7 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
-import java.util.Set;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;

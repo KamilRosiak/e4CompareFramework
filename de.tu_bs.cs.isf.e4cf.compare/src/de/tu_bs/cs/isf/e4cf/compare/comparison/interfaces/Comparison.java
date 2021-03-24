@@ -6,10 +6,9 @@ import java.util.List;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
 
 /**
- * data structure for the storage of the comparison between two nodes.
+ * A data structure for the storage of the comparison results between two artifacts of type Type.
  */
 public interface Comparison<Type> extends Serializable {
-	
 	
 	public Type mergeArtifacts();
 	

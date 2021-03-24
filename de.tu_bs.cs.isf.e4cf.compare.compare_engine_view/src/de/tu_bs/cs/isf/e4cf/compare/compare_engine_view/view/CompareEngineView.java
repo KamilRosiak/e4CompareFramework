@@ -14,6 +14,7 @@ import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFiles;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
@@ -76,13 +77,20 @@ public class CompareEngineView implements Initializable {
 
 	@FXML
 	public void compareArtifacts() {
-		
-		CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
-		List<Tree> artifacts = artifactTable.getItems();
+		try {
+			CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
+			List<Tree> artifacts = artifactTable.getItems();
 
-		if (artifacts.size() > 1) {
-			engine.compare(artifacts.get(0), artifacts.get(1));
+			if (artifacts.size() > 1) {
+				Tree mergedTree = engine.compare(artifacts.get(0), artifacts.get(1));
+				JavaWriter writer = new JavaWriter();
+				writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath());
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
 
 
 	}

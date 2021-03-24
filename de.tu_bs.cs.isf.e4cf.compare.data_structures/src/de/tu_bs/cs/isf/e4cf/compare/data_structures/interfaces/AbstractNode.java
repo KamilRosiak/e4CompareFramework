@@ -183,5 +183,10 @@ public abstract class AbstractNode implements Node {
 	public void setUUID(UUID uuid) {
 		this.uuid = uuid;
 	}
+	
+	@Override
+	public String toString() {
+		return nodeType;
+	}
 
 }

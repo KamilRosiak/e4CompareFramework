@@ -12,6 +12,11 @@ import de.tu_bs.cs.isf.e4cf.compare.interfaces.ICompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 
+/**
+ * Decomposes two trees and compares , match and merges them hierarchical which decomposes the Node bottom/up.
+ * @author NoLimit
+ *
+ */
 public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	private StringComparator defaultComparator = new StringComparator();
 	private Metric metric;
