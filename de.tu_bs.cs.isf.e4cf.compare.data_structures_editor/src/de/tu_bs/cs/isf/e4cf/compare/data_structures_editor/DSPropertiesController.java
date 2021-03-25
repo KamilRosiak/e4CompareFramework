@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -18,7 +18,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.Delet
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.ModifyValuesAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeAttributePair;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.RenamePropertyAction;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.PropertiesViewUtilities;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -50,15 +50,15 @@ public class DSPropertiesController {
 	 * refreshes views
 	 */
 	private void refreshGUI() {
-		services.eventBroker.send(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT, true);
-		services.eventBroker.send(DataStructuresEditorST.REOPEN_ITEM_EVENT, true);
+		services.eventBroker.send(DSEditorST.REFRESH_TREEVIEW_EVENT, true);
+		services.eventBroker.send(DSEditorST.REOPEN_ITEM_EVENT, true);
 	}
 
 	/**
 	 * @return the current attributes values before changes are made
 	 */
-	Set<Value> getCurrentAttributeValues() {
-		Set<Value> oldAttributeValues = new HashSet<Value>();
+	List<Value> getCurrentAttributeValues() {
+		List<Value> oldAttributeValues = new ArrayList<Value>();
 		// save the old attribute values
 		for (Value value : getSelectedItem().getAttributeValues()) {
 			oldAttributeValues.add(value);
@@ -95,9 +95,9 @@ public class DSPropertiesController {
 	 */
 	@FXML
 	public void editNodeValue() {
-		Set<Value> oldAttributeValues = getCurrentAttributeValues();
+		List<Value> oldAttributeValues = getCurrentAttributeValues();
 		String newValue = PropertiesViewUtilities.getInput("Please enter new Value");
-		Set<Value> newAttributeValues;
+		List<Value> newAttributeValues;
 
 		if (newValue != null) {
 			getSelectedItem().getAttributeValues().clear();
@@ -115,8 +115,8 @@ public class DSPropertiesController {
 	public void removeNodeAttribute() {
 		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
 			Attribute deletedAttribute = getSelectedItem();
-			services.eventBroker.send(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
-			services.eventBroker.send(DataStructuresEditorST.ASK_FOR_SELECTED_ITEM_EVENT, true);
+			services.eventBroker.send(DSEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
+			services.eventBroker.send(DSEditorST.ASK_FOR_SELECTED_ITEM_EVENT, true);
 			NodeAttributePair pair = new NodeAttributePair(selectedNode, deletedAttribute);
 			propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
 			refreshGUI();
@@ -129,8 +129,8 @@ public class DSPropertiesController {
 	 */
 	@FXML
 	public void addNodeValue() {
-		Set<Value> oldAttributeValues = getCurrentAttributeValues();
-		Set<Value> newAttributeValues;
+		List<Value> oldAttributeValues = getCurrentAttributeValues();
+		List<Value> newAttributeValues;
 		String s = PropertiesViewUtilities.getInput("Please enter another Value");
 		if (s != null) {
 			getSelectedItem().getAttributeValues().add(new StringValueImpl(s));
@@ -156,7 +156,7 @@ public class DSPropertiesController {
 	 */
 	@Optional
 	@Inject
-	public void receiveSelectedNode(@UIEventTopic(DataStructuresEditorST.RECEIVE_SELECTED_NODE_EVENT) Node node) {
+	public void receiveSelectedNode(@UIEventTopic(DSEditorST.RECEIVE_SELECTED_NODE_EVENT) Node node) {
 		selectedNode = node;
 	}
 
@@ -167,7 +167,7 @@ public class DSPropertiesController {
 	 */
 	@Optional
 	@Inject
-	public void emptyPropertiesTable(@UIEventTopic(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT) boolean bool) {
+	public void emptyPropertiesTable(@UIEventTopic(DSEditorST.EMPTY_PROPERTIES_TABLE_EVENT) boolean bool) {
 		propertiesTable.getItems().clear();
 	}
 
@@ -177,7 +177,7 @@ public class DSPropertiesController {
 	 */
 	@Optional
 	@Inject
-	public void showProperties(@UIEventTopic(DataStructuresEditorST.NODE_PROPERTIES_EVENT) Node node) {
+	public void showProperties(@UIEventTopic(DSEditorST.NODE_PROPERTIES_EVENT) Node node) {
 		propertiesTable.getColumns().clear();
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());

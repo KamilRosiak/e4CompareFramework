@@ -16,7 +16,7 @@ import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -83,11 +83,11 @@ public class CompareEngineView implements Initializable {
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
-				Tree mergedTree = engine.compare(artifacts.get(0), artifacts.get(1));
-				services.eventBroker.send(DataStructuresEditorST.INITIALIZE_TREE_EVENT, mergedTree);
+				Tree mergedTree = engine.compare(artifacts);
+				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
 				JavaWriter writer = new JavaWriter();
 				writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-						+ "/" + mergedTree.getTreeName());
+						+ "/" + mergedTree.getTreeName());	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

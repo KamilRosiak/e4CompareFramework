@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
-import java.util.Set;
+import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
@@ -12,10 +12,10 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
  */
 
 public class ModifyValuesAction extends AbstractTreeAction {
-	private Set<Value> oldAttributeValues;
-	private Set<Value> newAttributeValues;
+	private List<Value> oldAttributeValues;
+	private List<Value> newAttributeValues;
 
-	public ModifyValuesAction(String name, Set<Value> oldAttributeValues, Set<Value> newAttributeValues) {
+	public ModifyValuesAction(String name, List<Value> oldAttributeValues, List<Value> newAttributeValues) {
 		setName(name);
 		this.oldAttributeValues = oldAttributeValues;
 		this.newAttributeValues = newAttributeValues;

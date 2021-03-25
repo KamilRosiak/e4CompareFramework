@@ -6,7 +6,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 /**
@@ -26,8 +26,8 @@ public class OpenInTreeViewHandler {
     public void execute(ServiceContainer services) {
 	Tree tree = ArtifactIOUtil.parseArtifact(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 	if (tree != null) {
-	    services.partService.showPart(DataStructuresEditorST.TREE_VIEW_ID);
-	    services.eventBroker.send(DataStructuresEditorST.INITIALIZE_TREE_EVENT, tree);
+	    services.partService.showPart(DSEditorST.TREE_VIEW_ID);
+	    services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, tree);
 	}
     }
     

@@ -7,7 +7,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLLoader;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.embed.swt.FXCanvas;
@@ -27,7 +27,7 @@ public class DSEditorAdapter {
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
 		FXMLLoader<DSEditorController> loader = new FXMLLoader<DSEditorController>(context,
-				DataStructuresEditorST.BUNDLE_NAME, DataStructuresEditorST.TREE_VIEW_FXML);
+				DSEditorST.BUNDLE_NAME, DSEditorST.TREE_VIEW_FXML);
 
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);

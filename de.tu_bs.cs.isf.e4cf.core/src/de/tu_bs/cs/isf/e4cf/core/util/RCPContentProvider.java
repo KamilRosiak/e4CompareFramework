@@ -17,38 +17,38 @@ import org.eclipse.osgi.service.datalocation.Location;
  */
 public class RCPContentProvider {
 
-    /**
-     * This method returns the path of the current workspace location
-     * 
-     * @return path of the current workspace location
-     */
-    public static String getCurrentWorkspacePath() {
-	Location instanceLocation = Platform.getInstanceLocation();
-	return instanceLocation.getURL().getPath().substring(1);
-    }
-
-    public static IConfigurationElement[] getIConfigurationElements(String extensionPoint) {
-	IExtensionRegistry reg = Platform.getExtensionRegistry();
-	IConfigurationElement[] configs;
-	configs = reg.getConfigurationElementsFor(extensionPoint);
-	return configs;
-    }
-
-    /**
-     * This method creates a list of object that are provides by a given extension
-     * point.
-     */
-    public static <T> List<T> getInstanceFromBundle(String point, String extensionID) {
-	List<T> objects = new ArrayList<T>();
-	for (IConfigurationElement config : getIConfigurationElements(point)) {
-	    try {
-		objects.add((T) config.createExecutableExtension(extensionID));
-	    } catch (CoreException e) {
-		e.printStackTrace();
-		return null;
-	    }
+	/**
+	 * This method returns the path of the current workspace location
+	 * 
+	 * @return path of the current workspace location
+	 */
+	public static String getCurrentWorkspacePath() {
+		Location instanceLocation = Platform.getInstanceLocation();
+		return instanceLocation.getURL().getPath().substring(1);
 	}
-	return objects;
-    }
+
+	public static IConfigurationElement[] getIConfigurationElements(String extensionPoint) {
+		IExtensionRegistry reg = Platform.getExtensionRegistry();
+		IConfigurationElement[] configs;
+		configs = reg.getConfigurationElementsFor(extensionPoint);
+		return configs;
+	}
+
+	/**
+	 * This method creates a list of object that are provides by a given extension
+	 * point.
+	 */
+	public static <T> List<T> getInstanceFromBundle(String point, String extensionID) {
+		List<T> objects = new ArrayList<T>();
+		for (IConfigurationElement config : getIConfigurationElements(point)) {
+			try {
+				objects.add((T) config.createExecutableExtension(extensionID));
+			} catch (CoreException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return objects;
+	}
 
 }

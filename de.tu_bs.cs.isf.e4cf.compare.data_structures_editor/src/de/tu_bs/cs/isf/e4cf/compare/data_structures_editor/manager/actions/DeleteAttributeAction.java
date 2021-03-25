@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 /**
@@ -22,7 +22,7 @@ public class DeleteAttributeAction extends AbstractTreeAction {
 
 	@Override
 	public void undo() {
-		services.eventBroker.send(DataStructuresEditorST.ADD_ATTRIBUTE_EVENT, pair);
+		services.eventBroker.send(DSEditorST.ADD_ATTRIBUTE_EVENT, pair);
 	}
 
 	@Override

@@ -79,7 +79,8 @@ public interface Comparison<Type> extends Serializable {
 		if (!getResultElements().isEmpty()) {
 			resultSimilarity = resultSimilarity / getResultElements().size();
 		}
-		return resultSimilarity;
+		//if one of both artifacts is null the similarity is 0 because its an optional
+		return (getLeftArtifact()== null || getRightArtifact() == null) ? 0f : resultSimilarity;
 	}
 
 	/**
@@ -99,7 +100,7 @@ public interface Comparison<Type> extends Serializable {
 			return childSimilarity / getChildComparisons().size();
 		} else {
 			//if empty they are similar
-			return 1f;
+			return (getLeftArtifact()== null || getRightArtifact() == null) ? 0f : 1f;
 		}
 	}
 

@@ -65,7 +65,7 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
-	public void addAttribute(String key, Set<Value> values) {
+	public void addAttribute(String key, List<Value> values) {
 		Optional<Attribute> attribute = attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny();
 		if (!attribute.isPresent()) {
 			getAttributes().add(new AttributeImpl(key, values));
@@ -74,7 +74,11 @@ public abstract class AbstractNode implements Node {
 			attribute.get().addAttributeValues(values);
 		}
 	}
-
+	
+	public void addAttribute(Attribute attr) {
+		getAttributes().add(attr);
+	}
+	
 	@Override
 	public Attribute getAttributeForKey(String key) {
 		return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();

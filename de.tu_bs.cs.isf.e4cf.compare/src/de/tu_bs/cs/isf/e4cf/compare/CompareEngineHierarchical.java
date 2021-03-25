@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
+import java.util.Iterator;
 import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
@@ -47,6 +48,21 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		}
 
 		return null;
+	}
+
+	@Override
+	public Tree compare(List<Tree> variants) {
+		Iterator<Tree> variantIterator = variants.iterator();
+		Tree mergedTree = null;
+		for (Tree variant : variants) {
+			// first variant
+			if (mergedTree == null) {
+				mergedTree = variantIterator.next();
+			} else {
+				mergedTree = compare(mergedTree, variant);
+			}
+		}
+		return mergedTree;
 	}
 
 	@Override
@@ -105,4 +121,5 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	public Matcher getMatcher() {
 		return this.matcher;
 	}
+
 }

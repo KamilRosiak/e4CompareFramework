@@ -2,10 +2,11 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities;
 
 import java.util.Optional;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -45,7 +46,10 @@ public class PropertiesViewUtilities {
 		value.setCellValueFactory(e -> {
 			String valueString = "";
 			for(Value singleValue : e.getValue().getAttributeValues()) {
-				valueString+= singleValue+" ";
+				if(singleValue instanceof StringValueImpl) {
+					valueString+= singleValue.getValue()+" ";
+				}
+				
 			}
 			return new SimpleStringProperty(valueString);
 		});
@@ -78,7 +82,7 @@ public class PropertiesViewUtilities {
 		td.showAndWait();
 		String s = td.getEditor().getText();
 		if (s.equals("") || s.equals(null)) {
-			if (confirmationAlert(DataStructuresEditorST.NO_INPUT_ALERT) == true) {
+			if (confirmationAlert(DSEditorST.NO_INPUT_ALERT) == true) {
 				return null;
 			} else {
 				getInput(displayedDialog);
@@ -100,7 +104,7 @@ public class PropertiesViewUtilities {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(outputText);
-		alert.setTitle(DataStructuresEditorST.CONFIRMATION_REQUIRED);
+		alert.setTitle(DSEditorST.CONFIRMATION_REQUIRED);
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
 			return true;

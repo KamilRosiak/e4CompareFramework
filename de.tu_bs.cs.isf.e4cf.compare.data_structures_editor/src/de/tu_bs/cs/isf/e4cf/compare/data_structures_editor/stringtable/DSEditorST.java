@@ -7,7 +7,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable;
  *
  */
 
-public class DataStructuresEditorST {
+public class DSEditorST {
 
 	public static final String TREE_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view";
 	public static final String PROPERTIES_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view";

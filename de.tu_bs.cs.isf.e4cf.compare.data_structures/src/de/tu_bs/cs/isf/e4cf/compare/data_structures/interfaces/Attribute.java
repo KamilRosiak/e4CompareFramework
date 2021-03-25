@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 public interface Attribute extends Serializable {
 	/**
@@ -12,7 +12,7 @@ public interface Attribute extends Serializable {
 	/**
 	 * Returns the value of this attributes , e.g., String key or void
 	 */
-	public Set<Value> getAttributeValues();
+	public List<Value> getAttributeValues();
 
 	/**
 	 * Add an value to this attribute
@@ -23,16 +23,25 @@ public interface Attribute extends Serializable {
 	/**
 	 * Add an values to this attribute
 	 */
-	public void addAttributeValues(Set<Value> value);
+	public void addAttributeValues(List<Value> value);
 
 	/**
 	 * This method returns the highest similarity value between the given attribute
 	 * an this attribute.
 	 */
 	public float compare(Attribute attr);
-
+	
 	public default boolean isAttributeOfSameType(Attribute attr) {
 		return attr.getAttributeKey().equals(getAttributeKey());
+	}
+	
+	public default boolean containsValue(Value value) {
+		for(Value val : getAttributeValues()) {
+			if(val.equals(value)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

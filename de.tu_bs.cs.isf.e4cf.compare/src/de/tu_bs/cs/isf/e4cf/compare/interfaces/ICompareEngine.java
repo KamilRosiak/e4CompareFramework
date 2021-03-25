@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.interfaces;
 
+import java.util.List;
+
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -15,6 +17,7 @@ public interface ICompareEngine<Type> {
 	 */
 	public Tree compare(Tree first, Tree second);
 	
+	public Tree compare(List<Tree> variants);
 	
 	public Comparison<Type> compare(Node first, Node second);
 	

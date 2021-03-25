@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractAttribute implements Attribute {
 	/**
@@ -9,10 +9,10 @@ public abstract class AbstractAttribute implements Attribute {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String attributeKey;
-	private Set<Value> attributeValues;
+	private List<Value> attributeValues;
 
 	public AbstractAttribute() {
-		setAttributeValues(new HashSet<Value>());
+		setAttributeValues(new ArrayList<Value>());
 	}
 
 	@Override
@@ -22,11 +22,11 @@ public abstract class AbstractAttribute implements Attribute {
 		if (attr.getAttributeKey().equals(getAttributeKey())) {
 			similarity += 0.25f;
 		}
-		for (Value first_value : attr.getAttributeValues()) {
+		value: for (Value first_value : attr.getAttributeValues()) {
 			for (Value second_value : getAttributeValues()) {
 				if (first_value.equals(second_value)) {
 					similarity += 0.75f;
-					break;
+					break value;
 				}
 			}
 		}
@@ -34,7 +34,7 @@ public abstract class AbstractAttribute implements Attribute {
 	}
 	
 	@Override
-	public void addAttributeValues(Set<Value> value) {
+	public void addAttributeValues(List<Value> value) {
 		attributeValues.addAll(value);	
 	}
 	
@@ -44,7 +44,7 @@ public abstract class AbstractAttribute implements Attribute {
 	}
 
 	@Override
-	public Set<Value> getAttributeValues() {
+	public List<Value> getAttributeValues() {
 		return attributeValues;
 	}
 
@@ -53,7 +53,7 @@ public abstract class AbstractAttribute implements Attribute {
 		attributeValues.add(value);
 	}
 
-	public void setAttributeValues(Set<Value> attributeValues) {
+	public void setAttributeValues(List<Value> attributeValues) {
 		this.attributeValues = attributeValues;
 	}
 

@@ -8,7 +8,7 @@ public class AbstractTree implements Tree {
     private static final long serialVersionUID = 7659681319811210012L;
     private Node root;
     private String treeName;
-    private String fileExtension;
+    private String fileExtension ="NONE";
 	
 	
 	@Override

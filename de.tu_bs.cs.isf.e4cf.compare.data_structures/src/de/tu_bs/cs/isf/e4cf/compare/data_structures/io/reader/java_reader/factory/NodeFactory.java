@@ -37,7 +37,7 @@ public class NodeFactory {
 	public void attachArguments(NodeWithArguments n, Node parent, JavaVisitor visitor) {
 		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), parent);
 		int argSize = n.getArguments().size();
-		args.addAttribute(JavaAttributesTypes.Children.name(), new StringValueImpl(String.valueOf(argSize)));
+
 		for (int i = 0; i < argSize; i++) {
 			Expression argumentExpr = n.getArgument(0);
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
@@ -121,7 +121,6 @@ public class NodeFactory {
 		// Add the paramter of the method declariton Parameter
 		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), p);
 		int argList = n.getParameters().size();
-		args.addAttribute(JavaAttributesTypes.Children.name(), new StringValueImpl(String.valueOf(argList)));
 		for (int i = 0; i < argList; i++) {
 			Parameter concreteParameter = n.getParameter(0);
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);

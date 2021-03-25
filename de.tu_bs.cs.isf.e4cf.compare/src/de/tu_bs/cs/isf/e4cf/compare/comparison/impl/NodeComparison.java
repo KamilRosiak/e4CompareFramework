@@ -5,6 +5,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
 /**
  * The implementation for the comparison of artifacts of type Node.
@@ -47,27 +48,29 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			float resultSimilarity = getResultSimilarity();
 			if (resultSimilarity == ComparisonUtil.MANDATORY_VALUE) {
 				node = getLeftArtifact();
-				node.setVariabilityClass(VariabilityClass.MANDATORY);
 			} else if (resultSimilarity >= ComparisonUtil.OPTIONAL_VALUE) {
 				node = getLeftArtifact();
-				node.setVariabilityClass(VariabilityClass.ALTERNATIVE);
-				for (Attribute attr : getRightArtifact().getAttributes()) {
-					Attribute mergAttr = node.getAttributeForKey(attr.getAttributeKey());
 
-					if (mergAttr != null) {
-						mergAttr.addAttributeValues(mergAttr.getAttributeValues());
+				for (Attribute rightAttr : getRightArtifact().getAttributes()) {
+					Attribute leftAttr = node.getAttributeForKey(rightAttr.getAttributeKey());
+
+					if (leftAttr != null) {
+						for (Value rightVal : rightAttr.getAttributeValues()) {
+							if (!leftAttr.containsValue(rightVal)) {
+								leftAttr.addAttributeValue(rightVal);
+							}
+						}
 					} else {
-						node.addAttribute(mergAttr.getAttributeKey(), mergAttr.getAttributeValues());
+						node.addAttribute(rightAttr);
 					}
 				}
 			} else {
 				node = getLeftArtifact() != null ? getLeftArtifact() : getRightArtifact();
-				node.setVariabilityClass(VariabilityClass.OPTIONAL);
 			}
 		} else {
-			node = getLeftArtifact();
+			node = getLeftArtifact() != null ? getLeftArtifact() : getRightArtifact();
 		}
-
+		node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
 		// process child comparisons recursively
 		node.getChildren().clear();
 		for (Comparison<Node> childComparision : getChildComparisons()) {

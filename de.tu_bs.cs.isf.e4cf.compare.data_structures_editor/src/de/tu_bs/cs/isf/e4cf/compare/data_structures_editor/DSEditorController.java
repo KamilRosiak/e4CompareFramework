@@ -13,19 +13,23 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DecorationManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddAttributeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.AddChildNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.DeleteNodeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeAttributePair;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -46,24 +50,18 @@ import javafx.scene.text.Text;
  *
  */
 public class DSEditorController {
-
 	@Inject
 	private ServiceContainer services;
 
+	@Inject DecorationManager decoManager;
 	@FXML
 	private MenuItem properties;
-
-	@FXML
-	private VBox background;
 
 	@FXML
 	private Button search;
 
 	@FXML
 	private Label testLabel;
-
-	@FXML
-	private Text hitCount, totalNodeAmount;
 
 	@FXML
 	private TreeView<Node> treeView;
@@ -73,6 +71,9 @@ public class DSEditorController {
 
 	@FXML
 	private ContextMenu contextMenu;
+	
+	@FXML
+	private ComboBox<NodeDecorator> decoratorCombo;
 
 	private String currentSearchText;
 	private Tree currentTree;
@@ -97,20 +98,25 @@ public class DSEditorController {
 	 */
 	@Optional
 	@Inject
-	public void showTree(@UIEventTopic(DataStructuresEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
+	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
 		setCurrentTree(tree);
 		setContextMenü();
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		services.partService.showPart(DataStructuresEditorST.TREE_VIEW_ID);
+		services.partService.showPart(DSEditorST.TREE_VIEW_ID);
 		closeFile();
 		createTreeRoot(tree);
-
-		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot());
+		//load decorator and select the first
+		decoratorCombo = new ComboBox<NodeDecorator>(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
+		decoratorCombo.getSelectionModel().select(0);
+		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), decoratorCombo.getSelectionModel().getSelectedItem());
 		addListener();
-		displayTotalNodeAmount();
 	}
 
+	private NodeDecorator getSelectedDecorator() {
+		return decoratorCombo.getSelectionModel().getSelectedItem();
+	}
+	
 	private void createTreeRoot(Tree tree) {
 		treeView.setRoot(new TreeItem<Node>(tree.getRoot()));
 		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
@@ -120,16 +126,7 @@ public class DSEditorController {
 
 	private void setContextMenü() {
 		treeView.setContextMenu(contextMenu);
-		background.setOnMouseEntered(event -> contextMenu.hide());
-	}
-
-	/**
-	 * Method to display the total amount of nodes
-	 */
-	private void displayTotalNodeAmount() {
-		totalNodeAmount.setText(
-				"Total node amount: " + (treeViewToList(treeView.getRoot(), new ArrayList<TreeItem<Node>>())).size());
-		treeView.refresh();
+		treeView.setOnMouseEntered(event -> contextMenu.hide());
 	}
 
 	/**
@@ -157,7 +154,6 @@ public class DSEditorController {
 		}
 		treeView.getSelectionModel().select(resultList.get(searchCounter));
 		treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
-		hitCount.setText((searchCounter + 1) + "/" + resultList.size());
 		resultList.clear();
 	}
 
@@ -196,8 +192,8 @@ public class DSEditorController {
 	public void addListener() {
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
-				services.partService.showPart(DataStructuresEditorST.PROPERTIES_VIEW_ID);
-				services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
+				services.partService.showPart(DSEditorST.PROPERTIES_VIEW_ID);
+				services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
 		});
@@ -217,7 +213,7 @@ public class DSEditorController {
 	 */
 	@FXML
 	void addChildNode() {
-		commandStack.execute(new AddChildNodeAction(treeView, treeView.getSelectionModel().getSelectedItem()));
+		commandStack.execute(new AddChildNodeAction(treeView, treeView.getSelectionModel().getSelectedItem(), getSelectedDecorator()));
 		treeView.refresh();
 	}
 
@@ -239,18 +235,16 @@ public class DSEditorController {
 	void pasteNode() {
 		try {
 			for (TreeItem<Node> ti : copyList) {
-				TreeItem<Node> tempNode = TreeViewUtilities.createTreeItem(ti.getValue());
+				TreeItem<Node> tempNode = TreeViewUtilities.createTreeItem(ti.getValue(), getSelectedDecorator());
 				// Idee: Index verwalten über expand/collapse All
 				treeView.getSelectionModel().getSelectedItem().getChildren().add(tempNode);
 				for (TreeItem<Node> child : ti.getChildren()) {
-					tempNode.getChildren().add(TreeViewUtilities.createTreeItem(child.getValue()));
+					tempNode.getChildren().add(TreeViewUtilities.createTreeItem(child.getValue(),getSelectedDecorator()));
 				}
-				displayTotalNodeAmount();
 			}
 		} catch (NullPointerException e) {
 			return;
 		}
-
 	}
 
 	/**
@@ -280,7 +274,7 @@ public class DSEditorController {
 				// treeView.getSelectionModel().getSelectedItem().getValue()));
 				addAttribute("name", newName);
 				treeView.refresh();
-				services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
+				services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
 		}
@@ -326,7 +320,6 @@ public class DSEditorController {
 		ti.getParent().getChildren().remove(ti);
 
 		unselectAllNodes();
-		displayTotalNodeAmount();
 		treeView.refresh();
 	}
 
@@ -336,10 +329,9 @@ public class DSEditorController {
 	@FXML
 	void closeFile() {
 		treeView.setRoot(null);
-		hitCount.setText("");
 		searchCounter = 0;
 		currentSearchText = null;
-		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
+		services.eventBroker.send(DSEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
 	}
 
 	/**
@@ -374,7 +366,6 @@ public class DSEditorController {
 	@FXML
 	void undoAction() {
 		commandStack.undo();
-		displayTotalNodeAmount();
 		treeView.refresh();
 	}
 
@@ -384,7 +375,7 @@ public class DSEditorController {
 	@FXML
 	void selectAllNodes() {
 		treeView.getSelectionModel().selectAll();
-		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
+		services.eventBroker.send(DSEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
 	}
 
 	/**
@@ -393,7 +384,7 @@ public class DSEditorController {
 	@FXML
 	void unselectAllNodes() {
 		treeView.getSelectionModel().clearSelection();
-		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
+		services.eventBroker.send(DSEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
 	}
 
 	/**
@@ -470,7 +461,7 @@ public class DSEditorController {
 	 */
 	@Optional
 	@Inject
-	public void refreshTreeView(@UIEventTopic(DataStructuresEditorST.REFRESH_TREEVIEW_EVENT) boolean bool) {
+	public void refreshTreeView(@UIEventTopic(DSEditorST.REFRESH_TREEVIEW_EVENT) boolean bool) {
 		treeView.refresh();
 	}
 
@@ -482,7 +473,7 @@ public class DSEditorController {
 	@Optional
 	@Inject
 	public void removeNodeAttributeFromSelectedItem(
-			@UIEventTopic(DataStructuresEditorST.DELETE_ATTRIBUTE_EVENT) Attribute attribute) {
+			@UIEventTopic(DSEditorST.DELETE_ATTRIBUTE_EVENT) Attribute attribute) {
 		treeView.getSelectionModel().getSelectedItem().getValue().getAttributes().remove(attribute);
 	}
 
@@ -492,9 +483,9 @@ public class DSEditorController {
 	 */
 	@Optional
 	@Inject
-	public void reopenItem(@UIEventTopic(DataStructuresEditorST.REOPEN_ITEM_EVENT) boolean bool) {
-		services.eventBroker.send(DataStructuresEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
-		services.eventBroker.send(DataStructuresEditorST.NODE_PROPERTIES_EVENT,
+	public void reopenItem(@UIEventTopic(DSEditorST.REOPEN_ITEM_EVENT) boolean bool) {
+		services.eventBroker.send(DSEditorST.EMPTY_PROPERTIES_TABLE_EVENT, true);
+		services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
 				treeView.getSelectionModel().getSelectedItem().getValue());
 	}
 
@@ -505,7 +496,7 @@ public class DSEditorController {
 	 */
 	@Optional
 	@Inject
-	private void addAttribute(@UIEventTopic(DataStructuresEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
+	private void addAttribute(@UIEventTopic(DSEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
 		pair.getOwner().getAttributes().add(pair.getAttribute());
 		treeView.refresh();
 	}
@@ -517,8 +508,8 @@ public class DSEditorController {
 	 */
 	@Optional
 	@Inject
-	public void askForSelectedItem(@UIEventTopic(DataStructuresEditorST.ASK_FOR_SELECTED_ITEM_EVENT) boolean bool) {
-		services.eventBroker.send(DataStructuresEditorST.RECEIVE_SELECTED_NODE_EVENT,
+	public void askForSelectedItem(@UIEventTopic(DSEditorST.ASK_FOR_SELECTED_ITEM_EVENT) boolean bool) {
+		services.eventBroker.send(DSEditorST.RECEIVE_SELECTED_NODE_EVENT,
 				treeView.getSelectionModel().getSelectedItem().getValue());
 	}
 }

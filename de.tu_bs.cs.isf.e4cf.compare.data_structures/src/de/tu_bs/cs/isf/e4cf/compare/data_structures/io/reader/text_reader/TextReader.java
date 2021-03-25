@@ -26,6 +26,7 @@ public class TextReader extends AbstractArtifactReader {
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
 		Tree tree = null;
+		tree.setFileExtension("txt");
 		if (isFileSupported(element)) {
 			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
 			// Spiting the input by lines
