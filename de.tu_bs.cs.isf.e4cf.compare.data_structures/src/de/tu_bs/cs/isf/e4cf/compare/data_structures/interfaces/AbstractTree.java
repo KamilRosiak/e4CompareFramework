@@ -8,7 +8,6 @@ public class AbstractTree implements Tree {
     private static final long serialVersionUID = 7659681319811210012L;
     private Node root;
     private String treeName;
-    private String artifactType;
     private String fileExtension;
 	
 	
@@ -59,7 +58,6 @@ public class AbstractTree implements Tree {
 		return root;
 	}
 	public void setRoot(Node root) {
-		setArtifactType(root.getNodeType());
 		this.root = root;
 	}
 	
@@ -71,14 +69,11 @@ public class AbstractTree implements Tree {
 		this.treeName = treeName;
 	}
 
-	public void setArtifactType(String artifactType) {
-		this.artifactType = artifactType;
-	}
-
 	@Override
 	public String getFileExtension() {
-	    return null;
+	    return fileExtension;
 	}
+	@Override
 	public void setFileExtension(String fileExtension) {
 	    this.fileExtension = fileExtension;
 	}

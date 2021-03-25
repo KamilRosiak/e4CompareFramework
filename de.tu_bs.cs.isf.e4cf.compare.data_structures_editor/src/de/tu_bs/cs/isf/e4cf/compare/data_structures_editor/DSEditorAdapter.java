@@ -14,7 +14,8 @@ import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
 /**
- * This class is a adapter which draws the JavaFX UI elements on the SWT composite.
+ * This class is a adapter which draws the JavaFX UI elements on the SWT
+ * composite.
  * 
  * @author Team05, Kamil Rosiak
  *
@@ -22,13 +23,13 @@ import javafx.scene.Scene;
 
 public class DSEditorAdapter {
 
-    @PostConstruct
-    public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {
-	FXCanvas canvans = new FXCanvas(parent, SWT.None);
-	FXMLLoader<DSEditorController> loader = new FXMLLoader<DSEditorController>(context,
-		DataStructuresEditorST.BUNDLE_NAME, DataStructuresEditorST.TREE_VIEW_FXML);
+	@PostConstruct
+	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {
+		FXCanvas canvans = new FXCanvas(parent, SWT.None);
+		FXMLLoader<DSEditorController> loader = new FXMLLoader<DSEditorController>(context,
+				DataStructuresEditorST.BUNDLE_NAME, DataStructuresEditorST.TREE_VIEW_FXML);
 
-	Scene scene = new Scene(loader.getNode());
-	canvans.setScene(scene);
-    }
+		Scene scene = new Scene(loader.getNode());
+		canvans.setScene(scene);
+	}
 }

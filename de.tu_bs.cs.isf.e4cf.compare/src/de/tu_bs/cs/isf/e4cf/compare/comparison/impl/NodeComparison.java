@@ -40,25 +40,44 @@ public class NodeComparison extends AbstractComparsion<Node> {
 
 	@Override
 	public Node mergeArtifacts() {
+		
 		Node node = null;
-		if(getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
-			node = getLeftArtifact();
-			node.setVariabilityClass(VariabilityClass.MANDATORY);
-		} else if(getSimilarity() >= ComparisonUtil.OPTIONAL_VALUE) {
-			node = getLeftArtifact();
-			node.setVariabilityClass(VariabilityClass.ALTERNATIVE);
-			for(Attribute attr : getRightArtifact().getAttributes()) {
-				Attribute mergAttr = node.getAttributeForKey(attr.getAttributeKey());
-				if(mergAttr != null) {
-					mergAttr.addAttributeValues(mergAttr.getAttributeValues());
-				} else {
-					node.addAttribute(mergAttr.getAttributeKey(), mergAttr.getAttributeValues());
+		if(!getResultElements().isEmpty()) {
+			float attrSimilarity = 0f;
+			
+			
+			
+			if(getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
+				node = getLeftArtifact();
+				node.setVariabilityClass(VariabilityClass.MANDATORY);
+			} else if(getSimilarity() >= ComparisonUtil.OPTIONAL_VALUE) {
+				node = getLeftArtifact();
+				node.setVariabilityClass(VariabilityClass.ALTERNATIVE);
+				for(Attribute attr : getRightArtifact().getAttributes()) {
+					Attribute mergAttr = node.getAttributeForKey(attr.getAttributeKey());
+					
+					if(mergAttr != null) {
+						mergAttr.addAttributeValues(mergAttr.getAttributeValues());
+					} else {
+						node.addAttribute(mergAttr.getAttributeKey(), mergAttr.getAttributeValues());
+					}
 				}
+			} else {
+				node = getLeftArtifact() != null ? getLeftArtifact() : getRightArtifact();
+				node.setVariabilityClass(VariabilityClass.OPTIONAL);
 			}
+			
+			
+			
+			
+			
+			
+			
+			
 		} else {
-			node = getLeftArtifact() != null ? getLeftArtifact() : getRightArtifact();
-			node.setVariabilityClass(VariabilityClass.OPTIONAL);
+			node = getLeftArtifact();
 		}
+		
 		//process child comparisons recursively 
 		node.getChildren().clear();
 		for(Comparison<Node> childComparision : getChildComparisons()) {

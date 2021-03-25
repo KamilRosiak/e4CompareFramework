@@ -31,14 +31,12 @@ public class RestButtonHandler {
 		root.setChildren(new LinkedList<>());
 
 		TreeImpl tree1 = new TreeImpl("testTree1");
-		tree1.setArtifactType("type");
 		tree1.setRoot(root);
 
 		testAttributes.add(new AttributeImpl("Key2", "Value"));
 		root.setAttributes(testAttributes);
 
 		TreeImpl tree2 = new TreeImpl("testTree2");
-		tree2.setArtifactType("type");
 		tree2.setRoot(root);
 
 		try {

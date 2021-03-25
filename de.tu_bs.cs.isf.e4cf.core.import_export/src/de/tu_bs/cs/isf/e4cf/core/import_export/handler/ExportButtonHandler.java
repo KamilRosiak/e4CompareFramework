@@ -38,9 +38,7 @@ public class ExportButtonHandler {
 		root.setChildren(new LinkedList<>());
 
 		TreeImpl tree = new TreeImpl("testTree");
-		tree.setArtifactType("type");
 		tree.setRoot(root);
 
-		System.out.println(exportService.exportTree(tree));
 	}
 }

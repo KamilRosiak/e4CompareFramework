@@ -13,7 +13,9 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 
 /**
- * Decomposes two trees and compares , match and merges them hierarchical which decomposes the Node bottom/up.
+ * Decomposes two trees and compares , match and merges them hierarchical which
+ * decomposes the Node bottom/up.
+ * 
  * @author NoLimit
  *
  */

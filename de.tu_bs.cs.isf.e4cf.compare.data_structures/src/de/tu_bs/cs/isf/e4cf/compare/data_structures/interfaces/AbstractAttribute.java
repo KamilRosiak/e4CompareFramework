@@ -31,7 +31,7 @@ public abstract class AbstractAttribute implements Attribute {
 	
 	@Override
 	public void addAttributeValues(Set<String> value) {
-		value.addAll(value);	
+		attributeValues.addAll(value);	
 	}
 	
 	@Override

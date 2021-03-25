@@ -35,6 +35,8 @@ public interface Tree extends Serializable {
 	 */
 	public String getFileExtension();
 	
+	public void setFileExtension(String extension);
+	
 	/**
 	 * This method returns all nodes of this tree that have the given type.
 	 */
@@ -57,4 +59,10 @@ public interface Tree extends Serializable {
 	 * Moreover, the first Node in this list is the startingNode and the last element is the targetNode.
 	 */
 	public List<Node> getPath(Node startingNode,Node targetNode);
+	
+	
+
+	
+	
+	
 }

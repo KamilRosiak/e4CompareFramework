@@ -50,6 +50,7 @@ public class JavaReader extends AbstractArtifactReader {
 			JavaVisitor visitor = new JavaVisitor(new NodeFactory(new StatementNodeFactory()));
 			visitor.visit(cu, rootNode);
 			tree = new TreeImpl(fileName, rootNode);
+		
 		}
 		return tree;
 	}

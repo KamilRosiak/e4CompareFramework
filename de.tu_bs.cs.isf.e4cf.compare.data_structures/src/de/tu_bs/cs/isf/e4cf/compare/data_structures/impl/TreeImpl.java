@@ -28,7 +28,6 @@ public class TreeImpl extends AbstractTree {
 	
 	public TreeImpl(Tree first, Tree second, Node root) {
 		this(first.getTreeName()+"_"+second.getTreeName(), root);
-		setArtifactType(first.getArtifactType());
 		setFileExtension(first.getFileExtension());
 	}
 }
