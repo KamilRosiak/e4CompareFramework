@@ -96,9 +96,11 @@ public interface Comparison<Type> extends Serializable {
 		}
 		// calculate the average value
 		if (!getChildComparisons().isEmpty()) {
-			childSimilarity = childSimilarity / getChildComparisons().size();
+			return childSimilarity / getChildComparisons().size();
+		} else {
+			//if empty they are similar
+			return 1f;
 		}
-		return childSimilarity;
 	}
 
 	/**

@@ -2,6 +2,8 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions;
 
 import java.util.Set;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+
 /**
  * Implementation of UndoAction for Edit and Add Value
  * 
@@ -10,10 +12,10 @@ import java.util.Set;
  */
 
 public class ModifyValuesAction extends AbstractTreeAction {
-	private Set<String> oldAttributeValues;
-	private Set<String> newAttributeValues;
+	private Set<Value> oldAttributeValues;
+	private Set<Value> newAttributeValues;
 
-	public ModifyValuesAction(String name, Set<String> oldAttributeValues, Set<String> newAttributeValues) {
+	public ModifyValuesAction(String name, Set<Value> oldAttributeValues, Set<Value> newAttributeValues) {
 		setName(name);
 		this.oldAttributeValues = oldAttributeValues;
 		this.newAttributeValues = newAttributeValues;
@@ -22,7 +24,7 @@ public class ModifyValuesAction extends AbstractTreeAction {
 	@Override
 	public void undo() {
 		newAttributeValues.clear();
-		for (String value : oldAttributeValues) {
+		for (Value value : oldAttributeValues) {
 			newAttributeValues.add(value);
 		}
 	}

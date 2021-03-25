@@ -36,12 +36,12 @@ public interface Node {
 	/**
 	 * This method adds value for a given key, a variant with a respective values.
 	 */
-	public void addAttribute(String key, String value);
+	public void addAttribute(String key, Value value);
 	
 	/**
 	 * This method adds values for a given key, a variant with a respective values.
 	 */
-	public void addAttribute(String attributeKey, Set<String> attributeValues);
+	public void addAttribute(String attributeKey, Set<Value> attributeValues);
 	
 	/**
 	 * This method returns the value for the given key.

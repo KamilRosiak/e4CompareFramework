@@ -11,6 +11,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAttributesTypes;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaNodeTypes;
@@ -36,7 +37,7 @@ public class NodeFactory {
 	public void attachArguments(NodeWithArguments n, Node parent, JavaVisitor visitor) {
 		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), parent);
 		int argSize = n.getArguments().size();
-		args.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(argSize));
+		args.addAttribute(JavaAttributesTypes.Children.name(), new StringValueImpl(String.valueOf(argSize)));
 		for (int i = 0; i < argSize; i++) {
 			Expression argumentExpr = n.getArgument(0);
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
@@ -68,13 +69,13 @@ public class NodeFactory {
 
 		// Class or Interface?
 		classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.IsInterface.name(),
-				String.valueOf(n.isInterface()));
+				new StringValueImpl(String.valueOf(n.isInterface())));
 
 		// Superclass
 		if (n.getExtendedTypes().size() > 0) {
 			// Only a single class can be inherited!
 			ClassOrInterfaceType superclass = n.getExtendedTypes(0);
-			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Superclass.name(), superclass.toString());
+			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Superclass.name(), new StringValueImpl(superclass.toString()));
 			superclass.removeForced();
 		}
 
@@ -83,7 +84,7 @@ public class NodeFactory {
 		for (int i = 0; i < interfaceSize; i++) {
 			// Multiple classes can be implemented
 			ClassOrInterfaceType implemented = n.getImplementedTypes(0);
-			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Interface.name(), implemented.toString());
+			classOrInterfaceDeclarationNode.addAttribute(JavaAttributesTypes.Interface.name(), new StringValueImpl(implemented.toString()));
 			implemented.removeForced();
 		}
 		return classOrInterfaceDeclarationNode;
@@ -94,8 +95,8 @@ public class NodeFactory {
 	 */
 	public void attachImportDecl(ImportDeclaration importDecl, Node parent, JavaVisitor visitor) {
 		Node leaf = new NodeImpl(JavaNodeTypes.Import.name(), parent);
-		leaf.addAttribute(JavaAttributesTypes.Asterisks.name(), String.valueOf(importDecl.isAsterisk()));
-		leaf.addAttribute(JavaAttributesTypes.Static.name(), String.valueOf(importDecl.isStatic()));
+		leaf.addAttribute(JavaAttributesTypes.Asterisks.name(), new StringValueImpl(String.valueOf(importDecl.isAsterisk())));
+		leaf.addAttribute(JavaAttributesTypes.Static.name(), new StringValueImpl(String.valueOf(importDecl.isStatic())));
 		importDecl.getName().accept(visitor, leaf);
 	}
 
@@ -113,24 +114,24 @@ public class NodeFactory {
 		// Add Throws as attributes
 		for (int i = n.getThrownExceptions().size(); i > 0; i--) {
 			ReferenceType referenceType = n.getThrownException(0);
-			p.addAttribute(JavaAttributesTypes.Throws.name(), referenceType.asString());
+			p.addAttribute(JavaAttributesTypes.Throws.name(), new StringValueImpl(referenceType.asString()));
 			referenceType.removeForced();
 		}
 
 		// Add the paramter of the method declariton Parameter
 		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), p);
 		int argList = n.getParameters().size();
-		args.addAttribute(JavaAttributesTypes.Children.name(), String.valueOf(argList));
+		args.addAttribute(JavaAttributesTypes.Children.name(), new StringValueImpl(String.valueOf(argList)));
 		for (int i = 0; i < argList; i++) {
 			Parameter concreteParameter = n.getParameter(0);
 			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
-			argNode.addAttribute(JavaAttributesTypes.Type.name(), concreteParameter.getTypeAsString());
+			argNode.addAttribute(JavaAttributesTypes.Type.name(), new StringValueImpl(concreteParameter.getTypeAsString()));
 			concreteParameter.getName().accept(visitor, argNode);
 			concreteParameter.getModifiers().forEach(modif -> modif.accept(visitor, argNode));
 			concreteParameter.removeForced();
 		}
 		// Add the returing type as attribute
-		p.addAttribute(JavaAttributesTypes.ReturnType.name(), n.getTypeAsString());
+		p.addAttribute(JavaAttributesTypes.ReturnType.name(), new StringValueImpl(n.getTypeAsString()));
 		return p;
 	}
 

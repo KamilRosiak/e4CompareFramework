@@ -4,11 +4,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class AbstractAttribute implements Attribute {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String attributeKey;
-	private Set<String> attributeValues;
+	private Set<Value> attributeValues;
 
 	public AbstractAttribute() {
-		setAttributeValues(new HashSet<String>());
+		setAttributeValues(new HashSet<Value>());
 	}
 
 	@Override
@@ -18,8 +22,8 @@ public abstract class AbstractAttribute implements Attribute {
 		if (attr.getAttributeKey().equals(getAttributeKey())) {
 			similarity += 0.25f;
 		}
-		for (String first_value : attr.getAttributeValues()) {
-			for (String second_value : getAttributeValues()) {
+		for (Value first_value : attr.getAttributeValues()) {
+			for (Value second_value : getAttributeValues()) {
 				if (first_value.equals(second_value)) {
 					similarity += 0.75f;
 					break;
@@ -30,7 +34,7 @@ public abstract class AbstractAttribute implements Attribute {
 	}
 	
 	@Override
-	public void addAttributeValues(Set<String> value) {
+	public void addAttributeValues(Set<Value> value) {
 		attributeValues.addAll(value);	
 	}
 	
@@ -40,16 +44,16 @@ public abstract class AbstractAttribute implements Attribute {
 	}
 
 	@Override
-	public Set<String> getAttributeValues() {
+	public Set<Value> getAttributeValues() {
 		return attributeValues;
 	}
 
 	@Override
-	public void addAttributeValue(String value) {
+	public void addAttributeValue(Value value) {
 		attributeValues.add(value);
 	}
 
-	public void setAttributeValues(Set<String> attributeValues) {
+	public void setAttributeValues(Set<Value> attributeValues) {
 		this.attributeValues = attributeValues;
 	}
 

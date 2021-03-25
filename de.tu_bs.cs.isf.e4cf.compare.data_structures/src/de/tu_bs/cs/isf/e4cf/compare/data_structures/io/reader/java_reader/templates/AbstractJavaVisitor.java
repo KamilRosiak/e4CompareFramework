@@ -13,6 +13,7 @@ import com.github.javaparser.ast.stmt.LabeledStmt;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAttributesTypes;
 
@@ -27,7 +28,7 @@ public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 	 */
 	protected void visitor(com.github.javaparser.ast.Node n, Node arg, com.github.javaparser.ast.Node... exceptions) {
 		// Comments are no child nodes. Therefore they are added explicitly.
-		n.getComment().ifPresent(comment -> arg.addAttribute(JavaAttributesTypes.Comment.name(), comment.getContent()));
+		n.getComment().ifPresent(comment -> arg.addAttribute(JavaAttributesTypes.Comment.name(), new StringValueImpl(comment.getContent())));
 		NodeList<com.github.javaparser.ast.Node> exceptionList = NodeList.nodeList(exceptions);
 		for (com.github.javaparser.ast.Node childNode : n.getChildNodes()) {
 			if (!exceptionList.contains(childNode)) {
@@ -50,7 +51,7 @@ public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 	@Override
 	public void visit(LabeledStmt n, Node arg) {
 		Node labeledStmt = new NodeImpl(n.getClass().getSimpleName(), arg);
-		labeledStmt.addAttribute(JavaAttributesTypes.Name.name(), n.getLabel().asString());
+		labeledStmt.addAttribute(JavaAttributesTypes.Name.name(), new StringValueImpl(n.getLabel().asString()));
 		visitor(n, labeledStmt);
 	}
 

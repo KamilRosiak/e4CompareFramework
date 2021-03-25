@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
 /**
  * Concrete implementation of the Attribute interface.
@@ -22,7 +23,7 @@ public class AttributeImpl extends AbstractAttribute {
 	/**
 	 * Create an Attribute with a kay and corrosponding value
 	 */
-	public AttributeImpl(String attrKey, String attrValue) {
+	public AttributeImpl(String attrKey, Value attrValue) {
 		this(attrKey);
 		addAttributeValue(attrValue);
 	}
@@ -30,7 +31,7 @@ public class AttributeImpl extends AbstractAttribute {
 	/**
 	 * Create an Attribute with a kay and corrosponding value
 	 */
-	public AttributeImpl(String attrKey, Set<String> attrValues) {
+	public AttributeImpl(String attrKey, Set<Value> attrValues) {
 		this(attrKey);
 		getAttributeValues().addAll(attrValues);
 	}

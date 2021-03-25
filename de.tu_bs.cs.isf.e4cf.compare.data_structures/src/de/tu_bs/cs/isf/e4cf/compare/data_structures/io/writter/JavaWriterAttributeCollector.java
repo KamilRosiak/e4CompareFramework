@@ -15,8 +15,10 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.ast.type.UnionType;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAttributesTypes;
 
 /**
@@ -80,18 +82,22 @@ public class JavaWriterAttributeCollector {
 	public void collectAttributes(Node n) throws UnsupportedOperationException {
 		for (Attribute attribute : n.getAttributes()) {
 			final String key = attribute.getAttributeKey();
-			final String singleVal = attribute.getAttributeValues().iterator().next();
+			final StringValueImpl singleVal = (StringValueImpl) attribute.getAttributeValues().iterator().next();
 
 			if (key.equals(JavaAttributesTypes.Annotation.name())) {
-				for (String value : attribute.getAttributeValues()) {
+				for (Value value : attribute.getAttributeValues()) {
 					// Annotations start with an at-symbol
-					if (!value.startsWith("@")) {
-						value = "@" + value;
+					if(value instanceof StringValueImpl) {
+						StringValueImpl stringVal = (StringValueImpl)value;
+						if (!stringVal.getValue().startsWith("@")) {
+							stringVal.setValue( "@" + value.getValue());
+						}
+						_annotation.add(StaticJavaParser.parseAnnotation(stringVal.getValue()));
 					}
-					_annotation.add(StaticJavaParser.parseAnnotation(value));
+
 				}
 			} else if (key.equals(JavaAttributesTypes.Asterisks.name())) {
-				_asteriks = Boolean.valueOf(singleVal);
+				_asteriks = Boolean.valueOf(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Bound.name())) {
 				/*
 				 * Attribute Bound contains the number of bound children
@@ -100,68 +106,72 @@ public class JavaWriterAttributeCollector {
 				 * _bound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
 				 */
 			} else if (key.equals(JavaAttributesTypes.Check.name())) {
-				_check = StaticJavaParser.parseExpression(singleVal);
+				_check = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Children.name())) {
-				_children = Integer.parseInt(singleVal);
+				_children = Integer.parseInt(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Comment.name())) {
-				_comment = singleVal;
+				_comment = singleVal.getValue();
 			} else if (key.equals(JavaAttributesTypes.Comparison.name())) {
-				_comparison = StaticJavaParser.parseExpression(singleVal);
+				_comparison = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Condition.name())) {
-				attribute.getAttributeValues().forEach(val -> _condition.add(StaticJavaParser.parseExpression(val)));
+				attribute.getAttributeValues().forEach(val -> _condition.add(StaticJavaParser.parseExpression((String) val.getValue())));
 			} else if (key.equals(JavaAttributesTypes.Default.name())) {
-				_default = Boolean.valueOf(singleVal);
+				_default = Boolean.valueOf(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Else.name())) {
-				_else = StaticJavaParser.parseExpression(singleVal);
+				_else = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Expression.name())) {
-				_expression = StaticJavaParser.parseExpression(singleVal);
+				_expression = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Identifier.name())) {
-				_identifier = singleVal;
+				_identifier = singleVal.getValue();
 			} else if (key.equals(JavaAttributesTypes.Initilization.name())) {
 				Expression expr;
-				for (String val : attribute.getAttributeValues()) {
-					if (val.startsWith("{") && val.endsWith("}")) {
-						expr = StaticJavaParser.parseExpression("new " + getType().asString() + " " + val);
-					} else {
-						try {
-							expr = StaticJavaParser.parseExpression(val);
-						} catch (ParseProblemException ppe) {
-							expr = StaticJavaParser.parseVariableDeclarationExpr(val);
+				for (Value val : attribute.getAttributeValues()) {
+					if(val instanceof StringValueImpl) {
+						StringValueImpl stringVal = (StringValueImpl)val;
+						if (stringVal.getValue().startsWith("{") && stringVal.getValue().endsWith("}")) {
+							expr = StaticJavaParser.parseExpression("new " + getType().asString() + " " + val);
+						} else {
+							try {
+								expr = StaticJavaParser.parseExpression(stringVal.getValue());
+							} catch (ParseProblemException ppe) {
+								expr = StaticJavaParser.parseVariableDeclarationExpr(stringVal.getValue());
+							}
 						}
+						_initilization.add(expr);
 					}
-					_initilization.add(expr);
+
 				}
 			} else if (key.equals(JavaAttributesTypes.Interface.name())) {
 				attribute.getAttributeValues()
-						.forEach(val -> _interface.add(StaticJavaParser.parseClassOrInterfaceType(val)));
+						.forEach(val -> _interface.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue())));
 			} else if (key.equals(JavaAttributesTypes.isEnclosingParameters.name())) {
-				_isEnclosingParameters = Boolean.valueOf(singleVal);
+				_isEnclosingParameters = Boolean.valueOf(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.IsEnum.name())) {
-				_isEnum = Boolean.valueOf(singleVal);
+				_isEnum = Boolean.valueOf(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.IsInterface.name())) {
-				_isinterface = Boolean.valueOf(singleVal);
+				_isinterface = Boolean.valueOf(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.IsThis.name())) {
-				_isThis = Boolean.valueOf(singleVal);
+				_isThis = Boolean.valueOf(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Iterator.name())) {
-				_iterator = StaticJavaParser.parseExpression(singleVal);
+				_iterator = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Key.name())) {
-				_key = singleVal;
+				_key = singleVal.getValue();
 			} else if (key.equals(JavaAttributesTypes.Message.name())) {
-				_message = StaticJavaParser.parseExpression(singleVal);
+				_message = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.contains(JavaAttributesTypes.Modifer.name()) || key.equals(JavaAttributesTypes.AccessModifier.name())) {
 				attribute.getAttributeValues()
-						.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf(val))));
+						.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf((String) val.getValue()))));
 			} else if (key.equals(JavaAttributesTypes.Name.name())) {
-				_name = singleVal;
+				_name = singleVal.getValue();
 			} else if (key.equals(JavaAttributesTypes.Operator.name())) {
-				_operator = singleVal;
+				_operator = singleVal.getValue();
 			} else if (key.equals(JavaAttributesTypes.Package.name())) {
-				_package = singleVal;
+				_package = singleVal.getValue();
 			} else if (key.equals(JavaAttributesTypes.Resource.name())) {
 				attribute.getAttributeValues()
-						.forEach(val -> _resource.add(StaticJavaParser.parseVariableDeclarationExpr(val)));
+						.forEach(val -> _resource.add(StaticJavaParser.parseVariableDeclarationExpr((String) val.getValue())));
 			} else if (key.equals(JavaAttributesTypes.ReturnType.name())) {
-				_returnType = StaticJavaParser.parseType(singleVal);
+				_returnType = StaticJavaParser.parseType(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Scope.name())) {
 				if (singleVal.equals("super")) {
 					/*
@@ -170,59 +180,59 @@ public class JavaWriterAttributeCollector {
 					 */
 					_scope = new SuperExpr();
 				} else {
-					_scope = StaticJavaParser.parseExpression(singleVal);
+					_scope = StaticJavaParser.parseExpression(singleVal.getValue());
 				}
 			} else if (key.equals(JavaAttributesTypes.Selector.name())) {
-				_selector = StaticJavaParser.parseExpression(singleVal);
+				_selector = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Statement.name())) {
-				_statement = StaticJavaParser.parseStatement(singleVal);
+				_statement = StaticJavaParser.parseStatement(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Static.name())) {
-				_static = Boolean.valueOf(singleVal);
+				_static = Boolean.valueOf(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Superclass.name())) {
-				_superclass = singleVal;
+				_superclass = singleVal.getValue();
 			} else if (key.equals(JavaAttributesTypes.SuperExpr.name())) {
-				_superexpr = StaticJavaParser.parseExpression(singleVal);
+				_superexpr = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Target.name())) {
-				_target = StaticJavaParser.parseExpression(singleVal);
+				_target = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Then.name())) {
-				_then = StaticJavaParser.parseExpression(singleVal);
+				_then = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Throws.name())) {
 				attribute.getAttributeValues()
-						.forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType(val)));
+						.forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue())));
 			} else if (key.equals(JavaAttributesTypes.Type.name())) {
-				if (!singleVal.contains("|")) {
-					_type = StaticJavaParser.parseType(singleVal);
+				if (!singleVal.getValue().contains("|")) {
+					_type = StaticJavaParser.parseType(singleVal.getValue());
 				} else {
-					for (String type : singleVal.split("\\|")) {
+					for (String type : singleVal.getValue().split("\\|")) {
 						_unionType.add(StaticJavaParser.parseClassOrInterfaceType(type));
 					}
 				}
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
-				_typeargument = StaticJavaParser.parseTypeParameter(singleVal);
+				_typeargument = StaticJavaParser.parseTypeParameter(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.TypeParameterBound.name())) {
 				attribute.getAttributeValues().forEach(val -> {
 					if (val.equals("?")) {
 						// Question mark type seems unparseable, so this is done manually
 						_typeParameterBound.add(new ClassOrInterfaceType("?"));
 					} else {
-						_typeParameterBound.add(StaticJavaParser.parseClassOrInterfaceType(val));
+						_typeParameterBound.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue()));
 					}
 				});
 			} else if (key.equals(JavaAttributesTypes.Update.name())) {
-				attribute.getAttributeValues().forEach(val -> _update.add(StaticJavaParser.parseExpression(val)));
+				attribute.getAttributeValues().forEach(val -> _update.add(StaticJavaParser.parseExpression((String) val.getValue())));
 			} else if (key.equals(JavaAttributesTypes.Value.name())) {
 				/*
 				 * The value can be an array initializer expr, e.g. "{0, 1, 2}", which cannot be parsed. This
 				 * needs some manual work.
 				 */
-				if (singleVal.startsWith("{") && singleVal.endsWith("}")) {
+				if (singleVal.getValue().startsWith("{") && singleVal.getValue().endsWith("}")) {
 					NodeList<Expression> values = new NodeList<Expression>();
-					for (String v : singleVal.substring(1,singleVal.length()-1).split(",")) {
+					for (String v : singleVal.getValue().substring(1,singleVal.getValue().length()-1).split(",")) {
 						values.add(StaticJavaParser.parseExpression(v));
 					}
 					_value = new ArrayInitializerExpr(values);
 				} else {
-					_value = StaticJavaParser.parseExpression(singleVal);
+					_value = StaticJavaParser.parseExpression(singleVal.getValue());
 				}
 			} else {
 				System.out.println(key);

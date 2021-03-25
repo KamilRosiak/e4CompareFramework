@@ -8,9 +8,11 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.DeleteAttributeAction;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.ModifyValuesAction;
@@ -55,10 +57,10 @@ public class DSPropertiesController {
 	/**
 	 * @return the current attributes values before changes are made
 	 */
-	Set<String> getCurrentAttributeValues() {
-		Set<String> oldAttributeValues = new HashSet<String>();
+	Set<Value> getCurrentAttributeValues() {
+		Set<Value> oldAttributeValues = new HashSet<Value>();
 		// save the old attribute values
-		for (String value : getSelectedItem().getAttributeValues()) {
+		for (Value value : getSelectedItem().getAttributeValues()) {
 			oldAttributeValues.add(value);
 		}
 		return oldAttributeValues;
@@ -93,13 +95,13 @@ public class DSPropertiesController {
 	 */
 	@FXML
 	public void editNodeValue() {
-		Set<String> oldAttributeValues = getCurrentAttributeValues();
+		Set<Value> oldAttributeValues = getCurrentAttributeValues();
 		String newValue = PropertiesViewUtilities.getInput("Please enter new Value");
-		Set<String> newAttributeValues;
+		Set<Value> newAttributeValues;
 
 		if (newValue != null) {
 			getSelectedItem().getAttributeValues().clear();
-			getSelectedItem().getAttributeValues().add(newValue);
+			getSelectedItem().getAttributeValues().add(new StringValueImpl(newValue));
 			newAttributeValues = getSelectedItem().getAttributeValues();
 			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
 			refreshGUI();
@@ -127,11 +129,11 @@ public class DSPropertiesController {
 	 */
 	@FXML
 	public void addNodeValue() {
-		Set<String> oldAttributeValues = getCurrentAttributeValues();
-		Set<String> newAttributeValues;
+		Set<Value> oldAttributeValues = getCurrentAttributeValues();
+		Set<Value> newAttributeValues;
 		String s = PropertiesViewUtilities.getInput("Please enter another Value");
 		if (s != null) {
-			getSelectedItem().getAttributeValues().add(s);
+			getSelectedItem().getAttributeValues().add(new StringValueImpl(s));
 			newAttributeValues = getSelectedItem().getAttributeValues();
 			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
 			refreshGUI();

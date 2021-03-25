@@ -7,6 +7,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAttributesTypes;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaNodeTypes;
@@ -34,10 +35,10 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	private Node createForEachStmtNode(ForEachStmt stmt, Node parent, JavaVisitor visitor) {
 		Node p = new NodeImpl(stmt.getClass().getSimpleName(), parent);
 		// Add Iterator ass attribute
-		p.addAttribute(JavaAttributesTypes.Iterator.name(), stmt.getIterable().toString());
+		p.addAttribute(JavaAttributesTypes.Iterator.name(), new StringValueImpl(stmt.getIterable().toString()));
 		// Add the initiliaze values
-		p.addAttribute(JavaAttributesTypes.Initilization.name(), stmt.getVariableDeclarator().getNameAsString());
-		p.addAttribute(JavaAttributesTypes.Type.name(), stmt.getVariableDeclarator().getTypeAsString());
+		p.addAttribute(JavaAttributesTypes.Initilization.name(), new StringValueImpl(stmt.getVariableDeclarator().getNameAsString()));
+		p.addAttribute(JavaAttributesTypes.Type.name(), new StringValueImpl(stmt.getVariableDeclarator().getTypeAsString()));
 		return p;
 	}
 
@@ -49,7 +50,7 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 
 		// Comparison
 		if (forStmt.getCompare().isPresent()) {
-			forStmtNode.addAttribute(JavaAttributesTypes.Comparison.name(), forStmt.getCompare().get().toString());
+			forStmtNode.addAttribute(JavaAttributesTypes.Comparison.name(), new StringValueImpl(forStmt.getCompare().get().toString()));
 		}
 		forStmt.removeCompare(); // rm bc visited
 
@@ -57,7 +58,7 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 		int initializations = forStmt.getInitialization().size();
 		for (int i = 0; i < initializations; i++) {
 			Expression initExpr = forStmt.getInitialization().get(0);
-			forStmtNode.addAttribute(JavaAttributesTypes.Initilization.name(), initExpr.toString());
+			forStmtNode.addAttribute(JavaAttributesTypes.Initilization.name(), new StringValueImpl(initExpr.toString()));
 			initExpr.removeForced();
 		}
 
@@ -65,7 +66,7 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 		int updates = forStmt.getUpdate().size();
 		for (int i = 0; i < updates; i++) {
 			Expression updateExpr = forStmt.getUpdate().get(0);
-			forStmtNode.addAttribute(JavaAttributesTypes.Update.name(), updateExpr.toString());
+			forStmtNode.addAttribute(JavaAttributesTypes.Update.name(), new StringValueImpl(updateExpr.toString()));
 			updateExpr.removeForced();
 		}
 		return forStmtNode;
@@ -79,7 +80,7 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 		// Fall through
 		Statement thenStmt = ifStmt.getThenStmt();
 		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), arg);
-		thenNode.addAttribute(JavaAttributesTypes.Condition.name(), ifStmt.getCondition().toString());
+		thenNode.addAttribute(JavaAttributesTypes.Condition.name(), new StringValueImpl(ifStmt.getCondition().toString()));
 		thenStmt.accept(visitor, thenNode);
 		ifStmt.remove(thenStmt);
 

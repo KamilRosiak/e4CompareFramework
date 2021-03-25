@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DataStructuresEditorST;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -43,7 +44,7 @@ public class PropertiesViewUtilities {
 		value.setCellValueFactory(new PropertyValueFactory<>("attributeValues"));
 		value.setCellValueFactory(e -> {
 			String valueString = "";
-			for(String singleValue : e.getValue().getAttributeValues()) {
+			for(Value singleValue : e.getValue().getAttributeValues()) {
 				valueString+= singleValue+" ";
 			}
 			return new SimpleStringProperty(valueString);

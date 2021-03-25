@@ -6,6 +6,7 @@ import java.util.List;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.templates.AbstractNodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
 public class StringComparator extends AbstractNodeComparator {
 
@@ -47,8 +48,8 @@ public class StringComparator extends AbstractNodeComparator {
 	 * compares the values of a corresponding key returns 1 if a match is found else
 	 */
 	private Float compareValues(Attribute firstAttr, Attribute secondAttr) {
-		for (String firstValue : firstAttr.getAttributeValues()) {
-			for (String secondValue : secondAttr.getAttributeValues()) {
+		for (Value firstValue : firstAttr.getAttributeValues()) {
+			for (Value secondValue : secondAttr.getAttributeValues()) {
 				if (firstValue.equals(secondValue)) {
 					return 1f;
 				}

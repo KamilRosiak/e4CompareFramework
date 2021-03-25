@@ -9,6 +9,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
@@ -30,7 +31,7 @@ public class ExportButtonHandler {
 
 
 		List<Attribute> testAttributes = new LinkedList<>();
-		testAttributes.add(new AttributeImpl("Key1","Value"));
+		testAttributes.add(new AttributeImpl("Key1",new StringValueImpl("Value")));
 
 		NodeImpl root = new NodeImpl("Root");
 		root.setAttributes(testAttributes);

@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.text_reader;
 import java.nio.file.Paths;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -38,7 +39,7 @@ public class TextReader extends AbstractArtifactReader {
 				String[] words = line.split(" ");
 				for (String word : words) {
 					Node wordNode = new NodeImpl(TextFileTags.WORD.toString(), lineNode);
-					wordNode.addAttribute(TextFileTags.TEXT.toString(), word);
+					wordNode.addAttribute(TextFileTags.TEXT.toString(), new StringValueImpl(word));
 				}
 			}
 		}

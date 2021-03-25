@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -138,7 +139,7 @@ public class DSEditorController {
 	 * @param attributeValue
 	 */
 	private void addAttribute(String attributeName, String attributeValue) {
-		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, attributeValue);
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, new StringValueImpl(attributeValue));
 		treeView.refresh();
 	}
 
