@@ -83,15 +83,12 @@ public class SortingMatcher extends AbstractMatcher {
 	}
 
 	/**
-	 * This method sorts a list of comparisons by their similarity values
+	 * This method sorts a list of comparisons by their similarity values descending
 	 */
 	public <K> void sortBySimilarityDesc(List<Comparison<K>> comparisons) {
 		comparisons.sort((first, second) -> {
-			if (first.getSimilarity() == second.getSimilarity()) {
-				return 0;
-			} else {
-				return first.getChildSimilarity() > second.getSimilarity() ? -1 : 1;
-			}
+			//Multiply with -1 to sort descending 
+			return -1 * Float.compare(first.getSimilarity(), second.getSimilarity());
 		});
 	}
 

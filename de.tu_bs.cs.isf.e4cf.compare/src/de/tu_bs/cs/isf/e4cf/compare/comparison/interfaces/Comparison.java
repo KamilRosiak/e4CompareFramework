@@ -19,7 +19,6 @@ public interface Comparison<Type> extends Serializable {
 	 */
 	public Type mergeArtifacts();
 	
-	
 	/**
 	 * Returns the left artifact of this comparison.
 	 */
