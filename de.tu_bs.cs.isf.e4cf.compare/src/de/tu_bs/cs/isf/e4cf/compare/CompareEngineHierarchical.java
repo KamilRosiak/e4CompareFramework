@@ -103,7 +103,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			}
 			return comparison;
 		} else {
-			return null;
+			return comparison;
 		}
 	}
 

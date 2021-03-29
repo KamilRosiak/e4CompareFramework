@@ -85,9 +85,9 @@ public class CompareEngineView implements Initializable {
 			if (artifacts.size() > 1) {
 				Tree mergedTree = engine.compare(artifacts);
 				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
-				JavaWriter writer = new JavaWriter();
-				writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-						+ "/" + mergedTree.getTreeName());	
+				//JavaWriter writer = new JavaWriter();
+				//writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+					//	+ "/" + mergedTree.getTreeName());	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

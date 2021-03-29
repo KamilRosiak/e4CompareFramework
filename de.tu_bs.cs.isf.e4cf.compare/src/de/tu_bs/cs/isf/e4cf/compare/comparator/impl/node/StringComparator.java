@@ -9,6 +9,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
 public class StringComparator extends AbstractNodeComparator {
+	float keyValueRatio = 0.4f;
 
 	public StringComparator() {
 		super(WILDCARD);
@@ -22,7 +23,7 @@ public class StringComparator extends AbstractNodeComparator {
 		for (Attribute firstAttr : firstNode.getAttributes()) {
 			for (Attribute secondAttr : secondNode.getAttributes()) {
 				// check if attributes are the same
-				if (firstAttr.isAttributeOfSameType(secondAttr)) {
+				if (firstAttr.keyEquals(secondAttr)) {
 					similarities.add(compareValues(firstAttr, secondAttr));
 				}
 			}
@@ -30,6 +31,8 @@ public class StringComparator extends AbstractNodeComparator {
 		// calculate the avarage similarity
 		int maxAttributes = Math.max(firstNode.getAttributes().size(), firstNode.getAttributes().size());
 		float similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
+		// add 0.2 as base similarity becuase this node are of the same type
+		similarity = similarity * (1.0f - keyValueRatio) + keyValueRatio;
 		return new NodeResultElement(this, similarity);
 	}
 

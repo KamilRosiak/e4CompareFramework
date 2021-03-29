@@ -10,7 +10,10 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
  * artifacts of type Type.
  */
 public interface Comparison<Type> extends Serializable {
-	
+	/**
+	 * returns true if nodes are of same type.
+	 */
+	public boolean areArtifactsOfSameType();
 	/**
 	 * Merges both nodes 
 	 */
@@ -103,7 +106,8 @@ public interface Comparison<Type> extends Serializable {
 			return (getLeftArtifact()== null || getRightArtifact() == null) ? 0f : 1f;
 		}
 	}
-
+	
+	
 	/**
 	 * This method updates the similarity of this node and all child nodes recursive
 	 */
@@ -114,7 +118,11 @@ public interface Comparison<Type> extends Serializable {
 
 		// no children node attributes so they are equal on their type
 		if (getChildComparisons().isEmpty() && getResultElements().isEmpty()) {
-			similarity = 1f;
+			if(areArtifactsOfSameType()) {
+				similarity = 1f;
+			} else {
+				similarity = 0f;
+			}
 		}
 
 		// only results available so the similarity is based on them

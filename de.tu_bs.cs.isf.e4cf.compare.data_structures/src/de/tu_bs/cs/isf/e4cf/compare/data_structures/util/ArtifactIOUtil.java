@@ -19,86 +19,103 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
  */
 public class ArtifactIOUtil {
 
-    /**
-     * Returns all Artifact reader that extending the AtifactReader extension point.
-     * The extension point is defined in schema/ArtifactReader.exsd
-     */
-    public static List<ArtifactReader> getAllArtifactReader() {
-	List<ArtifactReader> reader = RCPContentProvider.<ArtifactReader>getInstanceFromBundle(
-		DataStructureST.ARTIFACT_READER_SYMBOLIC_NAME, DataStructureST.ARTIFACT_READER_EXTENSION);
-	if (reader != null) {
-	    return reader;
+	/**
+	 * Returns all Artifact reader that extending the AtifactReader extension point.
+	 * The extension point is defined in schema/ArtifactReader.exsd
+	 */
+	public static List<ArtifactReader> getAllArtifactReader() {
+		List<ArtifactReader> reader = RCPContentProvider.<ArtifactReader>getInstanceFromBundle(
+				DataStructureST.ARTIFACT_READER_SYMBOLIC_NAME, DataStructureST.ARTIFACT_READER_EXTENSION);
+		if (reader != null) {
+			return reader;
+		}
+		return new ArrayList<ArtifactReader>();
 	}
-	return new ArrayList<ArtifactReader>();
-    }
-
-    /**
-     * Returns all Artifact reader that extending the AtifactReader extension point.
-     * The extension point is defined in schema/ArtifactWriter.exsd
-     */
-    public static List<ArtifactWriter> getAllArtifactWriter() {
-	List<ArtifactWriter> writer = RCPContentProvider.<ArtifactWriter>getInstanceFromBundle(
-		DataStructureST.ARTIFACT_WRITER_SYMBOLIC_NAME, DataStructureST.ARTIFACT_WRITER_EXTENSION);
-	if (writer != null) {
-	    return writer;
+	
+	/**
+	 * Returns the artifact reader for a given artifact type. The artifact type is
+	 * the type of the root node.
+	 */
+	public static ArtifactReader getReaderForType(FileTreeElement fte) {
+		for (ArtifactReader reader : getAllArtifactReader()) {
+			if (reader.isFileSupported(fte)) {
+				return reader;
+			}
+		}
+		return null;
 	}
-	return new ArrayList<ArtifactWriter>();
-    }
-
-    /**
-     * Returns the artifact writer for a given artifact type. The artifact type is
-     * the type of the root node.
-     */
-    public static ArtifactWriter getWriterForType(String artifactType) {
-	for (ArtifactWriter writer : getAllArtifactWriter()) {
-	    if (writer.getSuppotedNodeType().equals(artifactType)) {
-		return writer;
-	    }
+	
+	
+	
+	
+	
+	/**
+	 * Returns all Artifact reader that extending the AtifactReader extension point.
+	 * The extension point is defined in schema/ArtifactWriter.exsd
+	 */
+	public static List<ArtifactWriter> getAllArtifactWriter() {
+		List<ArtifactWriter> writer = RCPContentProvider.<ArtifactWriter>getInstanceFromBundle(
+				DataStructureST.ARTIFACT_WRITER_SYMBOLIC_NAME, DataStructureST.ARTIFACT_WRITER_EXTENSION);
+		if (writer != null) {
+			return writer;
+		}
+		return new ArrayList<ArtifactWriter>();
 	}
-	return null;
-    }
 
-    /**
-     * This method parses the given files if possible an returns a list of trees.
-     */
-    public static List<Tree> parseArtifacts(List<FileTreeElement> files) {
-	List<Tree> artifacts = new ArrayList<Tree>();
-	for (FileTreeElement file : files) {
-	    Tree tree = null;
-	    tree = parseArtifact(file);
-	    if (tree != null) {
-		artifacts.add(tree);
-	    }
+	/**
+	 * Returns the artifact writer for a given artifact type. The artifact type is
+	 * the type of the root node.
+	 */
+	public static ArtifactWriter getWriterForType(String artifactType) {
+		for (ArtifactWriter writer : getAllArtifactWriter()) {
+			if (writer.getSuppotedNodeType().equals(artifactType)) {
+				return writer;
+			}
+		}
+		return null;
 	}
-	return artifacts;
-    }
 
-    /**
-     * This method parsers a file into a tree. if no artifact reader is available
-     * for the specific artifact type it returns null.
-     */
-    public static Tree parseArtifact(FileTreeElement file) {
-	for (ArtifactReader reader : getAllArtifactReader()) {
-	    if (reader.isFileSupported(file)) {
-		return reader.readArtifact(file);
-	    }
+	/**
+	 * This method parses the given files if possible an returns a list of trees.
+	 */
+	public static List<Tree> parseArtifacts(List<FileTreeElement> files) {
+		List<Tree> artifacts = new ArrayList<Tree>();
+		for (FileTreeElement file : files) {
+			Tree tree = null;
+			tree = parseArtifact(file);
+			if (tree != null) {
+				artifacts.add(tree);
+			}
+		}
+		return artifacts;
 	}
-	return null;
-    }
 
-    /**
-     * This method parsers a file into a tree. if no artifact reader is available
-     * for the specific artifact type it returns null.
-     */
-    public static boolean writeArtifactToFile(Tree tree, String path) {
-	for (ArtifactWriter writer : getAllArtifactWriter()) {
-
-	    if (writer.isFileSupported(tree.getFileExtension())) {
-		writer.writeArtifact(tree, path + "." + tree.getFileExtension());
-		return true;
-	    }
+	/**
+	 * This method parsers a file into a tree. if no artifact reader is available
+	 * for the specific artifact type it returns null.
+	 */
+	public static Tree parseArtifact(FileTreeElement file) {
+		for (ArtifactReader reader : getAllArtifactReader()) {
+			if (reader.isFileSupported(file)) {
+				return reader.readArtifact(file);
+			}
+		}
+		return null;
 	}
-	return false;
-    }
+
+	/**
+	 * This method parsers a file into a tree. if no artifact reader is available
+	 * for the specific artifact type it returns null.
+	 */
+	public static boolean writeArtifactToFile(Tree tree, String path) {
+		for (ArtifactWriter writer : getAllArtifactWriter()) {
+
+			if (writer.isFileSupported(tree.getFileExtension())) {
+				writer.writeArtifact(tree, path + "." + tree.getFileExtension());
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

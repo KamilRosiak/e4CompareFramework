@@ -52,7 +52,8 @@ public class NodeFactory {
 		// Attach imports if available
 		if(!compilationUnit.getImports().isEmpty()) {
 			Node imports = new NodeImpl(JavaNodeTypes.Import.name(), cu);
-			for(ImportDeclaration importDecl : compilationUnit.getImports()) {
+			while(compilationUnit.getImports().iterator().hasNext()) {
+				ImportDeclaration importDecl = compilationUnit.getImports().iterator().next();
 				attachImportDecl(importDecl, imports, visitor);
 				importDecl.removeForced();
 			}

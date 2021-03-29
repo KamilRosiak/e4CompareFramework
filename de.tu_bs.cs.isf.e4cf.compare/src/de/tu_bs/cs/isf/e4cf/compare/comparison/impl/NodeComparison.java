@@ -1,8 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.comparison.impl;
 
+import java.util.Iterator;
+
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
@@ -42,41 +43,54 @@ public class NodeComparison extends AbstractComparsion<Node> {
 
 	@Override
 	public Node mergeArtifacts() {
+		// if one of both artifact is null its means that we have an optional and can
+		// keep the implementation below this artifacts.
+		if (getLeftArtifact() == null || getRightArtifact() == null) {
+			Node node = getLeftArtifact() == null ? getRightArtifact() : getLeftArtifact();
+			node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
+			return node;
+		}
+		// all artifacts which are equals
+		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
+			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(ComparisonUtil.MANDATORY_VALUE));
+			return getLeftArtifact();
+		} else {
+			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
+			// first merge attributes
 
-		Node node = null;
-		if (!getResultElements().isEmpty()) {
-			float resultSimilarity = getResultSimilarity();
-			if (resultSimilarity == ComparisonUtil.MANDATORY_VALUE) {
-				node = getLeftArtifact();
-			} else if (resultSimilarity >= ComparisonUtil.OPTIONAL_VALUE) {
-				node = getLeftArtifact();
-
-				for (Attribute rightAttr : getRightArtifact().getAttributes()) {
-					Attribute leftAttr = node.getAttributeForKey(rightAttr.getAttributeKey());
-
-					if (leftAttr != null) {
-						for (Value rightVal : rightAttr.getAttributeValues()) {
-							if (!leftAttr.containsValue(rightVal)) {
-								leftAttr.addAttributeValue(rightVal);
+			for (Attribute leftAttr : getLeftArtifact().getAttributes()) {
+				Iterator<Attribute> rightAttrs = getRightArtifact().getAttributes().iterator();
+				while (rightAttrs.hasNext()) {
+					Attribute rightAttr = rightAttrs.next();
+					if (leftAttr.keyEquals(rightAttr)) {
+						for (Value rightValue : rightAttr.getAttributeValues()) {
+							if (!leftAttr.containsValue(rightValue)) {
+								leftAttr.addAttributeValue(rightValue);
 							}
 						}
-					} else {
-						node.addAttribute(rightAttr);
+						rightAttrs.remove();
 					}
 				}
-			} else {
-				node = getLeftArtifact() != null ? getLeftArtifact() : getRightArtifact();
 			}
-		} else {
-			node = getLeftArtifact() != null ? getLeftArtifact() : getRightArtifact();
+
+			// put all other attributes from right to left because it wasent contained
+			// before
+			getRightArtifact().getAttributes().stream().forEach(e -> getLeftArtifact().addAttribute(e));
+
+			// process child comparisons recursively
+			getLeftArtifact().getChildren().clear();
+			for (Comparison<Node> childComparision : getChildComparisons()) {
+				getLeftArtifact().addChildWithParent(childComparision.mergeArtifacts());
+			}
+			return getLeftArtifact();
 		}
-		node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
-		// process child comparisons recursively
-		node.getChildren().clear();
-		for (Comparison<Node> childComparision : getChildComparisons()) {
-			node.addChild(childComparision.mergeArtifacts());
-		}
-		return node;
 	}
+
+	@Override
+	public boolean areArtifactsOfSameType() {
+		return (getLeftArtifact() != null && getRightArtifact() != null) ? getLeftArtifact().getNodeType().equals(getRightArtifact().getNodeType()) : false;
+	}
+
+
 
 }

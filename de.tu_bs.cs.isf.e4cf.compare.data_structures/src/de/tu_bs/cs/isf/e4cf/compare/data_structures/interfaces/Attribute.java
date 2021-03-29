@@ -31,7 +31,7 @@ public interface Attribute extends Serializable {
 	 */
 	public float compare(Attribute attr);
 	
-	public default boolean isAttributeOfSameType(Attribute attr) {
+	public default boolean keyEquals(Attribute attr) {
 		return attr.getAttributeKey().equals(getAttributeKey());
 	}
 	

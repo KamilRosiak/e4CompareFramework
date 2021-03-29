@@ -14,7 +14,7 @@ public interface ArtifactReader {
 	 * This method checks if the current fileEnding is supported
 	 */
 	public default boolean isFileSupported(FileTreeElement element) {
-	    return isFileSupported(element.getExtension());
+	    return element.isDirectory()? false : isFileSupported(element.getExtension());
 	}
 	
 	public default boolean isFileSupported(String fileExtension) {
@@ -25,4 +25,5 @@ public interface ArtifactReader {
 		}
 		return false;
 	}
+	
 }

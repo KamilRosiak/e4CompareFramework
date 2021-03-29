@@ -37,7 +37,9 @@ public class NodeImpl extends AbstractNode {
 	public NodeImpl(String nodeType, Node parent) {
 		this(nodeType);
 		setParent(parent);
-		parent.addChild(this);
+		if(parent!= null) {
+			parent.addChildWithParent(this);
+		}
 	}
 	
 	/**

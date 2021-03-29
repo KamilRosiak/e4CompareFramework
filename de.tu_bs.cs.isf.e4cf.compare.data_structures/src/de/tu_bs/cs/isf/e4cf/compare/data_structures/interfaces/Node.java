@@ -88,6 +88,12 @@ public interface Node {
 	/**
 	 * This method adds a child node to the current node and sets the parent.
 	 */
+	public void addChildWithParent(Node node);
+	
+	
+	/**
+	 * This method adds a child node to the current node and sets the parent.
+	 */
 	public void addChild(Node node);
 	
 	/**

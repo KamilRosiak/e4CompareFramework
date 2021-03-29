@@ -146,9 +146,14 @@ public abstract class AbstractNode implements Node {
 	public List<Node> getChildren() {
 		return children;
 	}
-
+	
 	@Override
 	public void addChild(Node child) {
+		this.children.add(child);
+	}
+	
+	@Override
+	public void addChildWithParent(Node child) {
 		child.setParent(this);
 		this.children.add(child);
 	}

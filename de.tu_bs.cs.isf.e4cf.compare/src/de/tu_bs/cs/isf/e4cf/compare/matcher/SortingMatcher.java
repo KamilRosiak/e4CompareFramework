@@ -78,7 +78,6 @@ public class SortingMatcher extends AbstractMatcher {
 			} else if (e.getLeftArtifact() != null || e.getRightArtifact() != null) {
 				// that are all containers that was added as optional by the compare-engine.
 				comparisons.add(e);
-
 			}
 		});
 	}
@@ -88,12 +87,10 @@ public class SortingMatcher extends AbstractMatcher {
 	 */
 	public <K> void sortBySimilarityDesc(List<Comparison<K>> comparisons) {
 		comparisons.sort((first, second) -> {
-			if (first.getSimilarity() < second.getSimilarity()) {
-				return 1;
-			} else if (first.getSimilarity() > second.getSimilarity()) {
-				return -1;
-			} else {
+			if (first.getSimilarity() == second.getSimilarity()) {
 				return 0;
+			} else {
+				return first.getChildSimilarity() > second.getSimilarity() ? -1 : 1;
 			}
 		});
 	}
