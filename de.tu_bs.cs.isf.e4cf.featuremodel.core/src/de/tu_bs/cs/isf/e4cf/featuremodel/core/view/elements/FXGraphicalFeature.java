@@ -3,6 +3,8 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Display;
+
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.Feature;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -179,7 +181,7 @@ public class FXGraphicalFeature extends VBox  {
 				if(event.getClickCount() == 2) {
 					services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_RENAME, feature);
 					FMESimpleTextInputDialog dialog = new FMESimpleTextInputDialog(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE,feature.getName());
-					String newName = dialog.show(event.getSceneX(), event.getSceneY());
+					String newName = dialog.show(Double.valueOf(Display.getCurrent().getCursorLocation().x), Double.valueOf(Display.getCurrent().getCursorLocation().y));
 					if(!newName.equals(feature.getName())) {
 						feature.setName(newName);
 						featureNameLabel.setText(newName);

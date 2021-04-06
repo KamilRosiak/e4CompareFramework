@@ -26,7 +26,7 @@ public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 	 * @param arg        e4cf Parent Node
 	 * @param exceptions Nodes that should not be visited
 	 */
-	protected void visitor(com.github.javaparser.ast.Node n, Node arg, com.github.javaparser.ast.Node... exceptions) {
+	protected synchronized void visitor(com.github.javaparser.ast.Node n, Node arg, com.github.javaparser.ast.Node... exceptions) {
 		// Comments are no child nodes. Therefore they are added explicitly.
 		n.getComment().ifPresent(comment -> arg.addAttribute(JavaAttributesTypes.Comment.name(), new StringValueImpl(comment.getContent())));
 		NodeList<com.github.javaparser.ast.Node> exceptionList = NodeList.nodeList(exceptions);
