@@ -71,7 +71,7 @@ public class FeatureModelEditorView {
 	private DragHandler dragHandler;
 	private SelectionAreaHandler selectionHandler;
 	private PrimaryMouseButtonClickedHandler primaryMouseClickedHandler;
-	private ZoomHandler zoomHander;
+	private ZoomHandler zoomHandler;
 	private Scene scene;
 	private Rectangle selectionRectangle;
 	private FeatureDiagramm currentModel;
@@ -93,9 +93,9 @@ public class FeatureModelEditorView {
 	/**
 	 * This method creates the selection rectangle.
 	 */
-	private void createSelectionRectangle() {
+	private void createSelectionRectangle(StackPane parent) {
 		this.selectionRectangle = new Rectangle(20, 20, Color.TRANSPARENT);
-        root.getChildren().add(selectionRectangle);
+        parent.getChildren().add(selectionRectangle);
         selectionRectangle.setDisable(true);
         selectionRectangle.getStrokeDashArray().addAll(10d, 5d, 10d);
 	}
@@ -118,17 +118,17 @@ public class FeatureModelEditorView {
         root = new Pane();
 
 		StackPane gesturePane = new StackPane(root);
-		gesturePane.setStyle("-fx-background-color: white;");
+		gesturePane.setStyle("-fx-background-color: cyan;");
         root.setStyle("-fx-background-color: white;"); 
         
         //Creating and adding the mouse handler that allows zooming in and out with the mouse wheel.
-        zoomHander = new ZoomHandler(root);
-        gesturePane.addEventHandler(ScrollEvent.ANY, zoomHander);
+        zoomHandler = new ZoomHandler(root);
+        gesturePane.addEventHandler(ScrollEvent.ANY, zoomHandler);
 
-        scene = new Scene(gesturePane);
-        
         //creating the selection rectangle
-        createSelectionRectangle();
+        createSelectionRectangle(gesturePane);
+        
+        scene = new Scene(gesturePane);
         
         //set theme from preferences 
         setTheme(PreferencesUtil.getValueWithDefault(FDStringTable.BUNDLE_NAME, FDStringTable.FME_THEME_KEY, DefaultTheme.DEFAULT_THEME).getStringValue());
@@ -151,8 +151,18 @@ public class FeatureModelEditorView {
         gesturePane.setAlignment(Pos.TOP_CENTER);
         gesturePane.getChildren().add(new FeatureModelEditorToolbar(services, this));
         
+        // translate root pane to keep root feature node centered, as long the pane hasn't been moved before
+        scene.widthProperty().addListener((obs, oldVal, newVal) -> {
+        	root.setTranslateX(root.getTranslateX() + (newVal.doubleValue()/2 - oldVal.doubleValue()/2));
+		});
+		scene.heightProperty().addListener((obs, oldVal, newVal) -> {
+			root.setTranslateY(root.getTranslateY() + (newVal.doubleValue()/2 - oldVal.doubleValue()/2));
+		});
+		
+        
         //creating an empty feature diagram
 		createNewFeatureDiagram();
+		
 		
         return scene;
 	}
@@ -182,9 +192,9 @@ public class FeatureModelEditorView {
 		currentModel = FeatureDiagramFactoryImpl.eINSTANCE.createFeatureDiagramm();
 		Feature root = createFeature("Root", true);
 		root.getGraphicalfeature().setX(this.root.getWidth()/2);
-		root.getGraphicalfeature().setY(this.root.getMaxWidth()/2);
+		root.getGraphicalfeature().setY(this.root.getHeight()/2); // before: maxWidth
 		currentModel.setRoot(root);
-		addFeature(root ,this.getRootPane().getWidth()/2,50d);
+		addFeature(root, this.getRootPane().getWidth()/2, this.getRootPane().getHeight()/2);
 	}
 	
 	/**

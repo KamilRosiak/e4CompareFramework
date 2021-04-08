@@ -51,8 +51,8 @@ public class SelectionAreaHandler implements EventHandler<MouseEvent>{
 			xPosMax = Math.max(event.getX(), mouseClickHandler.getXPosition());
 			yPosMax = Math.max(event.getY(), mouseClickHandler.getYPosition());
 			
-			selectionRectangle.setX(xStartPosition - (pane.getTranslateX()));
-			selectionRectangle.setY(yStartPosition - (pane.getTranslateY()));
+			selectionRectangle.setX(xStartPosition- pane.getTranslateX());
+			selectionRectangle.setY(yStartPosition - pane.getTranslateY());
 			
 			selectionRectangle.setHeight(Math.abs(yPosMax - yStartPosition));
 			selectionRectangle.setWidth(Math.abs(xPosMax - xStartPosition));
