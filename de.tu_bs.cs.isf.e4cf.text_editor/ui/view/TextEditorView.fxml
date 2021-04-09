@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import org.fxmisc.richtext.CodeArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+
+<VBox fx:id="textEditorView" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.271" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.text_editor.view.TextEditor">
+  <children>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+         <children>
+            <Label fx:id="wordCount" layoutX="227.0" layoutY="364.0" text="Words: 0" AnchorPane.bottomAnchor="0.0" />
+            <Label fx:id="rowCount" layoutX="70.0" layoutY="364.0" text="Rows: 0" AnchorPane.bottomAnchor="0.0" />
+            <TabPane fx:id="tabPane" layoutX="193.0" prefHeight="25.0" prefWidth="640.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <tabs>
+                <Tab text="untitled">
+                     <content>
+                        <CodeArea fx:id="textArea" prefHeight="0.0" prefWidth="640.0" />
+                     </content></Tab>
+              </tabs>
+            </TabPane>
+         </children>
+    </AnchorPane>
+  </children>
+</VBox>

@@ -1,0 +1,48 @@
+.java-keyword {
+    -fx-fill: purple;
+    -fx-font-weight: bold;
+}
+.java-semicolon {
+    -fx-font-weight: bold;
+}
+.java-paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.java-bracket {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+.java-brace {
+    -fx-fill: teal;
+    -fx-font-weight: bold;
+}
+.java-string {
+    -fx-fill: blue;
+}
+
+.java-comment {
+	-fx-fill: cadetblue;
+}
+
+.java-method {
+    -fx-fill: #ffbe00;
+}
+
+.java-annotation{
+	-fx-fill : orange;
+}
+
+.java-instance{
+	-fx-fill : tan;
+}
+
+.java-param{
+	-fx-fill : tan;
+}
+
+.java-error{
+	-fx-fill : red;
+}
+
+
