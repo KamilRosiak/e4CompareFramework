@@ -18,7 +18,6 @@ public class ComparisonUtil {
 	public static float getOptionalThreshold() {
 		return PreferencesUtil.getValueWithDefault(CompareST.BUNDLE_NAME, OptionalThresholdPref.OPTIONAL_THRESHOLD,
 				String.valueOf(OptionalThresholdPref.DEFAULT_THRESHOLD)).getFloatValue() / 100;
-
 	}
 
 }

@@ -27,5 +27,4 @@ public interface ICompareEngine<Type> {
 	
 	public Matcher getMatcher();
 	
-	
 }

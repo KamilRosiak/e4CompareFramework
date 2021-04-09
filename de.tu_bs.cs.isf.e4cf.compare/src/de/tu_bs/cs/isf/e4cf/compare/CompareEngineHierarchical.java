@@ -46,7 +46,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 
