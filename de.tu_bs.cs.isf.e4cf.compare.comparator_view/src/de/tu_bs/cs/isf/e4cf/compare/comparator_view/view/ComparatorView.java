@@ -126,7 +126,7 @@ public class ComparatorView implements Initializable {
 	 * 
 	 * @return list of NodeComparators
 	 */
-	private List<FXComparatorElement> getNodeComparatorList() {
+	private List<FXComparatorElement> getFxComparatorElements() {
 		ObservableList<Comparator> comparatorList = FXCollections
 				.observableArrayList(ComparisonUtil.getComparator());
 		StringComparator st1 = new StringComparator();
@@ -134,7 +134,7 @@ public class ComparatorView implements Initializable {
 		StringComparator st3 = new StringComparator();
 		comparatorList.addAll(st1, st2, st3);
 		
-		List<FXComparatorElement> fxComparatorElementsList = new ArrayList<FXComparatorElement>();
+		List<FXComparatorElement> fxComparatorElementsList = new ArrayList<>();
 		comparatorList.stream().forEach(elem -> fxComparatorElementsList.add(new FXComparatorElement(elem)));
 		return fxComparatorElementsList;
 	}
@@ -153,7 +153,7 @@ public class ComparatorView implements Initializable {
 		Map<String, List<FilterableTreeItem<Comparator>>> nodeMap = new HashMap<>();
 		// init set with different comparatortypes
 		Set<String> availableTypes = new HashSet<>();
-		getNodeComparatorList().forEach(elem -> {
+		getFxComparatorElements().forEach(elem -> {
 			availableTypes.add(splitByLastDot(elem));
 		});
 
@@ -170,7 +170,7 @@ public class ComparatorView implements Initializable {
 		});
 
 		// add comparators to the fitting subrootnode as children
-		getNodeComparatorList().forEach(elem -> {
+		getFxComparatorElements().forEach(elem -> {
 			if (nodeMap.containsKey(splitByLastDot(elem))) {
 				// get(0) da zwangsläufig erstes element
 				nodeMap.get(splitByLastDot(elem)).get(0).getInternalChildren().add(new FilterableTreeItem<>(elem));
@@ -225,12 +225,13 @@ public class ComparatorView implements Initializable {
 	
 	private void initTable() {
 		treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		FilterableTreeItem<FXComparatorElement> root = new FilterableTreeItem<FXComparatorElement>(new FXComparatorElement("root"));
-		List nodeList = getNodeComparatorList();
+		FilterableTreeItem<FXComparatorElement> root = new FilterableTreeItem<>(new FXComparatorElement("root"));
+		
 		Set<String> availableTypes = new HashSet<>();
-		getNodeComparatorList().forEach(elem -> {
+		getFxComparatorElements().forEach(elem -> {
 			availableTypes.add(elem.getComparatorType());
 		});
+		
 		availableTypes.forEach(elem -> {
 			// as list elements, then add internal children to that?
 			FilterableTreeItem<FXComparatorElement> subRootNode = new FilterableTreeItem(elem);
