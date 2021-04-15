@@ -9,6 +9,8 @@ public class CompareST {
     public static final String MATCHER_SYMBOLIC_NAME ="de.tu_bs.cs.isf.e4cf.compare.Matcher";
     public static final String MATCHER_EXTENSION = "matcher";
     
+    public static final String COMPARISON_SYMBOLIC_NAME ="de.tu_bs.cs.isf.e4cf.compare.Comparator";
+    public static final String COMPARISON_EXTENSION = "comparator";
     //
     public static final String FILE_ENDING_METRIC = "metric";
     

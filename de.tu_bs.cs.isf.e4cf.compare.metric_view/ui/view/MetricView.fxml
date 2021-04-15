@@ -1,37 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="D:\Arbeit_ISF\03_Workspaces\e4CompareFramework\de.tu_bs.cs.isf.e4cf.compare.metric_view\css\metric_view.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.metric_view.view.MetricView">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #c1d5ef" stylesheets="@../../css/metric_view.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.metric_view.view.MetricView">
    <top>
       <ToolBar fx:id="toolBarTop" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-            <Button fx:id = "newMetricButton" mnemonicParsing="false" text="New Metric" />
-          	<Button fx:id = "storeMetricButton" mnemonicParsing="false" text="Store Metric" />
-            <Button fx:id = "loadMetricButton" mnemonicParsing="false" text="Load Metric" />
+            <Button fx:id="newMetricButton" mnemonicParsing="false" text="New Metric" />
+          	<Button fx:id="storeMetricButton" mnemonicParsing="false" text="Store Metric" />
+            <Button fx:id="loadMetricButton" mnemonicParsing="false" text="Load Metric" />
         </items>
       </ToolBar>
    </top>
    <bottom>
       <ToolBar fx:id="toolBarBottom" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-          <Button fx:id = "ignoreTypeButton" mnemonicParsing="false" text="Add Type to Ignore" />
+          <Button fx:id="ignoreTypeButton" mnemonicParsing="false" text="Add Type to Ignore" />
         </items>
       </ToolBar>
    </bottom>
-   <center>
-      <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: GREY;" BorderPane.alignment="CENTER" />
-   </center>
    <right>
-      <TableView prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Grey;" BorderPane.alignment="CENTER">
+      <TableView fx:id="metricTable" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Grey;" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn maxWidth="300.0" minWidth="-1.0" prefWidth="-1.0" text="C1" />
+            <TableColumn fx:id="ignoreColumn" minWidth="0.0" prefWidth="75.0" text="Ignore" />
+            <TableColumn fx:id="nameColumn" minWidth="100.0" prefWidth="125.0" text="Name" />
         </columns>
       </TableView>
    </right>
+   <left>
+      <TreeView fx:id="metricTree" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <contextMenu>
+            <ContextMenu>
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#removeComparator" text="Remove Comparator" />
+              </items>
+            </ContextMenu>
+         </contextMenu>
+      </TreeView>
+   </left>
+   <center>
+      <TreeTableView fx:id="treeTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TreeTableColumn fx:id="comparatorColumn" prefWidth="95.0" text="Comparator" />
+          <TreeTableColumn fx:id="weightColumn" prefWidth="104.0" text="Weight" />
+        </columns>
+      </TreeTableView>
+   </center>
 </BorderPane>

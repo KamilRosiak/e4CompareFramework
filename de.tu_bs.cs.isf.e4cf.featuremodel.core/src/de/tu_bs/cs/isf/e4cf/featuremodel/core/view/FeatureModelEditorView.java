@@ -159,10 +159,10 @@ public class FeatureModelEditorView {
 		// translate root pane to keep root feature node centered, as long the pane
 		// hasn't been moved before
 		scene.widthProperty().addListener((obs, oldVal, newVal) -> {
-			root.setTranslateX(root.getTranslateX() + (newVal.doubleValue() / 2 - oldVal.doubleValue() / 2));
+			root.setTranslateX(root.getTranslateX() + (newVal.doubleValue() / 2 - oldVal.doubleValue() / 2) - (root.getWidth()/2));
 		});
 		scene.heightProperty().addListener((obs, oldVal, newVal) -> {
-			root.setTranslateY(root.getTranslateY() + (newVal.doubleValue() / 2 - oldVal.doubleValue() / 2));
+			root.setTranslateY(root.getTranslateY() + (newVal.doubleValue() / 2 - oldVal.doubleValue() / 2) - (root.getHeight()/2));
 		});
 
 		// creating an empty feature diagram
