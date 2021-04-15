@@ -7,12 +7,14 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
 
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #c1d5ef" stylesheets="@../../css/comparator_view.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.comparator_view.view.ComparatorView">
    <top>
-      <ToolBar fx:id="toolBar" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <ToolBar fx:id="toolBar" prefHeight="0.0" prefWidth="400.0" BorderPane.alignment="CENTER">
         <items>
           <Button fx:id="button" mnemonicParsing="false" onAction="#loadComparators" text="Button" />
             <Label text="Filter:">
@@ -25,13 +27,25 @@
       </ToolBar>
    </top>
    <center>
-      <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <contextMenu>
-            <ContextMenu>
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#addComparator" text="Add Comparator to MetricView" />
-              </items>
-            </ContextMenu>
-         </contextMenu></TreeView>
+      <TreeTableView fx:id="treeTable" editable="true" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TreeTableColumn fx:id="comparatorColumn" editable="false" prefWidth="250.0" text="Comparator">
+               <contextMenu>
+                  <ContextMenu>
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#addComparator" text="Add Comparator to MetricView" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu>
+            </TreeTableColumn>
+          <TreeTableColumn fx:id="weightColumn" prefWidth="150.0" text="Weight" />
+        </columns>
+         <columnResizePolicy>
+            <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TreeTableView>
    </center>
+   <bottom>
+      <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </bottom>
 </BorderPane>

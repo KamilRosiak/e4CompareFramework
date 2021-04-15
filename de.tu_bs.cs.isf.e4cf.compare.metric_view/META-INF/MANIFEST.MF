@@ -15,4 +15,5 @@ Require-Bundle: org.eclipse.e4.ui.di;bundle-version="1.2.800",
  org.eclipse.fx.ui.controls;bundle-version="3.7.0"
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.metric.view
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.tu_bs.cs.isf.e4cf.compare.metric_view.stringtable
+Export-Package: de.tu_bs.cs.isf.e4cf.compare.metric_view.components,
+ de.tu_bs.cs.isf.e4cf.compare.metric_view.stringtable

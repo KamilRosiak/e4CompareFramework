@@ -2,7 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.metric_view.components;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 
-public class FXMetricViewElement {
+public class FXComparatorElement {
 
 private static final Float DEFAULT_WEIGHT = 0f;
 
@@ -10,19 +10,19 @@ private static final Float DEFAULT_WEIGHT = 0f;
 	private Comparator comparator;
 	private Float weight;
 	
-	public FXMetricViewElement(Comparator comparator, Float weight) {
-		this.comparatorType = "StringComparator";
+	public FXComparatorElement(Comparator comparator, Float weight) {
+		this.comparatorType = splitByLastDot(comparator);
 		this.comparator = comparator;
 		this.weight = weight;
 	}
 	
-	public FXMetricViewElement(String comparatorType) {
-		this.comparatorType = comparatorType;
+	public FXComparatorElement(String type) {
 		this.comparator = null;
-		this.weight= DEFAULT_WEIGHT;
+		this.comparatorType = null;
+		this.weight = 0f;
 	}
 	
-	public FXMetricViewElement(Comparator comparator) {
+	public FXComparatorElement(Comparator comparator) {
 		this(comparator, DEFAULT_WEIGHT);
 	}
 
@@ -49,6 +49,10 @@ private static final Float DEFAULT_WEIGHT = 0f;
 
 	public void setWeight(Float weight) {
 		this.weight = weight;
+	}
+	
+	private String splitByLastDot(Comparator elem) {	
+		return elem.getClass().toString().substring(elem.getClass().toString().lastIndexOf(".") + 1);
 	}
 
 }

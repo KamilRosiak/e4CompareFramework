@@ -15,7 +15,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.util.MetricUtil;
-import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXMetricViewElement;
+import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -57,11 +57,11 @@ public class MetricView implements Initializable {
 	
 	//MetricTreeTable
 	@FXML
-	private TreeTableView<FXMetricViewElement> treeTable;
+	private TreeTableView<FXComparatorElement> treeTable;
 	@FXML
-	private TreeTableColumn<FXMetricViewElement, String> comparatorColumn;
+	private TreeTableColumn<FXComparatorElement, String> comparatorColumn;
 	@FXML
-	private TreeTableColumn<FXMetricViewElement, Float> weightColumn;
+	private TreeTableColumn<FXComparatorElement, Float> weightColumn;
 	//Buttons
 	@FXML
 	private Button storeMetricButton;
@@ -92,7 +92,7 @@ public class MetricView implements Initializable {
 		}
 		
 		//
-		for (TreeItem<FXMetricViewElement> elem : treeTable.getSelectionModel().getSelectedItems()) {
+		for (TreeItem<FXComparatorElement> elem : treeTable.getSelectionModel().getSelectedItems()) {
 			elem.getParent().getChildren().remove(elem);
 		}
 		//
@@ -145,7 +145,7 @@ public class MetricView implements Initializable {
 	// wie ist das besser zu lösen?
 	private TreeItem<Comparator> originalRoot;
 	
-	private TreeItem<FXMetricViewElement> origRoot;
+	private TreeItem<FXComparatorElement> origRoot;
 	
 // 	private void initMetricTree() {
 ////		private TreeItem<Comparator> originalRoot = new TreeItem<>("Comparators");
@@ -156,7 +156,7 @@ public class MetricView implements Initializable {
 //	}
 // 	
  	private void initMetricTable() {
- 		treeTable.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
+// 		treeTable.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
  		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory("comparator"));
  		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory("weight"));
  		
@@ -175,7 +175,7 @@ public class MetricView implements Initializable {
  	}
 	
 	private void initIgnoreTable() {
-		metricTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+//		metricTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
 		//MapValueFactory for the ignore types
 		nameColumn.setCellValueFactory(new MapValueFactory<>("comparatorName"));
@@ -214,7 +214,7 @@ public class MetricView implements Initializable {
 		newRoot.getChildren().removeIf(elem -> (elem.toString().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))));
 		
 		//
-		TreeItem<FXMetricViewElement> newTableRoot = new TreeItem("Comparators");
+		TreeItem<FXComparatorElement> newTableRoot = new TreeItem("Comparators");
 		newTableRoot.getChildren().addAll(origRoot.getChildren());
 //		for (TreeItem<FXMetricViewElement> elem: newTableRoot.getChildren()) {
 //			if (elem.getValue().getComparatorType().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))) {
@@ -303,7 +303,7 @@ public class MetricView implements Initializable {
 					System.out.println("rootList: " + rootList);
 					
 					originalRoot.getChildren().add(new TreeItem<Comparator>(elem));
-					origRoot.getChildren().add(new TreeItem<FXMetricViewElement>(new FXMetricViewElement(elem)));
+					origRoot.getChildren().add(new TreeItem<FXComparatorElement>(new FXComparatorElement(elem)));
 					System.out.println(tempList);
 				}
 			}
@@ -325,7 +325,7 @@ public class MetricView implements Initializable {
 	
 	// in comparatortypen gliedern (wie bei comparatorview)?
 	private TreeItem<Comparator> initDataFromComparatorView(List<Comparator> comparators) {
-		TreeItem<FXMetricViewElement> tableRoot = new TreeItem("Comparators"); //table
+		TreeItem<FXComparatorElement> tableRoot = new TreeItem("Comparators"); //table
 		TreeItem<Comparator> root = new TreeItem("Comparators");
 		List<String> ignoreTypes = new ArrayList<>();
 		ObservableList<Map<String, Object>> ignoreList = FXCollections.<Map<String, Object>>observableArrayList();
@@ -336,7 +336,7 @@ public class MetricView implements Initializable {
 				
 			}
 			root.getChildren().add(new TreeItem<>(elem));
-			tableRoot.getChildren().add(new TreeItem<>(new FXMetricViewElement(elem))); //table
+			tableRoot.getChildren().add(new TreeItem<>(new FXComparatorElement(elem))); //table
 		}
 		
 		for(String elem: ignoreTypes) {
@@ -364,8 +364,8 @@ public class MetricView implements Initializable {
 	
 	
 	
-	private TreeItem<FXMetricViewElement> initDataFromComparatorViewTable(List<Comparator> comparators) {
-		TreeItem<FXMetricViewElement> tableRoot = new TreeItem("Comparators"); //table
+	private TreeItem<FXComparatorElement> initDataFromComparatorViewTable(List<Comparator> comparators) {
+		TreeItem<FXComparatorElement> tableRoot = new TreeItem("Comparators"); //table
 		TreeItem<Comparator> root = new TreeItem("Comparators");
 		List<String> ignoreTypes = new ArrayList<>();
 		ObservableList<Map<String, Object>> ignoreList = FXCollections.<Map<String, Object>>observableArrayList();
@@ -376,7 +376,7 @@ public class MetricView implements Initializable {
 				
 			}
 			root.getChildren().add(new TreeItem<>(elem));
-			tableRoot.getChildren().add(new TreeItem<>(new FXMetricViewElement(elem))); //table
+			tableRoot.getChildren().add(new TreeItem<>(new FXComparatorElement(elem))); //table
 		}
 		
 		for(String elem: ignoreTypes) {

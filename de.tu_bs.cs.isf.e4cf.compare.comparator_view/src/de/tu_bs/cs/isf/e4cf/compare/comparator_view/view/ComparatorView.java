@@ -18,6 +18,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.comparator_view.ComparatorViewController;
+import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.stringtable.MetricST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.beans.binding.Bindings;
@@ -31,6 +32,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 
@@ -43,9 +46,15 @@ public class ComparatorView implements Initializable {
 
 	@FXML
 	TreeView<Comparator> treeView;
-
 	@FXML
-	TextField filterField;
+	private TreeTableView<FXComparatorElement> treeTable;
+	@FXML
+	private TreeTableColumn<FXComparatorElement, String> comparatorColumn;
+	@FXML
+	private TreeTableColumn<FXComparatorElement, Float> weightColumn;
+	
+	@FXML
+	private TextField filterField;
 
 	/**
 	 * this method loads on click the ComparatorTree
@@ -117,15 +126,20 @@ public class ComparatorView implements Initializable {
 	 * 
 	 * @return list of NodeComparators
 	 */
-	private List<Comparator> getNodeComparatorList() {
+	private List<FXComparatorElement> getNodeComparatorList() {
 		ObservableList<Comparator> comparatorList = FXCollections
 				.observableArrayList(ComparisonUtil.getComparator());
 		StringComparator st1 = new StringComparator();
 		StringComparator st2 = new StringComparator();
 		StringComparator st3 = new StringComparator();
 		comparatorList.addAll(st1, st2, st3);
-		return comparatorList;
+		
+		List<FXComparatorElement> fxComparatorElementsList = new ArrayList<FXComparatorElement>();
+		comparatorList.stream().forEach(elem -> fxComparatorElementsList.add(new FXComparatorElement(elem)));
+		return fxComparatorElementsList;
 	}
+	
+	
 
 	/**
 	 * this method generates the tree
@@ -185,7 +199,7 @@ public class ComparatorView implements Initializable {
 	 */
 	private void initTree() {		
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		FilterableTreeItem<Comparator> root = getTreeModel().get("root").get(0);
+		FilterableTreeItem<FXComparatorElement> root = new FilterableTreeItem<FXComparatorElement>(new FXComparatorElement("root"));
 		root.predicateProperty().bind(Bindings.createObjectBinding(() -> {
 			if (filterField.getText() == null || filterField.getText().isEmpty()) {
 				return null;
@@ -209,6 +223,24 @@ public class ComparatorView implements Initializable {
 		treeView.setShowRoot(false);
 	}
 	
+	private void initTable() {
+		treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		FilterableTreeItem<FXComparatorElement> root = new FilterableTreeItem<FXComparatorElement>(new FXComparatorElement("root"));
+		List nodeList = getNodeComparatorList();
+		Set<String> availableTypes = new HashSet<>();
+		getNodeComparatorList().forEach(elem -> {
+			availableTypes.add(elem.getComparatorType());
+		});
+		availableTypes.forEach(elem -> {
+			// as list elements, then add internal children to that?
+			FilterableTreeItem<FXComparatorElement> subRootNode = new FilterableTreeItem(elem);
+			root.getInternalChildren().add(subRootNode);
+			subRootNode.setExpanded(true);
+		});
+		
+		
+	}
+	
 	
 
 //	private Set<String> getAvailableComparatorTypes() {
@@ -224,7 +256,10 @@ public class ComparatorView implements Initializable {
 		return elem.getClass().toString().substring(elem.getClass().toString().lastIndexOf(".") + 1);
 	}
 	
-	
+	private FXComparatorElement createElement(Comparator comparator) {
+		return  new FXComparatorElement(comparator);
+		
+	}
 
 }
 
