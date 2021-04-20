@@ -19,6 +19,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.comparator_view.ComparatorViewController;
+import de.tu_bs.cs.isf.e4cf.compare.comparator_view.components.ComparatorCell;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.stringtable.MetricST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -40,6 +41,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 public class ComparatorView implements Initializable {
@@ -138,12 +140,20 @@ public class ComparatorView implements Initializable {
 	}	
 	
 	private void initTable() {
+		comparatorColumn.setCellFactory(new Callback<TreeTableColumn<FXComparatorElement, String>, TreeTableCell<FXComparatorElement, String>>() {
+			@Override
+			public TreeTableCell<FXComparatorElement, String> call(TreeTableColumn<FXComparatorElement, String> e) {
+				return new ComparatorCell(serviceContainer);
+			}
+		});
 		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory("name"));
+		
 		weightColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new StringToFloatConverter()));
  		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory("weight"));
  		weightColumn.setOnEditCommit(event -> {
  			event.getTreeTablePosition().getTreeItem().getValue().setWeight(event.getNewValue());
  		});
+ 		
 		treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		FilterableTreeItem<FXComparatorElement> root = new FilterableTreeItem<>(new FXComparatorElement("root"));
 		
@@ -167,6 +177,25 @@ public class ComparatorView implements Initializable {
 				}
 			}); 
 
+		});
+		
+		root.predicateProperty().bind(Bindings.createObjectBinding(() -> {
+			if (filterField.getText() == null || filterField.getText().isEmpty()) {
+				return null;
+			}
+			return TreeItemPredicate.create(elem -> (elem.getName().contains(filterField.getText().toUpperCase())
+					|| elem.getName().contains(filterField.getText().toLowerCase())
+					|| elem.getName().contains(filterField.getText())));
+		}, filterField.textProperty()));
+		
+		treeTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		   @Override 	
+		   public void handle(MouseEvent e) {
+		      if (e.getClickCount() == 1) {
+		         System.out.println(treeView.getSelectionModel().getSelectedItem());  
+		         System.out.println("listener test");
+		      }
+		   }
 		});
 		
 		treeTable.setRoot(root);
