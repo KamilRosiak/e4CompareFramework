@@ -163,7 +163,6 @@ public class ComparatorView implements Initializable {
 		});
 		
 		availableTypes.forEach(elem -> {
-			// as list elements, then add internal children to that?
 			FilterableTreeItem<FXComparatorElement> subRootNode = new FilterableTreeItem(new FXComparatorElement(elem));
 			root.getInternalChildren().add(subRootNode);
 			subRootNode.setExpanded(true);

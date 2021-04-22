@@ -3,14 +3,17 @@ package de.tu_bs.cs.isf.e4cf.compare.metric_view.view;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.fx.ui.controls.tree.FilterableTreeItem;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -31,6 +34,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 
 /**
@@ -43,19 +47,12 @@ import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 public class MetricView implements Initializable {
 	//IgnoreTable
 	@FXML
-	private TableView<Map> metricTable; 
+	private TableView<FXComparatorElement> metricTable; 
 	@FXML
-	private TableColumn<Map, String> nameColumn;				
+	private TableColumn<FXComparatorElement, String> nameColumn;				
 //	@FXML
 //	private TableColumn ignoreColumn;
 	
-	//MetricTree
-	@FXML
-	private TreeView<Comparator> metricTree;	//changed from Metric to Comparator
-//	@FXML
-//	private TreeView<Metric> weightTree;
-	
-	//MetricTreeTable
 	@FXML
 	private TreeTableView<FXComparatorElement> treeTable;
 	@FXML
@@ -74,6 +71,8 @@ public class MetricView implements Initializable {
 
 	private MetricImpl currentMetric;
 	
+	private Set<String> comparatorTypes;
+	
 	
 	@FXML
 	private void addToIgnoreList(ActionEvent event) {
@@ -81,22 +80,22 @@ public class MetricView implements Initializable {
 		
 	}
 	
-	@FXML
-	private void removeComparator(ActionEvent event) {
-		event.consume();
-//		System.out.println("Sysout selection" + metricTree.getSelectionModel().getSelectedItems());
-		
-		ObservableList<Comparator> comparators = FXCollections.observableArrayList();
-		for (TreeItem<Comparator> elem : metricTree.getSelectionModel().getSelectedItems()) {
-			elem.getParent().getChildren().remove(elem);
-		}
-		
-		//
-		for (TreeItem<FXComparatorElement> elem : treeTable.getSelectionModel().getSelectedItems()) {
-			elem.getParent().getChildren().remove(elem);
-		}
-		//
-	}
+//	@FXML
+//	private void removeComparator(ActionEvent event) {
+//		event.consume();
+////		System.out.println("Sysout selection" + metricTree.getSelectionModel().getSelectedItems());
+//		
+//		ObservableList<Comparator> comparators = FXCollections.observableArrayList();
+//		for (TreeItem<Comparator> elem : metricTree.getSelectionModel().getSelectedItems()) {
+//			elem.getParent().getChildren().remove(elem);
+//		}
+//		
+//		//
+//		for (TreeItem<FXComparatorElement> elem : treeTable.getSelectionModel().getSelectedItems()) {
+//			elem.getParent().getChildren().remove(elem);
+//		}
+//		//
+//	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -138,26 +137,8 @@ public class MetricView implements Initializable {
 		});
 	}
 	
-	
-	
-	
-	
-	// wie ist das besser zu lösen?
-	private TreeItem<Comparator> originalRoot;
-	
-	private TreeItem<FXComparatorElement> origRoot;
-	
-// 	private void initMetricTree() {
-////		private TreeItem<Comparator> originalRoot = new TreeItem<>("Comparators");
-//// 		metricTree.getSelectionModel().selectedItemProperty().addListener((obvservable, oldValue, newValue) -> {
-////			if (newValue == oldValue || newValue == null) {
-////				return null;
-////			}
-//	}
-// 	
  	private void initMetricTable() {
-// 		treeTable.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
- 		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory("comparator"));
+ 		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory("name"));
  		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory("weight"));
  		
 // 		weightColumn.setCellValueFactory(new Callback<CellDataFeatures<FXMetricViewElement, Float>, ObservableValue<Float>>() {
@@ -171,27 +152,25 @@ public class MetricView implements Initializable {
 // 		}); 
  		
  		treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-// 		treeTable.setVisible(true);
  	}
 	
 	private void initIgnoreTable() {
-//		metricTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
 		//MapValueFactory for the ignore types
-		nameColumn.setCellValueFactory(new MapValueFactory<>("comparatorName"));
+		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 //		metricTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);	
 		metricTable.getSelectionModel().selectedItemProperty().addListener((obvservable, oldValue, newValue) -> {
 			if (newValue == oldValue || newValue == null) {
 				metricTable.getSelectionModel().clearSelection();
 				System.out.println("Nothing selected");
-				metricTree.setRoot(originalRoot);
-				System.out.println(originalRoot.getChildren() + "");
+//				treeTable.setRoot(origRoot);
+				System.out.println(treeTable.getRoot().getChildren() + "");
 				
 				//
-				treeTable.getSelectionModel().clearSelection();
-				System.out.println("Nothing selected");
-				treeTable.setRoot(origRoot);
-				System.out.println(origRoot.getChildren() + "");
+//				treeTable.getSelectionModel().clearSelection();
+//				System.out.println("Nothing selected");
+//				treeTable.setRoot(origRoot);
+//				System.out.println(origRoot.getChildren() + "");
 				//
 				
 //			} else if (newValue.toString() == "{comparatorName=testString}") {
@@ -199,7 +178,7 @@ public class MetricView implements Initializable {
 //				System.out.println(originalRoot.getChildren() + " else if");
 				
 			} else {
-				System.out.println("originalRoot: " + originalRoot.getChildren());
+				System.out.println("originalRoot: " + treeTable.getRoot().getChildren());
 				applyIgnoreTypes(newValue);
 				System.out.println("ListView Selection Changed (selected: " + newValue.toString() + ")");
 			}
@@ -209,13 +188,13 @@ public class MetricView implements Initializable {
 	
 	private void applyIgnoreTypes(Object selection) {
 		
-		TreeItem<Comparator> newRoot = new TreeItem("Comparators");
-		newRoot.getChildren().addAll(originalRoot.getChildren());
-		newRoot.getChildren().removeIf(elem -> (elem.toString().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))));
+//		TreeItem<Comparator> newRoot = new TreeItem("Comparators");
+//		newRoot.getChildren().addAll(originalRoot.getChildren());
+//		newRoot.getChildren().removeIf(elem -> (elem.toString().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))));
 		
 		//
 		TreeItem<FXComparatorElement> newTableRoot = new TreeItem("Comparators");
-		newTableRoot.getChildren().addAll(origRoot.getChildren());
+		newTableRoot.getChildren().addAll(treeTable.getRoot().getChildren());
 //		for (TreeItem<FXMetricViewElement> elem: newTableRoot.getChildren()) {
 //			if (elem.getValue().getComparatorType().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))) {
 //				newTableRoot.getChildren().remove(elem);
@@ -232,14 +211,14 @@ public class MetricView implements Initializable {
 		
 		
 //		System.out.println(root.getChildren() + ", " + selection + ", " + newRoot.getChildren());
-		System.out.println("newRoot: " + newRoot.getChildren() + ", originalRoot: " + originalRoot.getChildren());
-		metricTree.setRoot(newRoot);
+//		System.out.println("newRoot: " + newRoot.getChildren() + ", originalRoot: " + originalRoot.getChildren());
+//		metricTree.setRoot(newRoot);
 		
 		treeTable.setRoot(newTableRoot); //
-		
-		newRoot.setExpanded(true);
-		metricTree.setShowRoot(true);
-		
+//		
+//		newRoot.setExpanded(true);
+//		metricTree.setShowRoot(true);
+//		
 		newTableRoot.setExpanded(true); //
 		treeTable.setShowRoot(true); //
 		
@@ -252,238 +231,73 @@ public class MetricView implements Initializable {
 	
 	@Optional 
 	@Inject
-	private void metricTreeComparatorList(@UIEventTopic("comparatorListEvent") List<Comparator> comparators) {
-		if (originalRoot == null) {
-			
-			treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); //table
-			
-			metricTree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-			System.out.println("getComparatorlists, null case " + comparators);
-			originalRoot = initDataFromComparatorView(comparators);
-			
-			origRoot = initDataFromComparatorViewTable(comparators); //table
-			
-			//table
-//			for (TreeItem<Comparator> elem: originalRoot.getChildren()) {
-//				FXMetricViewElement elem2 = new FXMetricViewElement(elem.getValue());
-//				origRoot.getChildren().add(elem2);
-//			} 
-			
+	private void metricTreeComparatorList(@UIEventTopic("comparatorListEvent") List<FXComparatorElement> comparators) {
+		if (treeTable.getRoot() == null) {
+			treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+			initData(comparators);			
 		} else {
-			
-			
-			
-			
-			System.out.println("getComparatorlists, else case " + comparators);
-			metricTree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-			metricTree.getSelectionModel().selectAll();
-			ObservableList<TreeItem<Comparator>> items = metricTree.getSelectionModel().getSelectedItems();
-			List<TreeItem<Comparator>> tempList = new ArrayList<>(items);
-
-			List<Comparator> rootList = new ArrayList<Comparator>();
-			for (TreeItem<Comparator> child: originalRoot.getChildren()) {
-				rootList.add(child.getValue());
-			}
-			
-			for (TreeItem<Comparator> elem: items) {
-//				System.out.println("Class: " + elem.getValue());
-//				tempList2.add(elem.getValue().toString());
-//				tempList.add(elem.getValue());
-			}
-			
-//			List<Comparator> tempList2 = new ArrayList<>();
-//			tempList.forEach(elem -> tempList2.add(elem.getValue()));
-			metricTree.getSelectionModel().clearSelection();
-//			System.out.println("items: " + tempList2);
-			
-			for (Comparator elem: comparators) {
-				if (!rootList.contains(elem)) {
-					
-//					tempList.add(elem);
-					System.out.println("rootList: " + rootList);
-					
-					originalRoot.getChildren().add(new TreeItem<Comparator>(elem));
-					origRoot.getChildren().add(new TreeItem<FXComparatorElement>(new FXComparatorElement(elem)));
-					System.out.println(tempList);
+			comparators.forEach(elem -> {
+				System.err.println("elemType: " + elem.getComparatorType());
+				if(!comparatorTypes.contains(elem.getComparatorType())) {
+					comparatorTypes.add(elem.getComparatorType());
+					TreeItem<FXComparatorElement> typeNode = new TreeItem<FXComparatorElement>(new FXComparatorElement(elem.getComparatorType()));
+					treeTable.getRoot().getChildren().add(typeNode);
+					typeNode.setExpanded(true);
 				}
-			}
-		}
-		
-		metricTree.setRoot(originalRoot);
-		
-		treeTable.setRoot(origRoot);
-		
-		originalRoot.setExpanded(true);
-		metricTree.setShowRoot(true);
-		
-		treeTable.setShowRoot(true);
-	}
-	
-	
+			});
+			
+			comparators.forEach(elem -> {
+				treeTable.getRoot().getChildren().forEach(child -> {
+					boolean newElem = true;
+					if (child.getValue().getName().equals(elem.getComparatorType())) {
+						for(TreeItem<FXComparatorElement> typeChild: child.getChildren()) {
+							if((typeChild.getValue().equals(elem))) {
+								newElem = false;
+							}
+						}
+						if (newElem) {
+							child.getChildren().add(new TreeItem<FXComparatorElement>(elem));
+						}
+					}
+				}); 
 
-	
-	
-	// in comparatortypen gliedern (wie bei comparatorview)?
-	private TreeItem<Comparator> initDataFromComparatorView(List<Comparator> comparators) {
-		TreeItem<FXComparatorElement> tableRoot = new TreeItem("Comparators"); //table
-		TreeItem<Comparator> root = new TreeItem("Comparators");
-		List<String> ignoreTypes = new ArrayList<>();
-		ObservableList<Map<String, Object>> ignoreList = FXCollections.<Map<String, Object>>observableArrayList();
-		
-		for(Comparator elem: comparators) {
-			if(!ignoreTypes.contains(elem.getClass().getSimpleName())) {
-				ignoreTypes.add(elem.getClass().getSimpleName());
-				
-			}
-			root.getChildren().add(new TreeItem<>(elem));
-			tableRoot.getChildren().add(new TreeItem<>(new FXComparatorElement(elem))); //table
+			});
+			treeTable.setShowRoot(false);
+			treeTable.getRoot().setExpanded(true);
 		}
+	
+	}
+			
+	
+	private void initData(List<FXComparatorElement> comparators) {
+		TreeItem<FXComparatorElement> origRoot = new TreeItem<FXComparatorElement>(new FXComparatorElement("Root"));
+		comparatorTypes = new HashSet<>();
+		comparators.forEach(elem -> {
+			comparatorTypes.add(elem.getComparatorType());
+		});
 		
-		for(String elem: ignoreTypes) {
-			if (!ignoreList.contains(elem)) {
-				Map<String, Object> item = new HashMap<>();
-				System.out.println("elem: "+ elem);
-				item.put("comparatorName", elem);
-//				item.put("test", "TestValue");
-				ignoreList.add(item);
-			}
-		}
+		comparatorTypes.forEach(elem -> {
+			TreeItem<FXComparatorElement> subRootNode = new TreeItem<>(new FXComparatorElement(elem));
+			origRoot.getChildren().add(subRootNode);
+			subRootNode.setExpanded(true);
+		});
 		
-		Map<String, Object> item2 = new HashMap<>();
-		item2.put("comparatorName", "testString");
-		ignoreList.add(item2);
-		
-		
-		metricTable.getItems().clear();
-		metricTable.getItems().addAll(ignoreList);
-		
-		
-		return root;
+		comparators.forEach(elem -> {
+			origRoot.getChildren().forEach(child -> {				
+				if (child.getValue().getComparatorType().equals(elem.getComparatorType())) {
+					child.getChildren().add(new TreeItem<>(elem));
+				}
+			}); 
+
+		});
+
+		treeTable.setRoot(origRoot);
+		treeTable.setShowRoot(false);
+		origRoot.setExpanded(true);
 	}
 	
-	
-	
-	
-	private TreeItem<FXComparatorElement> initDataFromComparatorViewTable(List<Comparator> comparators) {
-		TreeItem<FXComparatorElement> tableRoot = new TreeItem("Comparators"); //table
-		TreeItem<Comparator> root = new TreeItem("Comparators");
-		List<String> ignoreTypes = new ArrayList<>();
-		ObservableList<Map<String, Object>> ignoreList = FXCollections.<Map<String, Object>>observableArrayList();
-		
-		for(Comparator elem: comparators) {
-			if(!ignoreTypes.contains(elem.getClass().getSimpleName())) {
-				ignoreTypes.add(elem.getClass().getSimpleName());
-				
-			}
-			root.getChildren().add(new TreeItem<>(elem));
-			tableRoot.getChildren().add(new TreeItem<>(new FXComparatorElement(elem))); //table
-		}
-		
-		for(String elem: ignoreTypes) {
-			if (!ignoreList.contains(elem)) {
-				Map<String, Object> item = new HashMap<>();
-				System.out.println("elem: "+ elem);
-				item.put("comparatorName", elem);
-//				item.put("test", "TestValue");
-				ignoreList.add(item);
-			}
-		}
-		
-		Map<String, Object> item2 = new HashMap<>();
-		item2.put("comparatorName", "testString");
-		ignoreList.add(item2);
-		
-		
-		metricTable.getItems().clear();
-		metricTable.getItems().addAll(ignoreList);
-		
-		
-		return tableRoot;
-	}
 	
 	private void initIgnoreTypes() {
 		
 	}
-	
-	
-//	@Optional
-//	@Inject
-//	private void initMetricTree(@UIEventTopic("sendComparatorEvent") TreeView tree) {
-//		metricTree = tree;
-//	}
-//	@Optional
-//	@Inject
-//	private void initMetricTree(@UIEventTopic("sendComparatorEvent") TreeView<Object> tree) {
-//		metricTree = tree;
-//	}
-//	
-//	@Optional
-//	@Inject
-//	private void initMetricTable(@UIEventTopic("sendComparatorTypesEvent") Set types) {
-//		System.out.println("initMetricTable Method");
-//		System.out.println("types: " + types);
-//		//services.partService.showPart(MetricST.BUNDLE_NAME);
-//		List typeList = new ArrayList<String>(types);
-//		System.out.println(typeList + " List");
-//		
-//		ObservableList<String> type = FXCollections.observableArrayList(typeList);
-//		System.out.println("after observablelist: "+ type);
-//		TableColumn ignoreTypes = new TableColumn("Ignoretypes");
-//		System.out.println("after ignoretypes");
-//		ignoreTypes.setCellValueFactory(new PropertyValueFactory<>("Name"));
-//		
-//		System.out.println("after cellfactory");
-//		metricTable.setItems(type);
-//		System.out.println("after setitems");
-//		metricTable.getColumns().addAll(ignoreTypes);
-//		System.out.println("after getcolumns");
-////		metricTable.setItems(type);
-////		type.forEach(elem -> {
-////			metricTable.setItems(elem);
-////		});
-//		
-//	}
-	
-	/*
-	 * direkt liste von Comparatoren senden -> baum neu aufbauen
-	 */
-//	@Optional
-//	@Inject
-//	private void metricTreeModel(@UIEventTopic("comparatorEvent") Map<String, List<FilterableTreeItem<Object>>> model) {
-//		services.partService.showPart(MetricST.BUNDLE_NAME);
-//		
-//		
-//		
-//		System.out.println(model.get("StringComparatorChild").get(0).getValue().getClass() + " " + model.get("StringComparatorChild").get(0).getValue());
-////		ObservableList<Comparator> ignoreList = FXCollections.observableArrayList(model.values());
-//		
-////		System.out.println("metricTreeModel Method");
-////		System.out.println(model.keySet() + "KeySet");
-////		TableColumn ignoreTypes = new TableColumn("Ignoretypes");
-////		System.out.println("after ignoretypes");
-////		ignoreTypes.setCellValueFactory(new PropertyValueFactory<>("Name"));
-//		
-//		
-//		ObservableList<Map<String, Object>> ignoreList = FXCollections.<Map<String, Object>>observableArrayList();
-//		
-//		for(String elem: model.keySet()) {
-//			if (!elem.equals("root") && !elem.contains("Child")) {
-//				System.out.println(elem + " elem");
-//				Map<String, Object> item = new HashMap<>();
-//				item.put("comparatorName", elem);
-//				ignoreList.add(item);
-//
-//				Map<String, Object> item2 = new HashMap<>();
-//				item.put("comparatorName", "testString");
-//				ignoreList.add(item2);
-//				
-//			}
-//		}
-//		System.out.println(ignoreList +" ignoreList");
-//		metricTable.setItems(ignoreList);
-//		FilterableTreeItem<Object> root = model.get("root").get(0);
-//		metricTree.setRoot(root);
-//		root.setExpanded(true);
-//		metricTree.setShowRoot(false);
-//	}
 }
