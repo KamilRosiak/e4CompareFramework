@@ -34,11 +34,13 @@ public class ComparatorCell extends TreeTableCell<FXComparatorElement, String> {
 		setOnMouseClicked(event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
 	            TreeTableRow<FXComparatorElement> row = getTreeTableRow();
-	            FXComparatorElement item = row.getItem();
-	            serviceContainer.partService.showPart(MetricST.BUNDLE_NAME);
-	            ObservableList<FXComparatorElement> temp = FXCollections.observableArrayList();
-	            temp.add(item);
-	            serviceContainer.eventBroker.send("comparatorListEvent", temp);
+	            TreeItem<FXComparatorElement> item = row.getTreeItem();
+	            if (!row.getTreeTableView().getRoot().getChildren().contains(item)) {
+		            serviceContainer.partService.showPart(MetricST.BUNDLE_NAME);
+		            ObservableList<FXComparatorElement> temp = FXCollections.observableArrayList();
+		            temp.add(item.getValue());
+		            serviceContainer.eventBroker.send("comparatorListEvent", temp);
+	            }
 			}
         });
 		

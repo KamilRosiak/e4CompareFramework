@@ -78,7 +78,9 @@ public class ComparatorView implements Initializable {
 		System.out.println("Sysout selection" + treeTable.getSelectionModel().getSelectedItem().getValue());
 		ObservableList<FXComparatorElement> comparators = FXCollections.observableArrayList();
 		for (TreeItem<FXComparatorElement> elem : treeTable.getSelectionModel().getSelectedItems()) {
-			comparators.add(elem.getValue());
+			if (!treeTable.getRoot().getChildren().contains(elem)) {
+				comparators.add(elem.getValue());
+			}
 		}
 		sendComparators(comparators);
 	}
@@ -110,7 +112,7 @@ public class ComparatorView implements Initializable {
 			for (TreeItem<FXComparatorElement> elem : treeTable.getSelectionModel().getSelectedItems()) {
 				temp.add(elem.getValue());
 			}
-			treeView.getSelectionModel().clearSelection();
+			treeTable.getSelectionModel().clearSelection();
 			
 			serviceContainer.eventBroker.send("comparatorListEvent", temp);
 		} else {
@@ -186,16 +188,6 @@ public class ComparatorView implements Initializable {
 					|| elem.getName().contains(filterField.getText().toLowerCase())
 					|| elem.getName().contains(filterField.getText())));
 		}, filterField.textProperty()));
-		
-		treeTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
-		   @Override 	
-		   public void handle(MouseEvent e) {
-		      if (e.getClickCount() == 1) {
-		         System.out.println(treeView.getSelectionModel().getSelectedItem());  
-		         System.out.println("listener test");
-		      }
-		   }
-		});
 		
 		treeTable.setRoot(root);
 		root.setExpanded(true);

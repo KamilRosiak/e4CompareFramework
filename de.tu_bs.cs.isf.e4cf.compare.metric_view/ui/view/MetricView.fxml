@@ -28,8 +28,8 @@
    <right>
       <TableView fx:id="metricTable" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Grey;" BorderPane.alignment="CENTER">
         <columns>
-            <TableColumn fx:id="ignoreColumn" minWidth="0.0" prefWidth="75.0" text="Ignore" />
-            <TableColumn fx:id="nameColumn" minWidth="100.0" prefWidth="125.0" text="Name" />
+            <TableColumn fx:id="ignoreColumn" minWidth="0.0" prefWidth="75.0" sortable="false" text="Ignore" />
+            <TableColumn fx:id="nameColumn" minWidth="100.0" prefWidth="125.0" sortable="false" text="Name" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -39,8 +39,8 @@
    <center>
       <TreeTableView fx:id="treeTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
-          <TreeTableColumn fx:id="comparatorColumn" prefWidth="95.0" text="Comparator" />
-          <TreeTableColumn fx:id="weightColumn" prefWidth="104.0" text="Weight" />
+          <TreeTableColumn fx:id="comparatorColumn" prefWidth="95.0" sortable="false" text="Comparator" />
+          <TreeTableColumn fx:id="weightColumn" prefWidth="104.0" sortable="false" text="Weight" />
         </columns>
          <columnResizePolicy>
             <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
