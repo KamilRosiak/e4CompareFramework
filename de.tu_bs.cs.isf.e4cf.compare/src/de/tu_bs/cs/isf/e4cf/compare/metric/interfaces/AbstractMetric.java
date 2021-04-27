@@ -38,6 +38,13 @@ public class AbstractMetric implements Metric {
 			comparators.put(nodeType, new ArrayList<Comparator>(FXCollections.observableArrayList(comparator)));
 		}
 	}
+	
+	@Override
+	public void removeComparator(String nodeType, Comparator comparator) {
+		if (comparators.containsKey(nodeType) && comparators.get(nodeType).contains(comparator)) {
+			comparators.get(nodeType).remove(comparator);
+		}
+	}
 
 	@Override
 	public String getMetricName() {

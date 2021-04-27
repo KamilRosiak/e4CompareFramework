@@ -24,6 +24,11 @@ public interface Metric extends Serializable {
     public void addComparator(String nodeType, Comparator comparator);
     
     /**
+     * This method removes a comparator from the comparator map
+     */
+    public void removeComparator(String nodeType, Comparator comparator);
+    
+    /**
      * Returns the name of this metric
      */
     public String getMetricName();

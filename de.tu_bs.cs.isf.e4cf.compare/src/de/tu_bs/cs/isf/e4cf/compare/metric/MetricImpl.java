@@ -24,5 +24,11 @@ public class MetricImpl extends AbstractMetric {
 			addComparator(comparator.getSupportedNodeType(), comparator);
 		}
 	}
+	
+	public void removeComparators(Comparator[] comparators) {
+		for (Comparator comparator : comparators) {
+			removeComparator(comparator.getSupportedNodeType(), comparator);
+		}
+	}
 
 }

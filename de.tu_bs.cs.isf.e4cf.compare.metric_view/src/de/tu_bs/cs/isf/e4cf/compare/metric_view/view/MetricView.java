@@ -27,6 +27,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -102,61 +103,87 @@ public class MetricView implements Initializable {
 			//subrootnode case
 			if (treeTable.getRoot().getChildren().contains(elem)) {
 				comparatorTypes.remove(elem.getValue().getComparatorType());
+				
+				// construct comparator list to call remove comparators for the current metric
+				List<Comparator> children = new ArrayList<>();
+				for (TreeItem<FXComparatorElement> child : elem.getChildren()) {
+					children.add(child.getValue().getComparator());
+				}
+				Comparator[] comparators = new Comparator[children.size()];
+				currentMetric.removeComparators(children.toArray(comparators));
+				
+				// remove the comparator element from the metric table
 				parent.getChildren().remove(elem);
 			}
 			//no subrootnode case
 			if (!parent.equals(treeTable.getRoot())) {
 				//only element in subrootnode
 				if (parent.getChildren().size() == 1) {
-					parent.getChildren().remove(elem);
+					removeComparatorElement(elem, parent);
 					treeTable.getRoot().getChildren().remove(parent);
 					comparatorTypes.remove(elem.getValue().getComparatorType());
 				} else {
-					parent.getChildren().remove(elem);
+					removeComparatorElement(elem, parent);
 				}
 			}			
 		}
 		event.consume();
 	}
+
+	private void removeComparatorElement(TreeItem<FXComparatorElement> elem, TreeItem<FXComparatorElement> parent) {
+		currentMetric.removeComparator(elem.getValue().getComparatorType(), elem.getValue().getComparator());
+		parent.getChildren().remove(elem);
+	}
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		initButtons();
+		//initButtons();
 		initMetricTable();
 		initIgnoreTable();
 
 	}
 
-	private void initButtons() {
-		initStoreMetricButtonAction();
-		initLoadMetricButtonAction();
-		initNewMetricButton();
+//	private void initButtons() {
+//		storeMetric();
+//		loadMetric();
+//		initMetric();
+//	}
+	
+	@FXML
+	private void storeMetric(Event event) {
+		event.consume();
+		MetricUtil.serializesMetric(currentMetric);
 	}
-
-	private void initStoreMetricButtonAction() {
-		storeMetricButton.setOnAction(e -> MetricUtil.serializesMetric(currentMetric));
-	}
-
-	private void initLoadMetricButtonAction() {
-		loadMetricButton.setOnAction(e -> {
-			MetricUtil.deSerializesMetric(RCPMessageProvider.getFilePathDialog("Select Metric File", ""));
-		});
-	}
-
-	private void initNewMetricButton() {
-
-		newMetricButton.setOnAction(e -> {
-
-			if (currentMetric != null) {
-				if (RCPMessageProvider.questionMessage("Current Metric",
-						"Would you like to store your current metric?")) {
-					MetricUtil.serializesMetric(currentMetric);
-				}
+	
+	@FXML
+	private void loadMetric(Event event) {
+		currentMetric = MetricUtil.deSerializesMetric(RCPMessageProvider.getFilePathDialog("Select Metric File", ""));
+		Map<String, List<Comparator>> comparators = currentMetric.getAllComparator();
+		treeTable.setRoot(null);
+		comparatorTypes.clear();
+		List<FXComparatorElement> elements = new ArrayList<>();
+		for (String type : comparators.keySet()) {
+			for (Comparator c : comparators.get(type)) {
+				elements.add(new FXComparatorElement(c));
 			}
-			String metricName = RCPMessageProvider.inputDialog("Metric Name Dialog", "Please enter a metric name:");
-			currentMetric = new MetricImpl(metricName);
-
-		});
+		}
+		initData(elements);
+		event.consume();
+	}
+	
+	@FXML
+	private void initMetric(Event event) {
+		if (currentMetric != null) {
+			if (RCPMessageProvider.questionMessage("Current Metric",
+					"Would you like to store your current metric?")) {
+				MetricUtil.serializesMetric(currentMetric);
+			}
+		}
+		String metricName = RCPMessageProvider.inputDialog("Metric Name Dialog", "Please enter a metric name:");
+		currentMetric = new MetricImpl(metricName);
+		treeTable.setRoot(null);
+		comparatorTypes.clear();
+		event.consume();
 	}
 	
  	private void initMetricTable() {
@@ -280,6 +307,9 @@ public class MetricView implements Initializable {
 	@Optional 
 	@Inject
 	private void metricTreeComparatorList(@UIEventTopic("comparatorListEvent") List<FXComparatorElement> comparators) {
+		if (currentMetric == null) {
+			initMetric(new ActionEvent());
+		}
 		if (treeTable.getRoot() == null) {
 			treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			initData(comparators);			
@@ -302,6 +332,7 @@ public class MetricView implements Initializable {
 				}
 			});
 			
+			// checks if a comparator is not yet present in the table and inserts it
 			comparators.forEach(elem -> {
 				treeTable.getRoot().getChildren().forEach(child -> {
 					boolean newElem = true;
@@ -313,6 +344,7 @@ public class MetricView implements Initializable {
 						}
 						if (newElem) {
 							child.getChildren().add(new TreeItem<FXComparatorElement>(elem));
+							currentMetric.addComparator(elem.getComparatorType(), elem.getComparator());
 						}
 					}
 				}); 
@@ -328,9 +360,14 @@ public class MetricView implements Initializable {
 	private void initData(List<FXComparatorElement> comparators) {
 		TreeItem<FXComparatorElement> origRoot = new TreeItem<FXComparatorElement>(new FXComparatorElement("Root"));
 		
+		Set<String> availableTypes = new HashSet<>();
 		comparators.forEach(elem -> {
+			availableTypes.add(elem.getComparatorType());
+		});
+		
+		availableTypes.forEach(type -> {
 			Map<String, String> item = new HashMap<>();
-			item.put("type", elem.getComparatorType());
+			item.put("type", type);
 			comparatorTypes.add(item);
 		});
 		
@@ -340,10 +377,12 @@ public class MetricView implements Initializable {
 			subRootNode.setExpanded(true);
 		});
 		
+		// inserts the comparator element into the fitting subtree
 		comparators.forEach(elem -> {
 			origRoot.getChildren().forEach(child -> {				
 				if (child.getValue().getComparatorType().equals(elem.getComparatorType())) {
 					child.getChildren().add(new TreeItem<>(elem));
+					currentMetric.addComparator(elem.getComparatorType(), elem.getComparator());
 				}
 			}); 
 

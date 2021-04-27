@@ -12,9 +12,9 @@
    <top>
       <ToolBar fx:id="toolBarTop" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-            <Button fx:id="newMetricButton" mnemonicParsing="false" text="New Metric" />
-          	<Button fx:id="storeMetricButton" mnemonicParsing="false" text="Store Metric" />
-            <Button fx:id="loadMetricButton" mnemonicParsing="false" text="Load Metric" />
+            <Button fx:id="newMetricButton" onAction="#initMetric" mnemonicParsing="false" text="New Metric" />
+            <Button fx:id="storeMetricButton" onAction="#storeMetric" mnemonicParsing="false" text="Store Metric" />
+            <Button fx:id="loadMetricButton" onAction="#loadMetric" mnemonicParsing="false" text="Load Metric" />
         </items>
       </ToolBar>
    </top>

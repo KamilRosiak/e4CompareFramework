@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.comparator.templates;
 
+import java.io.Serializable;
+
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
@@ -8,7 +10,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
  * @author Kamil Rosiak
  *
  */
-public abstract class AbstractNodeComparator implements Comparator<Node> {
+public abstract class AbstractNodeComparator implements Comparator<Node>, Serializable {
+	private static final long serialVersionUID = 7212002340935774949L;
 	private String supportedNodeType;
 
 
