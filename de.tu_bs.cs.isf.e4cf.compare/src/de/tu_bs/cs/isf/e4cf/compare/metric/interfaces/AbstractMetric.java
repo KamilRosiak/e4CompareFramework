@@ -27,8 +27,15 @@ public class AbstractMetric implements Metric {
 
 	@Override
 	public void unignorType(String type) {
+		nodeIgnorList.put(type, false);
+	}
+	
+	@Override
+	public void removeIgnoreType(String type) {
 		nodeIgnorList.remove(type);
 	}
+	
+	
 
 	@Override
 	public void addComparator(String nodeType, Comparator comparator) {

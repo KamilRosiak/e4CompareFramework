@@ -19,7 +19,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.comparator_view.ComparatorViewController;
-import de.tu_bs.cs.isf.e4cf.compare.comparator_view.components.ComparatorCell;
+import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.ComparatorCell;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.stringtable.MetricST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -57,8 +57,6 @@ public class ComparatorView implements Initializable {
 	private TreeTableView<FXComparatorElement> treeTable;
 	@FXML
 	private TreeTableColumn<FXComparatorElement, String> comparatorColumn;
-	@FXML
-	private TreeTableColumn<FXComparatorElement, Float> weightColumn;
 	
 	@FXML
 	private TextField filterField;
@@ -150,11 +148,7 @@ public class ComparatorView implements Initializable {
 		});
 		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory("name"));
 		
-		weightColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new StringToFloatConverter()));
- 		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory("weight"));
- 		weightColumn.setOnEditCommit(event -> {
- 			event.getTreeTablePosition().getTreeItem().getValue().setWeight(event.getNewValue());
- 		});
+		
  		
 		treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		FilterableTreeItem<FXComparatorElement> root = new FilterableTreeItem<>(new FXComparatorElement("root"));
@@ -197,31 +191,6 @@ public class ComparatorView implements Initializable {
 	
 	private FXComparatorElement createElement(Comparator comparator) {
 		return  new FXComparatorElement(comparator);
-		
-	}
-	
-	public class StringToFloatConverter extends StringConverter<Float> {
-
-		@Override
-		public String toString(Float object) {
-			return String.valueOf(object);			
-		}
-
-		@Override
-		public Float fromString(String string) {
-			treeTable.getRoot().getChildren().forEach(child -> {
-				child.getChildren().forEach(child2 -> {
-					System.out.println(child2.getValue().getWeight());
-				});
-			});
-			try {
-				return Float.parseFloat(string);
-				
-			} catch(NumberFormatException e) {
-				System.err.println("Float Format Error");
-			}
-			return null;
-		}
 		
 	}
 

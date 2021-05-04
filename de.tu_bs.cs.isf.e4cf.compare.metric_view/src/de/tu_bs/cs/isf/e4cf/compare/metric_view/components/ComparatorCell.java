@@ -1,8 +1,7 @@
-package de.tu_bs.cs.isf.e4cf.compare.comparator_view.components;
+package de.tu_bs.cs.isf.e4cf.compare.metric_view.components;
 
 import javax.inject.Inject;
 
-import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.stringtable.MetricST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.collections.FXCollections;

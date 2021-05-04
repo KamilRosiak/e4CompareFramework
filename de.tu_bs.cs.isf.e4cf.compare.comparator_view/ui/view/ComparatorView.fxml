@@ -37,7 +37,6 @@
                   </ContextMenu>
                </contextMenu>
             </TreeTableColumn>
-          <TreeTableColumn fx:id="weightColumn" prefWidth="150.0" text="Weight" />
         </columns>
          <columnResizePolicy>
             <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

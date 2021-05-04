@@ -48,8 +48,10 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 /**
  * This class represents the controller class of the ui/view/MetricView.fxml and
@@ -113,7 +115,7 @@ public class MetricView implements Initializable {
 				currentMetric.removeComparators(children.toArray(comparators));
 				
 				// remove the comparator element from the metric table
-				parent.getChildren().remove(elem);
+				removeComparatorElement(elem, parent);
 			}
 			//no subrootnode case
 			if (!parent.equals(treeTable.getRoot())) {
@@ -132,6 +134,7 @@ public class MetricView implements Initializable {
 
 	private void removeComparatorElement(TreeItem<FXComparatorElement> elem, TreeItem<FXComparatorElement> parent) {
 		currentMetric.removeComparator(elem.getValue().getComparatorType(), elem.getValue().getComparator());
+		elem.getValue().setWeight(0f);
 		parent.getChildren().remove(elem);
 	}
 	
@@ -189,7 +192,11 @@ public class MetricView implements Initializable {
  	private void initMetricTable() {
  		
  		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
- 		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("weight"));
+ 		weightColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new StringToFloatConverter()));
+ 		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory("weight"));
+ 		weightColumn.setOnEditCommit(event -> {
+ 			event.getTreeTablePosition().getTreeItem().getValue().setWeight(event.getNewValue());
+ 		});
  		treeTable.setRowFactory(new Callback<TreeTableView<FXComparatorElement>, TreeTableRow<FXComparatorElement>>() {
 
 			@Override
@@ -200,15 +207,7 @@ public class MetricView implements Initializable {
                 removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {  
                     @Override  
                     public void handle(ActionEvent event) {
-                    	removeComparator(event);
-//                    	FXComparatorElement treeItem = row.getItem();
-//                    	System.out.println("TreeItem: " + treeItem);
-//                    	
-//                    	row.getParent().getChildrenUnmodifiable().remove(treeItem);
-                    	
-                
-						  
-//                        treeTable.getRoot().getChildren().remove(row.getItem());                    
+                    	removeComparator(event);                  
                     }  
                 });  
                 contextMenu.getItems().add(removeMenuItem);
@@ -225,6 +224,31 @@ public class MetricView implements Initializable {
  		
  		treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
  	}
+ 	
+ 	public class StringToFloatConverter extends StringConverter<Float> {
+
+		@Override
+		public String toString(Float object) {
+			return String.valueOf(object);			
+		}
+
+		@Override
+		public Float fromString(String string) {
+			treeTable.getRoot().getChildren().forEach(child -> {
+				child.getChildren().forEach(child2 -> {
+					System.out.println(child2.getValue().getWeight());
+				});
+			});
+			try {
+				return Float.parseFloat(string);
+				
+			} catch(NumberFormatException e) {
+				System.err.println("Float Format Error");
+			}
+			return null;
+		}
+		
+	}
 	
 	private void initIgnoreTable() {
 		comparatorTypes = FXCollections.<Map<String, String>>observableArrayList();

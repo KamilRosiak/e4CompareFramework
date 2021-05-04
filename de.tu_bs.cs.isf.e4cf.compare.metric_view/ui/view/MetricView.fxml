@@ -37,10 +37,10 @@
       </TableView>
    </right>
    <center>
-      <TreeTableView fx:id="treeTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TreeTableView fx:id="treeTable" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
-          <TreeTableColumn fx:id="comparatorColumn" prefWidth="95.0" sortable="false" text="Comparator" />
-          <TreeTableColumn fx:id="weightColumn" prefWidth="104.0" sortable="false" text="Weight" />
+          <TreeTableColumn fx:id="comparatorColumn" editable="false" prefWidth="95.0" sortable="false" text="Comparator" />
+          <TreeTableColumn fx:id="weightColumn" editable="true" prefWidth="104.0" sortable="false" text="Weight" />
         </columns>
          <columnResizePolicy>
             <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

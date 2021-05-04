@@ -14,9 +14,15 @@ public interface Metric extends Serializable {
     public void ignoreType(String type);
     
     /**
-     * This method removes a node type from the ignore list.
+     * This method unignores a node type in the ignore list.
      */
     public void unignorType(String type);
+    
+    /**
+     * This method removes a node type from the ignore list
+     * @param type
+     */
+    public void removeIgnoreType(String type);
     
     /**
      * This method give a comparator to the comparator map.
