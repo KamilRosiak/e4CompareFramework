@@ -101,10 +101,20 @@ public class MetricView implements Initializable {
 		ObservableList<TreeItem<FXComparatorElement>> selection = treeTable.getSelectionModel().getSelectedItems();
 		
 		for (TreeItem<FXComparatorElement> elem : selection) {
+			if (elem == null || elem.equals(treeTable.getRoot())) {
+				continue;
+			}
 			TreeItem<FXComparatorElement> parent = elem.getParent();
+			int typeIndex = -1;
+			for (int i = 0; i < comparatorTypes.size(); i++) {
+				if (comparatorTypes.get(i).get("type").equals(elem.getValue().getComparatorType())) {
+					typeIndex = i;
+				}
+			}
+			
 			//subrootnode case
 			if (treeTable.getRoot().getChildren().contains(elem)) {
-				comparatorTypes.remove(elem.getValue().getComparatorType());
+				comparatorTypes.remove(typeIndex);
 				
 				// construct comparator list to call remove comparators for the current metric
 				List<Comparator> children = new ArrayList<>();
@@ -117,18 +127,20 @@ public class MetricView implements Initializable {
 				// remove the comparator element from the metric table
 				removeComparatorElement(elem, parent);
 			}
+			
 			//no subrootnode case
 			if (!parent.equals(treeTable.getRoot())) {
 				//only element in subrootnode
 				if (parent.getChildren().size() == 1) {
 					removeComparatorElement(elem, parent);
 					treeTable.getRoot().getChildren().remove(parent);
-					comparatorTypes.remove(elem.getValue().getComparatorType());
+					comparatorTypes.remove(typeIndex);
 				} else {
 					removeComparatorElement(elem, parent);
 				}
 			}			
 		}
+		treeTable.getSelectionModel().clearSelection();
 		event.consume();
 	}
 
@@ -374,7 +386,7 @@ public class MetricView implements Initializable {
 				}); 
 
 			});
-			treeTable.setShowRoot(false);
+			treeTable.setShowRoot(true);
 			treeTable.getRoot().setExpanded(true);
 		}
 	
@@ -417,7 +429,6 @@ public class MetricView implements Initializable {
 		
 		
 		treeTable.setRoot(origRoot);
-		treeTable.setShowRoot(false);
 		origRoot.setExpanded(true);
 	}
 	
