@@ -11,20 +11,30 @@ private static final Float DEFAULT_WEIGHT = 0f;
 	private Comparator comparator;
 	private Float weight;
 	private String name;
+	private Boolean ignored;
 	
 	public FXComparatorElement(Comparator comparator, Float weight) {
 		this.comparatorType = splitByLastDot(comparator);
 		this.comparator = comparator;
 		this.weight = weight;
 		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
+		this.ignored = false;
 	}
 	
+	public FXComparatorElement(Comparator comparator, Float weight, Boolean ignored) {
+		this.comparatorType = splitByLastDot(comparator);
+		this.comparator = comparator;
+		this.weight = weight;
+		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
+		this.ignored = ignored;
+	}
 	
 	public FXComparatorElement(String type) {
 		this.comparator = null;
 		this.comparatorType = type;
 		this.weight = 1f;
 		this.name = type;
+		this.ignored = false;
 	}
 	
 	public FXComparatorElement(Comparator comparator) {
@@ -62,5 +72,13 @@ private static final Float DEFAULT_WEIGHT = 0f;
 	
 	public String getName() {
 		return name;
+	}
+	
+	public void setIgnored(Boolean ignored) {
+		this.ignored = ignored;
+	}
+	
+	public Boolean getIgnored() {
+		return ignored;
 	}
 }

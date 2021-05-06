@@ -268,25 +268,24 @@ public class MetricView implements Initializable {
 	
 	private void initIgnoreTable() {
 		comparatorTypes = FXCollections.<Map<String, String>>observableArrayList();
-//		ignoreList.addAll(comparatorTypes);
-//		metricTable.setItems();
-		nameColumn.setCellValueFactory(new MapValueFactory<>("type"));
-//		ignoreColumn.setCellValueFactory(new MapValueFactory<>("ignored"));
+		nameColumn.setCellValueFactory(new MapValueFactory<String>("type"));
 		ignoreColumn.setCellValueFactory(cell -> {
 			final Map<String, String> element = cell.getValue();
 			final BooleanProperty prop = new SimpleBooleanProperty(Boolean.parseBoolean(element.get("ignored")));
+			prop.addListener((p, old, value) -> {
+				element.put("ignored", value.toString());
+			});
 			return prop;
 		});
 		ignoreColumn.setCellFactory(CheckBoxTableCell.forTableColumn(ignoreColumn));
 		metricTable.getItems().addAll(comparatorTypes);
 		
 		metricTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);	
-		metricTable.getSelectionModel().selectedItemProperty().addListener((obvservable, oldValue, newValue) -> {
+		metricTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == oldValue || newValue == null) {
 				metricTable.getSelectionModel().clearSelection();
-				System.out.println("Nothing selected");
-//				treeTable.setRoot(origRoot);
-				System.out.println(treeTable.getRoot().getChildren() + "");
+//				System.out.println("Nothing selected");
+//				System.out.println(treeTable.getRoot().getChildren() + "");
 				
 				//
 //				treeTable.getSelectionModel().clearSelection();
@@ -342,7 +341,7 @@ public class MetricView implements Initializable {
 //		metricTree.setShowRoot(true);
 //		
 		newTableRoot.setExpanded(true); //
-		treeTable.setShowRoot(true); //
+		treeTable.setShowRoot(false); //
 		
 		
 //		return originalRoot;
