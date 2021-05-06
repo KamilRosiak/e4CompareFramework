@@ -21,6 +21,8 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.util.MetricUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -46,11 +48,13 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.util.Callback;
+import javafx.util.Pair;
 import javafx.util.StringConverter;
 
 /**
@@ -63,11 +67,11 @@ import javafx.util.StringConverter;
 public class MetricView implements Initializable {
 	//IgnoreTable
 	@FXML
-	private TableView<Map> metricTable; 
+	private TableView<Map<String, String>> metricTable; 
 	@FXML
 	private TableColumn<Map, String> nameColumn;				
-//	@FXML
-//	private TableColumn ignoreColumn;
+	@FXML
+	private TableColumn<Map, Boolean> ignoreColumn;
 	
 	@FXML
 	private TreeTableView<FXComparatorElement> treeTable;
@@ -267,6 +271,13 @@ public class MetricView implements Initializable {
 //		ignoreList.addAll(comparatorTypes);
 //		metricTable.setItems();
 		nameColumn.setCellValueFactory(new MapValueFactory<>("type"));
+//		ignoreColumn.setCellValueFactory(new MapValueFactory<>("ignored"));
+		ignoreColumn.setCellValueFactory(cell -> {
+			final Map<String, String> element = cell.getValue();
+			final BooleanProperty prop = new SimpleBooleanProperty(Boolean.parseBoolean(element.get("ignored")));
+			return prop;
+		});
+		ignoreColumn.setCellFactory(CheckBoxTableCell.forTableColumn(ignoreColumn));
 		metricTable.getItems().addAll(comparatorTypes);
 		
 		metricTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);	
@@ -354,14 +365,16 @@ public class MetricView implements Initializable {
 				System.err.println("elemType: " + elem.getComparatorType());
 				boolean knownType = false;
 				for(Map<String, String> e : comparatorTypes) {
-					if (e.containsValue(elem.getComparatorType())) {
+					if (e.get("type").equals(elem.getComparatorType())) {
 						knownType = true;
 					}
 				}
 				if(!knownType) {
 					Map<String, String> item = new HashMap<>();
 					item.put("type", elem.getComparatorType());
+					item.put("ignored", new String("false"));
 					comparatorTypes.add(item);
+
 					TreeItem<FXComparatorElement> typeNode = new TreeItem<FXComparatorElement>(new FXComparatorElement(elem.getComparatorType()));
 					treeTable.getRoot().getChildren().add(typeNode);
 					typeNode.setExpanded(true);
@@ -404,6 +417,7 @@ public class MetricView implements Initializable {
 		availableTypes.forEach(type -> {
 			Map<String, String> item = new HashMap<>();
 			item.put("type", type);
+			item.put("ignored", new String("false"));
 			comparatorTypes.add(item);
 		});
 		

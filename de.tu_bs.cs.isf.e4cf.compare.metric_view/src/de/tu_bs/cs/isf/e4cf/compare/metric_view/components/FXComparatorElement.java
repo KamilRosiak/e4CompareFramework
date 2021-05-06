@@ -19,6 +19,7 @@ private static final Float DEFAULT_WEIGHT = 0f;
 		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
 	}
 	
+	
 	public FXComparatorElement(String type) {
 		this.comparator = null;
 		this.comparatorType = type;
@@ -62,5 +63,4 @@ private static final Float DEFAULT_WEIGHT = 0f;
 	public String getName() {
 		return name;
 	}
-
 }
