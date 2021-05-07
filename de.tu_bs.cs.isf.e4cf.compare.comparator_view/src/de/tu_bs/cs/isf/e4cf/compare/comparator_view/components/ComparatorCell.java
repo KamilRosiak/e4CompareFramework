@@ -1,7 +1,8 @@
-package de.tu_bs.cs.isf.e4cf.compare.metric_view.components;
+package de.tu_bs.cs.isf.e4cf.compare.comparator_view.components;
 
 import javax.inject.Inject;
 
+import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.stringtable.MetricST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.collections.FXCollections;
@@ -13,16 +14,16 @@ import javafx.scene.input.MouseButton;
 
 public class ComparatorCell extends TreeTableCell<FXComparatorElement, String> {
 	
-	 @Override
-	    protected void updateItem(String item, boolean empty) {
-	        super.updateItem(item, empty);
+	@Override
+    protected void updateItem(String item, boolean empty) {
+        super.updateItem(item, empty);
 
-	        if (item == null || empty) {
-	            setText(null);
-	        } else {
-	            setText(item);
-	        }
-	    }
+        if (item == null || empty) {
+            setText(null);
+        } else {
+            setText(item);
+        }
+    }
 	
 	private ServiceContainer serviceContainer;
 	

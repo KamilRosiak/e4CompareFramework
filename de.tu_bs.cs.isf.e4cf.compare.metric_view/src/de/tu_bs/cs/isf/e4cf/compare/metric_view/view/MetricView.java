@@ -13,19 +13,16 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.fx.ui.controls.tree.FilterableTreeItem;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.util.MetricUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
+import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.MetricViewCell;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -33,28 +30,22 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.MapValueFactory;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.util.Callback;
-import javafx.util.Pair;
 import javafx.util.StringConverter;
 
 /**
@@ -126,7 +117,6 @@ public class MetricView implements Initializable {
 					children.add(child.getValue().getComparator());
 				}
 				Comparator[] comparators = new Comparator[children.size()];
-				currentMetric.removeComparators(children.toArray(comparators));
 				
 				// remove the comparator element from the metric table
 				removeComparatorElement(elem, parent);
@@ -141,15 +131,15 @@ public class MetricView implements Initializable {
 					comparatorTypes.remove(typeIndex);
 				} else {
 					removeComparatorElement(elem, parent);
+					treeTable.getSelectionModel().clearSelection();
 				}
 			}			
 		}
-		treeTable.getSelectionModel().clearSelection();
+		
 		event.consume();
 	}
 
 	private void removeComparatorElement(TreeItem<FXComparatorElement> elem, TreeItem<FXComparatorElement> parent) {
-		currentMetric.removeComparator(elem.getValue().getComparatorType(), elem.getValue().getComparator());
 		elem.getValue().setWeight(0f);
 		parent.getChildren().remove(elem);
 	}
@@ -171,7 +161,26 @@ public class MetricView implements Initializable {
 	@FXML
 	private void storeMetric(Event event) {
 		event.consume();
+		if (currentMetric == null) {
+			initMetric(new ActionEvent());
+		}
+		updateMetric(currentMetric);
 		MetricUtil.serializesMetric(currentMetric);
+	}
+
+	private void updateMetric(MetricImpl metric) {
+		metric.getAllComparator().clear();
+		treeTable.getRoot().getChildren().forEach(typeNode -> {
+			typeNode.getChildren().forEach(comparatorNode -> {
+				metric.addComparator(comparatorNode.getValue().getComparatorType(), comparatorNode.getValue().getComparator());
+			});
+		});
+
+		Map<String, Boolean> ignoredTypes = new HashMap<>();
+		comparatorTypes.forEach(type -> {
+			ignoredTypes.put(type.get("type"), Boolean.parseBoolean(type.get("ignored")));
+		});
+		metric.setNodeIgnorList(ignoredTypes);
 	}
 	
 	@FXML
@@ -179,7 +188,6 @@ public class MetricView implements Initializable {
 		currentMetric = MetricUtil.deSerializesMetric(RCPMessageProvider.getFilePathDialog("Select Metric File", ""));
 		Map<String, List<Comparator>> comparators = currentMetric.getAllComparator();
 		treeTable.setRoot(null);
-		comparatorTypes.clear();
 		List<FXComparatorElement> elements = new ArrayList<>();
 		for (String type : comparators.keySet()) {
 			for (Comparator c : comparators.get(type)) {
@@ -187,6 +195,13 @@ public class MetricView implements Initializable {
 			}
 		}
 		initData(elements);
+
+		Map<String, Boolean> ignoredTypes = currentMetric.getNodeIgnoreList();
+		for (Map<String, String> entry : comparatorTypes) {
+			if (ignoredTypes.get(entry.get("type"))) {
+				entry.put("ignored", "true");
+			}
+		}
 		event.consume();
 	}
 	
@@ -206,10 +221,15 @@ public class MetricView implements Initializable {
 	}
 	
  	private void initMetricTable() {
- 		
+ 		comparatorColumn.setCellFactory(new Callback<TreeTableColumn<FXComparatorElement, String>, TreeTableCell<FXComparatorElement, String>>() {
+			@Override
+			public TreeTableCell<FXComparatorElement, String> call(TreeTableColumn<FXComparatorElement, String> e) {
+				return new MetricViewCell(comparatorTypes);
+			}
+		});
  		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
  		weightColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new StringToFloatConverter()));
- 		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory("weight"));
+ 		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("weight"));
  		weightColumn.setOnEditCommit(event -> {
  			event.getTreeTablePosition().getTreeItem().getValue().setWeight(event.getNewValue());
  		});
@@ -232,7 +252,7 @@ public class MetricView implements Initializable {
                         .then((ContextMenu)null)  
                         .otherwise(contextMenu)  
                 ); 
-                
+                row.setDisclosureNode(null);
 				return row;
 			}
  			
@@ -314,7 +334,7 @@ public class MetricView implements Initializable {
 //		newRoot.getChildren().removeIf(elem -> (elem.toString().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))));
 		
 		//
-		TreeItem<FXComparatorElement> newTableRoot = new TreeItem<>(new FXComparatorElement("Comparators"));
+		TreeItem<FXComparatorElement> newTableRoot = new TreeItem<>(new FXComparatorElement("Root"));
 		newTableRoot.getChildren().addAll(treeTable.getRoot().getChildren());
 //		for (TreeItem<FXMetricViewElement> elem: newTableRoot.getChildren()) {
 //			if (elem.getValue().getComparatorType().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))) {
@@ -353,9 +373,6 @@ public class MetricView implements Initializable {
 	@Optional 
 	@Inject
 	private void metricTreeComparatorList(@UIEventTopic("comparatorListEvent") List<FXComparatorElement> comparators) {
-		if (currentMetric == null) {
-			initMetric(new ActionEvent());
-		}
 		if (treeTable.getRoot() == null) {
 			treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			initData(comparators);			
@@ -392,7 +409,6 @@ public class MetricView implements Initializable {
 						}
 						if (newElem) {
 							child.getChildren().add(new TreeItem<FXComparatorElement>(elem));
-							currentMetric.addComparator(elem.getComparatorType(), elem.getComparator());
 						}
 					}
 				}); 
@@ -406,6 +422,7 @@ public class MetricView implements Initializable {
 			
 	
 	private void initData(List<FXComparatorElement> comparators) {
+		comparatorTypes.clear();
 		TreeItem<FXComparatorElement> origRoot = new TreeItem<FXComparatorElement>(new FXComparatorElement("Root"));
 		
 		Set<String> availableTypes = new HashSet<>();
@@ -431,7 +448,6 @@ public class MetricView implements Initializable {
 			origRoot.getChildren().forEach(child -> {				
 				if (child.getValue().getComparatorType().equals(elem.getComparatorType())) {
 					child.getChildren().add(new TreeItem<>(elem));
-					currentMetric.addComparator(elem.getComparatorType(), elem.getComparator());
 				}
 			}); 
 

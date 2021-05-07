@@ -19,7 +19,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.comparator_view.ComparatorViewController;
-import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.ComparatorCell;
+import de.tu_bs.cs.isf.e4cf.compare.comparator_view.components.ComparatorCell;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.stringtable.MetricST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -146,7 +146,7 @@ public class ComparatorView implements Initializable {
 				return new ComparatorCell(serviceContainer);
 			}
 		});
-		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory("name"));
+		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		
 		
  		
