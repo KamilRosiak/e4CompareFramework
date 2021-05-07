@@ -126,7 +126,6 @@ public class MetricView implements Initializable {
 					children.add(child.getValue().getComparator());
 				}
 				Comparator[] comparators = new Comparator[children.size()];
-				currentMetric.removeComparators(children.toArray(comparators));
 				
 				// remove the comparator element from the metric table
 				removeComparatorElement(elem, parent);
@@ -149,7 +148,6 @@ public class MetricView implements Initializable {
 	}
 
 	private void removeComparatorElement(TreeItem<FXComparatorElement> elem, TreeItem<FXComparatorElement> parent) {
-		currentMetric.removeComparator(elem.getValue().getComparatorType(), elem.getValue().getComparator());
 		elem.getValue().setWeight(0f);
 		parent.getChildren().remove(elem);
 	}
@@ -171,7 +169,26 @@ public class MetricView implements Initializable {
 	@FXML
 	private void storeMetric(Event event) {
 		event.consume();
+		if (currentMetric == null) {
+			initMetric(new ActionEvent());
+		}
+		updateMetric(currentMetric);
 		MetricUtil.serializesMetric(currentMetric);
+	}
+
+	private void updateMetric(MetricImpl metric) {
+		metric.getAllComparator().clear();
+		treeTable.getRoot().getChildren().forEach(typeNode -> {
+			typeNode.getChildren().forEach(comparatorNode -> {
+				metric.addComparator(comparatorNode.getValue().getComparatorType(), comparatorNode.getValue().getComparator());
+			});
+		});
+
+		Map<String, Boolean> ignoredTypes = new HashMap<>();
+		comparatorTypes.forEach(type -> {
+			ignoredTypes.put(type.get("type"), Boolean.parseBoolean(type.get("ignored")));
+		});
+		metric.setNodeIgnorList(ignoredTypes);
 	}
 	
 	@FXML
@@ -179,7 +196,6 @@ public class MetricView implements Initializable {
 		currentMetric = MetricUtil.deSerializesMetric(RCPMessageProvider.getFilePathDialog("Select Metric File", ""));
 		Map<String, List<Comparator>> comparators = currentMetric.getAllComparator();
 		treeTable.setRoot(null);
-		comparatorTypes.clear();
 		List<FXComparatorElement> elements = new ArrayList<>();
 		for (String type : comparators.keySet()) {
 			for (Comparator c : comparators.get(type)) {
@@ -187,6 +203,13 @@ public class MetricView implements Initializable {
 			}
 		}
 		initData(elements);
+
+		Map<String, Boolean> ignoredTypes = currentMetric.getNodeIgnoreList();
+		for (Map<String, String> entry : comparatorTypes) {
+			if (ignoredTypes.get(entry.get("type"))) {
+				entry.put("ignored", "true");
+			}
+		}
 		event.consume();
 	}
 	
@@ -314,7 +337,7 @@ public class MetricView implements Initializable {
 //		newRoot.getChildren().removeIf(elem -> (elem.toString().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))));
 		
 		//
-		TreeItem<FXComparatorElement> newTableRoot = new TreeItem<>(new FXComparatorElement("Comparators"));
+		TreeItem<FXComparatorElement> newTableRoot = new TreeItem<>(new FXComparatorElement("Root"));
 		newTableRoot.getChildren().addAll(treeTable.getRoot().getChildren());
 //		for (TreeItem<FXMetricViewElement> elem: newTableRoot.getChildren()) {
 //			if (elem.getValue().getComparatorType().contains(selection.toString().substring(selection.toString().lastIndexOf("=") + 1, selection.toString().lastIndexOf("}")))) {
@@ -353,9 +376,6 @@ public class MetricView implements Initializable {
 	@Optional 
 	@Inject
 	private void metricTreeComparatorList(@UIEventTopic("comparatorListEvent") List<FXComparatorElement> comparators) {
-		if (currentMetric == null) {
-			initMetric(new ActionEvent());
-		}
 		if (treeTable.getRoot() == null) {
 			treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			initData(comparators);			
@@ -392,7 +412,6 @@ public class MetricView implements Initializable {
 						}
 						if (newElem) {
 							child.getChildren().add(new TreeItem<FXComparatorElement>(elem));
-							currentMetric.addComparator(elem.getComparatorType(), elem.getComparator());
 						}
 					}
 				}); 
@@ -406,6 +425,7 @@ public class MetricView implements Initializable {
 			
 	
 	private void initData(List<FXComparatorElement> comparators) {
+		comparatorTypes.clear();
 		TreeItem<FXComparatorElement> origRoot = new TreeItem<FXComparatorElement>(new FXComparatorElement("Root"));
 		
 		Set<String> availableTypes = new HashSet<>();
@@ -431,7 +451,6 @@ public class MetricView implements Initializable {
 			origRoot.getChildren().forEach(child -> {				
 				if (child.getValue().getComparatorType().equals(elem.getComparatorType())) {
 					child.getChildren().add(new TreeItem<>(elem));
-					currentMetric.addComparator(elem.getComparatorType(), elem.getComparator());
 				}
 			}); 
 
