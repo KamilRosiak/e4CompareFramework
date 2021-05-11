@@ -19,6 +19,7 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.util.MetricUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.MetricViewCell;
+import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.WeightCell;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -228,10 +229,21 @@ public class MetricView implements Initializable {
 			}
 		});
  		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
- 		weightColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new StringToFloatConverter()));
+ 		//weightColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new StringToFloatConverter()));
+		weightColumn.setCellFactory(new Callback<TreeTableColumn<FXComparatorElement, Float>, TreeTableCell<FXComparatorElement, Float>>() {
+			@Override
+			public TreeTableCell<FXComparatorElement, Float> call(TreeTableColumn<FXComparatorElement, Float> e) {
+				return new WeightCell();
+			}
+		});
  		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("weight"));
  		weightColumn.setOnEditCommit(event -> {
- 			event.getTreeTablePosition().getTreeItem().getValue().setWeight(event.getNewValue());
+ 			
+ 			event.getTreeTablePosition().getTreeItem().getValue().setWeight(event.getNewValue()); //leaf
+// 			if (event.getTreeTablePosition().getTreeItem().getParent().getValue().getWeight() ) {
+// 				
+// 			}
+ 			
  		});
  		treeTable.setRowFactory(new Callback<TreeTableView<FXComparatorElement>, TreeTableRow<FXComparatorElement>>() {
 
@@ -437,7 +449,7 @@ public class MetricView implements Initializable {
 	
 	private void initData(List<FXComparatorElement> comparators) {
 		comparatorTypes.clear();
-		TreeItem<FXComparatorElement> origRoot = new TreeItem<FXComparatorElement>(new FXComparatorElement("Root"));
+		TreeItem<FXComparatorElement> origRoot = new TreeItem<FXComparatorElement>(new FXComparatorElement("Metric"));
 		
 		Set<String> availableTypes = new HashSet<>();
 		comparators.forEach(elem -> {
@@ -452,7 +464,7 @@ public class MetricView implements Initializable {
 		});
 		
 		comparatorTypes.forEach(elem -> {
-			TreeItem<FXComparatorElement> subRootNode = new TreeItem<>(new FXComparatorElement(elem.get("type")));
+			TreeItem<FXComparatorElement> subRootNode = new TreeItem<FXComparatorElement>(new FXComparatorElement(elem.get("type")));
 			origRoot.getChildren().add(subRootNode);
 			subRootNode.setExpanded(true);
 		});
@@ -461,7 +473,7 @@ public class MetricView implements Initializable {
 		comparators.forEach(elem -> {
 			origRoot.getChildren().forEach(child -> {				
 				if (child.getValue().getComparatorType().equals(elem.getComparatorType())) {
-					child.getChildren().add(new TreeItem<>(elem));
+					child.getChildren().add(new TreeItem<FXComparatorElement>(elem));
 				}
 			}); 
 

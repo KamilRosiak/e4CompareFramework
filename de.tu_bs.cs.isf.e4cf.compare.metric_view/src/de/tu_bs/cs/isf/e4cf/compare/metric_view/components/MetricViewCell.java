@@ -10,7 +10,7 @@ import javafx.scene.control.TreeTableCell;
 
 public class MetricViewCell extends TreeTableCell<FXComparatorElement, String> {
 	
-    ObservableList<Map<String, String>> ignoredTypes = FXCollections.<Map<String, String>>observableArrayList();;
+    ObservableList<Map<String, String>> ignoredTypes = FXCollections.<Map<String, String>>observableArrayList();
 
 	@Override
     protected void updateItem(String item, boolean empty) {

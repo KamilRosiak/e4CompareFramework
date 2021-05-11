@@ -28,11 +28,13 @@ private static final Float DEFAULT_WEIGHT = 0f;
 		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
 		this.ignored = ignored;
 	}
-	
+	/**
+	 * typeNode Constructor
+	 */
 	public FXComparatorElement(String type) {
 		this.comparator = null;
 		this.comparatorType = type;
-		this.weight = 1f;
+		this.weight = DEFAULT_WEIGHT;
 		this.name = type;
 		this.ignored = false;
 	}
