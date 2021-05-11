@@ -252,7 +252,7 @@ public class MetricView implements Initializable {
                         .then((ContextMenu)null)  
                         .otherwise(contextMenu)  
                 ); 
-                row.setDisclosureNode(null);
+//                row.setDisclosureNode(null);
 				return row;
 			}
  			
@@ -294,6 +294,11 @@ public class MetricView implements Initializable {
 			final BooleanProperty prop = new SimpleBooleanProperty(Boolean.parseBoolean(element.get("ignored")));
 			prop.addListener((p, old, value) -> {
 				element.put("ignored", value.toString());
+				if (value.toString().equals("true")) {
+					getTypeNode(element).setExpanded(false);;
+				} else {
+					getTypeNode(element).setExpanded(true);
+				}
 			});
 			return prop;
 		});
@@ -325,6 +330,15 @@ public class MetricView implements Initializable {
 			}
 		});
 		
+	}
+
+	private TreeItem<FXComparatorElement> getTypeNode(final Map<String, String> element) {
+		for (TreeItem<FXComparatorElement> type : treeTable.getRoot().getChildren()) {
+			if (type.getValue().getName().equals(element.get("type"))) {
+				return type;
+			}
+		}
+		return new TreeItem<>();
 	}
 	
 	private void applyIgnoreTypes(Object selection) {

@@ -19,10 +19,10 @@ public class MetricViewCell extends TreeTableCell<FXComparatorElement, String> {
             setText(null);
         } else if (isIgnored(getType(item))) {
             setDisable(true);
-            setText(item);
+            setText(item);    
         } else {
             setDisable(false);
-        	setText(item);
+            setText(item);
         }
     }
 	
@@ -44,7 +44,7 @@ public class MetricViewCell extends TreeTableCell<FXComparatorElement, String> {
     private String getType(String item) {
         for (TreeItem<FXComparatorElement> type : getTreeTableView().getRoot().getChildren()) {
             String currentType = type.getValue().getName();
-            if (currentType.equals(item)) {
+            if (currentType.equals(item)) {        
                 return currentType;
             }
         }
