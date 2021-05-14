@@ -42,6 +42,7 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.control.TreeItem.TreeModificationEvent;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
@@ -230,12 +231,7 @@ public class MetricView implements Initializable {
 		});
  		comparatorColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
  		//weightColumn.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new StringToFloatConverter()));
-		weightColumn.setCellFactory(new Callback<TreeTableColumn<FXComparatorElement, Float>, TreeTableCell<FXComparatorElement, Float>>() {
-			@Override
-			public TreeTableCell<FXComparatorElement, Float> call(TreeTableColumn<FXComparatorElement, Float> e) {
-				return new WeightCell();
-			}
-		});
+		weightColumn.setCellFactory(WeightCell.forTreeTableColumn());
  		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("weight"));
  		weightColumn.setOnEditCommit(event -> {
  			
@@ -273,44 +269,30 @@ public class MetricView implements Initializable {
  		treeTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
  	}
  	
- 	public class StringToFloatConverter extends StringConverter<Float> {
-
-		@Override
-		public String toString(Float object) {
-			return String.valueOf(object);			
-		}
-
-		@Override
-		public Float fromString(String string) {
-			treeTable.getRoot().getChildren().forEach(child -> {
-				child.getChildren().forEach(child2 -> {
-					System.out.println(child2.getValue().getWeight());
-				});
-			});
-			try {
-				return Float.parseFloat(string);
-				
-			} catch(NumberFormatException e) {
-				System.err.println("Float Format Error");
-			}
-			return null;
-		}
-		
-	}
 	
 	private void initIgnoreTable() {
+		EventHandler<TreeModificationEvent<String>> expandHandler = new EventHandler<TreeModificationEvent<String>>() {
+			@Override
+			public void handle(TreeModificationEvent<String> event) {
+				event.getTreeItem().setExpanded(false);
+				event.consume();
+				
+			}
+		};
+
 		comparatorTypes = FXCollections.<Map<String, String>>observableArrayList();
 		nameColumn.setCellValueFactory(new MapValueFactory<String>("type"));
 		ignoreColumn.setCellValueFactory(cell -> {
 			final Map<String, String> element = cell.getValue();
 			final BooleanProperty prop = new SimpleBooleanProperty(Boolean.parseBoolean(element.get("ignored")));
-			prop.addListener((p, old, value) -> {
-				element.put("ignored", value.toString());
-				if (value.toString().equals("true")) {
-					getTypeNode(element).setExpanded(false);;
+			prop.addListener((p, old, booleanIgnored) -> {
+				element.put("ignored", booleanIgnored.toString());
+				if (booleanIgnored) {
+					getTypeNode(element).addEventHandler(TreeItem.branchExpandedEvent(), expandHandler); 
 				} else {
-					getTypeNode(element).setExpanded(true);
+					getTypeNode(element).removeEventHandler(TreeItem.branchExpandedEvent(), expandHandler);
 				}
+				getTypeNode(element).setExpanded(!booleanIgnored);
 			});
 			return prop;
 		});
