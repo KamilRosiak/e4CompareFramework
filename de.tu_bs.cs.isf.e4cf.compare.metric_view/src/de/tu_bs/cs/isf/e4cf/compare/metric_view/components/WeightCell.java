@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.metric_view.components;
 
+import javax.annotation.PostConstruct;
+
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
@@ -16,22 +18,29 @@ public class WeightCell extends TextFieldTreeTableCell<FXComparatorElement, Floa
 
 	public WeightCell() {
 		super();
+		setConverter(new StringToFloatConverter());
 	}
 	
 	@Override
 	public void updateItem(Float item, boolean empty) {
         super.updateItem(item, empty);
-        TreeTableView<FXComparatorElement> table = getTreeTableView();
-        TreeTableRow<FXComparatorElement> row = getTreeTableRow();
-        FXComparatorElement fx = row.getItem();
+		if (empty || item == null) {
+			setText(null);
+			setGraphic(null);
+			return;
+		}
+
+        FXComparatorElement fx = getTreeTableRow().getItem();
         if (fx != null) {
-	        if (getTreeTableRow().getItem().getComparator() == null && getTreeTableRow().getItem().getName() != null) {
+	        if (fx.getComparator() == null && fx.getName() != null) {
 	        	setEditable(false);
+//	        	setDisable(true);
 	        } else {
 	        	setEditable(true);
-	        }
-	        setText(String.valueOf(item));
+//	        	setDisable(false);
+	        }   
 		}
+		setText(String.valueOf(item));
 	}
 
 	public static class StringToFloatConverter extends StringConverter<Float> {
@@ -54,12 +63,18 @@ public class WeightCell extends TextFieldTreeTableCell<FXComparatorElement, Floa
 			} catch(NumberFormatException e) {
 				System.err.println("Float Format Error");
 			}
-			return null;
+			return 0f;
 		}
 	
 	}
 	
 	public static Callback<TreeTableColumn<FXComparatorElement, Float>, TreeTableCell<FXComparatorElement, Float>> forTreeTableColumn() {
-        return forTreeTableColumn(new StringToFloatConverter());
+        return new Callback<TreeTableColumn<FXComparatorElement, Float>, TreeTableCell<FXComparatorElement, Float>>() {
+			@Override
+			public TreeTableCell<FXComparatorElement, Float> call(TreeTableColumn<FXComparatorElement, Float> param) {
+				
+				return new WeightCell();
+			}
+		};
     }
 }
