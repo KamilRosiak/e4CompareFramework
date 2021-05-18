@@ -1,19 +1,14 @@
 package de.tu_bs.cs.isf.e4cf.compare.metric_view.components;
 
-import javax.annotation.PostConstruct;
 
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableRow;
-import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import javafx.util.converter.DefaultStringConverter;
 
 
-//need to changed to TextFieldTreeTableCell
 public class WeightCell extends TextFieldTreeTableCell<FXComparatorElement, Float> {
 
 	public WeightCell() {
@@ -32,15 +27,18 @@ public class WeightCell extends TextFieldTreeTableCell<FXComparatorElement, Floa
 
         FXComparatorElement fx = getTreeTableRow().getItem();
         if (fx != null) {
+        	//typeNode
 	        if (fx.getComparator() == null && fx.getName() != null) {
 	        	setEditable(false);
-//	        	setDisable(true);
+	        //leafNode
 	        } else {
 	        	setEditable(true);
-//	        	setDisable(false);
 	        }   
 		}
-		setText(String.valueOf(item));
+		if (item > 100f) {
+			setTextFill(Color.RED);
+		}
+		setText(String.format("%.2f", item));
 	}
 
 	public static class StringToFloatConverter extends StringConverter<Float> {

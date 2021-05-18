@@ -21,6 +21,7 @@ import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.MetricViewCell;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.WeightCell;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -38,17 +39,15 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeItem.TreeModificationEvent;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.control.TreeItem.TreeModificationEvent;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.MapValueFactory;
-import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 
 /**
  * This class represents the controller class of the ui/view/MetricView.fxml and
@@ -85,8 +84,11 @@ public class MetricView implements Initializable {
 	private MetricImpl currentMetric;
 	
 	private ObservableList<Map<String, String>> comparatorTypes;
+
+	@Inject
+	private ServiceContainer container;
 	
-	
+
 	
 	@FXML
 	private void addToIgnoreList(ActionEvent event) {
@@ -234,12 +236,27 @@ public class MetricView implements Initializable {
 		weightColumn.setCellFactory(WeightCell.forTreeTableColumn());
  		weightColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("weight"));
  		weightColumn.setOnEditCommit(event -> {
- 			
- 			event.getTreeTablePosition().getTreeItem().getValue().setWeight(event.getNewValue()); //leaf
-// 			if (event.getTreeTablePosition().getTreeItem().getParent().getValue().getWeight() ) {
-// 				
+ 			float oldChildWeight = event.getTreeTablePosition().getTreeItem().getValue().getWeight();
+ 			float parentWeight = event.getTreeTablePosition().getTreeItem().getParent().getValue().getWeight();
+ 			float changedWeight = parentWeight + event.getNewValue() - oldChildWeight;
+ 			float rootWeight = treeTable.getRoot().getValue().getWeight();
+			float newRootWeight = rootWeight + changedWeight - parentWeight;
+// 			if (changedWeight > 100.0f) {
+// 				RCPMessageProvider.informationMessage("Cumulative Weight higher than 100", "Please insert a smaller weight");
+// 				event.consume();
+// 			} else {
+ 				event.getTreeTablePosition().getTreeItem().getValue().setWeight(event.getNewValue());	
+ 	 			event.getTreeTablePosition().getTreeItem().getParent().getValue().setWeight(changedWeight);
+ 	 			treeTable.getRoot().getValue().setWeight(newRootWeight);
+ 	 			
+ 	 			
 // 			}
- 			
+			
+
+			
+
+ 			event.consume();
+ 			treeTable.refresh();
  		});
  		treeTable.setRowFactory(new Callback<TreeTableView<FXComparatorElement>, TreeTableRow<FXComparatorElement>>() {
 
