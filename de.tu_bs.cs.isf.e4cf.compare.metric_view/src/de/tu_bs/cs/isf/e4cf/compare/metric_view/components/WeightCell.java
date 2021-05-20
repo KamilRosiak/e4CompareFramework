@@ -1,6 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.compare.metric_view.components;
 
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
@@ -10,7 +14,9 @@ import javafx.util.StringConverter;
 
 
 public class WeightCell extends TextFieldTreeTableCell<FXComparatorElement, Float> {
-
+	
+	private static DecimalFormat df = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
+	
 	public WeightCell() {
 		super();
 		setConverter(new StringToFloatConverter());
@@ -38,7 +44,7 @@ public class WeightCell extends TextFieldTreeTableCell<FXComparatorElement, Floa
 		if (item > 100f) {
 			setTextFill(Color.RED);
 		}
-		setText(String.format("%.2f", item));
+		setText(df.format(item));
 	}
 
 	public static class StringToFloatConverter extends StringConverter<Float> {
