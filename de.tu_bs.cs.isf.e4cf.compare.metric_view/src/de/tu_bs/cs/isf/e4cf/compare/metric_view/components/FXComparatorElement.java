@@ -14,7 +14,7 @@ private static final Float DEFAULT_WEIGHT = 0f;
 	private Boolean ignored;
 	
 	public FXComparatorElement(Comparator comparator, Float weight) {
-		this.comparatorType = splitByLastDot(comparator);
+		this.comparatorType = comparator.getSupportedNodeType();
 		this.comparator = comparator;
 		this.weight = weight;
 		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
@@ -22,7 +22,7 @@ private static final Float DEFAULT_WEIGHT = 0f;
 	}
 	
 	public FXComparatorElement(Comparator comparator, Float weight, Boolean ignored) {
-		this.comparatorType = splitByLastDot(comparator);
+		this.comparatorType = comparator.getSupportedNodeType();
 		this.comparator = comparator;
 		this.weight = weight;
 		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
@@ -54,11 +54,6 @@ private static final Float DEFAULT_WEIGHT = 0f;
 	public String getComparatorType() {
 		return comparatorType;
 	}
-	
-	public void setComparatorType(String comparatorType) {
-		this.comparatorType = comparatorType;
-	}
-	
 	
 	public Float getWeight() {
 		return weight;
