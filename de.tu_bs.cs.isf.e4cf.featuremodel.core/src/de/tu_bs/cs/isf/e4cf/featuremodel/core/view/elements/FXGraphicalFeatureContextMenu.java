@@ -21,6 +21,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 	
 	public void createControl() {
+		this.getItems().add(createCompoundFeature());
 		this.getItems().add(addFeatureBelowMenuItem());
 		this.getItems().add(addFeatureAboveMenuItem());
 		this.getItems().add(removeFeatureMenuItem());
@@ -40,6 +41,19 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(moveSelectedFeatures());
 		this.getItems().add(new SeparatorMenuItem());
 		this.getItems().add(setDescription());
+	}
+	
+	private MenuItem createCompoundFeature() {
+		MenuItem item = new MenuItem("Create CompundFeature");
+		item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	eventBroker.send(FDEventTable.ADD_COMPOUNDFEATURE, fxGraFeature);	
+            	event.consume();
+            }
+        });
+
+		return item;
 	}
 
 	private MenuItem addFeatureBelowMenuItem() {

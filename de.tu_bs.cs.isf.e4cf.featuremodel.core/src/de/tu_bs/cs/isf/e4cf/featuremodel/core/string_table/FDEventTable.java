@@ -11,6 +11,7 @@ public class FDEventTable {
 	/**
 	 * VIEW EVENTS
 	 */
+	public static final String ADD_COMPOUNDFEATURE = "ADD_COMPOUNDFEATURE_EVENT";
 	public static final String RENAMED_FEATURE_EVENT = "RENAMED_FEATURE_EVENT";
 	public static final String ADD_FEATURE_EVENT = "ADD_FEATURE_EVENT";
 	public static final String ADD_FEATURE_BELOW = "ADD_FEATURE_BELOW_EVENT";
