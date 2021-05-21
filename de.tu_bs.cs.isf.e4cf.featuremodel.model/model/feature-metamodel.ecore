@@ -50,4 +50,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="referencedArtifactIDs"
         upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompoundFeature" eSuperTypes="#//Feature">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="featurediagramm" lowerBound="1"
+        eType="#//FeatureDiagramm" containment="true"/>
+  </eClassifiers>
 </ecore:EPackage>

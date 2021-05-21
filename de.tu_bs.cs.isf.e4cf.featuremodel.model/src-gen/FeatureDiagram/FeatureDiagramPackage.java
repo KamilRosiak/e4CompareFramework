@@ -359,6 +359,152 @@ public interface FeatureDiagramPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link FeatureDiagram.impl.CompoundFeatureImpl <em>Compound Feature</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see FeatureDiagram.impl.CompoundFeatureImpl
+	 * @see FeatureDiagram.impl.FeatureDiagramPackageImpl#getCompoundFeature()
+	 * @generated
+	 */
+	int COMPOUND_FEATURE = 4;
+
+	/**
+	 * The feature id for the '<em><b>Children</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__CHILDREN = FEATURE__CHILDREN;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__NAME = FEATURE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Description</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__DESCRIPTION = FEATURE__DESCRIPTION;
+
+	/**
+	 * The feature id for the '<em><b>Mandatory</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__MANDATORY = FEATURE__MANDATORY;
+
+	/**
+	 * The feature id for the '<em><b>Alternative</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__ALTERNATIVE = FEATURE__ALTERNATIVE;
+
+	/**
+	 * The feature id for the '<em><b>Or</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__OR = FEATURE__OR;
+
+	/**
+	 * The feature id for the '<em><b>Graphicalfeature</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__GRAPHICALFEATURE = FEATURE__GRAPHICALFEATURE;
+
+	/**
+	 * The feature id for the '<em><b>Parent</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__PARENT = FEATURE__PARENT;
+
+	/**
+	 * The feature id for the '<em><b>Identifier</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__IDENTIFIER = FEATURE__IDENTIFIER;
+
+	/**
+	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__ABSTRACT = FEATURE__ABSTRACT;
+
+	/**
+	 * The feature id for the '<em><b>Hidden</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__HIDDEN = FEATURE__HIDDEN;
+
+	/**
+	 * The feature id for the '<em><b>Artifact References</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__ARTIFACT_REFERENCES = FEATURE__ARTIFACT_REFERENCES;
+
+	/**
+	 * The feature id for the '<em><b>Featurediagramm</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE__FEATUREDIAGRAMM = FEATURE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Compound Feature</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE_FEATURE_COUNT = FEATURE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>Compound Feature</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPOUND_FEATURE_OPERATION_COUNT = FEATURE_OPERATION_COUNT + 0;
+
+
+	/**
 	 * Returns the meta object for class '{@link FeatureDiagram.FeatureDiagramm <em>Feature Diagramm</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -630,6 +776,27 @@ public interface FeatureDiagramPackage extends EPackage {
 	EAttribute getArtifactReference_ReferencedArtifactIDs();
 
 	/**
+	 * Returns the meta object for class '{@link FeatureDiagram.CompoundFeature <em>Compound Feature</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Compound Feature</em>'.
+	 * @see FeatureDiagram.CompoundFeature
+	 * @generated
+	 */
+	EClass getCompoundFeature();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link FeatureDiagram.CompoundFeature#getFeaturediagramm <em>Featurediagramm</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Featurediagramm</em>'.
+	 * @see FeatureDiagram.CompoundFeature#getFeaturediagramm()
+	 * @see #getCompoundFeature()
+	 * @generated
+	 */
+	EReference getCompoundFeature_Featurediagramm();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -859,6 +1026,24 @@ public interface FeatureDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute ARTIFACT_REFERENCE__REFERENCED_ARTIFACT_IDS = eINSTANCE.getArtifactReference_ReferencedArtifactIDs();
+
+		/**
+		 * The meta object literal for the '{@link FeatureDiagram.impl.CompoundFeatureImpl <em>Compound Feature</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see FeatureDiagram.impl.CompoundFeatureImpl
+		 * @see FeatureDiagram.impl.FeatureDiagramPackageImpl#getCompoundFeature()
+		 * @generated
+		 */
+		EClass COMPOUND_FEATURE = eINSTANCE.getCompoundFeature();
+
+		/**
+		 * The meta object literal for the '<em><b>Featurediagramm</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPOUND_FEATURE__FEATUREDIAGRAMM = eINSTANCE.getCompoundFeature_Featurediagramm();
 
 	}
 

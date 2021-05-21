@@ -58,6 +58,15 @@ public interface FeatureDiagramFactory extends EFactory {
 	ArtifactReference createArtifactReference();
 
 	/**
+	 * Returns a new object of class '<em>Compound Feature</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Compound Feature</em>'.
+	 * @generated
+	 */
+	CompoundFeature createCompoundFeature();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

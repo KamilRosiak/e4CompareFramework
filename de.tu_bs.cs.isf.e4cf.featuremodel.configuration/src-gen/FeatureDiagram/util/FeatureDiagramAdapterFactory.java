@@ -84,6 +84,10 @@ public class FeatureDiagramAdapterFactory extends AdapterFactoryImpl {
 				return createArtifactReferenceAdapter();
 			}
 			@Override
+			public Adapter caseCompoundFeature(CompoundFeature object) {
+				return createCompoundFeatureAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -156,6 +160,20 @@ public class FeatureDiagramAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createArtifactReferenceAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link FeatureDiagram.CompoundFeature <em>Compound Feature</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see FeatureDiagram.CompoundFeature
+	 * @generated
+	 */
+	public Adapter createCompoundFeatureAdapter() {
 		return null;
 	}
 
