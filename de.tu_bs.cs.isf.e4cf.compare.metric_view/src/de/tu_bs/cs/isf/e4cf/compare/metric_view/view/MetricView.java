@@ -199,11 +199,16 @@ public class MetricView implements Initializable {
 			}
 		}
 		initData(elements);
-
+		
 		Map<String, Boolean> ignoredTypes = currentMetric.getNodeIgnoreList();
 		for (Map<String, String> entry : comparatorTypes) {
 			if (ignoredTypes.get(entry.get("type"))) {
 				entry.put("ignored", "true");
+				for (TreeItem<FXComparatorElement> child : treeTable.getRoot().getChildren()) {
+					if (child.getValue().getComparatorType().equals(entry.get("type"))) {
+						child.setExpanded(false);
+					}
+				}
 			}
 		}
 		event.consume();
@@ -408,6 +413,10 @@ public class MetricView implements Initializable {
 			origRoot.getChildren().forEach(child -> {				
 				if (child.getValue().getComparatorType().equals(elem.getComparatorType())) {
 					child.getChildren().add(new TreeItem<FXComparatorElement>(elem));
+					float weight = child.getValue().getWeight();
+					child.getValue().setWeight(weight + elem.getWeight());
+					float rootWeight = origRoot.getValue().getWeight();
+					origRoot.getValue().setWeight(rootWeight + elem.getWeight());
 				}
 			}); 
 

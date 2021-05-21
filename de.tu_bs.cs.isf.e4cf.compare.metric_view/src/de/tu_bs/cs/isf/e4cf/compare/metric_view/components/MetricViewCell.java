@@ -18,8 +18,7 @@ import javafx.scene.input.KeyEvent;
 public class MetricViewCell extends TreeTableCell<FXComparatorElement, String> {
 	
     ObservableList<Map<String, String>> ignoredTypes = FXCollections.<Map<String, String>>observableArrayList();
-//    Node disclosureNode;
-//    boolean node = false;
+    
 	@Override
     protected void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
@@ -27,17 +26,9 @@ public class MetricViewCell extends TreeTableCell<FXComparatorElement, String> {
             setText(null);
         } else if (isIgnored(getType(item))) {
         	getTreeTableRow().setDisable(true);  
-//        	if (!node) {
-//        		node = true;
-//        		disclosureNode = getTreeTableRow().getDisclosureNode();
-//        	}
-//        	getTreeTableRow().setDisclosureNode(null);
-        	
-        	//getTreeTableRow().setEventDispatcher(new CellEventDispatcher());
             setText(item);    
         } else {
         	getTreeTableRow().setDisable(false);
-//        	getTreeTableRow().setDisclosureNode(disclosureNode);
             setText(item);
         }
     }

@@ -11,14 +11,12 @@ private static final Float DEFAULT_WEIGHT = 0f;
 	private Comparator comparator;
 	private Float weight;
 	private String name;
-	private Boolean ignored;
 	
 	public FXComparatorElement(Comparator comparator, Float weight) {
 		this.comparatorType = comparator.getSupportedNodeType();
 		this.comparator = comparator;
 		this.weight = comparator.getWeight();
 		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
-		this.ignored = false;
 	}
 	
 	public FXComparatorElement(Comparator comparator, Float weight, Boolean ignored) {
@@ -26,7 +24,6 @@ private static final Float DEFAULT_WEIGHT = 0f;
 		this.comparator = comparator;
 		this.weight = comparator.getWeight();
 		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
-		this.ignored = ignored;
 	}
 	/**
 	 * typeNode Constructor
@@ -36,7 +33,6 @@ private static final Float DEFAULT_WEIGHT = 0f;
 		this.comparatorType = type;
 		this.weight = DEFAULT_WEIGHT;
 		this.name = type;
-		this.ignored = false;
 	}
 	
 	public FXComparatorElement(Comparator comparator) {
@@ -74,11 +70,4 @@ private static final Float DEFAULT_WEIGHT = 0f;
 		return name;
 	}
 	
-	public void setIgnored(Boolean ignored) {
-		this.ignored = ignored;
-	}
-	
-	public Boolean getIgnored() {
-		return ignored;
-	}
 }
