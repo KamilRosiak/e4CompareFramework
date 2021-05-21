@@ -25,7 +25,7 @@ public class MetricViewCell extends TreeTableCell<FXComparatorElement, String> {
         if (item == null || empty) {
             setText(null);
         } else if (isIgnored(getType(item))) {
-        	getTreeTableRow().setDisable(true);  
+        	getTreeTableRow().setDisable(true); 
             setText(item);    
         } else {
         	getTreeTableRow().setDisable(false);

@@ -207,6 +207,7 @@ public class MetricView implements Initializable {
 				for (TreeItem<FXComparatorElement> child : treeTable.getRoot().getChildren()) {
 					if (child.getValue().getComparatorType().equals(entry.get("type"))) {
 						child.setExpanded(false);
+						treeTable.getRoot().getValue().setWeight(treeTable.getRoot().getValue().getWeight() - child.getValue().getWeight());
 					}
 				}
 			}
@@ -293,6 +294,7 @@ public class MetricView implements Initializable {
  	
 	
 	private void initIgnoreTable() {
+		//needed to make sure it is no longer possible to expand using arrow keys
 		EventHandler<TreeModificationEvent<String>> expandHandler = new EventHandler<TreeModificationEvent<String>>() {
 			@Override
 			public void handle(TreeModificationEvent<String> event) {
@@ -311,10 +313,14 @@ public class MetricView implements Initializable {
 				element.put("ignored", booleanIgnored.toString());
 				if (booleanIgnored) {
 					getTypeNode(element).addEventHandler(TreeItem.branchExpandedEvent(), expandHandler); 
+					getTypeNode(element).setExpanded(false);
+					treeTable.getRoot().getValue().setWeight(treeTable.getRoot().getValue().getWeight() - getTypeNode(element).getValue().getWeight());
+					
 				} else {
 					getTypeNode(element).removeEventHandler(TreeItem.branchExpandedEvent(), expandHandler);
-				}
-				getTypeNode(element).setExpanded(!booleanIgnored);
+					getTypeNode(element).setExpanded(true);
+					treeTable.getRoot().getValue().setWeight(treeTable.getRoot().getValue().getWeight() + getTypeNode(element).getValue().getWeight());
+				}				
 			});
 			return prop;
 		});
