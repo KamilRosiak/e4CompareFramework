@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import FeatureDiagram.ArtifactReference;
+import FeatureDiagram.CompoundFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.FeatureDiagramm;
@@ -348,6 +349,25 @@ public class FeatureModelEditorView {
 		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
 		Feature newFeature = createFeatureWithPosition("NewFeature_" + currentModel.getIdentifierIncrement(), false,
 				xPos, yPos);
+		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
+
+		return newGraFeature;
+	}
+
+	public FXGraphicalFeature addCompoundFeatureBelow(FXGraphicalFeature parent) {
+		services.eventBroker.send(FDEventTable.LOGGER_ADD_COMPOUNDFEATURE_BELOW, parent);
+		// create new feature and add under the parent
+		double xPos = parent.getFeature().getGraphicalfeature().getX();
+		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
+		CompoundFeature newFeature = createCompoundFeatureWithPosition("NewCompoundFeature_" + currentModel.getIdentifierIncrement(), false,
+				xPos, yPos);
+		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
+		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("compoundFeature");
+
+		return newGraFeature;
+	}
+
+	private FXGraphicalFeature createGraphicalFeatureBelow(FXGraphicalFeature parent, Feature newFeature) {
 		// add the new feature to model and set the parent feature
 		parent.getFeature().getChildren().add(newFeature);
 		newFeature.setParent(parent.getFeature());
@@ -368,7 +388,6 @@ public class FeatureModelEditorView {
 
 		// set the current feature, necessary for feature split
 		setCurrentFeature(newGraFeature);
-
 		return newGraFeature;
 	}
 
@@ -580,11 +599,37 @@ public class FeatureModelEditorView {
 		return feature;
 	}
 
+	public CompoundFeature createCompoundFeature(String featureName, boolean isRoot) {
+		CompoundFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createCompoundFeature();
+		feature.setName(featureName);
+		feature.setMandatory(isRoot ? true : false);
+		feature.setAlternative(false);
+		feature.setOr(false);
+		feature.setAbstract(false);
+		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
+		feature.setIdentifier(currentModel.getIdentifierIncrement());
+		GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();
+		feature.setGraphicalfeature(graphicalFeature);
+
+		ArtifactReference artifactReference = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
+		artifactReference.setArtifactClearName(feature.getName());
+		feature.getArtifactReferences().add(artifactReference);
+
+		return feature;
+	}
+
 	/**
 	 * Creates a feature with given name and sets the x and y position
 	 */
 	public Feature createFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
 		Feature feature = createFeature(featureName, isRoot);
+		feature.getGraphicalfeature().setX(x);
+		feature.getGraphicalfeature().setX(y);
+		return feature;
+	}
+	
+	public CompoundFeature createCompoundFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
+		CompoundFeature feature = createCompoundFeature(featureName, isRoot);
 		feature.getGraphicalfeature().setX(x);
 		feature.getGraphicalfeature().setX(y);
 		return feature;

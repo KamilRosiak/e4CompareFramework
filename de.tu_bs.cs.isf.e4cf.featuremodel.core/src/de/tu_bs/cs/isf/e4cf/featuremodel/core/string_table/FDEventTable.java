@@ -11,7 +11,8 @@ public class FDEventTable {
 	/**
 	 * VIEW EVENTS
 	 */
-	public static final String ADD_COMPOUNDFEATURE = "ADD_COMPOUNDFEATURE_EVENT";
+	public static final String ADD_COMPOUNDFEATURE_BELOW = "ADD_COMPOUNDFEATURE_BELOW_EVENT";
+	public static final String ADD_COMPOUNDFEATURE_ABOVE = "ADD_COMPOUNDFEATURE_ABOVE_EVENT";
 	public static final String RENAMED_FEATURE_EVENT = "RENAMED_FEATURE_EVENT";
 	public static final String ADD_FEATURE_EVENT = "ADD_FEATURE_EVENT";
 	public static final String ADD_FEATURE_BELOW = "ADD_FEATURE_BELOW_EVENT";
@@ -54,6 +55,7 @@ public class FDEventTable {
 	/**
 	 * LOGGER EVENTS
 	 */
+	public static final String LOGGER_ADD_COMPOUNDFEATURE_BELOW = "LOGGER_ADD_COMPOUNDFEATURE_BELOW";
 	public static final String LOGGER_ADD_FEATURE = "LOGGER_ADD_FEATURE";
 	public static final String LOGGER_ADD_FEATURE_BELOW = "LOGGER_ADD_FEATURE_BELOW";
 	public static final String LOGGER_ADD_FEATURE_ABOVE = "LOGGER_ADD_FEATURE_ABOVE";

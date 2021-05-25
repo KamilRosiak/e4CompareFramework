@@ -44,11 +44,11 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 	
 	private MenuItem createCompoundFeature() {
-		MenuItem item = new MenuItem("Create CompundFeature");
+		MenuItem item = new MenuItem("Create CompoundFeature");
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.ADD_COMPOUNDFEATURE, fxGraFeature);	
+            	eventBroker.send(FDEventTable.ADD_COMPOUNDFEATURE_BELOW, fxGraFeature);	
             	event.consume();
             }
         });
