@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 
+import FeatureDiagram.CompoundFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.event.ActionEvent;
@@ -15,15 +16,20 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	private FXGraphicalFeature fxGraFeature;
 	
 	public FXGraphicalFeatureContextMenu(IEventBroker eventBroker, FXGraphicalFeature fxGraFeature) {
-		createControl();
+		if (fxGraFeature.getFeature() instanceof CompoundFeature) {
+			createCompoundControl();
+		} else {
+			createControl();
+		}
+		
 		this.eventBroker = eventBroker;
 		this.fxGraFeature = fxGraFeature;
 	}
-	
+ 	
 	public void createControl() {
-		this.getItems().add(createCompoundFeature());
 		this.getItems().add(addFeatureBelowMenuItem());
 		this.getItems().add(addFeatureAboveMenuItem());
+		this.getItems().add(createCompoundFeature());
 		this.getItems().add(removeFeatureMenuItem());
 		this.getItems().add(removeFeatureTrunkMenuItem());
 		this.getItems().add(splitFeature());
@@ -39,6 +45,17 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(addFeatureMakeHiddenMenuItem());
 		this.getItems().add(mergeSelectedFeatures());
 		this.getItems().add(moveSelectedFeatures());
+		this.getItems().add(new SeparatorMenuItem());
+		this.getItems().add(setDescription());
+	}
+
+	private void createCompoundControl() {
+		this.getItems().add(removeFeatureMenuItem());
+
+		this.getItems().add(new SeparatorMenuItem());
+		this.getItems().add(setOptionMenuItem());
+		this.getItems().add(setMandatoryMenuItem());
+
 		this.getItems().add(new SeparatorMenuItem());
 		this.getItems().add(setDescription());
 	}

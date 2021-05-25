@@ -87,6 +87,18 @@ public class FeatureModelEditorController {
 	}
 	
 	@Optional
+	@Inject
+	public void addCompoundFeatureAbove(@UIEventTopic(FDEventTable.ADD_COMPOUNDFEATURE_ABOVE) FXGraphicalFeature parentFeature) {
+		try {
+			view.addCompoundFeatureBelow(parentFeature);
+			
+		} catch (Exception e) {
+			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_COMPOUNDFEATURE_ABOVE, e.getMessage());
+			errorListeners.forEach(listener -> listener.onError(error));
+		}
+	}
+	
+	@Optional
 	@Inject 
 	public void addFeature(@UIEventTopic(FDEventTable.ADD_FEATURE_EVENT) Feature feature) {
 		try {

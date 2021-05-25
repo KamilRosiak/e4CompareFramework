@@ -160,14 +160,17 @@ public class FeatureModelEditorView {
 		// translate root pane to keep root feature node centered, as long the pane
 		// hasn't been moved before
 		scene.widthProperty().addListener((obs, oldVal, newVal) -> {
-			root.setTranslateX(root.getTranslateX() + (newVal.doubleValue() / 2 - oldVal.doubleValue() / 2) - (root.getWidth()/2));
+			root.setTranslateX(root.getTranslateX() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
 		});
 		scene.heightProperty().addListener((obs, oldVal, newVal) -> {
-			root.setTranslateY(root.getTranslateY() + (newVal.doubleValue() / 2 - oldVal.doubleValue() / 2) - (root.getHeight()/2));
+			root.setTranslateY(root.getTranslateY() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
 		});
 
 		// creating an empty feature diagram
 		createNewFeatureDiagram();
+		
+		root.setTranslateX(-30);
+		root.setTranslateY(-30);
 
 		return scene;
 	}
@@ -218,6 +221,9 @@ public class FeatureModelEditorView {
 		// add all Feature to front so that no overlapping exists.
 		for (FXGraphicalFeature fxFeature : featureList) {
 			fxFeature.toFront();
+			if (fxFeature.getFeature() instanceof CompoundFeature) {
+				fxFeature.getFeatureNameLabel().getStyleClass().add("compoundFeature");
+			}
 		}
 
 		root.setTranslateX(0d);
