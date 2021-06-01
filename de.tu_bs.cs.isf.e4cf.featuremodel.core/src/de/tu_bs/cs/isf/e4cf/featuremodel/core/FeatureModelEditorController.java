@@ -14,6 +14,7 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import FeatureDiagram.CompoundFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
@@ -69,11 +70,31 @@ public class FeatureModelEditorController {
 	} 
 
 	private Tab createNewTab(String title) {
-		Tab tab = new Tab(title);
+		Tab tab = newTab(title);
 		FeatureModelEditorView view = new FeatureModelEditorView(tab, services);
 		tab.setUserData(view);
 		tabPane.getTabs().add(tab);
 		return tab;
+	}
+
+	private Tab newTab(String title) {
+		Tab tab = new Tab(title);
+		tab.setOnCloseRequest(event -> {
+			((FeatureModelEditorView) tab.getUserData()).askToSave();		
+			// don't allow the tabPane to be empty
+			if (tabPane.getTabs().size() == 1) {
+				createNewTab("Feature Model");
+			}
+		});
+		return tab;
+	}
+
+	@Optional
+	@Inject
+	public void addNewTab(@UIEventTopic(FDEventTable.ADD_NEW_TAB) CompoundFeature feature) {
+		Tab newTab = createNewTab(feature.getName());
+		tabPane.getSelectionModel().select(newTab);
+		feature.setFeaturediagramm(getCurrentFeatureDiagram());
 	}
 
 	

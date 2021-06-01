@@ -366,11 +366,14 @@ public class FeatureModelEditorView {
 		// create new feature and add under the parent
 		double xPos = parent.getFeature().getGraphicalfeature().getX();
 		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
-		CompoundFeature newFeature = createCompoundFeatureWithPosition("NewCompoundFeature_" + currentModel.getIdentifierIncrement(), false,
+		String featureName = "NewCompoundFeature_" + currentModel.getIdentifierIncrement();
+		CompoundFeature newFeature = createCompoundFeatureWithPosition(featureName, false,
 				xPos, yPos);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("compoundFeature");
-
+	
+		services.eventBroker.send(FDEventTable.ADD_NEW_TAB, newFeature);
+		
 		return newGraFeature;
 	}
 
