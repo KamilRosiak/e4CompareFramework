@@ -48,6 +48,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FeatureModelEditorToo
 import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -75,7 +76,9 @@ public class FeatureModelEditorView {
 	private SelectionAreaHandler selectionHandler;
 	private PrimaryMouseButtonClickedHandler primaryMouseClickedHandler;
 	private ZoomHandler zoomHandler;
-	private Scene scene;
+
+	private Pane arrangementPane;
+
 	private Rectangle selectionRectangle;
 	private FeatureDiagramm currentModel;
 	private FXGraphicalFeature currentFeature;
@@ -86,9 +89,9 @@ public class FeatureModelEditorView {
 
 	private AnimationMap labelBorderAnimationMap;
 
-	public FeatureModelEditorView(FXCanvas canvas, ServiceContainer services) {
+	public FeatureModelEditorView(Tab tab, ServiceContainer services) {
 		this.services = services;
-		canvas.setScene(createScene());
+		tab.setContent(createScene());
 	}
 
 	/**
@@ -114,7 +117,7 @@ public class FeatureModelEditorView {
 	/**
 	 * This method creates the Scene and adds all Pane and Listener to it.
 	 */
-	private Scene createScene() {
+	private Pane createScene() {
 		initDataStructure();
 		root = new Pane();
 		root.setStyle("-fx-background-color: white;");
@@ -126,6 +129,7 @@ public class FeatureModelEditorView {
 
 		arrangementPane.setCenter(gesturePane);
 		arrangementPane.setTop(new FeatureModelEditorToolbar(services, this));
+		this.arrangementPane = arrangementPane;
 
 		// Creating and adding the mouse handler that allows zooming in and out with the
 		// mouse wheel.
@@ -135,13 +139,11 @@ public class FeatureModelEditorView {
 		// creating the selection rectangle
 		createSelectionRectangle(gesturePane);
 
-		scene = new Scene(arrangementPane);
-
 		// set theme from preferences
 		setTheme(PreferencesUtil
 				.getValueWithDefault(FDStringTable.BUNDLE_NAME, FDStringTable.FME_THEME_KEY, DefaultTheme.DEFAULT_THEME)
 				.getStringValue());
-		scene.addEventHandler(KeyEvent.ANY, new KeyTranslateHandler(root, 10d));
+		arrangementPane.addEventHandler(KeyEvent.ANY, new KeyTranslateHandler(root, 10d));
 
 		primaryMouseClickedHandler = new PrimaryMouseButtonClickedHandler(services);
 		gesturePane.addEventHandler(MouseEvent.MOUSE_PRESSED, primaryMouseClickedHandler);
@@ -159,10 +161,10 @@ public class FeatureModelEditorView {
 
 		// translate root pane to keep root feature node centered, as long the pane
 		// hasn't been moved before
-		scene.widthProperty().addListener((obs, oldVal, newVal) -> {
+		arrangementPane.widthProperty().addListener((obs, oldVal, newVal) -> {
 			root.setTranslateX(root.getTranslateX() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
 		});
-		scene.heightProperty().addListener((obs, oldVal, newVal) -> {
+		arrangementPane.heightProperty().addListener((obs, oldVal, newVal) -> {
 			root.setTranslateY(root.getTranslateY() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
 		});
 
@@ -171,12 +173,11 @@ public class FeatureModelEditorView {
 		
 		root.setTranslateX(-30);
 		root.setTranslateY(-30);
-
-		return scene;
+		return this.arrangementPane;
 	}
 
 	public void setTheme(String cssLocation) {
-		scene.getStylesheets().setAll(cssLocation);
+		arrangementPane.getStylesheets().setAll(cssLocation);
 	}
 
 	/**
