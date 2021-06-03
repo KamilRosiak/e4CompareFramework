@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import FeatureDiagram.ArtifactReference;
-import FeatureDiagram.CompoundFeature;
+import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.FeatureDiagramm;
@@ -222,7 +222,7 @@ public class FeatureModelEditorView {
 		// add all Feature to front so that no overlapping exists.
 		for (FXGraphicalFeature fxFeature : featureList) {
 			fxFeature.toFront();
-			if (fxFeature.getFeature() instanceof CompoundFeature) {
+			if (fxFeature.getFeature() instanceof ComponentFeature) {
 				fxFeature.getFeatureNameLabel().getStyleClass().add("compoundFeature");
 			}
 		}
@@ -361,13 +361,13 @@ public class FeatureModelEditorView {
 		return newGraFeature;
 	}
 
-	public FXGraphicalFeature addCompoundFeatureBelow(FXGraphicalFeature parent) {
+	public FXGraphicalFeature addComponentFeatureBelow(FXGraphicalFeature parent) {
 		services.eventBroker.send(FDEventTable.LOGGER_ADD_COMPOUNDFEATURE_BELOW, parent);
 		// create new feature and add under the parent
 		double xPos = parent.getFeature().getGraphicalfeature().getX();
 		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
-		String featureName = "NewCompoundFeature_" + currentModel.getIdentifierIncrement();
-		CompoundFeature newFeature = createCompoundFeatureWithPosition(featureName, false,
+		String featureName = "NewComponentFeature_" + currentModel.getIdentifierIncrement();
+		ComponentFeature newFeature = createComponentFeatureWithPosition(featureName, false,
 				xPos, yPos);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("compoundFeature");
@@ -609,8 +609,8 @@ public class FeatureModelEditorView {
 		return feature;
 	}
 
-	public CompoundFeature createCompoundFeature(String featureName, boolean isRoot) {
-		CompoundFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createCompoundFeature();
+	public ComponentFeature createComponentFeature(String featureName, boolean isRoot) {
+		ComponentFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createComponentFeature();
 		feature.setName(featureName);
 		feature.setMandatory(isRoot ? true : false);
 		feature.setAlternative(false);
@@ -638,8 +638,8 @@ public class FeatureModelEditorView {
 		return feature;
 	}
 	
-	public CompoundFeature createCompoundFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
-		CompoundFeature feature = createCompoundFeature(featureName, isRoot);
+	public ComponentFeature createComponentFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
+		ComponentFeature feature = createComponentFeature(featureName, isRoot);
 		feature.getGraphicalfeature().setX(x);
 		feature.getGraphicalfeature().setX(y);
 		return feature;

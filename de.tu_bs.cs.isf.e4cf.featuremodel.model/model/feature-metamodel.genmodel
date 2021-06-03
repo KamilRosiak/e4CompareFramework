@@ -38,8 +38,8 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//ArtifactReference/artifactClearName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//ArtifactReference/referencedArtifactIDs"/>
     </genClasses>
-    <genClasses ecoreClass="feature-metamodel.ecore#//CompoundFeature">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//CompoundFeature/featurediagramm"/>
+    <genClasses ecoreClass="feature-metamodel.ecore#//ComponentFeature">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//ComponentFeature/featurediagramm"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

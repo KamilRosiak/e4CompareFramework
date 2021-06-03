@@ -15,18 +15,18 @@ package FeatureDiagram;
  *   <li>{@link FeatureDiagram.ComponentFeature#getFeaturediagramm <em>Featurediagramm</em>}</li>
  * </ul>
  *
- * @see FeatureDiagram.FeatureDiagramPackage#getCompoundFeature()
+ * @see FeatureDiagram.FeatureDiagramPackage#getComponentFeature()
  * @model
  * @generated
  */
-public interface CompoundFeature extends Feature {
+public interface ComponentFeature extends Feature {
 	/**
 	 * Returns the value of the '<em><b>Featurediagramm</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Featurediagramm</em>' containment reference.
 	 * @see #setFeaturediagramm(FeatureDiagramm)
-	 * @see FeatureDiagram.FeatureDiagramPackage#getCompoundFeature_Featurediagramm()
+	 * @see FeatureDiagram.FeatureDiagramPackage#getComponentFeature_Featurediagramm()
 	 * @model containment="true" required="true"
 	 * @generated
 	 */

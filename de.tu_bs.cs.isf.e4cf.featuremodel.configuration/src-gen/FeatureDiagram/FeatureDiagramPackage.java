@@ -359,14 +359,14 @@ public interface FeatureDiagramPackage extends EPackage {
 
 
 	/**
-	 * The meta object id for the '{@link FeatureDiagram.impl.CompoundFeatureImpl <em>Compound Feature</em>}' class.
+	 * The meta object id for the '{@link FeatureDiagram.impl.ComponentFeatureImpl <em>Component Feature</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see FeatureDiagram.impl.CompoundFeatureImpl
-	 * @see FeatureDiagram.impl.FeatureDiagramPackageImpl#getCompoundFeature()
+	 * @see FeatureDiagram.impl.ComponentFeatureImpl
+	 * @see FeatureDiagram.impl.FeatureDiagramPackageImpl#getComponentFeature()
 	 * @generated
 	 */
-	int COMPOUND_FEATURE = 4;
+	int COMPONENT_FEATURE = 4;
 
 	/**
 	 * The feature id for the '<em><b>Children</b></em>' containment reference list.
@@ -375,7 +375,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__CHILDREN = FEATURE__CHILDREN;
+	int COMPONENT_FEATURE__CHILDREN = FEATURE__CHILDREN;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -384,7 +384,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__NAME = FEATURE__NAME;
+	int COMPONENT_FEATURE__NAME = FEATURE__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Description</b></em>' attribute.
@@ -393,7 +393,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__DESCRIPTION = FEATURE__DESCRIPTION;
+	int COMPONENT_FEATURE__DESCRIPTION = FEATURE__DESCRIPTION;
 
 	/**
 	 * The feature id for the '<em><b>Mandatory</b></em>' attribute.
@@ -402,7 +402,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__MANDATORY = FEATURE__MANDATORY;
+	int COMPONENT_FEATURE__MANDATORY = FEATURE__MANDATORY;
 
 	/**
 	 * The feature id for the '<em><b>Alternative</b></em>' attribute.
@@ -411,7 +411,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__ALTERNATIVE = FEATURE__ALTERNATIVE;
+	int COMPONENT_FEATURE__ALTERNATIVE = FEATURE__ALTERNATIVE;
 
 	/**
 	 * The feature id for the '<em><b>Or</b></em>' attribute.
@@ -420,7 +420,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__OR = FEATURE__OR;
+	int COMPONENT_FEATURE__OR = FEATURE__OR;
 
 	/**
 	 * The feature id for the '<em><b>Graphicalfeature</b></em>' containment reference.
@@ -429,7 +429,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__GRAPHICALFEATURE = FEATURE__GRAPHICALFEATURE;
+	int COMPONENT_FEATURE__GRAPHICALFEATURE = FEATURE__GRAPHICALFEATURE;
 
 	/**
 	 * The feature id for the '<em><b>Parent</b></em>' reference.
@@ -438,7 +438,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__PARENT = FEATURE__PARENT;
+	int COMPONENT_FEATURE__PARENT = FEATURE__PARENT;
 
 	/**
 	 * The feature id for the '<em><b>Identifier</b></em>' attribute.
@@ -447,7 +447,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__IDENTIFIER = FEATURE__IDENTIFIER;
+	int COMPONENT_FEATURE__IDENTIFIER = FEATURE__IDENTIFIER;
 
 	/**
 	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
@@ -456,7 +456,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__ABSTRACT = FEATURE__ABSTRACT;
+	int COMPONENT_FEATURE__ABSTRACT = FEATURE__ABSTRACT;
 
 	/**
 	 * The feature id for the '<em><b>Hidden</b></em>' attribute.
@@ -465,7 +465,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__HIDDEN = FEATURE__HIDDEN;
+	int COMPONENT_FEATURE__HIDDEN = FEATURE__HIDDEN;
 
 	/**
 	 * The feature id for the '<em><b>Artifact References</b></em>' containment reference list.
@@ -474,7 +474,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__ARTIFACT_REFERENCES = FEATURE__ARTIFACT_REFERENCES;
+	int COMPONENT_FEATURE__ARTIFACT_REFERENCES = FEATURE__ARTIFACT_REFERENCES;
 
 	/**
 	 * The feature id for the '<em><b>Featurediagramm</b></em>' containment reference.
@@ -483,26 +483,25 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE__FEATUREDIAGRAMM = FEATURE_FEATURE_COUNT + 0;
+	int COMPONENT_FEATURE__FEATUREDIAGRAMM = FEATURE_FEATURE_COUNT + 0;
 
 	/**
-	 * The number of structural features of the '<em>Compound Feature</em>' class.
+	 * The number of structural features of the '<em>Component Feature</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE_FEATURE_COUNT = FEATURE_FEATURE_COUNT + 1;
+	int COMPONENT_FEATURE_FEATURE_COUNT = FEATURE_FEATURE_COUNT + 1;
 
 	/**
-	 * The number of operations of the '<em>Compound Feature</em>' class.
+	 * The number of operations of the '<em>Component Feature</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPOUND_FEATURE_OPERATION_COUNT = FEATURE_OPERATION_COUNT + 0;
-
+	int COMPONENT_FEATURE_OPERATION_COUNT = FEATURE_OPERATION_COUNT + 0;
 
 	/**
 	 * Returns the meta object for class '{@link FeatureDiagram.FeatureDiagramm <em>Feature Diagramm</em>}'.
@@ -776,25 +775,25 @@ public interface FeatureDiagramPackage extends EPackage {
 	EAttribute getArtifactReference_ReferencedArtifactIDs();
 
 	/**
-	 * Returns the meta object for class '{@link FeatureDiagram.CompoundFeature <em>Compound Feature</em>}'.
+	 * Returns the meta object for class '{@link FeatureDiagram.ComponentFeature <em>Component Feature</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Compound Feature</em>'.
-	 * @see FeatureDiagram.CompoundFeature
+	 * @return the meta object for class '<em>Component Feature</em>'.
+	 * @see FeatureDiagram.ComponentFeature
 	 * @generated
 	 */
-	EClass getCompoundFeature();
+	EClass getComponentFeature();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link FeatureDiagram.CompoundFeature#getFeaturediagramm <em>Featurediagramm</em>}'.
+	 * Returns the meta object for the containment reference '{@link FeatureDiagram.ComponentFeature#getFeaturediagramm <em>Featurediagramm</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference '<em>Featurediagramm</em>'.
-	 * @see FeatureDiagram.CompoundFeature#getFeaturediagramm()
-	 * @see #getCompoundFeature()
+	 * @see FeatureDiagram.ComponentFeature#getFeaturediagramm()
+	 * @see #getComponentFeature()
 	 * @generated
 	 */
-	EReference getCompoundFeature_Featurediagramm();
+	EReference getComponentFeature_Featurediagramm();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -1028,14 +1027,14 @@ public interface FeatureDiagramPackage extends EPackage {
 		EAttribute ARTIFACT_REFERENCE__REFERENCED_ARTIFACT_IDS = eINSTANCE.getArtifactReference_ReferencedArtifactIDs();
 
 		/**
-		 * The meta object literal for the '{@link FeatureDiagram.impl.CompoundFeatureImpl <em>Compound Feature</em>}' class.
+		 * The meta object literal for the '{@link FeatureDiagram.impl.ComponentFeatureImpl <em>Component Feature</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see FeatureDiagram.impl.CompoundFeatureImpl
-		 * @see FeatureDiagram.impl.FeatureDiagramPackageImpl#getCompoundFeature()
+		 * @see FeatureDiagram.impl.ComponentFeatureImpl
+		 * @see FeatureDiagram.impl.FeatureDiagramPackageImpl#getComponentFeature()
 		 * @generated
 		 */
-		EClass COMPOUND_FEATURE = eINSTANCE.getCompoundFeature();
+		EClass COMPONENT_FEATURE = eINSTANCE.getComponentFeature();
 
 		/**
 		 * The meta object literal for the '<em><b>Featurediagramm</b></em>' containment reference feature.
@@ -1043,7 +1042,7 @@ public interface FeatureDiagramPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference COMPOUND_FEATURE__FEATUREDIAGRAMM = eINSTANCE.getCompoundFeature_Featurediagramm();
+		EReference COMPONENT_FEATURE__FEATUREDIAGRAMM = eINSTANCE.getComponentFeature_Featurediagramm();
 
 	}
 

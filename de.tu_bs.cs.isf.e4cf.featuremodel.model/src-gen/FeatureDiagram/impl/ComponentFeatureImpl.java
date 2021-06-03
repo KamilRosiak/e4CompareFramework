@@ -2,7 +2,7 @@
  */
 package FeatureDiagram.impl;
 
-import FeatureDiagram.CompoundFeature;
+import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.FeatureDiagramPackage;
 import FeatureDiagram.FeatureDiagramm;
 
@@ -16,18 +16,18 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Compound Feature</b></em>'.
+ * An implementation of the model object '<em><b>Component Feature</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link FeatureDiagram.impl.CompoundFeatureImpl#getFeaturediagramm <em>Featurediagramm</em>}</li>
+ *   <li>{@link FeatureDiagram.impl.ComponentFeatureImpl#getFeaturediagramm <em>Featurediagramm</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature {
+public class ComponentFeatureImpl extends FeatureImpl implements ComponentFeature {
 	/**
 	 * The cached value of the '{@link #getFeaturediagramm() <em>Featurediagramm</em>}' containment reference.
 	 * <!-- begin-user-doc -->
@@ -43,7 +43,7 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected CompoundFeatureImpl() {
+	protected ComponentFeatureImpl() {
 		super();
 	}
 
@@ -54,7 +54,7 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return FeatureDiagramPackage.Literals.COMPOUND_FEATURE;
+		return FeatureDiagramPackage.Literals.COMPONENT_FEATURE;
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 		FeatureDiagramm oldFeaturediagramm = featurediagramm;
 		featurediagramm = newFeaturediagramm;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM, oldFeaturediagramm, newFeaturediagramm);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM, oldFeaturediagramm, newFeaturediagramm);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
 		return msgs;
@@ -92,14 +92,14 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 		if (newFeaturediagramm != featurediagramm) {
 			NotificationChain msgs = null;
 			if (featurediagramm != null)
-				msgs = ((InternalEObject)featurediagramm).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM, null, msgs);
+				msgs = ((InternalEObject)featurediagramm).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM, null, msgs);
 			if (newFeaturediagramm != null)
-				msgs = ((InternalEObject)newFeaturediagramm).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM, null, msgs);
+				msgs = ((InternalEObject)newFeaturediagramm).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM, null, msgs);
 			msgs = basicSetFeaturediagramm(newFeaturediagramm, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM, newFeaturediagramm, newFeaturediagramm));
+			eNotify(new ENotificationImpl(this, Notification.SET, FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM, newFeaturediagramm, newFeaturediagramm));
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM:
+			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				return basicSetFeaturediagramm(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
@@ -124,7 +124,7 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM:
+			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				return getFeaturediagramm();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -138,7 +138,7 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM:
+			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				setFeaturediagramm((FeatureDiagramm)newValue);
 				return;
 		}
@@ -153,7 +153,7 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM:
+			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				setFeaturediagramm((FeatureDiagramm)null);
 				return;
 		}
@@ -168,10 +168,10 @@ public class CompoundFeatureImpl extends FeatureImpl implements CompoundFeature 
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case FeatureDiagramPackage.COMPOUND_FEATURE__FEATUREDIAGRAMM:
+			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				return featurediagramm != null;
 		}
 		return super.eIsSet(featureID);
 	}
 
-} //CompoundFeatureImpl
+} //ComponentFeatureImpl

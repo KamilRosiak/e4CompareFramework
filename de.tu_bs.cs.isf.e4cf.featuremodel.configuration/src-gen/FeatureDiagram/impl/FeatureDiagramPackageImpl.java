@@ -7,7 +7,7 @@ import CrossTreeConstraints.CrossTreeConstraintsPackage;
 import CrossTreeConstraints.impl.CrossTreeConstraintsPackageImpl;
 
 import FeatureDiagram.ArtifactReference;
-import FeatureDiagram.CompoundFeature;
+import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.FeatureDiagramPackage;
@@ -65,7 +65,7 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass compoundFeatureEClass = null;
+	private EClass componentFeatureEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -394,8 +394,8 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 	 * @generated
 	 */
 	@Override
-	public EClass getCompoundFeature() {
-		return compoundFeatureEClass;
+	public EClass getComponentFeature() {
+		return componentFeatureEClass;
 	}
 
 	/**
@@ -404,8 +404,8 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 	 * @generated
 	 */
 	@Override
-	public EReference getCompoundFeature_Featurediagramm() {
-		return (EReference)compoundFeatureEClass.getEStructuralFeatures().get(0);
+	public EReference getComponentFeature_Featurediagramm() {
+		return (EReference)componentFeatureEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -466,8 +466,8 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		createEAttribute(artifactReferenceEClass, ARTIFACT_REFERENCE__ARTIFACT_CLEAR_NAME);
 		createEAttribute(artifactReferenceEClass, ARTIFACT_REFERENCE__REFERENCED_ARTIFACT_IDS);
 
-		compoundFeatureEClass = createEClass(COMPOUND_FEATURE);
-		createEReference(compoundFeatureEClass, COMPOUND_FEATURE__FEATUREDIAGRAMM);
+		componentFeatureEClass = createEClass(COMPONENT_FEATURE);
+		createEReference(componentFeatureEClass, COMPONENT_FEATURE__FEATUREDIAGRAMM);
 	}
 
 	/**
@@ -501,7 +501,7 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
-		compoundFeatureEClass.getESuperTypes().add(this.getFeature());
+		componentFeatureEClass.getESuperTypes().add(this.getFeature());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(featureDiagrammEClass, FeatureDiagramm.class, "FeatureDiagramm", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -533,8 +533,8 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		initEAttribute(getArtifactReference_ArtifactClearName(), ecorePackage.getEString(), "artifactClearName", null, 1, 1, ArtifactReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getArtifactReference_ReferencedArtifactIDs(), ecorePackage.getEString(), "referencedArtifactIDs", null, 0, -1, ArtifactReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(compoundFeatureEClass, CompoundFeature.class, "CompoundFeature", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getCompoundFeature_Featurediagramm(), this.getFeatureDiagramm(), null, "featurediagramm", null, 1, 1, CompoundFeature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(componentFeatureEClass, ComponentFeature.class, "ComponentFeature", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getComponentFeature_Featurediagramm(), this.getFeatureDiagramm(), null, "featurediagramm", null, 1, 1, ComponentFeature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

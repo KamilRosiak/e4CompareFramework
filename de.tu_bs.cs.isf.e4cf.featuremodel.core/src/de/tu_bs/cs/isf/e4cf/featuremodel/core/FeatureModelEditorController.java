@@ -14,7 +14,7 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import FeatureDiagram.CompoundFeature;
+import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
@@ -91,7 +91,7 @@ public class FeatureModelEditorController {
 
 	@Optional
 	@Inject
-	public void addNewTab(@UIEventTopic(FDEventTable.ADD_NEW_TAB) CompoundFeature feature) {
+	public void addNewTab(@UIEventTopic(FDEventTable.ADD_NEW_TAB) ComponentFeature feature) {
 		Tab newTab = createNewTab(feature.getName());
 		tabPane.getSelectionModel().select(newTab);
 		feature.setFeaturediagramm(getCurrentFeatureDiagram());
@@ -124,7 +124,7 @@ public class FeatureModelEditorController {
 	@Inject
 	public void addCompoundFeatureBelow(@UIEventTopic(FDEventTable.ADD_COMPOUNDFEATURE_BELOW) FXGraphicalFeature parentFeature) {
 		try {
-			getCurrentView().addCompoundFeatureBelow(parentFeature);
+			getCurrentView().addComponentFeatureBelow(parentFeature);
 			
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_COMPOUNDFEATURE_BELOW, e.getMessage());
@@ -136,7 +136,7 @@ public class FeatureModelEditorController {
 	@Inject
 	public void addCompoundFeatureAbove(@UIEventTopic(FDEventTable.ADD_COMPOUNDFEATURE_ABOVE) FXGraphicalFeature parentFeature) {
 		try {
-			getCurrentView().addCompoundFeatureBelow(parentFeature);
+			getCurrentView().addComponentFeatureBelow(parentFeature);
 			
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_COMPOUNDFEATURE_ABOVE, e.getMessage());

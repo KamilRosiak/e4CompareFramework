@@ -2,7 +2,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 
-import FeatureDiagram.CompoundFeature;
+import FeatureDiagram.ComponentFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.event.ActionEvent;
@@ -16,7 +16,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	private FXGraphicalFeature fxGraFeature;
 	
 	public FXGraphicalFeatureContextMenu(IEventBroker eventBroker, FXGraphicalFeature fxGraFeature) {
-		if (fxGraFeature.getFeature() instanceof CompoundFeature) {
+		if (fxGraFeature.getFeature() instanceof ComponentFeature) {
 			createCompoundControl();
 		} else {
 			createControl();
