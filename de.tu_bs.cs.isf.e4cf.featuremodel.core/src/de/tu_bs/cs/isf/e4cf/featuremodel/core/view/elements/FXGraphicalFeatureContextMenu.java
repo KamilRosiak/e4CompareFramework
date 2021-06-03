@@ -17,7 +17,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	
 	public FXGraphicalFeatureContextMenu(IEventBroker eventBroker, FXGraphicalFeature fxGraFeature) {
 		if (fxGraFeature.getFeature() instanceof ComponentFeature) {
-			createCompoundControl();
+			createComponentControl();
 		} else {
 			createControl();
 		}
@@ -29,7 +29,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	public void createControl() {
 		this.getItems().add(addFeatureBelowMenuItem());
 		this.getItems().add(addFeatureAboveMenuItem());
-		this.getItems().add(createCompoundFeature());
+		this.getItems().add(createComponentFeature());
 		this.getItems().add(removeFeatureMenuItem());
 		this.getItems().add(removeFeatureTrunkMenuItem());
 		this.getItems().add(splitFeature());
@@ -49,23 +49,35 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(setDescription());
 	}
 
-	private void createCompoundControl() {
-		this.getItems().add(removeFeatureMenuItem());
+	private void createComponentControl() {
+		this.getItems().add(removeFeatureMenuItem());		
 
 		this.getItems().add(new SeparatorMenuItem());
-		this.getItems().add(setOptionMenuItem());
-		this.getItems().add(setMandatoryMenuItem());
-
-		this.getItems().add(new SeparatorMenuItem());
+		this.getItems().add(renameFeatureMenuItem());
 		this.getItems().add(setDescription());
 	}
 	
-	private MenuItem createCompoundFeature() {
-		MenuItem item = new MenuItem("Create CompoundFeature");
+	private MenuItem renameFeatureMenuItem() {
+		MenuItem item = new MenuItem("Rename Feature");
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.ADD_COMPOUNDFEATURE_BELOW, fxGraFeature);	
+            	hide();				
+            	fxGraFeature.showRenameFeatureDialog();
+            	eventBroker.send(FDEventTable.RENAMED_FEATURE_EVENT, fxGraFeature.getFeature());
+            	event.consume();
+            }
+        });
+
+		return item;
+	}
+	
+	private MenuItem createComponentFeature() {
+		MenuItem item = new MenuItem("Create ComponentFeature");
+		item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	eventBroker.send(FDEventTable.ADD_COMPONENTFEATURE_BELOW, fxGraFeature);	
             	event.consume();
             }
         });
@@ -258,6 +270,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+				hide();
             	eventBroker.send(FDEventTable.SET_DESCRIPTION, fxGraFeature);	
             	event.consume();
             }

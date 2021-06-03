@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Display;
 
 import FeatureDiagram.ArtifactReference;
+import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
@@ -179,19 +180,27 @@ public class FXGraphicalFeature extends VBox  {
 		featureNameLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if(event.getButton().equals(MouseButton.PRIMARY)) {
 				if(event.getClickCount() == 2) {
-					services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_RENAME, feature);
-					FMESimpleTextInputDialog dialog = new FMESimpleTextInputDialog(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE,feature.getName());
-					String newName = dialog.show(Double.valueOf(Display.getCurrent().getCursorLocation().x), Double.valueOf(Display.getCurrent().getCursorLocation().y));
-					if(!newName.equals(feature.getName())) {
-						feature.setName(newName);
-						featureNameLabel.setText(newName);
+					if (getFeature() instanceof ComponentFeature) { // open feature diagram tab for component features
+						services.eventBroker.send(FDEventTable.OPEN_FEATURE_DIAGRAM, (ComponentFeature) getFeature());
+					} else { // show the rename dialog for normal features
+						showRenameFeatureDialog();
 						event.consume();
-						services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 					}
 				}
 			}
 		});
 		getChildren().add(featureNameLabel);
+	}
+
+	public void showRenameFeatureDialog() {
+		services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_RENAME, feature);
+		FMESimpleTextInputDialog dialog = new FMESimpleTextInputDialog(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE,feature.getName());
+		String newName = dialog.show(Double.valueOf(Display.getCurrent().getCursorLocation().x), Double.valueOf(Display.getCurrent().getCursorLocation().y));
+		if(!newName.equals(feature.getName())) {
+			feature.setName(newName);
+			featureNameLabel.setText(newName);
+			services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
+		}
 	}
 	
 	/**

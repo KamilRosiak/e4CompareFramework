@@ -27,7 +27,7 @@
 	-fx-font-size: 10px;
 }
 
-.compoundFeature {
+.componentFeature {
 	-fx-background-color: 
         #000000,
         linear-gradient(#B9E3FF, #62FA90),
@@ -42,7 +42,7 @@
 	-fx-border-width: 1px;	
 }
 
-.compoundFeature:hover {
+.componentFeature:hover {
 	-fx-background-color: 
         #b1c6fc,
         linear-gradient(#B9E3FF, #62FA90),

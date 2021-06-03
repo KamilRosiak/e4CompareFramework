@@ -223,7 +223,7 @@ public class FeatureModelEditorView {
 		for (FXGraphicalFeature fxFeature : featureList) {
 			fxFeature.toFront();
 			if (fxFeature.getFeature() instanceof ComponentFeature) {
-				fxFeature.getFeatureNameLabel().getStyleClass().add("compoundFeature");
+				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
 			}
 		}
 
@@ -362,7 +362,7 @@ public class FeatureModelEditorView {
 	}
 
 	public FXGraphicalFeature addComponentFeatureBelow(FXGraphicalFeature parent) {
-		services.eventBroker.send(FDEventTable.LOGGER_ADD_COMPOUNDFEATURE_BELOW, parent);
+		services.eventBroker.send(FDEventTable.LOGGER_ADD_COMPONENTFEATURE_BELOW, parent);
 		// create new feature and add under the parent
 		double xPos = parent.getFeature().getGraphicalfeature().getX();
 		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
@@ -370,7 +370,7 @@ public class FeatureModelEditorView {
 		ComponentFeature newFeature = createComponentFeatureWithPosition(featureName, false,
 				xPos, yPos);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
-		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("compoundFeature");
+		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 	
 		services.eventBroker.send(FDEventTable.ADD_NEW_TAB, newFeature);
 		
@@ -654,6 +654,10 @@ public class FeatureModelEditorView {
 	 */
 	public List<FXGraphicalFeature> getFeatureList() {
 		return featureList;
+	}
+	
+	public FeatureDiagramm getFeatureDiagram() {
+		return currentModel;
 	}
 
 	/**
