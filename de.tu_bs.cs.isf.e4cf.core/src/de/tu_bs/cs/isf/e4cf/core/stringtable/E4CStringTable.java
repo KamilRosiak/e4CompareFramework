@@ -61,9 +61,9 @@ public abstract class E4CStringTable {
 	public static final String CONFIG_DIRECTORY = "02 Metrics";
 	public static final String MODEL_DIRECTORY ="01 Models";
 	public static final String RESULT_DIRECTORY ="03 Results";
-	public static final String FAMILY_MODEL_DIRECTORY ="04 FamilyModels";
-	public static final String FEATURE_MODEL_DIRECTORY = "05 FeatureModels";
-	public static final String UNMATCHED_DIRECTORY = "06 UnmatchedResults";
+	public static final String FAMILY_MODEL_DIRECTORY ="04 Family Models";
+	public static final String FEATURE_MODEL_DIRECTORY = "05 Feature Models";
+	public static final String UNMATCHED_DIRECTORY = "06 Unmatched Results";
 	
 	public static final String FEATURE_MODEL_SUB_DIRECTORY = "Modification Sequences";
 

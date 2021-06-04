@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
@@ -45,8 +46,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactor
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FeatureModelEditorToolbar;
-import javafx.embed.swt.FXCanvas;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.input.KeyEvent;
@@ -277,8 +276,20 @@ public class FeatureModelEditorView {
 		FileTreeElement root = services.workspaceFileSystem.getWorkspaceDirectory();
 		Path rootPath = FileHandlingUtility.getPath(root);
 		Path projectPath = rootPath.resolve("");
-		FeatureDiagramSerialiazer.save(currentModel, projectPath.resolve(E4CStringTable.FEATURE_MODEL_DIRECTORY).toUri()
-				+ currentModel.getRoot().getName() + FDStringTable.FD_FILE_ENDING);
+		Path uriPath = projectPath.resolve(E4CStringTable.FEATURE_MODEL_DIRECTORY);
+		String fileName = currentModel.getRoot().getName() + FDStringTable.FD_FILE_ENDING;
+		String absolutePath = uriPath.toUri() + "/" + fileName;
+
+		
+		try {
+			if (services.workspaceFileSystem.search(uriPath.toAbsolutePath() + "\\" + fileName) != null) {
+				boolean result = RCPMessageProvider.questionMessage("Feature Model Editor", "File with same name already exists. Do you want to override it?");
+				if (!result) {
+					return;
+				}
+			}
+		} catch (NoSuchElementException e) {}
+		FeatureDiagramSerialiazer.save(currentModel, absolutePath);
 	}
 
 	/**

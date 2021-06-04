@@ -97,7 +97,7 @@ public class FeatureModelEditorController {
 		Tab openedTab = getOpenedTabOrNull(diagram);
 		
 		if (openedTab != null) {
-			changeTab(openedTab);
+			selectTab(openedTab);
 		} else {
 			services.eventBroker.send(FDEventTable.ADD_NEW_TAB, feature);
 		}
@@ -114,7 +114,7 @@ public class FeatureModelEditorController {
 		return null;
 	}
 	
-	private void changeTab(Tab tab) {
+	private void selectTab(Tab tab) {
 		tabPane.getSelectionModel().select(tab);
 	}
 	
@@ -132,7 +132,7 @@ public class FeatureModelEditorController {
 	@Inject
 	public void addNewTab(@UIEventTopic(FDEventTable.ADD_NEW_TAB) ComponentFeature feature) {
 		Tab newTab = createNewTab(feature.getName());
-		changeTab(newTab);
+		selectTab(newTab);
 		feature.setFeaturediagramm(getCurrentFeatureDiagram());
 	}
 
@@ -347,7 +347,7 @@ public class FeatureModelEditorController {
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
-	
+	 
 	@Optional
 	@Inject 
 	public void saveFeatureDiagram(@UIEventTopic(FDEventTable.SAVE_FEATURE_DIAGRAM) String path) {
@@ -364,7 +364,13 @@ public class FeatureModelEditorController {
 	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) FileTreeElement file) {
 		try {
 			FeatureDiagramm featureDiagram = FeatureDiagramSerialiazer.load(file.getAbsolutePath());
-			getCurrentView().loadFeatureDiagram(featureDiagram, true);
+			Tab tab = getOpenedTabOrNull(featureDiagram);
+			if ( tab == null) {
+				tab = createNewTab(file.getFileName());
+			}
+			FeatureModelEditorView view = (FeatureModelEditorView) tab.getUserData();
+			view.loadFeatureDiagram(featureDiagram, false);
+			selectTab(tab);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -376,7 +382,13 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagramm featureDiagram) {
 		try {
-			getCurrentView().loadFeatureDiagram(featureDiagram, false);
+			Tab tab = getOpenedTabOrNull(featureDiagram);
+			if ( tab == null) {
+				tab = createNewTab("Feature Model");
+			}
+			FeatureModelEditorView view = (FeatureModelEditorView) tab.getUserData();
+			view.loadFeatureDiagram(featureDiagram, false);
+			selectTab(tab);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
