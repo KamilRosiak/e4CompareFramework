@@ -131,9 +131,17 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject
 	public void addNewTab(@UIEventTopic(FDEventTable.ADD_NEW_TAB) ComponentFeature feature) {
+		FXGraphicalFeature fxGraFeature = getCurrentView().getFXGraphicalFeature(feature);
 		Tab newTab = createNewTab(feature.getName());
 		selectTab(newTab);
-		feature.setFeaturediagramm(getCurrentFeatureDiagram());
+		if (feature.getFeaturediagramm() == null) {
+			feature.setFeaturediagramm(getCurrentFeatureDiagram());
+		}
+		getCurrentView().loadFeatureDiagram(feature.getFeaturediagramm(), false);
+		
+		if (getCurrentFeatureDiagram().getRoot().isMandatory()) {
+			fxGraFeature.setMandatory();
+		}
 	}
 
 	
@@ -161,24 +169,12 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject
-	public void addCompoundFeatureBelow(@UIEventTopic(FDEventTable.ADD_COMPONENTFEATURE_BELOW) FXGraphicalFeature parentFeature) {
+	public void addCompoundFeatureBelow(@UIEventTopic(FDEventTable.ADD_COMPONENTFEATURE) FXGraphicalFeature parentFeature) {
 		try {
 			getCurrentView().addComponentFeatureBelow(parentFeature);
 			
 		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_COMPONENTFEATURE_BELOW, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
-		}
-	}
-	
-	@Optional
-	@Inject
-	public void addCompoundFeatureAbove(@UIEventTopic(FDEventTable.ADD_COMPONENTFEATURE_ABOVE) FXGraphicalFeature parentFeature) {
-		try {
-			getCurrentView().addComponentFeatureBelow(parentFeature);
-			
-		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_COMPONENTFEATURE_ABOVE, e.getMessage());
+			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_COMPONENTFEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}

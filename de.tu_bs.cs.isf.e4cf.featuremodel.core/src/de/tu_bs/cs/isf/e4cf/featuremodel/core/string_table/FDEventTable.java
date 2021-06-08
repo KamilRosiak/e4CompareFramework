@@ -14,8 +14,7 @@ public class FDEventTable {
 	public static final String OPEN_FEATURE_DIAGRAM = "OPEN_FEATUREDIAGRAM_EVENT";
 	public static final String CHANGE_TAB_EVENT =  "CHANGE_TAB_EVENT";
 	public static final String ADD_NEW_TAB = "ADD_NEW_TAB";
-	public static final String ADD_COMPONENTFEATURE_BELOW = "ADD_COMPONENTFEATURE_BELOW_EVENT";
-	public static final String ADD_COMPONENTFEATURE_ABOVE = "ADD_COMPONENTFEATURE_ABOVE_EVENT";
+	public static final String ADD_COMPONENTFEATURE = "ADD_COMPONENTFEATURE_EVENT";
 	public static final String RENAMED_FEATURE_EVENT = "RENAMED_FEATURE_EVENT";
 	public static final String ADD_FEATURE_EVENT = "ADD_FEATURE_EVENT";
 	public static final String ADD_FEATURE_BELOW = "ADD_FEATURE_BELOW_EVENT";

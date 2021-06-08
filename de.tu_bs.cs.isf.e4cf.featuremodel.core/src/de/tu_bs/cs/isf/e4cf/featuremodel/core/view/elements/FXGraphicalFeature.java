@@ -164,7 +164,7 @@ public class FXGraphicalFeature extends VBox  {
 		if(feature.isOr()) {
 			setGroupVariability_OR();
 		} else if (feature.isAlternative()) {
-			setGroupVariability_ALTERNATIVE();;
+			setGroupVariability_ALTERNATIVE();
 		} else {
 			setGroupVariability_AND();	// FIXME validate
 		}

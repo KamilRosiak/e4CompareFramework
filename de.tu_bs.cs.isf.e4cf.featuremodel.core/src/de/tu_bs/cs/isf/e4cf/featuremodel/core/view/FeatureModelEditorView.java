@@ -92,6 +92,15 @@ public class FeatureModelEditorView {
 		this.services = services;
 		tab.setContent(createScene());
 	}
+	
+	public FXGraphicalFeature getFXGraphicalFeature(Feature feature) {
+		for (FXGraphicalFeature fxGraFeature : featureList) {
+			if (fxGraFeature.getFeature().equals(feature)) {
+				return fxGraFeature;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * This method creates the selection rectangle.
