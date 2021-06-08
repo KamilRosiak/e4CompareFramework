@@ -13,6 +13,7 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/root"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//FeatureDiagramm/identifierIncrement"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/Constraints"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//FeatureDiagramm/uuid"/>
     </genClasses>
     <genClasses ecoreClass="feature-metamodel.ecore#//Feature">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//Feature/children"/>

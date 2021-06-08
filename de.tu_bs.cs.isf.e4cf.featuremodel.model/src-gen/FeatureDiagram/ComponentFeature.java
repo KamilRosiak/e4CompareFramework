@@ -5,7 +5,7 @@ package FeatureDiagram;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Compound Feature</b></em>'.
+ * A representation of the model object '<em><b>Component Feature</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
@@ -42,4 +42,4 @@ public interface ComponentFeature extends Feature {
 	 */
 	void setFeaturediagramm(FeatureDiagramm value);
 
-} // CompoundFeature
+} // ComponentFeature

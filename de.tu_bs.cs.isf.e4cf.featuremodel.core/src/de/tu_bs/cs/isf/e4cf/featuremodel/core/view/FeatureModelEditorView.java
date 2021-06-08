@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
+
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
@@ -31,6 +33,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ZoomHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramFactoryUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
@@ -206,7 +209,7 @@ public class FeatureModelEditorView {
 	 */
 	public void createNewFeatureDiagram() {
 		clearAll();
-		currentModel = FeatureDiagramFactoryImpl.eINSTANCE.createFeatureDiagramm();
+		currentModel = FeatureDiagramFactoryUtil.createFeatureDiagram();
 		Feature root = createFeature("Root", true);
 		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
 		root.getGraphicalfeature().setY(this.root.getHeight() / 2); // before: maxWidth

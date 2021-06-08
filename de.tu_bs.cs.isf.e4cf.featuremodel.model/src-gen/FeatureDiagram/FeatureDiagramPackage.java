@@ -94,13 +94,22 @@ public interface FeatureDiagramPackage extends EPackage {
 	int FEATURE_DIAGRAMM__CONSTRAINTS = 2;
 
 	/**
+	 * The feature id for the '<em><b>Uuid</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_DIAGRAMM__UUID = 3;
+
+	/**
 	 * The number of structural features of the '<em>Feature Diagramm</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int FEATURE_DIAGRAMM_FEATURE_COUNT = 3;
+	int FEATURE_DIAGRAMM_FEATURE_COUNT = 4;
 
 	/**
 	 * The number of operations of the '<em>Feature Diagramm</em>' class.
@@ -357,7 +366,6 @@ public interface FeatureDiagramPackage extends EPackage {
 	 */
 	int ARTIFACT_REFERENCE_OPERATION_COUNT = 0;
 
-
 	/**
 	 * The meta object id for the '{@link FeatureDiagram.impl.ComponentFeatureImpl <em>Component Feature</em>}' class.
 	 * <!-- begin-user-doc -->
@@ -503,6 +511,7 @@ public interface FeatureDiagramPackage extends EPackage {
 	 */
 	int COMPONENT_FEATURE_OPERATION_COUNT = FEATURE_OPERATION_COUNT + 0;
 
+
 	/**
 	 * Returns the meta object for class '{@link FeatureDiagram.FeatureDiagramm <em>Feature Diagramm</em>}'.
 	 * <!-- begin-user-doc -->
@@ -545,6 +554,17 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getFeatureDiagramm_Constraints();
+
+	/**
+	 * Returns the meta object for the attribute '{@link FeatureDiagram.FeatureDiagramm#getUuid <em>Uuid</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Uuid</em>'.
+	 * @see FeatureDiagram.FeatureDiagramm#getUuid()
+	 * @see #getFeatureDiagramm()
+	 * @generated
+	 */
+	EAttribute getFeatureDiagramm_Uuid();
 
 	/**
 	 * Returns the meta object for class '{@link FeatureDiagram.Feature <em>Feature</em>}'.
@@ -851,6 +871,14 @@ public interface FeatureDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EReference FEATURE_DIAGRAMM__CONSTRAINTS = eINSTANCE.getFeatureDiagramm_Constraints();
+
+		/**
+		 * The meta object literal for the '<em><b>Uuid</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute FEATURE_DIAGRAMM__UUID = eINSTANCE.getFeatureDiagramm_Uuid();
 
 		/**
 		 * The meta object literal for the '{@link FeatureDiagram.impl.FeatureImpl <em>Feature</em>}' class.

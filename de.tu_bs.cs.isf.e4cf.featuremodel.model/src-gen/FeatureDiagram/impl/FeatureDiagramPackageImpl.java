@@ -171,6 +171,16 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 	 * @generated
 	 */
 	@Override
+	public EAttribute getFeatureDiagramm_Uuid() {
+		return (EAttribute)featureDiagrammEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getFeature() {
 		return featureEClass;
 	}
@@ -428,6 +438,7 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		createEReference(featureDiagrammEClass, FEATURE_DIAGRAMM__ROOT);
 		createEAttribute(featureDiagrammEClass, FEATURE_DIAGRAMM__IDENTIFIER_INCREMENT);
 		createEReference(featureDiagrammEClass, FEATURE_DIAGRAMM__CONSTRAINTS);
+		createEAttribute(featureDiagrammEClass, FEATURE_DIAGRAMM__UUID);
 
 		featureEClass = createEClass(FEATURE);
 		createEReference(featureEClass, FEATURE__CHILDREN);
@@ -495,6 +506,7 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		initEReference(getFeatureDiagramm_Root(), this.getFeature(), null, "root", null, 0, 1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFeatureDiagramm_IdentifierIncrement(), ecorePackage.getEInt(), "identifierIncrement", "-1", 1, 1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getFeatureDiagramm_Constraints(), theCrossTreeConstraintsPackage.getAbstractConstraint(), null, "Constraints", null, 0, -1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFeatureDiagramm_Uuid(), ecorePackage.getEString(), "uuid", null, 1, 1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		initEClass(featureEClass, Feature.class, "Feature", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getFeature_Children(), this.getFeature(), null, "children", null, 0, -1, Feature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
