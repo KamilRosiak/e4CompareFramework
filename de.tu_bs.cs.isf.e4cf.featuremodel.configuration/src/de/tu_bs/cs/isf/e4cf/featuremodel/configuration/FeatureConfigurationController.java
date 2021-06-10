@@ -67,6 +67,7 @@ public class FeatureConfigurationController {
 	@Inject
 	public void createConfiguration(@UIEventTopic(FeatureModelConfigurationEvents.EVENT_CREATE_CONFIGURATION) FeatureDiagramm fd) {
 		// construct feature configuration 
+		services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
 		featureConfiguration = featureConfigurationBuilder.createFeatureConfiguration(fd);
 		view.refreshView(featureConfiguration);
 	}
