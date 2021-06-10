@@ -87,12 +87,14 @@ public class FeatureModelEditorView {
 	private List<FXGraphicalFeature> selectedFeatures;
 
 	private List<FXGraphicalFeature> featureList;
+	private List<FXGraphicalFeature> componentFeatureList;
 	private Map<FXGraphicalFeature, Line> featureLineMap;
 
 	private AnimationMap labelBorderAnimationMap;
 
 	public FeatureModelEditorView(Tab tab, ServiceContainer services) {
 		this.services = services;
+		this.componentFeatureList = new ArrayList<FXGraphicalFeature>();
 		tab.setContent(createScene());
 	}
 	
@@ -394,6 +396,7 @@ public class FeatureModelEditorView {
 				xPos, yPos);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
+		componentFeatureList.add(newGraFeature);
 	
 		services.eventBroker.send(FDEventTable.ADD_NEW_TAB, newFeature);
 		
@@ -679,6 +682,10 @@ public class FeatureModelEditorView {
 		return featureList;
 	}
 	
+	public List<FXGraphicalFeature> getComponentFeatureList() {
+		return componentFeatureList;
+	}
+	
 	public FeatureDiagramm getFeatureDiagram() {
 		return currentModel;
 	}
@@ -712,6 +719,9 @@ public class FeatureModelEditorView {
 			this.root.getChildren().remove(graphicalFeature);
 			removeLine(graphicalFeature);
 			this.featureList.remove(graphicalFeature);
+			if (graphicalFeature.getFeature() instanceof ComponentFeature) {
+				this.componentFeatureList.remove(graphicalFeature);			
+			}
 
 			if (sendLoggerEvents) {
 				services.eventBroker.send(FDEventTable.LOGGER_REMOVE_FEATURE, graphicalFeature);
@@ -922,10 +932,16 @@ public class FeatureModelEditorView {
 
 	public void setFeatureOptional(FXGraphicalFeature feature) {
 		feature.setOptional();
+		if (feature.getFeature() == currentModel.getRoot()) {
+			services.eventBroker.send(FDEventTable.ROOT_FEATURE_OPTIONAL_EVENT, currentModel.getUuid());
+		}
 	}
 
 	public void setFeatureMandatory(FXGraphicalFeature feature) {
 		feature.setMandatory();
+		if (feature.getFeature() == currentModel.getRoot()) {
+			services.eventBroker.send(FDEventTable.ROOT_FEATURE_MANDATORY_EVENT, currentModel.getUuid());
+		}
 	}
 
 	public void setFeatureAlternativeGroup(FXGraphicalFeature feature) {

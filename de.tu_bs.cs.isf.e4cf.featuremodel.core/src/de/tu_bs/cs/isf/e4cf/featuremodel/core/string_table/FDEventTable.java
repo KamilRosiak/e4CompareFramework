@@ -11,6 +11,8 @@ public class FDEventTable {
 	/**
 	 * VIEW EVENTS
 	 */
+	public static final String ROOT_FEATURE_MANDATORY_EVENT = "ROOT_FEATURE_MANDATORY_EVENT";
+	public static final String ROOT_FEATURE_OPTIONAL_EVENT = "ROOT_FEATURE_OPTIONAL_EVENT";
 	public static final String OPEN_FEATURE_DIAGRAM = "OPEN_FEATUREDIAGRAM_EVENT";
 	public static final String CHANGE_TAB_EVENT =  "CHANGE_TAB_EVENT";
 	public static final String ADD_NEW_TAB = "ADD_NEW_TAB";

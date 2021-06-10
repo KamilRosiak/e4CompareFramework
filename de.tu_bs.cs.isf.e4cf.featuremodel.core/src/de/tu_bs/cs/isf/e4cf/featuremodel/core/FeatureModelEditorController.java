@@ -154,6 +154,34 @@ public class FeatureModelEditorController {
 	}
 	
 	@Optional
+	@Inject
+	public void componentFeatureVariabilityChangeMandatory(@UIEventTopic(FDEventTable.ROOT_FEATURE_MANDATORY_EVENT) String uuid) {
+		tabPane.getTabs().forEach(tab -> {
+			List<FXGraphicalFeature> componentList = ((FeatureModelEditorView) tab.getUserData()).getComponentFeatureList();
+			for (FXGraphicalFeature graFeature : componentList) {
+				ComponentFeature component = (ComponentFeature) graFeature.getFeature();
+				if (component.getFeaturediagramm().getUuid().equals(uuid)) {
+					graFeature.setMandatory();
+				}
+			}
+		});
+	}
+	
+	@Optional
+	@Inject
+	public void componentFeatureVariabilityChangeOptional(@UIEventTopic(FDEventTable.ROOT_FEATURE_OPTIONAL_EVENT) String uuid) {
+		tabPane.getTabs().forEach(tab -> {
+			List<FXGraphicalFeature> componentList = ((FeatureModelEditorView) tab.getUserData()).getComponentFeatureList();
+			for (FXGraphicalFeature graFeature : componentList) {
+				ComponentFeature component = (ComponentFeature) graFeature.getFeature();
+				if (component.getFeaturediagramm().getUuid().equals(uuid)) {
+					graFeature.setOptional();
+				}
+			}
+		});
+	}
+	
+	@Optional
 	@Inject 
 	public void registerErrorListener(@UIEventTopic(FDEventTable.REGISTER_ERR_LISTENER) ErrorListener errorListener) {
 		if (!errorListeners.contains(errorListener)) {
@@ -332,6 +360,7 @@ public class FeatureModelEditorController {
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
+	
 	
 	@Optional
 	@Inject 
