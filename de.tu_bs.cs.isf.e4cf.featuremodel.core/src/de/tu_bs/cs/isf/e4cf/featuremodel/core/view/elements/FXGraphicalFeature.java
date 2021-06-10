@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.swt.widgets.Display;
 
 import FeatureDiagram.ArtifactReference;
@@ -26,6 +27,7 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.util.Pair;
 
 
 public class FXGraphicalFeature extends VBox  {
@@ -196,10 +198,8 @@ public class FXGraphicalFeature extends VBox  {
 		services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_RENAME, feature);
 		FMESimpleTextInputDialog dialog = new FMESimpleTextInputDialog(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE,feature.getName());
 		String newName = dialog.show(Double.valueOf(Display.getCurrent().getCursorLocation().x), Double.valueOf(Display.getCurrent().getCursorLocation().y));
-		if(!newName.equals(feature.getName())) {
-			feature.setName(newName);
-			featureNameLabel.setText(newName);
-			services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
+		if(!newName.equals(feature.getName())) {			
+			services.eventBroker.send(FDEventTable.SET_FEATURE_NAME, new Pair<FXGraphicalFeature, String>(this, newName));
 		}
 	}
 	
@@ -276,7 +276,9 @@ public class FXGraphicalFeature extends VBox  {
 	}
 	
 	public void rename(String name) {
-		this.featureNameLabel.setText(name);
+		feature.setName(name);
+		featureNameLabel.setText(name);
+		services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 	}
 	
 	public void setMandatory() {

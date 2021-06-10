@@ -212,7 +212,7 @@ public class FeatureModelEditorView {
 	public void createNewFeatureDiagram() {
 		clearAll();
 		currentModel = FeatureDiagramFactoryUtil.createFeatureDiagram();
-		Feature root = createFeature("Root", true);
+		Feature root = createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true);
 		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
 		root.getGraphicalfeature().setY(this.root.getHeight() / 2); // before: maxWidth
 		currentModel.setRoot(root);
@@ -957,7 +957,6 @@ public class FeatureModelEditorView {
 	}
 
 	public void renameCurrentFeature(String name) {
-		currentFeature.getFeature().setName(name);
 		currentFeature.rename(name);
 		if (!currentFeature.getFeature().getArtifactReferences().isEmpty()) {
 			currentFeature.getFeature().getArtifactReferences().get(0).setArtifactClearName(name);

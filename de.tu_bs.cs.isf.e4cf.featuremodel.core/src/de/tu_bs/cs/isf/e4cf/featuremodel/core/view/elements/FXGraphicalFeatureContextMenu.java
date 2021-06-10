@@ -61,7 +61,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 	
 	private MenuItem createComponentFeatureConfiguration() {
-		MenuItem item = new MenuItem("Create New Configuration");
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_CREATE_NEW_CONFIGURATION);
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -75,13 +75,12 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 	
 	private MenuItem renameFeatureMenuItem() {
-		MenuItem item = new MenuItem("Rename Feature");
+		MenuItem item = new MenuItem(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE);
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
             	hide();				
             	fxGraFeature.showRenameFeatureDialog();
-            	eventBroker.send(FDEventTable.RENAMED_FEATURE_EVENT, fxGraFeature.getFeature());
             	event.consume();
             }
         });
@@ -90,7 +89,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 	
 	private MenuItem createComponentFeature() {
-		MenuItem item = new MenuItem("Create ComponentFeature");
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_CREATE_COMPONENTFEATURE);
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

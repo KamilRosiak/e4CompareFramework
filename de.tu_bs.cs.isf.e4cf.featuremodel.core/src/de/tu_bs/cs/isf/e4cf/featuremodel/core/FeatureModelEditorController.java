@@ -33,6 +33,7 @@ import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.util.Pair;
 
 /**
  * This class represents the controller of a MVC implementation. It handles events from FDEventTable.
@@ -58,17 +59,21 @@ public class FeatureModelEditorController {
 		this.services = services;
 		this.errorListeners = new ArrayList<>();
 
-		createNewTab("Feature Model");
+		createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
 	}
 
 	private FeatureModelEditorView getCurrentView() {
 		Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
 		if (currentTab == null) {
-			return (FeatureModelEditorView) createNewTab("Feature Model").getUserData();
+			return (FeatureModelEditorView) createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME).getUserData();
 		}
 		FeatureModelEditorView view = (FeatureModelEditorView) currentTab.getUserData();
 		return view;
-	} 
+	}
+	
+	private Tab getCurrentTab() {
+		return tabPane.getSelectionModel().getSelectedItem();
+	}
 
 	private Tab createNewTab(String title) {
 		Tab tab = newTab(title);
@@ -84,7 +89,7 @@ public class FeatureModelEditorController {
 			((FeatureModelEditorView) tab.getUserData()).askToSave();		
 			// don't allow the tabPane to be empty
 			if (tabPane.getTabs().size() == 1) {
-				createNewTab("Feature Model");
+				createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
 			}
 		});
 		return tab;
@@ -136,8 +141,10 @@ public class FeatureModelEditorController {
 		selectTab(newTab);
 		if (feature.getFeaturediagramm() == null) {
 			feature.setFeaturediagramm(getCurrentFeatureDiagram());
+			getCurrentView().getFeatureList().get(0).rename(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
 		}
 		getCurrentView().loadFeatureDiagram(feature.getFeaturediagramm(), false);
+		getCurrentTab().setText(getCurrentFeatureDiagram().getRoot().getName());
 		
 		if (getCurrentFeatureDiagram().getRoot().isMandatory()) {
 			fxGraFeature.setMandatory();
@@ -319,9 +326,12 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void setFeatureName(@UIEventTopic(FDEventTable.SET_FEATURE_NAME) String name) {
+	public void setFeatureName(@UIEventTopic(FDEventTable.SET_FEATURE_NAME) Pair<FXGraphicalFeature, String> data) {
 		try {
-			getCurrentView().renameCurrentFeature(name);
+			data.getKey().rename(data.getValue());
+			if (data.getKey().getFeature() == getCurrentView().getFeatureDiagram().getRoot()) {
+				getCurrentTab().setText(data.getValue());
+			}
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -409,7 +419,7 @@ public class FeatureModelEditorController {
 		try {
 			Tab tab = getOpenedTabOrNull(featureDiagram);
 			if ( tab == null) {
-				tab = createNewTab("Feature Model");
+				tab = createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
 			}
 			FeatureModelEditorView view = (FeatureModelEditorView) tab.getUserData();
 			view.loadFeatureDiagram(featureDiagram, false);

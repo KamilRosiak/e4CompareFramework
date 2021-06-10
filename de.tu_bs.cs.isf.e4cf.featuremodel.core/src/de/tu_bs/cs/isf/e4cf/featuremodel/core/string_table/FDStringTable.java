@@ -61,6 +61,10 @@ public class FDStringTable {
 	public static final String FX_FEATURE_CM_GROUP_SELECTED_FEATURES ="Fuse Selected Features";
 	public static final String FX_FEATURE_CM_MOVE_SELECTED_FEATURES_HERE ="Move Selected Features";
 	public static final String FX_FEATURE_CM_SET_DESCRIPTION ="Set Description";
+	public static final String FX_FEATURE_CM_CREATE_COMPONENTFEATURE = "Create ComponentFeature";
+	public static final String FX_FEATURE_CM_CREATE_NEW_CONFIGURATION = "Create New Configuration";
+	
+	
 	
 	/**
 	 * FILE ENDINGS
@@ -72,4 +76,6 @@ public class FDStringTable {
 	 * Feature Configuration View
 	 */
 	public static final String FD_FEATURE_CONFIG_PART_NAME = "de.tu_bs.cs.isf.e4cf.featuremodel.configuration.part.featuremodelconfiguration";
+	
+	public static final String FD_DEFAULT_FEATURE_DIAGRAM_NAME = "Feature Model";
 }	
