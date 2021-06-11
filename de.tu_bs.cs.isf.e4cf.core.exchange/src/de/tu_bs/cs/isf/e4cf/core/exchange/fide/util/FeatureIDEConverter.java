@@ -15,7 +15,7 @@ import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
 import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import FeatureModel.FeatureModell;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramFactoryUtil;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactory;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
@@ -39,7 +39,7 @@ public class FeatureIDEConverter {
 	 */
 	public static FeatureDiagramm convertToFamilyModel(FeatureModell fideModel) {
 		idCounter = 0;
-		FeatureDiagramm familyModel = FeatureDiagramFactoryUtil.createFeatureDiagram();
+		FeatureDiagramm familyModel = new FeatureDiagram();
 		Feature root = convertModelType(fideModel);
 		familyModel.setRoot(root);
 		//familyModel.set(convertConstraints(fideModel.getConstraints());

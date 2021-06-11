@@ -8,13 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.eclipse.emf.ecore.util.EcoreUtil;
-
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramFactory;
-import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
 import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
@@ -24,6 +21,7 @@ import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.DragHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.KeyTranslateHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.PrimaryMouseButtonClickedHandler;
@@ -33,7 +31,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ZoomHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramFactoryUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
@@ -82,7 +79,7 @@ public class FeatureModelEditorView {
 	private Pane arrangementPane;
 
 	private Rectangle selectionRectangle;
-	private FeatureDiagramm currentModel;
+	private FeatureDiagram currentModel;
 	private FXGraphicalFeature currentFeature;
 	private List<FXGraphicalFeature> selectedFeatures;
 
@@ -211,7 +208,7 @@ public class FeatureModelEditorView {
 	 */
 	public void createNewFeatureDiagram() {
 		clearAll();
-		currentModel = FeatureDiagramFactoryUtil.createFeatureDiagram();
+		currentModel = new FeatureDiagram();
 		Feature root = createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true);
 		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
 		root.getGraphicalfeature().setY(this.root.getHeight() / 2); // before: maxWidth
@@ -222,7 +219,7 @@ public class FeatureModelEditorView {
 	/**
 	 * This method loads a FeatureDiagram.
 	 */
-	public void loadFeatureDiagram(FeatureDiagramm model, boolean isSave) {
+	public void loadFeatureDiagram(FeatureDiagram model, boolean isSave) {
 		// Ask for saving before deleting
 		if (isSave) {
 			askToSave();
@@ -686,7 +683,7 @@ public class FeatureModelEditorView {
 		return componentFeatureList;
 	}
 	
-	public FeatureDiagramm getFeatureDiagram() {
+	public FeatureDiagram getFeatureDiagram() {
 		return currentModel;
 	}
 
@@ -896,11 +893,11 @@ public class FeatureModelEditorView {
 		target.getArtifactReferences().addAll(origin.getArtifactReferences());
 	}
 
-	public FeatureDiagramm getCurrentModel() {
+	public FeatureDiagram getCurrentModel() {
 		return currentModel;
 	}
 
-	public void setCurrentModel(FeatureDiagramm currentModel) {
+	public void setCurrentModel(FeatureDiagram currentModel) {
 		this.currentModel = currentModel;
 	}
 

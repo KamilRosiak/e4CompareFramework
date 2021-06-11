@@ -11,13 +11,11 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
-import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -98,7 +96,7 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject
 	public void openFeatureDiagram(@UIEventTopic(FDEventTable.OPEN_FEATURE_DIAGRAM) ComponentFeature feature) {
-		FeatureDiagramm diagram = feature.getFeaturediagramm();
+		FeatureDiagram diagram = (FeatureDiagram) feature.getFeaturediagramm();
 		Tab openedTab = getOpenedTabOrNull(diagram);
 		
 		if (openedTab != null) {
@@ -109,9 +107,9 @@ public class FeatureModelEditorController {
 		
 	}
 	
-	private Tab getOpenedTabOrNull(FeatureDiagramm diagram) {
+	private Tab getOpenedTabOrNull(FeatureDiagram diagram) {
 		for (Tab tab : tabPane.getTabs()) {
-			FeatureDiagramm tabDiagram = ((FeatureModelEditorView) tab.getUserData()).getCurrentModel();
+			FeatureDiagram tabDiagram = ((FeatureModelEditorView) tab.getUserData()).getCurrentModel();
 			if (diagram == tabDiagram) {
 				return tab;
 			}
@@ -127,7 +125,7 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject
 	public void changeTab(@UIEventTopic(FDEventTable.CHANGE_TAB_EVENT) ComponentFeature feature) {
-		FeatureDiagramm diagram = feature.getFeaturediagramm();
+		FeatureDiagram diagram = (FeatureDiagram) (feature.getFeaturediagramm());
 		for (Tab tab : tabPane.getTabs()) {
 			
 		}
@@ -141,9 +139,9 @@ public class FeatureModelEditorController {
 		selectTab(newTab);
 		if (feature.getFeaturediagramm() == null) {
 			feature.setFeaturediagramm(getCurrentFeatureDiagram());
-			getCurrentView().getFeatureList().get(0).rename(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
+			getCurrentView().getFeatureList().get(0).rename(feature.getName());
 		}
-		getCurrentView().loadFeatureDiagram(feature.getFeaturediagramm(), false);
+		getCurrentView().loadFeatureDiagram((FeatureDiagram) feature.getFeaturediagramm(), false);
 		getCurrentTab().setText(getCurrentFeatureDiagram().getRoot().getName());
 		
 		if (getCurrentFeatureDiagram().getRoot().isMandatory()) {
@@ -156,7 +154,7 @@ public class FeatureModelEditorController {
 	 * returns the current shown diagram
 	 * @return
 	 */
-	public FeatureDiagramm getCurrentFeatureDiagram() {
+	public FeatureDiagram getCurrentFeatureDiagram() {
 		return getCurrentView().getCurrentModel();
 	}
 	
@@ -398,7 +396,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) FileTreeElement file) {
 		try {
-			FeatureDiagramm featureDiagram = FeatureDiagramSerialiazer.load(file.getAbsolutePath());
+			FeatureDiagram featureDiagram = (FeatureDiagram) FeatureDiagramSerialiazer.load(file.getAbsolutePath());
 			Tab tab = getOpenedTabOrNull(featureDiagram);
 			if ( tab == null) {
 				tab = createNewTab(file.getFileName());
@@ -415,7 +413,7 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagramm featureDiagram) {
+	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram featureDiagram) {
 		try {
 			Tab tab = getOpenedTabOrNull(featureDiagram);
 			if ( tab == null) {
