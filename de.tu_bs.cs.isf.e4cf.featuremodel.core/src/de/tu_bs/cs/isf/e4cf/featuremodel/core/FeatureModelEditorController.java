@@ -137,16 +137,20 @@ public class FeatureModelEditorController {
 		FXGraphicalFeature fxGraFeature = getCurrentView().getFXGraphicalFeature(feature);
 		Tab newTab = createNewTab(feature.getName());
 		selectTab(newTab);
-		if (feature.getFeaturediagramm() == null) {
-			feature.setFeaturediagramm(getCurrentFeatureDiagram());
-			getCurrentView().getFeatureList().get(0).rename(feature.getName());
-		}
 		getCurrentView().loadFeatureDiagram((FeatureDiagram) feature.getFeaturediagramm(), false);
 		getCurrentTab().setText(getCurrentFeatureDiagram().getRoot().getName());
-		
-		if (getCurrentFeatureDiagram().getRoot().isMandatory()) {
-			fxGraFeature.setMandatory();
+	}
+	
+	@Optional
+	@Inject
+	public void loadComponentFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_COMPONENTFEATUREDIAGRAM_EVENT) FXGraphicalFeature fxGraFeature) {
+		String filepath = services.dialogService.getFileFromFileSystem(services.shell);
+		if (filepath != null) {
+			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.load(filepath));
+			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
+			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
 		}
+		
 	}
 
 	

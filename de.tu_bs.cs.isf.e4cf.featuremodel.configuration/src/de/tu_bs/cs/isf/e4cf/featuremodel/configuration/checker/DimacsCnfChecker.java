@@ -22,9 +22,9 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
 import FeatureDiagram.Feature;
-import FeatureDiagram.FeatureDiagramm;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureDiagramIterator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.FeatureConfiguration;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureDiagramIterator;
 
 public class DimacsCnfChecker implements FeatureConfigurationChecker {
 
@@ -51,7 +51,7 @@ public class DimacsCnfChecker implements FeatureConfigurationChecker {
 			isInit = false;
 			return;
 		}
-		FeatureDiagramm fd = config.getFeatureDiagram();
+		FeatureDiagram fd = (FeatureDiagram) config.getFeatureDiagram();
 		
 		// assign each feature to an integer
 		featureToVariable.clear();

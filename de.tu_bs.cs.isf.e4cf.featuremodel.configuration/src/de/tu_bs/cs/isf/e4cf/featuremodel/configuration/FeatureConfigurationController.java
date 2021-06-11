@@ -17,11 +17,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.swt.widgets.Composite;
 
-import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.emf.EMFResourceSetManager;
 import de.tu_bs.cs.isf.e4cf.core.util.emf.IResourceManager;
+import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.FeatureConfiguration;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.checker.DimacsCnfChecker;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.checker.FeatureConfigurationChecker;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.checker.FeatureConfigurationChecker.OperationState;
@@ -30,9 +30,9 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelC
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.util.FeatureConfigurationBuilder;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.FeatureConfigurationView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.LoadFeatureConfigurationResourceDialog;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.FeatureConfiguration;
 
 public class FeatureConfigurationController {
 		
@@ -65,7 +65,7 @@ public class FeatureConfigurationController {
 	
 	@Optional
 	@Inject
-	public void createConfiguration(@UIEventTopic(FeatureModelConfigurationEvents.EVENT_CREATE_CONFIGURATION) FeatureDiagramm fd) {
+	public void createConfiguration(@UIEventTopic(FeatureModelConfigurationEvents.EVENT_CREATE_CONFIGURATION) FeatureDiagram fd) {
 		// construct feature configuration 
 		services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
 		featureConfiguration = featureConfigurationBuilder.createFeatureConfiguration(fd);
@@ -91,7 +91,7 @@ public class FeatureConfigurationController {
 		}
 				
 		// Only continue save process if feature diagram is already contained in a resource
-		FeatureDiagramm fd = featureConfiguration.getFeatureDiagram();
+		FeatureDiagram fd = (FeatureDiagram) featureConfiguration.getFeatureDiagram();
 		if (fd.eResource() == null) {
 			boolean saveFd = !RCPMessageProvider.questionMessage("Save Feature Configuration", 
 					"The feature model is not contained in a resource. Do you want to save it first.");

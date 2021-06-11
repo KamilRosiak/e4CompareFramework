@@ -209,11 +209,16 @@ public class FeatureModelEditorView {
 	public void createNewFeatureDiagram() {
 		clearAll();
 		currentModel = new FeatureDiagram();
+		initFeatureDiagram(currentModel);
+		addFeature(currentModel.getRoot(), this.getRootPane().getWidth() / 2, this.getRootPane().getHeight() / 2);
+	}
+
+	private FeatureDiagram initFeatureDiagram(FeatureDiagram diagram) {		
 		Feature root = createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true);
 		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
 		root.getGraphicalfeature().setY(this.root.getHeight() / 2); // before: maxWidth
-		currentModel.setRoot(root);
-		addFeature(root, this.getRootPane().getWidth() / 2, this.getRootPane().getHeight() / 2);
+		diagram.setRoot(root);
+		return diagram;
 	}
 
 	/**
@@ -395,7 +400,7 @@ public class FeatureModelEditorView {
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 		componentFeatureList.add(newGraFeature);
 	
-		services.eventBroker.send(FDEventTable.ADD_NEW_TAB, newFeature);
+//		services.eventBroker.send(FDEventTable.ADD_NEW_TAB, newFeature);
 		
 		return newGraFeature;
 	}
@@ -635,10 +640,12 @@ public class FeatureModelEditorView {
 	public ComponentFeature createComponentFeature(String featureName, boolean isRoot) {
 		ComponentFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createComponentFeature();
 		feature.setName(featureName);
-		feature.setMandatory(isRoot ? true : false);
+		feature.setMandatory(true);
 		feature.setAlternative(false);
 		feature.setOr(false);
 		feature.setAbstract(false);
+		feature.setFeaturediagramm(initFeatureDiagram(new FeatureDiagram()));
+		feature.getFeaturediagramm().getRoot().setName(featureName);
 		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
 		feature.setIdentifier(currentModel.getIdentifierIncrement());
 		GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();

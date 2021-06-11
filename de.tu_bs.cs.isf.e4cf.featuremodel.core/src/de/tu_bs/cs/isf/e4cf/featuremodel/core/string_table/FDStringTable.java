@@ -63,6 +63,7 @@ public class FDStringTable {
 	public static final String FX_FEATURE_CM_SET_DESCRIPTION ="Set Description";
 	public static final String FX_FEATURE_CM_CREATE_COMPONENTFEATURE = "Create ComponentFeature";
 	public static final String FX_FEATURE_CM_CREATE_NEW_CONFIGURATION = "Create New Configuration";
+	public static final String FX_FEATURE_CM_LOAD_COMPONENTFEATUREDIAGRAM = "Load Feature Diagram";
 	
 	
 	

@@ -18,9 +18,9 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import CrossTreeConstraints.AbstractConstraint;
 import FeatureDiagram.Feature;
-import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.AbstractDialog;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
@@ -54,7 +54,7 @@ public class ConstraintEditor extends AbstractDialog {
 	private static double ICON_COL_WIDTH = 40d;
 	private Map<Integer, String> errorToolTips = new HashMap<>();
 
-	private FeatureDiagramm diagram;
+	private FeatureDiagram diagram;
 	
 
 	

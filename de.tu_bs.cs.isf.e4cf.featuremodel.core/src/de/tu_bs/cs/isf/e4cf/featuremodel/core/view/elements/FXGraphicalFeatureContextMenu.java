@@ -3,10 +3,9 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
 import FeatureDiagram.ComponentFeature;
-import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -53,6 +52,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 
 	private void createComponentControl() {
 		this.getItems().add(createComponentFeatureConfiguration());
+		this.getItems().add(loadComponentFeatureDiagram());
 		this.getItems().add(removeFeatureMenuItem());		
 
 		this.getItems().add(new SeparatorMenuItem());
@@ -66,7 +66,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
             @Override
             public void handle(ActionEvent event) {
             	hide();
-            	FeatureDiagramm diagram = ((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm();
+            	FeatureDiagram diagram = (FeatureDiagram) ((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm();
 				eventBroker.send(FDEventTable.EVENT_CREATE_CONFIGURATION, diagram);
             	event.consume();
             }
@@ -98,6 +98,18 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
             }
         });
 
+		return item;
+	}
+	
+	private MenuItem loadComponentFeatureDiagram() {
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_LOAD_COMPONENTFEATUREDIAGRAM);
+		item.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+            	eventBroker.send(FDEventTable.LOAD_COMPONENTFEATUREDIAGRAM_EVENT, fxGraFeature);	
+            	event.consume();
+            }
+		});
 		return item;
 	}
 

@@ -10,16 +10,16 @@ import java.util.Timer;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.widgets.Display;
 
-import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.Modification;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.key_value.KeyValueNode;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.replay_view.replay.state.ReplayerState;
-import de.tu_bs.cs.isf.e4cf.replay_view.replay.state.ReplayerStateMachine;
 import de.tu_bs.cs.isf.e4cf.replay_view.replay.state.ReplayerState.ReplayAction;
+import de.tu_bs.cs.isf.e4cf.replay_view.replay.state.ReplayerStateMachine;
 import de.tu_bs.cs.isf.e4cf.replay_view.replay.tasks.FastForwardReplayTask;
 import de.tu_bs.cs.isf.e4cf.replay_view.replay.tasks.SequentialReplayTask;
 import de.tu_bs.cs.isf.e4cf.replay_view.util.ModificationSetUtil;
@@ -49,13 +49,13 @@ public class ModificationReplayer extends ReplayerStateMachine implements Replay
 	 */
 	private boolean paused;
 	
-	private FeatureDiagramm currentFeatureDiagram;
+	private FeatureDiagram currentFeatureDiagram;
 	
 	/**
 	 * Stores the modification together with its resulting feature model after applying.
 	 * The mapping depends on the initial feature model on which the 
 	 */
-	private Map<Modification, FeatureDiagramm> featureDiagramMap;
+	private Map<Modification, FeatureDiagram> featureDiagramMap;
 	
 	public ModificationReplayer(ReplayView view) {
 		super(ReplayerState.INACTIVE);
@@ -307,11 +307,11 @@ public class ModificationReplayer extends ReplayerStateMachine implements Replay
 			}
 			
 			// Reset the feature diagram state to the one stored in the target modification
-			FeatureDiagramm featureDiagram = featureDiagramMap.get(targetMod);
+			FeatureDiagram featureDiagram = featureDiagramMap.get(targetMod);
 			if (featureDiagram == null) {
 				throw new RuntimeException("Feature diagram must not be null.");
 			}
-			FeatureDiagramm featureModelCopy = EcoreUtil.copy(featureDiagram);
+			FeatureDiagram featureModelCopy = EcoreUtil.copy(featureDiagram);
 			view.getServiceContainer().eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM, featureModelCopy);
 						
 			// Wind back the clock for the replay task - set its modification queue to the state just after the target modification
@@ -442,12 +442,12 @@ public class ModificationReplayer extends ReplayerStateMachine implements Replay
 		return task != null && task.isActive();
 	}
 	
-	public void setCurrentFeatureDiagram(FeatureDiagramm fd) {
-		FeatureDiagramm fdCopy = EcoreUtil.copy(fd);
+	public void setCurrentFeatureDiagram(FeatureDiagram fd) {
+		FeatureDiagram fdCopy = EcoreUtil.copy(fd);
 		this.currentFeatureDiagram = fdCopy;
 	}
 	
-	public FeatureDiagramm getCurrentFeatureDiagram() {
+	public FeatureDiagram getCurrentFeatureDiagram() {
 		return currentFeatureDiagram;
 	}
 

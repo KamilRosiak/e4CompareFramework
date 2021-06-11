@@ -22,7 +22,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.xml.sax.SAXException;
 
-import FeatureDiagram.FeatureDiagramm;
 import FeatureModel.FeatureModell;
 import de.tu_bs.cs.isf.e4cf.core.exchange.fide.util.FamilyModelConverter;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
@@ -30,6 +29,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 
 /**
@@ -44,7 +44,7 @@ public class ConvertToFeatureIdeXmlHandler {
 	@Execute
 	public void execute(ServiceContainer serviceContainer) throws ParserConfigurationException, SAXException, IOException {
 		String path = serviceContainer.rcpSelectionService.getCurrentSelectionFromExplorer().getAbsolutePath();
-	    FeatureDiagramm featureDiagram = FeatureDiagramSerialiazer.load(path);   	    
+	    FeatureDiagram featureDiagram = (FeatureDiagram) FeatureDiagramSerialiazer.load(path);   	    
   		Path projectPath = createUriPath(serviceContainer);
   		
   		FeatureModell fideModel = FamilyModelConverter.convertToFeatureIDE(featureDiagram);

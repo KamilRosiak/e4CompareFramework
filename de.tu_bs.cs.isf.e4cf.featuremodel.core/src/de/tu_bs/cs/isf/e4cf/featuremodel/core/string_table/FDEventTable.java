@@ -34,6 +34,7 @@ public class FDEventTable {
 	public static final String SPLIT_FEATURE = "SPLIT_FEATURE";
 	public static final String SET_REFERNECED_ARTIFACT_ID_MAP = "SET_REFERNECED_ARTIFACT_ID_MAP";
 	public static final String SET_DESCRIPTION = "SET_DESCRIPTION";
+	public static final String LOAD_COMPONENTFEATUREDIAGRAM_EVENT ="LOAD_COMPONENTFEATUREDIAGRAM_EVENT";
 	
 	/**
 	 * Constraint Events
