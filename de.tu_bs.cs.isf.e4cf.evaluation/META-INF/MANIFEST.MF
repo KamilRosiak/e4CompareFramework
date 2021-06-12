@@ -3,9 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Evaluation
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.evaluation;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.eclipse.e4.core.di.annotations;bundle-version="1.6.600",
+Require-Bundle: javax.inject;bundle-version="1.0.0",
+ org.eclipse.e4.core.di.annotations;bundle-version="1.6.600",
  org.eclipse.e4.ui.model.workbench,
  de.tu_bs.cs.isf.e4cf.parts.project_explorer,
- de.tu_bs.cs.isf.e4cf.core
+ de.tu_bs.cs.isf.e4cf.core,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures,
+ de.tu_bs.cs.isf.e4cf.core.import_export;bundle-version="1.0.0"
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.evaluation
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

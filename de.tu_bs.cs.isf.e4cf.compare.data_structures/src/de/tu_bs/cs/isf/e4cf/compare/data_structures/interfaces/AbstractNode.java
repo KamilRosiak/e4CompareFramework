@@ -13,7 +13,7 @@ public abstract class AbstractNode implements Node {
 	private static final long serialVersionUID = 5776489857546412690L;
 	private String nodeType;
 	private List<Node> children;
-	private Node parent;
+	private transient Node parent;
 	private List<Attribute> attributes;
 	private VariabilityClass varClass = VariabilityClass.MANDATORY;
 	private UUID uuid = UUID.randomUUID();

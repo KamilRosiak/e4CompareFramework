@@ -6,11 +6,14 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.ImportService;
+import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.adapter.NodeInstanceCreator;
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.adapter.TreeInstanceCreator;
 
 /**
@@ -31,6 +34,7 @@ public class GsonImportService implements ImportService<String> {
 	public GsonImportService() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(Tree.class, new TreeInstanceCreator());
+		gsonBuilder.registerTypeAdapter(Node.class,	new NodeInstanceCreator());
 		this.gson = gsonBuilder.create();
 	}
 
@@ -42,9 +46,13 @@ public class GsonImportService implements ImportService<String> {
 	 */
 	@Override
 	public TreeImpl importTree(String jsonString) {
-		TreeImpl tree = (TreeImpl) this.gson.fromJson(jsonString, Tree.class);
-		this.reconstructTree(tree.getRoot());
-		return tree;
+//		TreeImpl tree = (TreeImpl) this.gson.fromJson(jsonString, TreeImpl.class);
+//		this.reconstructTree(tree.getRoot());
+//		return tree;
+		
+		JsonElement rootNode = JsonParser.parseString(jsonString);		
+		
+		return null;
 	}
 
 	/**
