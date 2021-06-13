@@ -6,7 +6,6 @@ import com.google.gson.InstanceCreator;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 public class NodeInstanceCreator implements InstanceCreator<AbstractNode> {
 	/**
