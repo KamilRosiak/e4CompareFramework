@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core;
  
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -149,6 +150,7 @@ public class FeatureModelEditorController {
 			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.load(filepath));
 			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
 			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
+			showConstraintView();
 		}
 		
 	}
@@ -400,15 +402,14 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) FileTreeElement file) {
 		try {
-			FeatureDiagram featureDiagram = (FeatureDiagram) FeatureDiagramSerialiazer.load(file.getAbsolutePath());
+			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.load(file.getAbsolutePath()));
 			Tab tab = getOpenedTabOrNull(featureDiagram);
 			if ( tab == null) {
-				tab = createNewTab(file.getFileName());
+				tab = createNewTab(featureDiagram.getRoot().getName());
 			}
-			FeatureModelEditorView view = (FeatureModelEditorView) tab.getUserData();
-			view.loadFeatureDiagram(featureDiagram, false);
+			getCurrentView().loadFeatureDiagram(featureDiagram, false);
 			selectTab(tab);
-		} catch (Exception e) {
+		} catch (NoSuchElementException e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
@@ -426,7 +427,7 @@ public class FeatureModelEditorController {
 			FeatureModelEditorView view = (FeatureModelEditorView) tab.getUserData();
 			view.loadFeatureDiagram(featureDiagram, false);
 			selectTab(tab);
-		} catch (Exception e) {
+		} catch (NoSuchElementException e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}

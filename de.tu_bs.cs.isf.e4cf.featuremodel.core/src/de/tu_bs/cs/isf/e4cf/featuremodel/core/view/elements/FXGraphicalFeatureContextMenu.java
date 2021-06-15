@@ -106,6 +106,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
             public void handle(ActionEvent event) {
+				hide();
             	eventBroker.send(FDEventTable.LOAD_COMPONENTFEATUREDIAGRAM_EVENT, fxGraFeature);	
             	event.consume();
             }

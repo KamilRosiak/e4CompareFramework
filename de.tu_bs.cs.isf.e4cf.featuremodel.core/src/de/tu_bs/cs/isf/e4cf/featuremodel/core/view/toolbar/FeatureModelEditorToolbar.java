@@ -1,11 +1,16 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar;
 
+import java.util.NoSuchElementException;
+
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener.FeatureModelViewError;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
@@ -56,7 +61,14 @@ public class FeatureModelEditorToolbar extends ToolBar  {
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_LOAD,e -> {
-			RCPMessageProvider.errorMessage("Load", "not implemented now.");
+			String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "\\" + CompareST.FEATURE_MODELS);
+			try {
+				FileTreeElement file = services.workspaceFileSystem.search(filepath);
+				services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, file);
+			} catch (NoSuchElementException ex) {
+				System.err.println("File could not be loaded.");
+				
+			}
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_FORMAT_DIAGRAM, e-> {

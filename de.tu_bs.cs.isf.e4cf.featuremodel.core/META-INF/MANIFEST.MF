@@ -29,5 +29,6 @@ Bundle-ManifestVersion: 2
 Bundle-Activator: de.tu_bs.cs.isf.e4cf.featuremodel.core.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: org.eclipse.e4.core.contexts
+Import-Package: de.tu_bs.cs.isf.e4cf.compare.stringtable,
+ org.eclipse.e4.core.contexts
 
