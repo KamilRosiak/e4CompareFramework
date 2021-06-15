@@ -5,7 +5,6 @@ package FeatureDiagramModificationSet.impl;
 import CrossTreeConstraints.CrossTreeConstraintsPackage;
 
 import FeatureDiagram.FeatureDiagramPackage;
-
 import FeatureDiagramModificationSet.Delta;
 import FeatureDiagramModificationSet.DeltaProperties;
 import FeatureDiagramModificationSet.FeatureDiagramModificationSetFactory;

@@ -21,7 +21,6 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.emf.EMFResourceSetManager;
 import de.tu_bs.cs.isf.e4cf.core.util.emf.IResourceManager;
-import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.FeatureConfiguration;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.checker.DimacsCnfChecker;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.checker.FeatureConfigurationChecker;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.checker.FeatureConfigurationChecker.OperationState;
@@ -33,6 +32,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.LoadFeatureConfigura
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration;
 
 public class FeatureConfigurationController {
 		

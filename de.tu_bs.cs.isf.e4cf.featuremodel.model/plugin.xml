@@ -7,6 +7,14 @@
 <plugin>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated feature_configuration -->
+      <package
+            uri="www.feature.configuration.de"
+            class="de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage"
+            genModel="model/feature_configuration.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated feature-metamodel -->
       <package
             uri="www.example.com/featureDiagram"

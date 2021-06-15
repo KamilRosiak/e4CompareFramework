@@ -3,7 +3,6 @@
 package FeatureDiagram.impl;
 
 import CrossTreeConstraints.CrossTreeConstraintsPackage;
-
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
@@ -11,7 +10,6 @@ import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.FeatureDiagramPackage;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;

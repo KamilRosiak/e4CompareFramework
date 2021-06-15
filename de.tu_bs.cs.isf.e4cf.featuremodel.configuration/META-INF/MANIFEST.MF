@@ -24,19 +24,6 @@ Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.featuremodel.configuration
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.configuration,
- de.tu_bs.cs.isf.e4cf.featuremodel.configuration.model,
  de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable,
  de.tu_bs.cs.isf.e4cf.featuremodel.configuration.util,
- de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view,
- de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration,
- de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.impl,
- de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.util,
- CrossTreeConstraints,
- CrossTreeConstraints.impl,
- CrossTreeConstraints.util,
- FeatureDiagram,
- FeatureDiagram.impl,
- FeatureDiagram.util,
- de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration,
- de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.impl,
- de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.util
+ de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view
