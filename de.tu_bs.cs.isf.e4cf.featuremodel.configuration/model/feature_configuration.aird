@@ -1,2 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewpoint:DAnalysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" uid="_CJmlcMqfEeum_uLAuPUiWA" version="14.3.1.202003261200"/>
+<viewpoint:DAnalysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" xsi:schemaLocation="http://www.eclipse.org/sirius/description/1.1.0 http://www.eclipse.org/sirius/1.1.0#//description" uid="_n4DNEM3nEeulzfh1x_l0yQ" selectedViews="_n6y_EM3nEeulzfh1x_l0yQ _n7CPoM3nEeulzfh1x_l0yQ _n7DdwM3nEeulzfh1x_l0yQ _n7VxoM3nEeulzfh1x_l0yQ" version="14.3.1.202003261200">
+  <semanticResources>feature_configuration.ecore</semanticResources>
+  <semanticResources>platform:/resource/de.tu_bs.cs.isf.e4cf.featuremodel.model/model/feature-metamodel.ecore</semanticResources>
+  <semanticResources>platform:/resource/de.tu_bs.cs.isf.e4cf.featuremodel.model/model/constraint-metamodel.ecore</semanticResources>
+  <semanticResources>feature_configuration.genmodel</semanticResources>
+  <ownedViews xmi:type="viewpoint:DView" uid="_n6y_EM3nEeulzfh1x_l0yQ">
+    <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']"/>
+  </ownedViews>
+  <ownedViews xmi:type="viewpoint:DView" uid="_n7CPoM3nEeulzfh1x_l0yQ">
+    <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Review']"/>
+  </ownedViews>
+  <ownedViews xmi:type="viewpoint:DView" uid="_n7DdwM3nEeulzfh1x_l0yQ">
+    <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Archetype']"/>
+  </ownedViews>
+  <ownedViews xmi:type="viewpoint:DView" uid="_n7VxoM3nEeulzfh1x_l0yQ">
+    <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Generation']"/>
+  </ownedViews>
+</viewpoint:DAnalysis>

@@ -61,14 +61,7 @@ public class FeatureModelEditorToolbar extends ToolBar  {
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_LOAD,e -> {
-			String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "\\" + CompareST.FEATURE_MODELS);
-			try {
-				FileTreeElement file = services.workspaceFileSystem.search(filepath);
-				services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, file);
-			} catch (NoSuchElementException ex) {
-				System.err.println("File could not be loaded.");
-				
-			}
+			services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, "");
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_FORMAT_DIAGRAM, e-> {

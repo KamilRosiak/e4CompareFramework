@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core;
  
+import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,7 +19,8 @@ import org.eclipse.swt.widgets.Composite;
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
-import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener.FeatureModelViewError;
@@ -145,14 +147,25 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject
 	public void loadComponentFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_COMPONENTFEATUREDIAGRAM_EVENT) FXGraphicalFeature fxGraFeature) {
-		String filepath = services.dialogService.getFileFromFileSystem(services.shell);
-		if (filepath != null) {
-			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.load(filepath));
+		FeatureDiagram featureDiagram = serializeFeatureDiagram();
+		if (featureDiagram != null) {
 			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
 			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
 			showConstraintView();
 		}
 		
+		
+	}
+
+	private FeatureDiagram serializeFeatureDiagram() {
+		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "\\\\" + CompareST.FEATURE_MODELS);
+		if (filepath.endsWith(".fm")) {
+			return new FeatureDiagram(FeatureDiagramSerialiazer.load(filepath));
+		} else {
+			System.out.println("Selected File is not a Feature Diagram.");
+		}
+		return null;
+
 	}
 
 	
@@ -400,20 +413,17 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) FileTreeElement file) {
-		try {
-			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.load(file.getAbsolutePath()));
+	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) String filePath) {
+		FeatureDiagram featureDiagram = serializeFeatureDiagram();
+		if (featureDiagram != null) {
 			Tab tab = getOpenedTabOrNull(featureDiagram);
 			if ( tab == null) {
 				tab = createNewTab(featureDiagram.getRoot().getName());
 			}
-			getCurrentView().loadFeatureDiagram(featureDiagram, false);
 			selectTab(tab);
-		} catch (NoSuchElementException e) {
-			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			getCurrentView().loadFeatureDiagram(featureDiagram, false);
+			showConstraintView();
 		}
-		showConstraintView();
 	}
 	
 	@Optional
@@ -421,12 +431,11 @@ public class FeatureModelEditorController {
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram featureDiagram) {
 		try {
 			Tab tab = getOpenedTabOrNull(featureDiagram);
-			if ( tab == null) {
+			if (tab == null) {
 				tab = createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
 			}
-			FeatureModelEditorView view = (FeatureModelEditorView) tab.getUserData();
-			view.loadFeatureDiagram(featureDiagram, false);
 			selectTab(tab);
+			getCurrentView().loadFeatureDiagram(featureDiagram, false);
 		} catch (NoSuchElementException e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
