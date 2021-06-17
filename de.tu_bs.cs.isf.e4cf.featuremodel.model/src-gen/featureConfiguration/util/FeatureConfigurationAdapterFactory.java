@@ -1,10 +1,10 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.util;
+package featureConfiguration.util;
 
 import FeatureDiagram.Feature;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.*;
+import featureConfiguration.*;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ import org.eclipse.emf.ecore.EObject;
  * The <b>Adapter Factory</b> for the model.
  * It provides an adapter <code>createXXX</code> method for each class of the model.
  * <!-- end-user-doc -->
- * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage
+ * @see featureConfiguration.FeatureConfigurationPackage
  * @generated
  */
 public class FeatureConfigurationAdapterFactory extends AdapterFactoryImpl {
@@ -100,13 +100,13 @@ public class FeatureConfigurationAdapterFactory extends AdapterFactoryImpl {
 
 
 	/**
-	 * Creates a new adapter for an object of class '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration <em>Feature Configuration</em>}'.
+	 * Creates a new adapter for an object of class '{@link featureConfiguration.FeatureConfiguration <em>Feature Configuration</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration
+	 * @see featureConfiguration.FeatureConfiguration
 	 * @generated
 	 */
 	public Adapter createFeatureConfigurationAdapter() {

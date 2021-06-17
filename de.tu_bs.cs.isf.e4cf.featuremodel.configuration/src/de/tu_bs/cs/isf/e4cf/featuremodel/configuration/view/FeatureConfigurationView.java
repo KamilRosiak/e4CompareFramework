@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfigurationContr
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelConfigurationStrings;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureDiagramIterator;
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration;
+import featureConfiguration.FeatureConfiguration;
 import javafx.embed.swt.FXCanvas;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

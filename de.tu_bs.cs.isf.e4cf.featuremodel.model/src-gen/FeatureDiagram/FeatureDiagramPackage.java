@@ -103,13 +103,22 @@ public interface FeatureDiagramPackage extends EPackage {
 	int FEATURE_DIAGRAMM__UUID = 3;
 
 	/**
+	 * The feature id for the '<em><b>Feature Configuration</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int FEATURE_DIAGRAMM__FEATURE_CONFIGURATION = 4;
+
+	/**
 	 * The number of structural features of the '<em>Feature Diagramm</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int FEATURE_DIAGRAMM_FEATURE_COUNT = 4;
+	int FEATURE_DIAGRAMM_FEATURE_COUNT = 5;
 
 	/**
 	 * The number of operations of the '<em>Feature Diagramm</em>' class.
@@ -567,6 +576,17 @@ public interface FeatureDiagramPackage extends EPackage {
 	EAttribute getFeatureDiagramm_Uuid();
 
 	/**
+	 * Returns the meta object for the reference list '{@link FeatureDiagram.FeatureDiagramm#getFeatureConfiguration <em>Feature Configuration</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Feature Configuration</em>'.
+	 * @see FeatureDiagram.FeatureDiagramm#getFeatureConfiguration()
+	 * @see #getFeatureDiagramm()
+	 * @generated
+	 */
+	EReference getFeatureDiagramm_FeatureConfiguration();
+
+	/**
 	 * Returns the meta object for class '{@link FeatureDiagram.Feature <em>Feature</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -879,6 +899,14 @@ public interface FeatureDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute FEATURE_DIAGRAMM__UUID = eINSTANCE.getFeatureDiagramm_Uuid();
+
+		/**
+		 * The meta object literal for the '<em><b>Feature Configuration</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference FEATURE_DIAGRAMM__FEATURE_CONFIGURATION = eINSTANCE.getFeatureDiagramm_FeatureConfiguration();
 
 		/**
 		 * The meta object literal for the '{@link FeatureDiagram.impl.FeatureImpl <em>Feature</em>}' class.

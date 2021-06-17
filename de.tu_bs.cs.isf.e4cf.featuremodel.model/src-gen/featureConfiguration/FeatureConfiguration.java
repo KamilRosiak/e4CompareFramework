@@ -1,6 +1,6 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration;
+package featureConfiguration;
 
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
@@ -18,12 +18,12 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getName <em>Name</em>}</li>
- *   <li>{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getFeatureSelection <em>Feature Selection</em>}</li>
- *   <li>{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getFeatureDiagram <em>Feature Diagram</em>}</li>
+ *   <li>{@link featureConfiguration.FeatureConfiguration#getName <em>Name</em>}</li>
+ *   <li>{@link featureConfiguration.FeatureConfiguration#getFeatureSelection <em>Feature Selection</em>}</li>
+ *   <li>{@link featureConfiguration.FeatureConfiguration#getFeatureDiagram <em>Feature Diagram</em>}</li>
  * </ul>
  *
- * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage#getFeatureConfiguration()
+ * @see featureConfiguration.FeatureConfigurationPackage#getFeatureConfiguration()
  * @model
  * @generated
  */
@@ -34,14 +34,14 @@ public interface FeatureConfiguration extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage#getFeatureConfiguration_Name()
+	 * @see featureConfiguration.FeatureConfigurationPackage#getFeatureConfiguration_Name()
 	 * @model
 	 * @generated
 	 */
 	String getName();
 
 	/**
-	 * Sets the value of the '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getName <em>Name</em>}' attribute.
+	 * Sets the value of the '{@link featureConfiguration.FeatureConfiguration#getName <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Name</em>' attribute.
@@ -57,8 +57,8 @@ public interface FeatureConfiguration extends EObject {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Feature Selection</em>' map.
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage#getFeatureConfiguration_FeatureSelection()
-	 * @model mapType="de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureToBooleanMap&lt;FeatureDiagram.Feature, org.eclipse.emf.ecore.EBooleanObject&gt;"
+	 * @see featureConfiguration.FeatureConfigurationPackage#getFeatureConfiguration_FeatureSelection()
+	 * @model mapType="featureConfiguration.FeatureToBooleanMap&lt;FeatureDiagram.Feature, org.eclipse.emf.ecore.EBooleanObject&gt;"
 	 * @generated
 	 */
 	EMap<Feature, Boolean> getFeatureSelection();
@@ -69,14 +69,14 @@ public interface FeatureConfiguration extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Feature Diagram</em>' reference.
 	 * @see #setFeatureDiagram(FeatureDiagramm)
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage#getFeatureConfiguration_FeatureDiagram()
+	 * @see featureConfiguration.FeatureConfigurationPackage#getFeatureConfiguration_FeatureDiagram()
 	 * @model
 	 * @generated
 	 */
 	FeatureDiagramm getFeatureDiagram();
 
 	/**
-	 * Sets the value of the '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getFeatureDiagram <em>Feature Diagram</em>}' reference.
+	 * Sets the value of the '{@link featureConfiguration.FeatureConfiguration#getFeatureDiagram <em>Feature Diagram</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Feature Diagram</em>' reference.

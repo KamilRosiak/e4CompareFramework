@@ -10,6 +10,8 @@
         eType="ecore:EClass constraint-metamodel.ecore#//AbstractConstraint" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="uuid" ordered="false" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="featureConfiguration" upperBound="-1"
+        eType="ecore:EClass feature_configuration.ecore#//FeatureConfiguration"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Feature">
     <eStructuralFeatures xsi:type="ecore:EReference" name="children" upperBound="-1"

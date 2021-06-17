@@ -3,7 +3,7 @@
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model/src-gen"
     modelPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model" modelName="FeatureDiagramModificationSet"
     rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
-    complianceLevel="8.0" copyrightFields="false" usedGenPackages="feature-metamodel.genmodel#//FeatureDiagram constraint-metamodel.genmodel#//CrossTreeConstraints"
+    complianceLevel="8.0" copyrightFields="false" usedGenPackages="feature-metamodel.genmodel#//FeatureDiagram constraint-metamodel.genmodel#//CrossTreeConstraints feature-metamodel.genmodel#//featureConfiguration"
     operationReflection="true" importOrganizing="true">
   <foreignModel>featureDiagramModificationSet.ecore</foreignModel>
   <genPackages prefix="FeatureDiagramModificationSet" disposableProviderFactory="true"

@@ -1,13 +1,12 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl;
+package featureConfiguration.impl;
 
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration;
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage;
-
+import featureConfiguration.FeatureConfiguration;
+import featureConfiguration.FeatureConfigurationPackage;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -34,9 +33,9 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationImpl#getName <em>Name</em>}</li>
- *   <li>{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationImpl#getFeatureSelection <em>Feature Selection</em>}</li>
- *   <li>{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationImpl#getFeatureDiagram <em>Feature Diagram</em>}</li>
+ *   <li>{@link featureConfiguration.impl.FeatureConfigurationImpl#getName <em>Name</em>}</li>
+ *   <li>{@link featureConfiguration.impl.FeatureConfigurationImpl#getFeatureSelection <em>Feature Selection</em>}</li>
+ *   <li>{@link featureConfiguration.impl.FeatureConfigurationImpl#getFeatureDiagram <em>Feature Diagram</em>}</li>
  * </ul>
  *
  * @generated

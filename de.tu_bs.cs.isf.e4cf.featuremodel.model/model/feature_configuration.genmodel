@@ -2,17 +2,17 @@
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model/src-gen"
     editDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model.edit/src" editorDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model.editor/src"
-    modelPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.configuration" modelName="Feature_configuration"
-    editPluginClass="de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.provider.Feature_configurationEditPlugin"
-    editorPluginClass="de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.presentation.Feature_configurationEditorPlugin"
-    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" testSuiteClass="de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.tests.Feature_configurationAllTests"
+    modelPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model" modelName="Feature_configuration"
+    editPluginClass="featureConfiguration.provider.Feature_configurationEditPlugin"
+    editorPluginClass="featureConfiguration.presentation.Feature_configurationEditorPlugin"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" testSuiteClass="featureConfiguration.tests.Feature_configurationAllTests"
     importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
-    editPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model.edit" editorPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model.editor"
+    editPluginID="/de.tu_bs.cs.isf.e4cf.featuremodel.model.edit" editorPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model.editor"
     testsPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model.tests" operationReflection="true"
     importOrganizing="true">
   <foreignModel>feature_configuration.ecore</foreignModel>
-  <genPackages prefix="FeatureConfiguration" basePackage="de.tu_bs.cs.isf.e4cf.featuremodel.model"
-      disposableProviderFactory="true" fileExtensions="fc" ecorePackage="feature_configuration.ecore#/">
+  <genPackages prefix="FeatureConfiguration" disposableProviderFactory="true" fileExtensions="fc"
+      ecorePackage="feature_configuration.ecore#/">
     <genClasses ecoreClass="feature_configuration.ecore#//FeatureConfiguration">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature_configuration.ecore#//FeatureConfiguration/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureConfiguration/featureSelection"/>
@@ -30,6 +30,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//FeatureDiagramm/identifierIncrement"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/Constraints"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//FeatureDiagramm/uuid"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/featureConfiguration"/>
     </genClasses>
     <genClasses ecoreClass="feature-metamodel.ecore#//Feature">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//Feature/children"/>

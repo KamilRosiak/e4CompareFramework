@@ -1,18 +1,15 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl;
+package featureConfiguration.impl;
 
 import CrossTreeConstraints.CrossTreeConstraintsPackage;
-
-import CrossTreeConstraints.impl.CrossTreeConstraintsPackageImpl;
-
 import FeatureDiagram.FeatureDiagramPackage;
 
 import FeatureDiagram.impl.FeatureDiagramPackageImpl;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration;
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationFactory;
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage;
+import featureConfiguration.FeatureConfiguration;
+import featureConfiguration.FeatureConfigurationFactory;
+import featureConfiguration.FeatureConfigurationPackage;
 
 import java.util.Map;
 
@@ -56,7 +53,7 @@ public class FeatureConfigurationPackageImpl extends EPackageImpl implements Fea
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see org.eclipse.emf.ecore.EPackage.Registry
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage#eNS_URI
+	 * @see featureConfiguration.FeatureConfigurationPackage#eNS_URI
 	 * @see #init()
 	 * @generated
 	 */
@@ -92,21 +89,20 @@ public class FeatureConfigurationPackageImpl extends EPackageImpl implements Fea
 
 		isInited = true;
 
+		// Initialize simple dependencies
+		CrossTreeConstraintsPackage.eINSTANCE.eClass();
+
 		// Obtain or create and register interdependencies
 		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(FeatureDiagramPackage.eNS_URI);
 		FeatureDiagramPackageImpl theFeatureDiagramPackage = (FeatureDiagramPackageImpl)(registeredPackage instanceof FeatureDiagramPackageImpl ? registeredPackage : FeatureDiagramPackage.eINSTANCE);
-		registeredPackage = EPackage.Registry.INSTANCE.getEPackage(CrossTreeConstraintsPackage.eNS_URI);
-		CrossTreeConstraintsPackageImpl theCrossTreeConstraintsPackage = (CrossTreeConstraintsPackageImpl)(registeredPackage instanceof CrossTreeConstraintsPackageImpl ? registeredPackage : CrossTreeConstraintsPackage.eINSTANCE);
 
 		// Create package meta-data objects
 		theFeatureConfigurationPackage.createPackageContents();
 		theFeatureDiagramPackage.createPackageContents();
-		theCrossTreeConstraintsPackage.createPackageContents();
 
 		// Initialize created meta-data
 		theFeatureConfigurationPackage.initializePackageContents();
 		theFeatureDiagramPackage.initializePackageContents();
-		theCrossTreeConstraintsPackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theFeatureConfigurationPackage.freeze();

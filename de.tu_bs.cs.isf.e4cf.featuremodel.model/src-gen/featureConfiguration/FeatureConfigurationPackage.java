@@ -1,6 +1,6 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration;
+package featureConfiguration;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -20,7 +20,7 @@ import org.eclipse.emf.ecore.EReference;
  *   <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
- * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationFactory
+ * @see featureConfiguration.FeatureConfigurationFactory
  * @model kind="package"
  * @generated
  */
@@ -31,7 +31,7 @@ public interface FeatureConfigurationPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNAME = "FeatureConfiguration";
+	String eNAME = "featureConfiguration";
 
 	/**
 	 * The package namespace URI.
@@ -55,14 +55,14 @@ public interface FeatureConfigurationPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	FeatureConfigurationPackage eINSTANCE = de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationPackageImpl.init();
+	FeatureConfigurationPackage eINSTANCE = featureConfiguration.impl.FeatureConfigurationPackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationImpl <em>Feature Configuration</em>}' class.
+	 * The meta object id for the '{@link featureConfiguration.impl.FeatureConfigurationImpl <em>Feature Configuration</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationImpl
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationPackageImpl#getFeatureConfiguration()
+	 * @see featureConfiguration.impl.FeatureConfigurationImpl
+	 * @see featureConfiguration.impl.FeatureConfigurationPackageImpl#getFeatureConfiguration()
 	 * @generated
 	 */
 	int FEATURE_CONFIGURATION = 0;
@@ -122,11 +122,11 @@ public interface FeatureConfigurationPackage extends EPackage {
 	int FEATURE_CONFIGURATION_OPERATION_COUNT = 1;
 
 	/**
-	 * The meta object id for the '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureToBooleanMapImpl <em>Feature To Boolean Map</em>}' class.
+	 * The meta object id for the '{@link featureConfiguration.impl.FeatureToBooleanMapImpl <em>Feature To Boolean Map</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureToBooleanMapImpl
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationPackageImpl#getFeatureToBooleanMap()
+	 * @see featureConfiguration.impl.FeatureToBooleanMapImpl
+	 * @see featureConfiguration.impl.FeatureConfigurationPackageImpl#getFeatureToBooleanMap()
 	 * @generated
 	 */
 	int FEATURE_TO_BOOLEAN_MAP = 1;
@@ -169,54 +169,54 @@ public interface FeatureConfigurationPackage extends EPackage {
 
 
 	/**
-	 * Returns the meta object for class '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration <em>Feature Configuration</em>}'.
+	 * Returns the meta object for class '{@link featureConfiguration.FeatureConfiguration <em>Feature Configuration</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Feature Configuration</em>'.
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration
+	 * @see featureConfiguration.FeatureConfiguration
 	 * @generated
 	 */
 	EClass getFeatureConfiguration();
 
 	/**
-	 * Returns the meta object for the attribute '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getName <em>Name</em>}'.
+	 * Returns the meta object for the attribute '{@link featureConfiguration.FeatureConfiguration#getName <em>Name</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Name</em>'.
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getName()
+	 * @see featureConfiguration.FeatureConfiguration#getName()
 	 * @see #getFeatureConfiguration()
 	 * @generated
 	 */
 	EAttribute getFeatureConfiguration_Name();
 
 	/**
-	 * Returns the meta object for the map '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getFeatureSelection <em>Feature Selection</em>}'.
+	 * Returns the meta object for the map '{@link featureConfiguration.FeatureConfiguration#getFeatureSelection <em>Feature Selection</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the map '<em>Feature Selection</em>'.
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getFeatureSelection()
+	 * @see featureConfiguration.FeatureConfiguration#getFeatureSelection()
 	 * @see #getFeatureConfiguration()
 	 * @generated
 	 */
 	EReference getFeatureConfiguration_FeatureSelection();
 
 	/**
-	 * Returns the meta object for the reference '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getFeatureDiagram <em>Feature Diagram</em>}'.
+	 * Returns the meta object for the reference '{@link featureConfiguration.FeatureConfiguration#getFeatureDiagram <em>Feature Diagram</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Feature Diagram</em>'.
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#getFeatureDiagram()
+	 * @see featureConfiguration.FeatureConfiguration#getFeatureDiagram()
 	 * @see #getFeatureConfiguration()
 	 * @generated
 	 */
 	EReference getFeatureConfiguration_FeatureDiagram();
 
 	/**
-	 * Returns the meta object for the '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#toString() <em>To String</em>}' operation.
+	 * Returns the meta object for the '{@link featureConfiguration.FeatureConfiguration#toString() <em>To String</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the '<em>To String</em>' operation.
-	 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration#toString()
+	 * @see featureConfiguration.FeatureConfiguration#toString()
 	 * @generated
 	 */
 	EOperation getFeatureConfiguration__ToString();
@@ -279,11 +279,11 @@ public interface FeatureConfigurationPackage extends EPackage {
 	 */
 	interface Literals {
 		/**
-		 * The meta object literal for the '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationImpl <em>Feature Configuration</em>}' class.
+		 * The meta object literal for the '{@link featureConfiguration.impl.FeatureConfigurationImpl <em>Feature Configuration</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationImpl
-		 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationPackageImpl#getFeatureConfiguration()
+		 * @see featureConfiguration.impl.FeatureConfigurationImpl
+		 * @see featureConfiguration.impl.FeatureConfigurationPackageImpl#getFeatureConfiguration()
 		 * @generated
 		 */
 		EClass FEATURE_CONFIGURATION = eINSTANCE.getFeatureConfiguration();
@@ -321,11 +321,11 @@ public interface FeatureConfigurationPackage extends EPackage {
 		EOperation FEATURE_CONFIGURATION___TO_STRING = eINSTANCE.getFeatureConfiguration__ToString();
 
 		/**
-		 * The meta object literal for the '{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureToBooleanMapImpl <em>Feature To Boolean Map</em>}' class.
+		 * The meta object literal for the '{@link featureConfiguration.impl.FeatureToBooleanMapImpl <em>Feature To Boolean Map</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureToBooleanMapImpl
-		 * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationPackageImpl#getFeatureToBooleanMap()
+		 * @see featureConfiguration.impl.FeatureToBooleanMapImpl
+		 * @see featureConfiguration.impl.FeatureConfigurationPackageImpl#getFeatureToBooleanMap()
 		 * @generated
 		 */
 		EClass FEATURE_TO_BOOLEAN_MAP = eINSTANCE.getFeatureToBooleanMap();

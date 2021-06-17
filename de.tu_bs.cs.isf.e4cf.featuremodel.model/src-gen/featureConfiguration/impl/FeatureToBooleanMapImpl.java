@@ -1,11 +1,9 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl;
+package featureConfiguration.impl;
 
 import FeatureDiagram.Feature;
-
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage;
-
+import featureConfiguration.FeatureConfigurationPackage;
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.common.util.BasicEMap;
@@ -26,8 +24,8 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureToBooleanMapImpl#getTypedKey <em>Key</em>}</li>
- *   <li>{@link de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureToBooleanMapImpl#getTypedValue <em>Value</em>}</li>
+ *   <li>{@link featureConfiguration.impl.FeatureToBooleanMapImpl#getTypedKey <em>Key</em>}</li>
+ *   <li>{@link featureConfiguration.impl.FeatureToBooleanMapImpl#getTypedValue <em>Value</em>}</li>
  * </ul>
  *
  * @generated
@@ -51,7 +49,7 @@ public class FeatureToBooleanMapImpl extends MinimalEObjectImpl.Container implem
 	 * @generated
 	 * @ordered
 	 */
-	protected static final Boolean VALUE_EDEFAULT = Boolean.FALSE;
+	protected static final Boolean VALUE_EDEFAULT = java.lang.Boolean.FALSE;
 
 	/**
 	 * The cached value of the '{@link #getTypedValue() <em>Value</em>}' attribute.

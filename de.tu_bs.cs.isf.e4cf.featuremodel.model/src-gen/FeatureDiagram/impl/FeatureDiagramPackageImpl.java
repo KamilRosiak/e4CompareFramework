@@ -10,6 +10,8 @@ import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.FeatureDiagramPackage;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
+import featureConfiguration.FeatureConfigurationPackage;
+import featureConfiguration.impl.FeatureConfigurationPackageImpl;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
@@ -109,11 +111,17 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		// Initialize simple dependencies
 		CrossTreeConstraintsPackage.eINSTANCE.eClass();
 
+		// Obtain or create and register interdependencies
+		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(FeatureConfigurationPackage.eNS_URI);
+		FeatureConfigurationPackageImpl theFeatureConfigurationPackage = (FeatureConfigurationPackageImpl)(registeredPackage instanceof FeatureConfigurationPackageImpl ? registeredPackage : FeatureConfigurationPackage.eINSTANCE);
+
 		// Create package meta-data objects
 		theFeatureDiagramPackage.createPackageContents();
+		theFeatureConfigurationPackage.createPackageContents();
 
 		// Initialize created meta-data
 		theFeatureDiagramPackage.initializePackageContents();
+		theFeatureConfigurationPackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theFeatureDiagramPackage.freeze();
@@ -171,6 +179,16 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 	@Override
 	public EAttribute getFeatureDiagramm_Uuid() {
 		return (EAttribute)featureDiagrammEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getFeatureDiagramm_FeatureConfiguration() {
+		return (EReference)featureDiagrammEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -437,6 +455,7 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		createEAttribute(featureDiagrammEClass, FEATURE_DIAGRAMM__IDENTIFIER_INCREMENT);
 		createEReference(featureDiagrammEClass, FEATURE_DIAGRAMM__CONSTRAINTS);
 		createEAttribute(featureDiagrammEClass, FEATURE_DIAGRAMM__UUID);
+		createEReference(featureDiagrammEClass, FEATURE_DIAGRAMM__FEATURE_CONFIGURATION);
 
 		featureEClass = createEClass(FEATURE);
 		createEReference(featureEClass, FEATURE__CHILDREN);
@@ -491,6 +510,7 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 
 		// Obtain other dependent packages
 		CrossTreeConstraintsPackage theCrossTreeConstraintsPackage = (CrossTreeConstraintsPackage)EPackage.Registry.INSTANCE.getEPackage(CrossTreeConstraintsPackage.eNS_URI);
+		FeatureConfigurationPackage theFeatureConfigurationPackage = (FeatureConfigurationPackage)EPackage.Registry.INSTANCE.getEPackage(FeatureConfigurationPackage.eNS_URI);
 
 		// Create type parameters
 
@@ -505,6 +525,7 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		initEAttribute(getFeatureDiagramm_IdentifierIncrement(), ecorePackage.getEInt(), "identifierIncrement", "-1", 1, 1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getFeatureDiagramm_Constraints(), theCrossTreeConstraintsPackage.getAbstractConstraint(), null, "Constraints", null, 0, -1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFeatureDiagramm_Uuid(), ecorePackage.getEString(), "uuid", null, 1, 1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEReference(getFeatureDiagramm_FeatureConfiguration(), theFeatureConfigurationPackage.getFeatureConfiguration(), null, "featureConfiguration", null, 0, -1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(featureEClass, Feature.class, "Feature", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getFeature_Children(), this.getFeature(), null, "children", null, 0, -1, Feature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

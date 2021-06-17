@@ -32,7 +32,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.LoadFeatureConfigura
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration;
+import featureConfiguration.FeatureConfiguration;
 
 public class FeatureConfigurationController {
 		

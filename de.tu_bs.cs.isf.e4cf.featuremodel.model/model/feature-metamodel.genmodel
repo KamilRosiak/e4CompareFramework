@@ -14,6 +14,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//FeatureDiagramm/identifierIncrement"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/Constraints"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//FeatureDiagramm/uuid"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/featureConfiguration"/>
     </genClasses>
     <genClasses ecoreClass="feature-metamodel.ecore#//Feature">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//Feature/children"/>
@@ -41,6 +42,18 @@
     </genClasses>
     <genClasses ecoreClass="feature-metamodel.ecore#//ComponentFeature">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//ComponentFeature/featurediagramm"/>
+    </genClasses>
+  </genPackages>
+  <genPackages prefix="FeatureConfiguration" ecorePackage="feature_configuration.ecore#/">
+    <genClasses ecoreClass="feature_configuration.ecore#//FeatureConfiguration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature_configuration.ecore#//FeatureConfiguration/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureConfiguration/featureSelection"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureConfiguration/featureDiagram"/>
+      <genOperations ecoreOperation="feature_configuration.ecore#//FeatureConfiguration/toString"/>
+    </genClasses>
+    <genClasses ecoreClass="feature_configuration.ecore#//FeatureToBooleanMap">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureToBooleanMap/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature_configuration.ecore#//FeatureToBooleanMap/value"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

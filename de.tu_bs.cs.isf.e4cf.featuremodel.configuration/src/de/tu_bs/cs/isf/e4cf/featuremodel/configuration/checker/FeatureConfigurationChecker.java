@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.configuration.checker;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfiguration;
+import featureConfiguration.FeatureConfiguration;
 
 public interface FeatureConfigurationChecker {
 

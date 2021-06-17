@@ -1,6 +1,6 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration;
+package featureConfiguration;
 
 import org.eclipse.emf.ecore.EFactory;
 
@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.EFactory;
  * The <b>Factory</b> for the model.
  * It provides a create method for each non-abstract class of the model.
  * <!-- end-user-doc -->
- * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage
+ * @see featureConfiguration.FeatureConfigurationPackage
  * @generated
  */
 public interface FeatureConfigurationFactory extends EFactory {
@@ -19,7 +19,7 @@ public interface FeatureConfigurationFactory extends EFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	FeatureConfigurationFactory eINSTANCE = de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationFactoryImpl.init();
+	FeatureConfigurationFactory eINSTANCE = featureConfiguration.impl.FeatureConfigurationFactoryImpl.init();
 
 	/**
 	 * Returns a new object of class '<em>Feature Configuration</em>'.

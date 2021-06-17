@@ -6,11 +6,15 @@
 
 <plugin>
 
+
+
+
+
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated feature_configuration -->
       <package
             uri="www.feature.configuration.de"
-            class="de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage"
+            class="featureConfiguration.FeatureConfigurationPackage"
             genModel="model/feature_configuration.genmodel"/>
    </extension>
 
@@ -29,6 +33,9 @@
             class="FeatureDiagramModificationSet.FeatureDiagramModificationSetPackage"
             genModel="model/featureDiagramModificationSet.genmodel"/>
    </extension>
+
+
+
 
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated constraint-metamodel -->

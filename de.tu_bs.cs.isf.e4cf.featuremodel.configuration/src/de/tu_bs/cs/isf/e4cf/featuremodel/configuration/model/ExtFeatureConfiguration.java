@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.configuration.model;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureConfigurationImpl;
+import featureConfiguration.impl.FeatureConfigurationImpl;
 
 public class ExtFeatureConfiguration extends FeatureConfigurationImpl {
 

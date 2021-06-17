@@ -1,10 +1,10 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.util;
+package featureConfiguration.util;
 
 import FeatureDiagram.Feature;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.*;
+import featureConfiguration.*;
 
 import java.util.Map;
 
@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.util.Switch;
  * until a non-null result is returned,
  * which is the result of the switch.
  * <!-- end-user-doc -->
- * @see de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.FeatureConfigurationPackage
+ * @see featureConfiguration.FeatureConfigurationPackage
  * @generated
  */
 public class FeatureConfigurationSwitch<T> extends Switch<T> {

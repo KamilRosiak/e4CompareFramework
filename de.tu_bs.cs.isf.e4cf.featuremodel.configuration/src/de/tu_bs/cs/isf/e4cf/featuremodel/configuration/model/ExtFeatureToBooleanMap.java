@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.configuration.model;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl.FeatureToBooleanMapImpl;
+import featureConfiguration.impl.FeatureToBooleanMapImpl;
 
 public class ExtFeatureToBooleanMap extends FeatureToBooleanMapImpl {
 

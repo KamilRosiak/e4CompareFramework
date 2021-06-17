@@ -1,10 +1,10 @@
 /**
  */
-package de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.impl;
+package featureConfiguration.impl;
 
 import FeatureDiagram.Feature;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.model.FeatureConfiguration.*;
+import featureConfiguration.*;
 
 import java.util.Map;
 
