@@ -20,6 +20,7 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.util.MetricUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.FXComparatorElement;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.MetricViewCell;
 import de.tu_bs.cs.isf.e4cf.compare.metric_view.components.WeightCell;
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.beans.binding.Bindings;
@@ -189,7 +190,7 @@ public class MetricView implements Initializable {
 	
 	@FXML
 	private void loadMetric(Event event) {
-		currentMetric = MetricUtil.deSerializesMetric(RCPMessageProvider.getFilePathDialog("Select Metric File", ""));
+		currentMetric = MetricUtil.deSerializesMetric(RCPMessageProvider.getFilePathDialog("Select Metric File", CompareST.METRICS_FOLDER));
 		Map<String, List<Comparator>> comparators = currentMetric.getAllComparator();
 		treeTable.setRoot(null);
 		List<FXComparatorElement> elements = new ArrayList<>();

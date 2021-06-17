@@ -113,7 +113,7 @@ public class FeatureModelEditorController {
 	private Tab getOpenedTabOrNull(FeatureDiagram diagram) {
 		for (Tab tab : tabPane.getTabs()) {
 			FeatureDiagram tabDiagram = ((FeatureModelEditorView) tab.getUserData()).getCurrentModel();
-			if (diagram == tabDiagram) {
+			if (diagram.getUuid().equals(tabDiagram.getUuid())) {
 				return tab;
 			}
 		}
@@ -147,27 +147,19 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject
 	public void loadComponentFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_COMPONENTFEATUREDIAGRAM_EVENT) FXGraphicalFeature fxGraFeature) {
-		FeatureDiagram featureDiagram = serializeFeatureDiagram();
-		if (featureDiagram != null) {
+		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", CompareST.FEATURE_MODELS);
+		try {
+			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.loadFeatureDiagram(filepath));
 			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
 			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
 			showConstraintView();
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
 		}
 		
 		
+		
 	}
-
-	private FeatureDiagram serializeFeatureDiagram() {
-		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "\\\\" + CompareST.FEATURE_MODELS);
-		if (filepath.endsWith(".fm")) {
-			return new FeatureDiagram(FeatureDiagramSerialiazer.load(filepath));
-		} else {
-			System.out.println("Selected File is not a Feature Diagram.");
-		}
-		return null;
-
-	}
-
 	
 	/**
 	 * returns the current shown diagram
@@ -413,33 +405,34 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) String filePath) {
-		FeatureDiagram featureDiagram = serializeFeatureDiagram();
-		if (featureDiagram != null) {
-			Tab tab = getOpenedTabOrNull(featureDiagram);
-			if ( tab == null) {
-				tab = createNewTab(featureDiagram.getRoot().getName());
-			}
-			selectTab(tab);
-			getCurrentView().loadFeatureDiagram(featureDiagram, false);
-			showConstraintView();
+	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) String filepath) {
+		FeatureDiagram featureDiagram;
+		if (filepath.equals("")) {
+			filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", CompareST.FEATURE_MODELS);
+			if (filepath.equals("")) { return; }
 		}
+		try {	
+			featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.loadFeatureDiagram(filepath));
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+			return;
+		}
+		loadFeatureDiagram(featureDiagram);
 	}
 	
 	@Optional
 	@Inject 
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram featureDiagram) {
-		try {
-			Tab tab = getOpenedTabOrNull(featureDiagram);
-			if (tab == null) {
-				tab = createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
-			}
+		Tab tab = getOpenedTabOrNull(featureDiagram);
+		if (tab == null) {
+			tab = createNewTab(featureDiagram.getRoot().getName());
 			selectTab(tab);
 			getCurrentView().loadFeatureDiagram(featureDiagram, false);
-		} catch (NoSuchElementException e) {
-			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+		} else {
+			selectTab(tab);
 		}
+		
+		System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded.");
 		showConstraintView();
 	}
 	
