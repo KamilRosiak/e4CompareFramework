@@ -5,12 +5,22 @@
  */
 package de.tu_bs.cs.isf.e4cf.evaluation.generator;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
+@Singleton
+@Creatable
 public class CloneHelper {
+	
+	@Inject 
+	private CloneLogger logger;
 	
 	/**
 	 * Create a shallow copy of a node and assigns it to a target. 
@@ -19,10 +29,12 @@ public class CloneHelper {
 	 * @param targetParent: The parent for newly created source clone.
 	 * @return The clone of the source node
 	 */
-	public static Node copy(Node source, Node targetParent) {
+	public Node copy(Node source, Node targetParent) {
 		if (!(source instanceof NodeImpl)) {
 			return null;
 		}
+		
+		logger.logRaw("Copy " + source.getUUID() + " " + targetParent.getUUID());
 		
 		NodeImpl target = new NodeImpl();
 		target.setNodeType(source.getNodeType());
@@ -44,11 +56,19 @@ public class CloneHelper {
 	 * @param targetParent: The parent for newly created source clone
 	 * @return The clone of the source node
 	 */
-	public static Node copyRecursively(Node source, Node targetParent) {
+	public Node copyRecursively(Node source, Node targetParent) {
 		if (!(source instanceof NodeImpl)) {
 			return null;
 		}
 		
+		logger.logRaw("RCopy " + source.getUUID() + " " + targetParent.getUUID());
+
+		Node clone = rcopy(source, targetParent);
+		
+		return clone;
+	}
+	
+	private Node rcopy(Node source, Node targetParent) {
 		Node clone = copy(source, targetParent);
 		
 		for (Node sourceChild : source.getChildren()) {
@@ -65,7 +85,9 @@ public class CloneHelper {
 	 * @param targetParent: The new parent for the source
 	 * @return always the source
 	 */
-	public static Node move(Node source, Node targetParent) {	
+	public Node move(Node source, Node targetParent) {
+		logger.logRaw("Move " + source.getUUID() + " " + targetParent.getUUID());
+
 		Node oldParent = source.getParent();
 		oldParent.getChildren().remove(source);
 		targetParent.getChildren().add(source);
@@ -79,8 +101,12 @@ public class CloneHelper {
 	 * Deletes a node from the tree by removing it from its parent
 	 * @param source: Node to be removed
 	 */
-	public static void delete(Node source) {
+	public void delete(Node source) {
+		logger.logRaw("Delete " + source.getUUID());
 		source.getParent().getChildren().remove(source);
 	}
+	
+	// TODO: Create Nodes Function from Seed-Repository
+	
 
 }

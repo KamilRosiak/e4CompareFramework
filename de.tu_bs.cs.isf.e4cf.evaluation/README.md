@@ -8,6 +8,7 @@
 - [X] How to create clones? -> Paper Taxonomy
 - [ ] Log Modifications to Trees -> OG Location, Clone Location (File:Line), Operations (Taxonomy)
 - [X] How to save Tree
+- [ ] How to determine nodes to clone
 - ...
 - [ ] Determine Exchange Data Format [4Weeks] (FileSet<GenericDataStructures>, ..?)
   - Metadata as Log?
@@ -15,9 +16,8 @@
 - ...
 
 
-
-Tree Serializiation
-- Broken as is
-  - Migrate to Ecore -> Refactor instantiation everywhere but robustm out of the box, modification safe serializers
-  - **Use Existing GSON Parser **
-  - Reparse into the input format (create file copies) -> More extensible for different (non generic) clone detection tools  
+Seeds als Base-File
+Repository of Cloneable Code
+Empty nodes are great targets for duplication.
+Nodes with Attributes are great candidates for cloning but respect their containment.
+Xtend ok.

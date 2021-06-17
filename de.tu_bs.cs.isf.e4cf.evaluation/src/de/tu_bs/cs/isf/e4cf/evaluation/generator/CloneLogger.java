@@ -50,17 +50,17 @@ public class CloneLogger {
 		}
 		
 		Path logPath = workspaceRoot.resolve(DEFAULT_LOG_PATH).resolve(selectedPath);
-		outputLog(logPath, fileName);
+		write(logPath, fileName, log);
 	}
 
-	public void outputLog(Path logDir, String fileName) {
+	public void write(Path targetDir, String fileName, Iterable<? extends CharSequence> content) {
 		try {
-			Files.createDirectories(logDir);
+			Files.createDirectories(targetDir);
 			
-			Files.write(logDir.resolve(fileName), log,
+			Files.write(targetDir.resolve(fileName), content,
 					StandardOpenOption.CREATE,
 			        StandardOpenOption.TRUNCATE_EXISTING);
-			System.out.println(logDir.toString());
+			System.out.println(targetDir.toString());
 			
 		} catch (FileAlreadyExistsException alreadyException) {
 			alreadyException.printStackTrace();
