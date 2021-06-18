@@ -42,10 +42,12 @@ public class CloneHelper {
 		target.setParent(targetParent);
 		
 		for (Attribute sourceAttr : source.getAttributes()) {
-			source.addAttribute(new AttributeImpl(
+			target.addAttribute(new AttributeImpl(
 				sourceAttr.getAttributeKey(), 
 				sourceAttr.getAttributeValues()));
 		}
+		
+		targetParent.addChild(target);
 		
 		return target;
 	}
@@ -72,9 +74,10 @@ public class CloneHelper {
 		Node clone = copy(source, targetParent);
 		
 		for (Node sourceChild : source.getChildren()) {
-			Node cloneChild = copyRecursively(sourceChild, clone);
-			clone.addChild(cloneChild);
+			rcopy(sourceChild, clone);
 		}
+		
+		targetParent.addChild(clone);
 		
 		return clone;
 	}
@@ -90,12 +93,50 @@ public class CloneHelper {
 
 		Node oldParent = source.getParent();
 		oldParent.getChildren().remove(source);
-		targetParent.getChildren().add(source);
+		targetParent.addChild(source);
 		source.setParent(targetParent);
 		
 		return source;
 	}
 	
+	/***
+	 * Moves a node to the specified index in its current parent
+	 * @param source: Node to move
+	 * @param targetIndex: Position in parents children list
+	 * @return the moved Node
+	 */
+	public Node move(Node source, int targetIndex) {
+		
+		// TODO this does not work quite right 
+		Node parent = source.getParent();
+		
+		if (targetIndex < 0 || targetIndex > parent.getNumberOfChildren()-1 ) {
+			System.err.println("Error while moving node position: Appending node to the end");
+			targetIndex = parent.getNumberOfChildren()-1;
+		}
+		
+		logger.logRaw("MovePos " + source.getUUID() + " " + targetIndex);
+		
+		parent.getChildren().remove(source);
+		parent.getChildren().add(targetIndex, source);
+		
+		return source;
+	}
+	
+	/***
+	 * Moves a node to the specified index in the specified parent
+	 * @param source: Node to move
+	 * @param targetParent: The new parent for the source
+	 * @param targetIndex: Position in targetParents children list
+	 * @return the moved Node
+	 */
+	public Node move(Node source, Node targetParent, int targetIndex) {
+		move(source, targetParent);
+		move(source, targetIndex);
+		return source;
+	}
+	
+	// TODO add move implementation for moving a node around the children list 
 	
 	/***
 	 * Deletes a node from the tree by removing it from its parent

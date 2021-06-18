@@ -60,7 +60,6 @@ public class CloneLogger {
 			Files.write(targetDir.resolve(fileName), content,
 					StandardOpenOption.CREATE,
 			        StandardOpenOption.TRUNCATE_EXISTING);
-			System.out.println(targetDir.toString());
 			
 		} catch (FileAlreadyExistsException alreadyException) {
 			alreadyException.printStackTrace();
