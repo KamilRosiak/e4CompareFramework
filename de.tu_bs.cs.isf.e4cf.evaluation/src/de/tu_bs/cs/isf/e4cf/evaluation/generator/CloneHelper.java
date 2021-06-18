@@ -34,22 +34,23 @@ public class CloneHelper {
 			return null;
 		}
 		
-		logger.logRaw("Copy " + source.getUUID() + " " + targetParent.getUUID());
-		
-		NodeImpl target = new NodeImpl();
-		target.setNodeType(source.getNodeType());
-		target.setVariabilityClass(source.getVariabilityClass());
-		target.setParent(targetParent);
+		NodeImpl clone = new NodeImpl();
+		clone.setNodeType(source.getNodeType());
+		clone.setVariabilityClass(source.getVariabilityClass());
+		clone.setParent(targetParent);
 		
 		for (Attribute sourceAttr : source.getAttributes()) {
-			target.addAttribute(new AttributeImpl(
+			clone.addAttribute(new AttributeImpl(
 				sourceAttr.getAttributeKey(), 
 				sourceAttr.getAttributeValues()));
 		}
 		
-		targetParent.addChild(target);
+		targetParent.addChild(clone);
 		
-		return target;
+		logger.logRaw("Copy source:" + source.getUUID() + 
+				" target:" + targetParent.getUUID() + 
+				" clone:" + clone.getUUID());
+		return clone;
 	}
 	
 	/**
@@ -63,7 +64,7 @@ public class CloneHelper {
 			return null;
 		}
 		
-		logger.logRaw("RCopy " + source.getUUID() + " " + targetParent.getUUID());
+		logger.logRaw("RCopy source:" + source.getUUID() + " target:" + targetParent.getUUID());
 
 		Node clone = rcopy(source, targetParent);
 		
@@ -71,13 +72,12 @@ public class CloneHelper {
 	}
 	
 	private Node rcopy(Node source, Node targetParent) {
+		
 		Node clone = copy(source, targetParent);
-		
-		for (Node sourceChild : source.getChildren()) {
-			rcopy(sourceChild, clone);
+		for (Node omgChild : source.getChildren()) {
+			//copy(omgChild, clone);
+			rcopy(omgChild, clone);
 		}
-		
-		targetParent.addChild(clone);
 		
 		return clone;
 	}
@@ -89,7 +89,7 @@ public class CloneHelper {
 	 * @return always the source
 	 */
 	public Node move(Node source, Node targetParent) {
-		logger.logRaw("Move " + source.getUUID() + " " + targetParent.getUUID());
+		logger.logRaw("Move source:" + source.getUUID() + " target:" + targetParent.getUUID());
 
 		Node oldParent = source.getParent();
 		oldParent.getChildren().remove(source);
@@ -115,7 +115,7 @@ public class CloneHelper {
 			targetIndex = parent.getNumberOfChildren()-1;
 		}
 		
-		logger.logRaw("MovePos " + source.getUUID() + " " + targetIndex);
+		logger.logRaw("MovePos source:" + source.getUUID() + " index:" + targetIndex);
 		
 		parent.getChildren().remove(source);
 		parent.getChildren().add(targetIndex, source);

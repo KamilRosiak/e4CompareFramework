@@ -38,11 +38,13 @@ public class CloneGenerator {
 		Node body = tree.getRoot().getChildren().get(0).getChildren().get(0).getChildren().get(1);
 		Node varDecl = body.getChildren().get(0);
 		Node varDeclClone = helper.copyRecursively(varDecl, body);
-		// TODO change some attribute
+
 		helper.move(varDeclClone, 1);	
 		
+		// TODO change some attribute
+		
 		String modifiedTreeSerialized = gsonExportService.exportTree((TreeImpl) tree);
-		save(modifiedTreeSerialized, "mod");
+		save(modifiedTreeSerialized, ".mod");
 		
 		logger.outputLog();
 	}
