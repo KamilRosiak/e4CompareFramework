@@ -39,16 +39,15 @@ public class CloneGenerator {
 		Node varDecl = body.getChildren().get(0);
 		Node varDeclClone = helper.copyRecursively(varDecl, body);
 		// TODO change some attribute
-		helper.move(varDeclClone, 1);
-		
+		helper.move(varDeclClone, 1);	
 		
 		String modifiedTreeSerialized = gsonExportService.exportTree((TreeImpl) tree);
 		save(modifiedTreeSerialized, "mod");
 		
-		
 		logger.outputLog();
 	}
 	
+	/** Saves tree string to json file */
 	private void save(String content, String infix) {
 		
 		Path workspaceRoot = services.workspaceFileSystem.getWorkspaceDirectory().getFile();
@@ -59,7 +58,7 @@ public class CloneGenerator {
 			System.err.println("Not available for directory selection");
 		} else {
 			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount()-1);
-			fileName = services.rcpSelectionService.getCurrentSelectionFromExplorer().getFileName() + infix + ".json";		
+			fileName = services.rcpSelectionService.getCurrentSelectionFromExplorer().getFileName() + infix + ".tree";		
 		}
 		
 		Path logPath = workspaceRoot.resolve(" 02 Trees").resolve(selectedPath);
@@ -68,6 +67,6 @@ public class CloneGenerator {
 		logger.write(logPath, fileName, contentAsList);	
 		
 	}
-
+	
 	
 }

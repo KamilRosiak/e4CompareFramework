@@ -6,7 +6,7 @@
 - <Entry Point for Project 1>
 - [X] Take a look at how to modify data structure (semantic)
 - [X] How to create clones? -> Paper Taxonomy
-- [ ] Log Modifications to Trees -> OG Location, Clone Location (File:Line), Operations (Taxonomy)
+- [X] Log Modifications to Trees -> OG Location, Clone Location (File:Line), Operations (Taxonomy)
 - [X] How to save Tree
 - [ ] How to determine nodes to clone
 - ...
