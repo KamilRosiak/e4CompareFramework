@@ -8,10 +8,6 @@ import CrossTreeConstraints.CrossTreeConstraintsPackage;
 import CrossTreeConstraints.Formula;
 import CrossTreeConstraints.Literal;
 import CrossTreeConstraints.Operator;
-import FeatureDiagram.FeatureDiagramPackage;
-import FeatureDiagram.impl.FeatureDiagramPackageImpl;
-import featureConfiguration.FeatureConfigurationPackage;
-import featureConfiguration.impl.FeatureConfigurationPackageImpl;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
@@ -102,21 +98,11 @@ public class CrossTreeConstraintsPackageImpl extends EPackageImpl implements Cro
 
 		isInited = true;
 
-		// Obtain or create and register interdependencies
-		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(FeatureConfigurationPackage.eNS_URI);
-		FeatureConfigurationPackageImpl theFeatureConfigurationPackage = (FeatureConfigurationPackageImpl)(registeredPackage instanceof FeatureConfigurationPackageImpl ? registeredPackage : FeatureConfigurationPackage.eINSTANCE);
-		registeredPackage = EPackage.Registry.INSTANCE.getEPackage(FeatureDiagramPackage.eNS_URI);
-		FeatureDiagramPackageImpl theFeatureDiagramPackage = (FeatureDiagramPackageImpl)(registeredPackage instanceof FeatureDiagramPackageImpl ? registeredPackage : FeatureDiagramPackage.eINSTANCE);
-
 		// Create package meta-data objects
 		theCrossTreeConstraintsPackage.createPackageContents();
-		theFeatureConfigurationPackage.createPackageContents();
-		theFeatureDiagramPackage.createPackageContents();
 
 		// Initialize created meta-data
 		theCrossTreeConstraintsPackage.initializePackageContents();
-		theFeatureConfigurationPackage.initializePackageContents();
-		theFeatureDiagramPackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theCrossTreeConstraintsPackage.freeze();

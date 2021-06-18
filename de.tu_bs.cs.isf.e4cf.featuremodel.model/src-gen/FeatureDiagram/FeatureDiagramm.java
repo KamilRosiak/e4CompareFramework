@@ -3,9 +3,7 @@
 package FeatureDiagram;
 
 import CrossTreeConstraints.AbstractConstraint;
-
 import featureConfiguration.FeatureConfiguration;
-
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;

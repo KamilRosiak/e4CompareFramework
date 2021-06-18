@@ -49,7 +49,7 @@ public class FeatureToBooleanMapImpl extends MinimalEObjectImpl.Container implem
 	 * @generated
 	 * @ordered
 	 */
-	protected static final Boolean VALUE_EDEFAULT = java.lang.Boolean.FALSE;
+	protected static final Boolean VALUE_EDEFAULT = Boolean.FALSE;
 
 	/**
 	 * The cached value of the '{@link #getTypedValue() <em>Value</em>}' attribute.

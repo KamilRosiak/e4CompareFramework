@@ -12,7 +12,6 @@ import FeatureDiagramModificationSet.FeatureDiagramModificationSetFactory;
 import FeatureDiagramModificationSet.FeatureDiagramModificationSetPackage;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
 import FeatureDiagramModificationSet.Modification;
-
 import featureConfiguration.FeatureConfigurationPackage;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;

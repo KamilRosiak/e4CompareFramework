@@ -7,9 +7,7 @@ import CrossTreeConstraints.AbstractConstraint;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramPackage;
 import FeatureDiagram.FeatureDiagramm;
-
 import featureConfiguration.FeatureConfiguration;
-
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
