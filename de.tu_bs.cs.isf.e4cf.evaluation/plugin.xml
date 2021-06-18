@@ -6,6 +6,14 @@
             artifactReader="de.tu_bs.cs.isf.e4cf.evaluation.reader.TreeReader">
       </artifactReader>
    </extension>
+   <extension
+         id="UIContributions"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="evaluation.e4xmi">
+      </fragment>
+   </extension>
 
 
 </plugin>
