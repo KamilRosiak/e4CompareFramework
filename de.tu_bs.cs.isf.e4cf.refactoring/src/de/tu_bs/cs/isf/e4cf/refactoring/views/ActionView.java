@@ -23,6 +23,7 @@ public class ActionView extends View {
 
 	private Label actionLabel;
 	private Label componentLabel;
+	private Label taskLabel;
 
 	private Component selectedComponent;
 
@@ -56,7 +57,7 @@ public class ActionView extends View {
 	private ComponentTreeBuilder componentTreeBuilder;
 
 	public ActionView() {
-		super(2, "Actions");
+		super(2, "Action application");
 
 		actionTreeBuilder = new ActionTreeBuilder();
 		componentTreeBuilder = new ComponentTreeBuilder();
@@ -126,6 +127,13 @@ public class ActionView extends View {
 
 	@Override
 	public void setWidgets() {
+
+		taskLabel = new Label(shell, 0);
+		taskLabel.setText("Select actions to be applied:");
+
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 2;
+		taskLabel.setLayoutData(gridData);
 
 		componentLabel = new Label(shell, 0);
 		componentLabel.setText("Components");

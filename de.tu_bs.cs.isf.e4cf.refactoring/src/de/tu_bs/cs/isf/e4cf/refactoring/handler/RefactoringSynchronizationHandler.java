@@ -40,32 +40,43 @@ public class RefactoringSynchronizationHandler {
 		Tree first = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
 		Tree second = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(1));
 
-		List<RefactoringLayer> refactoringLayers = SynchronizationUtil.getRefactoringLayers();
+		List<RefactoringLayer> refactoringLayers = SynchronizationUtil
+				.getRefactoringLayers(first.getRoot().getAllNodeTypes(), second.getRoot().getAllNodeTypes());
+
+		boolean skipView = false;
 
 		refactoringViewController.showView(refactoringLayers);
 		if (refactoringViewController.isResult()) {
-			RefactoringResult firstResult = refactoringEngine.refactor(first, refactoringLayers);
-			RefactoringResult secondResult = refactoringEngine.refactor(second, refactoringLayers);
+			RefactoringResult firstResult = refactoringEngine.refactor(first, refactoringLayers, false);
+			RefactoringResult secondResult = refactoringEngine.refactor(second, refactoringLayers, false);
 
 			Map<Component, List<ActionScope>> componentToActions = synchronizationEngine.analyzeActions(firstResult,
 					secondResult);
 
-			actionViewController.showView(componentToActions);
+			skipView = componentToActions.values().stream().allMatch(x -> x.isEmpty());
 
-			if (actionViewController.isResult()) {
+			if (!skipView) {
+				actionViewController.showView(componentToActions);
+			}
+
+			if (actionViewController.isResult() || skipView) {
 
 				Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations = synchronizationEngine
 						.analyzeSynchronizations(firstResult, secondResult, componentToActions);
 
-				synchronizationViewController.showView(actionsToSynchronizations, componentToActions);
+				skipView = actionsToSynchronizations.values().stream().allMatch(x -> x.isEmpty());
 
-				if (synchronizationViewController.isResult()) {
+				if (!skipView) {
+					synchronizationViewController.showView(actionsToSynchronizations, componentToActions);
+				}
+
+				if (synchronizationViewController.isResult() || skipView) {
 
 					Map<Set<ActionScope>, Set<SynchronizationScope>> conflicts = synchronizationEngine
 							.scanForSynchronizationConflicts(componentToActions, actionsToSynchronizations);
 
 					if (conflicts.size() != 0) {
-						synchronizationConflictViewController.showView(conflicts);
+						synchronizationConflictViewController.showView(conflicts, actionsToSynchronizations);
 
 						if (!synchronizationConflictViewController.isResult()) {
 							return;
@@ -74,7 +85,7 @@ public class RefactoringSynchronizationHandler {
 					}
 
 					SynchronizationResult synchronizationResult = synchronizationEngine.synchronize(firstResult,
-							secondResult, componentToActions, actionsToSynchronizations);
+							secondResult, componentToActions, actionsToSynchronizations, true);
 
 					Node baseRoot = new NodeImpl("");
 					Tree baseTree = new TreeImpl("", baseRoot);

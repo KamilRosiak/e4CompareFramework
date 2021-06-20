@@ -31,18 +31,20 @@ public class RefactoringComparisonHandler {
 	public void execute(ServiceContainer services, ReaderManager readerManager, RefactoringEngine refactoringEngine,
 			RefactoringViewController refactoringViewController) {
 
-		CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
+		SortingMatcher matcher = new SortingMatcher();
+		CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher,
 				new MetricImpl("test"));
 
 		Tree tree1 = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
 		Tree tree2 = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(1));
 
-		List<RefactoringLayer> refactoringLayers = SynchronizationUtil.getRefactoringLayers();
+		List<RefactoringLayer> refactoringLayers = SynchronizationUtil
+				.getRefactoringLayers(tree1.getRoot().getAllNodeTypes(), tree2.getRoot().getAllNodeTypes());
 
 		refactoringViewController.showView(refactoringLayers);
 		if (refactoringViewController.isResult()) {
-			RefactoringResult result1 = refactoringEngine.refactor(tree1, refactoringLayers);
-			RefactoringResult result2 = refactoringEngine.refactor(tree2, refactoringLayers);
+			RefactoringResult result1 = refactoringEngine.refactor(tree1, refactoringLayers, false);
+			RefactoringResult result2 = refactoringEngine.refactor(tree2, refactoringLayers, false);
 
 			List<Comparison<Node>> comparisons = new LinkedList<Comparison<Node>>();
 
@@ -52,12 +54,15 @@ public class RefactoringComparisonHandler {
 				}
 			}
 			
+			matcher.calculateMatching(comparisons);
+
 			Node root = new NodeImpl();
 			Tree tree = new TreeImpl("", root);
 
 			for (Comparison<Node> comparison : comparisons) {
 				if (comparison.getSimilarity() > 0.8) {
-					Node mergedComponent = compareEngine.compareMerge(comparison.getLeftArtifact(), comparison.getRightArtifact());
+					Node mergedComponent = compareEngine.compareMerge(comparison.getLeftArtifact(),
+							comparison.getRightArtifact());
 					root.addChild(mergedComponent);
 				}
 			}
@@ -65,8 +70,6 @@ public class RefactoringComparisonHandler {
 			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, tree);
 			services.workspaceFileSystem.initializeFileTree("");
 		}
-
-		
 
 	}
 

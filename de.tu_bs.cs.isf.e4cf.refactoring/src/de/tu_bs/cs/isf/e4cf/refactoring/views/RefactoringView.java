@@ -54,7 +54,7 @@ public class RefactoringView extends View {
 	@Override
 	public void setWidgets() {
 		layerLabel = new Label(shell, 0);
-		layerLabel.setText("Layers");
+		layerLabel.setText("Select refactoring layers:");
 
 		layerTree = new Tree(shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 

@@ -54,12 +54,12 @@ public class SynchronizationEngineTest {
 		Tree tree2 = TestUtil.readFile(pathToMutation2);
 
 		Tree originalTree1a = tree1.cloneTree();
-		RefactoringResult result1a = refactoringEngine.refactor(originalTree1a, refactoringLayers);
+		RefactoringResult result1a = refactoringEngine.refactor(originalTree1a, refactoringLayers, false);
 
 		Tree originalTree1b = tree1.cloneTree();
-		RefactoringResult result1b = refactoringEngine.refactor(originalTree1b, refactoringLayers);
+		RefactoringResult result1b = refactoringEngine.refactor(originalTree1b, refactoringLayers, false);
 		Tree originalTree2 = tree2.cloneTree();
-		RefactoringResult result2 = refactoringEngine.refactor(originalTree2, refactoringLayers);
+		RefactoringResult result2 = refactoringEngine.refactor(originalTree2, refactoringLayers, false);
 
 		Map<Component, List<ActionScope>> componentToActions = synchronizationEngine.analyzeActions(result1a, result2);
 
@@ -91,7 +91,7 @@ public class SynchronizationEngineTest {
 		}
 
 		SynchronizationResult synchronizationResult = synchronizationEngine.synchronize(result1a, result2,
-				componentToActions, actionsToSynchronizations);
+				componentToActions, actionsToSynchronizations, false);
 
 		// backwards
 
@@ -151,7 +151,7 @@ public class SynchronizationEngineTest {
 		}
 
 		synchronizationResult = synchronizationEngine.synchronize(synchronizationResult, result1b,
-				componentToActionsBackwards, actionsToSynchronizationsBackwards);
+				componentToActionsBackwards, actionsToSynchronizationsBackwards, false);
 		synchronizationEngine.analyzeSynchronizations(synchronizationResult, result1b, componentToActionsBackwards);
 
 		List<Comparison<Node>> nodeComparisons = new LinkedList<Comparison<Node>>();

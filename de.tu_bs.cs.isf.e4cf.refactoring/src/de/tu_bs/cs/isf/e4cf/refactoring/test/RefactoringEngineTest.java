@@ -32,7 +32,7 @@ class RefactoringEngineTest {
 		List<RefactoringLayer> refactoringLayers = new ArrayList<RefactoringLayer>();
 		refactoringLayers.add(new RefactoringLayer("MethodDeclaration", true));
 
-		refactoringEngine.refactor(tree, refactoringLayers);
+		refactoringEngine.refactor(tree, refactoringLayers, true);
 
 		Tree originalTree2 = TestUtil.assembleTree(tree);
 

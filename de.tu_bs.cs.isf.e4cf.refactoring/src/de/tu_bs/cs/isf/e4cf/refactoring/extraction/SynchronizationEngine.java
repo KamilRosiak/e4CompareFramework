@@ -45,9 +45,11 @@ public class SynchronizationEngine {
 	private CompareEngineHierarchical compareEngine;
 	private DetectionEngine detectionEngine;
 	private SynchronizationUnitEngine synchronizationUnitEngine;
+	private SortingMatcher sortingMatcher;
 
 	public SynchronizationEngine() {
-		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
+		sortingMatcher = new SortingMatcher();
+		compareEngine = new CompareEngineHierarchical(sortingMatcher, new MetricImpl("test"));
 		detectionEngine = new DetectionEngine();
 		synchronizationUnitEngine = new SynchronizationUnitEngine();
 	}
@@ -270,14 +272,17 @@ public class SynchronizationEngine {
 
 	public SynchronizationResult synchronize(RefactoringResult result1, RefactoringResult result2,
 			Map<Component, List<ActionScope>> componentToActions,
-			Map<ActionScope, List<SynchronizationScope>> actionToSynchronizations) {
+			Map<ActionScope, List<SynchronizationScope>> actionToSynchronizations,
+			boolean removeDuplicateConfigurations) {
 
 		synchronizeActions(actionToSynchronizations);
 
 		List<Component> synchronizedComponents = Lists.newArrayList(componentToActions.keySet());
 
-		for (Component synchronizedComponent : synchronizedComponents) {
-			removeDuplicateConfigurations(synchronizedComponent);
+		if (removeDuplicateConfigurations) {
+			for (Component synchronizedComponent : synchronizedComponents) {
+				removeDuplicateConfigurations(synchronizedComponent);
+			}
 		}
 
 		List<Tree> synchronizedTrees = new ArrayList<Tree>();
@@ -296,6 +301,9 @@ public class SynchronizationEngine {
 				nodeComparisons.add(compareEngine.compare(component1, component2));
 			}
 		}
+
+		sortingMatcher.calculateMatching(nodeComparisons);
+
 		return nodeComparisons;
 	}
 
@@ -360,7 +368,12 @@ public class SynchronizationEngine {
 
 								if (synchronizationScope1.synchronize() && synchronizationScope2.synchronize()) {
 
-									if (synchronizationScope1.getNode() == synchronizationScope2.getNode()) {
+									boolean cross = actionScope1.getAction().getAffectedNode() == synchronizationScope2
+											.getNode()
+											&& actionScope2.getAction().getAffectedNode() == synchronizationScope1
+													.getNode();
+
+									if (synchronizationScope1.getNode() == synchronizationScope2.getNode() || cross) {
 
 										boolean inSet = false;
 
@@ -373,12 +386,6 @@ public class SynchronizationEngine {
 													|| actionScopes.contains(actionScope2)) {
 												actionScopes.add(actionScope1);
 												actionScopes.add(actionScope2);
-
-												if (synchronizationScopes == null) {
-
-													System.out.println(actionScopes.hashCode());
-													System.out.println(conflicts.keySet().iterator().next().hashCode());
-												}
 
 												synchronizationScopes.add(synchronizationScope1);
 												synchronizationScopes.add(synchronizationScope2);

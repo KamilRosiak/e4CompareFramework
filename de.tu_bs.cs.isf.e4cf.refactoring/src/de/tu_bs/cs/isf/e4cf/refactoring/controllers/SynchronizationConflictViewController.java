@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.controllers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,54 +29,64 @@ public class SynchronizationConflictViewController extends Controller<Synchroniz
 	}
 
 	private Map<Set<ActionScope>, Set<SynchronizationScope>> conflicts;
+	private Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations;
 
 	@Override
 	protected void initView() {
-		view.getActionScopeTree().addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-
-				TreeItem item = (TreeItem) event.item;
-				ActionScope actionScope = (ActionScope) item.getData();
-
-				for (Entry<Set<ActionScope>, Set<SynchronizationScope>> entry : conflicts.entrySet()) {
-					if (entry.getKey().contains(actionScope)) {
-						view.createSynchronizationScopeTree(entry.getValue());
-					}
-				}
-
-			}
-		});
-
-		view.getSynchronizationScopeTree().addListener(SWT.Selection, new Listener() {
+		view.getConflictsTree().addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 
 				TreeItem item = (TreeItem) event.item;
 
-				if (event.detail == SWT.CHECK) {
+				if (!item.getText().contains("Conflict")) {
 
-					SynchronizationScope synchronizationScope = (SynchronizationScope) item.getData();
-					synchronizationScope.setSynchronize(item.getChecked());
+					boolean checked = item.getChecked();
+					ActionScope actionScope = (ActionScope) item.getData();
 
-					if (item.getChecked()) {
-						for (TreeItem treeItem : view.getSynchronizationScopeTree().getItems()) {
-							if (treeItem != item) {
-								treeItem.setChecked(false);
-								((SynchronizationScope) treeItem.getData()).setSynchronize(false);
+					if (event.detail == SWT.CHECK) {
+
+						List<SynchronizationScope> synchronizationScopes = actionsToSynchronizations.get(actionScope);
+
+						for (Entry<Set<ActionScope>, Set<SynchronizationScope>> entry : conflicts.entrySet()) {
+							if (entry.getKey().contains(actionScope)) {
+
+								for (SynchronizationScope synchronizationScope : entry.getValue()) {
+
+									if (synchronizationScopes.contains(synchronizationScope)) {
+										synchronizationScope.setSynchronize(checked);
+									} else {
+										synchronizationScope.setSynchronize(false);
+
+									}
+
+								}
+
 							}
 						}
-					} else {
-						view.getSynchronizationScopeTree().getItem(0).setChecked(true);
+
+						for (TreeItem treeItem : item.getParentItem().getItems()) {
+							if (treeItem != item) {
+								view.checkTreeRecursively(treeItem, false);
+
+							} else {
+								view.checkTreeRecursively(treeItem, true);
+							}
+						}
+
 					}
 
 				}
+
 			}
 		});
 
 	}
 
-	public void showView(Map<Set<ActionScope>, Set<SynchronizationScope>> conflicts) {
+	public void showView(Map<Set<ActionScope>, Set<SynchronizationScope>> conflicts,
+			Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations) {
 		this.conflicts = conflicts;
-		view.showView(conflicts);
+		this.actionsToSynchronizations = actionsToSynchronizations;
+		view.showView(conflicts, actionsToSynchronizations);
 
 	}
 

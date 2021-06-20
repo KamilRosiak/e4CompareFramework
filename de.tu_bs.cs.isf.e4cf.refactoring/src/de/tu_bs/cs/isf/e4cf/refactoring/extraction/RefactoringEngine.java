@@ -42,18 +42,19 @@ public class RefactoringEngine {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
 		detectionEngine = new DetectionEngine();
 		synchronizationUnitEngine = new SynchronizationUnitEngine();
-		
+
 	}
 
-	public RefactoringResult refactor(Tree tree, List<RefactoringLayer> refactoringLayers) {
+	public RefactoringResult refactor(Tree tree, List<RefactoringLayer> refactoringLayers,
+			boolean removeType1And2Clones) {
 
 		// assign position to tree elements
-				assignPosition(tree.getRoot(), 0);
-		
+		assignPosition(tree.getRoot(), 0);
+
 		List<Component> components = new ArrayList<Component>();
 		for (RefactoringLayer layer : refactoringLayers) {
 			if (layer.refactor()) {
-				components.addAll(extractComponents(getNodesByLayer(tree, layer.getLayer())));
+				components.addAll(extractComponents(getNodesByLayer(tree, layer.getLayer()), removeType1And2Clones));
 			}
 
 		}
@@ -61,18 +62,13 @@ public class RefactoringEngine {
 		return new RefactoringResult(components, Arrays.asList(tree));
 	}
 
-	private List<Component> extractComponents(List<Node> nodes) {
+	private List<Component> extractComponents(List<Node> nodes, boolean removeType1And2Clones) {
 
 		// find clusters with predefined threshold
 		List<Set<Node>> clusters = detectionEngine.findClusters_Version2(nodes, THRESHOLD);
 
-		//System.out.println("Clusters " + clusters.size());
-		
-		// find type 1 + 2 clones in clusters
-		List<List<Set<Node>>> filteredClusters = filterClusters(clusters);
-
-		
-
+		List<List<Set<Node>>> filteredClusters = filterClusters(clusters, removeType1And2Clones);
+	
 		List<Component> components = new LinkedList<Component>();
 
 		for (List<Set<Node>> cluster : filteredClusters) {
@@ -118,8 +114,7 @@ public class RefactoringEngine {
 
 					// save relation between parent and selected configuration
 					if (!component.getNodeComponentRelation().containsKey(cloneParent)) {
-						component.getNodeComponentRelation().put(cloneParent,
-								new HashMap<Integer, Configuration>());
+						component.getNodeComponentRelation().put(cloneParent, new HashMap<Integer, Configuration>());
 					}
 					component.getNodeComponentRelation().get(cloneParent).put(position, configuration);
 
@@ -134,23 +129,29 @@ public class RefactoringEngine {
 		return components;
 	}
 
-	private List<List<Set<Node>>> filterClusters(List<Set<Node>> clusters) {
-		
+	private List<List<Set<Node>>> filterClusters(List<Set<Node>> clusters, boolean removeType1And2Clones) {
+
 		Map<Node, Attribute> savedPositionAttribute = new HashMap<Node, Attribute>();
 
 		List<List<Set<Node>>> filteredClusters = new ArrayList<List<Set<Node>>>();
 		for (Set<Node> cluster : clusters) {
 
 			List<Set<Node>> filteredCluster = new ArrayList<Set<Node>>();
-			
-			for(Node node : cluster) {
+
+			for (Node node : cluster) {
 				Attribute position = node.getAttributeForKey("Position");
 				savedPositionAttribute.put(node, position);
 				node.getAttributes().remove(position);
 			}
 
-			// find clusters of type 1 or 2 clones
-			List<Set<Node>> cloneClusters = detectionEngine.findClusters_Version2(cluster, 1.0f);
+			List<Set<Node>> cloneClusters = new ArrayList<Set<Node>>();
+			
+			if(removeType1And2Clones) {
+				// find clusters of type 1 or 2 clones
+				cloneClusters = detectionEngine.findClusters_Version2(cluster, 1.0f);
+			}
+			
+		
 
 			for (Set<Node> node : cloneClusters) {
 				filteredCluster.add(node);
@@ -174,15 +175,13 @@ public class RefactoringEngine {
 			}
 
 			filteredClusters.add(filteredCluster);
-			
-			for(Node node : cluster) {
+
+			for (Node node : cluster) {
 				node.addAttribute(savedPositionAttribute.get(node));
 			}
-			
+
 		}
-		
-		
-		
+
 		return filteredClusters;
 	}
 

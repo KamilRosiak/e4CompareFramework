@@ -29,6 +29,8 @@ public class SynchronizationView extends View {
 	private Label actionLabel;
 	private Label scopeLabel;
 	private Label componentLabel;
+	private Label taskLabel;
+	
 
 	private Component selectedComponent;
 
@@ -64,7 +66,7 @@ public class SynchronizationView extends View {
 	private SynchronizationTreeBuilder synchronizationTreeBuilder;
 
 	public SynchronizationView() {
-		super(3, "Synchronization");
+		super(3, "Synchronization application");
 		componentTreeBuilder = new ComponentTreeBuilder();
 		actionTreeBuilder = new ActionTreeBuilder();
 		synchronizationTreeBuilder = new SynchronizationTreeBuilder();
@@ -149,11 +151,19 @@ public class SynchronizationView extends View {
 
 	@Override
 	public void setWidgets() {
+		
+		taskLabel = new Label(shell, 0);
+		taskLabel.setText("Choose synchronizations to be applied:");
+
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 3;
+		taskLabel.setLayoutData(gridData);
+		
 		actionLabel = new Label(shell, 0);
 		actionLabel.setText("Actions");
 
 		scopeLabel = new Label(shell, 0);
-		scopeLabel.setText("Scopes");
+		scopeLabel.setText("Synchronization scope");
 
 		componentLabel = new Label(shell, 0);
 		componentLabel.setText("Components");

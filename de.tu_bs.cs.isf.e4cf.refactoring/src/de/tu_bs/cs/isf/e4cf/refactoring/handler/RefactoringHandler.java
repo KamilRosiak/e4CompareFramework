@@ -1,6 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.handler;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -24,11 +27,15 @@ public class RefactoringHandler {
 
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 
-		List<RefactoringLayer> refactoringLayers = SynchronizationUtil.getRefactoringLayers();
+		Set<String> nodeTypes = new HashSet<String>();
+		nodeTypes.addAll(tree.getRoot().getAllNodeTypes()); 
+		
+		List<RefactoringLayer> refactoringLayers = SynchronizationUtil
+				.getRefactoringLayers(nodeTypes);
 
 		refactoringViewController.showView(refactoringLayers);
 		if (refactoringViewController.isResult()) {
-			RefactoringResult result = engine.refactor(tree, refactoringLayers);
+			RefactoringResult result = engine.refactor(tree, refactoringLayers, false);
 
 			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, tree);
 		}

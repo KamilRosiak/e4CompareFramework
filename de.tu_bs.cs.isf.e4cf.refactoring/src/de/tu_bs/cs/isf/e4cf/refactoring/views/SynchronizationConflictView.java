@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -15,44 +16,33 @@ import com.google.common.collect.Lists;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.SynchronizationScope;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
-import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationTreeBuilder;
 
 public class SynchronizationConflictView extends View {
 
-	private Label actionScopeLabel;
-	private Label synchronizationScopeLabel;
+	private Label conflictsLabel;
+	private Label taskLabel;
 
-	private Tree actionScopeTree;
-	private Tree synchronizationScopeTree;
+	private Tree conflictsTree;
 
-	public Tree getActionScopeTree() {
-		return actionScopeTree;
+	public Tree getConflictsTree() {
+		return conflictsTree;
 	}
 
-	public void setActionScopeTree(Tree actionScopeTree) {
-		this.actionScopeTree = actionScopeTree;
-	}
-
-	public Tree getSynchronizationScopeTree() {
-		return synchronizationScopeTree;
-	}
-
-	public void setSynchronizationScopeTree(Tree synchronizationScopeTree) {
-		this.synchronizationScopeTree = synchronizationScopeTree;
+	public void setConflictsTree(Tree conflictsTree) {
+		this.conflictsTree = conflictsTree;
 	}
 
 	private ActionTreeBuilder actionTreeBuilder;
-	private SynchronizationTreeBuilder synchronizationTreeBuilder;
 
 	public SynchronizationConflictView() {
 		super(2, "Synchronization conflicts");
 
-		synchronizationTreeBuilder = new SynchronizationTreeBuilder();
 		actionTreeBuilder = new ActionTreeBuilder();
 
 	}
 
-	public void showView(Map<Set<ActionScope>, Set<SynchronizationScope>> conflicts) {
+	public void showView(Map<Set<ActionScope>, Set<SynchronizationScope>> conflicts,
+			Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations) {
 
 		for (Entry<Set<ActionScope>, Set<SynchronizationScope>> entry : conflicts.entrySet()) {
 
@@ -68,44 +58,46 @@ public class SynchronizationConflictView extends View {
 
 	public void createActionScopeTree(Set<Set<ActionScope>> conflicts) {
 
-		for (TreeItem item : actionScopeTree.getItems()) {
+		for (TreeItem item : conflictsTree.getItems()) {
 			item.dispose();
 		}
 
 		int i = 0;
 		for (Set<ActionScope> actionScopes : conflicts) {
-			TreeItem item = new TreeItem(actionScopeTree, 0);
+			TreeItem item = new TreeItem(conflictsTree, 0);
 			item.setText("Conflict " + i);
 			item.setData(actionScopes.iterator().next());
 			actionTreeBuilder.buildActionTree(Lists.newArrayList(actionScopes), item);
+
+			checkTreeRecursively(item, false);
+
 			i++;
 		}
 
 	}
 
-	public void createSynchronizationScopeTree(Set<SynchronizationScope> synchronizationScopes) {
-
-		for (TreeItem item : synchronizationScopeTree.getItems()) {
-			item.dispose();
-		}
-		synchronizationTreeBuilder.buildSynchronizationTree(Lists.newArrayList(synchronizationScopes),
-				synchronizationScopeTree);
-
-	}
-
 	@Override
 	public void setWidgets() {
-		actionScopeLabel = new Label(shell, 0);
-		actionScopeLabel.setText("Actions");
 
-		synchronizationScopeLabel = new Label(shell, 0);
-		synchronizationScopeLabel.setText("Synchronizations");
+		taskLabel = new Label(shell, 0);
+		taskLabel.setText("Select one of the conflicting actions to be synchronized:");
+		
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 2;
+		taskLabel.setLayoutData(gridData);
 
-		actionScopeTree = new Tree(shell, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		actionScopeTree.setLayoutData(new GridData(GridData.FILL_BOTH));
+		conflictsLabel = new Label(shell, 0);
+		conflictsLabel.setText("Conflicts");
+		
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.horizontalSpan = 2;
+		conflictsLabel.setLayoutData(gridData);
 
-		synchronizationScopeTree = new Tree(shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		synchronizationScopeTree.setLayoutData(new GridData(GridData.FILL_BOTH));
+		conflictsTree = new Tree(shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+
+		gridData = new GridData(GridData.FILL_BOTH);
+		gridData.horizontalSpan = 2;
+		conflictsTree.setLayoutData(gridData);
 
 	}
 
