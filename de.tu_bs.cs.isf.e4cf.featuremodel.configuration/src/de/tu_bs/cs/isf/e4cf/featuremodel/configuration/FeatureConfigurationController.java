@@ -69,6 +69,7 @@ public class FeatureConfigurationController {
 		// construct feature configuration 
 		services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
 		featureConfiguration = featureConfigurationBuilder.createFeatureConfiguration(fd);
+		view.setFeatureDiagram(fd);
 		view.refreshView(featureConfiguration);
 	}
 	
@@ -94,7 +95,7 @@ public class FeatureConfigurationController {
 		FeatureDiagram fd = (FeatureDiagram) featureConfiguration.getFeatureDiagram();
 		if (fd.eResource() == null) {
 			boolean saveFd = !RCPMessageProvider.questionMessage("Save Feature Configuration", 
-					"The feature model is not contained in a resource. Do you want to save it first.");
+					"The feature model is not contained in a resource. Please save it first.");
 			if (!saveFd) {
 				return;
 			}
@@ -172,7 +173,7 @@ public class FeatureConfigurationController {
 			boolean loadFeatureModel = RCPMessageProvider.questionMessage("Load Feature Configuration", 
 					"Do you want to load the feature model associated with the loaded feature configuration?");
 			if (loadFeatureModel) {
-				services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM, fc.getFeatureDiagram());
+				services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM, new FeatureDiagram(fc.getFeatureDiagram()));
 			}
 		}
 		

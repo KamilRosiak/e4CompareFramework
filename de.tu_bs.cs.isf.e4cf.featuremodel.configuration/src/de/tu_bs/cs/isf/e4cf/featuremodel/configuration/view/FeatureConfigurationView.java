@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
 
@@ -15,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfigurationController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelConfigurationStrings;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureDiagramIterator;
 import featureConfiguration.FeatureConfiguration;
@@ -23,9 +25,13 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
 public class FeatureConfigurationView {
@@ -34,6 +40,9 @@ public class FeatureConfigurationView {
 	
 	private Composite parent;
 	private TreeView<FeatureSelectionElement> featureSelectionTree;
+	private TableView<FeatureConfiguration> configTable;
+
+	private FeatureDiagram featureDiagram;
 	
 	private FeatureConfiguration featureConfiguration;
 
@@ -65,6 +74,25 @@ public class FeatureConfigurationView {
 		toolbar.addItems(saveButton, loadButton, checkButton);
 		layout.setTop(toolbar.getHbox());
 		BorderPane.setMargin(toolbar.getHbox(), new Insets(10));
+
+		// create a list of available configurations
+		configTable = new TableView<FeatureConfiguration>();
+		TableColumn<FeatureConfiguration, String> configCol = new TableColumn<FeatureConfiguration, String>("Name");
+		configCol.setCellValueFactory(new PropertyValueFactory<FeatureConfiguration, String>("name"));
+		configTable.getColumns().add(configCol);
+		configTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		configTable.setRowFactory(row -> {
+			TableRow<FeatureConfiguration> configRow = new TableRow<>();
+			configRow.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 2 && !configRow.isEmpty()) {
+					FeatureConfiguration config = configRow.getItem();
+					refreshView(config);
+				}
+			});
+			return configRow;
+		});
+		layout.setRight(configTable);
+		
 		
 		// feature configuration tree
 		featureSelectionTree = new TreeView<FeatureSelectionElement>();
@@ -97,7 +125,7 @@ public class FeatureConfigurationView {
 			int featureEntryIndex = featureSelection.indexOfKey(feature);
 			Entry<Feature, Boolean> featureEntry = featureSelection.get(featureEntryIndex);
 		
-			FeatureSelectionElement element = new FeatureSelectionElement(featureSelection.get(featureEntryIndex));
+			FeatureSelectionElement element = new FeatureSelectionElement(featureEntry);
 			CheckBoxTreeItem<FeatureSelectionElement> item = createCheckedItem(element, true);
 
 			// distinguish the root feature from others 
@@ -120,7 +148,9 @@ public class FeatureConfigurationView {
 					Feature parentFeature = parentItem.getValue().getFeature();
 					if (parentFeature.isOr() || parentFeature.isAlternative()) {
 						// if the feature is the only child OR the feature is mandatory, select it too
-						item.setSelected(parentFeature.getChildren().size() <= 1 || feature.isMandatory());
+						if (parentFeature.getChildren().size() <= 1 || feature.isMandatory()) {
+							item.setSelected(true);
+						}
 					} else {
 						// in case of the parent feature variability state being AND, select feature
 						item.setSelected(true);
@@ -140,6 +170,7 @@ public class FeatureConfigurationView {
 		featureSelectionTree.setCellFactory(CheckBoxTreeCell.<FeatureSelectionElement>forTreeView());
 		
 		expandTree(featureSelectionTree.getRoot());
+		//featureSelectionTree.refresh();
 		
 	}
 
@@ -149,28 +180,43 @@ public class FeatureConfigurationView {
 			expandTree(child);
 		}
 	}
-
-	public void setFeatureConfiguration(FeatureConfiguration fc) {
-		this.featureConfiguration = fc;
-		
-		refreshView(featureConfiguration);
-	}
 	
 	private CheckBoxTreeItem<FeatureSelectionElement> createCheckedItem(FeatureSelectionElement element, boolean independent) {
 		CheckBoxTreeItem<FeatureSelectionElement> item = new CheckBoxTreeItem<FeatureSelectionElement>(element);
 		item.setIndependent(independent);
-		item.setSelected(element.get().getValue());
+		boolean selected = element.isSelected();
+		item.setSelected(selected);
 		item.addEventHandler(CheckBoxTreeItem.<FeatureSelectionElement>checkBoxSelectionChangedEvent(), (event) -> {
 			// propagate checkbox selection to configuration element
-			item.getValue().setSelected(event.getTreeItem().isSelected());
-			
+			item.getValue().setSelected(event.getTreeItem().isSelected());			
 			event.consume();
 		});
 		
 		return item;
 	}
+
+	private void loadConfigurations(FeatureDiagram fd) {
+		configTable.getItems().clear();
+		List<FeatureConfiguration> configs = fd.getFeatureConfiguration();
+		configTable.getItems().addAll(configs);
+	}
 	
 	public FeatureConfiguration getFeatureConfiguration() {
 		return featureConfiguration;
+	}
+
+	public void setFeatureConfiguration(FeatureConfiguration fc) {
+		this.featureConfiguration = fc;
+		refreshView(featureConfiguration);
+	}
+
+	public FeatureDiagram getFeatureDiagram() {
+		return featureDiagram;
+	}
+
+	public void setFeatureDiagram(FeatureDiagram fd) {
+		// set name of current diagram 
+		loadConfigurations(fd);
+		this.featureDiagram = fd;
 	}
 }

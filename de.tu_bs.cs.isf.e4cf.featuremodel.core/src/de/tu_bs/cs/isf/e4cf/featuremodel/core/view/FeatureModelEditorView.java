@@ -131,7 +131,7 @@ public class FeatureModelEditorView {
 		initDataStructure();
 		root = new Pane();
 		root.setStyle("-fx-background-color: white;");
-
+		
 		BorderPane arrangementPane = new BorderPane();
 
 		Pane gesturePane = new Pane(root);

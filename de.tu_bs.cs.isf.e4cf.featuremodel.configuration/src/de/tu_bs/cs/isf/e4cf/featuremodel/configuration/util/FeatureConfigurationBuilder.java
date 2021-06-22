@@ -30,7 +30,7 @@ public class FeatureConfigurationBuilder {
 			Feature feature = it.next();
 			fc.getFeatureSelection().put(feature, false);
 		}
-		
+		fd.getFeatureConfiguration().add(fc);
 		return fc;
 	}
 
