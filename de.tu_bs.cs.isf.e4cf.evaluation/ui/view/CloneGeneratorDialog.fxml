@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="160.0" prefWidth="593.0" spacing="10.0" 
+xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorViewController">
+   <children>
+      <HBox alignment="TOP_CENTER" prefHeight="5.0" prefWidth="600.0" spacing="3.0">
+         <children>
+            <VBox alignment="CENTER">
+               <children>
+                  <Label text="Root Export Folder: " />
+               </children>
+            </VBox>
+            <TextField fx:id="textRootPath" prefHeight="25.0" prefWidth="150.0" promptText="&lt;rootPath&gt;" HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnBrowse" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Browse" onAction="#browseFiles"/>
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </HBox>
+      <HBox spacing="5.0" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="135.0" spacing="2.0">
+               <children>
+                  <Label minWidth="125.0" prefHeight="17.0" prefWidth="137.0" text="Clone Granularity Level" />
+                  <RadioButton fx:id="radioGranularityClass" mnemonicParsing="false" text="Class" />
+                  <RadioButton fx:id="radioGranularityMethod" mnemonicParsing="false" text="Method" />
+                  <RadioButton fx:id="radioGranularityStatement" mnemonicParsing="false" text="Statement" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+               </padding>
+            </VBox>
+            <VBox prefHeight="141.0" prefWidth="346.0" spacing="2.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="137.0" text="Mutation Options" />
+                  <CheckBox mnemonicParsing="false" text="CheckBox" />
+                  <CheckBox layoutX="10.0" layoutY="27.0" mnemonicParsing="false" text="CheckBox" />
+                  <CheckBox layoutX="10.0" layoutY="44.0" mnemonicParsing="false" text="CheckBox" />
+                  <CheckBox layoutX="10.0" layoutY="61.0" mnemonicParsing="false" text="CheckBox" />
+                  <CheckBox layoutX="10.0" layoutY="78.0" mnemonicParsing="false" text="CheckBox" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+               </padding>
+            </VBox>
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </HBox>
+   </children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+   <padding>
+      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+   </padding>
+</VBox>

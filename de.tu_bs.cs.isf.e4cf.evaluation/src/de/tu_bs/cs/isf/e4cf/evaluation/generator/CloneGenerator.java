@@ -14,6 +14,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions;
 
 @Singleton
 @Creatable
@@ -25,11 +26,11 @@ public class CloneGenerator {
 	@Inject ServiceContainer services;
 	
 	
-	public void go(Tree tree) {
+	public void go(Tree tree, GeneratorOptions options) {
 		
 		// save a copy of the original tree
 		String originalTree = gsonExportService.exportTree((TreeImpl) tree);
-		save(originalTree, "");
+		save(options.outputRoot, originalTree, "");
 		
 		// demo modifications
 //		TreeModifier modifier = new TreeModifier();
@@ -44,15 +45,14 @@ public class CloneGenerator {
 		// TODO change some attribute
 		
 		String modifiedTreeSerialized = gsonExportService.exportTree((TreeImpl) tree);
-		save(modifiedTreeSerialized, ".mod");
+		save(options.outputRoot, modifiedTreeSerialized, ".mod");
 		
 		logger.outputLog();
 	}
 	
 	/** Saves tree string to json file */
-	private void save(String content, String infix) {
+	private void save(Path targetFolder, String content, String infix) {
 		
-		Path workspaceRoot = services.workspaceFileSystem.getWorkspaceDirectory().getFile();
 		Path selectedPath = Paths.get(services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath());
 		String fileName = "";
 		
@@ -63,7 +63,7 @@ public class CloneGenerator {
 			fileName = services.rcpSelectionService.getCurrentSelectionFromExplorer().getFileName() + infix + ".tree";		
 		}
 		
-		Path logPath = workspaceRoot.resolve(" 02 Trees").resolve(selectedPath);
+		Path logPath = targetFolder.resolve(selectedPath);
 		ArrayList<String> contentAsList = new ArrayList<>();
 		contentAsList.add(content);
 		logger.write(logPath, fileName, contentAsList);	

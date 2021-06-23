@@ -74,9 +74,8 @@ public class CloneHelper {
 	private Node rcopy(Node source, Node targetParent) {
 		
 		Node clone = copy(source, targetParent);
-		for (Node omgChild : source.getChildren()) {
-			//copy(omgChild, clone);
-			rcopy(omgChild, clone);
+		for (Node sourceChild : source.getChildren()) {
+			rcopy(sourceChild, clone);
 		}
 		
 		return clone;
@@ -107,7 +106,6 @@ public class CloneHelper {
 	 */
 	public Node move(Node source, int targetIndex) {
 		
-		// TODO this does not work quite right 
 		Node parent = source.getParent();
 		
 		if (targetIndex < 0 || targetIndex > parent.getNumberOfChildren()-1 ) {
@@ -136,8 +134,6 @@ public class CloneHelper {
 		return source;
 	}
 	
-	// TODO add move implementation for moving a node around the children list 
-	
 	/***
 	 * Deletes a node from the tree by removing it from its parent
 	 * @param source: Node to be removed
@@ -149,5 +145,4 @@ public class CloneHelper {
 	
 	// TODO: Create Nodes Function from Seed-Repository
 	
-
 }
