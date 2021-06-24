@@ -42,7 +42,6 @@ public class CloneGenerator {
 
 		helper.move(varDeclClone, 1);	
 		
-		// TODO change some attribute
 		
 		String modifiedTreeSerialized = gsonExportService.exportTree((TreeImpl) tree);
 		save(options.outputRoot, modifiedTreeSerialized, ".mod");
