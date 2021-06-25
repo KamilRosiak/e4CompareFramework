@@ -11,8 +11,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import FeatureDiagram.Feature;
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.FXToolbar;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfigurationController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelConfigurationStrings;
@@ -61,7 +63,7 @@ public class FeatureConfigurationView {
 		Button saveButton = JavaFXBuilder.createButton("Save Configuration", event -> {
 			String workspace = RCPContentProvider.getCurrentWorkspacePath();
 			String filename = featureConfiguration.getName() + "." + FeatureModelConfigurationStrings.FC_FILE_EXTENSION;
-			controller.saveConfiguration(workspace+filename);
+			controller.saveConfiguration(workspace + CompareST.FEATURE_CONFIGURATIONS + "/" + filename);
 		});
 		Button loadButton = JavaFXBuilder.createButton("Load Configuration", event -> {
 			controller.loadConfiguration(new Object());

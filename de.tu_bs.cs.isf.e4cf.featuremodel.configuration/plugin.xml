@@ -9,6 +9,13 @@
             apply="always">
       </fragment>
    </extension>
+<extension
+      point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+   <project_explorer_file_attr
+         file_extension="fc"
+         project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.contribution.project_explorer.FCFileExtension">
+   </project_explorer_file_attr>
+</extension>
 
 
 </plugin>
