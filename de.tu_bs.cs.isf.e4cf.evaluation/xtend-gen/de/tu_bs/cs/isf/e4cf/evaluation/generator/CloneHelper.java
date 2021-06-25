@@ -1,7 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.generator;
 
+import com.google.common.base.Objects;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
@@ -13,6 +15,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
 
 @Creatable
 @Singleton
@@ -158,17 +162,91 @@ public class CloneHelper {
     return _xblockexpression;
   }
   
-  public ArrayList<Class<Node>> getAllChildren(final Node root) {
-    ArrayList<Class<Node>> nodes = CollectionLiterals.<Class<Node>>newArrayList(Node.class);
+  /**
+   * Returns all children of the given node in depth first order
+   * @param root start node
+   */
+  public ArrayList<Node> getAllChildren(final Node root) {
+    ArrayList<Node> nodes = CollectionLiterals.<Node>newArrayList();
     this._getAllChildren(root, nodes);
     return nodes;
   }
   
-  private void _getAllChildren(final Node root, final List nodes) {
+  private void _getAllChildren(final Node root, final List<Node> nodes) {
     final Consumer<Node> _function = (Node c) -> {
       nodes.add(c);
       this._getAllChildren(c, nodes);
     };
     root.getChildren().forEach(_function);
+  }
+  
+  public Node findFirst(final Node root, final String type) {
+    final Function1<Node, Boolean> _function = (Node n) -> {
+      String _nodeType = n.getNodeType();
+      return Boolean.valueOf(Objects.equal(_nodeType, "VariableDeclarator"));
+    };
+    return IterableExtensions.<Node>findFirst(this.getAllChildren(root), _function);
+  }
+  
+  public Iterable<Node> refactor(final Node container, final String newValue) {
+    Iterable<Node> _xifexpression = null;
+    if ((container instanceof NodeImpl)) {
+      Iterable<Node> _xifexpression_1 = null;
+      String _nodeType = ((NodeImpl)container).getNodeType();
+      boolean _equals = Objects.equal(_nodeType, "VariableDeclarator");
+      if (_equals) {
+        final String oldValue = IterableExtensions.<Value>head(((NodeImpl)container).getAttributeForKey("Name").getAttributeValues()).getValue().toString();
+        final Node body = ((NodeImpl)container).getParent().getParent();
+        final Function1<Node, Boolean> _function = (Node n) -> {
+          final Function1<Attribute, Boolean> _function_1 = (Attribute a) -> {
+            return Boolean.valueOf((Objects.equal(a.getAttributeKey(), "Name") && Objects.equal(((String) IterableExtensions.<Value>head(a.getAttributeValues()).getValue()), oldValue)));
+          };
+          return Boolean.valueOf(IterableExtensions.<Attribute>exists(n.getAttributes(), _function_1));
+        };
+        final Consumer<Node> _function_1 = (Node n) -> {
+          n.getAttributeForKey("Name").getAttributeValues().remove(0);
+          Attribute _attributeForKey = n.getAttributeForKey("Name");
+          StringValueImpl _stringValueImpl = new StringValueImpl(newValue);
+          _attributeForKey.addAttributeValue(_stringValueImpl);
+        };
+        IterableExtensions.<Node>filter(this.getAllChildren(body), _function).forEach(_function_1);
+        final Function1<Node, Boolean> _function_2 = (Node n) -> {
+          final Function1<Attribute, Boolean> _function_3 = (Attribute a) -> {
+            return Boolean.valueOf((Objects.equal(a.getAttributeKey(), "Value") && ((String) IterableExtensions.<Value>head(a.getAttributeValues()).getValue()).contains(oldValue)));
+          };
+          return Boolean.valueOf(IterableExtensions.<Attribute>exists(n.getAttributes(), _function_3));
+        };
+        final Consumer<Node> _function_3 = (Node n) -> {
+          Object _value = IterableExtensions.<Value>head(n.getAttributeForKey("Value").getAttributeValues()).getValue();
+          String v = ((String) _value);
+          Value _head = IterableExtensions.<Value>head(n.getAttributeForKey("Value").getAttributeValues());
+          _head.setValue(v.replaceAll(oldValue, newValue));
+        };
+        IterableExtensions.<Node>filter(this.getAllChildren(body), _function_2).forEach(_function_3);
+      } else {
+        Iterable<Node> _xifexpression_2 = null;
+        boolean _startsWith = ((NodeImpl)container).getNodeType().startsWith("Argument");
+        if (_startsWith) {
+          Iterable<Node> _xblockexpression = null;
+          {
+            Value _head = IterableExtensions.<Value>head(((NodeImpl)container).getAttributeForKey("Name").getAttributeValues());
+            _head.setValue(newValue);
+            final String oldValue_1 = IterableExtensions.<Value>head(((NodeImpl)container).getAttributeForKey("Name").getAttributeValues()).getValue().toString();
+            final Node body_1 = ((NodeImpl)container).getParent().getParent().getChildren().get(1);
+            final Function1<Node, Boolean> _function_4 = (Node n) -> {
+              final Function1<Attribute, Boolean> _function_5 = (Attribute a) -> {
+                return Boolean.valueOf((((Objects.equal(a.getAttributeKey(), "Initilization") || Objects.equal(a.getAttributeKey(), "Name")) || Objects.equal(a.getAttributeKey(), "Value")) && ((String) IterableExtensions.<Value>head(a.getAttributeValues()).getValue()).contains(oldValue_1)));
+              };
+              return Boolean.valueOf(IterableExtensions.<Attribute>exists(n.getAttributes(), _function_5));
+            };
+            _xblockexpression = IterableExtensions.<Node>filter(this.getAllChildren(body_1), _function_4);
+          }
+          _xifexpression_2 = _xblockexpression;
+        }
+        _xifexpression_1 = _xifexpression_2;
+      }
+      _xifexpression = _xifexpression_1;
+    }
+    return _xifexpression;
   }
 }
