@@ -15,9 +15,7 @@ import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator;
 
 /**
- * This handler opens a given file in a tree view if a adapter exists
- * 
- *
+ * This handler opens a dialog for the clone generator
  */
 public class CloneGeneratorHandler {
 
