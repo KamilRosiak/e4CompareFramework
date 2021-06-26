@@ -3,11 +3,11 @@ package de.tu_bs.cs.isf.e4cf.evaluation.generator;
 import com.google.common.base.Objects;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -148,6 +148,28 @@ public class CloneHelper {
   }
   
   /**
+   * Swaps two nodes
+   */
+  public Node swap(final Node n1, final Node n2) {
+    Node _xblockexpression = null;
+    {
+      UUID _uUID = n1.getUUID();
+      String _plus = ("Swap n1:" + _uUID);
+      String _plus_1 = (_plus + " n2:");
+      UUID _uUID_1 = n2.getUUID();
+      String _plus_2 = (_plus_1 + _uUID_1);
+      this.logger.logRaw(_plus_2);
+      final Node parent1 = n1.getParent();
+      final int index1 = parent1.getChildren().indexOf(n1);
+      final Node parent2 = n2.getParent();
+      final int index2 = parent2.getChildren().indexOf(n2);
+      this.move(n1, parent2, index2);
+      _xblockexpression = this.move(n2, parent1, index1);
+    }
+    return _xblockexpression;
+  }
+  
+  /**
    * Deletes a node from the tree by removing it from its parent
    * @param source Node to be removed
    */
@@ -180,73 +202,109 @@ public class CloneHelper {
     root.getChildren().forEach(_function);
   }
   
+  /**
+   * Finds the first element of type belowroot
+   * @param root start node
+   * @param type node type to find
+   */
   public Node findFirst(final Node root, final String type) {
     final Function1<Node, Boolean> _function = (Node n) -> {
       String _nodeType = n.getNodeType();
-      return Boolean.valueOf(Objects.equal(_nodeType, "VariableDeclarator"));
+      return Boolean.valueOf(Objects.equal(_nodeType, type));
     };
     return IterableExtensions.<Node>findFirst(this.getAllChildren(root), _function);
   }
   
-  public Iterable<Node> refactor(final Node container, final String newValue) {
-    Iterable<Node> _xifexpression = null;
+  /**
+   * Performs refactoring depending on what type of container is given and
+   *  replaces the occurences of the old value
+   */
+  public void refactor(final Node container, final String newValue) {
     if ((container instanceof NodeImpl)) {
-      Iterable<Node> _xifexpression_1 = null;
+      Node body = null;
+      final String oldValue = this.getAttributeValue(container, "Name");
       String _nodeType = ((NodeImpl)container).getNodeType();
       boolean _equals = Objects.equal(_nodeType, "VariableDeclarator");
       if (_equals) {
-        final String oldValue = IterableExtensions.<Value>head(((NodeImpl)container).getAttributeForKey("Name").getAttributeValues()).getValue().toString();
-        final Node body = ((NodeImpl)container).getParent().getParent();
-        final Function1<Node, Boolean> _function = (Node n) -> {
-          final Function1<Attribute, Boolean> _function_1 = (Attribute a) -> {
-            return Boolean.valueOf((Objects.equal(a.getAttributeKey(), "Name") && Objects.equal(((String) IterableExtensions.<Value>head(a.getAttributeValues()).getValue()), oldValue)));
-          };
-          return Boolean.valueOf(IterableExtensions.<Attribute>exists(n.getAttributes(), _function_1));
-        };
-        final Consumer<Node> _function_1 = (Node n) -> {
-          n.getAttributeForKey("Name").getAttributeValues().remove(0);
-          Attribute _attributeForKey = n.getAttributeForKey("Name");
-          StringValueImpl _stringValueImpl = new StringValueImpl(newValue);
-          _attributeForKey.addAttributeValue(_stringValueImpl);
-        };
-        IterableExtensions.<Node>filter(this.getAllChildren(body), _function).forEach(_function_1);
-        final Function1<Node, Boolean> _function_2 = (Node n) -> {
-          final Function1<Attribute, Boolean> _function_3 = (Attribute a) -> {
-            return Boolean.valueOf((Objects.equal(a.getAttributeKey(), "Value") && ((String) IterableExtensions.<Value>head(a.getAttributeValues()).getValue()).contains(oldValue)));
-          };
-          return Boolean.valueOf(IterableExtensions.<Attribute>exists(n.getAttributes(), _function_3));
-        };
-        final Consumer<Node> _function_3 = (Node n) -> {
-          Object _value = IterableExtensions.<Value>head(n.getAttributeForKey("Value").getAttributeValues()).getValue();
-          String v = ((String) _value);
-          Value _head = IterableExtensions.<Value>head(n.getAttributeForKey("Value").getAttributeValues());
-          _head.setValue(v.replaceAll(oldValue, newValue));
-        };
-        IterableExtensions.<Node>filter(this.getAllChildren(body), _function_2).forEach(_function_3);
+        body = ((NodeImpl)container).getParent().getParent();
       } else {
-        Iterable<Node> _xifexpression_2 = null;
         boolean _startsWith = ((NodeImpl)container).getNodeType().startsWith("Argument");
         if (_startsWith) {
-          Iterable<Node> _xblockexpression = null;
-          {
-            Value _head = IterableExtensions.<Value>head(((NodeImpl)container).getAttributeForKey("Name").getAttributeValues());
-            _head.setValue(newValue);
-            final String oldValue_1 = IterableExtensions.<Value>head(((NodeImpl)container).getAttributeForKey("Name").getAttributeValues()).getValue().toString();
-            final Node body_1 = ((NodeImpl)container).getParent().getParent().getChildren().get(1);
-            final Function1<Node, Boolean> _function_4 = (Node n) -> {
-              final Function1<Attribute, Boolean> _function_5 = (Attribute a) -> {
-                return Boolean.valueOf((((Objects.equal(a.getAttributeKey(), "Initilization") || Objects.equal(a.getAttributeKey(), "Name")) || Objects.equal(a.getAttributeKey(), "Value")) && ((String) IterableExtensions.<Value>head(a.getAttributeValues()).getValue()).contains(oldValue_1)));
-              };
-              return Boolean.valueOf(IterableExtensions.<Attribute>exists(n.getAttributes(), _function_5));
-            };
-            _xblockexpression = IterableExtensions.<Node>filter(this.getAllChildren(body_1), _function_4);
+          this.setAttributeValue(container, "Name", newValue);
+          body = ((NodeImpl)container).getParent().getParent().getChildren().get(1);
+        } else {
+          String _nodeType_1 = ((NodeImpl)container).getNodeType();
+          boolean _equals_1 = Objects.equal(_nodeType_1, "MethodDeclaration");
+          if (_equals_1) {
+            body = ((NodeImpl)container).getParent();
+          } else {
+            return;
           }
-          _xifexpression_2 = _xblockexpression;
         }
-        _xifexpression_1 = _xifexpression_2;
       }
-      _xifexpression = _xifexpression_1;
+      UUID _uUID = ((NodeImpl)container).getUUID();
+      String _plus = ("Refactor container:" + _uUID);
+      String _plus_1 = (_plus + " type:");
+      String _nodeType_2 = ((NodeImpl)container).getNodeType();
+      String _plus_2 = (_plus_1 + _nodeType_2);
+      String _plus_3 = (_plus_2 + 
+        " scope:");
+      UUID _uUID_1 = body.getUUID();
+      String _plus_4 = (_plus_3 + _uUID_1);
+      String _plus_5 = (_plus_4 + " from:");
+      String _plus_6 = (_plus_5 + oldValue);
+      String _plus_7 = (_plus_6 + " to:");
+      String _plus_8 = (_plus_7 + newValue);
+      this.logger.logRaw(_plus_8);
+      this._refactor(body, Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList("Name", "Initilization", "Value", "Comparison", "Condition", "Update")), oldValue, newValue);
     }
-    return _xifexpression;
+  }
+  
+  private void _refactor(final Node body, final List<String> attrKeys, final String oldValue, final String newValue) {
+    final Consumer<String> _function = (String k) -> {
+      this._refactor(body, k, oldValue, newValue);
+    };
+    attrKeys.forEach(_function);
+  }
+  
+  private void _refactor(final Node body, final String attrKey, final String oldValue, final String newValue) {
+    final Function1<Node, Boolean> _function = (Node n) -> {
+      final Function1<Attribute, Boolean> _function_1 = (Attribute a) -> {
+        return Boolean.valueOf((Objects.equal(a.getAttributeKey(), attrKey) && ((String) IterableExtensions.<Value>head(a.getAttributeValues()).getValue()).contains(oldValue)));
+      };
+      return Boolean.valueOf(IterableExtensions.<Attribute>exists(n.getAttributes(), _function_1));
+    };
+    final Consumer<Node> _function_1 = (Node n) -> {
+      final String newAttrValue = this.getAttributeValue(n, attrKey).replaceAll(oldValue, newValue);
+      this.setAttributeValue(n, attrKey, newAttrValue);
+      UUID _uUID = n.getUUID();
+      String _plus = ((("SetAttr key: " + attrKey) + " ofNode: ") + _uUID);
+      String _plus_1 = (_plus + " from:");
+      String _plus_2 = (_plus_1 + oldValue);
+      String _plus_3 = (_plus_2 + " to:");
+      String _plus_4 = (_plus_3 + newAttrValue);
+      this.logger.logRaw(_plus_4);
+    };
+    IterableExtensions.<Node>filter(this.getAllChildren(body), _function).forEach(_function_1);
+  }
+  
+  public void setAttributeValue(final Node node, final String attributeKey, final String newValue) {
+    UUID _uUID = node.getUUID();
+    String _plus = ("SetAttribute node:" + _uUID);
+    String _plus_1 = (_plus + " key:");
+    String _plus_2 = (_plus_1 + attributeKey);
+    String _plus_3 = (_plus_2 + " oldValue:");
+    String _attributeValue = this.getAttributeValue(node, attributeKey);
+    String _plus_4 = (_plus_3 + _attributeValue);
+    String _plus_5 = (_plus_4 + " newValue:");
+    String _plus_6 = (_plus_5 + newValue);
+    this.logger.logRaw(_plus_6);
+    Value _head = IterableExtensions.<Value>head(node.getAttributeForKey(attributeKey).getAttributeValues());
+    _head.setValue(newValue);
+  }
+  
+  public String getAttributeValue(final Node node, final String attributeKey) {
+    Object _value = IterableExtensions.<Value>head(node.getAttributeForKey(attributeKey).getAttributeValues()).getValue();
+    return ((String) _value);
   }
 }

@@ -2,13 +2,11 @@ package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
 import java.util.List
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl
 
 @Creatable
 @Singleton
@@ -115,6 +113,20 @@ class CloneHelper {
 		return source
 	}
 	
+	
+	/**
+	 * Swaps two nodes
+	 */
+	def swap(Node n1, Node n2) {
+		logger.logRaw("Swap n1:" + n1.UUID + " n2:" + n2.UUID)
+		val parent1 = n1.parent
+		val index1 = parent1.children.indexOf(n1)
+		val parent2 = n2.parent
+		val index2 = parent2.children.indexOf(n2)
+		move(n1, parent2, index2)
+		move(n2, parent1, index1)
+	}
+	
 	/**
 	 * Deletes a node from the tree by removing it from its parent
 	 * @param source Node to be removed
@@ -141,70 +153,82 @@ class CloneHelper {
 		]
 	}
 	
+	/** Finds the first element of type belowroot 
+	 * @param root start node
+	 * @param type node type to find
+	 */
 	def findFirst(Node root, String type) {
-		return root.allChildren.findFirst[n | n.nodeType == "VariableDeclarator"]
+		return root.allChildren.findFirst[n | n.nodeType == type]
 	}
 	
+	
+	// Refactoring
+	
+	
+	/** Performs refactoring depending on what type of container is given and 
+	 *  replaces the occurences of the old value
+	 */
 	def refactor(Node container, String newValue) {
 		
 		if (container instanceof NodeImpl) {
+			var Node body;
+			val String oldValue = container.getAttributeValue("Name")
 			
-			// Refactor variable declarations
+			// Refactor variable declarations (Class and Methods)
+			// Note: also refactors method arguments with the same name as the field which may not be applicable to every language
 			if (container.nodeType == "VariableDeclarator") {
-				
-				val oldValue = container.getAttributeForKey("Name").attributeValues.head.value.toString
-				// All children in the same scope of the changed var with the same name attribute
-				val body = container.parent.parent
-				body.allChildren.filter[
-					n | n.attributes.exists[
-						a | a.attributeKey == "Name" && (a.attributeValues.head.value as String) == oldValue
-					]
-				].forEach[
-					n | n.getAttributeForKey("Name").attributeValues.remove(0);
-					n.getAttributeForKey("Name").addAttributeValue(new StringValueImpl(newValue))
-				]
-				// All children in the same scope of the changed var with the variable contained in a value attribute
-				// TODO make this robust with regex because right now changing i=>g turns a reference variable=>vargable
-				body.allChildren.filter[
-					n | n.attributes.exists[
-						a | a.attributeKey == "Value" && (a.attributeValues.head.value as String).contains(oldValue) 
-					]
-				].forEach[
-					n | var v = (n.getAttributeForKey("Value").attributeValues.head.value as String);
-					n.getAttributeForKey("Value").attributeValues.head.value = v.replaceAll(oldValue, newValue);
-				]
-			
+				body = container.parent.parent
+
 			// Refactor function Arguments		
 			} else if (container.nodeType.startsWith("Argument")) {
+				// refactor method argument
+				container.setAttributeValue("Name", newValue)
+				body = container.parent.parent.children.get(1)
 				
-				// TODO change in Initilization, Name, Value
-				container.getAttributeForKey("Name").attributeValues.head.value = newValue
-				val oldValue = container.getAttributeForKey("Name").attributeValues.head.value.toString
-				val body = container.parent.parent.children.get(1)
-				body.allChildren.filter[
-					n | n.attributes.exists[
-						a | (a.attributeKey == "Initilization" || a.attributeKey == "Name" || a.attributeKey == "Value") 
-							&& (a.attributeValues.head.value as String).contains(oldValue)
-					]
-				]
+			// Refactor method names
+			} else if (container.nodeType == "MethodDeclaration") {
+				body = container.parent
 				
-				
+			// Stop
+			} else {
+				return
 			}
 			
-			
+			logger.logRaw("Refactor container:" + container.UUID + " type:" + container.nodeType + 
+				" scope:" + body.UUID + " from:" + oldValue + " to:" + newValue)
+			_refactor(body, #["Name", "Initilization", "Value", "Comparison", "Condition", "Update"], oldValue, newValue)
 		}
-		
-		/* what can be refactored:
-		 * 1. variables in Declarations
-		 * 	- Scope: Body Downwards
-		 * 2. method arguments in Declaration/Arguments
-		 *  - Scope: Function Body Downwards
-		 * 3. Class Fields
-		 *  - Scope: Class Wide
-		 * 4. Method Names
-		 *  - Scope: Language Dependent! -> Unsupported
-		*/
-		
 	}
+	
+	private def _refactor(Node body, List<String> attrKeys, String oldValue, String newValue) {
+		attrKeys.forEach[k | _refactor(body, k, oldValue, newValue)]
+	}
+	
+	private def _refactor(Node body, String attrKey, String oldValue, String newValue) {
+		// TODO make this robust with regex because right now changing i=>g turns a reference variable=>vargable
+		body.allChildren.filter[
+			n | n.attributes.exists[
+				a | a.attributeKey == attrKey && (a.attributeValues.head.value as String).contains(oldValue) 
+			]
+		].forEach[
+			n | 
+			val newAttrValue = n.getAttributeValue(attrKey).replaceAll(oldValue, newValue)
+			n.setAttributeValue(attrKey, newAttrValue)
+			logger.logRaw("SetAttr key: " + attrKey + " ofNode: " + n.UUID + " from:" + oldValue + " to:" + newAttrValue)
+		]
+	}
+	
+	// Attribute Value Helpers
+	
+	def setAttributeValue(Node node, String attributeKey, String newValue) {
+		logger.logRaw("SetAttribute node:" + node.UUID + " key:" + attributeKey + " oldValue:" + node.getAttributeValue(attributeKey) + " newValue:" + newValue)
+		node.getAttributeForKey(attributeKey).attributeValues.head.value = newValue
+	}
+	
+	def String getAttributeValue(Node node, String attributeKey) {
+		return node.getAttributeForKey(attributeKey).attributeValues.head.value as String
+	}
+	
+	// utility: nest nodes e.g. wrap statsequence in control block
 	
 }
