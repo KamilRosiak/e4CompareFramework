@@ -33,11 +33,11 @@ public class CloneGenerator {
 		save(options.outputRoot, originalTree, "");	
 		
 		Node varDecl = helper.findFirst(tree.getRoot(), "VariableDeclarator");
-		//Node varDeclClone = helper.copyRecursively(varDecl, varDecl.getParent().getParent());
-		//helper.move(varDeclClone, 1);	
+		Node varDeclClone = helper.copyRecursively(varDecl, varDecl.getParent().getParent());
+//		helper.move(varDeclClone, 1);	
 		
 		// refactor i
-		helper.refactor(varDecl, "g");
+//		helper.refactor(varDecl, "g");
 		
 		
 		String modifiedTreeSerialized = gsonExportService.exportTree((TreeImpl) tree);

@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.handler;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
@@ -17,7 +16,6 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator;
-import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger;
 
 /**
  * This handler opens a dialog for the clone evaluator
@@ -64,7 +62,9 @@ public class CloneEvaluationHandler {
 		Tree mergedTree = engine.compare(originalTree, modifiedTree);
 		services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
 		// TODO evaluate
-
+		// change -> 2 attribute values instead of one (?VARIABILITY CLASS (alternative))
+		// change -> VARIABILITY CLASS (optional)
+		
 //		GeneratorDialog dialog = new GeneratorDialog(context, services.imageService);
 //		Optional<GeneratorOptions> result = dialog.open();
 //		result.ifPresent(options -> {

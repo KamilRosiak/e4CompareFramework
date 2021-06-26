@@ -8,6 +8,7 @@ package de.tu_bs.cs.isf.e4cf.evaluation.generator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.inject.Inject;
@@ -38,12 +39,12 @@ public class Taxonomy {
    * @param container is the container of the declaration of the value to modify
    */
   public void systematicRenaming(final Node container, final String newValue) {
-    this.logger.logRaw("Tax_SystematicRenaming");
+    this.logger.logRaw(CloneST.SYSTEMATIC_RENAMING);
     this.helper.refactor(container, newValue);
   }
   
   public void expressionsForParameters(final Node body, final String parameter, final String expression) {
-    this.logger.logRaw("Tax_ExpressionForParameter");
+    this.logger.logRaw(CloneST.EXPRESSION);
     final Consumer<Node> _function = (Node n) -> {
       final Consumer<Attribute> _function_1 = (Attribute a) -> {
         this.helper.setAttributeValue(n, 
@@ -61,7 +62,7 @@ public class Taxonomy {
   public Node arbitraryRenaming(final Node n1, final Node n2) {
     Node _xblockexpression = null;
     {
-      this.logger.logRaw("Tax_ArbitraryRenaming");
+      this.logger.logRaw(CloneST.ARBITRARY_RENAMING);
       _xblockexpression = this.helper.swap(n1, n2);
     }
     return _xblockexpression;
@@ -70,7 +71,7 @@ public class Taxonomy {
   public Node smallInlineInsertion(final Node parent, final Node insertion) {
     Node _xblockexpression = null;
     {
-      this.logger.logRaw("Tax_SmallInlineInsertion_Node");
+      this.logger.logRaw(CloneST.INLINE_INSERTION_NODE);
       _xblockexpression = this.helper.move(insertion, parent);
     }
     return _xblockexpression;
@@ -79,20 +80,20 @@ public class Taxonomy {
   public Node smallInlineInsertion(final Node parent, final Node insertion, final int index) {
     Node _xblockexpression = null;
     {
-      this.logger.logRaw("Tax_SmallInlineInsertion_Node");
+      this.logger.logRaw(CloneST.INLINE_INSERTION_NODE);
       _xblockexpression = this.helper.move(insertion, parent, index);
     }
     return _xblockexpression;
   }
   
   public void smallInlineInsertion(final Node parent, final String attributeKey, final String appendage) {
-    this.logger.logRaw("Tax_SmallInlineInsertion_Attribute");
+    this.logger.logRaw(CloneST.INLINE_INSERTION_ATTR);
     final String oldValue = this.helper.getAttributeValue(parent, attributeKey);
     this.helper.setAttributeValue(parent, attributeKey, (oldValue + appendage));
   }
   
   public void smallInlineInsertion(final Node parent, final String attributeKey, final String insertion, final int startIndex) {
-    this.logger.logRaw("Tax_SmallInlineInsertion_Attribute");
+    this.logger.logRaw(CloneST.INLINE_INSERTION_ATTR);
     final String oldValue = this.helper.getAttributeValue(parent, attributeKey);
     String _substring = oldValue.substring(0, startIndex);
     String _plus = (_substring + insertion);
@@ -104,21 +105,21 @@ public class Taxonomy {
   public boolean smallInlineDeletion(final Node removal) {
     boolean _xblockexpression = false;
     {
-      this.logger.logRaw("Tax_SmallInlineDeletion_Node");
+      this.logger.logRaw(CloneST.INLINE_DELETION_NODE);
       _xblockexpression = this.helper.delete(removal);
     }
     return _xblockexpression;
   }
   
   public void smallInlineDeletion(final Node parent, final String attributeKey, final String removePhrase) {
-    this.logger.logRaw("Tax_SmallInlineDeletion_Attribute");
+    this.logger.logRaw(CloneST.INLINE_DELETION_ATTR);
     String value = this.helper.getAttributeValue(parent, attributeKey);
     value.replaceAll(removePhrase, "");
     this.helper.setAttributeValue(parent, attributeKey, value);
   }
   
   public void deleteLines(final Node... nodes) {
-    this.logger.logRaw("Tax_DeleteLines");
+    this.logger.logRaw(CloneST.DELETE_LINES);
     final Consumer<Node> _function = (Node n) -> {
       this.helper.delete(n);
     };
@@ -126,7 +127,7 @@ public class Taxonomy {
   }
   
   public void insertLines(final Node parent, final int targetIndex, final Node... insertions) {
-    this.logger.logRaw("Tax_InsertLines");
+    this.logger.logRaw(CloneST.INSERT_LINES);
     int index = targetIndex;
     for (final Node n : insertions) {
       int _plusPlus = index++;

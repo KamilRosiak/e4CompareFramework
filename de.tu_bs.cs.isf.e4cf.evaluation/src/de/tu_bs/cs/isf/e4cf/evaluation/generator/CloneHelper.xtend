@@ -7,6 +7,7 @@ import java.util.List
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
+import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*;
 
 @Creatable
 @Singleton
@@ -35,7 +36,7 @@ class CloneHelper {
 		
 		targetParent.addChild(clone);
 		
-		logger.logRaw("Copy source:" + source.UUID + " target:" + targetParent.UUID + " clone:" + clone.UUID);
+		logger.logRaw(COPY + SOURCE + source.UUID + TARGET + targetParent.UUID + CLONE + clone.UUID);
 		return clone;
 	}
 	
@@ -50,7 +51,7 @@ class CloneHelper {
 			return null
 		}
 		
-		logger.logRaw("RCopy source:" + source.UUID + " target:" + targetParent.UUID)
+		logger.logRaw(RCOPY + SOURCE + source.UUID + TARGET + targetParent.UUID)
 		val clone = _copyRecursively(source, targetParent)
 		return clone;
 	}
@@ -68,7 +69,7 @@ class CloneHelper {
 	 * @return always the source
 	 */
 	def move(Node source, Node targetParent) {
-		logger.logRaw("Move source:" + source.UUID + " target:" + targetParent.UUID)
+		logger.logRaw(MOVE + SOURCE + source.UUID + TARGET + targetParent.UUID)
 		val oldParent = source.parent
 		oldParent.children.remove(source)
 		targetParent.addChild(source)
@@ -92,7 +93,7 @@ class CloneHelper {
 			index = parent.numberOfChildren-1
 		}
 		
-		logger.logRaw("MovePos source:" + source.UUID + " index:" + index)
+		logger.logRaw(MOVEPOS + SOURCE + source.UUID + INDEX + index)
 		
 		parent.children.remove(source)
 		parent.children.add(index, source)
@@ -118,7 +119,7 @@ class CloneHelper {
 	 * Swaps two nodes
 	 */
 	def swap(Node n1, Node n2) {
-		logger.logRaw("Swap n1:" + n1.UUID + " n2:" + n2.UUID)
+		logger.logRaw(SWAP +  SOURCE + n1.UUID + TARGET + n2.UUID)
 		val parent1 = n1.parent
 		val index1 = parent1.children.indexOf(n1)
 		val parent2 = n2.parent
@@ -132,7 +133,7 @@ class CloneHelper {
 	 * @param source Node to be removed
 	 */
 	def delete(Node source) {
-		logger.logRaw("Delete " + source.UUID)
+		logger.logRaw(DELETE + TARGET + source.UUID)
 		source.parent.children.remove(source)
 	}
 	
@@ -194,8 +195,8 @@ class CloneHelper {
 				return
 			}
 			
-			logger.logRaw("Refactor container:" + container.UUID + " type:" + container.nodeType + 
-				" scope:" + body.UUID + " from:" + oldValue + " to:" + newValue)
+			logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + 
+				SCOPE + body.UUID + FROM + oldValue + TO + newValue)
 			_refactor(body, #["Name", "Initilization", "Value", "Comparison", "Condition", "Update"], oldValue, newValue)
 		}
 	}
@@ -214,14 +215,13 @@ class CloneHelper {
 			n | 
 			val newAttrValue = n.getAttributeValue(attrKey).replaceAll(oldValue, newValue)
 			n.setAttributeValue(attrKey, newAttrValue)
-			logger.logRaw("SetAttr key: " + attrKey + " ofNode: " + n.UUID + " from:" + oldValue + " to:" + newAttrValue)
 		]
 	}
 	
 	// Attribute Value Helpers
 	
 	def setAttributeValue(Node node, String attributeKey, String newValue) {
-		logger.logRaw("SetAttribute node:" + node.UUID + " key:" + attributeKey + " oldValue:" + node.getAttributeValue(attributeKey) + " newValue:" + newValue)
+		logger.logRaw(SETATTR + TARGET + node.UUID + KEY + attributeKey + FROM + node.getAttributeValue(attributeKey) + TO + newValue)
 		node.getAttributeForKey(attributeKey).attributeValues.head.value = newValue
 	}
 	

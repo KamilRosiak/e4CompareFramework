@@ -6,6 +6,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,11 +50,11 @@ public class CloneHelper {
     source.getAttributes().forEach(_function);
     targetParent.addChild(clone);
     UUID _uUID = source.getUUID();
-    String _plus = ("Copy source:" + _uUID);
-    String _plus_1 = (_plus + " target:");
+    String _plus = ((CloneST.COPY + CloneST.SOURCE) + _uUID);
+    String _plus_1 = (_plus + CloneST.TARGET);
     UUID _uUID_1 = targetParent.getUUID();
     String _plus_2 = (_plus_1 + _uUID_1);
-    String _plus_3 = (_plus_2 + " clone:");
+    String _plus_3 = (_plus_2 + CloneST.CLONE);
     UUID _uUID_2 = clone.getUUID();
     String _plus_4 = (_plus_3 + _uUID_2);
     this.logger.logRaw(_plus_4);
@@ -71,8 +72,8 @@ public class CloneHelper {
       return null;
     }
     UUID _uUID = source.getUUID();
-    String _plus = ("RCopy source:" + _uUID);
-    String _plus_1 = (_plus + " target:");
+    String _plus = ((CloneST.RCOPY + CloneST.SOURCE) + _uUID);
+    String _plus_1 = (_plus + CloneST.TARGET);
     UUID _uUID_1 = targetParent.getUUID();
     String _plus_2 = (_plus_1 + _uUID_1);
     this.logger.logRaw(_plus_2);
@@ -97,8 +98,8 @@ public class CloneHelper {
    */
   public Node move(final Node source, final Node targetParent) {
     UUID _uUID = source.getUUID();
-    String _plus = ("Move source:" + _uUID);
-    String _plus_1 = (_plus + " target:");
+    String _plus = ((CloneST.MOVE + CloneST.SOURCE) + _uUID);
+    String _plus_1 = (_plus + CloneST.TARGET);
     UUID _uUID_1 = targetParent.getUUID();
     String _plus_2 = (_plus_1 + _uUID_1);
     this.logger.logRaw(_plus_2);
@@ -125,8 +126,8 @@ public class CloneHelper {
       index = _minus;
     }
     UUID _uUID = source.getUUID();
-    String _plus = ("MovePos source:" + _uUID);
-    String _plus_1 = (_plus + " index:");
+    String _plus = ((CloneST.MOVEPOS + CloneST.SOURCE) + _uUID);
+    String _plus_1 = (_plus + CloneST.INDEX);
     String _plus_2 = (_plus_1 + Integer.valueOf(index));
     this.logger.logRaw(_plus_2);
     parent.getChildren().remove(source);
@@ -154,8 +155,8 @@ public class CloneHelper {
     Node _xblockexpression = null;
     {
       UUID _uUID = n1.getUUID();
-      String _plus = ("Swap n1:" + _uUID);
-      String _plus_1 = (_plus + " n2:");
+      String _plus = ((CloneST.SWAP + CloneST.SOURCE) + _uUID);
+      String _plus_1 = (_plus + CloneST.TARGET);
       UUID _uUID_1 = n2.getUUID();
       String _plus_2 = (_plus_1 + _uUID_1);
       this.logger.logRaw(_plus_2);
@@ -177,7 +178,7 @@ public class CloneHelper {
     boolean _xblockexpression = false;
     {
       UUID _uUID = source.getUUID();
-      String _plus = ("Delete " + _uUID);
+      String _plus = ((CloneST.DELETE + CloneST.TARGET) + _uUID);
       this.logger.logRaw(_plus);
       _xblockexpression = source.getParent().getChildren().remove(source);
     }
@@ -243,17 +244,17 @@ public class CloneHelper {
         }
       }
       UUID _uUID = ((NodeImpl)container).getUUID();
-      String _plus = ("Refactor container:" + _uUID);
-      String _plus_1 = (_plus + " type:");
+      String _plus = ((CloneST.REFACTOR + CloneST.CONTAINER) + _uUID);
+      String _plus_1 = (_plus + CloneST.TYPE);
       String _nodeType_2 = ((NodeImpl)container).getNodeType();
       String _plus_2 = (_plus_1 + _nodeType_2);
       String _plus_3 = (_plus_2 + 
-        " scope:");
+        CloneST.SCOPE);
       UUID _uUID_1 = body.getUUID();
       String _plus_4 = (_plus_3 + _uUID_1);
-      String _plus_5 = (_plus_4 + " from:");
+      String _plus_5 = (_plus_4 + CloneST.FROM);
       String _plus_6 = (_plus_5 + oldValue);
-      String _plus_7 = (_plus_6 + " to:");
+      String _plus_7 = (_plus_6 + CloneST.TO);
       String _plus_8 = (_plus_7 + newValue);
       this.logger.logRaw(_plus_8);
       this._refactor(body, Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList("Name", "Initilization", "Value", "Comparison", "Condition", "Update")), oldValue, newValue);
@@ -277,26 +278,19 @@ public class CloneHelper {
     final Consumer<Node> _function_1 = (Node n) -> {
       final String newAttrValue = this.getAttributeValue(n, attrKey).replaceAll(oldValue, newValue);
       this.setAttributeValue(n, attrKey, newAttrValue);
-      UUID _uUID = n.getUUID();
-      String _plus = ((("SetAttr key: " + attrKey) + " ofNode: ") + _uUID);
-      String _plus_1 = (_plus + " from:");
-      String _plus_2 = (_plus_1 + oldValue);
-      String _plus_3 = (_plus_2 + " to:");
-      String _plus_4 = (_plus_3 + newAttrValue);
-      this.logger.logRaw(_plus_4);
     };
     IterableExtensions.<Node>filter(this.getAllChildren(body), _function).forEach(_function_1);
   }
   
   public void setAttributeValue(final Node node, final String attributeKey, final String newValue) {
     UUID _uUID = node.getUUID();
-    String _plus = ("SetAttribute node:" + _uUID);
-    String _plus_1 = (_plus + " key:");
+    String _plus = ((CloneST.SETATTR + CloneST.TARGET) + _uUID);
+    String _plus_1 = (_plus + CloneST.KEY);
     String _plus_2 = (_plus_1 + attributeKey);
-    String _plus_3 = (_plus_2 + " oldValue:");
+    String _plus_3 = (_plus_2 + CloneST.FROM);
     String _attributeValue = this.getAttributeValue(node, attributeKey);
     String _plus_4 = (_plus_3 + _attributeValue);
-    String _plus_5 = (_plus_4 + " newValue:");
+    String _plus_5 = (_plus_4 + CloneST.TO);
     String _plus_6 = (_plus_5 + newValue);
     this.logger.logRaw(_plus_6);
     Value _head = IterableExtensions.<Value>head(node.getAttributeForKey(attributeKey).getAttributeValues());

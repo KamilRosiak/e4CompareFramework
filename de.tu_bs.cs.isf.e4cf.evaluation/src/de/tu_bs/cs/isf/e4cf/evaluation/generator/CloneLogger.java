@@ -67,5 +67,27 @@ public class CloneLogger {
 			e.printStackTrace();
 		}
 	}
+	
+	public List<String> read(Path targetDir, String fileName) {
+		try {
+			return Files.readAllLines(targetDir.resolve(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public String readAttr(String logEntry, String key) {
+		for (String part : logEntry.split(" ")) {
+			String keyNoSpace = key.substring(1);
+			
+			if(part.startsWith(keyNoSpace)) {
+				return part.replace(keyNoSpace, "");
+			}
+		}
+		
+		return null;
+	}
 
 }
