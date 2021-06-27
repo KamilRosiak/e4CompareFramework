@@ -38,15 +38,8 @@ public class CloneGeneratorHandler {
 		System.out.println("Goodbye");
 	}
 	
-	
-	/**
-	 * This method checks if a artifact reader is available for this view
-	 * 
-	 * @param services
-	 * @return
-	 */
 	@Evaluate
-	public boolean isFileReaderAvailable(ServiceContainer services) {
+	public boolean isActive(ServiceContainer services) {
 		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() == 1) {
 			return true;
 		} else {

@@ -68,9 +68,9 @@ public class CloneLogger {
 		}
 	}
 	
-	public List<String> read(Path targetDir, String fileName) {
+	public List<String> read(String filePath) {
 		try {
-			return Files.readAllLines(targetDir.resolve(fileName));
+			return Files.readAllLines(Paths.get(filePath));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

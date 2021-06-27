@@ -8,13 +8,23 @@
 - [X] How to create clones? -> Paper Taxonomy
 - [X] Log Modifications to Trees -> OG Location, Clone Location (File:Line), Operations (Taxonomy)
 - [X] How to save Tree
-- [ ] How to determine nodes to clone
-- [ ] Look into Taxonomy (What can we do just on nodes? What attributes do we need for the rest of the taxonomy?)
-- ...
+- [ ] Determine nodes to clone
+- [X] Look into Taxonomy (What can we do just on nodes? What attributes do we need for the rest of the taxonomy?)
+- [ ] Call random clone operations
+- [ ] Folder selection support
+- [ ] UI Settings (granularity, type weights, number of mutations, ...)
+- [ ] Crossover operations
+- [ ] Optional: Taxonomy soundness
+- [ ] Optional: output every clone
 - [X] Determine Exchange Data Format [4Weeks] (FileSet<GenericDataStructures>, ..?)
   - Metadata as Log?
 - <Entry Point for Project 2>
-- ...
+- [X] Read outputs from project 1
+- [ ] Clone detection: Implement metrics (recall & precision)
+- [ ] Variability Mining
+- [ ] Taxonomy Mining
+- [ ] Add output UI (view?)
+- [ ] Add output file format
 
 ===== 16.06.2021
 Seeds als Base-File
@@ -37,3 +47,6 @@ Attribute haben nur einen Value (für uns)
 Was ist Node was ist Attribut -> erstmal undefiniert. Alles was in java leaf ist in tree attribut.
 Wir stellen passende constraints an die Datenstruktur passend zum Javaparser (später Ungereimtheiten in lessons learnt)
 Möglicherweise Config für Generator (Welche Nodes dürfen angefasst werden? Sprachausnahmen? Grammatik. Baumtyp)
+
+===== 30.06.2021
+Annahme: Initiale ground truth is clone free -> else overfitting?
