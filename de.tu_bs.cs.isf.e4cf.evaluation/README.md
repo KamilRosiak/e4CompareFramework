@@ -14,6 +14,7 @@
 - [X] Folder selection support
 - [ ] UI Settings (granularity, type weights, number of mutations, ...)
 - [ ] Crossover operations
+- [ ] Multipasses
 - [ ] Optional: Taxonomy soundness
 - [ ] Optional: output every clone
 - [X] Determine Exchange Data Format [4Weeks] (FileSet<GenericDataStructures>, ..?)
