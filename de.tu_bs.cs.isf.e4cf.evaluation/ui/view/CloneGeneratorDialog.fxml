@@ -64,35 +64,30 @@
             <VBox layoutX="155.0" layoutY="10.0" prefHeight="141.0" prefWidth="346.0" spacing="2.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="137.0" text="Type Weights" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                  <HBox spacing="5.0">
                      <children>
                         <VBox alignment="CENTER">
                            <children>
                               <Label text="Type I: " />
+                              <TextField fx:id="textTypeWeight1" prefWidth="50.0" text="50" />
                            </children>
                         </VBox>
-                        <TextField fx:id="textTypeWeight1" prefWidth="50.0" text="50" />
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="32.0" prefHeight="100.0" prefWidth="200.0">
-                     <children>
                         <VBox alignment="CENTER_LEFT">
                            <children>
                               <Label text="Type II: " />
+                              <TextField fx:id="textTypeWeight2" prefWidth="50.0" text="35" />
                            </children>
                         </VBox>
-                        <TextField fx:id="textTypeWeight2" prefWidth="50.0" text="35" />
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="80.0" prefHeight="100.0" prefWidth="200.0">
-                     <children>
-                        <VBox alignment="CENTER">
+                        <VBox>
                            <children>
                               <Label text="Type III: " />
+                              <TextField fx:id="textTypeWeight3" prefWidth="50.0" text="15" />
                            </children>
                         </VBox>
-                        <TextField fx:id="textTypeWeight3" prefWidth="50.0" text="15" />
                      </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
                   </HBox>
                </children>
                <opaqueInsets>
