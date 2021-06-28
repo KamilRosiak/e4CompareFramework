@@ -11,7 +11,7 @@
 - [ ] Determine nodes to clone
 - [X] Look into Taxonomy (What can we do just on nodes? What attributes do we need for the rest of the taxonomy?)
 - [ ] Call random clone operations
-- [ ] Folder selection support
+- [X] Folder selection support
 - [ ] UI Settings (granularity, type weights, number of mutations, ...)
 - [ ] Crossover operations
 - [ ] Optional: Taxonomy soundness

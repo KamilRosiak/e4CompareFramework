@@ -50,13 +50,12 @@ public class CloneGenerator {
 	private void save(Path targetFolder, String content, String infix) {
 		
 		Path selectedPath = Paths.get(services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath());
-		String fileName = "";
+		String fileName = services.rcpSelectionService.getCurrentSelectionFromExplorer().getFileName() + infix + ".tree";
 		
 		if (services.rcpSelectionService.getCurrentSelectionFromExplorer().isDirectory()) {
-			System.err.println("Not available for directory selection");
+			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount());
 		} else {
-			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount()-1);
-			fileName = services.rcpSelectionService.getCurrentSelectionFromExplorer().getFileName() + infix + ".tree";		
+			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount()-1);		
 		}
 		
 		Path logPath = targetFolder.resolve(selectedPath);
