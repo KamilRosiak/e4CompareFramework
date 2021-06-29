@@ -4,9 +4,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 import org.eclipse.emf.common.util.EMap;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -119,13 +121,8 @@ public class FeatureConfigurationView {
 		
 		// iterates breadth-first over features
 		Queue<CheckBoxTreeItem<FeatureSelectionElement>> parentQueue = new LinkedList<>();
-		for (Iterator<Feature> it = new FeatureDiagramIterator(fc.getFeatureDiagram()); it.hasNext();) {
-			Feature feature = it.next();
-			
-			// find the corresponding configuration entry and attach it to a tree item
-			EMap<Feature, Boolean> featureSelection = fc.getFeatureSelection();
-			int featureEntryIndex = featureSelection.indexOfKey(feature);
-			Entry<Feature, Boolean> featureEntry = featureSelection.get(featureEntryIndex);
+		for (Entry<Feature, Boolean> featureEntry : fc.getFeatureSelection()) {
+			Feature feature = featureEntry.getKey();
 		
 			FeatureSelectionElement element = new FeatureSelectionElement(featureEntry);
 			CheckBoxTreeItem<FeatureSelectionElement> item = createCheckedItem(element, true);
