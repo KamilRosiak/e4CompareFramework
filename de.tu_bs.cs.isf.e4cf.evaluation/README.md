@@ -12,9 +12,11 @@
 - [X] Look into Taxonomy (What can we do just on nodes? What attributes do we need for the rest of the taxonomy?)
 - [ ] Call random clone operations
 - [X] Folder selection support
-- [ ] UI Settings (granularity, type weights, number of mutations, ...)
+- [X] UI Settings (granularity, type weights, number of mutations, ...)
 - [ ] Crossover operations
-- [ ] Multipasses
+- [X] Implement Multipass
+- [ ] Implement Granularity
+- [X] Implement Type Weights
 - [ ] Optional: Taxonomy soundness
 - [ ] Optional: output every clone
 - [X] Determine Exchange Data Format [4Weeks] (FileSet<GenericDataStructures>, ..?)
@@ -26,6 +28,12 @@
 - [ ] Taxonomy Mining
 - [ ] Add output UI (view?)
 - [ ] Add output file format
+- <Framework Issues>
+- [ ] Standardized Node Types
+- [ ] Parser Structure (If-ElseIf, Double-Containments)
+- [ ] Introduce Expressions
+- [ ] Parser Inner-Class statement broken
+- [ ] Multi-Variable Initilization broken
 
 ===== 16.06.2021
 Seeds als Base-File
@@ -51,3 +59,5 @@ Möglicherweise Config für Generator (Welche Nodes dürfen angefasst werden? Sprac
 
 ===== 30.06.2021
 Annahme: Initiale ground truth is clone free -> else overfitting?
+Clone Granularity Discussion
+ - Änderungen an Granularity Level source node selection ein (Statement => Statements, Methods => Signatures, Classes => Packages & Imports?)

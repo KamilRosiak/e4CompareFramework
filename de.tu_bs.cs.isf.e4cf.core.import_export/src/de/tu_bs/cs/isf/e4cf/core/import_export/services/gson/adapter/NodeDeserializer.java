@@ -12,6 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
@@ -27,7 +28,8 @@ public class NodeDeserializer implements JsonDeserializer<Node> {
 		JsonObject jsonTreeObject = json.getAsJsonObject();
 		
 		// Create a node and set the uuid and type
-		Node node = new NodeImpl(jsonTreeObject.get("nodeType").getAsString());
+		NodeType standardizedNodeType = NodeType.fromString(jsonTreeObject.get("standardizedNodeType").getAsString());
+		Node node = new NodeImpl(standardizedNodeType, jsonTreeObject.get("nodeType").getAsString());
 		node.setUUID(UUID.fromString(jsonTreeObject.get("uuid").getAsString()));
 		
 		// Handle node attributes		

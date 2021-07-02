@@ -6,6 +6,7 @@ import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.Statement;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -33,8 +34,8 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	 * This method creates a Node for a ForEachStmt statement.
 	 */
 	private Node createForEachStmtNode(ForEachStmt stmt, Node parent, JavaVisitor visitor) {
-		Node p = new NodeImpl(stmt.getClass().getSimpleName(), parent);
-		// Add Iterator ass attribute
+		Node p = new NodeImpl(NodeType.LOOP_COLLECTION_CONTROLLED, stmt.getClass().getSimpleName(), parent);
+		// Add Iterator as attribute
 		p.addAttribute(JavaAttributesTypes.Iterator.name(), new StringValueImpl(stmt.getIterable().toString()));
 		// Add the initiliaze values
 		p.addAttribute(JavaAttributesTypes.Initilization.name(), new StringValueImpl(stmt.getVariableDeclarator().getNameAsString()));
@@ -46,7 +47,7 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	 * This method creates a Node for a ForStmt statement.
 	 */
 	private Node createForStmt(ForStmt forStmt, Node parent, JavaVisitor visitor) {
-		Node forStmtNode = new NodeImpl(forStmt.getClass().getSimpleName(), parent);
+		Node forStmtNode = new NodeImpl(NodeType.LOOP_COUNT_CONTROLLED, forStmt.getClass().getSimpleName(), parent);
 
 		// Comparison
 		if (forStmt.getCompare().isPresent()) {
@@ -76,10 +77,10 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	 * This method creates a Node for a IfStmt statement.
 	 */
 	private Node createIfStmtNode(IfStmt ifStmt, Node arg, JavaVisitor visitor) {
-		Node ifStmtNode = new NodeImpl(ifStmt.getClass().getSimpleName(), arg);
+		Node ifStmtNode = new NodeImpl(NodeType.IF, ifStmt.getClass().getSimpleName(), arg);
 		// Fall through
 		Statement thenStmt = ifStmt.getThenStmt();
-		Node thenNode = new NodeImpl(JavaNodeTypes.Then.name(), arg);
+		Node thenNode = new NodeImpl(NodeType.THEN, JavaNodeTypes.Then.name(), arg);
 		thenNode.addAttribute(JavaAttributesTypes.Condition.name(), new StringValueImpl(ifStmt.getCondition().toString()));
 		thenStmt.accept(visitor, thenNode);
 		ifStmt.remove(thenStmt);
@@ -90,7 +91,7 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 			if (elseStmt instanceof IfStmt) {
 				createIfStmtNode((IfStmt) elseStmt, arg, visitor);
 			} else {
-				Node elseNode = new NodeImpl(JavaNodeTypes.Else.name(), arg);
+				Node elseNode = new NodeImpl(NodeType.ELSE, JavaNodeTypes.Else.name(), arg);
 				elseStmt.accept(visitor, elseNode);
 			}
 		}
