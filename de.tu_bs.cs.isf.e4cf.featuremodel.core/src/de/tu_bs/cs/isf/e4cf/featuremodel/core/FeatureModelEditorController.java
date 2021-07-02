@@ -152,7 +152,7 @@ public class FeatureModelEditorController {
 			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.loadFeatureDiagram(filepath));
 			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
 			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
-			showConstraintView();
+			// showConstraintView();
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
@@ -433,7 +433,7 @@ public class FeatureModelEditorController {
 		}
 		
 		System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded.");
-		showConstraintView();
+		//showConstraintView();
 	}
 	
 	private void showConstraintView() {

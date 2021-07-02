@@ -1,16 +1,21 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 
+
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.swt.widgets.Display;
 
 import FeatureDiagram.ComponentFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.stage.Screen;
 
 public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	private IEventBroker eventBroker;
@@ -51,8 +56,9 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 
 	private void createComponentControl() {
-		this.getItems().add(createComponentFeatureConfiguration());
 		this.getItems().add(loadComponentFeatureDiagram());
+		this.getItems().add(createComponentFeatureConfiguration());
+		this.getItems().add(setConfiguration());
 		this.getItems().add(removeFeatureMenuItem());		
 
 		this.getItems().add(new SeparatorMenuItem());
@@ -60,6 +66,24 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(setDescription());
 	}
 	
+	private MenuItem setConfiguration() {
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_SET_CONFIGURATION);
+		item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	hide();
+            	FeatureDiagram fd = new FeatureDiagram(((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm());
+            	FMESetConfigurationDialog dialog = new FMESetConfigurationDialog("Set Configuration", fd);
+            	Rectangle2D primaryScreenBounds = Screen.getPrimary().getBounds();
+				Double x = primaryScreenBounds.getWidth() * .5;
+				Double y = primaryScreenBounds.getHeight() * .5;
+            	dialog.show(x, y);
+            	event.consume();
+            }
+        });
+		return item;
+	}
+
 	private MenuItem createComponentFeatureConfiguration() {
 		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_CREATE_NEW_CONFIGURATION);
 		item.setOnAction(new EventHandler<ActionEvent>() {

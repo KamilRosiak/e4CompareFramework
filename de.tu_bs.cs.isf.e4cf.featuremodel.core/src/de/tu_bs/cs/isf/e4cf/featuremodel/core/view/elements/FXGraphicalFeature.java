@@ -196,7 +196,7 @@ public class FXGraphicalFeature extends VBox  {
 
 	public void showRenameFeatureDialog() {
 		services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_RENAME, feature);
-		FMESimpleTextInputDialog dialog = new FMESimpleTextInputDialog(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE,feature.getName());
+		FMESimpleTextInputDialog dialog = new FMESimpleTextInputDialog(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE, feature.getName());
 		String newName = dialog.show(Double.valueOf(Display.getCurrent().getCursorLocation().x), Double.valueOf(Display.getCurrent().getCursorLocation().y));
 		if(!newName.equals(feature.getName())) {			
 			services.eventBroker.send(FDEventTable.SET_FEATURE_NAME, new Pair<FXGraphicalFeature, String>(this, newName));
@@ -237,6 +237,10 @@ public class FXGraphicalFeature extends VBox  {
 	
 	public Feature getFeature() {
 		return feature;
+	}
+	
+	public FeatureModelEditorView getView() {
+		return view;
 	}
 
 	public void setFeature(Feature feature) {
