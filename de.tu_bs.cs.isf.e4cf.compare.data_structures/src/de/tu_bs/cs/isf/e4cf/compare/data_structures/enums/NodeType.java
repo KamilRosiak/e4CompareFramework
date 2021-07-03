@@ -6,6 +6,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.enums;
  */
 public enum NodeType {
 	// TODO: Remove `// INTERESTING` marks from clone generator
+	ANNOTATION,
 	ARGUMENT, // INTERESTING
 	ASSERTION,
 	ASSIGNMENT, // INTERESTING
@@ -56,8 +57,16 @@ public enum NodeType {
 	LOOP_COUNT_CONTROLLED,
 	METHOD_CALL, // INTERESTING
 	METHOD_DECLARATION, // INTERESTING
+	/**
+	 * Usually denoted by `::`, e.g. Java Method Reference Expression
+	 */
+	REFERENCE,
 	STRUCT,
 	SWITCH,
+	/**
+	 * Nodes that explicitly take over thread safety, e.g. Java's `synchronized`, Locks, Mutex...
+	 */
+	SYNCHRONIZE,
 	/**
 	 * Also known as generics
 	 */
