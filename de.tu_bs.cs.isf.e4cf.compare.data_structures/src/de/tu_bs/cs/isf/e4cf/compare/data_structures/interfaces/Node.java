@@ -146,10 +146,19 @@ public interface Node {
 	 */
 	public void setNodeType(String nodeType);
 
-	/** Sets the standardized node type of this node */
+	/**
+	 *  Sets the standardized node type of this node
+	 */
 	public void setStandardizedNodeType(NodeType type);
 
-	/** Gets the standardized node type of this node */
+	/** 
+	 * Gets the standardized node type of this node 
+	 */
 	public NodeType getStandardizedNodeType();
+	
+	/**
+	 * Changes how the node displays itself when calling .toString()
+	 */
+	public void setRepresenation(String representation);
 
 }

@@ -13,6 +13,7 @@ public abstract class AbstractNode implements Node {
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 5776489857546412690L;
 	private String nodeType;
+	private String representation;
 	private NodeType standardizedNodeType = NodeType.UNDEFINED;
 	private List<Node> children;
 	private transient Node parent;
@@ -197,7 +198,12 @@ public abstract class AbstractNode implements Node {
 
 	@Override
 	public String toString() {
-		return nodeType;
+		return representation == null ? nodeType : representation;
+	}
+	
+	@Override
+	public void setRepresenation(String representation) {
+		this.representation = representation;
 	}
 
 	@Override

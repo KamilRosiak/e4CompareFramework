@@ -107,9 +107,9 @@ public class DSEditorController {
 		closeFile();
 		createTreeRoot(tree);
 		//load decorator and select the first
-		decoratorCombo = new ComboBox<NodeDecorator>(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
+		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		decoratorCombo.getSelectionModel().select(0);
-		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), decoratorCombo.getSelectionModel().getSelectedItem());
+		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), getSelectedDecorator());
 		addListener();
 	}
 
@@ -196,6 +196,13 @@ public class DSEditorController {
 				services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
+		});
+		
+		decoratorCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null) return;
+			decoManager.setCurrentDecorater(newValue);
+			TreeViewUtilities.decorateTree(treeView.getRoot(), decoManager.getCurrentDecorater());
+			services.eventBroker.send(DSEditorST.REFRESH_TREEVIEW_EVENT, true);
 		});
 	}
 
