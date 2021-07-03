@@ -197,7 +197,7 @@ class CloneHelper {
 			
 			logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + 
 				SCOPE + body.UUID + FROM + oldValue + TO + newValue)
-			_refactor(body, #["Name", "Initilization", "Value", "Comparison", "Condition", "Update"], oldValue, newValue)
+			_refactor(body, #["Name", "Initialization", "Value", "Comparison", "Condition", "Update"], oldValue, newValue)
 		}
 	}
 	

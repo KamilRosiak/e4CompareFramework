@@ -30,10 +30,11 @@
 - [ ] Add output file format
 - <Framework Issues>
 - [ ] Standardized Node Types
-- [ ] Parser Structure (If-ElseIf, Double-Containments)
+- [X] Parser Structure (If-ElseIf, )
 - [ ] Introduce Expressions
-- [ ] Parser Inner-Class statement broken
 - [ ] Multi-Variable Initilization broken
+- [ ] Fix instant parsing when right clicking
+- [ ] Do-While has duplicate attribute "condition" but with different key "value"
 
 ===== 16.06.2021
 Seeds als Base-File
@@ -61,3 +62,7 @@ Möglicherweise Config für Generator (Welche Nodes dürfen angefasst werden? Sprac
 Annahme: Initiale ground truth is clone free -> else overfitting?
 Clone Granularity Discussion
  - Änderungen an Granularity Level source node selection ein (Statement => Statements, Methods => Signatures, Classes => Packages & Imports?)
+ 
+===== 07.07.2021
+GitHub JavaParser gibt momentan JavaAST als generische Datenstruktur vor. Manuelles, rekursives parsen der AST 
+könnte da eine Abstraktionsebene draufsetzen, kostet uns aber ca. eine Woche.

@@ -1136,6 +1136,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	 */
 	@Override
 	public void visit(SwitchExpr n, Node arg) {
+		// NOTE: Switch Expressions are currently unsupported in javaparser
 		Node parent = new NodeImpl(NodeType.EXPRESSION, n.getClass().getSimpleName(), arg);
 		parent.addAttribute(JavaAttributesTypes.Selector.name(), new StringValueImpl(n.getSelector().toString()));
 		n.getEntries().forEach(entry -> entry.accept(this, parent));
@@ -1431,7 +1432,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	 * {@link VariableDeclarator#getType()}, an attribute
 	 * {@link JavaAttributesTypes#Name} with value
 	 * {@link VariableDeclarator#getName()} and an attribute
-	 * {@link JavaAttributesTypes#Initilization} with value of
+	 * {@link JavaAttributesTypes#Initialization} with value of
 	 * {@link VariableDeclarator#getInitializer()} is the initializer is present to
 	 * the parent node.
 	 * 
@@ -1449,7 +1450,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 
 		// Initializer
 		n.getInitializer().ifPresent(
-				init -> variableDeclaratorNode.addAttribute(JavaAttributesTypes.Initilization.name(), new StringValueImpl(init.toString())));
+				init -> variableDeclaratorNode.addAttribute(JavaAttributesTypes.Initialization.name(), new StringValueImpl(init.toString())));
 
 		visitor(n, variableDeclaratorNode, n.getType(), n.getInitializer().orElse(null));
 	}
@@ -1498,7 +1499,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	 */
 	@Override
 	public void visit(WhileStmt n, Node arg) {
-		Node whileStmtNode = new NodeImpl(NodeType.LOOP_CONDITION_CONTROLLED, n.getClass().getSimpleName(), arg);
+		Node whileStmtNode = new NodeImpl(NodeType.LOOP_WHILE, n.getClass().getSimpleName(), arg);
 		whileStmtNode.addAttribute(JavaAttributesTypes.Condition.name(), new StringValueImpl(n.getCondition().toString()));
 		visitor(n, whileStmtNode, n.getCondition());
 	}
@@ -1521,7 +1522,6 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	/**
 	 * Creates a new node of type {@link YieldStmt} and visits all children of the
 	 * yield statement.
-	 * 
 	 * @see <a href=
 	 *      "https://www.javadoc.io/doc/com.github.javaparser/javaparser-core/latest/com/github/javaparser/ast/stmt/YieldStmt.html">JavaParser
 	 *      Docs - YieldStmt</a>
@@ -1580,7 +1580,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	 */
 	@Override
 	public void visit(DoStmt n, Node arg) {
-		Node doNode = new NodeImpl(NodeType.LOOP_CONDITION_CONTROLLED, n.getClass().getSimpleName(), arg);
+		Node doNode = new NodeImpl(NodeType.LOOP_DO, n.getClass().getSimpleName(), arg);
 		doNode.addAttribute(JavaAttributesTypes.Condition.name(), new StringValueImpl(n.getCondition().toString()));
 		n.getCondition().removeForced();
 		visitor(n, doNode);
@@ -1717,7 +1717,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	 * Adds an attribute {@link JavaAttributesTypes#Iterator} with value
 	 * {@link ForEachStmt#getIterable()}.
 	 * <p>
-	 * Another attribute {@link JavaAttributesTypes#Initilization} with the name of
+	 * Another attribute {@link JavaAttributesTypes#Initialization} with the name of
 	 * {@link ForEachStmt#getVariableDeclarator()} is added to the new node. The
 	 * attribute {@link JavaAttributesTypes#Type} contains the type of
 	 * {@link ForEachStmt#getVariableDeclarator()}.
@@ -1745,7 +1745,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	 * {@link ForStmt#getCompare()} as a string.
 	 * <p>
 	 * For every initialization {@link ForStmt#getInitialization()} an attribute
-	 * {@link JavaAttributesTypes#Initilization} with the initialization expression
+	 * {@link JavaAttributesTypes#Initialization} with the initialization expression
 	 * as a string is added. The initilization are removed from the {@link ForStmt}
 	 * JavaParser node afterwards.
 	 * <p>

@@ -53,7 +53,7 @@ public class NodeFactory {
 		
 		// Attach imports if available
 		if(!compilationUnit.getImports().isEmpty()) {
-			Node imports = new NodeImpl(NodeType.IMPORT, JavaNodeTypes.Import.name(), cu);
+			Node imports = new NodeImpl(NodeType.IMPORT, JavaNodeTypes.Imports.name(), cu);
 			while(compilationUnit.getImports().iterator().hasNext()) {
 				ImportDeclaration importDecl = compilationUnit.getImports().iterator().next();
 				attachImportDecl(importDecl, imports, visitor);

@@ -104,7 +104,7 @@ public enum JavaAttributesTypes {
 	 * @see ForStmt
 	 * @see VariableDeclarator
 	 */
-	Initilization,
+	Initialization,
 	/**
 	 * This attribute lists the names of the interfaces implemented by a class.
 	 * 
