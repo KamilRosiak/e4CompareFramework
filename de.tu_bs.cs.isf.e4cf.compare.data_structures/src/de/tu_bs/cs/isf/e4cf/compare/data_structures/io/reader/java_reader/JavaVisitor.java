@@ -1582,8 +1582,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	public void visit(DoStmt n, Node arg) {
 		Node doNode = new NodeImpl(NodeType.LOOP_DO, n.getClass().getSimpleName(), arg);
 		doNode.addAttribute(JavaAttributesTypes.Condition.name(), new StringValueImpl(n.getCondition().toString()));
-		n.getCondition().removeForced();
-		visitor(n, doNode);
+		visitor(n, doNode, n.getCondition());
 
 	}
 

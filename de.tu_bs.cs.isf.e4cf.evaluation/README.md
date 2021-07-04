@@ -18,7 +18,7 @@
 - [ ] Implement Granularity
 - [X] Implement Type Weights
 - [ ] Optional: Taxonomy soundness
-- [ ] Optional: output every clone
+- [X] Optional: output every clone
 - [X] Determine Exchange Data Format [4Weeks] (FileSet<GenericDataStructures>, ..?)
   - Metadata as Log?
 - <Entry Point for Project 2>
@@ -29,12 +29,12 @@
 - [ ] Add output UI (view?)
 - [ ] Add output file format
 - <Framework Issues>
-- [ ] Standardized Node Types
+- [X] Standardized Node Types
 - [X] Parser Structure (If-ElseIf, )
 - [ ] Introduce Expressions
-- [ ] Multi-Variable Initilization broken
-- [ ] Fix instant parsing when right clicking
-- [ ] Do-While has duplicate attribute "condition" but with different key "value"
+- [X] Multi-Variable Initilization broken
+- [X] Fix instant parsing when right clicking
+- [X] Do-While has duplicate attribute "condition" but with different key "value"
 
 ===== 16.06.2021
 Seeds als Base-File

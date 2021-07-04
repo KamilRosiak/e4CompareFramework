@@ -6,6 +6,7 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
+import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
@@ -28,6 +29,11 @@ class Taxonomy {
 	
 	// Comments and Whitespace Changes not applicable
 	// Formatting Changes not applicable
+	
+	/** Returns a random method of clone type I */
+	def getType1Method() {
+		return this.class.methods.findFirst[m | m.name == "copyAndPaste"]
+	}
 	
 	// TYPE II
 	
@@ -58,6 +64,17 @@ class Taxonomy {
 	def arbitraryRenaming(Node n1, Node n2) {
 		logger.logRaw(ARBITRARY_RENAMING)
 		helper.swap(n1, n2)
+	}
+	
+	/** Returns a random method of clone type II */
+	def getType2Method() {
+		val rng = new Random()
+		val type2Methods = #[
+			this.class.methods.filter[m | m.name == "systematicRenaming"],
+			this.class.methods.filter[m | m.name == "expressionsForParameters"],
+			this.class.methods.filter[m | m.name == "arbitraryRenaming"]
+		].flatten
+		return type2Methods.get(rng.nextInt(type2Methods.size));
 	}
 	
 	// TYPE III
@@ -113,6 +130,19 @@ class Taxonomy {
 	
 	def modifyLines() {
 		// TODO This is hard
+	}
+	
+	/** Returns a random method of clone type III */
+	def getType3Method() {
+		val rng = new Random()
+		val type3Methods = #[
+			this.class.methods.filter[m | m.name == "smallInlineInsertion"],
+			this.class.methods.filter[m | m.name == "smallInlineDeletion"],
+			this.class.methods.filter[m | m.name == "deleteLines"],
+			this.class.methods.filter[m | m.name == "insertLines"]/*, TODO add once modifyLines is implemented
+			this.class.methods.filter[m | m.name == "insertLines"], */
+		].flatten
+		return type3Methods.get(rng.nextInt(type3Methods.size));
 	}
 	
 // Removed as we don't consider Type IV clones	
