@@ -10,6 +10,9 @@
       <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaReader">
       </artifactReader>
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.cpp_reader.CppReader">
+      </artifactReader>
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactWriter">
