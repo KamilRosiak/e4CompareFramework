@@ -31,6 +31,7 @@ public class FeatureConfigurationBuilder {
 			fc.getFeatureSelection().put(feature, false);
 		}
 		fd.getFeatureConfiguration().add(fc);
+		System.out.println(fd.getFeatureConfiguration().get(0).getName());
 		return fc;
 	}
 

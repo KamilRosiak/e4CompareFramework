@@ -99,7 +99,7 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject
 	public void openFeatureDiagram(@UIEventTopic(FDEventTable.OPEN_FEATURE_DIAGRAM) ComponentFeature feature) {
-		FeatureDiagram diagram = (FeatureDiagram) feature.getFeaturediagramm();
+		FeatureDiagram diagram = new FeatureDiagram(feature.getFeaturediagramm());
 		Tab openedTab = getOpenedTabOrNull(diagram);
 		
 		if (openedTab != null) {
@@ -140,7 +140,7 @@ public class FeatureModelEditorController {
 		FXGraphicalFeature fxGraFeature = getCurrentView().getFXGraphicalFeature(feature);
 		Tab newTab = createNewTab(feature.getName());
 		selectTab(newTab);
-		getCurrentView().loadFeatureDiagram((FeatureDiagram) feature.getFeaturediagramm(), false);
+		getCurrentView().loadFeatureDiagram(new FeatureDiagram(feature.getFeaturediagramm()), false);
 		getCurrentTab().setText(getCurrentFeatureDiagram().getRoot().getName());
 	}
 	

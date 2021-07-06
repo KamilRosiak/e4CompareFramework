@@ -1,14 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
-import org.eclipse.emf.common.util.EMap;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -16,13 +12,11 @@ import FeatureDiagram.Feature;
 import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.FXToolbar;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
-import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfigurationController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelConfigurationStrings;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureDiagramIterator;
 import featureConfiguration.FeatureConfiguration;
 import javafx.embed.swt.FXCanvas;
 import javafx.geometry.Insets;
@@ -196,8 +190,7 @@ public class FeatureConfigurationView {
 
 	private void loadConfigurations(FeatureDiagram fd) {
 		configTable.getItems().clear();
-		List<FeatureConfiguration> configs = fd.getFeatureConfiguration();
-		configTable.getItems().addAll(configs);
+		configTable.getItems().setAll(fd.getFeatureConfiguration());
 	}
 	
 	public FeatureConfiguration getFeatureConfiguration() {

@@ -16,7 +16,8 @@ public class FeatureDiagram extends FeatureDiagrammImpl {
         this.root = diagram.getRoot();
         this.identifierIncrement = diagram.getIdentifierIncrement();
         this.constraints = diagram.getConstraints();
-        this.uuid = diagram.getUuid();    	
+        this.uuid = diagram.getUuid();    
+        this.featureConfiguration = diagram.getFeatureConfiguration();
     }
     
     @Override

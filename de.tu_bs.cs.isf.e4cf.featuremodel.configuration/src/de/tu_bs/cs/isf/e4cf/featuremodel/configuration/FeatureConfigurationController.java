@@ -180,6 +180,7 @@ public class FeatureConfigurationController {
 		}
 		
 		// create the view
+		view.setFeatureDiagram(new FeatureDiagram(fc.getFeatureDiagram()));
 		view.refreshView(fc);
 		
 		// set internals

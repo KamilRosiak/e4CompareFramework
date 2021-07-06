@@ -2,7 +2,6 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 
 
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.swt.widgets.Display;
 
 import FeatureDiagram.ComponentFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
