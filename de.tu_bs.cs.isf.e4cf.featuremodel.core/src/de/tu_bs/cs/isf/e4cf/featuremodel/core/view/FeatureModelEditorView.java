@@ -397,6 +397,7 @@ public class FeatureModelEditorView {
 		ComponentFeature newFeature = createComponentFeatureWithPosition(featureName, false,
 				xPos, yPos);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
+		FXGraphicalFeature configGraFeature = createConfigurationFeatureBelow(newGraFeature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 		componentFeatureList.add(newGraFeature);
 	
@@ -429,6 +430,25 @@ public class FeatureModelEditorView {
 		return newGraFeature;
 	}
 
+	public FXGraphicalFeature createConfigurationFeatureBelow(FXGraphicalFeature parent) {
+		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, services, "Select Configuration")
+											.setPosition(parent.getXPos().doubleValue() *2, parent.getYPos().doubleValue() + parent.getHeight() * 4.0);
+		newGraFeature.setParentFxFeature(parent);
+		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
+		parent.addChildFeatureFormated(newGraFeature);
+
+		// add graphical feature to scene
+		root.getChildren().addAll(newGraFeature);
+
+		// add feature to featureList
+		featureList.add(newGraFeature);
+
+		// connect new feature with parent
+		createLineToChildren(parent, newGraFeature);
+		
+		return newGraFeature;
+	}
+	
 	/**
 	 * This method adds a parent to given child and returns the new FXFeature.
 	 */
@@ -664,14 +684,14 @@ public class FeatureModelEditorView {
 	public Feature createFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
 		Feature feature = createFeature(featureName, isRoot);
 		feature.getGraphicalfeature().setX(x);
-		feature.getGraphicalfeature().setX(y);
+		feature.getGraphicalfeature().setY(y);
 		return feature;
 	}
 	
 	public ComponentFeature createComponentFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
 		ComponentFeature feature = createComponentFeature(featureName, isRoot);
 		feature.getGraphicalfeature().setX(x);
-		feature.getGraphicalfeature().setX(y);
+		feature.getGraphicalfeature().setY(y);
 		return feature;
 	}
 

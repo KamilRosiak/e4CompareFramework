@@ -216,7 +216,6 @@ public class FeatureModelEditorController {
 	public void addCompoundFeatureBelow(@UIEventTopic(FDEventTable.ADD_COMPONENTFEATURE) FXGraphicalFeature parentFeature) {
 		try {
 			getCurrentView().addComponentFeatureBelow(parentFeature);
-			
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_COMPONENTFEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));

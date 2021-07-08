@@ -23,7 +23,7 @@ public class FeatureConfigurationBuilder {
 	}
 	
 	public FeatureConfiguration createFeatureConfiguration(FeatureDiagram fd) {
-		String fcName = "Configuration_"+fd.getRoot().getName();
+		String fcName = "Configuration_" + fd.getRoot().getName();
 		FeatureConfiguration fc = createFeatureConfiguration(fcName, fd, Collections.emptyMap());
 		
 		for (Iterator<Feature> it = new FeatureDiagramIterator(fc.getFeatureDiagram()); it.hasNext();) {

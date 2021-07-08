@@ -49,6 +49,32 @@ public class FXGraphicalFeature extends VBox  {
 		createFeature();
 	}
 
+	public FXGraphicalFeature(FeatureModelEditorView view, ServiceContainer services, String name) {
+		this.view = view;
+		this.services = services;
+		this.childFeatures = new ArrayList<FXGraphicalFeature>();
+		this.featureNameLabel = new Label(name);
+		featureNameLabel.getStyleClass().add("feature");
+		setSpacing(0);
+		this.xPos = new SimpleDoubleProperty();
+		this.yPos = new SimpleDoubleProperty();
+		initGraphicalConfigurationFeature();		
+		getChildren().add(featureNameLabel);
+		addDrag();
+	}
+
+	public FXGraphicalFeature setPosition(double x, double y) {
+		this.xPos = new SimpleDoubleProperty(x);
+		this.yPos = new SimpleDoubleProperty(y);
+		translateXProperty().bind(xPos);
+		translateYProperty().bind(yPos);
+		getChildren().clear();
+		initGraphicalConfigurationFeature();
+		getChildren().add(featureNameLabel);
+		addDrag();
+		return this;
+	}
+
 	private void createFeature() {
 		setSpacing(0);
 		initGraphicalFeature();
@@ -170,6 +196,16 @@ public class FXGraphicalFeature extends VBox  {
 		} else {
 			setGroupVariability_AND();	// FIXME validate
 		}
+	}
+	private void initGraphicalConfigurationFeature() {
+		setAlignment(Pos.TOP_CENTER);
+		upperConnector = new FXFeatureUpperConnector(true);
+//		lowerConnector = new FXFeatureLowerConnector(this);
+		getChildren().add(upperConnector);
+		
+		
+//		setTranslateX(feature.getGraphicalfeature().getX());
+//		setTranslateY(feature.getGraphicalfeature().getY());
 	}
 	
 	/**

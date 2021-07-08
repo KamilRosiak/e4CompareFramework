@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:diagram="http://www.eclipse.org/sirius/diagram/1.1.0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.3/notation" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" xsi:schemaLocation="http://www.eclipse.org/sirius/description/1.1.0 http://www.eclipse.org/sirius/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/style/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description/style">
-  <viewpoint:DAnalysis uid="_Dd4goM3oEeulzfh1x_l0yQ" selectedViews="_DfpbMM3oEeulzfh1x_l0yQ _Df9kQM3oEeulzfh1x_l0yQ _Df-yYM3oEeulzfh1x_l0yQ _DgE5AM3oEeulzfh1x_l0yQ" version="14.3.1.202003261200">
+  <viewpoint:DAnalysis uid="_Dd4goM3oEeulzfh1x_l0yQ" selectedViews="_DfpbMM3oEeulzfh1x_l0yQ _Df9kQM3oEeulzfh1x_l0yQ _Df-yYM3oEeulzfh1x_l0yQ _DgE5AM3oEeulzfh1x_l0yQ" version="14.5.0.202104161500">
     <semanticResources>feature-metamodel.ecore</semanticResources>
     <semanticResources>constraint-metamodel.ecore</semanticResources>
     <semanticResources>feature-metamodel.genmodel</semanticResources>
     <semanticResources>constraint-metamodel.genmodel</semanticResources>
     <semanticResources>feature_configuration.ecore</semanticResources>
+    <semanticResources>feature_configuration.genmodel</semanticResources>
     <ownedViews xmi:type="viewpoint:DView" uid="_DfpbMM3oEeulzfh1x_l0yQ">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']"/>
       <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_9RbooM3rEeulzfh1x_l0yQ" name="FeatureDiagram class diagram" repPath="#_9RXXMM3rEeulzfh1x_l0yQ" changeId="43a0ca18-177e-4cc8-85fc-1c17cea49f53">
