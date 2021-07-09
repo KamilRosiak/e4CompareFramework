@@ -391,13 +391,14 @@ public class FeatureModelEditorView {
 	public FXGraphicalFeature addComponentFeatureBelow(FXGraphicalFeature parent) {
 		services.eventBroker.send(FDEventTable.LOGGER_ADD_COMPONENTFEATURE_BELOW, parent);
 		// create new feature and add under the parent
+
 		double xPos = parent.getFeature().getGraphicalfeature().getX();
 		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
+		
 		String featureName = "NewComponentFeature_" + currentModel.getIdentifierIncrement();
 		ComponentFeature newFeature = createComponentFeatureWithPosition(featureName, false,
 				xPos, yPos);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
-		FXGraphicalFeature configGraFeature = createConfigurationFeatureBelow(newGraFeature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 		componentFeatureList.add(newGraFeature);
 	
@@ -410,9 +411,12 @@ public class FeatureModelEditorView {
 		// add the new feature to model and set the parent feature
 		parent.getFeature().getChildren().add(newFeature);
 		newFeature.setParent(parent.getFeature());
-
+		
+		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);;
 		// create graphical feature and set parent
-		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);
+		if (newFeature instanceof ComponentFeature) {
+			newGraFeature.addConfigLabel("Select configuration");
+		}
 		newGraFeature.setParentFxFeature(parent);
 		parent.addChildFeatureFormated(newGraFeature);
 
@@ -427,25 +431,6 @@ public class FeatureModelEditorView {
 
 		// set the current feature, necessary for feature split
 		setCurrentFeature(newGraFeature);
-		return newGraFeature;
-	}
-
-	public FXGraphicalFeature createConfigurationFeatureBelow(FXGraphicalFeature parent) {
-		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, services, "Select Configuration")
-											.setPosition(parent.getXPos().doubleValue() *2, parent.getYPos().doubleValue() + parent.getHeight() * 4.0);
-		newGraFeature.setParentFxFeature(parent);
-		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
-		parent.addChildFeatureFormated(newGraFeature);
-
-		// add graphical feature to scene
-		root.getChildren().addAll(newGraFeature);
-
-		// add feature to featureList
-		featureList.add(newGraFeature);
-
-		// connect new feature with parent
-		createLineToChildren(parent, newGraFeature);
-		
 		return newGraFeature;
 	}
 	
