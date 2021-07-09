@@ -31,7 +31,8 @@
 - <Framework Issues>
 - [X] Standardized Node Types
 - [X] Parser Structure (If-ElseIf, )
-- [ ] Introduce Expressions
+- [X] Introduce Expressions (Decorate Subexpressions of a Node as Label)
+- [ ] Extract ExpressionOperators into Enum
 - [X] Multi-Variable Initilization broken
 - [X] Fix instant parsing when right clicking
 - [X] Do-While has duplicate attribute "condition" but with different key "value"
@@ -65,4 +66,7 @@ Clone Granularity Discussion
  
 ===== 07.07.2021
 GitHub JavaParser gibt momentan JavaAST als generische Datenstruktur vor. Manuelles, rekursives parsen der AST 
-könnte da eine Abstraktionsebene draufsetzen, kostet uns aber ca. eine Woche.
+könnte da eine Abstraktionsebene draufsetzen, kostet uns aber ca. eine Woche. 
+Wollen wir etwas anderes als AST in unserer GenericDatastructure darstellen?
+- Definitiv auf StandardizedNodeType bleiben, access zu JavaNodeType deutet auf probleme im StandardNodeType hin
+Wollen wir potentiell verschiedene AST vergleichen (C <> Java)?

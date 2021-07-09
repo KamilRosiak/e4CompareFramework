@@ -11,15 +11,21 @@ public class DetailedFamilyModelNodeDecorator extends FamilyModelNodeDecorator {
 	public TreeItem<Node> decorateNode(TreeItem<Node> node) {
 		super.decorateNode(node);
 		Node nodeimpl = node.getValue();
-		String nodeName = "";
-		
-		try {
-			nodeName = " " + nodeimpl.getAttributeForKey("Name").getAttributeValues().get(0).getValue().toString();
-		} catch (NoSuchElementException e) {}
-		
-		nodeimpl.setRepresenation(nodeimpl.getStandardizedNodeType() + nodeName);
+		String nodeName = getAttributeValueFromNode(nodeimpl, "Name");
+		String nodeValue = getAttributeValueFromNode(nodeimpl, "Value");
+		String nodeOperator = getAttributeValueFromNode(nodeimpl, "Operator");
+
+		nodeimpl.setRepresenation(nodeimpl.getStandardizedNodeType() + nodeName + nodeValue + nodeOperator);
 
 		return node;
+	}
+	
+	private String getAttributeValueFromNode(Node n, String key) {
+		try {
+			return " " + n.getAttributeForKey(key).getAttributeValues().get(0).getValue().toString();
+		} catch (NoSuchElementException e) {
+			return "";
+		}
 	}
 	
 	@Override
