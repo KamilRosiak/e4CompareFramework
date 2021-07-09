@@ -71,13 +71,8 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
             @Override
             public void handle(ActionEvent event) {
             	hide();
-            	FeatureDiagram fd = new FeatureDiagram(((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm());
-            	FMESetConfigurationDialog dialog = new FMESetConfigurationDialog("Set Configuration", fd);
-            	Rectangle2D primaryScreenBounds = Screen.getPrimary().getBounds();
-				Double x = primaryScreenBounds.getWidth() * .5;
-				Double y = primaryScreenBounds.getHeight() * .5;
-            	dialog.show(x, y);
-            	event.consume();
+            	eventBroker.send(FDEventTable.SELECT_CONFIGURATION_EVENT, fxGraFeature);
+				event.consume();
             }
         });
 		return item;

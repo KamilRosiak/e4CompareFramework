@@ -22,6 +22,10 @@ public class FMESetConfigurationDialog {
 	public FMESetConfigurationDialog(String dialogTitle, FeatureDiagram fd) {
 		createDialog(dialogTitle, fd);
 	}
+	
+	public Dialog<FeatureConfiguration> getDialog() {
+		return dialog;
+	}
 
 	private void createDialog(String dialogTitle, FeatureDiagram fd) {
 		dialog = new Dialog<>();

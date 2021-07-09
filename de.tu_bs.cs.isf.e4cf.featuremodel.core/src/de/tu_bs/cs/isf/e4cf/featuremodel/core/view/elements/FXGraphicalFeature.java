@@ -51,6 +51,14 @@ public class FXGraphicalFeature extends VBox  {
 
 	public void addConfigLabel(String name) {
 		Label configLabel = new Label(name);
+		configLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if(event.getButton().equals(MouseButton.PRIMARY)) {
+				if(event.getClickCount() == 2) {
+					services.eventBroker.send(FDEventTable.SELECT_CONFIGURATION_EVENT, this);
+					event.consume();
+				}
+			}
+		});
 		configLabel.getStyleClass().add("componentFeature");
 		getChildren().add(configLabel);
 	}
@@ -264,6 +272,11 @@ public class FXGraphicalFeature extends VBox  {
 	public void addChildFeatureFormated(FXGraphicalFeature fxFeature) {
 		addChildFeature(fxFeature);
 		translateChildren();
+	}
+	
+	public void setName(String name) {
+		this.featureNameLabel.setText(name);
+		this.feature.setName(name);
 	}
 	
 	/**

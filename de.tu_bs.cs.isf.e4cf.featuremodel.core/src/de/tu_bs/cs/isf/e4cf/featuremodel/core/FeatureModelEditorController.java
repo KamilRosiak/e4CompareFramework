@@ -27,13 +27,18 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener.FeatureModelVi
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import featureConfiguration.FeatureConfiguration;
 import javafx.embed.swt.FXCanvas;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.stage.Screen;
 import javafx.util.Pair;
 
 /**
@@ -151,6 +156,7 @@ public class FeatureModelEditorController {
 		try {
 			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.loadFeatureDiagram(filepath));
 			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
+			fxGraFeature.setName(featureDiagram.getRoot().getName());
 			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
 			// showConstraintView();
 		} catch (IllegalArgumentException e) {
@@ -340,6 +346,27 @@ public class FeatureModelEditorController {
 			if (data.getKey().getFeature() == getCurrentView().getFeatureDiagram().getRoot()) {
 				getCurrentTab().setText(data.getValue());
 			}
+		} catch (Exception e) {
+			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
+			errorListeners.forEach(listener -> listener.onError(error));
+		}
+	}
+	
+	@Optional
+	@Inject 
+	public void setConfiguration(@UIEventTopic(FDEventTable.SELECT_CONFIGURATION_EVENT) FXGraphicalFeature fxGraFeature) {
+		try {
+			FeatureDiagram fd = new FeatureDiagram(((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm());
+        	FMESetConfigurationDialog dialog = new FMESetConfigurationDialog("Select Configuration", fd);
+        	Rectangle2D primaryScreenBounds = Screen.getPrimary().getBounds();
+			Double x = primaryScreenBounds.getWidth() * .5 - dialog.getDialog().getWidth() * .5;
+			Double y = primaryScreenBounds.getHeight() * .5 - dialog.getDialog().getHeight() * .5;
+        	FeatureConfiguration selectedConfig = dialog.show(x, y);
+        	if (selectedConfig != null) {
+        		Label configLabel = (Label) fxGraFeature.getChildren().get(fxGraFeature.getChildren().size() - 1);
+            	configLabel.setText(selectedConfig.getName());
+        	}
+        	
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
