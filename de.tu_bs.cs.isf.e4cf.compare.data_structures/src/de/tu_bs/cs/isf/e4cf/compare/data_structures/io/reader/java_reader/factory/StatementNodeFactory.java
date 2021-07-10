@@ -48,28 +48,30 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	 */
 	private Node createForStmt(ForStmt forStmt, Node parent, JavaVisitor visitor) {
 		Node forStmtNode = new NodeImpl(NodeType.LOOP_COUNT_CONTROLLED, forStmt.getClass().getSimpleName(), parent);
+		
+		// Initializations
+		for (Expression initializtaionExpr : forStmt.getInitialization()) {
+			initializtaionExpr.accept(visitor, forStmtNode);
+		}
+		forStmt.getInitialization().clear();
+		
 
 		// Comparison
 		if (forStmt.getCompare().isPresent()) {
-			forStmtNode.addAttribute(JavaAttributesTypes.Comparison.name(), new StringValueImpl(forStmt.getCompare().get().toString()));
-		}
-		forStmt.removeCompare(); // rm bc visited
-
-		// Initializations
-		int initializations = forStmt.getInitialization().size();
-		for (int i = 0; i < initializations; i++) {
-			Expression initExpr = forStmt.getInitialization().get(0);
-			forStmtNode.addAttribute(JavaAttributesTypes.Initialization.name(), new StringValueImpl(initExpr.toString()));
-			initExpr.removeForced();
+			Expression compareExpr = forStmt.getCompare().get();
+			Node conditionNode = new NodeImpl(NodeType.CONDITION, compareExpr.getClass().getSimpleName(), forStmtNode);
+			compareExpr.accept(visitor, conditionNode);
+			forStmt.removeCompare();
 		}
 
 		// Updates
-		int updates = forStmt.getUpdate().size();
-		for (int i = 0; i < updates; i++) {
-			Expression updateExpr = forStmt.getUpdate().get(0);
-			forStmtNode.addAttribute(JavaAttributesTypes.Update.name(), new StringValueImpl(updateExpr.toString()));
-			updateExpr.removeForced();
+		Node updateContainer = new NodeImpl(NodeType.UPDATE, "Update", forStmtNode);
+		for (Expression updateExpr : forStmt.getUpdate()) {
+			updateExpr.accept(visitor, updateContainer);
 		}
+		forStmt.getUpdate().clear();
+		
+
 		return forStmtNode;
 	}
 
@@ -78,8 +80,9 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	 */
 	private Node createIfStmtNode(IfStmt ifStmt, Node arg, JavaVisitor visitor) {
 		Node ifStmtNode = new NodeImpl(NodeType.IF, ifStmt.getClass().getSimpleName(), arg);
-		ifStmtNode.addAttribute(JavaAttributesTypes.Condition.name(), new StringValueImpl(ifStmt.getCondition().toString()));
-
+		Node conditionNode = new NodeImpl(NodeType.CONDITION, ifStmt.getCondition().getClass().getSimpleName(), ifStmtNode);
+		ifStmt.getCondition().accept(visitor, conditionNode);
+		
 		// Fall through
 		Statement thenStmt = ifStmt.getThenStmt();
 		Node thenNode = new NodeImpl(NodeType.THEN, JavaNodeTypes.Then.name(), ifStmtNode);

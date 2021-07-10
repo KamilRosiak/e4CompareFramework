@@ -1496,7 +1496,8 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	@Override
 	public void visit(WhileStmt n, Node arg) {
 		Node whileStmtNode = new NodeImpl(NodeType.LOOP_WHILE, n.getClass().getSimpleName(), arg);
-		whileStmtNode.addAttribute(JavaAttributesTypes.Condition.name(), new StringValueImpl(n.getCondition().toString()));
+		Node conditionNode = new NodeImpl(NodeType.CONDITION, n.getCondition().getClass().getSimpleName(), whileStmtNode);
+		n.getCondition().accept(this, conditionNode);
 		visitor(n, whileStmtNode, n.getCondition());
 	}
 
@@ -1577,9 +1578,9 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	@Override
 	public void visit(DoStmt n, Node arg) {
 		Node doNode = new NodeImpl(NodeType.LOOP_DO, n.getClass().getSimpleName(), arg);
-		doNode.addAttribute(JavaAttributesTypes.Condition.name(), new StringValueImpl(n.getCondition().toString()));
+		Node conditionNode = new NodeImpl(NodeType.CONDITION, n.getCondition().getClass().getSimpleName(), doNode);
+		n.getCondition().accept(this, conditionNode);
 		visitor(n, doNode, n.getCondition());
-
 	}
 
 	/**

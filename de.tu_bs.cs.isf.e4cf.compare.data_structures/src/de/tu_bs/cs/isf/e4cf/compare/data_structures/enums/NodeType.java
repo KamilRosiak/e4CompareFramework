@@ -20,6 +20,7 @@ public enum NodeType {
 	 * A container for programming artifacts (source code, imports...)
 	 */
 	COMPILATION_UNIT,
+	CONDITION,
 	CONSTRUCTION,
 	DIRECTORY,
 	ELSE,
@@ -91,6 +92,10 @@ public enum NodeType {
 	 * one or more super classes of a given set.
 	 */
 	UNION,
+	/**
+	 * Used in iterator controlled loops (for statements) to distinguish between body and update expressions
+	 */
+	UPDATE,
 	VARIABLE_DECLARATION, // INTERESTING
 	;
 	

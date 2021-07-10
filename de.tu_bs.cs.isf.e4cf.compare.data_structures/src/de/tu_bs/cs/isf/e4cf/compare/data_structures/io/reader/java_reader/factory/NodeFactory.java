@@ -41,11 +41,12 @@ public class NodeFactory {
 		int argSize = n.getArguments().size();
 
 		for (int i = 0; i < argSize; i++) {
-			Expression argumentExpr = n.getArgument(0);
+			Expression argumentExpr = n.getArgument(i);
 			Node argNode = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name() + i, args);
 			argumentExpr.accept(visitor, argNode);
-			argumentExpr.removeForced();
 		}
+		n.getArguments().clear();
+		
 	}
 
 	public Node createCompilationUnitNode(CompilationUnit compilationUnit, Node parent, JavaVisitor visitor) {
