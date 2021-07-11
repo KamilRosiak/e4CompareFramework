@@ -1,15 +1,20 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.string_table;
 
 public class CloneST {
-	// Helper Functions
-	public static final String COPY = "Copy";
-	public static final String RCOPY = "RCopy";
-	public static final String MOVE = "Move";
-	public static final String MOVEPOS = "MovePOS";
-	public static final String SWAP = "Swap";
-	public static final String DELETE = "Delete";
-	public static final String REFACTOR = "Refactor";
-	public static final String SETATTR = "SetAttribute";
+	// Non-atomic Functions
+	public static final String NON_ATOMIC = "NonAtomic_";
+	public static final String RCOPY = NON_ATOMIC + "RCopy";
+	public static final String SWAP = NON_ATOMIC + "Swap";
+	public static final String RDELETE = NON_ATOMIC + "RDelete";
+	public static final String REFACTOR = NON_ATOMIC + "Refactor";
+	
+	// Atomic Functions
+	public static final String ATOMIC = "Atomic_";
+	public static final String COPY = ATOMIC + "Copy";
+	public static final String MOVE = ATOMIC + "Move";
+	public static final String MOVEPOS = ATOMIC + "MovePOS";
+	public static final String DELETE = ATOMIC + "Delete";
+	public static final String SETATTR = ATOMIC + "SetAttribute";
 	
 	// Attributes
 	public static final String SOURCE = " source:";
@@ -24,13 +29,14 @@ public class CloneST {
 	public static final String KEY = " key:";
 	
 	// Taxonomy Functions
-	public static final String SYSTEMATIC_RENAMING = "Tax_SystematicRenaming";
-	public static final String EXPRESSION = "Tax_ExpressionForParameter";
-	public static final String ARBITRARY_RENAMING = "Tax_ArbitraryRenaming";
-	public static final String INLINE_INSERTION_NODE = "Tax_SmallInlineInsertion_Node";
-	public static final String INLINE_INSERTION_ATTR = "Tax_SmallInlineInsertion_Attribute";
-	public static final String INLINE_DELETION_NODE = "Tax_SmallInlineDeletion_Node";
-	public static final String INLINE_DELETION_ATTR = "Tax_SmallInlineDeletion_Attribute";
-	public static final String DELETE_LINES = "Tax_DeleteLines";
-	public static final String INSERT_LINES = "Tax_InsertLines";
+	public static final String TAX = "Tax_";
+	public static final String SYSTEMATIC_RENAMING = TAX + "SystematicRenaming";
+	public static final String EXPRESSION = TAX + "ExpressionForParameter";
+	public static final String ARBITRARY_RENAMING = TAX + "ArbitraryRenaming";
+	public static final String INLINE_INSERTION_NODE = TAX + "SmallInlineInsertion_Node";
+	public static final String INLINE_INSERTION_ATTR = TAX + "SmallInlineInsertion_Attribute";
+	public static final String INLINE_DELETION_NODE = TAX + "SmallInlineDeletion_Node";
+	public static final String INLINE_DELETION_ATTR = TAX + "SmallInlineDeletion_Attribute";
+	public static final String DELETE_LINES = TAX + "DeleteLines";
+	public static final String INSERT_LINES = TAX + "InsertLines";
 }

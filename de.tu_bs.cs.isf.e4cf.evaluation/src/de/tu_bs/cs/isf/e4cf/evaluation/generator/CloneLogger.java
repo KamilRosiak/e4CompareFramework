@@ -68,14 +68,16 @@ public class CloneLogger {
 		}
 	}
 	
-	public List<String> read(String filePath) {
+	public void read(String filePath) {
 		try {
-			return Files.readAllLines(Paths.get(filePath));
+			log = Files.readAllLines(Paths.get(filePath));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		return null;
+	}
+	
+	public List<String> getLog() {
+		return log;
 	}
 	
 	public String readAttr(String logEntry, String key) {

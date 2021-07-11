@@ -133,8 +133,20 @@ class CloneHelper {
 	 * @param source Node to be removed
 	 */
 	def delete(Node source) {
-		logger.logRaw(DELETE + TARGET + source.UUID)
+		logger.logRaw(RDELETE + TARGET + source.UUID)
+		_delete(source)
 		source.parent.children.remove(source)
+	}
+	
+	/**
+	 * Logs the uuids of all deleted nodes
+	 * @param source Node to be removed
+	 */
+	private def _delete(Node source) {
+		logger.logRaw(DELETE + TARGET + source.UUID)
+		source.allChildren.forEach[
+			c | logger.logRaw(DELETE + TARGET + c.UUID)
+		]
 	}
 	
 	// TODO: Create Nodes Function from Seed-Repository
