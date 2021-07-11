@@ -13,6 +13,8 @@ import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
+import java.lang.invoke.MethodHandles.Lookup
 
 @Singleton 
 @Creatable 
@@ -31,8 +33,7 @@ class CloneGenerator {
 		trees.add(originalTree)
 		save(options.outputRoot, originalTree, "")
 		
-		//var Node varDecl = helper.findFirst(tree.getRoot(), "VariableDeclarator")
-		//var Node varDeclClone = helper.copyRecursively(varDecl, varDecl.getParent().getParent())
+		createTaxonomyExamples(tree, options)
 		
 		// Number of mutations (taxonomy calls) given by user
 		for (var pass = 0; pass < options.mutations; pass++) {
@@ -73,13 +74,66 @@ class CloneGenerator {
 		// Serialize and save the final tree (already saved if save all is enabled)
 		if (!options.enableSaveAll) {	
 			var String modifiedTreeSerialized = gsonExportService.exportTree((tree as TreeImpl))
-			save(options.outputRoot, modifiedTreeSerialized, ".mod")
+			//save(options.outputRoot, modifiedTreeSerialized, ".mod")
 		}
 		
 		// store log
-		logger.outputLog()
+		logger.outputLog
+		logger.resetLog
 	}
+	
+	def private void createTaxonomyExamples(Tree tree, GeneratorOptions options) {
+		
+		// Base setup
+		// Copy & Paste
+		// Create a full copy and modify it further
+		val allNodes = helper.getAllChildren(tree.root)
+//		val sumTimesFunc = allNodes.findFirst[n | 
+//			n.standardizedNodeType == NodeType.METHOD_CALL
+//		]
+//		val someFuncBody = allNodes.findFirst[n | 
+//			n.standardizedNodeType == NodeType.BLOCK
+//			&& n.parent.standardizedNodeType == NodeType.METHOD_DECLARATION
+//		]
+//		helper.copyRecursively(sumTimesFunc, someFuncBody)
+//		val taxATree = gsonExportService.exportTree((tree as TreeImpl))
+//		save(options.outputRoot, taxATree, ".taxA")
+		
+		// systematic renaming (F)
+//		val sumDecl = allNodes.findFirst[n |
+//			n.standardizedNodeType == NodeType.VARIABLE_DECLARATION
+//			&& helper.getAttributeValue(n, "Name") == "s"
+//		]
+//		taxonomy.systematicRenaming(sumDecl, "sum")
+//		val productDecl = allNodes.findFirst[n |
+//			n.standardizedNodeType == NodeType.VARIABLE_DECLARATION
+//			&& helper.getAttributeValue(n, "Name") == "p"
+//		]
+//		taxonomy.systematicRenaming(productDecl, "product")
+//		val taxDTree = gsonExportService.exportTree((tree as TreeImpl))
+//		save(options.outputRoot, taxDTree, "taxD")
 
+		// expression for Parameters F
+//		val scope = allNodes.findFirst[n |
+//			n.standardizedNodeType == NodeType.BLOCK
+//			&& n.parent.standardizedNodeType == NodeType.LOOP_COUNT_CONTROLLED
+//		]
+//		taxonomy.expressionsForParameters(scope, "i", "(i*i)")
+//		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
+//		save(options.outputRoot, taxFTree, "taxF")
+
+		// Arbitrary Renaming (E)
+		val funcCall = allNodes.findFirst[n | n.standardizedNodeType == NodeType.METHOD_CALL]
+		taxonomy.arbitraryRenaming(funcCall.children.head.children.get(0), funcCall.children.head.children.get(1))
+		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
+		save(options.outputRoot, taxFTree, "taxE")
+		
+		
+		
+		
+		
+	}
+	
 	/** Saves tree string to json file */
 	def private void save(Path targetFolder, String content, String infix) {
 		var Path selectedPath = Paths.get(

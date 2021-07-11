@@ -45,17 +45,12 @@ class Taxonomy {
 		helper.refactor(container, newValue)
 	}
 	
-	def expressionsForParameters(Node body, String parameter, String expression) {
-		logger.logRaw(EXPRESSION)
-		helper.getAllChildren(body).forEach[ n |
-			n.attributes.forEach[ a |
-				helper.setAttributeValue(
-					n, 
-					a.attributeKey,
-					helper.getAttributeValue(n, a.attributeKey).replace(parameter, expression)
-				)
-			]
-		]
+	def expressionsForParameters(Node scope, String parameter, String expression) {
+		// logger.logRaw(EXPRESSION)
+		// TODO: this would take a lot of work for a result that may not always make sense (type- and operational semantics)
+		// generally one would:
+		// build expression from NodeImpl (!!HARD!!), maybe reduce possibilities to arithmetics
+		// replace all occurrences of the parameter NameExpressions with the build expression tree
 	}
 	
 	/**

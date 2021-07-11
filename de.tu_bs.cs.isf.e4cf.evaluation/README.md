@@ -70,3 +70,8 @@ könnte da eine Abstraktionsebene draufsetzen, kostet uns aber ca. eine Woche.
 Wollen wir etwas anderes als AST in unserer GenericDatastructure darstellen?
 - Definitiv auf StandardizedNodeType bleiben, access zu JavaNodeType deutet auf probleme im StandardNodeType hin
 Wollen wir potentiell verschiedene AST vergleichen (C <> Java)?
+
+===== 14.07.2021
+- Compare Engine Reorders Nodes -> TaxonomyExample D
+- Discuss Programflows
+
