@@ -11,11 +11,14 @@
 - [ ] Determine nodes to clone
 - [X] Look into Taxonomy (What can we do just on nodes? What attributes do we need for the rest of the taxonomy?)
 - [ ] Call random clone operations
-- [ ] Folder selection support
-- [ ] UI Settings (granularity, type weights, number of mutations, ...)
+- [X] Folder selection support
+- [X] UI Settings (granularity, type weights, number of mutations, ...)
 - [ ] Crossover operations
+- [X] Implement Multipass
+- [ ] Implement Granularity
+- [X] Implement Type Weights
 - [ ] Optional: Taxonomy soundness
-- [ ] Optional: output every clone
+- [X] Optional: output every clone
 - [X] Determine Exchange Data Format [4Weeks] (FileSet<GenericDataStructures>, ..?)
   - Metadata as Log?
 - <Entry Point for Project 2>
@@ -25,6 +28,14 @@
 - [ ] Taxonomy Mining
 - [ ] Add output UI (view?)
 - [ ] Add output file format
+- <Framework Issues>
+- [X] Standardized Node Types
+- [X] Parser Structure (If-ElseIf, )
+- [X] Introduce Expressions (Decorate Subexpressions of a Node as Label)
+- [ ] Extract ExpressionOperators into Enum
+- [X] Multi-Variable Initilization broken
+- [X] Fix instant parsing when right clicking
+- [X] Do-While has duplicate attribute "condition" but with different key "value"
 
 ===== 16.06.2021
 Seeds als Base-File
@@ -50,3 +61,17 @@ Möglicherweise Config für Generator (Welche Nodes dürfen angefasst werden? Sprac
 
 ===== 30.06.2021
 Annahme: Initiale ground truth is clone free -> else overfitting?
+Clone Granularity Discussion
+ - Änderungen an Granularity Level source node selection ein (Statement => Statements, Methods => Signatures, Classes => Packages & Imports?)
+ 
+===== 07.07.2021
+GitHub JavaParser gibt momentan JavaAST als generische Datenstruktur vor. Manuelles, rekursives parsen der AST 
+könnte da eine Abstraktionsebene draufsetzen, kostet uns aber ca. eine Woche. 
+Wollen wir etwas anderes als AST in unserer GenericDatastructure darstellen?
+- Definitiv auf StandardizedNodeType bleiben, access zu JavaNodeType deutet auf probleme im StandardNodeType hin
+Wollen wir potentiell verschiedene AST vergleichen (C <> Java)?
+
+===== 14.07.2021
+- Compare Engine Reorders Nodes -> TaxonomyExample D
+- Discuss Programflows
+

@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
@@ -46,7 +47,7 @@ public class JavaReader extends AbstractArtifactReader {
 			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
 			String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
 			CompilationUnit cu = StaticJavaParser.parse(s);
-			Node rootNode = new NodeImpl(JavaWriter.NODE_TYPE_TREE);
+			Node rootNode = new NodeImpl(NodeType.FILE, JavaWriter.NODE_TYPE_TREE);
 			JavaVisitor visitor = new JavaVisitor(new NodeFactory(new StatementNodeFactory()));
 			visitor.visit(cu, rootNode);
 			tree = new TreeImpl(fileName, rootNode);

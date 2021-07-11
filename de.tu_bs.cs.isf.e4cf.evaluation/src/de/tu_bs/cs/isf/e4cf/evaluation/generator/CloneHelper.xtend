@@ -8,6 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*;
+import java.util.NoSuchElementException
 
 @Creatable
 @Singleton
@@ -209,7 +210,7 @@ class CloneHelper {
 			
 			logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + 
 				SCOPE + body.UUID + FROM + oldValue + TO + newValue)
-			_refactor(body, #["Name", "Initilization", "Value", "Comparison", "Condition", "Update"], oldValue, newValue)
+			_refactor(body, #["Name", "Initialization", "Value", "Comparison", "Condition", "Update"], oldValue, newValue)
 		}
 	}
 	
@@ -238,7 +239,11 @@ class CloneHelper {
 	}
 	
 	def String getAttributeValue(Node node, String attributeKey) {
-		return node.getAttributeForKey(attributeKey).attributeValues.head.value as String
+		try {
+			return node.getAttributeForKey(attributeKey).attributeValues.head.value as String
+		} catch (NoSuchElementException e) {
+			return null
+		}
 	}
 	
 	// utility: nest nodes e.g. wrap statsequence in control block
