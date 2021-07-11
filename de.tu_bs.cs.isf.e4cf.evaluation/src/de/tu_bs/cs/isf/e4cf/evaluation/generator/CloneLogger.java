@@ -15,6 +15,7 @@ import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 
 @Singleton
 @Creatable
@@ -90,6 +91,19 @@ public class CloneLogger {
 		}
 		
 		return null;
+	}
+	
+	public void deleteLogsContainingString(String contains) {
+		yeeeeeeeeeeeeeeet(contains);
+	}
+	
+	private void yeeeeeeeeeeeeeeet(String contains) {
+		for (int i=0; i < log.size(); i++) {
+			String entry = log.get(i);
+			if(!entry.startsWith(CloneST.CLONE) && entry.contains(contains)) {
+				log.remove(entry);
+			}
+		}
 	}
 
 }

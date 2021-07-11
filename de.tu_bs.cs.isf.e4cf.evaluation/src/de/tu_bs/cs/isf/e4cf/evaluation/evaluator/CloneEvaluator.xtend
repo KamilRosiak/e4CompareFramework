@@ -136,7 +136,8 @@ class CloneEvaluator {
 			}
 			case MOVEPOS: {
 				val source = logger.readAttr(logEntry, SOURCE)
-				val index = logger.readAttr(logEntry, INDEX)
+				val from = logger.readAttr(logEntry, FROM)
+				val to = logger.readAttr(logEntry, TO)
 				// TODO: xcheck +1 for unique source
 			}
 			case DELETE: {

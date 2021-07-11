@@ -15,11 +15,13 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 import java.lang.invoke.MethodHandles.Lookup
+import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
 
 @Singleton 
 @Creatable 
 class CloneGenerator {
 	@Inject GsonExportService gsonExportService
+	@Inject GsonImportService gsonImportService
 	@Inject CloneLogger logger
 	@Inject CloneHelper helper
 	@Inject Taxonomy taxonomy
@@ -30,6 +32,9 @@ class CloneGenerator {
 		var trees = newArrayList
 		// save a copy of the original tree
 		val originalTree = gsonExportService.exportTree((tree as TreeImpl))
+		// copy tree to track modifications on original tree and remove invalid ones
+		val copyTree = gsonImportService.importTree(originalTree)
+		helper.trackingTreeRoot = copyTree.root
 		trees.add(originalTree)
 		save(options.outputRoot, originalTree, "")
 		
@@ -123,15 +128,60 @@ class CloneGenerator {
 //		save(options.outputRoot, taxFTree, "taxF")
 
 		// Arbitrary Renaming (E)
-		val funcCall = allNodes.findFirst[n | n.standardizedNodeType == NodeType.METHOD_CALL]
-		taxonomy.arbitraryRenaming(funcCall.children.head.children.get(0), funcCall.children.head.children.get(1))
-		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
-		save(options.outputRoot, taxFTree, "taxE")
+//		val funcCall = allNodes.findFirst[n | n.standardizedNodeType == NodeType.METHOD_CALL]
+//		taxonomy.arbitraryRenaming(funcCall.children.head.children.get(0), funcCall.children.head.children.get(1))
+//		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
+//		save(options.outputRoot, taxFTree, "taxE")
 		
 		
 		
 		
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		// Test move
+//		val funcCall = allNodes.findFirst[n | n.standardizedNodeType == NodeType.METHOD_CALL]
+//		val nodeToMove = funcCall.children.head.children.get(0)
+//		helper.move(nodeToMove, funcCall.parent)
+//		print(funcCall.parent.UUID)
+//		helper.move(nodeToMove, funcCall.parent.parent)
+//		print(funcCall.parent.parent.UUID)
+//		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
+//		save(options.outputRoot, taxFTree, "taxE")
+		
+		
+		// Test movepos
+//		val funcCall = allNodes.findFirst[n | n.standardizedNodeType == NodeType.METHOD_CALL]
+//		taxonomy.arbitraryRenaming(funcCall.children.head.children.get(0), funcCall.children.head.children.get(1))
+//		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
+//		save(options.outputRoot, taxFTree, "taxE")
+
+		// Test attr
+//		val funcCall = allNodes.findFirst[n | n.standardizedNodeType == NodeType.METHOD_CALL]
+//		helper.setAttributeValue(funcCall, "Name", "Tim is ne dumme Mongo")
+//		helper.setAttributeValue(funcCall, "Name", "Tim is ne dumme Mango")
+//		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
+//		save(options.outputRoot, taxFTree, "taxE")
+		
+		// Test delete
+//		val funcCall = allNodes.findFirst[n | n.standardizedNodeType == NodeType.METHOD_CALL]
+//		val nodeToMove = funcCall.children.head.children.get(0)
+//		helper.move(nodeToMove, funcCall.parent)
+//		helper.move(nodeToMove, funcCall.parent.parent)
+//		helper.delete(nodeToMove)
+//		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
+//		save(options.outputRoot, taxFTree, "taxE")
 	}
 	
 	/** Saves tree string to json file */

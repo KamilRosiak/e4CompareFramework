@@ -20,7 +20,6 @@ public class CloneST {
 	public static final String SOURCE = " source:";
 	public static final String TARGET = " target:";
 	public static final String CLONE = " clone:";
-	public static final String INDEX = " index:";
 	public static final String CONTAINER = " container:";
 	public static final String TYPE = " type:";
 	public static final String SCOPE = " scope:";

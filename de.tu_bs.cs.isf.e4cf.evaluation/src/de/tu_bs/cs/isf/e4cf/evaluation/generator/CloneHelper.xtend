@@ -16,6 +16,8 @@ class CloneHelper {
 	
 	@Inject 
 	CloneLogger logger;
+	// TODO
+	public Node trackingTreeRoot;
 	
 	/**
 	 * Create a shallow copy of a node and assigns it to a target. 
@@ -37,6 +39,7 @@ class CloneHelper {
 		
 		targetParent.addChild(clone);
 		
+		// No further check because a copy itself is always a valid mutation
 		logger.logRaw(COPY + SOURCE + source.UUID + TARGET + targetParent.UUID + CLONE + clone.UUID);
 		return clone;
 	}
@@ -70,11 +73,33 @@ class CloneHelper {
 	 * @return always the source
 	 */
 	def move(Node source, Node targetParent) {
-		logger.logRaw(MOVE + SOURCE + source.UUID + TARGET + targetParent.UUID)
+		// Invariant at most one move per source		
+		val previousMove = logger.log.findLast[n | n.startsWith(MOVE + SOURCE + source.UUID)]
 		val oldParent = source.parent
+		
+		if(previousMove !== null) {
+			logger.log.remove(previousMove)
+			
+			val originalParentUuid = trackingTreeRoot.allChildren.findFirst[n | n.UUID == source.UUID].parent.UUID
+			// A move back (target parent == original source parent) kills a previous move
+			if(originalParentUuid != targetParent.UUID) {
+				// If the node was already moved then the target of the previous move operation is replaced by a new one
+				// move (a,b) + move (a,c) --> move (a,c)
+				logger.logRaw(MOVE + SOURCE + source.UUID + TARGET + targetParent.UUID)
+			}
+			
+		} else {
+			// A move to the current parent should not be logged
+			if(oldParent.UUID != targetParent.UUID) {
+				logger.logRaw(MOVE + SOURCE + source.UUID + TARGET + targetParent.UUID)
+			}
+		}
+		
+		// Apply operation on tree
 		oldParent.children.remove(source)
 		targetParent.addChild(source)
 		source.parent = targetParent
+		
 		return source
 	}
 	
@@ -85,17 +110,36 @@ class CloneHelper {
 	 * @return the moved Node
 	 */
 	def move(Node source, int targetIndex) {
-		
+		// Invariant at most one movepos per source		
+		val previousMovePos = logger.log.findLast[n | n.startsWith(MOVEPOS + SOURCE + source.UUID)]
 		val parent = source.parent
 		var index = targetIndex
+		var previousIndex = parent.children.indexOf(source)
 		
 		if (targetIndex < 0 || targetIndex > parent.numberOfChildren-1 ) {
 			System.err.println("Error while moving node position: Appending node to the end")
 			index = parent.numberOfChildren-1
 		}
 		
-		logger.logRaw(MOVEPOS + SOURCE + source.UUID + INDEX + index)
+		if(previousMovePos !== null) {
+			logger.log.remove(previousMovePos)
+			
+			val originalSource = trackingTreeRoot.allChildren.findFirst[n | n.UUID == source.UUID]
+			val originalIndex = originalSource.parent.children.indexOf(originalSource)
+			// A move back (target index == original source index) kills a previous move
+			if(originalIndex != index) {
+				// If the node was already moved then the index of the previous movepos operation is replaced by a new one
+				logger.logRaw(MOVEPOS + SOURCE + source.UUID + FROM + originalIndex + TO + index)
+			}
+			
+		} else {
+			// A move to the current index should not be logged
+			if(previousIndex != index) {
+				logger.logRaw(MOVEPOS + SOURCE + source.UUID + FROM + previousIndex + TO + index)
+			}
+		}
 		
+		// Apply operation on tree
 		parent.children.remove(source)
 		parent.children.add(index, source)
 		
@@ -144,9 +188,16 @@ class CloneHelper {
 	 * @param source Node to be removed
 	 */
 	private def _delete(Node source) {
+		
+		// Delete invalidates all actions on nodes that are deleted (except clone operations)
+		logger.deleteLogsContainingString(source.UUID.toString)
 		logger.logRaw(DELETE + TARGET + source.UUID)
+		
 		source.allChildren.forEach[
-			c | logger.logRaw(DELETE + TARGET + c.UUID)
+			c | 
+			// Delete invalidates all actions on nodes that are deleted (except clone operations)
+			logger.deleteLogsContainingString(c.UUID.toString);
+			logger.logRaw(DELETE + TARGET + c.UUID);
 		]
 	}
 	
@@ -234,7 +285,28 @@ class CloneHelper {
 	// Attribute Value Helpers
 	
 	def setAttributeValue(Node node, String attributeKey, String newValue) {
-		logger.logRaw(SETATTR + TARGET + node.UUID + KEY + attributeKey + FROM + node.getAttributeValue(attributeKey) + TO + newValue)
+		// Invariant at most one set per source	+ key combination
+		val previousSetAttr = logger.log.findLast[n | n.startsWith(SETATTR + TARGET + node.UUID + KEY + attributeKey)]
+		
+		if(previousSetAttr !== null) {
+			logger.log.remove(previousSetAttr)
+			
+			val originaNode = trackingTreeRoot.allChildren.findFirst[n | n.UUID == node.UUID]		
+			val originalValue = originaNode.getAttributeValue(attributeKey)
+			
+			// A move back (new value == original value) kills a previous move
+			if(originalValue != newValue) {
+				// If the attribute was already set then the value is changed
+				logger.logRaw(SETATTR + TARGET + node.UUID + KEY + attributeKey + FROM + originalValue + TO + newValue)
+			}
+		} else {
+			// A change to the current value should not be logged
+			if(node.getAttributeValue(attributeKey) != newValue) {
+				logger.logRaw(SETATTR + TARGET + node.UUID + KEY + attributeKey + FROM + node.getAttributeValue(attributeKey) + TO + newValue)
+			}
+		}
+		
+		// Apply operation on tree
 		node.getAttributeForKey(attributeKey).attributeValues.head.value = newValue
 	}
 	
