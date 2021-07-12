@@ -85,6 +85,7 @@ public class SortingMatcher extends AbstractMatcher {
 	/**
 	 * This method sorts a list of comparisons by their similarity values descending
 	 */
+	@Override
 	public <K> void sortBySimilarityDesc(List<Comparison<K>> comparisons) {
 		comparisons.sort((first, second) -> {
 			//Multiply with -1 to sort descending 

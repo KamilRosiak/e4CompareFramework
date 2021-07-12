@@ -14,7 +14,6 @@ import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFiles;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
@@ -26,6 +25,8 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.graph.artifact_graph.ArtifactGraphFactory;
+import de.tu_bs.cs.isf.e4cf.graph.core.string_table.GraphEvents;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -83,8 +84,15 @@ public class CompareEngineView implements Initializable {
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
-				Tree mergedTree = engine.compare(artifacts);
+				Tree mergedTree = engine.compare(artifacts, false);
 				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
+				
+				// Create graph for artifacts 
+				ArtifactGraphFactory artifactGraph = new ArtifactGraphFactory(engine.artifactComparisonList);
+				artifactGraph.createNodesAndGraph();
+				artifactGraph.sortBySimilarityValues();
+				services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMap);
+				
 				//JavaWriter writer = new JavaWriter();
 				//writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
 					//	+ "/" + mergedTree.getTreeName());	

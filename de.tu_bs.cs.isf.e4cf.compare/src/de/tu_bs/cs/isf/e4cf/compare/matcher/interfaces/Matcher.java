@@ -20,6 +20,11 @@ public interface Matcher {
     public <K> void calculateMatching(List<Comparison<K>> comparisons);
     
     /**
+	 * This method sorts a list of comparisons by their similarity values descending
+	 */
+	public <K> void sortBySimilarityDesc(List<Comparison<K>> comparisons);
+	
+    /**
      * Returns the name of the matching approach
      */
     public String getMatcherName();

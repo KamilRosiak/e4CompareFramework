@@ -1,7 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
@@ -9,6 +12,8 @@ import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.graph.artifact_graph.ArtifactComparison;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.ICompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
@@ -25,10 +30,15 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	private Metric metric;
 	private Matcher matcher;
 
+	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
+
 	public CompareEngineHierarchical(Matcher selectedMatcher, Metric selectedMetric) {
 		this.metric = selectedMetric;
 		this.matcher = selectedMatcher;
 	}
+
+	@Inject
+	ServiceContainer services;
 
 	@Override
 	public Tree compare(Tree first, Tree second) {
@@ -38,7 +48,10 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			// match
 			root.updateSimilarity();
 			getMatcher().calculateMatching(root);
+			//getMatcher().sortBySimilarityDesc(artifactComparisonList);
 			root.updateSimilarity();
+			// Add Comparison to List for GrahView
+			AddArtifactComparisonsForGraph(root, first.getTreeName(), second.getTreeName());
 			// Merge
 			Node mergedRoot = root.mergeArtifacts();
 
@@ -47,6 +60,11 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public void AddArtifactComparisonsForGraph(NodeComparison artifactComparison,
+			String leftArtifactName, String rightArtifactName) {
+		artifactComparisonList.add(new ArtifactComparison(artifactComparison, leftArtifactName, rightArtifactName));
 	}
 
 	@Override
@@ -61,6 +79,27 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 				mergedTree = compare(mergedTree, variant);
 			}
 		}
+		return mergedTree;
+	}
+
+	@Override
+	public Tree compare(List<Tree> variants, boolean mergeCompare) {
+		Iterator<Tree> variantIterator = variants.iterator();
+		Tree mergedTree = null;
+		if (mergeCompare) {
+			compare(variants);
+		} else {
+			List<Tree> variantsDuplicate = variants;
+			
+			variants.stream().forEach(artifactLeft -> {
+				variantsDuplicate.stream().forEach(artifactRight -> {
+					if (artifactLeft != artifactRight) {
+						compare(artifactLeft, artifactRight);
+					}
+				});
+			});
+		}
+
 		return mergedTree;
 	}
 
