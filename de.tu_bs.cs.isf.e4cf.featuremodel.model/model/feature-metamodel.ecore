@@ -57,5 +57,11 @@
   <eClassifiers xsi:type="ecore:EClass" name="ComponentFeature" eSuperTypes="#//Feature">
     <eStructuralFeatures xsi:type="ecore:EReference" name="featurediagramm" lowerBound="1"
         eType="#//FeatureDiagramm" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="configurationfeature" upperBound="-1"
+        eType="#//ConfigurationFeature" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigurationFeature" eSuperTypes="#//Feature">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="configurationfeature" lowerBound="1"
+        eType="ecore:EClass feature_configuration.ecore#//FeatureConfiguration"/>
   </eClassifiers>
 </ecore:EPackage>

@@ -3,16 +3,21 @@
 package FeatureDiagram.impl;
 
 import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.FeatureDiagramPackage;
 import FeatureDiagram.FeatureDiagramm;
 
+import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,6 +28,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * </p>
  * <ul>
  *   <li>{@link FeatureDiagram.impl.ComponentFeatureImpl#getFeaturediagramm <em>Featurediagramm</em>}</li>
+ *   <li>{@link FeatureDiagram.impl.ComponentFeatureImpl#getConfigurationfeature <em>Configurationfeature</em>}</li>
  * </ul>
  *
  * @generated
@@ -37,6 +43,16 @@ public class ComponentFeatureImpl extends FeatureImpl implements ComponentFeatur
 	 * @ordered
 	 */
 	protected FeatureDiagramm featurediagramm;
+
+	/**
+	 * The cached value of the '{@link #getConfigurationfeature() <em>Configurationfeature</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getConfigurationfeature()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<ConfigurationFeature> configurationfeature;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -108,10 +124,25 @@ public class ComponentFeatureImpl extends FeatureImpl implements ComponentFeatur
 	 * @generated
 	 */
 	@Override
+	public EList<ConfigurationFeature> getConfigurationfeature() {
+		if (configurationfeature == null) {
+			configurationfeature = new EObjectContainmentEList<ConfigurationFeature>(ConfigurationFeature.class, this, FeatureDiagramPackage.COMPONENT_FEATURE__CONFIGURATIONFEATURE);
+		}
+		return configurationfeature;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				return basicSetFeaturediagramm(null, msgs);
+			case FeatureDiagramPackage.COMPONENT_FEATURE__CONFIGURATIONFEATURE:
+				return ((InternalEList<?>)getConfigurationfeature()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -126,6 +157,8 @@ public class ComponentFeatureImpl extends FeatureImpl implements ComponentFeatur
 		switch (featureID) {
 			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				return getFeaturediagramm();
+			case FeatureDiagramPackage.COMPONENT_FEATURE__CONFIGURATIONFEATURE:
+				return getConfigurationfeature();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -135,11 +168,16 @@ public class ComponentFeatureImpl extends FeatureImpl implements ComponentFeatur
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				setFeaturediagramm((FeatureDiagramm)newValue);
+				return;
+			case FeatureDiagramPackage.COMPONENT_FEATURE__CONFIGURATIONFEATURE:
+				getConfigurationfeature().clear();
+				getConfigurationfeature().addAll((Collection<? extends ConfigurationFeature>)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -156,6 +194,9 @@ public class ComponentFeatureImpl extends FeatureImpl implements ComponentFeatur
 			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				setFeaturediagramm((FeatureDiagramm)null);
 				return;
+			case FeatureDiagramPackage.COMPONENT_FEATURE__CONFIGURATIONFEATURE:
+				getConfigurationfeature().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -170,6 +211,8 @@ public class ComponentFeatureImpl extends FeatureImpl implements ComponentFeatur
 		switch (featureID) {
 			case FeatureDiagramPackage.COMPONENT_FEATURE__FEATUREDIAGRAMM:
 				return featurediagramm != null;
+			case FeatureDiagramPackage.COMPONENT_FEATURE__CONFIGURATIONFEATURE:
+				return configurationfeature != null && !configurationfeature.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

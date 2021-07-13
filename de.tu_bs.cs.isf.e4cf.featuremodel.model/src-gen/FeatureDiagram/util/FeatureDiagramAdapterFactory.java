@@ -88,6 +88,10 @@ public class FeatureDiagramAdapterFactory extends AdapterFactoryImpl {
 				return createComponentFeatureAdapter();
 			}
 			@Override
+			public Adapter caseConfigurationFeature(ConfigurationFeature object) {
+				return createConfigurationFeatureAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -174,6 +178,20 @@ public class FeatureDiagramAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createComponentFeatureAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link FeatureDiagram.ConfigurationFeature <em>Configuration Feature</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see FeatureDiagram.ConfigurationFeature
+	 * @generated
+	 */
+	public Adapter createConfigurationFeatureAdapter() {
 		return null;
 	}
 

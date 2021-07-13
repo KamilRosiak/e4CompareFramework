@@ -503,13 +503,22 @@ public interface FeatureDiagramPackage extends EPackage {
 	int COMPONENT_FEATURE__FEATUREDIAGRAMM = FEATURE_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Configurationfeature</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPONENT_FEATURE__CONFIGURATIONFEATURE = FEATURE_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Component Feature</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPONENT_FEATURE_FEATURE_COUNT = FEATURE_FEATURE_COUNT + 1;
+	int COMPONENT_FEATURE_FEATURE_COUNT = FEATURE_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>Component Feature</em>' class.
@@ -519,6 +528,152 @@ public interface FeatureDiagramPackage extends EPackage {
 	 * @ordered
 	 */
 	int COMPONENT_FEATURE_OPERATION_COUNT = FEATURE_OPERATION_COUNT + 0;
+
+
+	/**
+	 * The meta object id for the '{@link FeatureDiagram.impl.ConfigurationFeatureImpl <em>Configuration Feature</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see FeatureDiagram.impl.ConfigurationFeatureImpl
+	 * @see FeatureDiagram.impl.FeatureDiagramPackageImpl#getConfigurationFeature()
+	 * @generated
+	 */
+	int CONFIGURATION_FEATURE = 5;
+
+	/**
+	 * The feature id for the '<em><b>Children</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__CHILDREN = FEATURE__CHILDREN;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__NAME = FEATURE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Description</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__DESCRIPTION = FEATURE__DESCRIPTION;
+
+	/**
+	 * The feature id for the '<em><b>Mandatory</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__MANDATORY = FEATURE__MANDATORY;
+
+	/**
+	 * The feature id for the '<em><b>Alternative</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__ALTERNATIVE = FEATURE__ALTERNATIVE;
+
+	/**
+	 * The feature id for the '<em><b>Or</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__OR = FEATURE__OR;
+
+	/**
+	 * The feature id for the '<em><b>Graphicalfeature</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__GRAPHICALFEATURE = FEATURE__GRAPHICALFEATURE;
+
+	/**
+	 * The feature id for the '<em><b>Parent</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__PARENT = FEATURE__PARENT;
+
+	/**
+	 * The feature id for the '<em><b>Identifier</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__IDENTIFIER = FEATURE__IDENTIFIER;
+
+	/**
+	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__ABSTRACT = FEATURE__ABSTRACT;
+
+	/**
+	 * The feature id for the '<em><b>Hidden</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__HIDDEN = FEATURE__HIDDEN;
+
+	/**
+	 * The feature id for the '<em><b>Artifact References</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__ARTIFACT_REFERENCES = FEATURE__ARTIFACT_REFERENCES;
+
+	/**
+	 * The feature id for the '<em><b>Configurationfeature</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE__CONFIGURATIONFEATURE = FEATURE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Configuration Feature</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE_FEATURE_COUNT = FEATURE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>Configuration Feature</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CONFIGURATION_FEATURE_OPERATION_COUNT = FEATURE_OPERATION_COUNT + 0;
 
 
 	/**
@@ -836,6 +991,38 @@ public interface FeatureDiagramPackage extends EPackage {
 	EReference getComponentFeature_Featurediagramm();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link FeatureDiagram.ComponentFeature#getConfigurationfeature <em>Configurationfeature</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Configurationfeature</em>'.
+	 * @see FeatureDiagram.ComponentFeature#getConfigurationfeature()
+	 * @see #getComponentFeature()
+	 * @generated
+	 */
+	EReference getComponentFeature_Configurationfeature();
+
+	/**
+	 * Returns the meta object for class '{@link FeatureDiagram.ConfigurationFeature <em>Configuration Feature</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Configuration Feature</em>'.
+	 * @see FeatureDiagram.ConfigurationFeature
+	 * @generated
+	 */
+	EClass getConfigurationFeature();
+
+	/**
+	 * Returns the meta object for the reference '{@link FeatureDiagram.ConfigurationFeature#getConfigurationfeature <em>Configurationfeature</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Configurationfeature</em>'.
+	 * @see FeatureDiagram.ConfigurationFeature#getConfigurationfeature()
+	 * @see #getConfigurationFeature()
+	 * @generated
+	 */
+	EReference getConfigurationFeature_Configurationfeature();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1099,6 +1286,32 @@ public interface FeatureDiagramPackage extends EPackage {
 		 * @generated
 		 */
 		EReference COMPONENT_FEATURE__FEATUREDIAGRAMM = eINSTANCE.getComponentFeature_Featurediagramm();
+
+		/**
+		 * The meta object literal for the '<em><b>Configurationfeature</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPONENT_FEATURE__CONFIGURATIONFEATURE = eINSTANCE.getComponentFeature_Configurationfeature();
+
+		/**
+		 * The meta object literal for the '{@link FeatureDiagram.impl.ConfigurationFeatureImpl <em>Configuration Feature</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see FeatureDiagram.impl.ConfigurationFeatureImpl
+		 * @see FeatureDiagram.impl.FeatureDiagramPackageImpl#getConfigurationFeature()
+		 * @generated
+		 */
+		EClass CONFIGURATION_FEATURE = eINSTANCE.getConfigurationFeature();
+
+		/**
+		 * The meta object literal for the '<em><b>Configurationfeature</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference CONFIGURATION_FEATURE__CONFIGURATIONFEATURE = eINSTANCE.getConfigurationFeature_Configurationfeature();
 
 	}
 

@@ -2,6 +2,8 @@
  */
 package FeatureDiagram;
 
+import org.eclipse.emf.common.util.EList;
+
 
 /**
  * <!-- begin-user-doc -->
@@ -13,6 +15,7 @@ package FeatureDiagram;
  * </p>
  * <ul>
  *   <li>{@link FeatureDiagram.ComponentFeature#getFeaturediagramm <em>Featurediagramm</em>}</li>
+ *   <li>{@link FeatureDiagram.ComponentFeature#getConfigurationfeature <em>Configurationfeature</em>}</li>
  * </ul>
  *
  * @see FeatureDiagram.FeatureDiagramPackage#getComponentFeature()
@@ -41,5 +44,17 @@ public interface ComponentFeature extends Feature {
 	 * @generated
 	 */
 	void setFeaturediagramm(FeatureDiagramm value);
+
+	/**
+	 * Returns the value of the '<em><b>Configurationfeature</b></em>' containment reference list.
+	 * The list contents are of type {@link FeatureDiagram.ConfigurationFeature}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Configurationfeature</em>' containment reference list.
+	 * @see FeatureDiagram.FeatureDiagramPackage#getComponentFeature_Configurationfeature()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<ConfigurationFeature> getConfigurationfeature();
 
 } // ComponentFeature
