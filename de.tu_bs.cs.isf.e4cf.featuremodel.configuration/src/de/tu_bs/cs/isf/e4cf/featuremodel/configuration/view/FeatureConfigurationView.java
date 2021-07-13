@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
 
@@ -30,6 +29,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 
 public class FeatureConfigurationView {
@@ -75,14 +75,21 @@ public class FeatureConfigurationView {
 
 		// create a list of available configurations
 		configTable = new TableView<FeatureConfiguration>();
+		configTable.setEditable(true);
 		TableColumn<FeatureConfiguration, String> configCol = new TableColumn<FeatureConfiguration, String>("Name");
+		configCol.setEditable(true);
+		configCol.setCellFactory(TextFieldTableCell.<FeatureConfiguration>forTableColumn());
 		configCol.setCellValueFactory(new PropertyValueFactory<FeatureConfiguration, String>("name"));
+		configCol.setOnEditCommit(event -> {
+			event.getRowValue().setName(event.getNewValue());
+			event.consume();
+		});
 		configTable.getColumns().add(configCol);
 		configTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		configTable.setRowFactory(row -> {
 			TableRow<FeatureConfiguration> configRow = new TableRow<>();
 			configRow.setOnMouseClicked(event -> {
-				if (event.getClickCount() == 2 && !configRow.isEmpty()) {
+				if (event.isShiftDown() && event.getClickCount() == 1 && !configRow.isEmpty()) {
 					FeatureConfiguration config = configRow.getItem();
 					refreshView(config);
 				}

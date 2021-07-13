@@ -239,7 +239,7 @@ public class FeatureModelEditorView {
 			fxFeature.toFront();
 			if (fxFeature.getFeature() instanceof ComponentFeature) {
 				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
-				fxFeature.addConfigLabel("Select configuration");
+				fxFeature.addConfigLabel("Add configuration");
 			}
 		}
 

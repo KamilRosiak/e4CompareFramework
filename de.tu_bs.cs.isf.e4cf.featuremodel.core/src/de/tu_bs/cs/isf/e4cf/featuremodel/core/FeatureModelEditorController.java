@@ -361,10 +361,10 @@ public class FeatureModelEditorController {
         	Rectangle2D primaryScreenBounds = Screen.getPrimary().getBounds();
 			Double x = primaryScreenBounds.getWidth() * .5 - dialog.getDialog().getWidth() * .5;
 			Double y = primaryScreenBounds.getHeight() * .5 - dialog.getDialog().getHeight() * .5;
-        	FeatureConfiguration selectedConfig = dialog.show(x, y);
+        	List<FeatureConfiguration> selectedConfig = dialog.show(x, y);
         	if (selectedConfig != null) {
         		Label configLabel = (Label) fxGraFeature.getChildren().get(fxGraFeature.getChildren().size() - 1);
-            	configLabel.setText(selectedConfig.getName());
+            	configLabel.setText(selectedConfig.get(1).getName());
         	}
         	
 		} catch (Exception e) {

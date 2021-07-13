@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs;
 
+import java.util.List;
 import java.util.Optional;
 
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
@@ -10,6 +11,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -17,13 +19,13 @@ import javafx.stage.Window;
 import javafx.util.Callback;
 
 public class FMESetConfigurationDialog {
-    private Dialog<FeatureConfiguration> dialog;
+    private Dialog<List<FeatureConfiguration>> dialog;
 	
 	public FMESetConfigurationDialog(String dialogTitle, FeatureDiagram fd) {
 		createDialog(dialogTitle, fd);
 	}
 	
-	public Dialog<FeatureConfiguration> getDialog() {
+	public Dialog<List<FeatureConfiguration>> getDialog() {
 		return dialog;
 	}
 
@@ -42,6 +44,7 @@ public class FMESetConfigurationDialog {
 //		configTable.getItems().setAll(fd.getFeatureConfiguration());
 		
 		ListView<FeatureConfiguration> configList = new ListView<>();
+		configList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		configList.setCellFactory(param -> new ListCell<FeatureConfiguration>() {
 			@Override
 			protected void updateItem(FeatureConfiguration item, boolean empty) {
@@ -62,28 +65,28 @@ public class FMESetConfigurationDialog {
 		
 	}
 
-    public FeatureConfiguration show(double x, double y) {
+    public List<FeatureConfiguration> show(double x, double y) {
 		Window dialogWindow = dialog.getDialogPane().getScene().getWindow();
 		Scene scene = dialog.getDialogPane().getScene();
 		dialogWindow.setX(x);
 		dialogWindow.setY(y);
 		
-		dialog.setResultConverter(new Callback<ButtonType, FeatureConfiguration>() {
+		dialog.setResultConverter(new Callback<ButtonType, List<FeatureConfiguration>>() {
 
 			@Override
-			public FeatureConfiguration call(ButtonType button) {
+			public List<FeatureConfiguration> call(ButtonType button) {
 				if (button == ButtonType.OK) {
 					ScrollPane spane = (ScrollPane) dialog.getDialogPane().getContent();
-					FeatureConfiguration fc = ((ListView<FeatureConfiguration>) spane.getContent()).getSelectionModel().getSelectedItem();
+					List<FeatureConfiguration> fc = ((ListView<FeatureConfiguration>) spane.getContent()).getSelectionModel().getSelectedItems();
 					return fc;
 				}
 				return null;
 			}
 			
 		});
-		Optional<FeatureConfiguration> result = dialog.showAndWait();
+		Optional<List<FeatureConfiguration>> result = dialog.showAndWait();
 		if (result.isPresent()) {
-			return dialog.getResult();
+			return result.get();
 		}
 		return null;
 	}
