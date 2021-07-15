@@ -47,6 +47,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactor
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FeatureModelEditorToolbar;
+import featureConfiguration.FeatureConfiguration;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.input.KeyEvent;
@@ -242,7 +243,6 @@ public class FeatureModelEditorView {
 			fxFeature.toFront();
 			if (fxFeature.getFeature() instanceof ComponentFeature) {
 				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
-				fxFeature.addConfigLabel("Add configuration");
 			}
 		}
 
@@ -407,7 +407,7 @@ public class FeatureModelEditorView {
 				newFeature = createComponentFeatureFX(parent, false, xPos, yPos);
 				break;
 			case FDStringTable.CONFIGURATIONFEATURE:
-				newFeature = createConfigurationFeatureFX(parent, false, xPos, yPos);
+				newFeature = createConfigurationFeatureFX(parent, true, xPos, yPos);
 				break;
 			default:
 				throw new IllegalArgumentException("Wrong type");
@@ -416,6 +416,15 @@ public class FeatureModelEditorView {
 		return newFeature;
 	}
 
+	public FXGraphicalFeature addConfigurationBelow(Pair<FeatureConfiguration, FXGraphicalFeature> pair) {
+
+		FXGraphicalFeature fx = addFeatureBelow(new Pair<String, FXGraphicalFeature>(FDStringTable.CONFIGURATIONFEATURE, pair.getValue()));
+		ConfigurationFeature configFeature = (ConfigurationFeature) fx.getFeature();
+		configFeature.setConfigurationfeature(pair.getKey());
+		fx.rename(pair.getKey().getName());
+		return fx;
+	}
+	
 //	public FXGraphicalFeature addComponentFeatureBelow(FXGraphicalFeature parent) {
 //		services.eventBroker.send(FDEventTable.LOGGER_ADD_COMPONENTFEATURE_BELOW, parent);
 //		// create new feature and add under the parent
@@ -442,9 +451,6 @@ public class FeatureModelEditorView {
 		
 		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);
 		// create graphical feature and set parent
-		if (newFeature instanceof ComponentFeature) {
-			newGraFeature.addConfigLabel("Select configuration");
-		}
 		newGraFeature.setParentFxFeature(parent);
 		parent.addChildFeatureFormated(newGraFeature);
 
@@ -741,7 +747,7 @@ public class FeatureModelEditorView {
 
 	public FXGraphicalFeature createComponentFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
 		ComponentFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createComponentFeature();
-		createNewFeature(feature, "NewComponentFeature_" + currentModel.getIdentifierIncrement(), isRoot, x, y);
+		createNewFeature(feature, "NewComponentFeature_" + currentModel.getIdentifierIncrement(), true, x, y);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 		componentFeatureList.add(newGraFeature);
@@ -1187,4 +1193,5 @@ public class FeatureModelEditorView {
 			}
 		}
 	}
+
 }

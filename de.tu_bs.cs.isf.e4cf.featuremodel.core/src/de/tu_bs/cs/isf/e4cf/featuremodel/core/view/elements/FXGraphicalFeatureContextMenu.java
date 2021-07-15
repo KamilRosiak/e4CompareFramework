@@ -55,7 +55,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	private void createComponentControl() {
 		this.getItems().add(loadComponentFeatureDiagram());
 		this.getItems().add(createComponentFeatureConfiguration());
-		this.getItems().add(setConfiguration());
+		this.getItems().add(selectConfigurations());
 		this.getItems().add(removeFeatureMenuItem());		
 
 		this.getItems().add(new SeparatorMenuItem());
@@ -63,7 +63,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(setDescription());
 	}
 	
-	private MenuItem setConfiguration() {
+	private MenuItem selectConfigurations() {
 		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_SET_CONFIGURATION);
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override

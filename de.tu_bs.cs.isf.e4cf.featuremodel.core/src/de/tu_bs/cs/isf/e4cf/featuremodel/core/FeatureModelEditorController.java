@@ -156,7 +156,12 @@ public class FeatureModelEditorController {
 		try {
 			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.loadFeatureDiagram(filepath));
 			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
-			fxGraFeature.setName(featureDiagram.getRoot().getName());
+			((ComponentFeature) fxGraFeature.getFeature()).getChildren().clear();
+			List<FXGraphicalFeature> temp = new ArrayList<FXGraphicalFeature>(fxGraFeature.getChildFeatures());
+			for(FXGraphicalFeature child: temp) {
+				getCurrentView().removeFeature(child, false, false, false);
+			};
+			fxGraFeature.rename(featureDiagram.getRoot().getName());
 			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
 			// showConstraintView();
 		} catch (IllegalArgumentException e) {
@@ -363,10 +368,12 @@ public class FeatureModelEditorController {
 			Double x = primaryScreenBounds.getWidth() * .5 - dialog.getDialog().getWidth() * .5;
 			Double y = primaryScreenBounds.getHeight() * .5 - dialog.getDialog().getHeight() * .5;
         	List<FeatureConfiguration> selectedConfig = dialog.show(x, y);
-        	if (selectedConfig != null) {
-        		Label configLabel = (Label) fxGraFeature.getChildren().get(fxGraFeature.getChildren().size() - 1);
-            	configLabel.setText(selectedConfig.get(1).getName());
-        	}
+			if (selectedConfig != null) {
+				selectedConfig.forEach(config -> {
+					getCurrentView().addConfigurationBelow(new Pair<FeatureConfiguration, FXGraphicalFeature>(config, fxGraFeature));
+				});
+			} 
+        	
         	
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
