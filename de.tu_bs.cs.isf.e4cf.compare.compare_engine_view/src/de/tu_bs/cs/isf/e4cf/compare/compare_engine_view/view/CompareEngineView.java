@@ -1,9 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.view;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.inject.Inject;
 
@@ -15,7 +18,6 @@ import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFile
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -39,6 +41,8 @@ import javafx.scene.image.ImageView;
 public class CompareEngineView implements Initializable {
 	public static final int NAME_COLUMN_WIDTH_PERCENT = 60;
 	public static final int TYPE_COLUMN_WIDTH_PERCENT = 40;
+	
+	public List<Path> allArtifactPaths = new ArrayList<Path>();
 
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
@@ -84,14 +88,19 @@ public class CompareEngineView implements Initializable {
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
-				Tree mergedTree = engine.compare(artifacts, false);
-				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
+//				Tree mergedTree = engine.compare(artifacts);
+//				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
 				
 				// Create graph for artifacts 
+				engine.compare(artifacts, false);
 				ArtifactGraphFactory artifactGraph = new ArtifactGraphFactory(engine.artifactComparisonList);
-				artifactGraph.createNodesAndGraph();
-				artifactGraph.sortBySimilarityValues();
-				services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMap);
+				artifactGraph.deriveArtifactDetails(allArtifactPaths);
+				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
+				// artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
+
+				//artifactGraph.createNodesAndGraph();
+				//artifactGraph.sortBySimilarityValues();
+				services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMap); // Send prepared graph to GraphView listener for display
 				
 				//JavaWriter writer = new JavaWriter();
 				//writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
@@ -104,6 +113,34 @@ public class CompareEngineView implements Initializable {
 	}
 
 	/**
+	 * Compares Artifacts for Taxonomy computation
+	 */
+	@FXML
+	public void compareArtifactsForTaxonomy() {
+		try {
+			CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
+			List<Tree> artifacts = artifactTable.getItems();
+
+			if (artifacts.size() > 1) {
+				// Create graph for artifacts 
+				engine.compare(artifacts, false);
+				ArtifactGraphFactory artifactGraph = new ArtifactGraphFactory(engine.artifactComparisonList);
+				artifactGraph.deriveArtifactDetails(allArtifactPaths);
+				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
+				// artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
+
+				services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMap); // Send prepared graph to GraphView listener for display
+				
+				//JavaWriter writer = new JavaWriter();
+				//writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+					//	+ "/" + mergedTree.getTreeName());	
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * Add a list of artifacts to the list
 	 */
 	@FXML
@@ -111,9 +148,19 @@ public class CompareEngineView implements Initializable {
 		List<FileTreeElement> parsedFiles = JavaFXBuilder
 				.createFileChooser(RCPContentProvider.getCurrentWorkspacePath(), "Select More Artifacts").stream()
 				.map(file -> new File(file.getAbsolutePath())).collect(Collectors.toList());
+		collectParsedFilePaths(parsedFiles);
 		artifactTable.getItems().addAll(ArtifactIOUtil.parseArtifacts(parsedFiles));
 	}
-
+	
+	/**
+	 * Add a all selected artifacts to List
+	 */
+	public void collectParsedFilePaths(List<FileTreeElement> parsedFiles) {
+		for (FileTreeElement parsedFile: parsedFiles) {
+			allArtifactPaths.add(Paths.get(parsedFile.getAbsolutePath()));
+		}
+	}
+	
 	/**
 	 * Removes all selected artifacts from the artifact list.
 	 */

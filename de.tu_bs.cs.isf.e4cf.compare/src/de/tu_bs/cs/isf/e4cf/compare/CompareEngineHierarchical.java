@@ -29,6 +29,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	private StringComparator defaultComparator = new StringComparator();
 	private Metric metric;
 	private Matcher matcher;
+	private boolean mergeCompare = true;
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
@@ -48,12 +49,18 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			// match
 			root.updateSimilarity();
 			getMatcher().calculateMatching(root);
-			//getMatcher().sortBySimilarityDesc(artifactComparisonList);
+			// getMatcher().sortBySimilarityDesc(artifactComparisonList);
 			root.updateSimilarity();
-			// Add Comparison to List for GrahView
-			AddArtifactComparisonsForGraph(root, first.getTreeName(), second.getTreeName());
+
+//			// Add Comparison to List for GrahView
+//			if (!mergeCompare) {
+//			addArtifactComparisonsForGraph(root, first.getTreeName(), second.getTreeName());
+//			}
+
+			System.out.println(root.getSimilarity());
 			// Merge
 			Node mergedRoot = root.mergeArtifacts();
+			System.out.println(root.getSimilarity());
 
 			return new TreeImpl(first, second, mergedRoot);
 		} catch (Exception e) {
@@ -62,8 +69,8 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		return null;
 	}
 
-	public void AddArtifactComparisonsForGraph(NodeComparison artifactComparison,
-			String leftArtifactName, String rightArtifactName) {
+	public void addArtifactComparisonsForGraph(NodeComparison artifactComparison, String leftArtifactName,
+			String rightArtifactName) {
 		artifactComparisonList.add(new ArtifactComparison(artifactComparison, leftArtifactName, rightArtifactName));
 	}
 
@@ -83,18 +90,27 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	}
 
 	@Override
-	public Tree compare(List<Tree> variants, boolean mergeCompare) {
+	public Tree compare(List<Tree> variants, boolean _mergeCompare) {
 		Iterator<Tree> variantIterator = variants.iterator();
 		Tree mergedTree = null;
+		this.mergeCompare = _mergeCompare;
 		if (mergeCompare) {
 			compare(variants);
 		} else {
-			List<Tree> variantsDuplicate = variants;
 			
 			variants.stream().forEach(artifactLeft -> {
-				variantsDuplicate.stream().forEach(artifactRight -> {
+				variants.stream().forEach(artifactRight -> {
 					if (artifactLeft != artifactRight) {
-						compare(artifactLeft, artifactRight);
+						// Add Comparison to List for GrahView
+						if (!mergeCompare) {
+							NodeComparison root = compare(artifactLeft.getRoot(), artifactRight.getRoot());
+							root.updateSimilarity();
+							getMatcher().calculateMatching(root);
+							root.updateSimilarity();
+							addArtifactComparisonsForGraph(root, artifactLeft.getTreeName(),
+									artifactRight.getTreeName());
+						}
+						;
 					}
 				});
 			});
