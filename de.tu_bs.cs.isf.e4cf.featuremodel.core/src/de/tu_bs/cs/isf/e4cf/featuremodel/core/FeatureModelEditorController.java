@@ -219,11 +219,12 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject
-	public void addCompoundFeatureBelow(@UIEventTopic(FDEventTable.ADD_COMPONENTFEATURE) FXGraphicalFeature parentFeature) {
+	public void addCompoundFeatureBelow(@UIEventTopic(FDEventTable.ADD_COMPONENTFEATURE) Pair<String, FXGraphicalFeature> pair) {
 		try {
-			getCurrentView().addComponentFeatureBelow(parentFeature);
+			getCurrentView().addFeatureBelow(pair);
+//			getCurrentView().addComponentFeatureBelow(parentFeature);
 		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_COMPONENTFEATURE, e.getMessage());
+			FeatureModelViewError error = new FeatureModelViewError(pair.getValue(), FDEventTable.ADD_COMPONENTFEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
@@ -241,11 +242,11 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void addFeatureBelow(@UIEventTopic(FDEventTable.ADD_FEATURE_BELOW) FXGraphicalFeature parentFeature) {
+	public void addFeatureBelow(@UIEventTopic(FDEventTable.ADD_FEATURE_BELOW) Pair<String, FXGraphicalFeature> pair) {
 		try {
-			getCurrentView().addFeatureBelow(parentFeature);
+			getCurrentView().addFeatureBelow(pair);
 		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_FEATURE_BELOW, e.getMessage());
+			FeatureModelViewError error = new FeatureModelViewError(pair.getValue(), FDEventTable.ADD_FEATURE_BELOW, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}

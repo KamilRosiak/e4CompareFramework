@@ -42,7 +42,13 @@ public class FDStringTable {
 	public static final String FME_THEME_EXTENSION = "de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorTheme";
 	public static final String FME_THEME_ATTR = "theme_attr";
 	
-
+	/**
+	 * Feature Types
+	 */
+	public static final String FEATURE = "Feature";
+	public static final String COMPONENTFEATURE = "ComponentFeature";
+	public static final String CONFIGURATIONFEATURE = "ConfigurationFeature";
+	
 	/**
 	 * Graphical Feature context menu constants.
 	 */

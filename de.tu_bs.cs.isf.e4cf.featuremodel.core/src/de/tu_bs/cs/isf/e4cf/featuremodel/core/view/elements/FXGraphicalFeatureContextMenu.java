@@ -7,14 +7,12 @@ import FeatureDiagram.ComponentFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.stage.Screen;
+import javafx.util.Pair;
 
 public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	private IEventBroker eventBroker;
@@ -111,7 +109,8 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.ADD_COMPONENTFEATURE, fxGraFeature);	
+            	Pair<String, FXGraphicalFeature> pair = new Pair<String, FXGraphicalFeature>(FDStringTable.COMPONENTFEATURE, fxGraFeature);
+            	eventBroker.send(FDEventTable.ADD_COMPONENTFEATURE, pair);	
             	event.consume();
             }
         });
@@ -137,7 +136,8 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.ADD_FEATURE_BELOW, fxGraFeature);	
+            	Pair<String, FXGraphicalFeature> pair = new Pair<String, FXGraphicalFeature>(FDStringTable.FEATURE, fxGraFeature);
+            	eventBroker.send(FDEventTable.ADD_FEATURE_BELOW, pair);	
             	event.consume();
             }
         });

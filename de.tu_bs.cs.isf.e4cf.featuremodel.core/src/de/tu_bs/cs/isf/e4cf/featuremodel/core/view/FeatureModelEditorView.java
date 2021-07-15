@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.GraphicalFeature;
@@ -56,6 +57,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Pair;
 
 /**
  * This class represents the view of the MVC implementation it represents the
@@ -214,9 +216,10 @@ public class FeatureModelEditorView {
 	}
 
 	private FeatureDiagram initFeatureDiagram(FeatureDiagram diagram) {		
-		Feature root = createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true);
-		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
-		root.getGraphicalfeature().setY(this.root.getHeight() / 2); // before: maxWidth
+		Feature root = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true, 
+				this.root.getWidth() / 2, this.root.getHeight() / 2);
+//		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
+//		root.getGraphicalfeature().setY(this.root.getHeight() / 2); // before: maxWidth
 		diagram.setRoot(root);
 		return diagram;
 	}
@@ -377,43 +380,67 @@ public class FeatureModelEditorView {
 	/**
 	 * This method adds a child to given parent and returns the new FXFeature.
 	 */
-	public FXGraphicalFeature addFeatureBelow(FXGraphicalFeature parent) {
-		services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE_BELOW, parent);
-		// create new feature and add under the parent
+//	public FXGraphicalFeature addFeatureBelow(FXGraphicalFeature parent) {
+//		services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE_BELOW, parent);
+//		// create new feature and add under the parent
+//		double xPos = parent.getFeature().getGraphicalfeature().getX();
+//		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
+//		Feature feature = FeatureDiagramFactoryImpl.eINSTANCE.createFeature();
+//		Feature newFeature = createNewFeature("NewFeature_" + currentModel.getIdentifierIncrement(), false,
+//				xPos, yPos);
+//		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
+//
+//		return newGraFeature;
+//	}
+
+	public FXGraphicalFeature addFeatureBelow(Pair<String, FXGraphicalFeature> pair) {
+		String type = pair.getKey();
+		FXGraphicalFeature parent = pair.getValue();
 		double xPos = parent.getFeature().getGraphicalfeature().getX();
 		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
-		Feature newFeature = createFeatureWithPosition("NewFeature_" + currentModel.getIdentifierIncrement(), false,
-				xPos, yPos);
-		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
-
-		return newGraFeature;
+		FXGraphicalFeature newFeature;
+		switch (type) {
+			case FDStringTable.FEATURE:
+				newFeature = createFeatureFX(parent, false, xPos, yPos);
+				break;
+			case FDStringTable.COMPONENTFEATURE:
+				newFeature = createComponentFeatureFX(parent, false, xPos, yPos);
+				break;
+			case FDStringTable.CONFIGURATIONFEATURE:
+				newFeature = createConfigurationFeatureFX(parent, false, xPos, yPos);
+				break;
+			default:
+				throw new IllegalArgumentException("Wrong type");
+		}
+		
+		return newFeature;
 	}
 
-	public FXGraphicalFeature addComponentFeatureBelow(FXGraphicalFeature parent) {
-		services.eventBroker.send(FDEventTable.LOGGER_ADD_COMPONENTFEATURE_BELOW, parent);
-		// create new feature and add under the parent
-
-		double xPos = parent.getFeature().getGraphicalfeature().getX();
-		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
-		
-		String featureName = "NewComponentFeature_" + currentModel.getIdentifierIncrement();
-		ComponentFeature newFeature = createComponentFeatureWithPosition(featureName, false,
-				xPos, yPos);
-		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
-		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
-		componentFeatureList.add(newGraFeature);
-	
-//		services.eventBroker.send(FDEventTable.ADD_NEW_TAB, newFeature);
-		
-		return newGraFeature;
-	}
+//	public FXGraphicalFeature addComponentFeatureBelow(FXGraphicalFeature parent) {
+//		services.eventBroker.send(FDEventTable.LOGGER_ADD_COMPONENTFEATURE_BELOW, parent);
+//		// create new feature and add under the parent
+//
+//		double xPos = parent.getFeature().getGraphicalfeature().getX();
+//		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
+//		
+//		String featureName = "NewComponentFeature_" + currentModel.getIdentifierIncrement();
+//		ComponentFeature newFeature = createComponentFeature(featureName, false,
+//				xPos, yPos);
+//		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, newFeature);
+//		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
+//		componentFeatureList.add(newGraFeature);
+//	
+////		services.eventBroker.send(FDEventTable.ADD_NEW_TAB, newFeature);
+//		
+//		return newGraFeature;
+//	}
 
 	private FXGraphicalFeature createGraphicalFeatureBelow(FXGraphicalFeature parent, Feature newFeature) {
 		// add the new feature to model and set the parent feature
 		parent.getFeature().getChildren().add(newFeature);
 		newFeature.setParent(parent.getFeature());
 		
-		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);;
+		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);
 		// create graphical feature and set parent
 		if (newFeature instanceof ComponentFeature) {
 			newGraFeature.addConfigLabel("Select configuration");
@@ -469,7 +496,8 @@ public class FeatureModelEditorView {
 				+ Math.min(yPosChild, yPosParent);
 
 		// create new feature and add above the child
-		Feature newFeature = createFeatureWithPosition("NewFeature", false, xPosNewFeature, yPosNewFeature);
+		
+		Feature newFeature = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), "NewFeature", false, xPosNewFeature, yPosNewFeature);
 
 		// Reset the parent-child relations
 
@@ -525,9 +553,9 @@ public class FeatureModelEditorView {
 		double yPos = formerRoot.getGraphicalfeature().getY() - 30;
 
 		// create new feature and add above the child
-		Feature newRoot = createFeature("NewFeature", true);
-		newRoot.getGraphicalfeature().setX(xPos);
-		newRoot.getGraphicalfeature().setY(yPos);
+		Feature newRoot = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), "NewFeature", true, xPos, yPos);
+//		newRoot.getGraphicalfeature().setX(xPos);
+//		newRoot.getGraphicalfeature().setY(yPos);
 
 		// set parent-child relations
 		formerRoot.setParent(newRoot);
@@ -621,16 +649,44 @@ public class FeatureModelEditorView {
 		}
 	}
 
-	/**
-	 * This method creates a new feature. With default name
-	 */
-	public Feature createFeature(String featureName, boolean isRoot) {
-		Feature feature = FeatureDiagramFactoryImpl.eINSTANCE.createFeature();
+//	/**
+//	 * This method creates a new feature. With default name
+//	 */
+//	public Feature createFeature(String featureName, boolean isRoot, double x, double y) {
+//		Feature feature = FeatureDiagramFactoryImpl.eINSTANCE.createFeature();
+//		feature.setName(featureName);
+//		feature.setMandatory(isRoot ? true : false);
+//		feature.setAlternative(false);
+//		feature.setOr(false);
+//		feature.setAbstract(false);
+//		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
+//		feature.setIdentifier(currentModel.getIdentifierIncrement());
+//		GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();
+//		feature.setGraphicalfeature(graphicalFeature);
+//
+//		ArtifactReference artifactReference = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
+//		artifactReference.setArtifactClearName(feature.getName());
+//		feature.getArtifactReferences().add(artifactReference);
+//
+//		/**
+//		 * Set Feature to x and y position 
+//		 */
+//		feature.getGraphicalfeature().setX(x);
+//		feature.getGraphicalfeature().setY(y);
+//		
+//		return feature;
+//	}
+	
+	public Feature createNewFeature(Feature feature, String featureName, boolean isRoot, double x, double y) {
 		feature.setName(featureName);
-		feature.setMandatory(isRoot ? true : false);
+		feature.setMandatory(isRoot);
 		feature.setAlternative(false);
 		feature.setOr(false);
 		feature.setAbstract(false);
+		if (feature instanceof ComponentFeature) {
+			((ComponentFeature) feature).setFeaturediagramm(initFeatureDiagram(new FeatureDiagram()));
+			((ComponentFeature) feature).getFeaturediagramm().getRoot().setName(featureName);
+		}
 		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
 		feature.setIdentifier(currentModel.getIdentifierIncrement());
 		GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();
@@ -640,46 +696,82 @@ public class FeatureModelEditorView {
 		artifactReference.setArtifactClearName(feature.getName());
 		feature.getArtifactReferences().add(artifactReference);
 
+		/**
+		 * Set Feature to x and y position 
+		 */
+		feature.getGraphicalfeature().setX(x);
+		feature.getGraphicalfeature().setY(y);
+		
 		return feature;
 	}
 
-	public ComponentFeature createComponentFeature(String featureName, boolean isRoot) {
+	public FXGraphicalFeature createFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
+		Feature feature = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), "NewFeature_" + currentModel.getIdentifierIncrement(), isRoot, x, y);
+		return createGraphicalFeatureBelow(parent, feature);
+	}
+
+//	public ComponentFeature createComponentFeature(String featureName, boolean isRoot, double x, double y) {
+//		ComponentFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createComponentFeature();
+//		feature.setName(featureName);
+//		feature.setMandatory(true);
+//		feature.setAlternative(false);
+//		feature.setOr(false);
+//		feature.setAbstract(false);
+//		feature.setFeaturediagramm(initFeatureDiagram(new FeatureDiagram()));
+//		feature.getFeaturediagramm().getRoot().setName(featureName);
+//		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
+//		feature.setIdentifier(currentModel.getIdentifierIncrement());
+//		GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();
+//		feature.setGraphicalfeature(graphicalFeature);
+//
+//		ArtifactReference artifactReference = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
+//		artifactReference.setArtifactClearName(feature.getName());
+//		feature.getArtifactReferences().add(artifactReference);
+//		
+//		/**
+//		 * Set ComponentFeature to x and y position 
+//		 */
+//		feature.getGraphicalfeature().setX(x);
+//		feature.getGraphicalfeature().setY(y);
+//		
+//		return feature;
+//	}
+//	
+	
+
+	public FXGraphicalFeature createComponentFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
 		ComponentFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createComponentFeature();
-		feature.setName(featureName);
-		feature.setMandatory(true);
-		feature.setAlternative(false);
-		feature.setOr(false);
-		feature.setAbstract(false);
-		feature.setFeaturediagramm(initFeatureDiagram(new FeatureDiagram()));
-		feature.getFeaturediagramm().getRoot().setName(featureName);
-		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
-		feature.setIdentifier(currentModel.getIdentifierIncrement());
-		GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();
-		feature.setGraphicalfeature(graphicalFeature);
-
-		ArtifactReference artifactReference = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
-		artifactReference.setArtifactClearName(feature.getName());
-		feature.getArtifactReferences().add(artifactReference);
-
-		return feature;
+		createNewFeature(feature, "NewComponentFeature_" + currentModel.getIdentifierIncrement(), isRoot, x, y);
+		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
+		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
+		componentFeatureList.add(newGraFeature);
+		return newGraFeature;
+		
+	}
+	public FXGraphicalFeature createConfigurationFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
+		ConfigurationFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createConfigurationFeature();
+		createNewFeature(feature, "NewConfigurationFeature_" + currentModel.getIdentifierIncrement(), true, x, y);
+		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
+		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
+		return newGraFeature;
 	}
 
 	/**
 	 * Creates a feature with given name and sets the x and y position
 	 */
-	public Feature createFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
-		Feature feature = createFeature(featureName, isRoot);
-		feature.getGraphicalfeature().setX(x);
-		feature.getGraphicalfeature().setY(y);
-		return feature;
-	}
-	
-	public ComponentFeature createComponentFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
-		ComponentFeature feature = createComponentFeature(featureName, isRoot);
-		feature.getGraphicalfeature().setX(x);
-		feature.getGraphicalfeature().setY(y);
-		return feature;
-	}
+//	public Feature createFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
+//		Feature feature = createFeature(featureName, isRoot, double x, double y);
+//		feature.getGraphicalfeature().setX(x);
+//		feature.getGraphicalfeature().setY(y);
+//		return feature;
+//	}
+//	
+//	public ComponentFeature createComponentFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
+//		ComponentFeature feature = createComponentFeature(featureName, isRoot, double x, double y);
+//		feature.getGraphicalfeature().setX(x);
+//		feature.getGraphicalfeature().setY(y);
+//		return feature;
+//	}
 
 	public Pane getRootPane() {
 		return root;
