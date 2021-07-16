@@ -33,6 +33,7 @@ class CloneHelper {
 		
 		val clone = new NodeImpl()
 		clone.nodeType = source.nodeType
+		clone.standardizedNodeType = source.standardizedNodeType
 		clone.variabilityClass = source.variabilityClass
 		clone.parent = targetParent
 		source.attributes.forEach[a | clone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]	

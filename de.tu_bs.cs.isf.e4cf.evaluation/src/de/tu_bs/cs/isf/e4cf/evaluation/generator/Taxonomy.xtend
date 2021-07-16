@@ -2,6 +2,8 @@
  * This Class wraps the clone editing taxonomy of 
  * 2009 - Roy, C. - A Mutation Injectionbased Automatic Framework for Evaluating Code Clone Detection Tools
  * Using the generic data structure and clone helper.
+ * 
+ * TODO Ensure Syntactical Correctness after an operation
  */
 package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
@@ -45,14 +47,6 @@ class Taxonomy {
 		helper.refactor(container, newValue)
 	}
 	
-	def expressionsForParameters(Node scope, String parameter, String expression) {
-		// logger.logRaw(EXPRESSION)
-		// TODO: this would take a lot of work for a result that may not always make sense (type- and operational semantics)
-		// generally one would:
-		// build expression from NodeImpl (!!HARD!!), maybe reduce possibilities to arithmetics
-		// replace all occurrences of the parameter NameExpressions with the build expression tree
-	}
-	
 	/**
 	 * Swap two function argument nodes
 	 */
@@ -66,13 +60,20 @@ class Taxonomy {
 		val rng = new Random()
 		val type2Methods = #[
 			this.class.methods.filter[m | m.name == "systematicRenaming"],
-			this.class.methods.filter[m | m.name == "expressionsForParameters"],
 			this.class.methods.filter[m | m.name == "arbitraryRenaming"]
 		].flatten
 		return type2Methods.get(rng.nextInt(type2Methods.size));
 	}
 	
 	// TYPE III
+	
+	def expressionsForParameters(Node scope, String parameter, String expression) {
+		// logger.logRaw(EXPRESSION)
+		// TODO: this would take a lot of work for a result that may not always make sense (type- and operational semantics)
+		// generally one would:
+		// build expression from NodeImpl (!!HARD!!), maybe reduce possibilities to arithmetics
+		// replace all occurrences of the parameter NameExpressions with the build expression tree
+	}
 	
 	def smallInlineInsertion(Node parent, Node insertion) {
 		logger.logRaw(INLINE_INSERTION_NODE)
@@ -131,6 +132,7 @@ class Taxonomy {
 	def getType3Method() {
 		val rng = new Random()
 		val type3Methods = #[
+			this.class.methods.filter[m | m.name == "expressionsForParameters"],
 			this.class.methods.filter[m | m.name == "smallInlineInsertion"],
 			this.class.methods.filter[m | m.name == "smallInlineDeletion"],
 			this.class.methods.filter[m | m.name == "deleteLines"],

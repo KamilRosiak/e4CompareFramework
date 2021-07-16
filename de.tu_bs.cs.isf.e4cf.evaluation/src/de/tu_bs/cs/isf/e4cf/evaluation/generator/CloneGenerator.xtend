@@ -16,6 +16,9 @@ import org.eclipse.e4.core.di.annotations.Creatable
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 import java.lang.invoke.MethodHandles.Lookup
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
+import java.util.List
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
+import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST
 
 @Singleton 
 @Creatable 
@@ -38,24 +41,67 @@ class CloneGenerator {
 		trees.add(originalTree)
 		save(options.outputRoot, originalTree, "")
 		
-		createTaxonomyExamples(tree, options)
+		//createTaxonomyExamples(tree, options)
 		
 		// Number of mutations (taxonomy calls) given by user
 		for (var pass = 0; pass < options.mutations; pass++) {
+			var break = false;
 			
-			// get list of modifiable nodes for granularity type
-			val suitableNodes = findSuitableNodes(tree, options.granularity)	
+			// TODO: respect granularity type
+			val all = helper.getAllChildren(tree.root)	
 			
 			val cloneType = selectCloneType(options)
 			switch (cloneType) {
 				case 1: {
+					// This is just copy and pasting of subtrees for us
 					val method = taxonomy.type1Method
-					// TODO select arguments for method
+					// TODO Make source possibly come from external repo
+					val source = all.filter[n | 
+						#[ // statement level
+							NodeType.VARIABLE_DECLARATION,
+							NodeType.ASSIGNMENT,
+							NodeType.METHOD_CALL,
+							NodeType.^IF,
+							NodeType.LOOP_COLLECTION_CONTROLLED,
+							NodeType.LOOP_DO,
+							NodeType.LOOP_COUNT_CONTROLLED,
+							NodeType.LOOP_WHILE
+						].contains(n.standardizedNodeType)
+					].random
 					
+					val target = all.filter[n | n.standardizedNodeType == NodeType.BLOCK].random
+					
+					method.invoke(taxonomy, source, target)
 				}
 				case 2: {
 					val method = taxonomy.type2Method
-					// TODO select arguments for method
+	
+					if (method.name == "systematicRenaming") {
+						// rename a variable
+						val declaration = all.filter[ n |
+								n.standardizedNodeType == NodeType.VARIABLE_DECLARATION
+						].random
+						if (declaration !== null) {
+							method.invoke(taxonomy, declaration, '''V«new Random().nextInt»'''.toString)
+						} else break = true
+						
+					} else if (method.name == "arbitraryRenaming") {
+						// swap arguments around
+						val sources = all.filter[n | 
+							n.standardizedNodeType == NodeType.METHOD_CALL
+							&& n.children.size > 1
+						]
+						if (!sources.nullOrEmpty) {
+							val args = sources.random.children
+							var left = args.random
+							var right = args.random
+							while (left == right) right = args.random
+							method.invoke(taxonomy, left, right)
+						} else {
+							// this can not be done with our sources, omit this iteration
+							break = true
+						}
+					}
 					
 				}
 				case 3: {
@@ -65,21 +111,25 @@ class CloneGenerator {
 				}
 			}
 			
-			// save intermediate tree
-			val intermediateTree = gsonExportService.exportTree((tree as TreeImpl))
-			trees.add(intermediateTree)
-			if (options.enableSaveAll) {
-				save(options.outputRoot, intermediateTree, '''.mod«pass»''')
+			// omit iteration if there have been errors
+			if (break) {
+				pass--
+				
+			} else {
+				// logging end of a pass is not necessary as each pass is only one taxonomy call
+				// save intermediate tree
+				val intermediateTree = gsonExportService.exportTree((tree as TreeImpl))
+				trees.add(intermediateTree)
+				if (options.enableSaveAll) {
+					save(options.outputRoot, intermediateTree, '''.mod«pass»''')
+				}
 			}
-			
-			
 		}
-		
 		
 		// Serialize and save the final tree (already saved if save all is enabled)
 		if (!options.enableSaveAll) {	
 			var String modifiedTreeSerialized = gsonExportService.exportTree((tree as TreeImpl))
-			//save(options.outputRoot, modifiedTreeSerialized, ".mod")
+			save(options.outputRoot, modifiedTreeSerialized, ".mod")
 		}
 		
 		// store log
@@ -87,6 +137,7 @@ class CloneGenerator {
 		logger.resetLog
 	}
 	
+	@SuppressWarnings("all")
 	def private void createTaxonomyExamples(Tree tree, GeneratorOptions options) {
 		
 		// Base setup
@@ -132,23 +183,6 @@ class CloneGenerator {
 //		taxonomy.arbitraryRenaming(funcCall.children.head.children.get(0), funcCall.children.head.children.get(1))
 //		val taxFTree = 	gsonExportService.exportTree((tree as TreeImpl))
 //		save(options.outputRoot, taxFTree, "taxE")
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		// Test move
 //		val funcCall = allNodes.findFirst[n | n.standardizedNodeType == NodeType.METHOD_CALL]
@@ -203,7 +237,6 @@ class CloneGenerator {
 	/** Selects a random clone group 
 	 * @return an integer representing the clone type (1, 2 or 3) */
 	def private selectCloneType(GeneratorOptions options) {
-		// TODO: may be optimized
 		val rng = new Random()
 		val randomValue = rng.nextFloat;
 		val float weightSum = options.weightType1 + options.weightType2 + options.weightType3
@@ -219,43 +252,8 @@ class CloneGenerator {
 		}
 	}
 	
-	/** Returns a list of Nodes in the tree that may serve as modification sources for a given granularity */
-	def private findSuitableNodes(Tree t, Granularity granularity) {
-		// TODO: unsure node types: Body? Bound? 
-		switch (granularity) {
-			case CLASS: {
-				return helper.getAllChildren(t.root).filter[ n |
-					n.nodeType == JavaNodeTypes.Class.name ||
-					n.nodeType == JavaNodeTypes.Interface.name
-				]
-			}
-			case METHOD: {
-				return helper.getAllChildren(t.root).filter[ n |
-					n.nodeType == JavaNodeTypes.Argument.name
-				]
-			}
-			case STATEMENT: {
-				return helper.getAllChildren(t.root).filter[ n |
-					n.nodeType == JavaNodeTypes.Assignment.name
-				]
-			}
-			/*
-			 * Unused:
-			 * - BlockComment
-			 * - Break
-			 * - Cast
-			 * - Continue
-			 * - Else
-			 * - Finally
-			 * - Import
-			 * - JavadocComment
-			 * - LineComment
-			 * - Synchronized
-			 * - Then
-			 * 
-			 */
-		}
-		return null
+	def static private Node random(Iterable<? extends Node> l){
+		return l.get(new Random().nextInt(l.size))
 	}
 	
 }
