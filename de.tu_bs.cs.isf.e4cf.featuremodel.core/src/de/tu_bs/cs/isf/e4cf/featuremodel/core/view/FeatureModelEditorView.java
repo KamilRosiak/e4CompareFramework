@@ -243,6 +243,9 @@ public class FeatureModelEditorView {
 			fxFeature.toFront();
 			if (fxFeature.getFeature() instanceof ComponentFeature) {
 				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
+				componentFeatureList.add(fxFeature);
+			} else if (fxFeature.getFeature() instanceof ConfigurationFeature) {
+				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
 			}
 		}
 
@@ -421,7 +424,7 @@ public class FeatureModelEditorView {
 		FXGraphicalFeature fx = addFeatureBelow(new Pair<String, FXGraphicalFeature>(FDStringTable.CONFIGURATIONFEATURE, pair.getValue()));
 		ConfigurationFeature configFeature = (ConfigurationFeature) fx.getFeature();
 		configFeature.setConfigurationfeature(pair.getKey());
-		fx.rename(pair.getKey().getName());
+		fx.setName(pair.getKey().getName());
 		return fx;
 	}
 	
@@ -1065,7 +1068,7 @@ public class FeatureModelEditorView {
 	}
 
 	public void renameCurrentFeature(String name) {
-		currentFeature.rename(name);
+		currentFeature.setName(name);
 		if (!currentFeature.getFeature().getArtifactReferences().isEmpty()) {
 			currentFeature.getFeature().getArtifactReferences().get(0).setArtifactClearName(name);
 		}

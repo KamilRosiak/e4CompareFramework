@@ -161,7 +161,7 @@ public class FeatureModelEditorController {
 			for(FXGraphicalFeature child: temp) {
 				getCurrentView().removeFeature(child, false, false, false);
 			};
-			fxGraFeature.rename(featureDiagram.getRoot().getName());
+			fxGraFeature.setName(featureDiagram.getRoot().getName());
 			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
 			// showConstraintView();
 		} catch (IllegalArgumentException e) {
@@ -348,10 +348,29 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setFeatureName(@UIEventTopic(FDEventTable.SET_FEATURE_NAME) Pair<FXGraphicalFeature, String> data) {
 		try {
-			data.getKey().rename(data.getValue());
+			data.getKey().setName(data.getValue());
 			if (data.getKey().getFeature() == getCurrentView().getFeatureDiagram().getRoot()) {
 				getCurrentTab().setText(data.getValue());
 			}
+		} catch (Exception e) {
+			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
+			errorListeners.forEach(listener -> listener.onError(error));
+		}
+	}
+	
+	@Optional
+	@Inject 
+	public void setConfigurationFeatureName(@UIEventTopic(FDEventTable.EVENT_RENAME_CONFIGURATIONFEATURE) Pair<String, String> name) {
+		try {
+			String oldName = name.getKey();
+			getCurrentView().getComponentFeatureList().forEach(componentFeature -> {
+				componentFeature.getChildFeatures().forEach(configurationFeature -> {
+					if (configurationFeature.getFeatureNameLabel().getText().equals(oldName)) {
+						configurationFeature.setName(name.getValue());
+						return;
+					}
+				});
+			});
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));

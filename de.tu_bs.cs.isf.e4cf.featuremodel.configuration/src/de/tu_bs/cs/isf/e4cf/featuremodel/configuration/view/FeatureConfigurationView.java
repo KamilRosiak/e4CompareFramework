@@ -31,6 +31,7 @@ import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
+import javafx.util.Pair;
 
 public class FeatureConfigurationView {
 	
@@ -81,6 +82,8 @@ public class FeatureConfigurationView {
 		configCol.setCellFactory(TextFieldTableCell.<FeatureConfiguration>forTableColumn());
 		configCol.setCellValueFactory(new PropertyValueFactory<FeatureConfiguration, String>("name"));
 		configCol.setOnEditCommit(event -> {
+			
+			controller.getServices().eventBroker.send(FDEventTable.EVENT_RENAME_CONFIGURATIONFEATURE, new Pair<String, String>(event.getRowValue().getName(), event.getNewValue()));
 			event.getRowValue().setName(event.getNewValue());
 			event.consume();
 		});

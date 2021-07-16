@@ -274,10 +274,6 @@ public class FXGraphicalFeature extends VBox  {
 		translateChildren();
 	}
 	
-	public void setName(String name) {
-		this.featureNameLabel.setText(name);
-		this.feature.setName(name);
-	}
 	
 	/**
 	 * replacing children.
@@ -298,7 +294,7 @@ public class FXGraphicalFeature extends VBox  {
 		}
 	}
 	
-	public void rename(String name) {
+	public void setName(String name) {
 		feature.setName(name);
 		featureNameLabel.setText(name);
 		services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
