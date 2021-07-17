@@ -72,6 +72,11 @@ Wollen wir etwas anderes als AST in unserer GenericDatastructure darstellen?
 Wollen wir potentiell verschiedene AST vergleichen (C <> Java)?
 
 ===== 14.07.2021
-- Compare Engine Reorders Nodes -> TaxonomyExample D
+- Compare Engine Reorders Nodes -> TaxonomyExample D (Sorting matcher)
 - Discuss Programflows
 
+- How to get sensible values from the comparision (similiarity threshhold?, on create children are mandatory?)
+-> leafs < 1 -> always changes
+-> result similarity < 1 -> change
+-> optional children are mandatory
+- Next: Investigate matching (string comparator, similarity propagation (update))
