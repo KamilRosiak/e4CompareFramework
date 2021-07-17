@@ -1,9 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaNodeTypes
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService
+import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions
 import java.nio.file.Path
@@ -13,12 +15,6 @@ import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
-import java.lang.invoke.MethodHandles.Lookup
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
-import java.util.List
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
-import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST
 
 @Singleton 
 @Creatable 
@@ -46,6 +42,7 @@ class CloneGenerator {
 		// Number of mutations (taxonomy calls) given by user
 		for (var pass = 0; pass < options.mutations; pass++) {
 			var break = false;
+			println('''Starting Pass #«pass»''')
 			
 			// TODO: respect granularity type
 			val all = helper.getAllChildren(tree.root)	
@@ -69,8 +66,11 @@ class CloneGenerator {
 						].contains(n.standardizedNodeType)
 					].random
 					
-					val target = all.filter[n | n.standardizedNodeType == NodeType.BLOCK].random
-					
+					var Node target = all.filter[n | n.standardizedNodeType == NodeType.BLOCK].random
+					while (helper.getAllChildren(source).contains(target) || helper.getAllChildren(target).contains(source)) {
+						target = all.filter[n | n.standardizedNodeType == NodeType.BLOCK].random
+					}
+									
 					method.invoke(taxonomy, source, target)
 				}
 				case 2: {
@@ -79,8 +79,10 @@ class CloneGenerator {
 					if (method.name == "systematicRenaming") {
 						// rename a variable
 						val declaration = all.filter[ n |
-								n.standardizedNodeType == NodeType.VARIABLE_DECLARATION
+								n.standardizedNodeType == NodeType.VARIABLE_DECLARATION &&
+								!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
 						].random
+						
 						if (declaration !== null) {
 							method.invoke(taxonomy, declaration, '''V«new Random().nextInt»'''.toString)
 						} else break = true
@@ -89,10 +91,10 @@ class CloneGenerator {
 						// swap arguments around
 						val sources = all.filter[n | 
 							n.standardizedNodeType == NodeType.METHOD_CALL
-							&& n.children.size > 1
+							&& n.children.head.children.size > 1 // first child of method call is always argument container
 						]
 						if (!sources.nullOrEmpty) {
-							val args = sources.random.children
+							val args = sources.random.children.head.children
 							var left = args.random
 							var right = args.random
 							while (left == right) right = args.random
@@ -113,14 +115,16 @@ class CloneGenerator {
 			
 			// omit iteration if there have been errors
 			if (break) {
+				println('''An error occured during pass #«pass» with clone type «cloneType»''')
 				pass--
 				
 			} else {
 				// logging end of a pass is not necessary as each pass is only one taxonomy call
 				// save intermediate tree
-				val intermediateTree = gsonExportService.exportTree((tree as TreeImpl))
-				trees.add(intermediateTree)
+				
 				if (options.enableSaveAll) {
+					val intermediateTree = gsonExportService.exportTree((tree as TreeImpl))
+					// trees.add(intermediateTree)
 					save(options.outputRoot, intermediateTree, '''.mod«pass»''')
 				}
 			}

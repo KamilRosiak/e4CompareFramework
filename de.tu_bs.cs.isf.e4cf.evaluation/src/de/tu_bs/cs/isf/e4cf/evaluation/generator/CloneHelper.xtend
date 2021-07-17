@@ -9,6 +9,7 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*;
 import java.util.NoSuchElementException
+import java.util.UUID
 
 @Creatable
 @Singleton
@@ -31,14 +32,24 @@ class CloneHelper {
 			return null;
 		}
 		
+		// Create a clone
 		val clone = new NodeImpl()
 		clone.nodeType = source.nodeType
 		clone.standardizedNodeType = source.standardizedNodeType
 		clone.variabilityClass = source.variabilityClass
 		clone.parent = targetParent
-		source.attributes.forEach[a | clone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]	
-		
+		source.attributes.forEach[a | clone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]
 		targetParent.addChild(clone);
+		
+		// create another identical clone (same UUIDs) on the tracking tree for object persistence and correct logging
+		val shadowClone = new NodeImpl()
+		shadowClone.UUID = UUID.fromString(clone.UUID.toString)
+		shadowClone.standardizedNodeType = source.standardizedNodeType
+		shadowClone.variabilityClass = source.variabilityClass
+		val shadowParent = trackingTreeRoot.allChildren.findFirst[n | n.UUID == targetParent.UUID]
+		shadowParent.children.add(shadowClone)
+		shadowClone.parent = shadowParent
+		source.attributes.forEach[a | clone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]
 		
 		// No further check because a copy itself is always a valid mutation
 		logger.logRaw(COPY + SOURCE + source.UUID + TARGET + targetParent.UUID + CLONE + clone.UUID);
@@ -47,6 +58,9 @@ class CloneHelper {
 	
 	/**
 	 * Creates a deep copy of a subtree.
+	 * 
+	 * Make sure that the target parent is not contained in source!
+	 * 
 	 * @param source The subtrees root node to be moved
 	 * @param targetParent The parent for newly created source clone
 	 * @return The clone of the source node
@@ -181,7 +195,11 @@ class CloneHelper {
 	def delete(Node source) {
 		logger.logRaw(RDELETE + TARGET + source.UUID)
 		_delete(source)
+		// remove node subtree
 		source.parent.children.remove(source)
+		// also remove subtree from tracking tree
+		val shadowSource = trackingTreeRoot.allChildren.findFirst[n | n.UUID.toString == source.UUID.toString]
+		shadowSource.parent.children.remove(shadowSource)
 	}
 	
 	/**
@@ -242,27 +260,31 @@ class CloneHelper {
 			
 			// Refactor variable declarations (Class and Methods)
 			// Note: also refactors method arguments with the same name as the field which may not be applicable to every language
-			if (container.nodeType == "VariableDeclarator") {
-				body = container.parent.parent
-
-			// Refactor function Arguments		
-			} else if (container.nodeType.startsWith("Argument")) {
-				// refactor method argument
-				container.setAttributeValue("Name", newValue)
-				body = container.parent.parent.children.get(1)
-				
-			// Refactor method names
-			} else if (container.nodeType == "MethodDeclaration") {
-				body = container.parent
-				
-			// Stop
-			} else {
-				return
+			switch (container.standardizedNodeType) {
+				case VARIABLE_DECLARATION: {
+					if (container.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty) {
+						//abort
+						println("A container for multiple declarations was input here: "+ container.UUID.toString)
+						return
+					}
+					body = container.parent.parent
+				}
+				case ARGUMENT: {
+					// refactor method argument
+					container.setAttributeValue("Name", newValue)
+					body = container.parent.parent.children.get(1)
+					
+				}
+				case METHOD_DECLARATION: 
+					body = container.parent
+				default: {
+					println("Could not refactor node type: " + container.standardizedNodeType)
+					return
+				}
 			}
 			
-			logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + 
-				SCOPE + body.UUID + FROM + oldValue + TO + newValue)
-			_refactor(body, #["Name", "Initialization", "Value", "Comparison", "Condition", "Update"], oldValue, newValue)
+			logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + SCOPE + body.UUID + FROM + oldValue + TO + newValue)
+			_refactor(body, #["Name", "Value"], oldValue, newValue)
 		}
 	}
 	

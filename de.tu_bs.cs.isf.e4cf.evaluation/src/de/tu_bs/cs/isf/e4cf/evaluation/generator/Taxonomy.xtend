@@ -59,8 +59,8 @@ class Taxonomy {
 	def getType2Method() {
 		val rng = new Random()
 		val type2Methods = #[
-			this.class.methods.filter[m | m.name == "systematicRenaming"],
-			this.class.methods.filter[m | m.name == "arbitraryRenaming"]
+			this.class.methods.filter[m | m.name == "arbitraryRenaming"],
+			this.class.methods.filter[m | m.name == "systematicRenaming"]
 		].flatten
 		return type2Methods.get(rng.nextInt(type2Methods.size));
 	}
