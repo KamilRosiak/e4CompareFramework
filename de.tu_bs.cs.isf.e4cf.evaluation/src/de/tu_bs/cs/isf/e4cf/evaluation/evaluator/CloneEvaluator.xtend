@@ -22,6 +22,10 @@ import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass
 import java.util.HashSet
 import java.util.ArrayList
+import java.nio.file.StandardOpenOption
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 @Singleton
 @Creatable
@@ -88,21 +92,63 @@ class CloneEvaluator {
 		
 		
 		val detectableClones = getNumberOfClones(logEntries)
-		println("===== Summary =====")
-		println("Detectable\t" + detectableClones)
-		println("Detected\t" + detectedClonesCount)
-		println("Recall\t\t" + detectedClonesCount as float / detectableClones * 100 + " %")
 		
-		var foundEntries = new ArrayList
+		// TODO: invert logic: look from detected clones and not log to avoid precision > 1
+		var truePositives = new ArrayList
+		var falsePositives = new ArrayList
+		var truePositiveNodes = new HashSet
 		for(logEntry : logEntries.filter[l | l.startsWith(ATOMIC)]) {
-			if(applyAtomic(logEntry, detectedClones)) {
-				foundEntries.add(logEntry)
+			val node = applyAtomic(logEntry, detectedClones)
+			if(node !== null) {
+				truePositives.add(logEntry)
+				truePositiveNodes.add(node)
+			} else {
+				falsePositives.add(logEntry)
 			}
 		}
+//		for(clone : detectedClones) {
+//			var entries = logEntries.filter[l | l.startsWith(ATOMIC) && l.contains(clone.UUID.toString)]
+//		}
 		
-		val truePositives = foundEntries.size
-		println("True positives\t" + truePositives)
-		println("Precision\t" + truePositives as float / detectedClonesCount * 100 + " %")
+		// Calculate metrics
+		var metadata = new ArrayList
+		metadata.add("Detectable (true + false positives)\t" + detectableClones)
+		metadata.add("Detected (true positives + false negatives)\t" + detectedClonesCount)
+		// TODO: investigate low recall -> output file
+		metadata.add("Recall\t\t" + detectedClonesCount as float / detectableClones * 100 + " %")
+		val truePositivesCount = truePositives.size
+		metadata.add("True positives\t" + truePositivesCount)
+		metadata.add("Precision\t" + truePositivesCount as float / detectedClonesCount * 100 + " %")
+		
+		// print to console
+		metadata.forEach[e | println(e)]
+		
+		// TODO: output file
+		// detected clones, undetected clones
+		// tp, fp, ...
+		// fn: detected but not detectable
+		var outputLines = new ArrayList
+		outputLines.addAll(metadata)
+		outputLines.add("True positives (in generator log and correctly identified)")
+		outputLines.addAll(truePositives)
+		outputLines.add("False positives (in generator log and falsely not identified)")
+		outputLines.addAll(falsePositives)
+		outputLines.add("False negatives (not in generator log and falsely identified")
+		var falseNegatives = new HashSet(detectedClones)
+		falseNegatives.removeAll(truePositiveNodes)
+		outputLines.addAll(falseNegatives.map[n | return n.UUID.toString])
+//		outputLines.addAll()
+//		outputLines.add("True negatives (not in generator log and correctly not identified )")
+//		outputLines.addAll(trueNegatives)
+		
+		// TODO: plausibility check (lists vs counts?)
+		
+		var workspaceRoot = services.workspaceFileSystem.getWorkspaceDirectory().getFile();
+		var selectedPath = Paths.get(services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath());
+		val fileName = "CloneEvaluation.log";
+		Files.write(workspaceRoot.resolve(selectedPath.resolve(fileName)), outputLines,
+					StandardOpenOption.CREATE,
+			        StandardOpenOption.TRUNCATE_EXISTING);
 	}
 	
 	def void doComparison(NodeComparison comparison, Matcher matcher) {
@@ -154,7 +200,7 @@ class CloneEvaluator {
 		logEntries.filter[l | l.startsWith(ATOMIC)].size
 	}
 	
-	def boolean applyAtomic(String logEntry, HashSet<Node> detectedClones) {
+	def Node applyAtomic(String logEntry, HashSet<Node> detectedClones) {
 		switch (logEntry.split(" ").get(0)) {
 			// TODO: can / should we have stronger conditions?
 			// We can't differentiate operation on the same node as by design of the comparison
@@ -164,25 +210,29 @@ class CloneEvaluator {
 				val target = logger.readAttr(logEntry, TARGET)
 				val clone = logger.readAttr(logEntry, CLONE)
 				
-				return !detectedClones.filter[n | n.UUID.toString == clone].nullOrEmpty
+				val detectedClone = detectedClones.filter[n | n.UUID.toString == clone]
+				return detectedClone.empty ? null : detectedClone.get(0)
 			}
 			case MOVE: {
 				val source = logger.readAttr(logEntry, SOURCE)
 				val target = logger.readAttr(logEntry, TARGET)
 				
-				return !detectedClones.filter[n | n.UUID.toString == target].nullOrEmpty
+				val detectedClone = detectedClones.filter[n | n.UUID.toString == target]
+				return detectedClone.empty ? null : detectedClone.get(0)
 			}
 			case MOVEPOS: {
 				val source = logger.readAttr(logEntry, SOURCE)
 				val from = logger.readAttr(logEntry, FROM)
 				val to = logger.readAttr(logEntry, TO)
 				
-				return !detectedClones.filter[n | n.UUID.toString == source].nullOrEmpty
+				val detectedClone = detectedClones.filter[n | n.UUID.toString == source]
+				return detectedClone.empty ? null : detectedClone.get(0)
 			}
 			case DELETE: {
 				val target = logger.readAttr(logEntry, TARGET)
 				
-				return !detectedClones.filter[n | n.UUID.toString == target].nullOrEmpty
+				val detectedClone = detectedClones.filter[n | n.UUID.toString == target]
+				return detectedClone.empty ? null : detectedClone.get(0)
 			}
 			case SETATTR: {
 				val target = logger.readAttr(logEntry, TARGET)
@@ -190,11 +240,12 @@ class CloneEvaluator {
 				val from = logger.readAttr(logEntry, FROM)
 				val to = logger.readAttr(logEntry, TO)
 				
-				return !detectedClones.filter[n | n.UUID.toString == target].nullOrEmpty
+				val detectedClone = detectedClones.filter[n | n.UUID.toString == target]
+				return detectedClone.empty ? null : detectedClone.get(0)
 			}
 			default: {
 				println("Unsupported atomic clone operation ignored: " + logEntry)
-				return false
+				return null
 			}
 		}
 	}
