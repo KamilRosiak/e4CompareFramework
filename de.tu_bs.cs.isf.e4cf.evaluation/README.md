@@ -23,7 +23,7 @@
   - Metadata as Log?
 - <Entry Point for Project 2>
 - [X] Read outputs from project 1
-- [ ] Clone detection: Implement metrics (recall & precision)
+- [X] Clone detection: Implement metrics (recall & precision)
 - [ ] Variability Mining
 - [ ] Taxonomy Mining
 - [ ] Add output UI (view?)
