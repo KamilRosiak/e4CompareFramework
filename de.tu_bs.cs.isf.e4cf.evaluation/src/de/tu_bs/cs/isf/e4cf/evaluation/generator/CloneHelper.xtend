@@ -10,15 +10,26 @@ import org.eclipse.e4.core.di.annotations.Creatable
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*;
 import java.util.NoSuchElementException
 import java.util.UUID
+import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService
+import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
 
 @Creatable
 @Singleton
 class CloneHelper {
 	
-	@Inject 
-	CloneLogger logger;
-	// TODO
-	public Node trackingTreeRoot;
+	@Inject CloneLogger logger
+	@Inject GsonExportService exporter
+	@Inject GsonImportService importer
+	Node trackingTreeRoot;
+	
+	/** Sets up the shadow tree, to track modifications on original tree and remove invalid ones */
+	def setTrackingTree(Tree original) {
+		val originalTree = exporter.exportTree((original as TreeImpl))
+		val copyTree = importer.importTree(originalTree)
+		trackingTreeRoot = copyTree.root
+	}
 	
 	/**
 	 * Create a shallow copy of a node and assigns it to a target. 
@@ -296,12 +307,10 @@ class CloneHelper {
 		// TODO make this robust with regex because right now changing i=>g turns a reference variable=>vargable
 		body.allChildren.filter[
 			n | n.attributes.exists[
-				a | a.attributeKey == attrKey && (a.attributeValues.head.value as String).contains(oldValue) 
+				a | a.attributeKey == attrKey && n.getAttributeValue(attrKey) == oldValue
 			]
 		].forEach[
-			n | 
-			val newAttrValue = n.getAttributeValue(attrKey).replaceAll(oldValue, newValue)
-			n.setAttributeValue(attrKey, newAttrValue)
+			n | n.setAttributeValue(attrKey, newValue)
 		]
 	}
 	

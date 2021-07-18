@@ -31,16 +31,14 @@ class CloneGenerator {
 		var trees = newArrayList
 		// save a copy of the original tree
 		val originalTree = gsonExportService.exportTree((tree as TreeImpl))
-		// copy tree to track modifications on original tree and remove invalid ones
-		val copyTree = gsonImportService.importTree(originalTree)
-		helper.trackingTreeRoot = copyTree.root
+		helper.trackingTree = tree
 		trees.add(originalTree)
 		save(options.outputRoot, originalTree, "")
 		
 		//createTaxonomyExamples(tree, options)
 		
 		// Number of mutations (taxonomy calls) given by user
-		for (var pass = 0; pass < options.mutations; pass++) {
+		for (var pass = 1; pass <= options.mutations; pass++) {
 			var break = false;
 			println('''Starting Pass #«pass»''')
 			
@@ -223,7 +221,7 @@ class CloneGenerator {
 	}
 	
 	/** Saves tree string to json file */
-	def private void save(Path targetFolder, String content, String infix) {
+	def private void save(Path targetFolder, String content, String infix) { 
 		var Path selectedPath = Paths.get(
 			services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath())
 		var String fileName = '''«services.rcpSelectionService.getCurrentSelectionFromExplorer().getFileName()»«infix».tree'''

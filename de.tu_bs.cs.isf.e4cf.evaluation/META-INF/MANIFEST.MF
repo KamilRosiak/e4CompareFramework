@@ -17,6 +17,7 @@ Require-Bundle: org.eclipse.e4.core.contexts;bundle-version="1.8.400",
  de.tu_bs.cs.isf.e4cf.compare.data_structures_editor,
  org.eclipse.xtend.lib.macro,
  com.google.guava,
- org.eclipse.xtend.lib
+ org.eclipse.xtend.lib,
+ org.junit
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.evaluation
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

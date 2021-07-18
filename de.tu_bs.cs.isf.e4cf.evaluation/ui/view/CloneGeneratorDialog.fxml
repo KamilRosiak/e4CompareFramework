@@ -27,9 +27,9 @@
             <VBox prefHeight="200.0" prefWidth="135.0" spacing="2.0">
                <children>
                   <Label minWidth="125.0" prefHeight="17.0" prefWidth="137.0" text="Clone Granularity Level" />
-                  <RadioButton fx:id="radioGranularityClass" mnemonicParsing="false" text="Class" />
-                  <RadioButton fx:id="radioGranularityMethod" mnemonicParsing="false" text="Method" />
-                  <RadioButton fx:id="radioGranularityStatement" mnemonicParsing="false" text="Statement" />
+                  <RadioButton fx:id="radioGranularityClass" disable="true" mnemonicParsing="false" text="Class" />
+                  <RadioButton fx:id="radioGranularityMethod" disable="true" mnemonicParsing="false" text="Method" />
+                  <RadioButton fx:id="radioGranularityStatement" mnemonicParsing="false" selected="true" text="Statement" />
                </children>
                <opaqueInsets>
                   <Insets />
@@ -41,7 +41,7 @@
             <VBox prefHeight="119.0" prefWidth="161.0" spacing="2.0" HBox.hgrow="ALWAYS">
                <children>
                   <Label prefHeight="17.0" prefWidth="137.0" text="Options" />
-                  <CheckBox fx:id="checkboxCrossover" mnemonicParsing="false" text="Enable Crossover" />
+                  <CheckBox fx:id="checkboxCrossover" disable="true" mnemonicParsing="false" text="Enable Crossover" />
                   <CheckBox fx:id="checkboxSaveAll" layoutX="10.0" layoutY="27.0" mnemonicParsing="false" text="Save all Clones" />
                   <HBox prefHeight="5.0" prefWidth="600.0" spacing="3.0">
                      <children>
@@ -81,7 +81,7 @@
                         <VBox>
                            <children>
                               <Label text="Type III: " />
-                              <TextField fx:id="textTypeWeight3" prefWidth="50.0" text="15" />
+                              <TextField fx:id="textTypeWeight3" disable="true" prefWidth="50.0" text="0" />
                            </children>
                         </VBox>
                      </children>

@@ -8,12 +8,13 @@
 - [X] How to create clones? -> Paper Taxonomy
 - [X] Log Modifications to Trees -> OG Location, Clone Location (File:Line), Operations (Taxonomy)
 - [X] How to save Tree
-- [ ] Determine nodes to clone
+- [X] Determine nodes to clone
 - [X] Look into Taxonomy (What can we do just on nodes? What attributes do we need for the rest of the taxonomy?)
 - [ ] Call random clone operations
 - [X] Folder selection support
 - [X] UI Settings (granularity, type weights, number of mutations, ...)
 - [ ] Crossover operations
+- [ ] Syntax Correctness
 - [X] Implement Multipass
 - [ ] Implement Granularity
 - [X] Implement Type Weights
@@ -36,6 +37,9 @@
 - [X] Multi-Variable Initilization broken
 - [X] Fix instant parsing when right clicking
 - [X] Do-While has duplicate attribute "condition" but with different key "value"
+- [ ] Test Suite
+- [ ] Project Explorer Double Click
+
 
 ===== 16.06.2021
 Seeds als Base-File
