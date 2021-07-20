@@ -1,9 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core;
  
-import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -17,6 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
 import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
@@ -35,7 +35,6 @@ import featureConfiguration.FeatureConfiguration;
 import javafx.embed.swt.FXCanvas;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Screen;
@@ -127,16 +126,6 @@ public class FeatureModelEditorController {
 	
 	private void selectTab(Tab tab) {
 		tabPane.getSelectionModel().select(tab);
-	}
-	
-	
-	@Optional
-	@Inject
-	public void changeTab(@UIEventTopic(FDEventTable.CHANGE_TAB_EVENT) ComponentFeature feature) {
-		FeatureDiagram diagram = (FeatureDiagram) (feature.getFeaturediagramm());
-		for (Tab tab : tabPane.getTabs()) {
-			
-		}
 	}
 
 	@Optional
@@ -372,7 +361,7 @@ public class FeatureModelEditorController {
 				});
 			});
 		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
+			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.EVENT_RENAME_CONFIGURATIONFEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
@@ -382,14 +371,25 @@ public class FeatureModelEditorController {
 	public void setConfiguration(@UIEventTopic(FDEventTable.SELECT_CONFIGURATION_EVENT) FXGraphicalFeature fxGraFeature) {
 		try {
 			FeatureDiagram fd = new FeatureDiagram(((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm());
-        	FMESetConfigurationDialog dialog = new FMESetConfigurationDialog("Select Configuration", fd);
+        	FMESetConfigurationDialog dialog = new FMESetConfigurationDialog("Select Configuration", ((ComponentFeature) fxGraFeature.getFeature()));
         	Rectangle2D primaryScreenBounds = Screen.getPrimary().getBounds();
 			Double x = primaryScreenBounds.getWidth() * .5 - dialog.getDialog().getWidth() * .5;
 			Double y = primaryScreenBounds.getHeight() * .5 - dialog.getDialog().getHeight() * .5;
         	List<FeatureConfiguration> selectedConfig = dialog.show(x, y);
+        	
 			if (selectedConfig != null) {
 				selectedConfig.forEach(config -> {
-					getCurrentView().addConfigurationBelow(new Pair<FeatureConfiguration, FXGraphicalFeature>(config, fxGraFeature));
+					boolean contained = !fxGraFeature.getChildFeatures().stream()
+							.map(FXGraphicalFeature::getFeature)
+							.map(ConfigurationFeature.class::cast)
+							.map(ConfigurationFeature::getConfigurationfeature)
+							.collect(Collectors.toList())
+							.contains(config);
+					if (contained) {
+						getCurrentView().addConfigurationBelow(new Pair<FeatureConfiguration, FXGraphicalFeature>(config, fxGraFeature));
+					} else {
+						System.out.println("ComponentFeature already contains " +  config.getName());
+					}
 				});
 			} 
         	

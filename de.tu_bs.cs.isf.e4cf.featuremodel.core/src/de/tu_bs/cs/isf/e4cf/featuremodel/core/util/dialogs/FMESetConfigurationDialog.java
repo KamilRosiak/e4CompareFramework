@@ -2,8 +2,13 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
+import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 import featureConfiguration.FeatureConfiguration;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
@@ -12,24 +17,21 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Window;
 import javafx.util.Callback;
 
 public class FMESetConfigurationDialog {
     private Dialog<List<FeatureConfiguration>> dialog;
 	
-	public FMESetConfigurationDialog(String dialogTitle, FeatureDiagram fd) {
-		createDialog(dialogTitle, fd);
+	public FMESetConfigurationDialog(String dialogTitle, ComponentFeature componentFeature) {
+		createDialog(dialogTitle, componentFeature);
 	}
 	
 	public Dialog<List<FeatureConfiguration>> getDialog() {
 		return dialog;
 	}
 
-	private void createDialog(String dialogTitle, FeatureDiagram fd) {
+	private void createDialog(String dialogTitle, ComponentFeature componentFeature) {
 		dialog = new Dialog<>();
 		dialog.setTitle(dialogTitle);
 		dialog.setResizable(false);
@@ -43,9 +45,9 @@ public class FMESetConfigurationDialog {
 //		configTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 //		configTable.getItems().setAll(fd.getFeatureConfiguration());
 		
-		ListView<FeatureConfiguration> configList = new ListView<>();
-		configList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		configList.setCellFactory(param -> new ListCell<FeatureConfiguration>() {
+		ListView<FeatureConfiguration> configListView = new ListView<>();
+		configListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		configListView.setCellFactory(param -> new ListCell<FeatureConfiguration>() {
 			@Override
 			protected void updateItem(FeatureConfiguration item, boolean empty) {
 				super.updateItem(item, empty);
@@ -57,8 +59,15 @@ public class FMESetConfigurationDialog {
 				}
 			}
 		});
-		configList.getItems().setAll(fd.getFeatureConfiguration());
-		configPane.setContent(configList);
+		FeatureDiagramm fd = componentFeature.getFeaturediagramm();
+		configListView.getItems().setAll(fd.getFeatureConfiguration());
+		if (componentFeature.getConfigurationfeature() != null && componentFeature.getConfigurationfeature().size() > 0) {
+			List<FeatureConfiguration> existingConfigs = componentFeature.getConfigurationfeature().stream()
+					.map(ConfigurationFeature::getConfigurationfeature)
+					.collect(Collectors.toList());
+			configListView.getItems().removeAll(existingConfigs);
+		}
+		configPane.setContent(configListView);
 		dialog.getDialogPane().setContent(configPane);
 		
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);

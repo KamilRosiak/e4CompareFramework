@@ -4,6 +4,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
 import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
@@ -21,6 +22,8 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	public FXGraphicalFeatureContextMenu(IEventBroker eventBroker, FXGraphicalFeature fxGraFeature) {
 		if (fxGraFeature.getFeature() instanceof ComponentFeature) {
 			createComponentControl();
+		} else if (fxGraFeature.getFeature() instanceof ConfigurationFeature) {
+			createConfigurationControl();
 		} else {
 			createControl();
 		}
@@ -61,6 +64,10 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(new SeparatorMenuItem());
 		this.getItems().add(renameFeatureMenuItem());
 		this.getItems().add(setDescription());
+	}
+	
+	private void createConfigurationControl() {
+		this.getItems().add(removeFeatureMenuItem());		
 	}
 	
 	private MenuItem selectConfigurations() {
