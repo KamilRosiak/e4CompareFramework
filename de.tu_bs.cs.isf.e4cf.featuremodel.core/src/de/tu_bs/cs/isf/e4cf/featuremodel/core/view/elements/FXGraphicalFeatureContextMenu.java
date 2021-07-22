@@ -5,7 +5,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
+import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.event.ActionEvent;
@@ -89,7 +89,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
             @Override
             public void handle(ActionEvent event) {
             	hide();
-            	FeatureDiagram diagram = (FeatureDiagram) ((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm();
+            	FeatureDiagramm diagram = ((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm();
 				eventBroker.send(FDEventTable.EVENT_CREATE_CONFIGURATION, diagram);
             	event.consume();
             }

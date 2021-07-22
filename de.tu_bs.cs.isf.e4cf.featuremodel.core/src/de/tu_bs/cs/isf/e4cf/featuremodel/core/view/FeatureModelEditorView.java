@@ -13,6 +13,7 @@ import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramFactory;
+import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
 import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
@@ -82,7 +83,7 @@ public class FeatureModelEditorView {
 	private Pane arrangementPane;
 
 	private Rectangle selectionRectangle;
-	private FeatureDiagram currentModel;
+	private FeatureDiagramm currentModel;
 	private FXGraphicalFeature currentFeature;
 	private List<FXGraphicalFeature> selectedFeatures;
 
@@ -216,7 +217,7 @@ public class FeatureModelEditorView {
 		addFeature(currentModel.getRoot(), this.getRootPane().getWidth() / 2, this.getRootPane().getHeight() / 2);
 	}
 
-	private FeatureDiagram initFeatureDiagram(FeatureDiagram diagram) {		
+	private FeatureDiagramm initFeatureDiagram(FeatureDiagramm diagram) {		
 		Feature root = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true, 
 				this.root.getWidth() / 2, this.root.getHeight() / 2);
 //		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
@@ -228,7 +229,7 @@ public class FeatureModelEditorView {
 	/**
 	 * This method loads a FeatureDiagram.
 	 */
-	public void loadFeatureDiagram(FeatureDiagram model, boolean isSave) {
+	public void loadFeatureDiagram(FeatureDiagramm model, boolean isSave) {
 		// Ask for saving before deleting
 		if (isSave) {
 			askToSave();
@@ -669,8 +670,6 @@ public class FeatureModelEditorView {
 		createNewFeature(feature, "NewConfigurationFeature_" + currentModel.getIdentifierIncrement(), true, x, y);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
-		//add ConfigurationFeature as child to ConfigurationList of ComponentFeature
-		((ComponentFeature)parent.getFeature()).getConfigurationfeature().add(feature);
 		return newGraFeature;
 	}
 
@@ -689,7 +688,7 @@ public class FeatureModelEditorView {
 		return componentFeatureList;
 	}
 	
-	public FeatureDiagram getFeatureDiagram() {
+	public FeatureDiagramm getFeatureDiagram() {
 		return currentModel;
 	}
 
@@ -902,11 +901,11 @@ public class FeatureModelEditorView {
 		target.getArtifactReferences().addAll(origin.getArtifactReferences());
 	}
 
-	public FeatureDiagram getCurrentModel() {
+	public FeatureDiagramm getCurrentModel() {
 		return currentModel;
 	}
 
-	public void setCurrentModel(FeatureDiagram currentModel) {
+	public void setCurrentModel(FeatureDiagramm currentModel) {
 		this.currentModel = currentModel;
 	}
 

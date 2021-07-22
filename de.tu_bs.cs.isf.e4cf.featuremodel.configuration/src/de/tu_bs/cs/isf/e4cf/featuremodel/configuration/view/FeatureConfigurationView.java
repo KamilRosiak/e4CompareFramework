@@ -8,6 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import FeatureDiagram.Feature;
+import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.FXToolbar;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
@@ -17,11 +18,16 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelC
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import featureConfiguration.FeatureConfiguration;
+import javafx.beans.binding.Bindings;
 import javafx.embed.swt.FXCanvas;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -41,7 +47,7 @@ public class FeatureConfigurationView {
 	private TreeView<FeatureSelectionElement> featureSelectionTree;
 	private TableView<FeatureConfiguration> configTable;
 
-	private FeatureDiagram featureDiagram;
+	private FeatureDiagramm featureDiagram;
 	
 	private FeatureConfiguration featureConfiguration;
 
@@ -93,10 +99,22 @@ public class FeatureConfigurationView {
 			TableRow<FeatureConfiguration> configRow = new TableRow<>();
 			configRow.setOnMouseClicked(event -> {
 				if (event.isShiftDown() && event.getClickCount() == 1 && !configRow.isEmpty()) {
-					FeatureConfiguration config = configRow.getItem();
-					refreshView(config);
+					refreshView(configRow.getItem());
 				}
 			});
+			
+			final ContextMenu contextMenu = new ContextMenu();
+			final MenuItem removeMenuItem = new MenuItem("Remove Configuration");  
+            removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {  
+                @Override  
+                public void handle(ActionEvent event) {
+                	FeatureConfiguration config = configRow.getItem();
+                	configTable.getItems().remove(config);
+                	removeFeatureConfiguration(config);
+                }  
+            });  
+            contextMenu.getItems().add(removeMenuItem);
+            configRow.contextMenuProperty().bind(Bindings.when(configRow.emptyProperty()).then((ContextMenu)null).otherwise(contextMenu)); 
 			return configRow;
 		});
 		layout.setRight(configTable);
@@ -118,6 +136,10 @@ public class FeatureConfigurationView {
 		
 		Scene scene = new Scene(layout);
 		canvas.setScene(scene);
+	}
+	
+	private void removeFeatureConfiguration(FeatureConfiguration config) {
+		featureDiagram.getFeatureConfiguration().remove(config);
 	}
 	
 	public void refreshView(FeatureConfiguration fc) {
@@ -198,7 +220,7 @@ public class FeatureConfigurationView {
 		return item;
 	}
 
-	private void loadConfigurations(FeatureDiagram fd) {
+	private void loadConfigurations(FeatureDiagramm fd) {
 		configTable.getItems().clear();
 		configTable.getItems().setAll(fd.getFeatureConfiguration());
 	}
@@ -212,11 +234,11 @@ public class FeatureConfigurationView {
 		refreshView(featureConfiguration);
 	}
 
-	public FeatureDiagram getFeatureDiagram() {
+	public FeatureDiagramm getFeatureDiagram() {
 		return featureDiagram;
 	}
 
-	public void setFeatureDiagram(FeatureDiagram fd) {
+	public void setFeatureDiagram(FeatureDiagramm fd) {
 		// set name of current diagram 
 		loadConfigurations(fd);
 		this.featureDiagram = fd;

@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
+import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
 import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
@@ -103,7 +104,7 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject
 	public void openFeatureDiagram(@UIEventTopic(FDEventTable.OPEN_FEATURE_DIAGRAM) ComponentFeature feature) {
-		FeatureDiagram diagram = new FeatureDiagram(feature.getFeaturediagramm());
+		FeatureDiagramm diagram = feature.getFeaturediagramm();
 		Tab openedTab = getOpenedTabOrNull(diagram);
 		
 		if (openedTab != null) {
@@ -114,9 +115,9 @@ public class FeatureModelEditorController {
 		
 	}
 	
-	private Tab getOpenedTabOrNull(FeatureDiagram diagram) {
+	private Tab getOpenedTabOrNull(FeatureDiagramm diagram) {
 		for (Tab tab : tabPane.getTabs()) {
-			FeatureDiagram tabDiagram = ((FeatureModelEditorView) tab.getUserData()).getCurrentModel();
+			FeatureDiagramm tabDiagram = ((FeatureModelEditorView) tab.getUserData()).getCurrentModel();
 			if (diagram.getUuid().equals(tabDiagram.getUuid())) {
 				return tab;
 			}
@@ -134,7 +135,7 @@ public class FeatureModelEditorController {
 		FXGraphicalFeature fxGraFeature = getCurrentView().getFXGraphicalFeature(feature);
 		Tab newTab = createNewTab(feature.getName());
 		selectTab(newTab);
-		getCurrentView().loadFeatureDiagram(new FeatureDiagram(feature.getFeaturediagramm()), false);
+		getCurrentView().loadFeatureDiagram(feature.getFeaturediagramm(), false);
 		getCurrentTab().setText(getCurrentFeatureDiagram().getRoot().getName());
 	}
 	
@@ -143,7 +144,7 @@ public class FeatureModelEditorController {
 	public void loadComponentFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_COMPONENTFEATUREDIAGRAM_EVENT) FXGraphicalFeature fxGraFeature) {
 		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", CompareST.FEATURE_MODELS);
 		try {
-			FeatureDiagram featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.loadFeatureDiagram(filepath));
+			FeatureDiagramm featureDiagram = FeatureDiagramSerialiazer.loadFeatureDiagram(filepath);
 			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
 			((ComponentFeature) fxGraFeature.getFeature()).getChildren().clear();
 			List<FXGraphicalFeature> temp = new ArrayList<FXGraphicalFeature>(fxGraFeature.getChildFeatures());
@@ -165,7 +166,7 @@ public class FeatureModelEditorController {
 	 * returns the current shown diagram
 	 * @return
 	 */
-	public FeatureDiagram getCurrentFeatureDiagram() {
+	public FeatureDiagramm getCurrentFeatureDiagram() {
 		return getCurrentView().getCurrentModel();
 	}
 	
@@ -370,7 +371,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setConfiguration(@UIEventTopic(FDEventTable.SELECT_CONFIGURATION_EVENT) FXGraphicalFeature fxGraFeature) {
 		try {
-			FeatureDiagram fd = new FeatureDiagram(((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm());
+			FeatureDiagramm fd = ((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm();
         	FMESetConfigurationDialog dialog = new FMESetConfigurationDialog("Select Configuration", ((ComponentFeature) fxGraFeature.getFeature()));
         	Rectangle2D primaryScreenBounds = Screen.getPrimary().getBounds();
 			Double x = primaryScreenBounds.getWidth() * .5 - dialog.getDialog().getWidth() * .5;
@@ -459,13 +460,13 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject 
 	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) String filepath) {
-		FeatureDiagram featureDiagram;
+		FeatureDiagramm featureDiagram;
 		if (filepath.equals("")) {
 			filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", CompareST.FEATURE_MODELS);
 			if (filepath.equals("")) { return; }
 		}
 		try {	
-			featureDiagram = new FeatureDiagram(FeatureDiagramSerialiazer.loadFeatureDiagram(filepath));
+			featureDiagram = FeatureDiagramSerialiazer.loadFeatureDiagram(filepath);
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 			return;
@@ -475,7 +476,7 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram featureDiagram) {
+	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagramm featureDiagram) {
 		Tab tab = getOpenedTabOrNull(featureDiagram);
 		if (tab == null) {
 			tab = createNewTab(featureDiagram.getRoot().getName());

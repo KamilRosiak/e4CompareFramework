@@ -12,10 +12,10 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view.view.ConstraintView;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import javafx.embed.swt.FXCanvas;
@@ -23,7 +23,7 @@ import javafx.embed.swt.FXCanvas;
 public class ConstraintViewController {
 	private ServiceContainer services;
 	private ConstraintView view;
-	private FeatureDiagram currentModel;
+	private FeatureDiagramm currentModel;
 	
 	@PostConstruct
 	public void createPartControl(Composite parent, ServiceContainer services) {

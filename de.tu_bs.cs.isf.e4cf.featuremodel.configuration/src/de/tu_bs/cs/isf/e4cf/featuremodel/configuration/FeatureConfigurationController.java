@@ -15,10 +15,10 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.swt.widgets.Composite;
 
+import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.emf.EMFResourceSetManager;
@@ -31,7 +31,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelC
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.util.FeatureConfigurationBuilder;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.FeatureConfigurationView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.LoadFeatureConfigurationResourceDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import featureConfiguration.FeatureConfiguration;
@@ -67,7 +66,7 @@ public class FeatureConfigurationController {
 	
 	@Optional
 	@Inject
-	public void createConfiguration(@UIEventTopic(FeatureModelConfigurationEvents.EVENT_CREATE_CONFIGURATION) FeatureDiagram fd) {
+	public void createConfiguration(@UIEventTopic(FDEventTable.EVENT_CREATE_CONFIGURATION) FeatureDiagramm fd) {
 		// construct feature configuration 
 		services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
 		featureConfiguration = featureConfigurationBuilder.createFeatureConfiguration(fd);
@@ -94,7 +93,7 @@ public class FeatureConfigurationController {
 		}
 				
 		// Only continue save process if feature diagram is already contained in a resource
-		FeatureDiagram fd = (FeatureDiagram) featureConfiguration.getFeatureDiagram();
+		FeatureDiagramm fd = featureConfiguration.getFeatureDiagram();
 		if (fd.eResource() == null) {
 			boolean saveFd = !RCPMessageProvider.questionMessage("Save Feature Configuration", 
 					"The feature model is not contained in a resource. Please save it first.");
@@ -138,14 +137,20 @@ public class FeatureConfigurationController {
 		LoadFeatureConfigurationResourceDialog loadDialog = new LoadFeatureConfigurationResourceDialog("Load Feature Configuration", 
 				1024, 30);
 		
-		loadDialog.open();
+		//loadDialog.open();
+		//String resourcePath = loadDialog.getResourcePath();
 		
-		String resourcePath = loadDialog.getResourcePath();
-		if (resourcePath == null) {
-			return;
+		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Configuration", CompareST.FEATURE_CONFIGURATIONS);
+		
+		//System.out.println(resourcePath);
+		//System.out.println(filepath);
+		
+		if (!filepath.equals("")) {
+			loadConfiguration(filepath);
 		}
-		
-		loadConfiguration(resourcePath);
+		//if (resourcePath != null) {
+		//	loadConfiguration(resourcePath);
+		//}
 	}
 	
 	@Optional
@@ -175,12 +180,12 @@ public class FeatureConfigurationController {
 			boolean loadFeatureModel = RCPMessageProvider.questionMessage("Load Feature Configuration", 
 					"Do you want to load the feature model associated with the loaded feature configuration?");
 			if (loadFeatureModel) {
-				services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM, new FeatureDiagram(fc.getFeatureDiagram()));
+				services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM, fc.getFeatureDiagram());
 			}
 		}
 		
 		// create the view
-		view.setFeatureDiagram(new FeatureDiagram(fc.getFeatureDiagram()));
+		view.setFeatureDiagram(fc.getFeatureDiagram());
 		view.refreshView(fc);
 		
 		// set internals

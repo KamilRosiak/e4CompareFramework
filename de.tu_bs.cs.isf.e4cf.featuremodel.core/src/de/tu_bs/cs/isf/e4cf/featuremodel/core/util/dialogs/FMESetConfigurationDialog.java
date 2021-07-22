@@ -61,8 +61,9 @@ public class FMESetConfigurationDialog {
 		});
 		FeatureDiagramm fd = componentFeature.getFeaturediagramm();
 		configListView.getItems().setAll(fd.getFeatureConfiguration());
-		if (componentFeature.getConfigurationfeature() != null && componentFeature.getConfigurationfeature().size() > 0) {
-			List<FeatureConfiguration> existingConfigs = componentFeature.getConfigurationfeature().stream()
+		if (componentFeature.getChildren().size() > 0) {
+			List<FeatureConfiguration> existingConfigs = componentFeature.getChildren().stream()
+					.map(ConfigurationFeature.class::cast)
 					.map(ConfigurationFeature::getConfigurationfeature)
 					.collect(Collectors.toList());
 			configListView.getItems().removeAll(existingConfigs);
