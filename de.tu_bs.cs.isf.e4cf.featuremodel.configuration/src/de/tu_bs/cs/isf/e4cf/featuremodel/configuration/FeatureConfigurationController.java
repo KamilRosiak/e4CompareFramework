@@ -33,6 +33,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.FeatureConfiguration
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.LoadFeatureConfigurationResourceDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 import featureConfiguration.FeatureConfiguration;
 
 public class FeatureConfigurationController {
@@ -198,18 +199,19 @@ public class FeatureConfigurationController {
 		try {
 			FeatureConfigurationChecker configChecker = new DimacsCnfChecker();
 			configChecker.initialize(featureConfiguration);
+			String name = featureConfiguration.getName().equals("") ? "The current configuration" : featureConfiguration.getName();
 			
 			OperationState op = configChecker.check();
 			switch (op) {
 				case SUCCESS: {
 					boolean validConfig = configChecker.getResult();
 					if (validConfig) {
-						RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, "The current configuration is valid.");						
+						RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, name + " is valid.");						
 					} else {
 						if (op.hasInfo()) {
 							RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, op.getInfo());
 						} else {
-							RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, "The current configuration is invalid.");
+							RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, name + " is invalid.");
 						}
 					} 
 				} break;
@@ -245,6 +247,22 @@ public class FeatureConfigurationController {
 
 	public FeatureConfigurationView getView() {
 		return view;
+	}
+
+	public FeatureDiagramm loadFeatureModel() {
+		FeatureDiagramm featureDiagram;
+		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", CompareST.FEATURE_MODELS);
+		if (filepath.equals("")) { 
+			return null; 
+		}
+		try {	
+			featureDiagram = FeatureDiagramSerialiazer.loadFeatureDiagram(filepath);
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+		return featureDiagram;
+		
 	}
 
 	

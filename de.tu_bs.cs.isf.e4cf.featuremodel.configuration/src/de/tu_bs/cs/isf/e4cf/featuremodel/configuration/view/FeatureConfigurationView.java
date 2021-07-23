@@ -15,7 +15,6 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfigurationController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelConfigurationStrings;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import featureConfiguration.FeatureConfiguration;
 import javafx.beans.binding.Bindings;
@@ -31,6 +30,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
@@ -46,6 +46,7 @@ public class FeatureConfigurationView {
 	private Composite parent;
 	private TreeView<FeatureSelectionElement> featureSelectionTree;
 	private TableView<FeatureConfiguration> configTable;
+	private TitledPane featureSelectionPane;
 
 	private FeatureDiagramm featureDiagram;
 	
@@ -64,9 +65,7 @@ public class FeatureConfigurationView {
 		
 		// create a toolbar for controls
 		Button saveButton = JavaFXBuilder.createButton("Save Configuration", event -> {
-			String workspace = RCPContentProvider.getCurrentWorkspacePath();
-			String filename = featureConfiguration.getName() + "." + FeatureModelConfigurationStrings.FC_FILE_EXTENSION;
-			controller.saveConfiguration(workspace + CompareST.FEATURE_CONFIGURATIONS + "/" + filename);
+			saveConfiguration();
 		});
 		Button loadButton = JavaFXBuilder.createButton("Load Configuration", event -> {
 			controller.loadConfiguration(new Object());
@@ -75,8 +74,20 @@ public class FeatureConfigurationView {
 			controller.checkCurrentConfiguration();				
 		});
 		
+		Button loadFeatureModelButton = JavaFXBuilder.createButton("Load Feature Model", event -> {
+			FeatureDiagramm temp = controller.loadFeatureModel();
+			if (temp == null) {
+				System.out.println("No FeatureDiagram selected.");
+			} else {
+				setFeatureDiagram(temp);
+			}
+		});
+		
+		Button createConfigurationButton = JavaFXBuilder.createButton("Create Configuration", event -> {
+			controller.createConfiguration(featureDiagram);
+		});
 		FXToolbar toolbar = new FXToolbar(30, 10);
-		toolbar.addItems(saveButton, loadButton, checkButton);
+		toolbar.addItems(loadFeatureModelButton, loadButton, createConfigurationButton, saveButton, checkButton);
 		layout.setTop(toolbar.getHbox());
 		BorderPane.setMargin(toolbar.getHbox(), new Insets(10));
 
@@ -97,9 +108,9 @@ public class FeatureConfigurationView {
 		configTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		configTable.setRowFactory(row -> {
 			TableRow<FeatureConfiguration> configRow = new TableRow<>();
-			configRow.setOnMouseClicked(event -> {
-				if (event.isShiftDown() && event.getClickCount() == 1 && !configRow.isEmpty()) {
-					refreshView(configRow.getItem());
+			configTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+				if (newSelection != null) {
+					refreshView(newSelection);
 				}
 			});
 			
@@ -111,6 +122,7 @@ public class FeatureConfigurationView {
                 	FeatureConfiguration config = configRow.getItem();
                 	configTable.getItems().remove(config);
                 	removeFeatureConfiguration(config);
+                	saveConfiguration();
                 }  
             });  
             contextMenu.getItems().add(removeMenuItem);
@@ -122,7 +134,9 @@ public class FeatureConfigurationView {
 		
 		// feature configuration tree
 		featureSelectionTree = new TreeView<FeatureSelectionElement>();
-		layout.setCenter(featureSelectionTree);
+		featureSelectionPane = new TitledPane("", featureSelectionTree);
+		featureSelectionPane.setCollapsible(false);
+		layout.setCenter(featureSelectionPane);
 		// selection event
 		featureSelectionTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue == null) {
@@ -137,7 +151,13 @@ public class FeatureConfigurationView {
 		Scene scene = new Scene(layout);
 		canvas.setScene(scene);
 	}
-	
+
+	private void saveConfiguration() {
+		String workspace = RCPContentProvider.getCurrentWorkspacePath();
+		String filename = featureConfiguration.getName() + "." + FeatureModelConfigurationStrings.FC_FILE_EXTENSION;
+		controller.saveConfiguration(workspace + CompareST.FEATURE_CONFIGURATIONS + "/" + filename);
+	}
+	 
 	private void removeFeatureConfiguration(FeatureConfiguration config) {
 		featureDiagram.getFeatureConfiguration().remove(config);
 	}
@@ -241,6 +261,11 @@ public class FeatureConfigurationView {
 	public void setFeatureDiagram(FeatureDiagramm fd) {
 		// set name of current diagram 
 		loadConfigurations(fd);
+		featureSelectionTree.setRoot(null);
 		this.featureDiagram = fd;
+		this.featureSelectionPane.setCollapsible(true);
+		this.featureSelectionPane.setText("Current Feature Model: " + fd.getRoot().getName());
+		this.featureSelectionPane.setCollapsible(false);
+		
 	}
 }
