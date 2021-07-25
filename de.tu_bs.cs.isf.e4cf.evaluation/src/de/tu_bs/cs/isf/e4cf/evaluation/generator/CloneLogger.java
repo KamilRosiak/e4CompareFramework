@@ -7,7 +7,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,41 +26,94 @@ public class CloneLogger {
 
 	private final String DEFAULT_LOG_PATH = " 02 Trees";
 
-	private List<String> log = new ArrayList<String>();
+	private Map<Integer, List<String>> variantLogs = new HashMap<>();
+	private List<String> currentVariantLog;
 	@Inject
 	private ServiceContainer services;
-
+	
+	public Map<Integer, List<String>> getLogs() {
+		return variantLogs;
+	}
+	
+	public List<String> getLog() {
+		return currentVariantLog;
+	}
+	
+	public Path getOutputPath() {
+		return services.workspaceFileSystem.getWorkspaceDirectory().getFile().resolve(DEFAULT_LOG_PATH);
+	}
+	
+	/** Directly write a message into the current variants log */
 	public void logRaw(String message) {
-		log.add(message);
-	}
-
-	public void resetLog() {
-		log = new ArrayList<>();
-	}
-
-	public void outputLog() {
-		// Recreate relative path from a project directory to the selected file in DEFAULT_LOG_PATH
-		Path workspaceRoot = services.workspaceFileSystem.getWorkspaceDirectory().getFile();
-		Path selectedPath = Paths.get(services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath());
-		String fileName = "";
-		
-		if (services.rcpSelectionService.getCurrentSelectionFromExplorer().isDirectory()) {
-			// For directories create a generic filename
-			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount());
-			fileName = "CloneGenerator.log";
-		} else {
-			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount()-1);
-			fileName = services.rcpSelectionService.getCurrentSelectionFromExplorer().getFileName() + ".log";		
+		if (currentVariantLog == null) {
+			System.out.println("LOG ERROR: No variant to log to specified!");
+			return;
 		}
-		
-		Path logPath = workspaceRoot.resolve(DEFAULT_LOG_PATH).resolve(selectedPath);
-		write(logPath, fileName, log);
+		currentVariantLog.add(message);
+	}
+	
+	/** Create a new Log for a new variant */
+	public void logVariant(final int parentId, final int variantId) {
+		ArrayList<String> newLog = new ArrayList<>();
+		currentVariantLog = newLog;
+		// reconstruct the logs from the base (id=0) variant up to this parent
+		ArrayList<Integer> parentSequence = new ArrayList<>();
+		reconstructVariantTaxonomy(parentId, parentSequence);
+		// reverse parentSequence to start from 0 for log reconstruction
+		Collections.reverse(parentSequence);
+
+		for (int reconstructionId : parentSequence) {
+			if (variantLogs.containsKey(reconstructionId)) {
+				List<String> predecessorLog = variantLogs.get(reconstructionId);
+				for (String entry : predecessorLog) {
+					logRaw(entry);
+				}
+			}
+		}
+		// begin the section of this variant
+		logRaw(CloneST.VARIANT + " " + parentId + "~" + variantId);
+		variantLogs.put(variantId, currentVariantLog);
+	}
+	
+	/** 
+	 * Reconstructs the sequence of variants up to the given id, 
+	 * e.g.taxonomy will be #[10,6,3,1,0] 
+	 */
+	private void reconstructVariantTaxonomy(int id, List<Integer> taxonomy) {
+		if (variantLogs.containsKey(id)) {
+			taxonomy.add(id);
+			List<String> predecessorLog = variantLogs.get(id);
+			int predecessorId = Integer.parseInt(predecessorLog.get(0).split("[ ,~]")[1]);
+			reconstructVariantTaxonomy(predecessorId, taxonomy);
+		} 
+	}
+	
+	public void resetLogs() {
+		variantLogs = new HashMap<>();
+	}
+	
+	public void outputLog(Path targetDir, String fileName) {
+		// Flatten the logs and add separators
+		ArrayList<String> content = new ArrayList<String>();
+		for (List<String> log : variantLogs.values()) {
+			content.add(CloneST.LOG_SEPARATOR);
+			content.addAll(log);
+		}
+		write(targetDir, fileName, content);
 	}
 
+	/**
+	 * Utility for saving content to a file 
+	 * @param targetDir directory relative to the default path (workspace/ 02 Trees)
+	 * @param fileName The name of the created file
+	 * @param content
+	 */
 	public void write(Path targetDir, String fileName, Iterable<? extends CharSequence> content) {
 		try {
-			Files.createDirectories(targetDir);
+			targetDir = getOutputPath().resolve(targetDir);
 			
+			Files.createDirectories(targetDir);
+		
 			Files.write(targetDir.resolve(fileName), content,
 					StandardOpenOption.CREATE,
 			        StandardOpenOption.TRUNCATE_EXISTING);
@@ -71,14 +127,19 @@ public class CloneLogger {
 	
 	public void read(String filePath) {
 		try {
-			log = Files.readAllLines(Paths.get(filePath));
+			List<String> content = Files.readAllLines(Paths.get(filePath));
+			variantLogs = new HashMap<Integer, List<String>>();
+			for (String line : content) {
+				if (line.equals(CloneST.LOG_SEPARATOR)) {
+					currentVariantLog = new ArrayList<String>();
+					variantLogs.put(variantLogs.size()-1, currentVariantLog);
+				} else {
+					currentVariantLog.add(line);
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public List<String> getLog() {
-		return log;
 	}
 	
 	public String readAttr(String logEntry, String key) {
@@ -98,10 +159,10 @@ public class CloneLogger {
 	}
 	
 	private void yeeeeeeeeeeeeeeet(String contains) {
-		for (int i=0; i < log.size(); i++) {
-			String entry = log.get(i);
+		for (int i=0; i < currentVariantLog.size(); i++) {
+			String entry = currentVariantLog.get(i);
 			if(!entry.startsWith(CloneST.CLONE) && entry.contains(contains)) {
-				log.remove(entry);
+				currentVariantLog.remove(entry);
 			}
 		}
 	}

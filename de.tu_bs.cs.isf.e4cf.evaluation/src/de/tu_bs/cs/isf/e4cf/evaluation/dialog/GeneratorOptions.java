@@ -8,12 +8,10 @@ import de.tu_bs.cs.isf.e4cf.evaluation.generator.Granularity;
 public class GeneratorOptions {
 	public Path outputRoot;
 	public Granularity granularity;
-	public boolean enableSaveAll;
-	public boolean enableCrossover;
-	public int weightType1;
-	public int weightType2;
-	public int weightType3;
-	public int mutations;
+	public int variants;
+	public int crossoverPercentage;
+	public int modificationRatioPercentage;
+	public int variantChangeDegree;
 }
 
 

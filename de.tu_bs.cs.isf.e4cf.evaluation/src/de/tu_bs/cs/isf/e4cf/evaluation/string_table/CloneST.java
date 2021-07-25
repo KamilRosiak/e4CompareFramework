@@ -29,13 +29,14 @@ public class CloneST {
 	
 	// Taxonomy Functions
 	public static final String TAX = "Tax_";
-	public static final String SYSTEMATIC_RENAMING = TAX + "SystematicRenaming";
-	public static final String EXPRESSION = TAX + "ExpressionForParameter";
-	public static final String ARBITRARY_RENAMING = TAX + "ArbitraryRenaming";
-	public static final String INLINE_INSERTION_NODE = TAX + "SmallInlineInsertion_Node";
-	public static final String INLINE_INSERTION_ATTR = TAX + "SmallInlineInsertion_Attribute";
-	public static final String INLINE_DELETION_NODE = TAX + "SmallInlineDeletion_Node";
-	public static final String INLINE_DELETION_ATTR = TAX + "SmallInlineDeletion_Attribute";
-	public static final String DELETE_LINES = TAX + "DeleteLines";
-	public static final String INSERT_LINES = TAX + "InsertLines";
+	// Type II
+	public static final String REFACTOR_IDENT = TAX + "RefactorIdentifier";
+	public static final String REPLACE_IDENT = TAX + "ReplaceIdentifier";
+	public static final String LITERAL_CHANGE = TAX + "LiteralChange";
+	public static final String TYPE_CHANGE = TAX + "TypeChange";
+	// TODO Type III
+	
+	// Variant Functions
+	public static final String LOG_SEPARATOR = "==========================================================";
+	public static final String VARIANT = "NewVariant";
 }

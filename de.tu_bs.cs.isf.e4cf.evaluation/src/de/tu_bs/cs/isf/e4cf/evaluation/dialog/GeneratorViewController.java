@@ -11,11 +11,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.DirectoryChooser;
+import javafx.util.StringConverter;
 
 public class GeneratorViewController {
 	
@@ -45,26 +46,16 @@ public class GeneratorViewController {
 		}
 		
 		// Options
-		options.enableCrossover = checkboxCrossover.isSelected();
-		options.enableSaveAll = checkboxSaveAll.isSelected();
 		try {
-			options.mutations = Integer.parseInt(textNumberMutations.getText());
+			options.variants = Integer.parseInt(textNumberVariants.getText());
 		} catch (NumberFormatException e) {
 			System.out.println("WARN! There was an issue parsing the mutation count, falling back to default value.");
-			options.mutations = 1;
+			options.variants = 2;
 		}
 		
-		// Type Weights
-		try {
-			options.weightType1 = Integer.parseInt(textTypeWeight1.getText());
-			options.weightType2 = Integer.parseInt(textTypeWeight2.getText());
-			options.weightType3 = Integer.parseInt(textTypeWeight3.getText());
-		} catch (NumberFormatException e) {
-			System.out.println("WARN! There was an issue parsing the clone type weights, falling back to default values.");
-			options.weightType1 = 50;
-			options.weightType2 = 35;
-			options.weightType3 = 15;
-		}
+		options.crossoverPercentage = (int)Math.round(sliderCrossoverVariants.getValue());
+		options.modificationRatioPercentage = (int)Math.round(sliderModificationRatio.getValue());
+		options.variantChangeDegree = (int)Math.round(sliderChangeDegree.getValue());
 		
 		return options;
 	}
@@ -74,11 +65,33 @@ public class GeneratorViewController {
 		textRootPath.setText(services.workspaceFileSystem.getWorkspaceDirectory().getFile().toString() + "\\ 02 Trees");
 	
 		// restrict some text fields to numbers only
-		restrictTextfieldToNumbers(textNumberMutations);
-		restrictTextfieldToNumbers(textTypeWeight1);
-		restrictTextfieldToNumbers(textTypeWeight2);
-		restrictTextfieldToNumbers(textTypeWeight3);
+		restrictTextfieldToNumbers(textNumberVariants);
 		
+		// link sliders to text fields
+		linkTextWithSlider(textCrossoverVariants, sliderCrossoverVariants);
+		linkTextWithSlider(textModificationRatio, sliderModificationRatio);
+		
+		// change tick labels of variant change
+		sliderChangeDegree.setLabelFormatter(new StringConverter<Double>() {
+            @Override
+            public String toString(Double n) {
+                if (n <= 1.0) return "Less";
+                if (n >= 5.0) return "More";
+                return "";
+            }
+
+            @Override
+            public Double fromString(String s) {
+                switch (s) {
+                    case "Less":
+                        return 1d;
+                    case "More":
+                    	return 5d;
+                    default:
+                        return 3d;
+                }
+            }
+        });
 	}
 	
 	private void restrictTextfieldToNumbers(TextField field) {
@@ -91,6 +104,36 @@ public class GeneratorViewController {
 		        }
 		    }
 		});
+	}
+	
+	/** Links a text field to a slider, limits it's input to numbers and range according to the slider*/
+	private void linkTextWithSlider(TextField field, Slider slider) {
+		slider.valueProperty().addListener(new ChangeListener<Number>() {
+			  @Override
+			  public void changed(ObservableValue<? extends Number> arg0, Number oldValue, Number newValue) 
+			  {   
+				String v = String.valueOf(newValue);
+				double d = Double.parseDouble(v);
+			    field.setText("" + Math.round(d));
+			  }
+		});
+		
+		field.textProperty().addListener(new ChangeListener<String>() {
+		    @Override
+		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		    	String v = newValue;
+		        if (!newValue.matches("\\d*")) {
+		        	v = newValue.replaceAll("[^\\d]", "");
+		        }
+		        
+		        if (!v.equals("")) {
+			        double d = Math.min(Math.max(Double.parseDouble(v), slider.getMin()), slider.getMax()); 		
+			        field.setText(""+Math.round(d));
+			        slider.setValue(d);
+		        }
+		    }
+		});
+		
 	}
 	
 	// ------ RootPath Settings ------
@@ -128,22 +171,20 @@ public class GeneratorViewController {
 	
 	// ------ Generation Settings ------
 	
-	@FXML
-	public CheckBox checkboxCrossover;
-	
 	@FXML 
-	public CheckBox checkboxSaveAll;
-	
-	@FXML 
-	public TextField textNumberMutations;
+	public TextField textNumberVariants;
 	
 	@FXML
-	public TextField textTypeWeight1;
+	public TextField textCrossoverVariants;
+	@FXML
+	public Slider sliderCrossoverVariants;
 	
 	@FXML
-	public TextField textTypeWeight2;
+	public TextField textModificationRatio;
+	@FXML
+	public Slider sliderModificationRatio;
 	
 	@FXML
-	public TextField textTypeWeight3;
+	public Slider sliderChangeDegree;
 	
 }

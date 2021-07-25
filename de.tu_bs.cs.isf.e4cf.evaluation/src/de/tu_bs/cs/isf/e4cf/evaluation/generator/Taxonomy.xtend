@@ -1,7 +1,5 @@
 /**
- * This Class wraps the clone editing taxonomy of 
- * 2009 - Roy, C. - A Mutation Injectionbased Automatic Framework for Evaluating Code Clone Detection Tools
- * Using the generic data structure and clone helper.
+ * This Class performs edits on a given tree with provided constraints
  * 
  * TODO Ensure Syntactical Correctness after an operation
  */
@@ -14,6 +12,11 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
+import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
+import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.getAllChildren
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
+import java.lang.reflect.Method
 
 @Creatable
 @Singleton
@@ -24,128 +27,99 @@ class Taxonomy {
 	
 	// TYPE I
 	
-	def copyAndPaste(Node source, Node target) {
-		logger.logRaw("Tax_CopyPaste")
-		helper.copyRecursively(source, target)
-	}
-	
+	// Plain text clones not applicable while generating variants
 	// Comments and Whitespace Changes not applicable
 	// Formatting Changes not applicable
-	
-	/** Returns a random method of clone type I */
-	def getType1Method() {
-		return this.class.methods.findFirst[m | m.name == "copyAndPaste"]
-	}
 	
 	// TYPE II
 	
 	/**
 	 * @param container is the container of the declaration of the value to modify 
 	 */
-	def systematicRenaming(Node container, String newValue) {
-		logger.logRaw(SYSTEMATIC_RENAMING)
+	def refactorIdentifiers(Node container, String newValue) {
+		logger.logRaw(REFACTOR_IDENT)
 		helper.refactor(container, newValue)
 	}
 	
-	/**
-	 * Swap two function argument nodes
-	 */
-	def arbitraryRenaming(Node n1, Node n2) {
-		logger.logRaw(ARBITRARY_RENAMING)
-		helper.swap(n1, n2)
+	def replaceIdentifier(Node container, String newName) {
+		logger.logRaw(REPLACE_IDENT)
+		helper.setAttributeValue(container, "Name", newName)
+	}
+	
+	def literalChange(Node container, String newValue) {
+		logger.logRaw(LITERAL_CHANGE)
+		helper.setAttributeValue(container, "Value", newValue)
+	}
+	
+	def typeChange(Node container, String newType) {
+		logger.logRaw(TYPE_CHANGE)
+		helper.setAttributeValue(container, "Type", newType)
 	}
 	
 	/** Returns a random method of clone type II */
 	def getType2Method() {
 		val rng = new Random()
 		val type2Methods = #[
-			this.class.methods.filter[m | m.name == "arbitraryRenaming"],
-			this.class.methods.filter[m | m.name == "systematicRenaming"]
+			this.class.methods.filter[m | m.name == "refactorIdentifiers"],
+			this.class.methods.filter[m | m.name == "replaceIdentifier"],
+			this.class.methods.filter[m | m.name == "literalChange"],
+			this.class.methods.filter[m | m.name == "changeType"]
 		].flatten
 		return type2Methods.get(rng.nextInt(type2Methods.size));
 	}
 	
+	def performType2Modification(Tree tree) {	
+		val m = getType2Method()
+		switch (m.name) {
+			case "refactorIdentifiers": {
+				val declaration = tree.root.allChildren.filter[ n | 
+					n.standardizedNodeType == NodeType.VARIABLE_DECLARATION 
+					&& !n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
+				].random as Node	
+				
+				m.tryInvoke(declaration, "I" + new Random().nextInt(Integer.MAX_VALUE))
+			}
+			
+			case "replaceIdentifier": {
+				val ident = tree.root.allChildren.filter[ n | 
+					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
+				].random as Node	
+				
+				m.tryInvoke(ident, "N" + new Random().nextInt(Integer.MAX_VALUE))
+			}
+			
+			case "literalChange": {
+				val literal = tree.root.allChildren.filter[ n | 
+					n.standardizedNodeType == NodeType.LITERAL
+				].random as Node 
+				
+				m.tryInvoke(literal, "L" + new Random().nextInt(Integer.MAX_VALUE))
+			}
+			
+			case "changeType": {
+				val declaration = tree.root.allChildren.filter[ n | 
+					n.standardizedNodeType == NodeType.VARIABLE_DECLARATION 
+					&& !n.attributes.filter[a | a.attributeKey == "Type"].nullOrEmpty
+				].random as Node 
+				
+				m.tryInvoke(declaration, #["boolean", "int", "String", "float", "Object"].random as String)
+			}
+		}
+	}
+	
+	private def tryInvoke(Method m, Node n, String value) {
+		if (n !== null) {
+			m.invoke(this, n, value)
+		} else {
+			System.err.println('''Error with «m.name» modification''')  // TODO: how often does this happen?
+		}
+	}
+	
 	// TYPE III
 	
-	def expressionsForParameters(Node scope, String parameter, String expression) {
-		// logger.logRaw(EXPRESSION)
-		// TODO: this would take a lot of work for a result that may not always make sense (type- and operational semantics)
-		// generally one would:
-		// build expression from NodeImpl (!!HARD!!), maybe reduce possibilities to arithmetics
-		// replace all occurrences of the parameter NameExpressions with the build expression tree
+	def copyAndPaste(Node source, Node target) {
+		logger.logRaw("Tax_CopyPaste")
+		helper.copyRecursively(source, target)
 	}
 	
-	def smallInlineInsertion(Node parent, Node insertion) {
-		logger.logRaw(INLINE_INSERTION_NODE)
-		helper.move(insertion, parent)
-	}
-	
-	def smallInlineInsertion(Node parent, Node insertion, int index) {
-		logger.logRaw(INLINE_INSERTION_NODE)
-		helper.move(insertion, parent, index)
-	}
-	
-	def smallInlineInsertion(Node parent, String attributeKey, String appendage) {
-		logger.logRaw(INLINE_INSERTION_ATTR)
-		val oldValue = helper.getAttributeValue(parent, attributeKey)
-		helper.setAttributeValue(parent, attributeKey, oldValue + appendage)
-	}
-	
-	def smallInlineInsertion(Node parent, String attributeKey, String insertion, int startIndex) {
-		logger.logRaw(INLINE_INSERTION_ATTR)
-		val oldValue = helper.getAttributeValue(parent, attributeKey)
-		var newValue = oldValue.substring(0, startIndex) + insertion + oldValue.substring(startIndex)
-		helper.setAttributeValue(parent, attributeKey, newValue)
-	}
-	
-	def smallInlineDeletion(Node removal) {
-		logger.logRaw(INLINE_DELETION_NODE)
-		helper.delete(removal)
-	}
-	
-	def smallInlineDeletion(Node parent, String attributeKey, String removePhrase) {
-		logger.logRaw(INLINE_DELETION_ATTR)
-		var value = helper.getAttributeValue(parent, attributeKey)
-		value.replaceAll(removePhrase, "")
-		helper.setAttributeValue(parent, attributeKey, value)
-	}
-	
-	def deleteLines(Node... nodes) {
-		logger.logRaw(DELETE_LINES)
-		nodes.forEach[ n |
-			helper.delete(n)
-		]
-	}
-	
-	def insertLines(Node parent, int targetIndex, Node... insertions) {
-		logger.logRaw(INSERT_LINES)
-		var index = targetIndex
-		for (n : insertions)
-			helper.move(n, parent, index++)
-	}
-	
-	def modifyLines() {
-		// TODO This is hard
-	}
-	
-	/** Returns a random method of clone type III */
-	def getType3Method() {
-		val rng = new Random()
-		val type3Methods = #[
-			this.class.methods.filter[m | m.name == "expressionsForParameters"],
-			this.class.methods.filter[m | m.name == "smallInlineInsertion"],
-			this.class.methods.filter[m | m.name == "smallInlineDeletion"],
-			this.class.methods.filter[m | m.name == "deleteLines"],
-			this.class.methods.filter[m | m.name == "insertLines"]/*, TODO add once modifyLines is implemented
-			this.class.methods.filter[m | m.name == "insertLines"], */
-		].flatten
-		return type3Methods.get(rng.nextInt(type3Methods.size));
-	}
-	
-// Removed as we don't consider Type IV clones	
-//	def reorderDeclarations() {}
-//	
-//	def reorderStatements() {}
-//	
-//	def controlReplacements() {} 
 }

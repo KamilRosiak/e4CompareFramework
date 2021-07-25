@@ -14,6 +14,7 @@ import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
+import java.util.Random
 
 @Creatable
 @Singleton
@@ -22,13 +23,20 @@ class CloneHelper {
 	@Inject CloneLogger logger
 	@Inject GsonExportService exporter
 	@Inject GsonImportService importer
-	Node trackingTreeRoot;
+	Tree trackingTree;
 	
 	/** Sets up the shadow tree, to track modifications on original tree and remove invalid ones */
 	def setTrackingTree(Tree original) {
-		val originalTree = exporter.exportTree((original as TreeImpl))
-		val copyTree = importer.importTree(originalTree)
-		trackingTreeRoot = copyTree.root
+		trackingTree = deepCopy(original)
+	}
+	
+	def getTrackingTree() {
+		return trackingTree
+	}
+	
+	def deepCopy(Tree t) {
+		val originalTree = exporter.exportTree((t as TreeImpl))
+		return importer.importTree(originalTree)
 	}
 	
 	/**
@@ -57,7 +65,7 @@ class CloneHelper {
 		shadowClone.UUID = UUID.fromString(clone.UUID.toString)
 		shadowClone.standardizedNodeType = source.standardizedNodeType
 		shadowClone.variabilityClass = source.variabilityClass
-		val shadowParent = trackingTreeRoot.allChildren.findFirst[n | n.UUID == targetParent.UUID]
+		val shadowParent = trackingTree.root.allChildren.findFirst[n | n.UUID == targetParent.UUID]
 		shadowParent.children.add(shadowClone)
 		shadowClone.parent = shadowParent
 		source.attributes.forEach[a | clone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]
@@ -106,7 +114,7 @@ class CloneHelper {
 		if(previousMove !== null) {
 			logger.log.remove(previousMove)
 			
-			val originalParentUuid = trackingTreeRoot.allChildren.findFirst[n | n.UUID == source.UUID].parent.UUID
+			val originalParentUuid = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID].parent.UUID
 			// A move back (target parent == original source parent) kills a previous move
 			if(originalParentUuid != targetParent.UUID) {
 				// If the node was already moved then the target of the previous move operation is replaced by a new one
@@ -150,7 +158,7 @@ class CloneHelper {
 		if(previousMovePos !== null) {
 			logger.log.remove(previousMovePos)
 			
-			val originalSource = trackingTreeRoot.allChildren.findFirst[n | n.UUID == source.UUID]
+			val originalSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
 			val originalIndex = originalSource.parent.children.indexOf(originalSource)
 			// A move back (target index == original source index) kills a previous move
 			if(originalIndex != index) {
@@ -209,7 +217,7 @@ class CloneHelper {
 		// remove node subtree
 		source.parent.children.remove(source)
 		// also remove subtree from tracking tree
-		val shadowSource = trackingTreeRoot.allChildren.findFirst[n | n.UUID.toString == source.UUID.toString]
+		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID.toString == source.UUID.toString]
 		shadowSource.parent.children.remove(shadowSource)
 	}
 	
@@ -237,13 +245,13 @@ class CloneHelper {
 	 * Returns all children of the given node in depth first order
 	 * @param root start node
 	 */
-	def getAllChildren(Node root) {
+	def static getAllChildren(Node root) {
 		var nodes = newArrayList
 		root._getAllChildren(nodes)
 		return nodes
 	}
 	
-	private def void _getAllChildren(Node root, List<Node> nodes) {
+	private static def void _getAllChildren(Node root, List<Node> nodes) {
 		root.children.forEach[c | nodes.add(c); c._getAllChildren(nodes)
 		]
 	}
@@ -323,7 +331,7 @@ class CloneHelper {
 		if(previousSetAttr !== null) {
 			logger.log.remove(previousSetAttr)
 			
-			val originaNode = trackingTreeRoot.allChildren.findFirst[n | n.UUID == node.UUID]		
+			val originaNode = trackingTree.root.allChildren.findFirst[n | n.UUID == node.UUID]		
 			val originalValue = originaNode.getAttributeValue(attributeKey)
 			
 			// A move back (new value == original value) kills a previous move
@@ -348,6 +356,11 @@ class CloneHelper {
 		} catch (NoSuchElementException e) {
 			return null
 		}
+	}
+	
+	/** Returns a random entry of an iterable */
+	def static random(Iterable<? extends Object> l){
+		return l.get(new Random().nextInt(l.size))
 	}
 	
 	// utility: nest nodes e.g. wrap statsequence in control block

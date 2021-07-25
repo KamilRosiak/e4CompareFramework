@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="160.0" prefWidth="593.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorViewController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="189.0" prefWidth="593.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorViewController">
    <children>
       <HBox alignment="TOP_CENTER" prefHeight="5.0" prefWidth="600.0" spacing="3.0">
          <children>
@@ -24,9 +24,9 @@
       </HBox>
       <HBox spacing="5.0" VBox.vgrow="ALWAYS">
          <children>
-            <VBox prefHeight="200.0" prefWidth="135.0" spacing="2.0">
+            <VBox prefHeight="119.0" prefWidth="149.0" spacing="2.0">
                <children>
-                  <Label minWidth="125.0" prefHeight="17.0" prefWidth="137.0" text="Clone Granularity Level" />
+                  <Label minWidth="125.0" prefHeight="17.0" prefWidth="176.0" text="Granularity" />
                   <RadioButton fx:id="radioGranularityClass" disable="true" mnemonicParsing="false" text="Class" />
                   <RadioButton fx:id="radioGranularityMethod" disable="true" mnemonicParsing="false" text="Method" />
                   <RadioButton fx:id="radioGranularityStatement" mnemonicParsing="false" selected="true" text="Statement" />
@@ -41,53 +41,50 @@
             <VBox prefHeight="119.0" prefWidth="161.0" spacing="2.0" HBox.hgrow="ALWAYS">
                <children>
                   <Label prefHeight="17.0" prefWidth="137.0" text="Options" />
-                  <CheckBox fx:id="checkboxCrossover" disable="true" mnemonicParsing="false" text="Enable Crossover" />
-                  <CheckBox fx:id="checkboxSaveAll" layoutX="10.0" layoutY="27.0" mnemonicParsing="false" text="Save all Clones" />
                   <HBox prefHeight="5.0" prefWidth="600.0" spacing="3.0">
                      <children>
+                        <TextField fx:id="textNumberVariants" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="2" HBox.hgrow="NEVER" />
                         <VBox alignment="CENTER">
                            <children>
-                              <Label text="Mutations:" />
+                              <Label text="Variants" />
                            </children>
                         </VBox>
-                        <TextField fx:id="textNumberMutations" prefHeight="25.0" prefWidth="50.0" promptText="passes" text="1" HBox.hgrow="NEVER" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="2.0">
+                     <children>
+                        <Slider fx:id="sliderCrossoverVariants" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" />
+                        <TextField fx:id="textCrossoverVariants" prefHeight="25.0" prefWidth="40.0" text="0" />
+                        <Label text="\% Crossover Variants">
+                           <tooltip>
+                              <Tooltip text="The percentage of variants that will be the result of crossover operations." />
+                           </tooltip>
+                        </Label>
                      </children>
                   </HBox>
-               </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <padding>
-                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-               </padding>
-            </VBox>
-            <VBox layoutX="155.0" layoutY="10.0" prefHeight="141.0" prefWidth="346.0" spacing="2.0">
-               <children>
-                  <Label prefHeight="17.0" prefWidth="137.0" text="Type Weights" />
-                  <HBox spacing="5.0">
+                  <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="59.0" spacing="2.0">
                      <children>
-                        <VBox alignment="CENTER">
-                           <children>
-                              <Label text="Type I: " />
-                              <TextField fx:id="textTypeWeight1" prefWidth="50.0" text="50" />
-                           </children>
-                        </VBox>
-                        <VBox alignment="CENTER_LEFT">
-                           <children>
-                              <Label text="Type II: " />
-                              <TextField fx:id="textTypeWeight2" prefWidth="50.0" text="35" />
-                           </children>
-                        </VBox>
-                        <VBox>
-                           <children>
-                              <Label text="Type III: " />
-                              <TextField fx:id="textTypeWeight3" disable="true" prefWidth="50.0" text="0" />
-                           </children>
-                        </VBox>
+                        <Slider fx:id="sliderModificationRatio" blockIncrement="1.0" minorTickCount="0" showTickMarks="true" value="100.0" />
+                        <TextField fx:id="textModificationRatio" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="100" />
+                        <Label text="\% Modification Type Ratio">
+                           <tooltip>
+                              <Tooltip text="The amount of attribute modifications compared to the total modifications in a variant. The rest will be node modifications." />
+                           </tooltip>
+                        </Label>
                      </children>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="86.0" spacing="2.0">
+                     <children>
+                        <Slider fx:id="sliderChangeDegree" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                        <Label text="Variant Change Degree">
+                           <tooltip>
+                              <Tooltip text="How much a variant is modified from its original base." />
+                           </tooltip>
+                           <HBox.margin>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
                   </HBox>
                </children>
                <opaqueInsets>
