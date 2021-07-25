@@ -23,6 +23,13 @@
             node_decorator="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.DetailedFamilyModelNodeDecorator">
       </node_decorator>
    </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+      <project_explorer_file_attr
+            file_extension="tree"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.contribution.TreeProjectExplorerExtension">
+      </project_explorer_file_attr>
+   </extension>
 
 
 </plugin>

@@ -35,6 +35,9 @@ public class CloneST {
 	public static final String LITERAL_CHANGE = TAX + "LiteralChange";
 	public static final String TYPE_CHANGE = TAX + "TypeChange";
 	// TODO Type III
+	public static final String TAX_ADD = TAX + "AddSubtree";
+	public static final String TAX_MOVE = TAX + "MoveSubtree";
+	public static final String TAX_DELETE = TAX + "DeleteSubtree";
 	
 	// Variant Functions
 	public static final String LOG_SEPARATOR = "==========================================================";
