@@ -170,11 +170,15 @@ class Taxonomy {
 				val source = tree.root.allChildren.filter[n | 
 					STATEMENT_TYPES.contains(n.standardizedNodeType)
 				].random
+				if (source === null) {
+					System.err.println('''Error with «m.name» modification''')
+					return;
+				}
 				val target = tree.root.allChildren.filter[n | n.standardizedNodeType == BLOCK 
 					&& !n.allChildren.exists[c | c.UUID == n.UUID]
 					&& !source.allChildren.exists[c | c.UUID == n.UUID]
 				].random
-				if (source === null || target === null) {
+				if (target === null) {
 					System.err.println('''Error with «m.name» modification''')
 					return;
 				}
