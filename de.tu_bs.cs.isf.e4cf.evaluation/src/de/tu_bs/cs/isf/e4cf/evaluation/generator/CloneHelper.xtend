@@ -62,9 +62,10 @@ class CloneHelper {
 		
 		// create another identical clone (same UUIDs) on the tracking tree for object persistence and correct logging
 		val shadowClone = new NodeImpl()
+		shadowClone.nodeType = clone.nodeType
 		shadowClone.UUID = UUID.fromString(clone.UUID.toString)
-		shadowClone.standardizedNodeType = source.standardizedNodeType
-		shadowClone.variabilityClass = source.variabilityClass
+		shadowClone.standardizedNodeType = clone.standardizedNodeType
+		shadowClone.variabilityClass = clone.variabilityClass
 		val shadowParent = trackingTree.root.allChildren.findFirst[n | n.UUID == targetParent.UUID]
 		shadowParent.children.add(shadowClone)
 		shadowClone.parent = shadowParent
@@ -134,6 +135,13 @@ class CloneHelper {
 		targetParent.addChild(source)
 		source.parent = targetParent
 		
+		// Apply operation on shadow tree
+		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
+		trackingTree.root.allChildren.findFirst[n | n.UUID == oldParent.UUID].children.remove(shadowSource) // Remove source from old parent
+		val shadowTargetParent = trackingTree.root.allChildren.findFirst[n | n.UUID == targetParent.UUID]
+		shadowTargetParent.addChild(shadowSource) // add source to new parent
+		shadowSource.parent = shadowTargetParent // set parent of source to new parent
+		
 		return source
 	}
 	
@@ -176,6 +184,12 @@ class CloneHelper {
 		// Apply operation on tree
 		parent.children.remove(source)
 		parent.children.add(index, source)
+		
+		// Apply operation on shadow tree
+		val shadowParent = trackingTree.root.allChildren.findFirst[n | n.UUID == parent.UUID]
+		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
+		shadowParent.children.remove(shadowSource)
+		shadowParent.children.add(index, shadowSource)
 		
 		return source
 	}
@@ -256,15 +270,6 @@ class CloneHelper {
 		]
 	}
 	
-	/** Finds the first element of type belowroot 
-	 * @param root start node
-	 * @param type node type to find
-	 */
-	def findFirst(Node root, String type) {
-		return root.allChildren.findFirst[n | n.nodeType == type]
-	}
-	
-	
 	// Refactoring
 	
 	
@@ -312,7 +317,6 @@ class CloneHelper {
 	}
 	
 	private def _refactor(Node body, String attrKey, String oldValue, String newValue) {
-		// TODO make this robust with regex because right now changing i=>g turns a reference variable=>vargable
 		body.allChildren.filter[
 			n | n.attributes.exists[
 				a | a.attributeKey == attrKey && n.getAttributeValue(attrKey) == oldValue
@@ -359,7 +363,8 @@ class CloneHelper {
 	}
 	
 	/** Returns a random entry of an iterable */
-	def static random(Iterable<? extends Object> l){
+	def static <T> random(Iterable<T> l){
+		if (l.nullOrEmpty) return null;
 		return l.get(new Random().nextInt(l.size))
 	}
 	

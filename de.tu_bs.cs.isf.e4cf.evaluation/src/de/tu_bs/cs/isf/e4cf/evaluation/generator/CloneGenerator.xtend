@@ -32,45 +32,47 @@ class CloneGenerator {
 		helper.trackingTree = tree
 		var variants = newArrayList(new Variant(tree, helper.trackingTree, 0, 0))
 		
-		// Number of mutations (taxonomy calls) given by user
-		for (var pass = 1; pass <= options.variants; pass++) {
-			println('''Starting Variant Pass #«pass»''')
-
-			// TODO Crossover (pass>1) or Modifications
-			
-			// Select Predecessor
-			val predecessor = variants.random as Variant
-			
-			// Setup new Variant
-			val currentTree = helper.deepCopy(predecessor.tree) // create deep copy because we might have selected that variant before
-			helper.trackingTree = predecessor.trackingTree // tracking tree always deep copies
-			logger.logVariant(predecessor.index, variants.size)
-			
-			// TODO: respect granularity type
-			
-			// Modify this Variant
-			val nodeToSourceFactor = 6.0
-			val modToLineFactor = 10
-			val numModifications = Math.ceil(currentTree.root.allChildren.size / (nodeToSourceFactor * modToLineFactor)) * options.variantChangeDegree
-			for (var mod = 1; mod <= numModifications; mod++) {
+		try {
+			// Number of mutations (taxonomy calls) given by user
+			for (var pass = 1; pass <= options.variants; pass++) {
+				println('''Starting Variant Pass #«pass»''')
+	
+				// TODO Crossover (pass>1) or Modifications
 				
-				// Determine Type
-				if (new Random().nextInt(100) <= options.modificationRatioPercentage) {
-					// Type II Modification
-					taxonomy.performType2Modification(currentTree)
+				// Select Predecessor
+				val predecessor = variants.random
+				logger.logVariant(predecessor.index, variants.size)
+				
+				// Setup new Variant
+				val currentTree = helper.deepCopy(predecessor.tree) // create deep copy because we might have selected that variant before
+				helper.trackingTree = predecessor.trackingTree // tracking tree always deep copies
+				
+				// TODO: respect granularity type
+				
+				// Modify this Variant
+				val nodeToSourceFactor = 6.0
+				val modToLineFactor = 10
+				val numModifications = Math.ceil(currentTree.root.allChildren.size / (nodeToSourceFactor * modToLineFactor)) * options.variantChangeDegree
+				for (var mod = 1; mod <= numModifications; mod++) {
 					
-				} else {
-					// Type III Modification
+					// Determine Type
+					if (new Random().nextInt(100) <= options.modificationRatioPercentage) {
+						// Type II Modification
+						taxonomy.performType2Modification(currentTree)
+					} else {
+						// Type III Modification
+						taxonomy.performType3Modification(currentTree)
+					}
+					
 				}
 				
+				// Store Variant
+				variants.add(new Variant(currentTree, helper.trackingTree, predecessor.index, variants.size))
 			}
-			
-			// Store Variant
-			variants.add(new Variant(currentTree, helper.trackingTree, predecessor.index, variants.size))
+		} finally {
+			// Save all variants and logs
+			save(options.outputRoot, variants);
 		}
-		
-		// Save all variants
-		save(options.outputRoot, variants);
 	}
 	
 	/** Saves tree strings to json file and log */

@@ -43,7 +43,7 @@
                   <Label prefHeight="17.0" prefWidth="137.0" text="Options" />
                   <HBox prefHeight="5.0" prefWidth="600.0" spacing="3.0">
                      <children>
-                        <TextField fx:id="textNumberVariants" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="2" HBox.hgrow="NEVER" />
+                        <TextField fx:id="textNumberVariants" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="20" HBox.hgrow="NEVER" />
                         <VBox alignment="CENTER">
                            <children>
                               <Label text="Variants" />
@@ -64,8 +64,8 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="59.0" spacing="2.0">
                      <children>
-                        <Slider fx:id="sliderModificationRatio" blockIncrement="1.0" minorTickCount="0" showTickMarks="true" value="100.0" />
-                        <TextField fx:id="textModificationRatio" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="100" />
+                        <Slider fx:id="sliderModificationRatio" blockIncrement="1.0" minorTickCount="0" showTickMarks="true" value="50.0" />
+                        <TextField fx:id="textModificationRatio" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="50" />
                         <Label text="\% Modification Type Ratio">
                            <tooltip>
                               <Tooltip text="The amount of attribute modifications compared to the total modifications in a variant. The rest will be node modifications." />
@@ -75,7 +75,7 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="86.0" spacing="2.0">
                      <children>
-                        <Slider fx:id="sliderChangeDegree" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+                        <Slider fx:id="sliderChangeDegree" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3.0" />
                         <Label text="Variant Change Degree">
                            <tooltip>
                               <Tooltip text="How much a variant is modified from its original base." />
