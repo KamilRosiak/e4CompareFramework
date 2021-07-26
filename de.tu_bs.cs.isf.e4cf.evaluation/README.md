@@ -24,7 +24,7 @@
   - Metadata as Log?
 - <Entry Point for Project 2>
 - [X] Read outputs from project 1
-- [ ] Clone detection: Implement metrics (recall & precision)
+- [X] Clone detection: Implement metrics (recall & precision)
 - [ ] Variability Mining
 - [ ] Taxonomy Mining
 - [ ] Add output UI (view?)
@@ -76,6 +76,32 @@ Wollen wir etwas anderes als AST in unserer GenericDatastructure darstellen?
 Wollen wir potentiell verschiedene AST vergleichen (C <> Java)?
 
 ===== 14.07.2021
-- Compare Engine Reorders Nodes -> TaxonomyExample D
+- Compare Engine Reorders Nodes -> TaxonomyExample D (Sorting matcher)
 - Discuss Programflows
+
+- How to get sensible values from the comparision (similiarity threshhold?, on create children are mandatory?)
+-> leafs < 1 -> always changes
+-> result similarity < 1 -> change
+-> optional children are mandatory
+- Next: Investigate matching (string comparator, similarity propagation (update))
+
+===== 21.07.2021
+Attribute changes to fix precision probleme
+
+===== 28.07.2021
+Tested clone detection tools:
+Clone search <--> changes detection
+Mandatory (+alternative?) <--> optional (+alternative)
+Only copy paste creates new clones, other operations change clone type!!!
+-> Modifying not cloned code does not create additional clones!!! (maybe assumption: original is clone free, else false positives)
+-> However it might lead to an increase of false positives
+CloneGenerator is in reality a variant generator
+Where do we have to copy? (determine nodes to clone)
+- Case 1
+What fragments do we compare?
+- fully connected comparision between all variants
+-> consisting of nodes
+Project 1 -> variant generation
+Project 2 -> evaluates variant clones
+
 
