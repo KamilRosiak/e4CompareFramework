@@ -132,7 +132,7 @@ public class CloneLogger {
 			for (String line : content) {
 				if (line.equals(CloneST.LOG_SEPARATOR)) {
 					currentVariantLog = new ArrayList<String>();
-					variantLogs.put(variantLogs.size()-1, currentVariantLog);
+					variantLogs.put(variantLogs.size()+1, currentVariantLog);
 				} else {
 					currentVariantLog.add(line);
 				}

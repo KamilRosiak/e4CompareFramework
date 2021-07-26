@@ -33,23 +33,24 @@ public class CloneEvaluationHandler {
 			FileTreeElement directoryElement = services.rcpSelectionService.getCurrentSelectionFromExplorer();
 			directoryElement.getChildren();
 
-			boolean foundModTree = false;
+			boolean foundVariantTree = false;
 			boolean foundTree = false;
 			boolean foundLog = false;
 			
 			for (FileTreeElement child : directoryElement.getChildren()) {
 				String name = child.getFileName();
 				
-				if (name.endsWith(".mod.tree")) {
-					foundModTree = true;
-				} else if (name.endsWith(".tree")) {
+				// We need at least a log file and an original and one variant tree
+				if (name.endsWith("0~1.tree")) {
+					foundVariantTree = true;
+				} else if (name.endsWith("0~0.tree")) {
 					foundTree = true;
 				} else if (name.endsWith(".log")) {
 					foundLog = true;
 				}
 			}
 			
-			return foundLog && foundModTree && foundTree;
+			return foundLog && foundVariantTree && foundTree;
 			
 		} else {
 			return false;
