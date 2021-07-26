@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.tu_bs.cs.isf.e4cf.graph.artifact_graph;
 
 import java.io.IOException;
@@ -23,11 +20,16 @@ public class ArtifactFileDetails {
 	public ArtifactFileDetails(Path _artifactPath) {
 		artifactName = _artifactPath.getFileName().toString();
 		artifactPath = _artifactPath.toString();
-		artifactLinesOfCode = this.getLinesOfCode(_artifactPath);
-		numberOfCharactersInArtifact = this.getNumberOfCharacters(_artifactPath);
+		artifactLinesOfCode = this.countLinesOfCode(_artifactPath);
+		numberOfCharactersInArtifact = this.countNumberOfCharacters(_artifactPath);
 	}
 
-	private int getLinesOfCode(Path aParsedFile) {
+	/**
+	 * Calculates the lines of Code of a specified Variant or Artifact
+	 * @param aParsedFile
+	 * @return
+	 */
+	private int countLinesOfCode(Path aParsedFile) {
 		int linesOfCode = 0;
 
 		try {
@@ -40,7 +42,12 @@ public class ArtifactFileDetails {
 		return linesOfCode;
 	}
 
-	private int getNumberOfCharacters(Path aParsedFile) {
+	/**
+	 * Calculates and returns the number of characters given a specified Variant or Artifact
+	 * @param aParsedFile
+	 * @return
+	 */
+	private int countNumberOfCharacters(Path aParsedFile) {
 		int numberOfCharacters = 0;
 
 		try {
@@ -56,18 +63,34 @@ public class ArtifactFileDetails {
 		return numberOfCharacters;
 	}
 
+	/**
+	 * Gets the file name of the specified variant
+	 * @return
+	 */
 	public String getArtifactName() {
 		return artifactName;
 	}
 	
+	/**
+	 * Returns the path of the specified Variant or Artifact
+	 * @return
+	 */
 	public String getArtifactPath() {
 		return artifactPath;
 	}
 	
+	/**
+	 * Returns the number of lines of code contained in a specific variant
+	 * @return
+	 */
 	public int getArtifactLinesOfCode() {
 		return artifactLinesOfCode;
 	}
 	
+	/**
+	 * Returns the number of characters in a Variant
+	 * @return
+	 */
 	public int getNumberOfCharacters() {
 		return numberOfCharactersInArtifact;
 	}

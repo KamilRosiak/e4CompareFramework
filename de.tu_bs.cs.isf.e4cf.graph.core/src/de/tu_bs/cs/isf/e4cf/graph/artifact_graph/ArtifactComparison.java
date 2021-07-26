@@ -2,6 +2,10 @@ package de.tu_bs.cs.isf.e4cf.graph.artifact_graph;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 
+/**
+ * @author developer-olan
+ *
+ */
 public class ArtifactComparison {
   private String leftArtifactName;
   private String rightArtifactName;

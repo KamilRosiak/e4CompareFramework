@@ -107,7 +107,7 @@
                <children>
                   <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                      <children>
-                        <Label fx:id="label_2" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Taxonomy" textFill="WHITE" VBox.vgrow="ALWAYS">
+                        <Label fx:id="label_4" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Taxonomy" textFill="WHITE" VBox.vgrow="ALWAYS">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
@@ -116,14 +116,22 @@
                            </VBox.margin>
                         </Label>
                         <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
-                      
-                        <Button onAction="#selectMetric" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Compute Taxonomy">
-                           <VBox.margin>
-                              <Insets left="5.0" right="5.0" top="5.0" />
-                           </VBox.margin>
-                        </Button>
                      </children>
                   </VBox>
+                  <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #c1d5ef">
+               		<children>
+	                  <Button onAction="#compareArtifactsForRelationGraph" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Compute Relation Graph" HBox.hgrow="ALWAYS">
+	                     <HBox.margin>
+	                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+	                     </HBox.margin>
+	                  </Button>
+	                  <Button onAction="#compareArtifactsForTaxonomy" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Compute Taxonomy" HBox.hgrow="ALWAYS">
+	                     <HBox.margin>
+	                        <Insets bottom="5.0" right="5.0" top="5.0" />
+	                     </HBox.margin>
+	                  </Button>
+               		</children>
+            	</HBox>
                </children>
             </VBox>
          </children>
