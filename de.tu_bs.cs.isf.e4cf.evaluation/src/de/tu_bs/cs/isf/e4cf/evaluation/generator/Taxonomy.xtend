@@ -76,10 +76,10 @@ class Taxonomy {
 	/** Returns a random method of clone type II */
 	def getType2Method() {
 		return #[
-			this.class.methods.filter[m | m.name == "refactorIdentifiers"]
-//			this.class.methods.filter[m | m.name == "replaceIdentifier"],
-//			this.class.methods.filter[m | m.name == "literalChange"],
-//			this.class.methods.filter[m | m.name == "changeType"]
+			this.class.methods.filter[m | m.name == "refactorIdentifiers"],
+			this.class.methods.filter[m | m.name == "replaceIdentifier"],
+			this.class.methods.filter[m | m.name == "literalChange"],
+			this.class.methods.filter[m | m.name == "typeChange"]
 		].flatten.random
 	}
 	
@@ -97,6 +97,7 @@ class Taxonomy {
 			
 			case "replaceIdentifier": {
 				val ident = tree.root.allChildren.filter[ n | 
+					STATEMENT_TYPES.contains(n.standardizedNodeType) &&
 					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
 				].random	
 				

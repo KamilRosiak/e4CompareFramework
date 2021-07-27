@@ -81,7 +81,7 @@ class CloneEvaluator {
 			
 			// Atomic similarity -> result similarity == 1.0
 			// An atomic similarity can be understood as an atomic cloned node ("identical" part of a clone)
-			val detectedSimilarities = comparison.allChildren.filter[c | c.resultSimilarity == 1.0].toList
+			val detectedSimilarities = comparison.allChildren.filter[c | c.resultSimilarity == 1.0f].toList
 			
 			// Type 3: This detects mandatory children -> jeetus deletus
 			
@@ -94,11 +94,14 @@ class CloneEvaluator {
 
 			val detectableSimilaritiesCnt = comparison.allChildren.size() - getNumberOfChanges(logEntries)
 			val detectedSimilaritiesCnt = detectedSimilarities.size
-			val recall = "Recall\t\t" + detectedSimilaritiesCnt as float / detectableSimilaritiesCnt * 100 + " %"
+			val recall = detectedSimilaritiesCnt as float / detectableSimilaritiesCnt * 100
 			println("detected:" + detectedSimilaritiesCnt.toString)
 			println("detectable:" + detectableSimilaritiesCnt.toString)
-			println(recall)
-			
+			if(recall > 100) {
+				System.err.println("Recall\t\t" + recall + " %")
+			} else {
+				println("Recall\t\t" + recall + " %")
+			}
 			
 			
 
@@ -124,10 +127,14 @@ class CloneEvaluator {
 			}
 			
 			val truePositivesCount = truePositives.size
+			val precision = truePositivesCount as float / detectedSimilaritiesCnt * 100
 			println("true positives:" + truePositives.size)
 			println("false positives:" + falsePositives.size)
-			println("Precision\t" + truePositivesCount as float / detectedSimilaritiesCnt * 100 + " %")
-			
+			if(precision > 100) {
+				System.err.println("Precision\t" + precision + " %")
+			} else {
+				println("Precision\t" + precision + " %")
+			}
 			
 			// TODO: false positives and true negatives
 			
