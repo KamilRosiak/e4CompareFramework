@@ -76,10 +76,10 @@ class Taxonomy {
 	/** Returns a random method of clone type II */
 	def getType2Method() {
 		return #[
-			this.class.methods.filter[m | m.name == "refactorIdentifiers"],
-			this.class.methods.filter[m | m.name == "replaceIdentifier"],
-			this.class.methods.filter[m | m.name == "literalChange"],
-			this.class.methods.filter[m | m.name == "changeType"]
+			this.class.methods.filter[m | m.name == "refactorIdentifiers"]
+//			this.class.methods.filter[m | m.name == "replaceIdentifier"],
+//			this.class.methods.filter[m | m.name == "literalChange"],
+//			this.class.methods.filter[m | m.name == "changeType"]
 		].flatten.random
 	}
 	

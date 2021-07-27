@@ -23,6 +23,7 @@ import java.util.List
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
+import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement
 
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 
@@ -72,7 +73,6 @@ class CloneEvaluator {
 			println("========")
 			println(logEntries.reverse.findFirst[s | s.startsWith(VARIANT)])
 			
-			// TODO: change interface and remove package export
 			val comparison = engine.compare(originalTree.root, variantTree.root)
 			
 			println("Original tree nodes:" + originalTree.root.allChildren.size)
@@ -80,7 +80,8 @@ class CloneEvaluator {
 			doComparison(comparison, matcher)
 			
 			// Atomic similarity -> result similarity == 1.0
-			val detectedSimilarities = comparison.allChildren.filter[c | c.resultSimilarity == 1.0]
+			// An atomic similarity can be understood as an atomic cloned node ("identical" part of a clone)
+			val detectedSimilarities = comparison.allChildren.filter[c | c.resultSimilarity == 1.0].toList
 			
 			// Type 3: This detects mandatory children -> jeetus deletus
 			
@@ -92,10 +93,43 @@ class CloneEvaluator {
 //			}
 
 			val detectableSimilaritiesCnt = comparison.allChildren.size() - getNumberOfChanges(logEntries)
-			val recall = "Recall\t\t" + detectedSimilarities.size() as float / detectableSimilaritiesCnt * 100 + " %"
-			println("detected:" + detectedSimilarities.size().toString)
+			val detectedSimilaritiesCnt = detectedSimilarities.size
+			val recall = "Recall\t\t" + detectedSimilaritiesCnt as float / detectableSimilaritiesCnt * 100 + " %"
+			println("detected:" + detectedSimilaritiesCnt.toString)
 			println("detectable:" + detectableSimilaritiesCnt.toString)
 			println(recall)
+			
+			
+			
+
+			// Detected similarities (positives) that are also detectable from the log (true)
+			// TODO: copyyyy?
+			val truePositives = detectedSimilarities
+			val falsePositives = newArrayList
+			
+			
+			// For a change in the log
+			for (entry : logEntries.filter[l | l.startsWith(ATOMIC)]) {
+				
+				// For expected true positives (= initial all similar nodes)
+				var iterator = truePositives.iterator
+				while (iterator.hasNext) {
+					// Affected node in similar nodes -> false positive
+					val truePositive = iterator.next
+					if (isNodeChanged(entry, truePositive)) {
+						falsePositives.add(truePositive)
+						iterator.remove
+					}
+				}				
+			}
+			
+			val truePositivesCount = truePositives.size
+			println("true positives:" + truePositives.size)
+			println("false positives:" + falsePositives.size)
+			println("Precision\t" + truePositivesCount as float / detectedSimilaritiesCnt * 100 + " %")
+			
+			
+			// TODO: false positives and true negatives
 			
 			// Log (changes) -> clones
 			// List<String> all uuids
@@ -145,52 +179,52 @@ class CloneEvaluator {
 		logEntries.filter[l | l.startsWith(ATOMIC)].size
 	}
 	
-	def Node applyAtomic(String logEntry, HashSet<Node> detectedClones) {
+	def boolean isNodeChanged(String logEntry, Comparison<Node> comparison) {
+		val node = comparison.rightArtifact
+		
 		switch (logEntry.split(" ").get(0)) {
 			// TODO: can / should we have stronger conditions?
 			// We can't differentiate operation on the same node as by design of the comparison
 			// there is only one similarity value which identifies a change
 			case COPY: {
-				val source = logger.readAttr(logEntry, SOURCE)
-				val target = logger.readAttr(logEntry, TARGET)
+				// If the node is the target then only it's children changed but not the node itself
 				val clone = logger.readAttr(logEntry, CLONE)
 				
-				val detectedClone = detectedClones.filter[n | n.UUID.toString == clone]
-				return detectedClone.empty ? null : detectedClone.get(0)
+				return node.UUID.toString == clone
 			}
-			case MOVE: {
+			case MOVE, case MOVEPOS: {
+				// If the node is the target then only it's children changed but not the node itself
 				val source = logger.readAttr(logEntry, SOURCE)
-				val target = logger.readAttr(logEntry, TARGET)
 				
-				val detectedClone = detectedClones.filter[n | n.UUID.toString == target]
-				return detectedClone.empty ? null : detectedClone.get(0)
-			}
-			case MOVEPOS: {
-				val source = logger.readAttr(logEntry, SOURCE)
-				val from = logger.readAttr(logEntry, FROM)
-				val to = logger.readAttr(logEntry, TO)
-				
-				val detectedClone = detectedClones.filter[n | n.UUID.toString == source]
-				return detectedClone.empty ? null : detectedClone.get(0)
+				return node.UUID.toString == source
 			}
 			case DELETE: {
 				val target = logger.readAttr(logEntry, TARGET)
 				
-				val detectedClone = detectedClones.filter[n | n.UUID.toString == target]
-				return detectedClone.empty ? null : detectedClone.get(0)
+				return node.UUID.toString == target
 			}
 			case SETATTR: {
 				val target = logger.readAttr(logEntry, TARGET)
 				val key = logger.readAttr(logEntry, KEY)
-				val from = logger.readAttr(logEntry, FROM)
-				val to = logger.readAttr(logEntry, TO)
 				
-				val detectedClone = detectedClones.filter[n | n.UUID.toString == target]
-				return detectedClone.empty ? null : detectedClone.get(0)
+				if(node.UUID.toString == target) {
+					// Check attribute 
+					var resultWithAttribute = comparison.resultElements.filter[e | e instanceof NodeResultElement].findFirst[
+						e | (e as NodeResultElement).attributeSimilarities.containsKey(key)
+					]
+					
+					if(resultWithAttribute !== null) {
+						return (resultWithAttribute as NodeResultElement).attributeSimilarities.get(key) < 1.0
+					}
+					
+				}
+				
+				// No attribute change detected
+				return false
 			}
 			default: {
 				println("Unsupported atomic clone operation ignored: " + logEntry)
-				return null
+				return logEntry.contains(node.UUID.toString)
 			}
 		}
 	}

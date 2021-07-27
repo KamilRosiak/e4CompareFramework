@@ -155,10 +155,6 @@ public class CloneLogger {
 	}
 	
 	public void deleteLogsContainingString(String contains) {
-		yeeeeeeeeeeeeeeet(contains);
-	}
-	
-	private void yeeeeeeeeeeeeeeet(String contains) {
 		for (int i=0; i < currentVariantLog.size(); i++) {
 			String entry = currentVariantLog.get(i);
 			if(!entry.startsWith(CloneST.CLONE) && entry.contains(contains)) {
