@@ -66,7 +66,7 @@
                      <children>
                         <Slider fx:id="sliderModificationRatio" blockIncrement="1.0" minorTickCount="0" showTickMarks="true" value="50.0" />
                         <TextField fx:id="textModificationRatio" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="50" />
-                        <Label text="\% Modification Type Ratio">
+                        <Label text="\% Type II Attribute Changes">
                            <tooltip>
                               <Tooltip text="The amount of attribute modifications compared to the total modifications in a variant. The rest will be node modifications." />
                            </tooltip>

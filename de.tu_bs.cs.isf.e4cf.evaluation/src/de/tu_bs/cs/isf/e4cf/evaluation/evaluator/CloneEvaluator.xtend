@@ -81,18 +81,11 @@ class CloneEvaluator {
 			// An atomic similarity can be understood as an atomic cloned node ("identical" part of a clone)
 			val detectedSimilarities = comparison.allChildren.filter[c | c.resultSimilarity == 1.0f].toList
 			
-			
 			// Type 3: This detects mandatory children -> jeetus deletus
 			// TODO: prune detectedSimilarities for type 3 changes
 
-
-			val detectableSimilaritiesCnt = comparison.allChildren.size() - getNumberOfChanges(logEntries)
-			val detectedSimilaritiesCnt = detectedSimilarities.size
-			val recall = detectedSimilaritiesCnt as float / detectableSimilaritiesCnt * 100
-			evaluatorResults.add("detected:" + detectedSimilaritiesCnt.toString)
-			evaluatorResults.add("detectable:" + detectableSimilaritiesCnt.toString)
-			evaluatorResults.add("Recall " + recall + " %")
-					
+			//val detectableSimilaritiesCnt = comparison.allChildren.size() - getNumberOfChanges(logEntries)
+			//val detectedSimilaritiesCnt = detectedSimilarities.size			
 			
 			// Similarity <> Change
 			// Detected similarities (positives) that do not correspond to a change log-entry (true) (GOOD)
@@ -137,15 +130,21 @@ class CloneEvaluator {
 				}
 			}
 			
-			val truePositivesCount = truePositives.size
-			val precision = truePositivesCount as float / detectedSimilaritiesCnt * 100
-			evaluatorResults.add("Precision" + precision + " %")
+			val recall = truePositives.size as float / (truePositives.size + falseNegatives.size) * 100
+			evaluatorResults.add("detected:" + (truePositives.size + falsePositives.size))
+			evaluatorResults.add("detectable:" + (truePositives.size + trueNegatives.size))
+			evaluatorResults.add("Recall: " + recall + "%")
+			
+			val precision = truePositives.size as float / (truePositives.size + falsePositives.size) * 100
+			evaluatorResults.add("Precision: " + precision + " %")
 			evaluatorResults.add("true positives: " + truePositives.size)
 			// TODO: enable logging by switch
+			evaluatorResults.logComparisions(truePositives)
 			evaluatorResults.add("false positives: " + falsePositives.size)
 			evaluatorResults.logComparisions(falsePositives)
 			evaluatorResults.add("true negatives: " + trueNegatives.size)
 			// TODO: enable logging by switch
+			evaluatorResults.logComparisions(trueNegatives)
 			evaluatorResults.add("false negatives: " + falseNegatives.size)
 			evaluatorResults.logComparisions(falseNegatives)
 			
