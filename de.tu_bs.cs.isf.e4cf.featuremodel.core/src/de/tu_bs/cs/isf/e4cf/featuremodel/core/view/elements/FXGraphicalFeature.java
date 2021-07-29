@@ -114,7 +114,7 @@ public class FXGraphicalFeature extends VBox  {
 	  * Creating the context menu for the FMEditor.
 	  */
 	 private void createContextMenu() {
-		 FXGraphicalFeatureContextMenu fmeContextMenu = new FXGraphicalFeatureContextMenu(services.eventBroker, this);
+		 FXGraphicalFeatureContextMenu fmeContextMenu = new FXGraphicalFeatureContextMenu(services, this);
 		 VBox box = this;
 		 setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
 	            @Override

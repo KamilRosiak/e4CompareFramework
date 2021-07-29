@@ -30,7 +30,10 @@ public class FeatureConfigurationBuilder {
 		int i = 0;
 		do {
 			fcName = "Configuration_" + fd.getRoot().getName() + "_" + (fd.getFeatureConfiguration().size() + i++);
-		} while (fd.getFeatureConfiguration().stream().map(FeatureConfiguration::getName).collect(Collectors.toList()).contains(fcName));
+		} while (fd.getFeatureConfiguration().stream()
+				.map(FeatureConfiguration::getName)
+				.collect(Collectors.toList())
+				.contains(fcName));
 		FeatureConfiguration fc = createFeatureConfiguration(fcName, fd, Collections.emptyMap());
 		
 		for (Iterator<Feature> it = new FeatureDiagramIterator(fc.getFeatureDiagram()); it.hasNext();) {

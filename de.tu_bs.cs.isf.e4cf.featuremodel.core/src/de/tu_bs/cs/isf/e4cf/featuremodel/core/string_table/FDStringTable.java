@@ -68,7 +68,8 @@ public class FDStringTable {
 	public static final String FX_FEATURE_CM_MOVE_SELECTED_FEATURES_HERE ="Move Selected Features";
 	public static final String FX_FEATURE_CM_SET_DESCRIPTION ="Set Description";
 	public static final String FX_FEATURE_CM_CREATE_COMPONENTFEATURE = "Create ComponentFeature";
-	public static final String FX_FEATURE_CM_CREATE_NEW_CONFIGURATION = "Show Configurations";
+	public static final String FX_FEATURE_CM_SHOW_CONFIGURATIONS = "Show Configurations";
+	public static final String FX_FEATURE_CM_SHOW_COMPONENT_CONFIGURATION = "Show Configuration";
 	public static final String FX_FEATURE_CM_SET_CONFIGURATION = "Set Configuration";
 	public static final String FX_FEATURE_CM_LOAD_COMPONENTFEATUREDIAGRAM = "Load Feature Diagram";
 	
@@ -86,4 +87,6 @@ public class FDStringTable {
 	public static final String FD_FEATURE_CONFIG_PART_NAME = "de.tu_bs.cs.isf.e4cf.featuremodel.configuration.part.featuremodelconfiguration";
 	
 	public static final String FD_DEFAULT_FEATURE_DIAGRAM_NAME = "Feature Model";
+
+	
 }	

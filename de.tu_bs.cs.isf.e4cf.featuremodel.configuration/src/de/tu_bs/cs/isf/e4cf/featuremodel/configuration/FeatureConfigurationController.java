@@ -2,8 +2,8 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.configuration;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,6 +38,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 import featureConfiguration.FeatureConfiguration;
+import javafx.util.Pair;
 
 public class FeatureConfigurationController {
 		
@@ -71,10 +72,15 @@ public class FeatureConfigurationController {
 	@Optional
 	@Inject
 	public void showConfigurationView(@UIEventTopic(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW) FeatureDiagramm fd) {
-		// construct feature configuration 
-		services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
 		removeNull(fd.getFeatureConfiguration());
 		view.setFeatureDiagram(fd);
+	}
+	
+	@Optional
+	@Inject
+	public void showConfigurationComponentView(@UIEventTopic(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW) Pair<FeatureDiagramm, FeatureConfiguration> config) {
+		showConfigurationView(config.getKey());
+		view.setFeatureConfiguration(config.getValue());
 	}
 	
 	public void createConfiguration() {
@@ -98,7 +104,7 @@ public class FeatureConfigurationController {
 	@Optional
 	@Inject
 	public void saveConfiguration(@UIEventTopic(FeatureModelConfigurationEvents.EVENT_SAVE_CONFIGURATION) String path) {
-		if (featureConfiguration == null || featureConfiguration.getFeatureDiagram() == null) {
+		if (featureConfiguration == null) {
 			return;
 		}
 				
@@ -281,8 +287,16 @@ public class FeatureConfigurationController {
 		
 	}
 	
-	private <E> void removeNull(List<E> list) {
-		list.removeAll(Collections.singletonList(null));
+	private void removeNull(List<FeatureConfiguration> list) {
+		List<FeatureConfiguration> nulls = new ArrayList<>();
+		for (FeatureConfiguration config : list) {
+			if (config.getFeatureDiagram() == null || config.getFeatureSelection() == null || config.getName() == null) {
+				nulls.add(config);
+			}
+		}
+		for (FeatureConfiguration config : nulls) {
+			list.remove(config);
+		}
 	}
 
 	

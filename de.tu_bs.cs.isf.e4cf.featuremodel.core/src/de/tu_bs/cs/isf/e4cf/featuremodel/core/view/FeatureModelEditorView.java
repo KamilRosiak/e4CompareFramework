@@ -723,6 +723,10 @@ public class FeatureModelEditorView {
 			this.featureList.remove(graphicalFeature);
 			if (graphicalFeature.getFeature() instanceof ComponentFeature) {
 				this.componentFeatureList.remove(graphicalFeature);			
+				List<FXGraphicalFeature> temp = new ArrayList<FXGraphicalFeature>(graphicalFeature.getChildFeatures());
+				for(FXGraphicalFeature child: temp) {
+					removeFeature(child, false, false, false);
+				};
 			} else if (graphicalFeature.getFeature() instanceof ConfigurationFeature) {
 				((ComponentFeature) graphicalFeature.getParentFxFeature().getFeature()).getConfigurationfeature().remove((ConfigurationFeature) graphicalFeature.getFeature());
 			}

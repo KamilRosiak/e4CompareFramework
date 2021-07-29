@@ -64,7 +64,7 @@ public class FeatureConfigurationView {
 		BorderPane layout = new BorderPane();
 		
 		// create a toolbar for controls
-		Button saveButton = JavaFXBuilder.createButton("Save Configuration", event -> {
+		Button saveButton = JavaFXBuilder.createButton("Save Configurations", event -> {
 			saveConfiguration();
 		});
 		Button loadButton = JavaFXBuilder.createButton("Load Configuration", event -> {
@@ -251,9 +251,10 @@ public class FeatureConfigurationView {
 	}
 
 	public void setFeatureConfiguration(FeatureConfiguration fc) {
-		this.featureConfiguration = fc;
-		refreshView(featureConfiguration);
+		this.featureConfiguration = fc; 
 		loadConfigurations(featureDiagram);
+		refreshView(featureConfiguration);
+		configTable.getSelectionModel().select(featureConfiguration);
 	}
 
 	public FeatureDiagramm getFeatureDiagram() {
