@@ -142,7 +142,7 @@ public class ProjectExplorerViewController {
 	FileImageProvider fileImageProvider = new FileImageProvider(services, fileExtensions);
 
 	// Cell factory for custom tree cells
-	projectTree.setEditable(true);
+	projectTree.setEditable(false);
 
 	projectTree.setCellFactory(new Callback<TreeView<FileTreeElement>, TreeCell<FileTreeElement>>() {
 
@@ -361,7 +361,9 @@ public class ProjectExplorerViewController {
     @Inject
     @Optional
     public void rename(@UIEventTopic(E4CEventTable.EVENT_RENAME_PROJECT_EXPLORER_ITEM) Object o) {
-	projectTree.edit(projectTree.getSelectionModel().getSelectedItem());
+    	projectTree.setEditable(true);
+    	projectTree.edit(projectTree.getSelectionModel().getSelectedItem());
+    	projectTree.setEditable(false);
     }
 
     /** Subscribing on filter / search change */

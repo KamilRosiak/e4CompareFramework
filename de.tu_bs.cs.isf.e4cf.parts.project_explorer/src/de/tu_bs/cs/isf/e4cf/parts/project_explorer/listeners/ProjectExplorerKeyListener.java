@@ -63,10 +63,6 @@ public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
 					removeFile();
 					break;
 					
-				case F2:
-					renameFile();
-					break;
-					
 				default:
 					// do nothing
 			}
