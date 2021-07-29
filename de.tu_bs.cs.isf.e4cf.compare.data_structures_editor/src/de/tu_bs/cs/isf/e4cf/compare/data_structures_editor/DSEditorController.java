@@ -13,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.ConfigurationDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DecorationManager;
@@ -110,6 +111,7 @@ public class DSEditorController {
 		decoratorCombo = new ComboBox<NodeDecorator>(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		decoratorCombo.getSelectionModel().select(0);
 		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), decoratorCombo.getSelectionModel().getSelectedItem());
+		TreeViewUtilities.decorateTreeViewWithSelectedConfigurations(treeView.getRoot(), new ConfigurationDecorator());
 		addListener();
 	}
 

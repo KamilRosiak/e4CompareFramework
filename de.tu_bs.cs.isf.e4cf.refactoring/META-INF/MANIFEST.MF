@@ -24,3 +24,4 @@ Import-Package: de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.metric,
  org.eclipse.e4.core.di.annotations
 Export-Package: de.tu_bs.cs.isf.e4cf.refactoring.model
+Bundle-ClassPath: .

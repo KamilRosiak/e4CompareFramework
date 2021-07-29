@@ -13,29 +13,31 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
-import de.tu_bs.cs.isf.e4cf.refactoring.controllers.RefactoringViewController;
-import de.tu_bs.cs.isf.e4cf.refactoring.extraction.RefactoringEngine;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.RefactoringLayer;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.RefactoringResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.controllers.ComponentLayerViewController;
+
+import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ExtractionEngine;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ExtractionResult;
+
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 
-public class RefactoringHandler {
+public class ExtractionHandler {
 
 	@Execute
-	public void execute(ServiceContainer services, ReaderManager readerManager, RefactoringEngine engine,
-			RefactoringViewController refactoringViewController) {
+	public void execute(ServiceContainer services, ReaderManager readerManager, ExtractionEngine engine,
+			ComponentLayerViewController componentLayerViewController) {
 
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 
 		Set<String> nodeTypes = new HashSet<String>();
 		nodeTypes.addAll(tree.getRoot().getAllNodeTypes()); 
 		
-		List<RefactoringLayer> refactoringLayers = SynchronizationUtil
-				.getRefactoringLayers(nodeTypes);
+		List<ComponentLayer> componentLayers = SynchronizationUtil
+				.getComponentLayers(nodeTypes);
 
-		refactoringViewController.showView(refactoringLayers);
-		if (refactoringViewController.isResult()) {
-			RefactoringResult result = engine.refactor(tree, refactoringLayers, false);
+		componentLayerViewController.showView(componentLayers);
+		if (componentLayerViewController.isResult()) {
+			ExtractionResult result = engine.extractComponents(tree, componentLayers);
 
 			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, tree);
 		}

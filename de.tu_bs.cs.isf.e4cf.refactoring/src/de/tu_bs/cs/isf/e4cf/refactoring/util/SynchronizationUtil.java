@@ -5,29 +5,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.tu_bs.cs.isf.e4cf.refactoring.model.RefactoringLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
 
 public class SynchronizationUtil {
 
-	public static List<RefactoringLayer> getRefactoringLayers(Set<String> nodeTypes) {
-	
-		
-		List<RefactoringLayer> refactoringLayers = new ArrayList<RefactoringLayer>();
+	public static List<ComponentLayer> getComponentLayers(Set<String> nodeTypes) {
+
+		List<ComponentLayer> componentLayers = new ArrayList<ComponentLayer>();
 		for (String nodeType : nodeTypes) {
 			boolean refactor = nodeType.equals("MethodDeclaration");
-			refactoringLayers.add(new RefactoringLayer(nodeType, refactor));
+			componentLayers.add(new ComponentLayer(nodeType, refactor));
 		}
 
-		return refactoringLayers;
+		return componentLayers;
 	}
 
-	public static List<RefactoringLayer> getRefactoringLayers(List<String> nodeTypes1, List<String> nodeTypes2) {
+	public static List<ComponentLayer> getComponentLayers(List<String> nodeTypes1, List<String> nodeTypes2) {
 
 		Set<String> types = new HashSet<String>();
 		types.addAll(nodeTypes1);
 		types.addAll(nodeTypes2);
 
-		return getRefactoringLayers(types);
+		return getComponentLayers(types);
 	}
 
 }

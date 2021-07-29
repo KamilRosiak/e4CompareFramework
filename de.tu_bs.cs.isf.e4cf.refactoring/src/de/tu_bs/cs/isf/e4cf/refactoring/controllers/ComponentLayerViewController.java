@@ -10,15 +10,15 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.refactoring.model.RefactoringLayer;
-import de.tu_bs.cs.isf.e4cf.refactoring.views.RefactoringView;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.views.ComponentLayerView;
 
 @Singleton
 @Creatable
-public class RefactoringViewController extends Controller<RefactoringView> {
+public class ComponentLayerViewController extends Controller<ComponentLayerView> {
 
-	public RefactoringViewController() {
-		super(new RefactoringView());
+	public ComponentLayerViewController() {
+		super(new ComponentLayerView());
 
 	}
 
@@ -31,7 +31,7 @@ public class RefactoringViewController extends Controller<RefactoringView> {
 
 				if (event.detail == SWT.CHECK) {
 
-					RefactoringLayer layer = (RefactoringLayer) item.getData();
+					ComponentLayer layer = (ComponentLayer) item.getData();
 					layer.setRefactor(item.getChecked());
 
 				}
@@ -41,7 +41,7 @@ public class RefactoringViewController extends Controller<RefactoringView> {
 
 	}
 
-	public void showView(List<RefactoringLayer> refactoringLayers) {
+	public void showView(List<ComponentLayer> refactoringLayers) {
 		view.showView(refactoringLayers);
 
 	}

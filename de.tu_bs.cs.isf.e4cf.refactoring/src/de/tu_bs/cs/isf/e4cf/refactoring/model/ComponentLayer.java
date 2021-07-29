@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
-public class RefactoringLayer {
+public class ComponentLayer {
 
 	private String layer;
 
@@ -22,7 +22,7 @@ public class RefactoringLayer {
 		this.refactor = refactor;
 	}
 
-	public RefactoringLayer(String layer, boolean refactor) {
+	public ComponentLayer(String layer, boolean refactor) {
 		super();
 		this.layer = layer;
 		this.refactor = refactor;

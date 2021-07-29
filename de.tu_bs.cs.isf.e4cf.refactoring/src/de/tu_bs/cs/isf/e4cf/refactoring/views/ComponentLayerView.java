@@ -8,11 +8,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.refactoring.model.RefactoringLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.LayerTreeBuilder;
 
 
-public class RefactoringView extends View {
+public class ComponentLayerView extends View {
 
 	private Label layerLabel;
 
@@ -28,20 +28,20 @@ public class RefactoringView extends View {
 
 	private LayerTreeBuilder layerTreeBuilder;
 
-	public RefactoringView() {
+	public ComponentLayerView() {
 
 		super(2, "Refactoring layers");
 		layerTreeBuilder = new LayerTreeBuilder();
 
 	}
 
-	public void showView(List<RefactoringLayer> refactoringLayers) {
+	public void showView(List<ComponentLayer> refactoringLayers) {
 
 		createLayerTree(refactoringLayers);
 		showView();
 	}
 
-	public void createLayerTree(List<RefactoringLayer> refactoringLayers) {
+	public void createLayerTree(List<ComponentLayer> refactoringLayers) {
 
 		for (TreeItem item : layerTree.getItems()) {
 			item.dispose();
