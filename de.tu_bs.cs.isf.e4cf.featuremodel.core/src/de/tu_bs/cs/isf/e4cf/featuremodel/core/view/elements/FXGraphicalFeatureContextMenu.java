@@ -90,7 +90,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
             public void handle(ActionEvent event) {
             	hide();
             	FeatureDiagramm diagram = ((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm();
-				eventBroker.send(FDEventTable.EVENT_CREATE_CONFIGURATION, diagram);
+				eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, diagram);
             	event.consume();
             }
         });

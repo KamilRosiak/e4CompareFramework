@@ -84,7 +84,7 @@ public class FeatureConfigurationView {
 		});
 		
 		Button createConfigurationButton = JavaFXBuilder.createButton("Create Configuration", event -> {
-			controller.createConfiguration(featureDiagram);
+			controller.createConfiguration();
 		});
 		FXToolbar toolbar = new FXToolbar(30, 10);
 		toolbar.addItems(loadFeatureModelButton, loadButton, createConfigurationButton, saveButton, checkButton);
@@ -151,15 +151,16 @@ public class FeatureConfigurationView {
 		Scene scene = new Scene(layout);
 		canvas.setScene(scene);
 	}
-
+	
 	private void saveConfiguration() {
-		String workspace = RCPContentProvider.getCurrentWorkspacePath();
-		String filename = featureConfiguration.getName() + "." + FeatureModelConfigurationStrings.FC_FILE_EXTENSION;
-		controller.saveConfiguration(workspace + CompareST.FEATURE_CONFIGURATIONS + "/" + filename);
+		controller.saveConfiguration("");
 	}
 	 
 	private void removeFeatureConfiguration(FeatureConfiguration config) {
 		featureDiagram.getFeatureConfiguration().remove(config);
+		if (featureDiagram.getFeatureConfiguration().size() == 0) {
+			featureSelectionTree.setRoot(null);
+		}
 	}
 	
 	public void refreshView(FeatureConfiguration fc) {
@@ -252,6 +253,7 @@ public class FeatureConfigurationView {
 	public void setFeatureConfiguration(FeatureConfiguration fc) {
 		this.featureConfiguration = fc;
 		refreshView(featureConfiguration);
+		loadConfigurations(featureDiagram);
 	}
 
 	public FeatureDiagramm getFeatureDiagram() {
@@ -263,9 +265,13 @@ public class FeatureConfigurationView {
 		loadConfigurations(fd);
 		featureSelectionTree.setRoot(null);
 		this.featureDiagram = fd;
+		
 		this.featureSelectionPane.setCollapsible(true);
 		this.featureSelectionPane.setText("Current Feature Model: " + fd.getRoot().getName());
 		this.featureSelectionPane.setCollapsible(false);
 		
+		if (fd.getFeatureConfiguration().size() > 0 && fd.getFeatureConfiguration().get(0) != null) {
+			setFeatureConfiguration(fd.getFeatureConfiguration().get(0));
+		}
 	}
 }

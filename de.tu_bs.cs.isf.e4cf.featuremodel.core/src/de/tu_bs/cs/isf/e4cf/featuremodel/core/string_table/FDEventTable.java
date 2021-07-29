@@ -98,7 +98,7 @@ public class FDEventTable {
 	/**
 	 * Feature Configuration View 
 	 */
-	public static final String EVENT_CREATE_CONFIGURATION = "_createConfiguration";
+	public static final String EVENT_SHOW_CONFIGURATION_VIEW = "_showConfigurationView";
 	public static final String EVENT_FEATURE_CONFIGURATION_ELEMENT_SELECTED = "_featureConfigurationElementSelec;ted";
 	public static final String EVENT_RENAME_CONFIGURATIONFEATURE = "RENAME_CONFIGURATIONFEATURE";
 

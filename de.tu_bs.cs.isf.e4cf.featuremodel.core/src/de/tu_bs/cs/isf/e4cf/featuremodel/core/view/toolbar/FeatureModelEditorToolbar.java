@@ -74,7 +74,7 @@ public class FeatureModelEditorToolbar extends ToolBar  {
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_CREATE_CONFIG, e-> {
 			services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
-			services.eventBroker.send(FDEventTable.EVENT_CREATE_CONFIGURATION, view.getCurrentModel());
+			services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.getCurrentModel());
 		}));
 		
 		getItems().add(loggerButton);

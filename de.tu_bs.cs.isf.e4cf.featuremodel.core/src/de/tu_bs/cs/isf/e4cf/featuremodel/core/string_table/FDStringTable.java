@@ -34,7 +34,7 @@ public class FDStringTable {
 	public static final String FD_BAR_MENU_START_LOGGER = "Start Logger";
 	public static final String FD_BAR_MENU_STOP_LOGGER = "Stop Logger";
 	public static final String FD_BAR_MENU_CONSTRAINTS = "Add Constraints";
-	public static final String FD_BAR_MENU_CREATE_CONFIG = "Create Configuration";
+	public static final String FD_BAR_MENU_CREATE_CONFIG = "Show Configurations";
 	
 	/**
 	 * Extension Points
@@ -68,7 +68,7 @@ public class FDStringTable {
 	public static final String FX_FEATURE_CM_MOVE_SELECTED_FEATURES_HERE ="Move Selected Features";
 	public static final String FX_FEATURE_CM_SET_DESCRIPTION ="Set Description";
 	public static final String FX_FEATURE_CM_CREATE_COMPONENTFEATURE = "Create ComponentFeature";
-	public static final String FX_FEATURE_CM_CREATE_NEW_CONFIGURATION = "Create New Configuration";
+	public static final String FX_FEATURE_CM_CREATE_NEW_CONFIGURATION = "Show Configurations";
 	public static final String FX_FEATURE_CM_SET_CONFIGURATION = "Set Configuration";
 	public static final String FX_FEATURE_CM_LOAD_COMPONENTFEATUREDIAGRAM = "Load Feature Diagram";
 	
