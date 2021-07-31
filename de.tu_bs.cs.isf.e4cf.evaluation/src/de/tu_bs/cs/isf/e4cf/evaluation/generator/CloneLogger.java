@@ -24,7 +24,7 @@ import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 @Creatable
 public class CloneLogger {
 
-	private final String DEFAULT_LOG_PATH = " 02 Trees";
+	public String projectFolderName = " 02 Trees";
 
 	private Map<Integer, List<String>> variantLogs = new HashMap<>();
 	private List<String> currentVariantLog;
@@ -40,7 +40,7 @@ public class CloneLogger {
 	}
 	
 	public Path getOutputPath() {
-		return services.workspaceFileSystem.getWorkspaceDirectory().getFile().resolve(DEFAULT_LOG_PATH);
+		return services.workspaceFileSystem.getWorkspaceDirectory().getFile().resolve(projectFolderName);
 	}
 	
 	/** Directly write a message into the current variants log */
@@ -104,7 +104,7 @@ public class CloneLogger {
 
 	/**
 	 * Utility for saving content to a file 
-	 * @param targetDir directory relative to the default path (workspace/ 02 Trees)
+	 * @param targetDir directory relative to the project path
 	 * @param fileName The name of the created file
 	 * @param content
 	 */
@@ -123,6 +123,18 @@ public class CloneLogger {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Path getOutPutDirBasedOnSelection() {
+		// setup save path based on selection in explorer
+		Path selectedPath = Paths.get(services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath());
+		if (services.rcpSelectionService.getCurrentSelectionFromExplorer().isDirectory()) {
+			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount());
+		} else {
+			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount() - 1);
+		}
+		
+		return getOutputPath().resolve(selectedPath);
 	}
 	
 	public void read(String filePath) {
@@ -157,7 +169,9 @@ public class CloneLogger {
 	public void deleteLogsContainingString(String contains) {
 		for (int i=0; i < currentVariantLog.size(); i++) {
 			String entry = currentVariantLog.get(i);
-			if(!entry.startsWith(CloneST.CLONE) && entry.contains(contains)) {
+			if(entry.startsWith(CloneST.ATOMIC) 
+					&& !entry.startsWith(CloneST.COPY + CloneST.SOURCE)
+					&& entry.contains(contains)) {
 				currentVariantLog.remove(entry);
 			}
 		}

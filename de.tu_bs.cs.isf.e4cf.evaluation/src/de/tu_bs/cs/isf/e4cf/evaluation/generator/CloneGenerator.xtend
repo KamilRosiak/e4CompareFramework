@@ -7,7 +7,6 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.List
 import java.util.Random
 import javax.inject.Inject
@@ -25,6 +24,8 @@ class CloneGenerator {
 	@Inject CloneHelper helper
 	@Inject Taxonomy taxonomy
 	@Inject ServiceContainer services
+	
+	val PROJECT_PATH = " 02 Trees"
 
 	def void go(Tree tree, GeneratorOptions options) {
 		// store all tree states in serialized form
@@ -77,18 +78,14 @@ class CloneGenerator {
 	
 	/** Saves tree strings to json file and log */
 	def private void save(Path targetFolder, List<Variant> variants) { 
+		// Set the logger export project
+		logger.projectFolderName = PROJECT_PATH
 		
-		// setup save path based on selection in explorer
-		var Path selectedPath = Paths.get(services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath())
-		if (services.rcpSelectionService.getCurrentSelectionFromExplorer().isDirectory()) {
-			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount())
-		} else {
-			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount() - 1)
-		}
+		val selectedPath = logger.getOutPutDirBasedOnSelection()
 		// create a sub folder for this path
 		var subfolderName = "GeneratedVariants"
 		var i = 1; 
-		while (Files.exists(logger.outputPath.resolve(selectedPath).resolve(subfolderName))) {
+		while (Files.exists(selectedPath.resolve(subfolderName))) {
 			subfolderName = "GeneratedVariants (" + i + ")"
 			i++
 		}

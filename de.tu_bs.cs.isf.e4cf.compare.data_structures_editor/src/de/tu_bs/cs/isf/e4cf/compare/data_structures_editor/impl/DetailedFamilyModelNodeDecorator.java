@@ -14,15 +14,18 @@ public class DetailedFamilyModelNodeDecorator extends FamilyModelNodeDecorator {
 		String nodeName = getAttributeValueFromNode(nodeimpl, "Name");
 		String nodeValue = getAttributeValueFromNode(nodeimpl, "Value");
 		String nodeOperator = getAttributeValueFromNode(nodeimpl, "Operator");
+		String confusion = getAttributeValueFromNode(nodeimpl, "Confusion");
+		confusion = confusion == "" ? "" : "[" + confusion.trim() + "] ";
 
-		nodeimpl.setRepresenation(nodeimpl.getStandardizedNodeType() + nodeName + nodeValue + nodeOperator);
+		nodeimpl.setRepresenation(confusion + nodeimpl.getStandardizedNodeType() + nodeName + nodeValue + nodeOperator);
 
 		return node;
 	}
 	
 	private String getAttributeValueFromNode(Node n, String key) {
 		try {
-			return " " + n.getAttributeForKey(key).getAttributeValues().get(0).getValue().toString();
+			return " " + n.getAttributeForKey(key).getAttributeValues().stream().map(
+					v -> v.getValue().toString() + " ").reduce("", String::concat);
 		} catch (NoSuchElementException e) {
 			return "";
 		}
