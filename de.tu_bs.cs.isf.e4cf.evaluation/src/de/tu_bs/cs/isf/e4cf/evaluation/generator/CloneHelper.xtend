@@ -69,7 +69,7 @@ class CloneHelper {
 		val shadowParent = trackingTree.root.allChildren.findFirst[n | n.UUID == targetParent.UUID]
 		shadowParent.children.add(shadowClone)
 		shadowClone.parent = shadowParent
-		source.attributes.forEach[a | clone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]
+		source.attributes.forEach[a | shadowClone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]
 		
 		// No further check because a copy itself is always a valid mutation
 		logger.logRaw(COPY + SOURCE + source.UUID + TARGET + targetParent.UUID + CLONE + clone.UUID);

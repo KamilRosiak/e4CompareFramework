@@ -76,6 +76,9 @@ public final class TreeViewUtilities {
 		if (item.getValue().toString().toLowerCase().contains(name)) {
 			searchList.add(item);
 		}
+		if (item.getValue().getUUID().toString().toLowerCase().equals(name.toLowerCase())) {
+			searchList.add(item);
+		}
 
 		List<TreeItem<Node>> result = new ArrayList<TreeItem<Node>>();
 		for (TreeItem<Node> child : item.getChildren()) {

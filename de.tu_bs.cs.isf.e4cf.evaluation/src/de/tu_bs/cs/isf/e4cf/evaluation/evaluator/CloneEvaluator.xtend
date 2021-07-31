@@ -290,7 +290,6 @@ class CloneEvaluator {
 		}
 	}
 	
-	// TODO: Add confusions to log just now and only with one UUID
 	private def addConfusionAttributes(Node root, String label, List<Comparison<Node>> confusions) {
 		val allChildren = root.allChildren
 		
@@ -298,10 +297,12 @@ class CloneEvaluator {
 		while (iterator.hasNext) {
 			val confusion = iterator.next
 			var Node node
+			// For optionals two nodes with the same UUID may exist and they are left and right artifacts
 			if (confusion.leftArtifact !== null) {
 				node = allChildren.findFirst[n | n.UUID == confusion.leftArtifact.UUID];
 			} else {
-				node = allChildren.findFirst[n | n.UUID == confusion.rightArtifact.UUID];
+				// Should find the second node
+				node = allChildren.findLast[n | n.UUID == confusion.rightArtifact.UUID];
 			}
 			
 			if (node !== null) {
