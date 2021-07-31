@@ -12,7 +12,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher
-import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService
@@ -20,8 +19,10 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger
 import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST
+import java.nio.file.Files
 import java.util.Collections
 import java.util.List
+import java.util.Map
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
@@ -41,64 +42,99 @@ class CloneEvaluator {
 	@Inject CloneHelper helper
 	
 	val PROJECT_PATH = " 03 Metrics"
+	val matcher = new SortingMatcher()
+	val metric = new MetricImpl("Metric")
+	val engine = new CompareEngineHierarchical(matcher, metric)
 	
+	/**
+	 * Entry point of the evaluator
+	 * Evaluates the selected directory
+	 */
 	def evaluate() {
+		// TODO: get options?
+		var logVerbose = false
+		
 		val directoryElement = services.rcpSelectionService.getCurrentSelectionFromExplorer()
 		directoryElement.getChildren()
 		
 		var Tree originalTree = null
 		val variantTrees = newHashMap
-		val evaluatorResults = newArrayList
-		val evaluations = newArrayList
-		var allVariantNames = newArrayList
+		val allTrees = newHashMap
+		val allVariantNames = newArrayList
 		
+		// Read input folder
 		for (FileTreeElement child : directoryElement.getChildren()) {
 			val name = child.getFileName()
 			
 			if (name.endsWith("0~0.tree")) {
 				originalTree = readerManager.readFile(child)
+				allTrees.put(0, originalTree)
 				allVariantNames.add(name)
 			} else if (name.endsWith(".tree")) {
-				variantTrees.put(Integer.parseInt(name.split("[~.]").reverse.get(1)), readerManager.readFile(child))
+				var index = Integer.parseInt(name.split("[~.]").reverse.get(1))
+				var tree = readerManager.readFile(child)
+				variantTrees.put(index, tree)
+				allTrees.put(index, tree)
 				allVariantNames.add(name)
 			} else if (name.endsWith(".log")) {
 				logger.read(child.getAbsolutePath())
 			}
 		}
 		
-		/* INTERVARIANT SIMILARITY EVALUATION */	
+		val evaluatorResults = newArrayList
 		
-		val matcher = new SortingMatcher()
-		val metric = new MetricImpl("Metric")
+		logger.projectFolderName = PROJECT_PATH
+		var outputDir = logger.outPutDirBasedOnSelection
+		// Setup clean result directory
+		if(outputDir.toFile.exists) {
+			Files.walk(outputDir).forEach(p | p.toFile.delete())
+		} else {
+			Files.createDirectories(outputDir);
+		}
+		
+		// Do evaluation		
+		intervariantSimilarityEvaluation(originalTree, variantTrees, logVerbose, evaluatorResults)
+		
+		taxonomyEvaluation(allVariantNames, allTrees, logVerbose, evaluatorResults)		
+		
+		// Save Results
+		logger.write(logger.outPutDirBasedOnSelection, "CloneEvaluation.results", evaluatorResults)
+		
+		// Clean up		
+		logger.resetLogs
+	}
+	
+	/**
+	 * Compares each variant with the original variant
+	 * And then evaluates the results based on the generator log
+	 */
+	private def void intervariantSimilarityEvaluation(Tree originalTree, Map<Integer, Tree> variantTrees, boolean logVerbose, List<String> evaluatorResults) {
+		val evaluations = newArrayList
 
-		val engine = new CompareEngineHierarchical(matcher, metric)
-
-		for (var i=1; i<=variantTrees.size(); i++) {
-			val eval = new Evaluation
-			evaluations.add(eval)
-			
+		// Evaluate the comparison of each generated variant with the original variant
+		for (var i=1; i<=variantTrees.size(); i++) {			
 			val variantTree = variantTrees.get(i)
 			val logEntries = logger.logs.get(i)
 			val variantName = logEntries.reverse.findFirst[s | s.startsWith(VARIANT)]
+			
+			val eval = new Evaluation
+			eval.name = variantName
+			evaluations.add(eval)
+			
 			evaluatorResults.add(CloneST.LOG_SEPARATOR)
 			evaluatorResults.add(variantName)
-			eval.name = variantName
+			evaluatorResults.add("Original tree nodes: " + originalTree.root.allChildren.size)
+			evaluatorResults.add("Variant tree nodes: " + variantTree.root.allChildren.size)
 			
+			// Compare the variants
 			// Deep Copy Original Tree because otherwise we experience side effects when merging
-			val comparison = engine.compare(helper.deepCopy(originalTree).root, variantTree.root)
-			evaluatorResults.add("Original tree nodes:" + originalTree.root.allChildren.size)
-			evaluatorResults.add("Mod tree nodes:" + variantTree.root.allChildren.size)
-			doComparison(comparison, matcher)
+			val comparison = doComparison(helper.deepCopy(originalTree).root, variantTree.root)
 			eval.comp = comparison
-			
-			evaluatorResults.add("Comparison Tree Nodes:" + comparison.allChildren.size)
+			evaluatorResults.add("Comparison tree nodes: " + comparison.allChildren.size)
 			
 			// Atomic similarity -> result similarity == 1.0
 			// An atomic similarity can be understood as an atomic cloned node ("identical" part of a clone)
 			val detectedSimilarities = comparison.allChildren.filter[c | c.resultSimilarity == 1.0f].toList
-			
-			// Type 3: This detects mandatory children -> jeetus deletus
-			// TODO: prune detectedSimilarities for type 3 changes		
 			
 			// Similarity <> Change
 			// Detected similarities (positives) that do not correspond to a change log-entry (true) (GOOD)
@@ -110,6 +146,7 @@ class CloneEvaluator {
 			// Changes (negatives) that do not have a corresponding change log-entry (false) (BAD)
 			val falseNegatives = newArrayList
 			
+			// Identify positives as true or false
 			// For a change in the log
 			for (entry : logEntries.filter[l | l.startsWith(ATOMIC)]) {
 				// For expected true positives (= initial all similar nodes)
@@ -125,6 +162,7 @@ class CloneEvaluator {
 						
 			}
 			
+			// Identify negatives as true or false
 			// For a supposed true negative
 			val iterator = trueNegatives.iterator
 			while (iterator.hasNext) {
@@ -143,27 +181,32 @@ class CloneEvaluator {
 				}
 			}
 			
+			// Calculate metrics
 			val recall = truePositives.size as float / (truePositives.size + falseNegatives.size) * 100
-			evaluatorResults.add("detected:" + (truePositives.size + falsePositives.size))
-			evaluatorResults.add("detectable:" + (truePositives.size + falseNegatives.size))
+			evaluatorResults.add("Detected:" + (truePositives.size + falsePositives.size))
+			evaluatorResults.add("Detectable:" + (truePositives.size + falseNegatives.size))
 			evaluatorResults.add("Recall: " + recall + "%")
 			
 			val precision = truePositives.size as float / (truePositives.size + falsePositives.size) * 100
-			evaluatorResults.add("Precision: " + precision + " %")
+			evaluatorResults.add("Precision: " + precision + "%")
 			evaluatorResults.add("Similarities that really did not change (TP): " + truePositives.size)
-			// TODO: enable logging by switch
-			evaluatorResults.logComparisions(truePositives)
+			if(logVerbose) {
+				evaluatorResults.logComparisions(truePositives)
+			}
 			evaluatorResults.add("Similarities that actually changed(FP): " + falsePositives.size)
 			evaluatorResults.logComparisions(falsePositives)
 			evaluatorResults.add("Changes that really occurred (TN): " + trueNegatives.size)
-			// TODO: enable logging by switch
-			evaluatorResults.logComparisions(trueNegatives)
+			if(logVerbose) {
+				evaluatorResults.logComparisions(trueNegatives)
+			}
 			evaluatorResults.add("Changes that did not occur (FN): " + falseNegatives.size)
 			evaluatorResults.logComparisions(falseNegatives)
 			
 			// Print Results to Console additionally
 			val vName = variantName.replace("New", "")
-			println(vName + String.join("", Collections.nCopies(20 - vName.length, " ")) + "recall:" + recall + "% precision:" + precision + "%")
+			println(vName + String.join("", Collections.nCopies(20 - vName.length, " "))
+				+ "recall:" + String.format("%10.5f", recall) + "% precision:" + String.format("%10.5f", precision) + "%"
+			)
 			
 			// Store info in evaluation data object
 			eval.precision = precision
@@ -174,21 +217,20 @@ class CloneEvaluator {
 			eval.falseNegatives = falseNegatives
 			
 		}
-		
-		// Save Results
-		logger.projectFolderName = PROJECT_PATH
-		logger.write(logger.outPutDirBasedOnSelection, "CloneEvaluation.results", evaluatorResults)
 			        
-		// Build and Save Tree
+		// Build and Save Trees
 		buildEvaluationTrees(evaluations)
 		for (e : evaluations) {
 			val serialized = gsonExportService.exportTree(e.tree)
 			val name = e.name.split(" ").reverse.get(0)
 			logger.write(logger.outPutDirBasedOnSelection, "Comparison." + name + ".tree", newArrayList(serialized))
 		}
-		
-		/* INTERVARIANT TAXONOMY EVALUATION */	
-		
+	}
+	
+	/**
+	 * Evaluates the correctness of the taxonomy calculation based on generated variants taxonomy
+	 */
+	private def void taxonomyEvaluation(List<String> allVariantNames, Map<Integer, Tree> allTrees, boolean logVerbose, List<String> evaluatorResults) {
 		println("Calculating taxonomy...")
 		
 		// Get expected taxonomy from log names
@@ -200,18 +242,30 @@ class CloneEvaluator {
 				Integer.parseInt("" + temp.split("~").get(0)))
 		]
 		
-		// Algo to calculate taxonomy from variant trees
+		// Simple algorithm to calculate taxonomy from variant trees
+		val variantToParentCalculated = calculateTaxonomy(allVariantNames, allTrees)
 		
+		// Compare both
+		println("Expected taxonomy:\t" + variantToParentExpected.toString.replace("=", "->"))
+		println("Calculated taxonomy:\t" + variantToParentCalculated.toString.replace("=", "->"))
+		// TODO: log
+		evaluatorResults.add(CloneST.LOG_SEPARATOR)
+		
+		var hits = (0..allVariantNames.size-1).map[i | variantToParentExpected.get(i) == variantToParentCalculated.get(i)].filter[b | b].size
+		
+		println("Hitrate: " + hits as float/allVariantNames.size*100 + "%")
+	}
+	
+	/**
+	 * Simple algorithm to calculate taxonomy from variant trees
+	 */
+	private def calculateTaxonomy(List<String> allVariantNames, Map<Integer, Tree> allTrees) {
 		val variantComparsions = newArrayOfSize(allVariantNames.size, allVariantNames.size)
-		// TODO side effects?
-		val allTrees = variantTrees
-		allTrees.put(0, originalTree)
 		
 		for (var i=0; i < allVariantNames.size; i++) {
 			for (var j=i; j < allVariantNames.size; j++) {
 				if(i != j) {
-					val comparison = engine.compare(allTrees.get(i).root, allTrees.get(j).root)
-					doComparison(comparison, matcher)
+					val comparison = doComparison(allTrees.get(i).root, allTrees.get(j).root)
 					
 					val detectedSimilarities = comparison.allChildren.filter[c | c.resultSimilarity == 1.0f].toList
 					// [i][j] -> int simcount
@@ -252,42 +306,43 @@ class CloneEvaluator {
 		val root = sumsOfVariantSimilarities.indexOf(maxSimilarity)
 		variantToParentCalculated.put(root, root)
 		
-		// Compare both
-		println("Expected taxonomy:\t" + variantToParentExpected.toString.replace("=", "->"))
-		println("Calculated taxonomy:\t" + variantToParentCalculated.toString.replace("=", "->"))
-		var hits = (0..allVariantNames.size-1).map[i | variantToParentExpected.get(i) == variantToParentCalculated.get(i)].filter[b | b].size
-		
-		println("Hitrate: " + hits as float/allVariantNames.size*100 + "%")
-		
-		logger.resetLogs
+		return variantToParentCalculated
 	}
 	
-	def void doComparison(NodeComparison comparison, Matcher matcher) {
+	/* UTILITY FUNCTIONS */
+	
+	/**
+	 * Compares the left and right node with the comparison engine
+	 * @return comparison the resulting NodeComparison
+	 */
+	private def NodeComparison doComparison(Node leftRoot, Node rightRoot) {		
+		val comparison = engine.compare(leftRoot, rightRoot)
 		comparison.updateSimilarity()
 		matcher.calculateMatching(comparison)
 		comparison.updateSimilarity()
+		
+		return comparison
 	}
 
-	def getAllChildren(Comparison<Node> root) {
+	/** Returns all children of a comparison */
+	private def getAllChildren(Comparison<Node> root) {
 		var nodes = newArrayList
 		root._getAllChildren(nodes)
 		return nodes
 	}
 	
+	/** Recursion to get all children of a comparison */
 	private def void _getAllChildren(Comparison<Node> root, List<Comparison<Node>> nodes) {
-		root.childComparisons.forEach[c | nodes.add(c); c._getAllChildren(nodes)
-		]
-	}
-
-	def getNumberOfChanges(List<String> logEntries) {
-		logEntries.filter[l | l.startsWith(ATOMIC)].size
+		root.childComparisons.forEach[c | nodes.add(c); c._getAllChildren(nodes)]
 	}
 	
-	def boolean isNodeChanged(String logEntry, Comparison<Node> comparison) {
+	/**
+	 * Checks if a node of a comparison actually changed in a log entry
+	 */
+	private def boolean isNodeChanged(String logEntry, Comparison<Node> comparison) {
 		val node = comparison.rightArtifact !== null ? comparison.rightArtifact : comparison.leftArtifact
 		
 		switch (logEntry.split(" ").get(0)) {
-			// TODO: can / should we have stronger conditions?
 			// We can't differentiate operation on the same node as by design of the comparison
 			// there is only one similarity value which identifies a change
 			case COPY: {
@@ -333,6 +388,7 @@ class CloneEvaluator {
 		}
 	}
 	
+	/** Append information for each node comparison to a log */
 	def private logComparisions(List<String> log, List<Comparison<Node>> cNodes) {
 		for (c : cNodes) {
 			val leftUUID = c.leftArtifact !== null ? c.leftArtifact.UUID.toString : ""
@@ -341,7 +397,9 @@ class CloneEvaluator {
 		}
 	}
 	
-	/** Return a huge ass tree containing all relevant information about variants and similarities */
+	/**
+	 * Return a tree containing all relevant information about variants and similarities
+	 */
 	def buildEvaluationTrees(List<Evaluation> evaluations) {
 		for (eval : evaluations) {
 			val tree = new TreeImpl("Evaluation Results")
@@ -352,6 +410,7 @@ class CloneEvaluator {
 			val Node variantCompRoot = new NodeImpl(NodeType.FILE, "Comparison")
 			tree.root = variantCompRoot
 			variantCompRoot.addChildWithParent(eval.comp.mergeArtifacts(false))
+			
 			// Attach Attributes
 			variantCompRoot.addAttribute("Name", new StringValueImpl(eval.name))
 			variantCompRoot.addAttribute("Precision", new StringValueImpl(""+eval.precision))
@@ -365,6 +424,10 @@ class CloneEvaluator {
 		}
 	}
 	
+	/**
+	 * For a list of comparisons of a confusion class identified by a label,
+	 * find a corresponding Node in the result tree and add the label and similarity to the Node
+	 */
 	private def addConfusionAttributes(Node root, String label, List<Comparison<Node>> confusions) {
 		val allChildren = root.allChildren
 		
@@ -390,6 +453,7 @@ class CloneEvaluator {
 		
 	}
 	
+	/** Data class that holds evaluation information */
 	static class Evaluation {
 		
 		var public NodeComparison comp;
