@@ -1,11 +1,15 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.handler;
 
+import java.util.Optional;
+
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorDialog;
+import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions;
 import de.tu_bs.cs.isf.e4cf.evaluation.evaluator.CloneEvaluator;
 
 /**
@@ -17,10 +21,14 @@ public class CloneEvaluationHandler {
 	 * @param services
 	 */
 	@Execute
-	public void execute(IEclipseContext context, CloneEvaluator evaluator) {
+	public void execute(IEclipseContext context, ServiceContainer services, CloneEvaluator evaluator) {
 		System.out.println("Hello Evaluator");
 
-		evaluator.evaluate();
+		EvaluatorDialog dialog = new EvaluatorDialog(context, services.imageService);
+		Optional<EvaluatorOptions> result = dialog.open();
+		result.ifPresent(options -> {
+			evaluator.evaluate(options);
+		});
 
 		System.out.println("Goodbye");
 	}

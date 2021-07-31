@@ -30,6 +30,7 @@ import org.eclipse.e4.core.di.annotations.Creatable
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.getAllChildren
+import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions
 
 @Singleton
 @Creatable
@@ -50,10 +51,7 @@ class CloneEvaluator {
 	 * Entry point of the evaluator
 	 * Evaluates the selected directory
 	 */
-	def evaluate() {
-		// TODO: get options?
-		var logVerbose = false
-		
+	def evaluate(EvaluatorOptions options) {		
 		val directoryElement = services.rcpSelectionService.getCurrentSelectionFromExplorer()
 		directoryElement.getChildren()
 		
@@ -92,10 +90,18 @@ class CloneEvaluator {
 			Files.createDirectories(outputDir);
 		}
 		
-		// Do evaluation		
-		intervariantSimilarityEvaluation(originalTree, variantTrees, logVerbose, evaluatorResults)
+		// Do evaluation
+		if(options.doIntraEvaluation) {
+			// Not yet implemented
+		}
 		
-		taxonomyEvaluation(allVariantNames, allTrees, logVerbose, evaluatorResults)		
+		if(options.doInterEvaluation) {
+			intervariantSimilarityEvaluation(originalTree, variantTrees, evaluatorResults, options)
+		}
+		
+		if(options.doTaxonomyEvaluation) {
+			taxonomyEvaluation(allVariantNames, allTrees, evaluatorResults, options)		
+		}
 		
 		// Save Results
 		logger.write(logger.outPutDirBasedOnSelection, "CloneEvaluation.results", evaluatorResults)
@@ -108,7 +114,7 @@ class CloneEvaluator {
 	 * Compares each variant with the original variant
 	 * And then evaluates the results based on the generator log
 	 */
-	private def void intervariantSimilarityEvaluation(Tree originalTree, Map<Integer, Tree> variantTrees, boolean logVerbose, List<String> evaluatorResults) {
+	private def void intervariantSimilarityEvaluation(Tree originalTree, Map<Integer, Tree> variantTrees, List<String> evaluatorResults, EvaluatorOptions options) {
 		val evaluations = newArrayList
 
 		// Evaluate the comparison of each generated variant with the original variant
@@ -159,7 +165,6 @@ class CloneEvaluator {
 						iterator.remove
 					}
 				}
-						
 			}
 			
 			// Identify negatives as true or false
@@ -190,13 +195,13 @@ class CloneEvaluator {
 			val precision = truePositives.size as float / (truePositives.size + falsePositives.size) * 100
 			evaluatorResults.add("Precision: " + precision + "%")
 			evaluatorResults.add("Similarities that really did not change (TP): " + truePositives.size)
-			if(logVerbose) {
+			if(options.isLogVerbose) {
 				evaluatorResults.logComparisions(truePositives)
 			}
 			evaluatorResults.add("Similarities that actually changed(FP): " + falsePositives.size)
 			evaluatorResults.logComparisions(falsePositives)
 			evaluatorResults.add("Changes that really occurred (TN): " + trueNegatives.size)
-			if(logVerbose) {
+			if(options.isLogVerbose) {
 				evaluatorResults.logComparisions(trueNegatives)
 			}
 			evaluatorResults.add("Changes that did not occur (FN): " + falseNegatives.size)
@@ -230,7 +235,7 @@ class CloneEvaluator {
 	/**
 	 * Evaluates the correctness of the taxonomy calculation based on generated variants taxonomy
 	 */
-	private def void taxonomyEvaluation(List<String> allVariantNames, Map<Integer, Tree> allTrees, boolean logVerbose, List<String> evaluatorResults) {
+	private def void taxonomyEvaluation(List<String> allVariantNames, Map<Integer, Tree> allTrees, List<String> evaluatorResults, EvaluatorOptions options) {
 		println("Calculating taxonomy...")
 		
 		// Get expected taxonomy from log names
@@ -246,14 +251,19 @@ class CloneEvaluator {
 		val variantToParentCalculated = calculateTaxonomy(allVariantNames, allTrees)
 		
 		// Compare both
-		println("Expected taxonomy:\t" + variantToParentExpected.toString.replace("=", "->"))
-		println("Calculated taxonomy:\t" + variantToParentCalculated.toString.replace("=", "->"))
-		// TODO: log
-		evaluatorResults.add(CloneST.LOG_SEPARATOR)
-		
 		var hits = (0..allVariantNames.size-1).map[i | variantToParentExpected.get(i) == variantToParentCalculated.get(i)].filter[b | b].size
 		
-		println("Hitrate: " + hits as float/allVariantNames.size*100 + "%")
+		var expected = "Expected taxonomy:\t" + variantToParentExpected.toString.replace("=", "->")
+		var calculated = "Calculated taxonomy:\t" + variantToParentCalculated.toString.replace("=", "->")
+		var hitrate = "Hitrate: " + hits as float/allVariantNames.size*100 + "%"
+		
+		println(expected)
+		println(calculated)
+		println(hitrate)
+		evaluatorResults.add(CloneST.LOG_SEPARATOR)
+		evaluatorResults.add(expected)
+		evaluatorResults.add(calculated)
+		evaluatorResults.add(hitrate)
 	}
 	
 	/**
@@ -262,6 +272,7 @@ class CloneEvaluator {
 	private def calculateTaxonomy(List<String> allVariantNames, Map<Integer, Tree> allTrees) {
 		val variantComparsions = newArrayOfSize(allVariantNames.size, allVariantNames.size)
 		
+		// Create matrix storing comparisons of all variants
 		for (var i=0; i < allVariantNames.size; i++) {
 			for (var j=i; j < allVariantNames.size; j++) {
 				if(i != j) {
@@ -279,6 +290,8 @@ class CloneEvaluator {
 		}
 		
 		val variantToParentCalculated = newHashMap
+		// For each variant choose the variant with the highest number of similarities
+		// That the current variant is not parent of (to avoid cycles)
 		for (var i=0; i < allVariantNames.size; i++) {
 			val _i = i
 			val predecessorsWithCurrentAsParent = variantToParentCalculated.entrySet.filter[
@@ -298,12 +311,13 @@ class CloneEvaluator {
 			variantToParentCalculated.put(i, parent)
 		}
 		
+		// Sum all incoming similarities of a variant to detect a root variant
 		val sumsOfVariantSimilarities = variantComparsions.map[e1 | 
 			return e1.reduce[ i1, i2 | i1 + i2 ]
-		] 
-		// root ->sumsOfVariantSimilarities.max
+		]
 		val maxSimilarity = sumsOfVariantSimilarities.max
 		val root = sumsOfVariantSimilarities.indexOf(maxSimilarity)
+		// That simply has no parent (is its own parent)
 		variantToParentCalculated.put(root, root)
 		
 		return variantToParentCalculated
