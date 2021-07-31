@@ -50,24 +50,28 @@ class CloneEvaluator {
 		val variantTrees = newHashMap
 		val evaluatorResults = newArrayList
 		val evaluations = newArrayList
+		var allVariantNames = newArrayList
 		
 		for (FileTreeElement child : directoryElement.getChildren()) {
 			val name = child.getFileName()
 			
 			if (name.endsWith("0~0.tree")) {
 				originalTree = readerManager.readFile(child)
+				allVariantNames.add(name)
 			} else if (name.endsWith(".tree")) {
 				variantTrees.put(Integer.parseInt(name.split("[~.]").reverse.get(1)), readerManager.readFile(child))
+				allVariantNames.add(name)
 			} else if (name.endsWith(".log")) {
 				logger.read(child.getAbsolutePath())
 			}
 		}
-
+		
+		/* INTERVARIANT SIMILARITY EVALUATION */	
+		
 		val matcher = new SortingMatcher()
 		val metric = new MetricImpl("Metric")
 
 		val engine = new CompareEngineHierarchical(matcher, metric)
-
 
 		for (var i=1; i<=variantTrees.size(); i++) {
 			val eval = new Evaluation
@@ -183,7 +187,78 @@ class CloneEvaluator {
 			logger.write(logger.outPutDirBasedOnSelection, "Comparison." + name + ".tree", newArrayList(serialized))
 		}
 		
-		        
+		/* INTERVARIANT TAXONOMY EVALUATION */	
+		
+		println("Calculating taxonomy...")
+		
+		// Get expected taxonomy from log names
+		val variantToParentExpected = newHashMap
+		allVariantNames.forEach[v | 
+			val temp = v.split("\\.").get(v.split("\\.").size-2)
+			variantToParentExpected.put(
+				Integer.parseInt("" + temp.split("~").get(1)),
+				Integer.parseInt("" + temp.split("~").get(0)))
+		]
+		
+		// Algo to calculate taxonomy from variant trees
+		
+		val variantComparsions = newArrayOfSize(allVariantNames.size, allVariantNames.size)
+		// TODO side effects?
+		val allTrees = variantTrees
+		allTrees.put(0, originalTree)
+		
+		for (var i=0; i < allVariantNames.size; i++) {
+			for (var j=i; j < allVariantNames.size; j++) {
+				if(i != j) {
+					val comparison = engine.compare(allTrees.get(i).root, allTrees.get(j).root)
+					doComparison(comparison, matcher)
+					
+					val detectedSimilarities = comparison.allChildren.filter[c | c.resultSimilarity == 1.0f].toList
+					// [i][j] -> int simcount
+					variantComparsions.set(i, j, detectedSimilarities.size)
+					variantComparsions.set(j, i, detectedSimilarities.size)
+				} else {
+					// don't compare variant with itself
+					variantComparsions.set(i, j, 0)
+				}
+			}
+		}
+		
+		val variantToParentCalculated = newHashMap
+		for (var i=0; i < allVariantNames.size; i++) {
+			val _i = i
+			val predecessorsWithCurrentAsParent = variantToParentCalculated.entrySet.filter[
+				e | e.value == _i
+			].map[e | e.key]
+			
+			var int parent
+			var int offset=0
+			var similarities = variantComparsions.get(i).sort.reverse
+			do {
+				// max, max-1, ...
+				val maxSimilarity = similarities.get(offset)
+				parent = variantComparsions.get(i).indexOf(maxSimilarity)
+				offset++				
+			} while(predecessorsWithCurrentAsParent.contains(parent))
+			
+			variantToParentCalculated.put(i, parent)
+		}
+		
+		val sumsOfVariantSimilarities = variantComparsions.map[e1 | 
+			return e1.reduce[ i1, i2 | i1 + i2 ]
+		] 
+		// root ->sumsOfVariantSimilarities.max
+		val maxSimilarity = sumsOfVariantSimilarities.max
+		val root = sumsOfVariantSimilarities.indexOf(maxSimilarity)
+		variantToParentCalculated.put(root, root)
+		
+		// Compare both
+		println("Expected taxonomy:\t" + variantToParentExpected.toString.replace("=", "->"))
+		println("Calculated taxonomy:\t" + variantToParentCalculated.toString.replace("=", "->"))
+		var hits = (0..allVariantNames.size-1).map[i | variantToParentExpected.get(i) == variantToParentCalculated.get(i)].filter[b | b].size
+		
+		println("Hitrate: " + hits as float/allVariantNames.size*100 + "%")
+		
 		logger.resetLogs
 	}
 	
