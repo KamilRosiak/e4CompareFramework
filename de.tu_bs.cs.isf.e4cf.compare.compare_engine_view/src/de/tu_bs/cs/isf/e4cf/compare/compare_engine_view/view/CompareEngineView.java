@@ -23,12 +23,13 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.TaxonomyCompareEngine;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactGraph;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.graph.artifact_graph.ArtifactGraph;
 import de.tu_bs.cs.isf.e4cf.graph.core.string_table.GraphEvents;
 import de.tu_bs.cs.isf.e4cf.graph.core.string_table.GraphStringTable;
 import javafx.collections.FXCollections;
@@ -44,7 +45,7 @@ public class CompareEngineView implements Initializable {
 	public static final int NAME_COLUMN_WIDTH_PERCENT = 60;
 	public static final int TYPE_COLUMN_WIDTH_PERCENT = 40;
 
-	public List<Path> artifactPaths = new ArrayList<Path>();
+	public List<FileTreeElement> artifactFileTrees = new ArrayList<FileTreeElement>();
 
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
@@ -75,7 +76,6 @@ public class CompareEngineView implements Initializable {
 	// TODO: impl
 	private Metric getSelectedMetric() {
 		return new MetricImpl("test");
-
 	}
 
 	@FXML
@@ -103,21 +103,22 @@ public class CompareEngineView implements Initializable {
 	}
 
 	/**
-	 * Compares Artifacts for computation of Relation graph
+	 * Compares Artifacts for similarity computation and displays Relation graph
 	 */
 	@FXML
 	public void compareArtifactsForRelationGraph() {
 		try {									
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW); // First Display Graph View 
 			
-			CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedMatcher());
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
 				// Create graph for artifacts
-				engine.compare(artifacts, false);
+				engine.compare(artifacts);
+				engine.deriveArtifactDetails(artifactFileTrees);
 				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
-				artifactGraph.deriveArtifactDetails(artifactPaths);
+				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 
 				// Send prepared graph to GraphView listener for display
@@ -139,14 +140,15 @@ public class CompareEngineView implements Initializable {
 		try {												
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW);  // First Display Graph View 
 			
-			CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedMatcher());
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
+				
 				// Create graph for artifacts
-				engine.compare(artifacts, false);
+				engine.compare(artifacts);
 				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
-				artifactGraph.deriveArtifactDetails(artifactPaths);
+				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 				artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
 				
@@ -170,21 +172,14 @@ public class CompareEngineView implements Initializable {
 		artifactTable.getItems().addAll(ArtifactIOUtil.parseArtifacts(parsedFiles));
 	}
 
-	/**
-	 * Add a all selected artifacts to List
-	 */
-	public void collectParsedFilePaths(List<FileTreeElement> parsedFiles) {
-		for (FileTreeElement parsedFile : parsedFiles) {
-			artifactPaths.add(Paths.get(parsedFile.getAbsolutePath()));
-		}
-	}
-
+	
 	/**
 	 * Removes all selected artifacts from the artifact list.
 	 */
 	@FXML
 	public void removeArtifacts() {
 		artifactTable.getItems().removeAll(artifactTable.getSelectionModel().getSelectedItem());
+		removeFromArtifactFileDetailList();
 	}
 
 	/**
@@ -218,7 +213,7 @@ public class CompareEngineView implements Initializable {
 	@Inject
 	public void collectArtifactsFileDetails(
 			@UIEventTopic(CompareST.LOAD_ARTIFACTS_PATH_EVENET) List<FileTreeElement> parsedFiles) {
-		artifactPaths.clear(); // remove all items from previous selection
+		artifactFileTrees.clear(); // remove all items from previous selection
 		collectParsedFilePaths(parsedFiles); // add newly parsed files
 	}
 
@@ -233,5 +228,29 @@ public class CompareEngineView implements Initializable {
 		services.partService.showPart(CompareST.BUNDLE_NAME);
 		artifactTable.getItems().clear();
 		artifactTable.getItems().addAll(artifacts);
+	}
+	
+	/**
+	 * Add a all selected artifacts to List
+	 */
+	public void collectParsedFilePaths(List<FileTreeElement> parsedFiles) {
+		for (FileTreeElement parsedFile : parsedFiles) {
+			artifactFileTrees.add(parsedFile);
+		}
+	}
+
+	/**
+	 * Removes item selected for removal in artifact Table from artifact file tree list
+	 */
+	public void removeFromArtifactFileDetailList() {
+		Tree selectedArtifact = artifactTable.getSelectionModel().getSelectedItem();
+		List<FileTreeElement> artifactsToRemove = new ArrayList<FileTreeElement>();
+		for (FileTreeElement anArtifactDetail: artifactFileTrees) {
+			if (anArtifactDetail.getFileName().equals(selectedArtifact.getTreeName())) {
+				// anArtifactDetail.getAbsolutePath()
+				artifactsToRemove.add(anArtifactDetail);
+			}
+		}
+		artifactFileTrees.removeAll(artifactsToRemove);
 	}
 }

@@ -1,16 +1,15 @@
-package de.tu_bs.cs.isf.e4cf.graph.artifact_graph;
+package de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.gef.geometry.planar.Rectangle;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ArtifactFileDetails;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.graph.core.elements.model.GraphEdge;
 import de.tu_bs.cs.isf.e4cf.graph.core.elements.model.GraphNode;
 import de.tu_bs.cs.isf.e4cf.graph.core.elements.model.SimpleGraph;
 import javafx.scene.paint.Color;
+import org.eclipse.gef.geometry.planar.Rectangle;
 
 /**
  * @author developer-olan
@@ -18,7 +17,6 @@ import javafx.scene.paint.Color;
  */
 public class ArtifactGraph {
 	private static final double WIDTH = 150;
-	private static final double HEIGHT = 90;
 
 	private double xAxisOffset = 0;
 	private double yAxisOffset = 0;
@@ -36,17 +34,16 @@ public class ArtifactGraph {
 	public SimpleGraph mindMapRelationshipGraph;
 	public SimpleGraph mindMapTaxonomyGraph;
 
-	public ArtifactGraph() {
-		mindMapRelationshipGraph = new SimpleGraph();
-		mindMapTaxonomyGraph = new SimpleGraph();
-	}
-
 	public ArtifactGraph(List<ArtifactComparison> _artifactComparisonList) {
 		mindMapRelationshipGraph = new SimpleGraph();
 		mindMapTaxonomyGraph = new SimpleGraph();
 		artifactComparisonList = _artifactComparisonList;
 	}
-
+	
+	/**
+	 * Computes relation between artifacts
+	 * @return
+	 */
 	public SimpleGraph setUpRelationshipGraph() {
 
 		// Search all Artifact List to identify compared artifacts and establish node
@@ -81,11 +78,6 @@ public class ArtifactGraph {
 		addAllChildElementsToRelationGraphMap();
 
 		return mindMapRelationshipGraph;
-	}
-
-	public void clearAllLists() {
-		allArtifactNodes.clear();
-		allConnectionEdges.clear();
 	}
 	
 	/**
@@ -230,6 +222,12 @@ public class ArtifactGraph {
 		return allNodesReachable;
 	}
 
+	/**
+	 * Find nodes most similar to parent node
+	 * @param parentNode
+	 * @param mostSimilarNodes
+	 * @return
+	 */
 	private GraphNode getNodeWithHighestSimilarity(GraphNode parentNode, List<GraphNode> mostSimilarNodes) {
 		GraphNode mostSimilar = new GraphNode();
 		float maxSimilarityValue = 0;
@@ -428,13 +426,14 @@ public class ArtifactGraph {
 		return center;
 	}
 
+	
 	/**
 	 * adds list to all artifacts to engine list of artifacts
 	 * @param allArtifactPaths
 	 */
-	public void deriveArtifactDetails(List<Path> allArtifactPaths) {
-		for (Path anArtifactPath : allArtifactPaths) {
-			allArtifactFileDetails.add(new ArtifactFileDetails(anArtifactPath));
+	public void deriveArtifactDetails(List<FileTreeElement> allArtifactTreeElements) {
+		for (FileTreeElement anArtifactFileTreeElement : allArtifactTreeElements) {
+			allArtifactFileDetails.add(new ArtifactFileDetails(anArtifactFileTreeElement));
 		}
 	}
 

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Taxonomy_control_center
+Bundle-SymbolicName: de.tu_bs.cs.isf._e4cf.core.compare.parts.taxonomy_control_center
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.core.compare.parts.taxonomy.control.center
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

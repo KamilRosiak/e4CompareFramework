@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.graph.artifact_graph;
+package de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 

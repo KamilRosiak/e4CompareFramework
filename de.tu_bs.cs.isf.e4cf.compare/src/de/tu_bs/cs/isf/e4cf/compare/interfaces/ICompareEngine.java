@@ -18,9 +18,7 @@ public interface ICompareEngine<Type> {
 	public Tree compare(Tree first, Tree second);
 	
 	public Tree compare(List<Tree> variants);
-	
-	public Tree compare(List<Tree> variants,  boolean mergeCompare);
-	
+		
 	public Comparison<Type> compare(Node first, Node second);
 	
 	public Comparator<Type> getDefaultComparator();
