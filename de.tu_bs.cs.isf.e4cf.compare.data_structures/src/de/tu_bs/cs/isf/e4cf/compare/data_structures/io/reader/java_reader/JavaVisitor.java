@@ -1444,7 +1444,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	 */
 	@Override
 	public void visit(VariableDeclarator n, Node arg) {
-		Node variableDeclaratorNode = new NodeImpl(NodeType.VARIABLE_DECLARATION, VariableDeclarator.class.getSimpleName(), arg);
+		Node variableDeclaratorNode = new NodeImpl(NodeType.VARIABLE_DECLARATOR, VariableDeclarator.class.getSimpleName(), arg);
 		// Type
 		variableDeclaratorNode.addAttribute(JavaAttributesTypes.Type.name(), new StringValueImpl(n.getTypeAsString()));
 

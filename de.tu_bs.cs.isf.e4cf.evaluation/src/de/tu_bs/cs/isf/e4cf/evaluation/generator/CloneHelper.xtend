@@ -15,6 +15,7 @@ import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
 import java.util.Random
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 
 @Creatable
 @Singleton
@@ -284,8 +285,9 @@ class CloneHelper {
 			
 			// Refactor variable declarations (Class and Methods)
 			// Note: also refactors method arguments with the same name as the field which may not be applicable to every language
+			// CLASS, COMPILATION_UNIT,
 			switch (container.standardizedNodeType) {
-				case VARIABLE_DECLARATION: {
+				case VARIABLE_DECLARATOR: {
 					if (container.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty) {
 						//abort
 						println("A container for multiple declarations was input here: "+ container.UUID.toString)
@@ -294,13 +296,30 @@ class CloneHelper {
 					body = container.parent.parent
 				}
 				case ARGUMENT: {
-					// refactor method argument
+					// refactor method definition argument itself and every occurrence in the block next to it
 					container.setAttributeValue("Name", newValue)
-					body = container.parent.parent.children.get(1)
+					if (container.parent.parent.standardizedNodeType == NodeType.METHOD_DECLARATION) {
+						body = container.parent.parent.children.get(1)
+					} else {
+						// probably lambda
+						body = container.parent.children.findFirst[n | n.standardizedNodeType == NodeType.BLOCK]
+					}
+					
 					
 				}
-				case METHOD_DECLARATION: 
-					body = container.parent
+				case METHOD_DECLARATION: {
+					// Scope is the container (~class) of the method definition
+					body = container.parent					
+				}
+				case COMPILATION_UNIT,
+				case CLASS: {
+					// Note that we do not change anything out of file scope
+					body = container
+					while (body.standardizedNodeType != NodeType.COMPILATION_UNIT && body.parent !== null) {
+						body = body.parent
+					}
+					
+				}
 				default: {
 					println("Could not refactor node type: " + container.standardizedNodeType)
 					return
@@ -366,6 +385,15 @@ class CloneHelper {
 	def static <T> random(Iterable<T> l){
 		if (l.nullOrEmpty) return null;
 		return l.get(new Random().nextInt(l.size))
+	}
+	
+	/** Returns the root node of a node composite */
+	def static Node getRoot(Node n) {
+		if (n.parent !== null) {
+			return n.parent
+		} else {
+			return n
+		}
 	}
 	
 	// utility: nest nodes e.g. wrap statsequence in control block

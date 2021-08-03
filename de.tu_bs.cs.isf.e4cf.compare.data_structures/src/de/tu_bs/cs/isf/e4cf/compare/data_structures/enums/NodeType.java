@@ -97,6 +97,7 @@ public enum NodeType {
 	 */
 	UPDATE,
 	VARIABLE_DECLARATION, // INTERESTING
+	VARIABLE_DECLARATOR,
 	;
 	
 	public static NodeType fromString(String name) {

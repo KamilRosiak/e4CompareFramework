@@ -24,8 +24,6 @@ class CloneGenerator {
 	@Inject CloneHelper helper
 	@Inject Taxonomy taxonomy
 	@Inject ServiceContainer services
-	
-	val PROJECT_PATH = " 02 Trees"
 
 	def void go(Tree tree, GeneratorOptions options) {
 		// store all tree states in serialized form
@@ -79,9 +77,10 @@ class CloneGenerator {
 	/** Saves tree strings to json file and log */
 	def private void save(Path targetFolder, List<Variant> variants) { 
 		// Set the logger export project
-		logger.projectFolderName = PROJECT_PATH
+		logger.projectFolderName = " 02 Trees"
 		
 		val selectedPath = logger.getOutPutDirBasedOnSelection()
+		// val selectedPath = targetFolder
 		// create a sub folder for this path
 		var subfolderName = "GeneratedVariants"
 		var i = 1; 

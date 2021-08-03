@@ -25,19 +25,6 @@ class Taxonomy {
 	@Inject CloneHelper helper;
 	@Inject CloneLogger logger;
 	
-	val STATEMENT_TYPES = #[ASSIGNMENT, 
-							^IF, 
-							LOOP_COLLECTION_CONTROLLED, 
-							LOOP_COUNT_CONTROLLED, 
-							LOOP_DO, 
-							LOOP_WHILE,
-							METHOD_CALL,
-							TRY,
-							VARIABLE_DECLARATION
-							]
-	val METHOD_TYPES = #[METHOD_DECLARATION]
-	val CLASS_TYPES = #[CLASS]
-	
 	// ==========================================================
 	// TYPE I
 	// ==========================================================
@@ -88,16 +75,16 @@ class Taxonomy {
 		switch (m.name) {
 			case "refactorIdentifiers": {
 				val declaration = tree.root.allChildren.filter[ n | 
-					n.standardizedNodeType == VARIABLE_DECLARATION 
-					&& !n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
-				].random	
+					#[ARGUMENT, CLASS, COMPILATION_UNIT, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
+					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
+				].random
 				
 				m.tryInvoke(declaration, "I" + new Random().nextInt(Integer.MAX_VALUE))
 			}
 			
 			case "replaceIdentifier": {
 				val ident = tree.root.allChildren.filter[ n | 
-					STATEMENT_TYPES.contains(n.standardizedNodeType) &&
+					#[ARGUMENT, CLASS, COMPILATION_UNIT, EXPRESSION, METHOD_CALL, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
 					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
 				].random	
 				
@@ -109,13 +96,14 @@ class Taxonomy {
 					n.standardizedNodeType == LITERAL
 				].random 
 				
+				// TODO read type field and generate new value accordingly
 				m.tryInvoke(literal, "L" + new Random().nextInt(Integer.MAX_VALUE))
 			}
 			
 			case "changeType": {
 				val declaration = tree.root.allChildren.filter[ n | 
-					n.standardizedNodeType == VARIABLE_DECLARATION 
-					&& !n.attributes.filter[a | a.attributeKey == "Type"].nullOrEmpty
+					#[ARGUMENT, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) && 
+					!n.attributes.filter[a | a.attributeKey == "Type"].nullOrEmpty
 				].random
 				
 				m.tryInvoke(declaration, #["boolean", "int", "String", "float", "Object"].random as String)
@@ -127,7 +115,7 @@ class Taxonomy {
 		if (n !== null) {
 			m.invoke(this, n, value)
 		} else {
-			System.err.println('''Error with «m.name» modification''')
+			System.err.println('''Error with «m.name» modification: No Target Found''')
 		}
 	}
 	
@@ -136,10 +124,9 @@ class Taxonomy {
 	// ==========================================================
 	
 	/** Adds a given source Node composition to the target Node at specified index */
-	def add(Node source, Node target, int index) {
+	def add(Node source, Node target) {
 		logger.logRaw(TAX_ADD)
 		helper.copyRecursively(source, target)
-		helper.move(source, target, index)
 	}
 	
 	/** Delete a sub tree */
@@ -169,29 +156,85 @@ class Taxonomy {
 			case "add",
 			case "move": {
 				val source = tree.root.allChildren.filter[n | 
-					STATEMENT_TYPES.contains(n.standardizedNodeType)
-				].random
+					#[ASSIGNMENT, CLASS, CONSTRUCTION, FIELD_DECLARATION,
+						^IF, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO,
+						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION
+					].contains(n.standardizedNodeType)
+				].random 
+				
 				if (source === null) {
-					System.err.println('''Error with «m.name» modification''')
+					System.err.println('''Error with «m.name» modification: No Source found''')
 					return;
 				}
-				val target = tree.root.allChildren.filter[n | n.standardizedNodeType == BLOCK 
-					&& !n.allChildren.exists[c | c.UUID == n.UUID]
-					&& !source.allChildren.exists[c | c.UUID == n.UUID]
-				].random
+				
+				// no containment source<->target
+				// reasonable target depending on source type
+				var Node target
+				switch (source.standardizedNodeType) {
+					// BODY, CASE Targets
+					case ASSIGNMENT,
+					case ^IF,
+					case LOOP_COLLECTION_CONTROLLED,
+					case LOOP_COUNT_CONTROLLED,
+					case LOOP_DO,
+					case LOOP_WHILE,
+					case METHOD_CALL,
+					case SWITCH,
+					case TRY,
+					case VARIABLE_DECLARATION: {
+						target = tree.root.allChildren.filter[ n | 
+							#[BLOCK, CASE].contains(n.standardizedNodeType)
+							&& n.UUID != source.UUID // Make sure to not target the same node
+							&& !n.allChildren.exists[c | c.UUID == n.UUID] // Watch out for containment as we copy procedurally and run into infinite loops
+							&& !source.allChildren.exists[c | c.UUID == n.UUID]
+						].random
+					}
+					// CU, CLASS Targets
+					case CONSTRUCTION,
+					case FIELD_DECLARATION,
+					case METHOD_DECLARATION,
+					case CLASS: {
+						target = tree.root.allChildren.filter[ n | 
+							#[COMPILATION_UNIT, CLASS].contains(n.standardizedNodeType)
+							&& n.UUID != source.UUID // Make sure to not target the same node
+							&& !n.allChildren.exists[c | c.UUID == n.UUID] // Watch out for containment as we copy procedurally and run into infinite loops
+							&& !source.allChildren.exists[c | c.UUID == n.UUID]
+						].random
+					}
+					default: {
+						System.err.println('''Error with «m.name» modification: Target for source «source.standardizedNodeType» cannot be determined''')
+						return;
+					}
+				}
+				
 				if (target === null) {
-					System.err.println('''Error with «m.name» modification''')
-					return;
+					System.err.println('''Error with «m.name» modification: No target found.''')
+					return;	
 				}
-				val index = target.children.nullOrEmpty ? 0 : new Random().nextInt(target.children.size)
-				m.invoke(this, source, target, index)
+				
+				if (m.name == "add") {
+					// add
+					add(source, target)	
+					
+				} else {
+					// move
+					val index = target.children.nullOrEmpty ? 0 : new Random().nextInt(target.children.size)
+					move(source, target, index)
+				}
+				
 			}
 			case "delete": {
 				val target = tree.root.allChildren.filter[n | 
-					STATEMENT_TYPES.contains(n.standardizedNodeType)
+					#[ASSIGNMENT, ARGUMENT,	CLASS, CONSTRUCTION, EXPRESSION, FIELD_DECLARATION, 
+						^IF, LITERAL, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO, 
+						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION
+					].contains(n.standardizedNodeType) &&
+					// Only root expressions may be deleted safely
+					(n.standardizedNodeType != EXPRESSION || n.parent.standardizedNodeType != EXPRESSION)
 				].random
+				
 				if (target === null) {
-					System.err.println('''Error with «m.name» modification''')
+					System.err.println('''Error with «m.name» modification: No target found''')
 					return;	
 				}
 				delete(target)
