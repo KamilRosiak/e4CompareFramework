@@ -19,6 +19,7 @@ Export-Package:
  de.tu_bs.cs.isf.e4cf.core.file_structure,
  de.tu_bs.cs.isf.e4cf.core.file_structure.components,
  de.tu_bs.cs.isf.e4cf.core.file_structure.components.operations,
+ de.tu_bs.cs.isf.e4cf.core.file_structure.tree,
  de.tu_bs.cs.isf.e4cf.core.file_structure.tree.sync,
  de.tu_bs.cs.isf.e4cf.core.file_structure.tree.util,
  de.tu_bs.cs.isf.e4cf.core.file_structure.util,

@@ -43,5 +43,9 @@ public interface Attribute extends Serializable {
 		}
 		return false;
 	}
+	
+	public Attribute cloneAttribute();
+	
+
 
 }

@@ -14,6 +14,7 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.enums,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.impl,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.util
 Bundle-ClassPath: .,

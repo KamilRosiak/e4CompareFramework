@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.ConfigurationDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.FamilyModelNodeDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
@@ -41,7 +42,8 @@ public class DecorationManager {
 		}
 		if (decorator.isEmpty()) {
 			decorator.add(new FamilyModelNodeDecorator());
-		}
+			
+		}		
 		
 		return decorator;
 	}

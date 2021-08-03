@@ -39,6 +39,14 @@ public final class TreeViewUtilities {
 		}
 	}
 
+	public static void decorateTreeViewWithSelectedConfigurations(TreeItem<Node> parent, NodeDecorator decorator) {
+
+		for (TreeItem<Node> child : parent.getChildren()) {
+			decorator.decorateNode(child);
+			decorateTreeViewWithSelectedConfigurations(child, decorator);
+		}
+	}
+
 	/**
 	 * Creates TreeItem from a node, assigns an icon
 	 * 
