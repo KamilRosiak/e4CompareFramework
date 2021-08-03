@@ -15,7 +15,7 @@ public class DetailedFamilyModelNodeDecorator extends FamilyModelNodeDecorator {
 		String nodeValue = getAttributeValueFromNode(nodeimpl, "Value");
 		String nodeOperator = getAttributeValueFromNode(nodeimpl, "Operator");
 
-		nodeimpl.setRepresenation(nodeimpl.getStandardizedNodeType() + nodeName + nodeValue + nodeOperator);
+		nodeimpl.setRepresentation(nodeimpl.getStandardizedNodeType() + nodeName + nodeValue + nodeOperator);
 
 		return node;
 	}

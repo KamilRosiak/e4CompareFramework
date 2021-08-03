@@ -7,7 +7,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
+
 import com.google.common.collect.Lists;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
@@ -24,6 +26,8 @@ public abstract class AbstractNode implements Node {
 	private List<Attribute> attributes;
 	private VariabilityClass varClass = VariabilityClass.MANDATORY;
 	private UUID uuid = UUID.randomUUID();
+	private int startLine = -1;
+	private int endLine = -1;
 
 	public AbstractNode() {
 		initializeNode();
@@ -158,7 +162,24 @@ public abstract class AbstractNode implements Node {
 	public void addChild(Node child) {
 		this.children.add(child);
 	}
-  
+
+	@Override
+	public void sortChildNodes() {
+		// sort child artifacts if not empty
+		if (!getChildren().isEmpty()) {
+			getChildren().sort((a, b) -> {
+				if (a.getStartLine() < b.getStartLine()) {
+					return -1;
+				}
+
+				if (a.getStartLine() > b.getStartLine()) {
+					return 1;
+				}
+				return 0;
+			});
+		}
+	}
+
 	@Override
 	public void addChild(Node node, int position) {
 
@@ -246,9 +267,7 @@ public abstract class AbstractNode implements Node {
 
 				difference += 1;
 			}
-
 		}
-
 	}
 
 	@Override
@@ -283,7 +302,7 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public void addChildWithParent(Node child, int position) {
 		child.setParent(this);
-		
+
 		addChild(child, position);
 	}
 
@@ -312,7 +331,7 @@ public abstract class AbstractNode implements Node {
 	 *           for(String value : attr.getAttributeValues()) { nodeName += "
 	 *           "+value +"\n"; } } return nodeName; }
 	 **/
-	
+
 	@Override
 	public UUID getUUID() {
 		return uuid;
@@ -327,9 +346,9 @@ public abstract class AbstractNode implements Node {
 	public String toString() {
 		return representation == null ? nodeType : representation;
 	}
-	
+
 	@Override
-	public void setRepresenation(String representation) {
+	public void setRepresentation(String representation) {
 		this.representation = representation;
 	}
 
@@ -375,4 +394,23 @@ public abstract class AbstractNode implements Node {
 		sortChildrenByPosition();
 	}
 
+	@Override
+	public void setStartLine(int startLine) {
+		this.startLine = startLine;
+	}
+
+	@Override
+	public void setEndLine(int endLine) {
+		this.endLine = endLine;
+	}
+
+	@Override
+	public int getStartLine() {
+		return this.startLine;
+	}
+
+	@Override
+	public int getEndLine() {
+		return this.endLine;
+	}
 }
