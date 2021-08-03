@@ -67,7 +67,9 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 	
 	private void createConfigurationControl() {
-		this.getItems().add(showComponentFeatureConfiguration());
+//		this.getItems().add(showComponentFeatureConfiguration());
+		this.getItems().add(renameFeatureMenuItem());	
+		this.getItems().add(new SeparatorMenuItem());
 		this.getItems().add(removeFeatureMenuItem());		
 	}
 	

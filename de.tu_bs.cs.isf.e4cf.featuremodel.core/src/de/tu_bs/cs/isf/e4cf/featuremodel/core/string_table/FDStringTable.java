@@ -34,7 +34,7 @@ public class FDStringTable {
 	public static final String FD_BAR_MENU_START_LOGGER = "Start Logger";
 	public static final String FD_BAR_MENU_STOP_LOGGER = "Stop Logger";
 	public static final String FD_BAR_MENU_CONSTRAINTS = "Add Constraints";
-	public static final String FD_BAR_MENU_CREATE_CONFIG = "Show Configurations";
+	public static final String FD_BAR_MENU_SHOW_CONFIG = "Show Configurations";
 	
 	/**
 	 * Extension Points

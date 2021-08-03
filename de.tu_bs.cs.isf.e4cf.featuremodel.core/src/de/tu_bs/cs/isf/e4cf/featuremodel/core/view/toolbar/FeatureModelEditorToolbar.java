@@ -72,7 +72,7 @@ public class FeatureModelEditorToolbar extends ToolBar  {
     		}	
 		});
 		
-		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_CREATE_CONFIG, e-> {
+		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SHOW_CONFIG, e-> {
 			services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
 			services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.getCurrentModel());
 		}));

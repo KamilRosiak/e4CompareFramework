@@ -42,7 +42,6 @@ public class FeatureConfigurationBuilder {
 		}
 		//add possible Configurations to FeatureConfigurationList in FeatureDiagram
 		fd.getFeatureConfiguration().add(fc);
-		System.out.println(fd.getFeatureConfiguration().get(0).getName());
 		return fc;
 	}
 

@@ -3,18 +3,20 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.swt.widgets.Display;
 
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
+import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
+import featureConfiguration.FeatureConfiguration;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -23,6 +25,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -198,6 +201,11 @@ public class FXGraphicalFeature extends VBox  {
 				if(event.getClickCount() == 2) {
 					if (getFeature() instanceof ComponentFeature) { // open feature diagram tab for component features
 						services.eventBroker.send(FDEventTable.OPEN_FEATURE_DIAGRAM, (ComponentFeature) getFeature());
+					} else if (getFeature() instanceof ConfigurationFeature) {
+						FeatureDiagramm diagram = ((ComponentFeature) parentFxFeature.getFeature()).getFeaturediagramm();
+		            	FeatureConfiguration config = ((ConfigurationFeature) feature).getConfigurationfeature();
+		            	services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
+						services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, new Pair<>(diagram, config));
 					} else { // show the rename dialog for normal features
 						showRenameFeatureDialog();
 						event.consume();

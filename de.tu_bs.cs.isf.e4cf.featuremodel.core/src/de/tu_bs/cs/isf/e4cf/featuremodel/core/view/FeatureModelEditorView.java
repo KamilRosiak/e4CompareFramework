@@ -392,10 +392,10 @@ public class FeatureModelEditorView {
 				newFeature = createFeatureFX(parent, false, xPos, yPos);
 				break;
 			case FDStringTable.COMPONENTFEATURE:
-				newFeature = createComponentFeatureFX(parent, false, xPos, yPos);
+				newFeature = createComponentFeatureFX(parent, true, xPos, yPos);
 				break;
 			case FDStringTable.CONFIGURATIONFEATURE:
-				newFeature = createConfigurationFeatureFX(parent, true, xPos, yPos);
+				newFeature = createConfigurationFeatureFX(parent, false, xPos, yPos);
 				break;
 			default:
 				throw new IllegalArgumentException("Wrong type");
@@ -630,6 +630,7 @@ public class FeatureModelEditorView {
 		feature.setOr(false);
 		feature.setAbstract(false);
 		if (feature instanceof ComponentFeature) {
+			feature.setOr(true);
 			((ComponentFeature) feature).setFeaturediagramm(initFeatureDiagram(new FeatureDiagram()));
 			((ComponentFeature) feature).getFeaturediagramm().getRoot().setName(featureName);
 		}
@@ -658,7 +659,7 @@ public class FeatureModelEditorView {
 
 	public FXGraphicalFeature createComponentFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
 		ComponentFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createComponentFeature();
-		createNewFeature(feature, "NewComponentFeature_" + currentModel.getIdentifierIncrement(), true, x, y);
+		createNewFeature(feature, "NewComponentFeature_" + currentModel.getIdentifierIncrement(), isRoot, x, y);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 		componentFeatureList.add(newGraFeature);
@@ -667,7 +668,7 @@ public class FeatureModelEditorView {
 	}
 	public FXGraphicalFeature createConfigurationFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
 		ConfigurationFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createConfigurationFeature();
-		createNewFeature(feature, "NewConfigurationFeature_" + currentModel.getIdentifierIncrement(), true, x, y);
+		createNewFeature(feature, "NewConfigurationFeature_" + currentModel.getIdentifierIncrement(), isRoot, x, y);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 		return newGraFeature;
