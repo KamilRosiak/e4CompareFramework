@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.inject.Inject;
 
@@ -46,6 +44,8 @@ public class CompareEngineView implements Initializable {
 	public static final int TYPE_COLUMN_WIDTH_PERCENT = 40;
 
 	public List<FileTreeElement> artifactFileTrees = new ArrayList<FileTreeElement>();
+	
+	private boolean asymmetry = true;
 
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
@@ -110,13 +110,13 @@ public class CompareEngineView implements Initializable {
 		try {									
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW); // First Display Graph View 
 			
-			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedMatcher());
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedMatcher(), getAsymmetry());
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
 				// Create graph for artifacts
 				engine.compare(artifacts);
-				engine.deriveArtifactDetails(artifactFileTrees);
+				engine.deriveArtifactDetails(artifactFileTrees); // Get details of artifact e.g. lines of Codes, no. of characters etc.
 				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
 				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
@@ -140,7 +140,7 @@ public class CompareEngineView implements Initializable {
 		try {												
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW);  // First Display Graph View 
 			
-			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedMatcher());
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedMatcher(), getAsymmetry());
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
@@ -201,6 +201,13 @@ public class CompareEngineView implements Initializable {
 	 */
 	public Matcher getSelectedMatcher() {
 		return matcherCombo.getSelectionModel().getSelectedItem();
+	}
+	
+	/**
+	 * Gets Asymmetry option for comparison
+	 */
+	public boolean getAsymmetry() {
+		return asymmetry;
 	}
 
 	/**

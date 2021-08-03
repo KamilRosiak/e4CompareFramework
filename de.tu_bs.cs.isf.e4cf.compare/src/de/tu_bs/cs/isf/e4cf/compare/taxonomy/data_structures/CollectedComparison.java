@@ -1,0 +1,39 @@
+/**
+ * 
+ */
+package de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures;
+
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+
+/**
+ * @author developer-olan
+ *
+ */
+public class CollectedComparison {
+	private Tree leftArtifact;
+	private Tree rightArtifact;
+	private float cummulativeSimilarity;
+	
+	public CollectedComparison(Tree _leftArtifact, Tree _rightArtifact, Float _cummulativeSimilarity) {
+		this.leftArtifact = _leftArtifact;
+		this.rightArtifact = _rightArtifact;
+		this.cummulativeSimilarity = _cummulativeSimilarity;
+	}
+	
+	
+	public Tree getLeftArtifact() {
+		return leftArtifact;
+	}
+	
+	public Tree getRightArtifact() {
+		return rightArtifact;
+	}
+	
+	public float getCummulativeSimilarity() {
+		return cummulativeSimilarity;
+	}
+	
+	public void addCummulativeSimilarity(float valueToAdd) {
+		this.cummulativeSimilarity += valueToAdd;
+	}
+}

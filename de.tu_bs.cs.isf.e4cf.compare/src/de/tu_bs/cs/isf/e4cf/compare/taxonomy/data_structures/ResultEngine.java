@@ -6,7 +6,11 @@ package de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
 
 /**
  * @author developer-olan
@@ -21,6 +25,10 @@ public class ResultEngine {
 	private List<ResultMapping> potentialResultMapping = new ArrayList<ResultMapping>();
 	private List<SimpleResult> matchingVariantSetMapping = new ArrayList<SimpleResult>();
 
+	private List<CollectedComparison> cumulativeComparisons = new ArrayList<CollectedComparison>();
+
+	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
+
 	private static final float SIMILARITY_THRESHOLD = 0.4f;
 
 	public ResultEngine() {
@@ -31,6 +39,26 @@ public class ResultEngine {
 		return listOfComparedNodes;
 	}
 
+	public void addToCumulativeComparisons(Tree leftArtifactToInsert, Tree rightArtifactToInsert,
+			float similarityToAdd) {
+		CollectedComparison foundComparison = null;
+		for (CollectedComparison eachComparison : cumulativeComparisons) {
+			if (eachComparison.getLeftArtifact().equals(leftArtifactToInsert)
+					&& eachComparison.getRightArtifact().equals(rightArtifactToInsert)) {
+				foundComparison = eachComparison;
+				break;
+			}
+		}
+
+		if (foundComparison != null) {
+			foundComparison.addCummulativeSimilarity(similarityToAdd);
+		} else {
+			cumulativeComparisons
+					.add(new CollectedComparison(leftArtifactToInsert, rightArtifactToInsert, similarityToAdd));
+		}
+
+	}
+
 	public void addToListOfComparedNodes(NodeComparisonResult compResult) {
 		this.listOfComparedNodes.add(compResult);
 		addResultToMapping(this.directResultMapping, compResult.getLeftNodeSignature(),
@@ -39,32 +67,29 @@ public class ResultEngine {
 				compResult.getLeftNodeSignature(), compResult.getRightNodeSignature(), compResult.getSimilarity());
 	}
 
-	
-
 	/**
 	 * Removes Matchings which don't meet the threshold
 	 */
-	public void computeMatching() {
-		for (NodeComparisonResult aComparedNodesTuple : listOfComparedNodes) {
+	private void applyThresholdMatching(List<NodeComparisonResult> selectedListOfComparedNodes) {
+		for (NodeComparisonResult aComparedNodesTuple : selectedListOfComparedNodes) {
 			// Remove Matching which are lower than threshold
 			if (aComparedNodesTuple.getSimilarity() <= this.SIMILARITY_THRESHOLD) {
 				listOfComparedNodesRemoved.add(aComparedNodesTuple);
 			}
 		}
 
-		listOfComparedNodes.removeAll(listOfComparedNodesRemoved);
+		selectedListOfComparedNodes.removeAll(listOfComparedNodesRemoved);
 
 		System.out.println("Removed: " + listOfComparedNodesRemoved.size());
 		System.out.println("Kept: " + listOfComparedNodes.size());
 	}
 
-	
-
 	/**
-	 * STEP 1:
-	 * Match Nodes to extract unique Node comparisons with the highest similarity value
+	 * STEP 1: Match Nodes to extract unique Node comparisons with the highest
+	 * similarity value
 	 */
 	public void matchNodes() {
+		applyThresholdMatching(listOfComparedNodes); // Remove Node comparisons that do not meet threshold
 		while (directResultMapping.size() > 0) {
 			ResultMapping resultMap = directResultMapping.get(0);
 			if (resultMap.getMappedResults().size() == 0) {
@@ -80,19 +105,21 @@ public class ResultEngine {
 																								// highest similarity
 
 				matchingVariantSetMapping.add(t_matchedTriple); // Add Matching to final Match
-
-				// Removed found matches from old lists
-				removeMappingByKey(potentialResultMapping, m_matchedFragment); // Remove other potential mapping(s) after picking highest match (for one-to-one node mappings)
-				removeTriplesFromEachResultMappings(T_potential_ResultMap.getMappedResults(), directResultMapping); // Remove Triple matches of potential matches from original match triples (so node is not compared again to other matches)
+				
+				// Remove other potential mapping(s) after picking highest match (for one-to-one node mappings)
+				removeMappingByKey(potentialResultMapping, m_matchedFragment); 
+				
+				// Remove Triple matches of potential matches from original match 
+				// triples (so node is not compared again to other matches)
+				removeTriplesFromEachResultMappings(T_potential_ResultMap.getMappedResults(), directResultMapping); 
 
 			}
 		}
 
 	}
-	
+
 	/**
-	 * STEP 2:
-	 * Create list of refined unique comparisons 
+	 * STEP 2: Create list of refined unique comparisons
 	 */
 	public void createRefinedListofNodes() {
 		for (SimpleResult aSimpleResult : matchingVariantSetMapping) {
@@ -105,12 +132,35 @@ public class ResultEngine {
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 * STEP 3: Compute weighted Similarity of Nodes and Variants
 	 */
-	public void compute() {
-		
+	public void computeWeightedSimilarity() {
+		for (NodeComparisonResult comparedNodes : listOfComparedNodesRefined) {
+			float comparisonWeightedSimilarity = 0.0f;
+			comparisonWeightedSimilarity = comparedNodes.getLeftNodeWeight() * comparedNodes.getSimilarity();
+			comparedNodes.setWeightedSimilarity(comparisonWeightedSimilarity);
+
+			addToCumulativeComparisons(comparedNodes.getArtifactOfLeftNode(), comparedNodes.getArtifactOfRightNode(),
+					comparedNodes.getWeightedSimilarity());
+		}
+	}
+
+	/**
+	 * STEP 4: Creates artifact comparison for graph
+	 */
+	public List<ArtifactComparison> createArtifactComparison() {
+		for (CollectedComparison cummulative : cumulativeComparisons) {
+
+			NodeComparison newArtifactNodeComparison = new NodeComparison(cummulative.getLeftArtifact().getRoot(),
+					cummulative.getRightArtifact().getRoot(), cummulative.getCummulativeSimilarity());
+			ArtifactComparison newArtifactComparison = new ArtifactComparison(newArtifactNodeComparison,
+					cummulative.getLeftArtifact().getTreeName(), cummulative.getRightArtifact().getTreeName());
+			artifactComparisonList.add(newArtifactComparison);
+		}
+
+		return artifactComparisonList;
 	}
 
 	private void removeTriplesFromEachResultMappings(List<SimpleResult> simpleResults,

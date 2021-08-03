@@ -34,6 +34,8 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	private SimpleStringComparator defaultComparator = new SimpleStringComparator();
 	private TaxonomyMetric metric;
 	private Matcher matcher;
+	
+	private Boolean asymmetry;
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 	private int artifactIndexCounter = 0;
@@ -48,8 +50,9 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	public ResultEngine taxonomyResultEngine = new ResultEngine();
 	
 
-	public TaxonomyCompareEngine(Matcher selectedMatcher) {
-		this.matcher = selectedMatcher;
+	public TaxonomyCompareEngine(Matcher _selectedMatcher, boolean _asymmetry) {
+		this.matcher = _selectedMatcher;
+		this.asymmetry = _asymmetry;
 	}
 
 	@Inject
@@ -105,16 +108,10 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 						// Add Comparison to List for GraphView
 						currentLeftArtifact = artifactLeft;
 						currentRightArtifact = artifactRight;
-
 						NodeComparison root = compare(artifactLeft.getRoot(), artifactRight.getRoot());
-
 						root.updateSimilarity();
-						System.out.println("1. Before updateSimilarity" + root.getSimilarity());
-
 						getMatcher().calculateMatching(root);
 						root.updateSimilarity();
-						System.out.println("2. After first updateSimilarity" + root.getSimilarity());
-
 						addArtifactComparisonsForGraph(root, artifactLeft.getTreeName(), artifactRight.getTreeName());
 				}
 
@@ -123,10 +120,12 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 			artifactIndexCounter++; // Increment artifact/variant counter by one
 		});
 		
-		taxonomyResultEngine.printMatchingResults();
-		//taxonomyResultEngine.computeMatching();
-		taxonomyResultEngine.matchNodes();
-		taxonomyResultEngine.createRefinedListofNodes();
+		if (asymmetry) {
+			taxonomyResultEngine.matchNodes();
+			taxonomyResultEngine.createRefinedListofNodes();
+			taxonomyResultEngine.computeWeightedSimilarity();
+			artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
+		}
 		
 		return mergedTree;
 	}

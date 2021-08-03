@@ -16,5 +16,5 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.1.500",
  de.tu_bs.cs.isf.e4cf.compare.data_structures_editor
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.compare.engine
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: de.tu_bs.cs.isf.e4cf.graph.artifact_graph,
- de.tu_bs.cs.isf.e4cf.graph.core.string_table
+Import-Package: de.tu_bs.cs.isf.e4cf.graph.core.string_table
+Export-Package: de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table

@@ -19,8 +19,8 @@ public class NodeSourceTransverser {
 
 	public void NodeSourceTransverser() {
 	}
-
-	public String getNodeSource(Node nodeToTransverse) {
+	
+	public String getNodeSourceRecursive(Node nodeToTransverse) {
 		String nodeSourceCode = "";
 		
 		for (Attribute nodeAttribute : nodeToTransverse.getAttributes()) {
@@ -30,10 +30,21 @@ public class NodeSourceTransverser {
 
 		if (!nodeToTransverse.getChildren().isEmpty()) {
 			for (Node childNode : nodeToTransverse.getChildren()) {
-				nodeSourceCode += " " + getNodeSource(childNode);
+				nodeSourceCode += " " + getNodeSourceRecursive(childNode);
 			}
 		}
 
+		return nodeSourceCode;
+	}
+	
+
+	public String getNodeSource(Node nodeToTransverse) {
+		String nodeSourceCode = "";
+		
+		for (Attribute nodeAttribute : nodeToTransverse.getAttributes()) {
+			List<Value> nodeSource = nodeAttribute.getAttributeValues();
+			nodeSourceCode += " " + joinAttributes(nodeSource);
+		}
 		return nodeSourceCode;
 	}
 

@@ -18,4 +18,6 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.enums,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.util
 Bundle-ClassPath: .,
  lib/javaparser-core-3.18.0.jar
+Import-Package: de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table,
+ de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table
 

@@ -57,7 +57,7 @@ public class NodeComparisonResult {
 	public float computeLeftNodeWeight() {
 		float nodeWeight = 0.0f;
 		// Get variant number of Characters
-		String artifactSource = sourceTransverser.getNodeSource(artifactOfLeftNode.getRoot());
+		String artifactSource = sourceTransverser.getNodeSourceRecursive(artifactOfLeftNode.getRoot());
 		
 		// Compute Number of character in leftNode
 		String leftNodeSource = sourceTransverser.getNodeSource(leftNode);
@@ -114,8 +114,16 @@ public class NodeComparisonResult {
 		return similarity;
 	}
 	
+	public float getWeightedSimilarity() {
+		return weightedSimilarity;
+	}
+	
 	public float getLeftNodeWeight() {
 		return leftNodeWeight;
+	}
+	
+	public void setWeightedSimilarity(float newSimilarityValue) {
+		weightedSimilarity = newSimilarityValue;
 	}
 
 
