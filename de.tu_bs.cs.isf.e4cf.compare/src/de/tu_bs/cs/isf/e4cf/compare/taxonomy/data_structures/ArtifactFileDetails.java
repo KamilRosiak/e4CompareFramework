@@ -22,13 +22,14 @@ public class ArtifactFileDetails {
 	private boolean isDirectory;
 
 	public ArtifactFileDetails(FileTreeElement _artifactFileTreeElement) {
-		artifactFileTreeElement = _artifactFileTreeElement;
-		artifactName = Paths.get(_artifactFileTreeElement.getAbsolutePath()).getFileName().toString();
-		artifactPath = Paths.get(_artifactFileTreeElement.getAbsolutePath()).toString();
-		artifactLinesOfCode = this.countLinesOfCode(Paths.get(_artifactFileTreeElement.getAbsolutePath()));
-		numberOfCharactersInArtifact = this
+		this.isDirectory = _artifactFileTreeElement.isDirectory();
+		this.artifactFileTreeElement = _artifactFileTreeElement;
+		this.artifactName = Paths.get(_artifactFileTreeElement.getAbsolutePath()).getFileName().toString();
+		this.artifactPath = Paths.get(_artifactFileTreeElement.getAbsolutePath()).toString();
+		// Computed Class attributes
+		this.artifactLinesOfCode = this.countLinesOfCode(Paths.get(_artifactFileTreeElement.getAbsolutePath()));
+		this.numberOfCharactersInArtifact = this
 				.countNumberOfCharacters(Paths.get(_artifactFileTreeElement.getAbsolutePath()));
-		isDirectory = _artifactFileTreeElement.isDirectory();
 	}
 
 	/**
@@ -44,8 +45,7 @@ public class ArtifactFileDetails {
 			if (!isDirectory) {
 				List<String> codeInLines = Files.readAllLines(Paths.get(aParsedFile.toUri()), StandardCharsets.UTF_8);
 				linesOfCode = codeInLines.size();
-			}
-			else {
+			} else if(isDirectory) {
 				linesOfCode = getNumberOfChildren();
 			}
 		} catch (IOException e) {
@@ -72,7 +72,7 @@ public class ArtifactFileDetails {
 				for (String aLine : codeInLines) {
 					numberOfCharacters += aLine.length();
 				}
-			} else {
+			} else if(isDirectory) {
 				numberOfCharacters = getNumberOfChildren();
 			}
 		} catch (IOException e) {

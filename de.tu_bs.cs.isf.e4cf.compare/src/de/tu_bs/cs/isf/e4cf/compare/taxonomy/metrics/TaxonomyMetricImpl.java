@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.taxonomy.metric;
+package de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;

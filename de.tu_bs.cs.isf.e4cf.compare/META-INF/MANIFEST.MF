@@ -27,7 +27,7 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy.metric
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics
 Import-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable,
  javax.inject,
  org.eclipse.gef.geometry.planar

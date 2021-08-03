@@ -24,10 +24,10 @@ public class FileToTreeHandler {
 		
 		//transform every file element into a file tree Element
 		services.rcpSelectionService.getCurrentSelectionsFromExplorer().stream().forEach(e -> parsedFiles.add(e));
-
+		
 		services.partService.showPart(CompareST.BUNDLE_NAME); // Open View for Artifact comparison 
 		services.partService.showPart(TaxonomyST.BUNDLE_NAME); // Open Taxonomy information window
 		services.eventBroker.send(DataStructureST.LOAD_ARTIFACTS_EVENET, artifactList);		// sends message of paths to parsed artifacts list to listening subscribers
-		services.eventBroker.send(DataStructureST.LOAD_ARTIFACTS_PATH_EVENET, parsedFiles); // sends message of paths to parsed artifacts to listening subscribers 
+		services.eventBroker.send(CompareST.LOAD_ARTIFACTS_PATH_EVENT, parsedFiles); // sends message of paths to parsed artifacts to listening subscribers 
 	}
 }

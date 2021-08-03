@@ -12,7 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
-
+import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table.TaxonomyST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -90,6 +91,8 @@ public class TaxonomyControlView implements Initializable  {
 		asymmetricRadioButton.setToggleGroup(group);
 		symmetricRadioButton.setToggleGroup(group);
 		asymmetricRadioButton.setSelected(taxonomySettings.getAsymmetryMode());
+		
+//		services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, ""); 
 		
 		// Set Action/Event Handlers for Asymmetry Mode Radio Buttons
 		asymmetricRadioButton.selectedProperty().addListener(

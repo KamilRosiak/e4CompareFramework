@@ -23,6 +23,8 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.TaxonomyCompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactGraph;
+import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
+import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table.TaxonomyST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
@@ -209,9 +211,21 @@ public class CompareEngineView implements Initializable {
 	public boolean getAsymmetry() {
 		return asymmetry;
 	}
+	
+	/**
+	 * Subscribes and sets asymmetry comparison mode based on settings from taxonomy information window
+	 * 
+	 * @param taxonomySettings
+	 */
+	@Optional
+	@Inject
+	public void setAsymmetryMode(
+			@UIEventTopic(TaxonomyST.SAVE_TAXONOMY_EVENT) TaxonomyControlSettings taxonomySettings) {
+		this.asymmetry = taxonomySettings.getAsymmetryMode();
+	}
 
 	/**
-	 * Listen to compare artifacts even from project explorer and adds file path all
+	 * Subscribes to compare artifacts publisher messages from project explorer and adds file path all
 	 * selected artifacts to artifact file path List for further processing
 	 * 
 	 * @param parsedFiles
@@ -219,7 +233,7 @@ public class CompareEngineView implements Initializable {
 	@Optional
 	@Inject
 	public void collectArtifactsFileDetails(
-			@UIEventTopic(CompareST.LOAD_ARTIFACTS_PATH_EVENET) List<FileTreeElement> parsedFiles) {
+			@UIEventTopic(CompareST.LOAD_ARTIFACTS_PATH_EVENT) List<FileTreeElement> parsedFiles) {
 		artifactFileTrees.clear(); // remove all items from previous selection
 		collectParsedFilePaths(parsedFiles); // add newly parsed files
 	}
