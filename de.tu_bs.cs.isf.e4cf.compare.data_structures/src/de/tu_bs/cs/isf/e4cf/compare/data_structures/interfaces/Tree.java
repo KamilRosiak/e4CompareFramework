@@ -60,6 +60,8 @@ public interface Tree extends Serializable {
 	 */
 	public List<Node> getPath(Node startingNode,Node targetNode);
 	
+	public Tree cloneTree();
+	
 	
 
 	

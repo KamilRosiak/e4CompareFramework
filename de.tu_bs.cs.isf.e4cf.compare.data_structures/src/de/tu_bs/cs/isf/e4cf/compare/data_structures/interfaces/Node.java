@@ -12,7 +12,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  * @author Kamil Rosiak
  *
  */
-public interface Node {
+public interface Node {	
 
 	/**
 	 * This method returns the type of the node, e.g., class, method, statement.
@@ -92,17 +92,22 @@ public interface Node {
 	 * This method returns all children nodes of the given type.
 	 */
 	public List<Node> getNodesOfType(String nodeType);
-
+	
 	/**
-	 * This method adds a child node to the current node and sets the parent.
+	 * This method adds a child node to the current node at a given position and sets the parent.
 	 */
-	public void addChildWithParent(Node node);
+	public void addChildWithParent(Node node, int position);
 
 	/**
 	 * This method adds a child node to the current node and sets the parent.
 	 */
 	public void addChild(Node node);
 
+	/**
+	 * This method adds a child node to the current node at a given position and sets the parent.
+	 */
+	public void addChild(Node node, int position);
+	
 	/**
 	 * Returns the total number of child nodes
 	 */
@@ -138,13 +143,45 @@ public interface Node {
 	 * This method sets the UUID of this node.
 	 */
 	public void setUUID(UUID uuid);
-
 	/** 
 	 * Sets a customizable, not necessarily consistently defined node type
 	 * Use this method in parsers, when defining more precise types of node than
 	 * available with standardized NodeTypes
 	 */
+  
 	public void setNodeType(String nodeType);
+  
+	/**
+	 * This method creates a deep copy of this node.
+	 */
+	public Node cloneNode();
+	
+	
+	/**
+	 * This method returns the position of this node.
+	 * @return
+	 */
+	public int getPosition();
+	
+	/**
+	 * This method sets the position of this node.
+	 */
+	public void setPosition(int position);
+	
+	/**
+	 * This method updates the position of this node.
+	 */
+	public void updatePosition(int position);
+	
+	/**
+	 * This method sorts the children by position.
+	 */
+	public void sortChildrenByPosition();	
+		
+	/**
+	 * This method removes a given child.
+	 */
+	public void removeChild(Node child, int position);
 
 	/**
 	 *  Sets the standardized node type of this node
