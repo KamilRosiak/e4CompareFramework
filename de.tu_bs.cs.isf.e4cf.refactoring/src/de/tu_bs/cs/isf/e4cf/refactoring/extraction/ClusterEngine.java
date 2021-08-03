@@ -96,12 +96,8 @@ public class ClusterEngine {
 		}
 		printMetrics(clusters, threshold);
 		return clusters;
-
 	}
-	
-	
 
-	
 	public boolean verifyCluster(Iterable<Node> nodes, float threshold) {
 		List<Set<Node>> clusters = detectClusters(nodes, threshold);
 		
@@ -109,7 +105,6 @@ public class ClusterEngine {
 			return false;
 		}
 		return true;
-		
 	}
 
 	private void printMetrics(List<Set<Node>> clusters, float threshold) {

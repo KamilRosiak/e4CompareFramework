@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.test
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement
@@ -16,8 +15,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import org.junit.Before
 import org.junit.Test
-
-import static org.junit.Assert.assertEquals
 
 /** 
  * Small Suite for Testing Clone Generator Mechanisms

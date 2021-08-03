@@ -93,7 +93,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	@Override
 	public Tree compare(Tree first, Tree second) {
 		try {
-
 			return new TreeImpl(first, second, compareMerge(first.getRoot(), second.getRoot()));
 		} catch (Exception e) {
 			e.printStackTrace();

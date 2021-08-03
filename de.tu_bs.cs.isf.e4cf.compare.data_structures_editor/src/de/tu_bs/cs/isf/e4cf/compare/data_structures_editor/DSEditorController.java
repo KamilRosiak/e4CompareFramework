@@ -101,7 +101,7 @@ public class DSEditorController {
 	@Inject
 	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
 		setCurrentTree(tree);
-		setContextMenü();
+		setContextMenu();
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(DSEditorST.TREE_VIEW_ID);
@@ -128,7 +128,7 @@ public class DSEditorController {
 		treeView.setShowRoot(true);
 	}
 
-	private void setContextMenü() {
+	private void setContextMenu() {
 		treeView.setContextMenu(contextMenu);
 		treeView.setOnMouseEntered(event -> contextMenu.hide());
 	}
