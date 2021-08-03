@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactReader">
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.evaluation.reader.TreeReader">
+      </artifactReader>
+   </extension>
+   <extension
+         id="UIContributions"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="evaluation.e4xmi">
+      </fragment>
+   </extension>
+
+
+</plugin>

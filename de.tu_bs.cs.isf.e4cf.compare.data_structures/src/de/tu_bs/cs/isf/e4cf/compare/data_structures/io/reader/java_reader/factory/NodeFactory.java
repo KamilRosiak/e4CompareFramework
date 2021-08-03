@@ -10,6 +10,7 @@ import com.github.javaparser.ast.nodeTypes.NodeWithArguments;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -34,24 +35,26 @@ public class NodeFactory {
 	/**
 	 * This method attaches arguments to a given parent node.
 	 */
+	@SuppressWarnings("rawtypes")
 	public void attachArguments(NodeWithArguments n, Node parent, JavaVisitor visitor) {
-		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), parent);
+		Node args = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name(), parent);
 		int argSize = n.getArguments().size();
 
 		for (int i = 0; i < argSize; i++) {
-			Expression argumentExpr = n.getArgument(0);
-			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
+			Expression argumentExpr = n.getArgument(i);
+			Node argNode = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name() + i, args);
 			argumentExpr.accept(visitor, argNode);
-			argumentExpr.removeForced();
 		}
+		n.getArguments().clear();
+		
 	}
 
 	public Node createCompilationUnitNode(CompilationUnit compilationUnit, Node parent, JavaVisitor visitor) {
-		Node cu = new NodeImpl(compilationUnit.getClass().getSimpleName(), parent);
+		Node cu = new NodeImpl(NodeType.COMPILATION_UNIT, compilationUnit.getClass().getSimpleName(), parent);
 		
 		// Attach imports if available
 		if(!compilationUnit.getImports().isEmpty()) {
-			Node imports = new NodeImpl(JavaNodeTypes.Import.name(), cu);
+			Node imports = new NodeImpl(NodeType.IMPORT, JavaNodeTypes.Imports.name(), cu);
 			while(compilationUnit.getImports().iterator().hasNext()) {
 				ImportDeclaration importDecl = compilationUnit.getImports().iterator().next();
 				attachImportDecl(importDecl, imports, visitor);
@@ -64,8 +67,11 @@ public class NodeFactory {
 	public Node createClassOrInterfaceNode(ClassOrInterfaceDeclaration n, Node parent) {
 		Node classOrInterfaceDeclarationNode = parent;
 		if (!n.getParentNode().isPresent() || !(n.getParentNode().get() instanceof CompilationUnit)) {
-			classOrInterfaceDeclarationNode = new NodeImpl(
-					n.isInterface() ? JavaNodeTypes.Interface.name() : JavaNodeTypes.Class.name(), parent);
+			if (n.isInterface()) {
+				classOrInterfaceDeclarationNode = new NodeImpl(NodeType.INTERFACE, JavaNodeTypes.Interface.name(), parent);
+			} else {
+				classOrInterfaceDeclarationNode = new NodeImpl(NodeType.CLASS, JavaNodeTypes.Class.name(), parent);
+			}
 		}
 
 		// Class or Interface?
@@ -95,7 +101,7 @@ public class NodeFactory {
 	 * Creates the leaf node for the import Declaration
 	 */
 	public void attachImportDecl(ImportDeclaration importDecl, Node parent, JavaVisitor visitor) {
-		Node leaf = new NodeImpl(JavaNodeTypes.Import.name(), parent);
+		Node leaf = new NodeImpl(NodeType.IMPORT, JavaNodeTypes.Import.name(), parent);
 		leaf.addAttribute(JavaAttributesTypes.Asterisks.name(), new StringValueImpl(String.valueOf(importDecl.isAsterisk())));
 		leaf.addAttribute(JavaAttributesTypes.Static.name(), new StringValueImpl(String.valueOf(importDecl.isStatic())));
 		importDecl.getName().accept(visitor, leaf);
@@ -110,7 +116,7 @@ public class NodeFactory {
 	 * @return
 	 */
 	public Node createMethodDeclNode(MethodDeclaration n, Node arg, JavaVisitor visitor) {
-		Node p = new NodeImpl(n.getClass().getSimpleName(), arg);
+		Node p = new NodeImpl(NodeType.METHOD_DECLARATION, n.getClass().getSimpleName(), arg);
 
 		// Add Throws as attributes
 		for (int i = n.getThrownExceptions().size(); i > 0; i--) {
@@ -119,12 +125,12 @@ public class NodeFactory {
 			referenceType.removeForced();
 		}
 
-		// Add the paramter of the method declariton Parameter
-		Node args = new NodeImpl(JavaNodeTypes.Argument.name(), p);
+		// Add the parameter of the method declaration Parameter
+		Node args = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name(), p);
 		int argList = n.getParameters().size();
 		for (int i = 0; i < argList; i++) {
 			Parameter concreteParameter = n.getParameter(0);
-			Node argNode = new NodeImpl(JavaNodeTypes.Argument.name() + i, args);
+			Node argNode = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name() + i, args);
 			argNode.addAttribute(JavaAttributesTypes.Type.name(), new StringValueImpl(concreteParameter.getTypeAsString()));
 			concreteParameter.getName().accept(visitor, argNode);
 			concreteParameter.getModifiers().forEach(modif -> modif.accept(visitor, argNode));

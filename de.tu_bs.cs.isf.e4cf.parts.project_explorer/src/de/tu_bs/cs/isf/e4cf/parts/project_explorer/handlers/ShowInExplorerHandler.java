@@ -18,8 +18,7 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IHandler;
 
 public class ShowInExplorerHandler implements IHandler {
 
-	@Execute
-	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
+	public void execute(ServiceContainer services) {
 		FileTreeElement directoryToOpen = services.rcpSelectionService.getCurrentSelectionFromExplorer();
 
 		// If we omit this, we can open files with the OS directly.
@@ -40,5 +39,10 @@ public class ShowInExplorerHandler implements IHandler {
 	public boolean canExecute(RCPSelectionService selectionService) {
 		List<FileTreeElement> selections = selectionService.getCurrentSelectionsFromExplorer();
 		return selections != null && selections.size() == 1;
+	}
+
+	@Execute
+	public void execute(IEclipseContext context, ServiceContainer services, Shell shell) {
+		execute(services);
 	}
 }

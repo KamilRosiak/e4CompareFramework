@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
 import java.util.Optional;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaNodeTypes;
@@ -218,7 +219,7 @@ public class JavaWriterUtil {
 				jpNode = visitWriter(n.getChildren().get(0));
 				((TryStmt) p).setFinallyBlock((BlockStmt) jpNode);
 				p = null;
-				n = new NodeImpl("");
+				n = new NodeImpl(NodeType.UNDEFINED);
 			}
 		} else if (isOfType(n, ForEachStmt.class)) {
 			jpNode = new ForEachStmt().setIterable(attributes.getIterator()).setVariable(new VariableDeclarationExpr(

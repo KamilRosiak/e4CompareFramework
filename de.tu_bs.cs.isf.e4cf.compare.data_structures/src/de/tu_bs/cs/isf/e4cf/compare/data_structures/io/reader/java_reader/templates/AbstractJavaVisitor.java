@@ -12,6 +12,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.LabeledStmt;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -50,7 +51,7 @@ public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 
 	@Override
 	public void visit(LabeledStmt n, Node arg) {
-		Node labeledStmt = new NodeImpl(n.getClass().getSimpleName(), arg);
+		Node labeledStmt = new NodeImpl(NodeType.LABELED_STATEMENT, n.getClass().getSimpleName(), arg);
 		labeledStmt.addAttribute(JavaAttributesTypes.Name.name(), new StringValueImpl(n.getLabel().asString()));
 		visitor(n, labeledStmt);
 	}

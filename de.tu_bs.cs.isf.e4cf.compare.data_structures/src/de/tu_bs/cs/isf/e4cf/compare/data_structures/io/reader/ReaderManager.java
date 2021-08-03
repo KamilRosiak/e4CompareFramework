@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
@@ -37,7 +38,7 @@ public class ReaderManager {
 
 	private Node readFileRecursivly(Node parentNode, FileTreeElement fte) {
 		if (fte.isDirectory()) {
-			Node nextNode = new NodeImpl("Directory");
+			Node nextNode = new NodeImpl(NodeType.DIRECTORY);
 			nextNode.addAttribute("DIRECTORY_NAME", new StringValueImpl(fte.getFileName()));
 			
 			fte.getChildren().stream().forEach(childFte -> nextNode.addChildWithParent(readFileRecursivly(nextNode, childFte)));
@@ -48,7 +49,7 @@ public class ReaderManager {
 				return reader.readArtifact(fte).getRoot();
 			} else {
 				// store files that can't be processed as files
-				Node fileNode = new NodeImpl("File");
+				Node fileNode = new NodeImpl(NodeType.FILE);
 				fileNode.addAttribute("FILE_NAME", new StringValueImpl(fte.getFileName()));
 				fileNode.addAttribute("FILE_EXTENSION", new StringValueImpl(fte.getExtension()));
 				return fileNode;

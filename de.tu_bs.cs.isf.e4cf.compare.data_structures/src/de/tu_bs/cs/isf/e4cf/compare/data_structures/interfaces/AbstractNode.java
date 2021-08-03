@@ -11,10 +11,13 @@ import com.google.common.collect.Lists;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
 import java.util.Set;
 import java.util.TreeMap;
+
 import java.util.UUID;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 
@@ -22,10 +25,13 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 
 public abstract class AbstractNode implements Node {
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 5776489857546412690L;
 	private String nodeType;
+	private String representation;
+	private NodeType standardizedNodeType = NodeType.UNDEFINED;
 	private List<Node> children;
-	private Node parent;
+	private transient Node parent;
 	private List<Attribute> attributes;
 	private VariabilityClass varClass = VariabilityClass.MANDATORY;
 	private UUID uuid = UUID.randomUUID();
@@ -67,7 +73,7 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
-	public void addAttribute(String key, Value value) {
+	public void addAttribute(String key, @SuppressWarnings("rawtypes") Value value) {
 		Optional<Attribute> attribute = attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny();
 		if (!attribute.isPresent()) {
 			getAttributes().add(new AttributeImpl(key, value));
@@ -78,7 +84,7 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
-	public void addAttribute(String key, List<Value> values) {
+	public void addAttribute(String key, @SuppressWarnings("rawtypes") List<Value> values) {
 		Optional<Attribute> attribute = attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny();
 		if (!attribute.isPresent()) {
 			getAttributes().add(new AttributeImpl(key, values));
@@ -164,7 +170,7 @@ public abstract class AbstractNode implements Node {
 	public void addChild(Node child) {
 		this.children.add(child);
 	}
-
+  
 	@Override
 	public void addChild(Node node, int position) {
 
@@ -330,7 +336,22 @@ public abstract class AbstractNode implements Node {
 
 	@Override
 	public String toString() {
-		return nodeType;
+		return representation == null ? nodeType : representation;
+	}
+	
+	@Override
+	public void setRepresenation(String representation) {
+		this.representation = representation;
+	}
+
+	@Override
+	public void setStandardizedNodeType(NodeType type) {
+		standardizedNodeType = type;
+	}
+
+	@Override
+	public NodeType getStandardizedNodeType() {
+		return standardizedNodeType;
 	}
 
 	@Override

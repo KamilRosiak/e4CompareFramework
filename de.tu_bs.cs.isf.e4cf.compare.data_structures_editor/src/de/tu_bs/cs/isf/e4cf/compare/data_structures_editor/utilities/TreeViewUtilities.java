@@ -56,6 +56,18 @@ public final class TreeViewUtilities {
 	public static TreeItem<Node> createTreeItem(Node node, NodeDecorator decorator) {
 		return decorator.decorateNode(new TreeItem<Node>(node));
 	}
+	
+	/**
+	 * Redecorate the nodes in an existing tree.
+	 * @param item the current node to decorate all children
+	 * @param decorator to be used
+	 */
+	public static void decorateTree(TreeItem<Node> item, NodeDecorator decorator) {
+		decorator.decorateNode(item);
+		for (TreeItem<Node> child : item.getChildren()) {
+			decorateTree(child, decorator);
+		}
+	}
 
 	/**
 	 * Builds a list of TreeItems which contain the given string based on a given

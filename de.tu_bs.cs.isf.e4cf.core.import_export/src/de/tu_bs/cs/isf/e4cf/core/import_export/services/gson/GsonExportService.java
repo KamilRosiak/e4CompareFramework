@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.ExportService;
@@ -20,7 +21,10 @@ public class GsonExportService implements ExportService<String> {
 	private Gson gson;
 	
 	public GsonExportService() {
-		this.gson = new Gson();
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.setPrettyPrinting();
+		
+		this.gson = gsonBuilder.create();
 	}
 
 	@Override
