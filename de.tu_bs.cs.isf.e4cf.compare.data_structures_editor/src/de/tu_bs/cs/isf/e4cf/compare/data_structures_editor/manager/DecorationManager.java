@@ -20,7 +20,7 @@ public class DecorationManager {
 	private static final String DECORATER_ATTR = "node_decorator";
 
 	/**
-	 * This method returns all registered tree decorater
+	 * This method returns all registered tree decorate
 	 * 
 	 * @return
 	 */
@@ -34,16 +34,17 @@ public class DecorationManager {
 	 */
 	public List<NodeDecorator> getDecoratorForTree(Tree tree) {
 		List<NodeDecorator> decorator = new ArrayList<NodeDecorator>();
+		
 		for (NodeDecorator decorater : getDecoraterFromExtension()) {
 			if (decorater.isSupportedTree(tree)) {
 				decorator.add(decorater);
 			}
 		}
+		
 		if (decorator.isEmpty()) {
 			decorator.add(new FamilyModelNodeDecorator());
-			
-		}		
-		
+		}
+
 		return decorator;
 	}
 
@@ -54,5 +55,4 @@ public class DecorationManager {
 	public void setCurrentDecorater(NodeDecorator currentDecorater) {
 		this.currentDecorater = currentDecorater;
 	}
-
 }

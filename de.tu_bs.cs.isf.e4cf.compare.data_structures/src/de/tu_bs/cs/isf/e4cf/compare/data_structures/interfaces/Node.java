@@ -92,6 +92,7 @@ public interface Node {
 	 * This method returns all children nodes of the given type.
 	 */
 	public List<Node> getNodesOfType(String nodeType);
+	
 	public void addChildWithParent(Node child);
 	/**
 	 * This method adds a child node to the current node at a given position and sets the parent.

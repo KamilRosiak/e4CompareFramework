@@ -1,27 +1,16 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.google.common.collect.Lists;
-
-import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import java.util.Set;
 import java.util.TreeMap;
-
 import java.util.UUID;
-
+import com.google.common.collect.Lists;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
-
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 
 public abstract class AbstractNode implements Node {
@@ -46,7 +35,6 @@ public abstract class AbstractNode implements Node {
 	private void initializeNode() {
 		setChildren(new ArrayList<Node>());
 		setAttributes(new ArrayList<Attribute>());
-
 	}
 
 	@Override
@@ -295,7 +283,7 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public void addChildWithParent(Node child, int position) {
 		child.setParent(this);
-
+		
 		addChild(child, position);
 	}
 
@@ -324,6 +312,7 @@ public abstract class AbstractNode implements Node {
 	 *           for(String value : attr.getAttributeValues()) { nodeName += "
 	 *           "+value +"\n"; } } return nodeName; }
 	 **/
+	
 	@Override
 	public UUID getUUID() {
 		return uuid;

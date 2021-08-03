@@ -52,7 +52,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		}
 		// all artifacts which are equals
 		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
-			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(ComparisonUtil.MANDATORY_VALUE));
+			//mandatory is a default value if the artifacts was optional in a previous iteration it should stay as optional
 			return getLeftArtifact();
 		} else {
 			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
@@ -73,7 +73,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				}
 			}
 
-			// put all other attributes from right to left because it wasent contained
+			// put all other attributes from right to left because it wasn't contained
 			// before
 			getRightArtifact().getAttributes().stream().forEach(e -> getLeftArtifact().addAttribute(e));
 
