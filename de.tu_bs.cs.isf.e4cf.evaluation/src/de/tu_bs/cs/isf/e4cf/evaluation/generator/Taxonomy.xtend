@@ -72,6 +72,7 @@ class Taxonomy {
 	
 	def performType2Modification(Tree tree) {	
 		val m = getType2Method()
+		val rng = new Random
 		switch (m.name) {
 			case "refactorIdentifiers": {
 				val declaration = tree.root.depthFirstSearch.filter[ n | 
@@ -79,10 +80,11 @@ class Taxonomy {
 					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
 				].random
 				
-				m.tryInvoke(declaration, "I" + new Random().nextInt(Integer.MAX_VALUE))
+				m.tryInvoke(declaration, "I" + rng.nextInt(Integer.MAX_VALUE))
 			}
 			
 			case "replaceIdentifier": {
+				// TODO Syntax Fix
 				val ident = tree.root.depthFirstSearch.filter[ n | 
 					#[ARGUMENT, CLASS, COMPILATION_UNIT, EXPRESSION, METHOD_CALL, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
 					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
@@ -96,8 +98,30 @@ class Taxonomy {
 					n.standardizedNodeType == LITERAL
 				].random 
 				
-				// TODO read type field and generate new value accordingly
-				m.tryInvoke(literal, "L" + new Random().nextInt(Integer.MAX_VALUE))
+				val oldValue = helper.getAttributeValue(literal, "Value")
+				var newValue = ""
+				
+				switch (helper.getAttributeValue(literal, "Type")) {
+					case "int",
+					case "long": {
+						var l = Long.parseLong(oldValue.replaceAll("[Ll]",""))
+						var max = Math.min(Math.abs(l), Integer.MAX_VALUE) as int
+						max = max == 0 ? max=Short.MAX_VALUE : max=max // we don't want zero
+						newValue += rng.nextInt(max) * (Math.signum(l) as int)
+					}
+					case "char": {
+						newValue += rng.nextInt(Character.MAX_VALUE) as char
+					}
+					case "double",
+					case "float": {
+						newValue += rng.nextDouble * (Math.signum(Double.parseDouble(oldValue)) as int)
+					}
+					case "String": {
+						newValue = "L" + new Random().nextInt(Integer.MAX_VALUE);
+					}
+				}
+				
+				m.tryInvoke(literal, newValue)
 			}
 			
 			case "changeType": {
