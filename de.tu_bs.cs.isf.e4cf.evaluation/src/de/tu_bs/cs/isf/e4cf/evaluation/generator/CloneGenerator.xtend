@@ -6,7 +6,6 @@ import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions
 import java.nio.file.Files
-import java.nio.file.Path
 import java.util.List
 import java.util.Random
 import javax.inject.Inject
@@ -71,7 +70,7 @@ class CloneGenerator {
 			}
 		} finally {
 			// Save all variants and logs
-			save(options.outputRoot, variants);
+			save(variants);
 			
 			val endtime = System.nanoTime();
 			println("Runtime: " + (endtime - starttime))
@@ -79,12 +78,11 @@ class CloneGenerator {
 	}
 	
 	/** Saves tree strings to json file and log */
-	def private void save(Path targetFolder, List<Variant> variants) { 
+	def private void save(List<Variant> variants) { 
 		// Set the logger export project
 		logger.projectFolderName = " 02 Trees"
 		
-		val selectedPath = logger.getOutPutDirBasedOnSelection()
-		// val selectedPath = targetFolder
+		val selectedPath = logger.getOutPutDirBasedOnSelection() !== null ? logger.getOutPutDirBasedOnSelection() : logger.outputPath
 		// create a sub folder for this path
 		var subfolderName = "GeneratedVariants"
 		var i = 1; 

@@ -128,9 +128,16 @@ public class CloneLogger {
 	public Path getOutPutDirBasedOnSelection() {
 		// setup save path based on selection in explorer
 		Path selectedPath = Paths.get(services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath());
+		
 		if (services.rcpSelectionService.getCurrentSelectionFromExplorer().isDirectory()) {
+			if (selectedPath.getNameCount() < 2) {
+				return null;
+			}
 			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount());
 		} else {
+			if (selectedPath.getNameCount() < 3) {
+				return null;
+			}
 			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount() - 1);
 		}
 		

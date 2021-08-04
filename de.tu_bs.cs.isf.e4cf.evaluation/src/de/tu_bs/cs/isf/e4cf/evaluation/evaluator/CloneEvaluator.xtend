@@ -30,6 +30,7 @@ import org.eclipse.e4.core.di.annotations.Creatable
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions
+import java.nio.file.Path
 
 @Singleton
 @Creatable
@@ -45,6 +46,8 @@ class CloneEvaluator {
 	val matcher = new SortingMatcher()
 	val metric = new MetricImpl("Metric")
 	val engine = new CompareEngineHierarchical(matcher, metric)
+	
+	Path outputDir
 	
 	/**
 	 * Entry point of the evaluator
@@ -81,10 +84,10 @@ class CloneEvaluator {
 		val evaluatorResults = newArrayList
 		
 		logger.projectFolderName = PROJECT_PATH
-		var outputDir = logger.outPutDirBasedOnSelection
+		outputDir = logger.outPutDirBasedOnSelection !== null ? logger.outPutDirBasedOnSelection : logger.outputPath.resolve("Evaluation")
 		// Setup clean result directory
 		if(outputDir.toFile.exists) {
-			Files.walk(outputDir).forEach(p | p.toFile.delete())
+			Files.walk(outputDir, 1).filter(f | f.fileName.endsWith(".tree")).forEach(p | p.toFile.delete())
 		} else {
 			Files.createDirectories(outputDir);
 		}
@@ -103,7 +106,7 @@ class CloneEvaluator {
 		}
 		
 		// Save Results
-		logger.write(logger.outPutDirBasedOnSelection, "CloneEvaluation.results", evaluatorResults)
+		logger.write(outputDir, "CloneEvaluation.results", evaluatorResults)
 		
 		// Clean up		
 		logger.resetLogs
@@ -227,7 +230,7 @@ class CloneEvaluator {
 		for (e : evaluations) {
 			val serialized = gsonExportService.exportTree(e.tree)
 			val name = e.name.split(" ").reverse.get(0)
-			logger.write(logger.outPutDirBasedOnSelection, "Comparison." + name + ".tree", newArrayList(serialized))
+			logger.write(outputDir, "Comparison." + name + ".tree", newArrayList(serialized))
 		}
 	}
 	
