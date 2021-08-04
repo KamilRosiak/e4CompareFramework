@@ -16,12 +16,16 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.ICompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectoryNameComparator;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectorySizeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.SimpleStringComparator;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparison.TaxonomyNodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ArtifactFileDetails;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.NodeComparisonResult;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ResultEngine;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.TaxonomyMetric;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMatcher;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMetric;
 
 /**
  * Decomposes two trees and compares , match and merges them hierarchical which
@@ -32,8 +36,12 @@ import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.TaxonomyMetric;
  */
 public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	private SimpleStringComparator defaultComparator = new SimpleStringComparator();
-	private TaxonomyMetric metric;
-	private Matcher matcher;
+	
+	private DirectoryNameComparator directoryNameComparator = new DirectoryNameComparator();
+	private DirectorySizeComparator directorySizeComparator = new DirectorySizeComparator();
+	
+	private ITaxonomyMetric metric;
+	private ITaxonomyMatcher matcher;
 	
 	private Boolean asymmetry;
 
@@ -50,7 +58,7 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	public ResultEngine taxonomyResultEngine = new ResultEngine();
 	
 
-	public TaxonomyCompareEngine(Matcher _selectedMatcher, boolean _asymmetry) {
+	public TaxonomyCompareEngine(ITaxonomyMatcher _selectedMatcher, boolean _asymmetry) {
 		this.matcher = _selectedMatcher;
 		this.asymmetry = _asymmetry;
 	}
@@ -58,24 +66,6 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	@Inject
 	ServiceContainer services;
 
-	@Override
-	public Tree compare(Tree first, Tree second) {
-		try {
-			// compare
-			NodeComparison root = compare(first.getRoot(), second.getRoot());
-			// match
-			root.updateSimilarity();
-			getMatcher().calculateMatching(root);
-			// getMatcher().sortBySimilarityDesc(artifactComparisonList);
-			root.updateSimilarity();
-			// Merge
-			Node mergedRoot = root.mergeArtifacts();
-			return new TreeImpl(first, second, mergedRoot);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	/**
 	 * Populates list of artifact to prepare for taxonomy computation
@@ -84,7 +74,7 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	 * @param leftArtifactName
 	 * @param rightArtifactName
 	 */
-	public void addArtifactComparisonsForGraph(NodeComparison artifactComparison, String leftArtifactName,
+	public void addArtifactComparisonsForGraph(TaxonomyNodeComparison artifactComparison, String leftArtifactName,
 			String rightArtifactName) {
 		artifactComparisonList.add(new ArtifactComparison(artifactComparison, leftArtifactName, rightArtifactName));
 	}
@@ -99,6 +89,9 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 		}
 	}
 
+	/**
+	 * Compares variants in a list
+	 */
 	@Override
 	public Tree compare(List<Tree> variants) {
 		Tree mergedTree = null;
@@ -108,9 +101,9 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 						// Add Comparison to List for GraphView
 						currentLeftArtifact = artifactLeft;
 						currentRightArtifact = artifactRight;
-						NodeComparison root = compare(artifactLeft.getRoot(), artifactRight.getRoot());
+						TaxonomyNodeComparison root = compare(artifactLeft.getRoot(), artifactRight.getRoot());
 						root.updateSimilarity();
-						getMatcher().calculateMatching(root);
+						getTaxonomyMatcher().calculateMatching(root);
 						root.updateSimilarity();
 						addArtifactComparisonsForGraph(root, artifactLeft.getTreeName(), artifactRight.getTreeName());
 				}
@@ -132,12 +125,16 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 
 	
 	@Override
-	public NodeComparison compare(Node first, Node second) {
-		NodeComparison comparison = new NodeComparison(first, second);
+	public TaxonomyNodeComparison compare(Node first, Node second) {
+		TaxonomyNodeComparison comparison = new TaxonomyNodeComparison(first, second);
 		// if nodes are of the same type
 		if (first.getNodeType().equals(second.getNodeType())) {
-			NodeResultElement nodeResultElement = defaultComparator.compare(first, second); // Compare Default
-			comparison.addResultElement(nodeResultElement);
+			
+			if (first.getNodeType().equals("Directory")) {
+				comparison.addResultElement(directoryNameComparator.compare(first, second));
+			} else {
+				comparison.addResultElement(defaultComparator.compare(first, second));
+			}
 			
 			// Add Result to Node Comparison Result
 			NodeComparisonResult nodeComparisonResult = new NodeComparisonResult(artifactIndexCounter, currentLeftArtifact, first, second, currentRightArtifact, comparison.getResultSimilarity());
@@ -158,7 +155,7 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 					first.getChildren().stream().forEach(e -> {
 						second.getChildren().stream().forEach(f -> {
 
-							NodeComparison innerComp = compare(e, f);
+							TaxonomyNodeComparison innerComp = compare(e, f);
 							if (innerComp != null) {
 								comparison.addChildComparison(innerComp);
 							}
@@ -177,13 +174,25 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 		return defaultComparator;
 	}
 
+	
+	public ITaxonomyMatcher getTaxonomyMatcher() {
+		return this.matcher;
+	}
+	
 	@Override
 	public Matcher getMatcher() {
-		return this.matcher;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public Metric getMetric() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Tree compare(Tree first, Tree second) {
 		// TODO Auto-generated method stub
 		return null;
 	}

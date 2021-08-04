@@ -6,7 +6,7 @@ import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 
-public interface TaxonomyMetric extends Serializable {
+public interface ITaxonomyMetric extends Serializable {
     
     /**
      * This method adds a node type to the ignore list this means the node will not be compared.

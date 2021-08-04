@@ -7,7 +7,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
  * @author developer-olan
  *
  */
-public interface TaxonomyComparator<Type> {
+public interface ITaxonomyComparator<Type> {
 	public static final String WILDCARD = "WILDCARD";
 	
 	/**

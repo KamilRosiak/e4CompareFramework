@@ -92,7 +92,7 @@ public class TaxonomyControlView implements Initializable  {
 		symmetricRadioButton.setToggleGroup(group);
 		asymmetricRadioButton.setSelected(taxonomySettings.getAsymmetryMode());
 		
-//		services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, ""); 
+		//services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, ""); 
 		
 		// Set Action/Event Handlers for Asymmetry Mode Radio Buttons
 		asymmetricRadioButton.selectedProperty().addListener(

@@ -23,6 +23,8 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.TaxonomyCompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactGraph;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMatcher;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics.TaxonomyThresholdMatcher;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table.TaxonomyST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
@@ -47,7 +49,7 @@ public class CompareEngineView implements Initializable {
 
 	public List<FileTreeElement> artifactFileTrees = new ArrayList<FileTreeElement>();
 	
-	private boolean asymmetry = true;
+	private boolean asymmetry = false;
 
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
@@ -112,7 +114,7 @@ public class CompareEngineView implements Initializable {
 		try {									
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW); // First Display Graph View 
 			
-			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedMatcher(), getAsymmetry());
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedTaxonomyMatcher(), getAsymmetry());
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
@@ -142,7 +144,7 @@ public class CompareEngineView implements Initializable {
 		try {												
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW);  // First Display Graph View 
 			
-			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedMatcher(), getAsymmetry());
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedTaxonomyMatcher(), getAsymmetry());
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
@@ -203,6 +205,10 @@ public class CompareEngineView implements Initializable {
 	 */
 	public Matcher getSelectedMatcher() {
 		return matcherCombo.getSelectionModel().getSelectedItem();
+	}
+	
+	public ITaxonomyMatcher getSelectedTaxonomyMatcher() {
+		return new TaxonomyThresholdMatcher();
 	}
 	
 	/**

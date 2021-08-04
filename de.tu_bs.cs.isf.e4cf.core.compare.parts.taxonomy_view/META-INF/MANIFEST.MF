@@ -4,7 +4,8 @@ Bundle-Name: Taxonomy_Control_view
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.1.700.v20200113-1422",
- org.eclipse.swt
+ org.eclipse.swt,
+ de.tu_bs.cs.isf.e4cf.core;bundle-version="1.0.0"
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.core.compare.parts.taxonomy.view
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table,

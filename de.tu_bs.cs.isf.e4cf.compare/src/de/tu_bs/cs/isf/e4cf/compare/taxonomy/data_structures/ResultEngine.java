@@ -10,6 +10,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparison.TaxonomyNodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
 
 /**
@@ -153,7 +154,7 @@ public class ResultEngine {
 	public List<ArtifactComparison> createArtifactComparison() {
 		for (CollectedComparison cummulative : cumulativeComparisons) {
 
-			NodeComparison newArtifactNodeComparison = new NodeComparison(cummulative.getLeftArtifact().getRoot(),
+			TaxonomyNodeComparison newArtifactNodeComparison = new TaxonomyNodeComparison(cummulative.getLeftArtifact().getRoot(),
 					cummulative.getRightArtifact().getRoot(), cummulative.getCummulativeSimilarity());
 			ArtifactComparison newArtifactComparison = new ArtifactComparison(newArtifactNodeComparison,
 					cummulative.getLeftArtifact().getTreeName(), cummulative.getRightArtifact().getTreeName());

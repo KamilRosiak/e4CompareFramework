@@ -29,7 +29,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	private StringComparator defaultComparator = new StringComparator();
 	private Metric metric;
 	private Matcher matcher;
-	private boolean mergeCompare = true;
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
@@ -47,19 +46,11 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			// compare
 			NodeComparison root = compare(first.getRoot(), second.getRoot());
 			// match
-			System.out.println("");
-			System.out.println("1. Before updateSimilarity" + root.getSimilarity());
 			root.updateSimilarity();
-			System.out.println("2. After first updateSimilarity" + root.getSimilarity());
 			getMatcher().calculateMatching(root);
-			System.out.println("3. After calculateMatching" + root.getSimilarity());
-			// getMatcher().sortBySimilarityDesc(artifactComparisonList);
 			root.updateSimilarity();
-			System.out.println("4. After last updateSimilarity" +root.getSimilarity());
-			
 			// Merge
 			Node mergedRoot = root.mergeArtifacts();
-			
 
 			return new TreeImpl(first, second, mergedRoot);
 		} catch (Exception e) {
@@ -68,16 +59,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		return null;
 	}
 
-	/**
-	 * Populates list of artifact to prepare for taxonomy computation
-	 * @param artifactComparison
-	 * @param leftArtifactName
-	 * @param rightArtifactName
-	 */
-	public void addArtifactComparisonsForGraph(NodeComparison artifactComparison, String leftArtifactName,
-			String rightArtifactName) {
-		artifactComparisonList.add(new ArtifactComparison(artifactComparison, leftArtifactName, rightArtifactName));
-	}
+
 
 	@Override
 	public Tree compare(List<Tree> variants) {

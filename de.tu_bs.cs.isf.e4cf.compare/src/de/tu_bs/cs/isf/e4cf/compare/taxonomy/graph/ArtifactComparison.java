@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparison.TaxonomyNodeComparison;
 
 /**
  * @author developer-olan
@@ -10,9 +10,9 @@ public class ArtifactComparison {
   private String leftArtifactName;
   private String rightArtifactName;
   
-  private NodeComparison artifactComparison;
+  private TaxonomyNodeComparison artifactComparison;
   
-  public ArtifactComparison (NodeComparison _artifactComparison, String _leftArtifactName, String _rightArtifactName)
+  public ArtifactComparison (TaxonomyNodeComparison _artifactComparison, String _leftArtifactName, String _rightArtifactName)
   {
 	  artifactComparison = _artifactComparison;
 	  leftArtifactName = _leftArtifactName;
@@ -29,7 +29,7 @@ public class ArtifactComparison {
 	  return rightArtifactName;
   }
   
-  public NodeComparison getNodeComparison() {
+  public TaxonomyNodeComparison getNodeComparison() {
 	  return artifactComparison;
   }
   
