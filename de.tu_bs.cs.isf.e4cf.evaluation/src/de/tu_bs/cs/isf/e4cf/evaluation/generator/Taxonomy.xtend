@@ -6,17 +6,17 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
+import java.lang.reflect.Method
 import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
-import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 import static de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType.*
+import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
+
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
-import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.getAllChildren
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
-import java.lang.reflect.Method
 
 @Creatable
 @Singleton
@@ -74,7 +74,7 @@ class Taxonomy {
 		val m = getType2Method()
 		switch (m.name) {
 			case "refactorIdentifiers": {
-				val declaration = tree.root.allChildren.filter[ n | 
+				val declaration = tree.root.depthFirstSearch.filter[ n | 
 					#[ARGUMENT, CLASS, COMPILATION_UNIT, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
 					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
 				].random
@@ -83,7 +83,7 @@ class Taxonomy {
 			}
 			
 			case "replaceIdentifier": {
-				val ident = tree.root.allChildren.filter[ n | 
+				val ident = tree.root.depthFirstSearch.filter[ n | 
 					#[ARGUMENT, CLASS, COMPILATION_UNIT, EXPRESSION, METHOD_CALL, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
 					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
 				].random	
@@ -92,7 +92,7 @@ class Taxonomy {
 			}
 			
 			case "literalChange": {
-				val literal = tree.root.allChildren.filter[ n | 
+				val literal = tree.root.depthFirstSearch.filter[ n | 
 					n.standardizedNodeType == LITERAL
 				].random 
 				
@@ -101,7 +101,7 @@ class Taxonomy {
 			}
 			
 			case "changeType": {
-				val declaration = tree.root.allChildren.filter[ n | 
+				val declaration = tree.root.depthFirstSearch.filter[ n | 
 					#[ARGUMENT, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) && 
 					!n.attributes.filter[a | a.attributeKey == "Type"].nullOrEmpty
 				].random
@@ -155,7 +155,7 @@ class Taxonomy {
 		switch (m.name) {
 			case "add",
 			case "move": {
-				val source = tree.root.allChildren.filter[n | 
+				val source = tree.root.depthFirstSearch.filter[n | 
 					#[ASSIGNMENT, CLASS, CONSTRUCTION, FIELD_DECLARATION,
 						^IF, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO,
 						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION
@@ -182,11 +182,10 @@ class Taxonomy {
 					case SWITCH,
 					case TRY,
 					case VARIABLE_DECLARATION: {
-						target = tree.root.allChildren.filter[ n | 
+						target = tree.root.depthFirstSearch.filter[ n | 
 							#[BLOCK, CASE].contains(n.standardizedNodeType)
 							&& n.UUID != source.UUID // Make sure to not target the same node
-							&& !n.allChildren.exists[c | c.UUID == n.UUID] // Watch out for containment as we copy procedurally and run into infinite loops
-							&& !source.allChildren.exists[c | c.UUID == n.UUID]
+							&& !source.depthFirstSearch.exists[c | c.UUID == n.UUID] // The source is not allowed to contain the target
 						].random
 					}
 					// CU, CLASS Targets
@@ -194,11 +193,10 @@ class Taxonomy {
 					case FIELD_DECLARATION,
 					case METHOD_DECLARATION,
 					case CLASS: {
-						target = tree.root.allChildren.filter[ n | 
+						target = tree.root.depthFirstSearch.filter[ n | 
 							#[COMPILATION_UNIT, CLASS].contains(n.standardizedNodeType)
 							&& n.UUID != source.UUID // Make sure to not target the same node
-							&& !n.allChildren.exists[c | c.UUID == n.UUID] // Watch out for containment as we copy procedurally and run into infinite loops
-							&& !source.allChildren.exists[c | c.UUID == n.UUID]
+							&& !source.depthFirstSearch.exists[c | c.UUID == n.UUID] // The source is not allowed to contain the target
 						].random
 					}
 					default: {
@@ -224,7 +222,7 @@ class Taxonomy {
 				
 			}
 			case "delete": {
-				val target = tree.root.allChildren.filter[n | 
+				val target = tree.root.depthFirstSearch.filter[n | 
 					#[ASSIGNMENT, ARGUMENT,	CLASS, CONSTRUCTION, EXPRESSION, FIELD_DECLARATION, 
 						^IF, LITERAL, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO, 
 						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION

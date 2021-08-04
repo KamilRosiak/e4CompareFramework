@@ -160,5 +160,19 @@ public interface Node {
 	 * Changes how the node displays itself when calling .toString()
 	 */
 	public void setRepresenation(String representation);
+	
+	/**
+	 * Traverse the Node composite in a breadth first manner.
+	 * Not safe for cycles
+	 * @return The iterator used for traversal
+	 */
+	public Iterable<Node> breadthFirstSearch();
+	
+	/**
+	 * Traverse the Node composite in a depth first manner.
+	 * Not safe for cycles
+	 * @return The iterator used for traversal
+	 */
+    public Iterable<Node> depthFirstSearch();
 
 }

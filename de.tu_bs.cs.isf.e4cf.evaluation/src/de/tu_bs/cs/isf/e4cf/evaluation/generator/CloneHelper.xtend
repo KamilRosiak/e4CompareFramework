@@ -67,7 +67,7 @@ class CloneHelper {
 		shadowClone.UUID = UUID.fromString(clone.UUID.toString)
 		shadowClone.standardizedNodeType = clone.standardizedNodeType
 		shadowClone.variabilityClass = clone.variabilityClass
-		val shadowParent = trackingTree.root.allChildren.findFirst[n | n.UUID == targetParent.UUID]
+		val shadowParent = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == targetParent.UUID]
 		shadowParent.children.add(shadowClone)
 		shadowClone.parent = shadowParent
 		source.attributes.forEach[a | shadowClone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]
@@ -116,7 +116,7 @@ class CloneHelper {
 		if(previousMove !== null) {
 			logger.log.remove(previousMove)
 			
-			val originalParentUuid = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID].parent.UUID
+			val originalParentUuid = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == source.UUID].parent.UUID
 			// A move back (target parent == original source parent) kills a previous move
 			if(originalParentUuid != targetParent.UUID) {
 				// If the node was already moved then the target of the previous move operation is replaced by a new one
@@ -137,9 +137,9 @@ class CloneHelper {
 		source.parent = targetParent
 		
 		// Apply operation on shadow tree
-		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
-		trackingTree.root.allChildren.findFirst[n | n.UUID == oldParent.UUID].children.remove(shadowSource) // Remove source from old parent
-		val shadowTargetParent = trackingTree.root.allChildren.findFirst[n | n.UUID == targetParent.UUID]
+		val shadowSource = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == source.UUID]
+		trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == oldParent.UUID].children.remove(shadowSource) // Remove source from old parent
+		val shadowTargetParent = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == targetParent.UUID]
 		shadowTargetParent.addChild(shadowSource) // add source to new parent
 		shadowSource.parent = shadowTargetParent // set parent of source to new parent
 		
@@ -167,7 +167,7 @@ class CloneHelper {
 		if(previousMovePos !== null) {
 			logger.log.remove(previousMovePos)
 			
-			val originalSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
+			val originalSource = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == source.UUID]
 			val originalIndex = originalSource.parent.children.indexOf(originalSource)
 			// A move back (target index == original source index) kills a previous move
 			if(originalIndex != index) {
@@ -187,8 +187,8 @@ class CloneHelper {
 		parent.children.add(index, source)
 		
 		// Apply operation on shadow tree
-		val shadowParent = trackingTree.root.allChildren.findFirst[n | n.UUID == parent.UUID]
-		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
+		val shadowParent = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == parent.UUID]
+		val shadowSource = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == source.UUID]
 		shadowParent.children.remove(shadowSource)
 		shadowParent.children.add(index, shadowSource)
 		
@@ -232,7 +232,7 @@ class CloneHelper {
 		// remove node subtree
 		source.parent.children.remove(source)
 		// also remove subtree from tracking tree
-		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID.toString == source.UUID.toString]
+		val shadowSource = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID.toString == source.UUID.toString]
 		shadowSource.parent.children.remove(shadowSource)
 	}
 	
@@ -246,7 +246,7 @@ class CloneHelper {
 		logger.deleteLogsContainingString(source.UUID.toString)
 		logger.logRaw(DELETE + TARGET + source.UUID)
 		
-		source.allChildren.forEach[
+		source.depthFirstSearch.forEach[
 			c | 
 			// Delete invalidates all actions on nodes that are deleted (except clone operations)
 			logger.deleteLogsContainingString(c.UUID.toString);
@@ -255,21 +255,6 @@ class CloneHelper {
 	}
 	
 	// TODO: Create Nodes Function from Seed-Repository
-	
-	/**
-	 * Returns all children of the given node in depth first order
-	 * @param root start node
-	 */
-	def static getAllChildren(Node root) {
-		var nodes = newArrayList
-		root._getAllChildren(nodes)
-		return nodes
-	}
-	
-	private static def void _getAllChildren(Node root, List<Node> nodes) {
-		root.children.forEach[c | nodes.add(c); c._getAllChildren(nodes)
-		]
-	}
 	
 	// Refactoring
 	
@@ -336,7 +321,7 @@ class CloneHelper {
 	}
 	
 	private def _refactor(Node body, String attrKey, String oldValue, String newValue) {
-		body.allChildren.filter[
+		body.depthFirstSearch.filter[
 			n | n.attributes.exists[
 				a | a.attributeKey == attrKey && n.getAttributeValue(attrKey) == oldValue
 			]
@@ -354,7 +339,7 @@ class CloneHelper {
 		if(previousSetAttr !== null) {
 			logger.log.remove(previousSetAttr)
 			
-			val originaNode = trackingTree.root.allChildren.findFirst[n | n.UUID == node.UUID]		
+			val originaNode = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == node.UUID]		
 			val originalValue = originaNode.getAttributeValue(attributeKey)
 			
 			// A move back (new value == original value) kills a previous move

@@ -8,6 +8,7 @@ import java.util.UUID;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeIterator;
 
 public abstract class AbstractNode implements Node {
 	@SuppressWarnings("unused")
@@ -215,5 +216,15 @@ public abstract class AbstractNode implements Node {
 	public NodeType getStandardizedNodeType() {
 		return standardizedNodeType;
 	}
+	
+	@Override
+	public Iterable<Node> breadthFirstSearch() {
+        return () -> new NodeIterator(this, true);
+    }
+	
+	@Override
+    public Iterable<Node> depthFirstSearch() {
+        return () -> new NodeIterator(this, false);
+    }
 
 }

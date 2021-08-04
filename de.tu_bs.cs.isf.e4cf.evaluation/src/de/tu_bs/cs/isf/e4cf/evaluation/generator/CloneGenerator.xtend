@@ -13,7 +13,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
-import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.getAllChildren
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
 
 @Singleton 
@@ -30,6 +29,8 @@ class CloneGenerator {
 		// save a copy of the original tree
 		helper.trackingTree = tree
 		var variants = newArrayList(new Variant(tree, helper.trackingTree, 0, 0))
+		
+		val starttime = System.nanoTime();
 		
 		try {
 			// Number of mutations (taxonomy calls) given by user
@@ -51,7 +52,7 @@ class CloneGenerator {
 				// Modify this Variant
 				val nodeToSourceFactor = 6.0
 				val modToLineFactor = 10
-				val numModifications = Math.ceil(currentTree.root.allChildren.size / (nodeToSourceFactor * modToLineFactor)) * options.variantChangeDegree
+				val numModifications = Math.ceil(currentTree.root.depthFirstSearch.size / (nodeToSourceFactor * modToLineFactor)) * options.variantChangeDegree
 				for (var mod = 1; mod <= numModifications; mod++) {
 					
 					// Determine Type
@@ -71,6 +72,9 @@ class CloneGenerator {
 		} finally {
 			// Save all variants and logs
 			save(options.outputRoot, variants);
+			
+			val endtime = System.nanoTime();
+			println("Runtime: " + (endtime - starttime))
 		}
 	}
 	

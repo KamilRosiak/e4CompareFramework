@@ -29,7 +29,6 @@ import org.eclipse.e4.core.di.annotations.Creatable
 
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 
-import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.getAllChildren
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions
 
 @Singleton
@@ -129,8 +128,8 @@ class CloneEvaluator {
 			
 			evaluatorResults.add(CloneST.LOG_SEPARATOR)
 			evaluatorResults.add(variantName)
-			evaluatorResults.add("Original tree nodes: " + originalTree.root.allChildren.size)
-			evaluatorResults.add("Variant tree nodes: " + variantTree.root.allChildren.size)
+			evaluatorResults.add("Original tree nodes: " + originalTree.root.depthFirstSearch.size)
+			evaluatorResults.add("Variant tree nodes: " + variantTree.root.depthFirstSearch.size)
 			
 			// Compare the variants
 			// Deep Copy Original Tree because otherwise we experience side effects when merging
@@ -443,7 +442,7 @@ class CloneEvaluator {
 	 * find a corresponding Node in the result tree and add the label and similarity to the Node
 	 */
 	private def addConfusionAttributes(Node root, String label, List<Comparison<Node>> confusions) {
-		val allChildren = root.allChildren
+		val allChildren = root.depthFirstSearch
 		
 		val iterator = confusions.iterator
 		while (iterator.hasNext) {
