@@ -7,6 +7,8 @@ Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.data.structures
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.e4.core.services,
  javax.inject,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi,
  org.eclipse.e4.core.di.annotations,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.core.compare

@@ -72,12 +72,9 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 					// compare children recursively
 					first.getChildren().stream().forEach(e -> {
 						second.getChildren().stream().forEach(f -> {
-
 							NodeComparison innerComp = compare(e, f);
-
 							if (innerComp != null) {
 								comparison.addChildComparison(innerComp);
-
 							}
 						});
 					});
@@ -87,7 +84,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		} else {
 			return comparison;
 		}
-
 	}
 
 	@Override
