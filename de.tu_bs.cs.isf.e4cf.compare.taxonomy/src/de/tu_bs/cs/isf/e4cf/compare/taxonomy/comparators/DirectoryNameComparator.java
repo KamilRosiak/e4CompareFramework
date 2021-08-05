@@ -3,9 +3,9 @@
  */
 package de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.templates.AbstractNodeComparator;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.core.compare.algorithm.LevenstheinDistance;
@@ -16,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.core.compare.algorithm.LevenstheinDistance;
  */
 public class DirectoryNameComparator extends AbstractNodeComparator {
 	private static final String DIRECTORY_NAME_ATTRIBUTE_KEY = "DIRECTORY_NAME";
+	
 	/**
 	 * @param supportedType
 	 */

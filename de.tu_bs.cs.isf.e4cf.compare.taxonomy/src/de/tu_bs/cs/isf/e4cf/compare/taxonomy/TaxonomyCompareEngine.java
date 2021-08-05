@@ -2,18 +2,12 @@ package de.tu_bs.cs.isf.e4cf.compare.taxonomy;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
-import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
-import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.ICompareEngine;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectoryNameComparator;
@@ -26,6 +20,8 @@ import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ResultEngine;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMetric;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 /**
  * Decomposes two trees and compares , match and merges them hierarchical which
@@ -130,11 +126,13 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 		// if nodes are of the same type
 		if (first.getNodeType().equals(second.getNodeType())) {
 			
-			if (first.getNodeType().equals("Directory")) {
-				comparison.addResultElement(directoryNameComparator.compare(first, second));
-			} else {
-				comparison.addResultElement(defaultComparator.compare(first, second));
-			}
+			comparison.addResultElement(defaultComparator.compare(first, second));
+			
+//			if (first.getNodeType().equals("Directory")) {
+//				comparison.addResultElement(directoryNameComparator.compare(first, second));
+//			} else {
+//				comparison.addResultElement(defaultComparator.compare(first, second));
+//			}
 			
 			// Add Result to Node Comparison Result
 			NodeComparisonResult nodeComparisonResult = new NodeComparisonResult(artifactIndexCounter, currentLeftArtifact, first, second, currentRightArtifact, comparison.getResultSimilarity());
@@ -185,6 +183,7 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 		return null;
 	}
 
+
 	@Override
 	public Metric getMetric() {
 		// TODO Auto-generated method stub
@@ -196,5 +195,7 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 
 }

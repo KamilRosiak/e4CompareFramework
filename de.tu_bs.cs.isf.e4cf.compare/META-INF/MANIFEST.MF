@@ -13,21 +13,21 @@ Require-Bundle: org.eclipse.jface;bundle-version="3.17.0",
  de.tu_bs.cs.isf.e4cf.core.compare;bundle-version="1.0.0",
  de.tu_bs.cs.isf.e4cf.core,
  org.eclipse.core.resources,
- de.tu_bs.cs.isf.e4cf.graph.core
+ de.tu_bs.cs.isf.e4cf.graph.core,
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy;bundle-version="1.0.0"
 Export-Package: de.tu_bs.cs.isf.e4cf.compare,
+ de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node,
  de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces,
+ de.tu_bs.cs.isf.e4cf.compare.comparator.templates,
  de.tu_bs.cs.isf.e4cf.compare.comparison.impl,
+ de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.matcher.util,
  de.tu_bs.cs.isf.e4cf.compare.metric,
  de.tu_bs.cs.isf.e4cf.compare.metric.interfaces,
- de.tu_bs.cs.isf.e4cf.compare.metric.util,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics
+ de.tu_bs.cs.isf.e4cf.compare.metric.util
 Import-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable,
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,
  javax.inject,
  org.eclipse.gef.geometry.planar

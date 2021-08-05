@@ -22,9 +22,10 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.TaxonomyCompareEngine;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactGraph;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMatcher;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.*;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics.TaxonomyThresholdMatcher;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.*;
+
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table.TaxonomyST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
