@@ -101,6 +101,7 @@ class Taxonomy {
 					case ARGUMENT,
 					case EXPRESSION: {
 						
+						// This could also be a parameter of a calling method (not implemented)
 						val declaration = tree.root.depthFirstSearch.findFirst[ n | n.standardizedNodeType == VARIABLE_DECLARATOR
 							&& helper.getAttributeValue(n, "Name") == identName
 						]
@@ -128,10 +129,7 @@ class Taxonomy {
 					}
 					// Can be safely renamed if it was never called anywhere
 					case METHOD_DECLARATION: {
-						var calls = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == METHOD_CALL
-							&& helper.getAttributeValue(n, "Name") == identName]
-							
-						if(calls.empty) {
+						if(tree.getMethodDeclarationCalls(ident).isEmpty) {
 							newIdent = "N" + new Random().nextInt(Integer.MAX_VALUE)
 						} else {
 							System.err.println('''Error with «m.name» modification: Can't Substitute Method Decl «identName», because calls exist''')
@@ -310,21 +308,83 @@ class Taxonomy {
 			}
 			case "delete": {
 				val target = tree.root.depthFirstSearch.filter[n | 
-					#[ASSIGNMENT, ARGUMENT,	CLASS, CONSTRUCTION, EXPRESSION, FIELD_DECLARATION, 
+					// Assignments, if, loops, switch, try can be deleted safely, method calls
+					#[ASSIGNMENT, CONSTRUCTION, EXPRESSION, FIELD_DECLARATION, 
 						^IF, LITERAL, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO, 
 						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION
+						// , CLASS, ARGUMENT
 					].contains(n.standardizedNodeType) &&
-					// Only root expressions may be deleted safely
-					(n.standardizedNodeType != EXPRESSION || n.parent.standardizedNodeType != EXPRESSION)
+					// In general subexpressions of any kind can't be deleted safely
+					n.parent.standardizedNodeType != EXPRESSION
 				].random
+				
+				var isViable = false;
 				
 				if (target === null) {
 					System.err.println('''Error with «m.name» modification: No target found''')
 					return;	
+				}
+				
+				// Further restrictions
+				switch (target.standardizedNodeType) {
+					// Only literals at the end of an variable declaration can be deleted safely (-> uninitialized variable)
+					case LITERAL: {
+						if(target.parent.standardizedNodeType == VARIABLE_DECLARATOR) isViable = true;
+					}
+					// Only variable and field declarations that are not referenced (unused) can be deleted safely
+					case VARIABLE_DECLARATION,
+					case FIELD_DECLARATION: {
+						// Uses the name in the variable declarator
+						var references = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
+							&& helper.getAttributeValue(target.children.head, "Name") == helper.getAttributeValue(n, "Name")]
+							
+						if(references.isEmpty) isViable = true;
+					}
+					// Only method declarations that are not called (unused) can be deleted safely
+					case METHOD_DECLARATION: {
+						if(tree.getMethodDeclarationCalls(target).isEmpty) isViable = true;
+					}
+					// Only constructions that are not called anywhere (same arguments) can be deleted safely
+					case CONSTRUCTION: {
+						// So they should not be the type of an object creation expression
+						var calls = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
+							&& helper.getAttributeValue(target, "Name") == helper.getAttributeValue(n, "Type")]
+							
+						if(calls.isEmpty) isViable = true;
+					}
+					case ARGUMENT: {
+						// Only arguments of methods that are not called anywhere (same arguments)
+						// And that are not used in the function below (e.g. as arguments or in expressions) can be deleted safely
+//						if (target.parent.parent.standardizedNodeType == METHOD_DECLARATION) {
+//							if(tree.getMethodDeclarationCalls(target.parent.parent).isEmpty) isViable = true;
+//						}
+						throw new UnsupportedOperationException("Not yet implemented")
+					}
+					// Only classes that are not used (construction, field / variable, type cast, ...) can be deleted safely
+					case CLASS: {
+						throw new UnsupportedOperationException("Not yet implemented")
+					}
+					default: {
+						isViable = true
+					}
+				}
+				
+				if (!isViable) {
+					System.err.println('''Error with «m.name» modification: Target not viable for «target.UUID.toString»''')
+					return;
 				}
 				delete(target)
 			}
 		}
 	}
 	
+	def getMethodDeclarationCalls(Tree tree, Node methodDecl) {
+		return tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == METHOD_CALL
+			&& helper.getAttributeValue(methodDecl, "Name") == helper.getAttributeValue(n, "Name")
+			// Deal with polymorphism
+			// Same attribute count
+			&& n.children.head.children.size == methodDecl.children.head.children.size
+			// Ideal check same attribute types here
+			]
+	}	
 }
