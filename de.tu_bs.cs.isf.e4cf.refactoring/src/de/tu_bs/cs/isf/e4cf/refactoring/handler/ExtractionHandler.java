@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.handler;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,11 +13,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorS
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
 import de.tu_bs.cs.isf.e4cf.refactoring.controllers.ComponentLayerViewController;
-
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ExtractionEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ExtractionResult;
-
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 
 public class ExtractionHandler {

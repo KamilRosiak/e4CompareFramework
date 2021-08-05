@@ -52,9 +52,6 @@ public class ExtractionEngine {
 		System.out.println("");
 		System.out.println("|--------- Extract components ---------|");
 
-		// assign position to tree elements
-		assignPosition(tree.getRoot(), 0);
-
 		List<Component> components = new ArrayList<Component>();
 		for (ComponentLayer layer : componentLayers) {
 			if (layer.refactor()) {
@@ -105,7 +102,7 @@ public class ExtractionEngine {
 				component.addChildWithParent(configuration);
 
 				Node cloneParent = clusterInstance1.getParent();
-				int position = clusterInstance1.getPosition();
+				int position = cloneParent.getChildren().indexOf(clusterInstance1);
 
 				if (!component.getNodeComponentRelation().containsKey(cloneParent)) {
 					component.getNodeComponentRelation().put(cloneParent, new HashMap<Integer, Configuration>());
@@ -129,23 +126,14 @@ public class ExtractionEngine {
 		System.out.println("");
 		System.out.println("|--------- Verify components ---------|");
 
-		Map<Node, Attribute> positionAttributeMapping = new HashMap<Node, Attribute>();
-
 		for (Component component : extractionResult.getComponents()) {
 			List<Node> nodes = new ArrayList<Node>();
 			for (Configuration configuration : component.getConfigurations()) {
-				Node node = configuration.getChildren().get(0);
-				Attribute attribute = node.getAttributeForKey("Position");
-				positionAttributeMapping.put(node, attribute);
-				node.getAttributes().remove(attribute);
+
 				nodes.add(configuration.getChildren().get(0));
 			}
 
 			boolean isValid = clusterEngine.verifyCluster(nodes, DISTANCE);
-
-			for (Entry<Node, Attribute> entry : positionAttributeMapping.entrySet()) {
-				entry.getKey().addAttribute(entry.getValue());
-			}
 
 			if (!isValid) {
 
@@ -267,18 +255,6 @@ public class ExtractionEngine {
 			newComponents.add(component);
 		}
 		return newComponents;
-
-	}
-
-	private void assignPosition(Node node, int position) {
-
-		node.addAttribute("Position", new StringValueImpl(position + ""));
-
-		int childPosition = 0;
-		for (Node childNode : node.getChildren()) {
-			assignPosition(childNode, childPosition);
-			childPosition++;
-		}
 
 	}
 

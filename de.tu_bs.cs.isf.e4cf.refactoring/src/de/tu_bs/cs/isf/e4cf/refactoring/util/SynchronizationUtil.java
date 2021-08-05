@@ -1,10 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
 
 public class SynchronizationUtil {
@@ -28,5 +30,8 @@ public class SynchronizationUtil {
 
 		return getComponentLayers(types);
 	}
+	
+	
+
 
 }

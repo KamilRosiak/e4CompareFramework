@@ -2,9 +2,11 @@ package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -53,11 +55,19 @@ public abstract class View {
 		
 		setWidgets();
 		
+		
+		
 		applyButton = new Button(shell, SWT.PUSH);
 		applyButton.setText("Apply");
+		applyButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		
+		if(numberOfColumns == 3) {
+			Label label = new Label(shell, 0);
+		}
 
 		abortButton = new Button(shell, SWT.PUSH);
 		abortButton.setText("Abort");	
+		abortButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		
 		
 	}

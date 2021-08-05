@@ -11,8 +11,7 @@ public class Action {
 	private Node actionNode;	
 	
 
-	public Action(ActionType actionType, Node affectedNode, Node actionNode) {
-	
+	public Action(ActionType actionType, Node affectedNode, Node actionNode) {	
 		this.actionType = actionType;
 		this.affectedNode = affectedNode;
 		this.actionNode = actionNode;

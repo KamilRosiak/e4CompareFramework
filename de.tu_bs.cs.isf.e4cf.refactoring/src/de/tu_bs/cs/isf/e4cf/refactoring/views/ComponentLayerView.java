@@ -30,7 +30,7 @@ public class ComponentLayerView extends View {
 
 	public ComponentLayerView() {
 
-		super(2, "Refactoring layers");
+		super(2, "Component layers");
 		layerTreeBuilder = new LayerTreeBuilder();
 
 	}
@@ -54,7 +54,7 @@ public class ComponentLayerView extends View {
 	@Override
 	public void setWidgets() {
 		layerLabel = new Label(shell, 0);
-		layerLabel.setText("Select refactoring layers:");
+		layerLabel.setText("Select component layers:");
 
 		layerTree = new Tree(shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 

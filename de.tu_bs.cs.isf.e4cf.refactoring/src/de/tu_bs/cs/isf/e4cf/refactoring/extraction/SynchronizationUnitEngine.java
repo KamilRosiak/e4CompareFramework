@@ -19,41 +19,44 @@ public class SynchronizationUnitEngine {
 		// relationship between artifacts
 		if (comparison.getLeftArtifact() != null && comparison.getRightArtifact() != null) {
 
-			if (map.containsKey(comparison.getLeftArtifact())) {
+			if (comparison.getLeftArtifact() != comparison.getRightArtifact()) {
+				if (map.containsKey(comparison.getLeftArtifact())) {
 
-				boolean alreadyInList = false;
-				for (Node node : map.get(comparison.getLeftArtifact())) {
-					if (node.equals(comparison.getRightArtifact())) {
-						alreadyInList = true;
+					boolean alreadyInList = false;
+					for (Node node : map.get(comparison.getLeftArtifact())) {
+						if (node.equals(comparison.getRightArtifact())) {
+							alreadyInList = true;
+						}
 					}
-				}
-				if (!alreadyInList) {
-					map.get(comparison.getLeftArtifact()).add(comparison.getRightArtifact());
+					if (!alreadyInList) {
+						map.get(comparison.getLeftArtifact()).add(comparison.getRightArtifact());
+					}
+
+				} else {
+					Set<Node> set = new HashSet<Node>();
+					set.add(comparison.getRightArtifact());
+					map.put(comparison.getLeftArtifact(), set);
 				}
 
-			} else {
-				Set<Node> set = new HashSet<Node>();
-				set.add(comparison.getRightArtifact());
-				map.put(comparison.getLeftArtifact(), set);
+				if (map.containsKey(comparison.getRightArtifact())) {
+
+					boolean alreadyInList = false;
+					for (Node node : map.get(comparison.getRightArtifact())) {
+						if (node.equals(comparison.getLeftArtifact())) {
+							alreadyInList = true;
+						}
+					}
+					if (!alreadyInList) {
+						map.get(comparison.getRightArtifact()).add(comparison.getLeftArtifact());
+					}
+
+				} else {
+					Set<Node> set = new HashSet<Node>();
+					set.add(comparison.getLeftArtifact());
+					map.put(comparison.getRightArtifact(), set);
+				}
 			}
 
-			if (map.containsKey(comparison.getRightArtifact())) {
-
-				boolean alreadyInList = false;
-				for (Node node : map.get(comparison.getRightArtifact())) {
-					if (node.equals(comparison.getLeftArtifact())) {
-						alreadyInList = true;
-					}
-				}
-				if (!alreadyInList) {
-					map.get(comparison.getRightArtifact()).add(comparison.getLeftArtifact());
-				}
-
-			} else {
-				Set<Node> set = new HashSet<Node>();
-				set.add(comparison.getLeftArtifact());
-				map.put(comparison.getRightArtifact(), set);
-			}
 		}
 
 		for (Comparison<Node> childComparison : comparison.getChildComparisons()) {
@@ -102,5 +105,5 @@ public class SynchronizationUnitEngine {
 		}
 
 	}
-	
+
 }

@@ -10,6 +10,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Action;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionType;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.AddAction;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.MoveAction;
 
 public class ActionTreeBuilder {
 
@@ -31,31 +33,49 @@ public class ActionTreeBuilder {
 			actionTreeItem.setChecked(actionScope.apply());
 
 			TreeItem affectedNodeTreeItem = new TreeItem(actionTreeItem, 0);
-			affectedNodeTreeItem.setText("Affected node: " + action.getAffectedNode().getNodeType());
+
 			affectedNodeTreeItem.setData(actionScope);
 			affectedNodeTreeItem.setChecked(actionScope.apply());
 
 			TreeItem actionNodeTreeItem = new TreeItem(actionTreeItem, 0);
-			actionNodeTreeItem.setText("Action node: " + action.getActionNode().getNodeType());
+
 			actionNodeTreeItem.setData(actionScope);
 			actionNodeTreeItem.setChecked(actionScope.apply());
 
 			if (action.getActionType() == ActionType.UPDATE) {
 
+				affectedNodeTreeItem.setText("Affected node: " + action.getAffectedNode().getNodeType());
+				actionNodeTreeItem.setText("Action node: " + action.getActionNode().getNodeType());
 				decorateWithAttributes(action.getAffectedNode().getAttributes(), affectedNodeTreeItem, actionScope);
 				decorateWithAttributes(action.getActionNode().getAttributes(), actionNodeTreeItem, actionScope);
 
 			} else if (action.getActionType() == ActionType.MOVE) {
-				affectedNodeTreeItem.setText(
-						affectedNodeTreeItem.getText() + ", Position " + action.getAffectedNode().getPosition());
+
+				MoveAction moveAction = (MoveAction) action;
+
+				affectedNodeTreeItem.setText(action.getAffectedNode().getNodeType() + ", position: " + moveAction.getOriginalPosition());
 				actionNodeTreeItem
-						.setText(actionNodeTreeItem.getText() + ", Position " + action.getActionNode().getPosition());
+						.setText(action.getAffectedNode().getNodeType() + ", position: " + moveAction.getNewPosition());
 			} else if (action.getActionType() == ActionType.ADD) {
+
 				buildTreeRecursively(action.getActionNode(), actionScope, actionNodeTreeItem);
+				
+				AddAction addAction = (AddAction) action;
+
+				if (!addAction.addAtPositionZero()) {
+					affectedNodeTreeItem.setText("Add sibling to: " + action.getAffectedNode().getNodeType());
+				} else {
+					affectedNodeTreeItem.setText("Add child to: " + action.getAffectedNode().getNodeType());
+				}
+				
+				actionNodeTreeItem.setText("New node: " + action.getActionNode().getNodeType());
 			}
 
 			else if (action.getActionType() == ActionType.DELETE) {
+
 				buildTreeRecursively(action.getAffectedNode(), actionScope, affectedNodeTreeItem);
+				affectedNodeTreeItem.setText("Remove child from: " + action.getAffectedNode().getNodeType());
+				actionNodeTreeItem.setText("Node to remove: " + action.getActionNode().getNodeType());
 
 			}
 
@@ -66,21 +86,19 @@ public class ActionTreeBuilder {
 	private void decorateWithAttributes(List<Attribute> attributes, TreeItem item, ActionScope scope) {
 		for (Attribute attribute : attributes) {
 
-			if (attribute.getAttributeKey() != "Position") {
-				TreeItem attributeTreeItem = new TreeItem(item, 0);
-				String valueString = "";
-				for (int i = 0; i < attribute.getAttributeValues().size(); i++) {
+			TreeItem attributeTreeItem = new TreeItem(item, 0);
+			String valueString = "";
+			for (int i = 0; i < attribute.getAttributeValues().size(); i++) {
 
-					valueString += attribute.getAttributeValues().get(i).getValue().toString();
-					if (i != attribute.getAttributeValues().size() - 1) {
-						valueString += ",";
-					}
+				valueString += attribute.getAttributeValues().get(i).getValue().toString();
+				if (i != attribute.getAttributeValues().size() - 1) {
+					valueString += ",";
 				}
-
-				attributeTreeItem.setText(attribute.getAttributeKey() + ":" + valueString);
-				attributeTreeItem.setData(scope);
-				attributeTreeItem.setChecked(scope.apply());
 			}
+
+			attributeTreeItem.setText(attribute.getAttributeKey() + ":" + valueString);
+			attributeTreeItem.setData(scope);
+			attributeTreeItem.setChecked(scope.apply());
 
 		}
 	}

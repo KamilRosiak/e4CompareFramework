@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
-public class ActionScope {
+public class ActionScope implements Comparable<ActionScope> {
 
 	private Action action;
 
@@ -26,6 +26,20 @@ public class ActionScope {
 		super();
 		this.action = action;
 		this.apply = apply;
+	}
+
+	@Override
+	public int compareTo(ActionScope o) {
+
+		if (this.getAction().getActionType() == o.getAction().getActionType()) {
+			return 0;
+		}
+
+		if (this.getAction().getActionType() == ActionType.MOVE) {
+			return -1;
+		}
+
+		return 1;
 	}
 
 }

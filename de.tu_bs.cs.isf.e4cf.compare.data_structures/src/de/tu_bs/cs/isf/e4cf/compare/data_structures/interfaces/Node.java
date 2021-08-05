@@ -89,10 +89,6 @@ public interface Node {
 	 */
 	public void addChildWithParent(Node node);
 	
-	/**
-	 * This method adds a child node to the current node at a given position and sets the parent.
-	 */
-	public void addChildWithParent(Node node, int position);
 	
 	
 	/**
@@ -100,10 +96,7 @@ public interface Node {
 	 */
 	public void addChild(Node node);
 	
-	/**
-	 * This method adds a child node to the current node at a given position and sets the parent.
-	 */
-	public void addChild(Node node, int position);
+	
 	
 	/**
 	 * Returns the total number of child nodes
@@ -145,35 +138,18 @@ public interface Node {
 	 */
 	public Node cloneNode();
 	
-	
-	/**
-	 * This method returns the position of this node.
-	 * @return
-	 */
 	public int getPosition();
 	
-	/**
-	 * This method sets the position of this node.
-	 */
 	public void setPosition(int position);
-	
-	/**
-	 * This method updates the position of this node.
-	 */
-	public void updatePosition(int position);
-	
-	/**
-	 * This method sorts the children by position.
-	 */
-	public void sortChildrenByPosition();	
-		
-	/**
-	 * This method removes a given child.
-	 */
-	public void removeChild(Node child, int position);
-	
-	
 
+	public void addSiblingAtPosition(Node sibling, int position);
+	
+	public void addChildAtPosition(Node child, int position);
+
+	
+	public Node getNextSibling();
+	
+	public Node getPreviousSibling();
 	
 	
 	

@@ -4,22 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
-import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
+import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -47,7 +41,8 @@ public class ClusterEngine {
 			while (iterator2.hasNext()) {
 				Node node2 = iterator2.next();
 				if (node1 != node2) {
-					distanceString += 1 - compareEngine.compare(node1, node2).getResultSimilarity();
+					Comparison<Node> comparison = compareEngine.compare(node1, node2);
+					distanceString += 1 - comparison.getSimilarity();
 				} else {
 					distanceString += "0.00";
 				}
@@ -98,18 +93,15 @@ public class ClusterEngine {
 		return clusters;
 
 	}
-	
-	
 
-	
 	public boolean verifyCluster(Iterable<Node> nodes, float threshold) {
 		List<Set<Node>> clusters = detectClusters(nodes, threshold);
-		
-		if(clusters.size() != 1) {
+
+		if (clusters.size() != 1) {
 			return false;
 		}
 		return true;
-		
+
 	}
 
 	private void printMetrics(List<Set<Node>> clusters, float threshold) {
@@ -132,7 +124,7 @@ public class ClusterEngine {
 		System.out.println("Number of clusters: " + clusters.size());
 		System.out.println("Largest cluster: " + largestCluster);
 		System.out.println("Clusters of size 1: " + numberOfClustersWithSingleElement);
-		
+
 	}
 
 }
