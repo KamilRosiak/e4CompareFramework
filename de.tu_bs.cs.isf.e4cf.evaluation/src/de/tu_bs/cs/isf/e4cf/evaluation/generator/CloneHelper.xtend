@@ -284,7 +284,10 @@ class CloneHelper {
 					// refactor method definition argument itself and every occurrence in the block next to it
 					container.setAttributeValue("Name", newValue)
 					if (container.parent.parent.standardizedNodeType == NodeType.METHOD_DECLARATION) {
-						body = container.parent.parent.children.get(1)
+						// Interfaces have no body
+						if(container.parent.parent.children.size > 1) {
+							body = container.parent.parent.children.get(1)
+						}
 					} else {
 						// probably lambda
 						body = container.parent.children.findFirst[n | n.standardizedNodeType == NodeType.BLOCK]
@@ -311,8 +314,12 @@ class CloneHelper {
 				}
 			}
 			
-			logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + SCOPE + body.UUID + FROM + oldValue + TO + newValue)
-			_refactor(body, #["Name", "Value"], oldValue, newValue)
+			if(body === null) {
+				System.err.println('''Error with refactoring «oldValue»: No body found''')
+			} else {
+				logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + SCOPE + body.UUID + FROM + oldValue + TO + newValue)
+				_refactor(body, #["Name", "Value"], oldValue, newValue)
+			}
 		}
 	}
 	

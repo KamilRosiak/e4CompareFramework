@@ -77,20 +77,83 @@ class Taxonomy {
 			case "refactorIdentifiers": {
 				val declaration = tree.root.depthFirstSearch.filter[ n | 
 					#[ARGUMENT, CLASS, COMPILATION_UNIT, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
-					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
+					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty &&
+					n.parent.standardizedNodeType != TEMPLATE
 				].random
 				
 				m.tryInvoke(declaration, "I" + rng.nextInt(Integer.MAX_VALUE))
 			}
 			
 			case "replaceIdentifier": {
-				// TODO Syntax Fix
-				val ident = tree.root.depthFirstSearch.filter[ n | 
-					#[ARGUMENT, CLASS, COMPILATION_UNIT, EXPRESSION, METHOD_CALL, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
-					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
-				].random	
+				val ident = tree.root.depthFirstSearch.filter[ n |
+					// Named expression
+					#[ARGUMENT, EXPRESSION, METHOD_DECLARATION, VARIABLE_DECLARATOR //, METHOD_CALL
+					].contains(n.standardizedNodeType) &&
+					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty 
+				].random
 				
-				m.tryInvoke(ident, "N" + new Random().nextInt(Integer.MAX_VALUE))
+				var String newIdent = null
+				val identName = helper.getAttributeValue(ident, "Name")
+				
+				// Find a valid substitute:
+				switch (ident.standardizedNodeType) {
+					// A variable declaration with the same type (or method with the right return type and no arguments (not implemented))
+					case ARGUMENT,
+					case EXPRESSION: {
+						
+						val declaration = tree.root.depthFirstSearch.findFirst[ n | n.standardizedNodeType == VARIABLE_DECLARATOR
+							&& helper.getAttributeValue(n, "Name") == identName
+						]
+						
+						if(declaration === null) {
+							System.err.println('''Error with «m.name» modification: No Declaration Found For «identName»''')
+						} else {
+							
+							val substitute = tree.root.depthFirstSearch.findFirst[ n | n.standardizedNodeType == VARIABLE_DECLARATOR
+								&& helper.getAttributeValue(declaration, "Type") == helper.getAttributeValue(n, "Type")
+								&& n != declaration
+							]
+							
+							if(substitute === null) {
+								System.err.println('''Error with «m.name» modification: No Substitute Found For «identName»''')
+							} else {
+								newIdent = helper.getAttributeValue(substitute, "Name").toString
+							}
+								
+						}
+					}
+					// A method declaration with the same number of arguments with the same type and the same return type
+					case METHOD_CALL: {
+						throw new UnsupportedOperationException("Not yet implemented")
+					}
+					// Can be safely renamed if it was never called anywhere
+					case METHOD_DECLARATION: {
+						var calls = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == METHOD_CALL
+							&& helper.getAttributeValue(n, "Name") == identName]
+							
+						if(calls.empty) {
+							newIdent = "N" + new Random().nextInt(Integer.MAX_VALUE)
+						} else {
+							System.err.println('''Error with «m.name» modification: Can't Substitute Method Decl «identName», because calls exist''')
+						}
+					}
+					// Can be safely renamed if it was never referenced anywhere
+					case VARIABLE_DECLARATOR: {
+						var references = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
+							&& helper.getAttributeValue(n, "Name") == identName]
+							
+						if(references.empty) {
+							newIdent = "N" + new Random().nextInt(Integer.MAX_VALUE)
+						} else {
+							System.err.println('''Error with «m.name» modification: Can't Substitute Variable Decl «identName», because references exist''')
+						}
+					}
+					default: { }
+				}
+				
+				if(newIdent !== null) {
+					m.tryInvoke(ident, newIdent)
+				}
 			}
 			
 			case "literalChange": {
