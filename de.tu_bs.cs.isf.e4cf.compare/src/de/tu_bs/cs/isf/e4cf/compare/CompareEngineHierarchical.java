@@ -37,7 +37,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		root.updateSimilarity();
 		getMatcher().calculateMatching(root);
 		root.updateSimilarity();
-		// Merge
 		return root.mergeArtifacts();
 	}
 
