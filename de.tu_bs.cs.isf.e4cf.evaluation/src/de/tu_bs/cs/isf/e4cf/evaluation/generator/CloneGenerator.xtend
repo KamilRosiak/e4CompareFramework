@@ -46,8 +46,6 @@ class CloneGenerator {
 				val currentTree = helper.deepCopy(predecessor.tree) // create deep copy because we might have selected that variant before
 				helper.trackingTree = predecessor.trackingTree // tracking tree always deep copies
 				
-				// TODO: respect granularity type
-				
 				// Modify this Variant
 				val nodeToSourceFactor = 6.0
 				val modToLineFactor = 10
@@ -57,10 +55,10 @@ class CloneGenerator {
 					// Determine Type
 					if (new Random().nextInt(100) <= options.modificationRatioPercentage) {
 						// Type II Modification
-						taxonomy.performType2Modification(currentTree)
+						taxonomy.performType2Modification(currentTree, options.isSyntaxSafe)
 					} else {
 						// Type III Modification
-						taxonomy.performType3Modification(currentTree)
+						taxonomy.performType3Modification(currentTree, options.isSyntaxSafe)
 					}
 					
 				}

@@ -1,7 +1,5 @@
 /**
  * This Class performs edits on a given tree with provided constraints
- * 
- * TODO Ensure Syntactical Correctness after an operation
  */
 package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
@@ -61,17 +59,33 @@ class Taxonomy {
 	}
 	
 	/** Returns a random method of clone type II */
-	def getType2Method() {
-		return #[
-			this.class.methods.filter[m | m.name == "refactorIdentifiers"],
-			this.class.methods.filter[m | m.name == "replaceIdentifier"],
-			this.class.methods.filter[m | m.name == "literalChange"],
-			this.class.methods.filter[m | m.name == "typeChange"]
-		].flatten.random
+	def getType2Method(boolean isSyntaxSafe) {
+		if(isSyntaxSafe) {
+			return #[
+				this.class.methods.filter[m | m.name == "refactorIdentifiers"],
+				this.class.methods.filter[m | m.name == "literalChange"]
+			].flatten.random
+		} else {
+			return #[
+				this.class.methods.filter[m | m.name == "refactorIdentifiers"],
+				this.class.methods.filter[m | m.name == "replaceIdentifier"],
+				this.class.methods.filter[m | m.name == "literalChange"],
+				this.class.methods.filter[m | m.name == "typeChange"]
+			].flatten.random
+		}
 	}
 	
-	def performType2Modification(Tree tree) {	
-		val m = getType2Method()
+	def performType2Modification(Tree tree, boolean isSyntaxSafe) {	
+		val m = getType2Method(isSyntaxSafe)
+		
+		if(isSyntaxSafe) {
+			performType2ModificationSyntaxSafe(tree, m)
+		} else {
+			performType2ModificationNotSyntaxSafe(tree, m)
+		}
+	}
+	
+	def performType2ModificationSyntaxSafe(Tree tree, Method m) {
 		val rng = new Random
 		switch (m.name) {
 			case "refactorIdentifiers": {
@@ -85,73 +99,137 @@ class Taxonomy {
 			}
 			
 			case "replaceIdentifier": {
-				val ident = tree.root.depthFirstSearch.filter[ n |
-					// Named expression
-					#[ARGUMENT, EXPRESSION, METHOD_DECLARATION, VARIABLE_DECLARATOR //, METHOD_CALL
-					].contains(n.standardizedNodeType) &&
-					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty 
+				throw new UnsupportedOperationException("Not yet implemented")
+//				val ident = tree.root.depthFirstSearch.filter[ n |
+//					// Named expression
+//					#[ARGUMENT, EXPRESSION, METHOD_DECLARATION, VARIABLE_DECLARATOR //, METHOD_CALL
+//					].contains(n.standardizedNodeType) &&
+//					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty 
+//				].random
+//				
+//				var String newIdent = null
+//				val identName = helper.getAttributeValue(ident, "Name")
+//				
+//				// Find a valid substitute:
+//				switch (ident.standardizedNodeType) {
+//					// A variable declaration with the same type (or method with the right return type and no arguments (not implemented))
+//					case ARGUMENT,
+//					case EXPRESSION: {
+//						
+//						// This could also be a parameter of a calling method (not implemented)
+//						val declaration = tree.root.depthFirstSearch.findFirst[ n | n.standardizedNodeType == VARIABLE_DECLARATOR
+//							&& helper.getAttributeValue(n, "Name") == identName
+//						]
+//						
+//						if(declaration === null) {
+//							System.err.println('''Error with «m.name» modification: No Declaration Found For «identName»''')
+//						} else {
+//							
+//							val substitute = tree.root.depthFirstSearch.findFirst[ n | n.standardizedNodeType == VARIABLE_DECLARATOR
+//								&& helper.getAttributeValue(declaration, "Type") == helper.getAttributeValue(n, "Type")
+//								&& n != declaration
+//							]
+//							
+//							if(substitute === null) {
+//								System.err.println('''Error with «m.name» modification: No Substitute Found For «identName»''')
+//							} else {
+//								newIdent = helper.getAttributeValue(substitute, "Name").toString
+//							}
+//								
+//						}
+//					}
+//					// A method declaration with the same number of arguments with the same type and the same return type
+//					case METHOD_CALL: {
+//						throw new UnsupportedOperationException("Not yet implemented")
+//					}
+//					// Can be safely renamed if it was never called anywhere
+//					case METHOD_DECLARATION: {
+//						if(tree.getMethodDeclarationCalls(ident).isEmpty) {
+//							newIdent = "N" + new Random().nextInt(Integer.MAX_VALUE)
+//						} else {
+//							System.err.println('''Error with «m.name» modification: Can't Substitute Method Decl «identName», because calls exist''')
+//						}
+//					}
+//					// Can be safely renamed if it was never referenced anywhere
+//					case VARIABLE_DECLARATOR: {
+//						var references = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
+//							&& helper.getAttributeValue(n, "Name") == identName]
+//							
+//						if(references.empty) {
+//							newIdent = "N" + new Random().nextInt(Integer.MAX_VALUE)
+//						} else {
+//							System.err.println('''Error with «m.name» modification: Can't Substitute Variable Decl «identName», because references exist''')
+//						}
+//					}
+//					default: { }
+//				}
+//				
+//				if(newIdent !== null) {
+//					m.tryInvoke(ident, newIdent)
+//				}
+			}
+			
+			case "literalChange": {
+				val literal = tree.root.depthFirstSearch.filter[ n | 
+					n.standardizedNodeType == LITERAL
 				].random
 				
-				var String newIdent = null
-				val identName = helper.getAttributeValue(ident, "Name")
+				if(literal !== null) {
+					val oldValue = helper.getAttributeValue(literal, "Value")
+					var newValue = ""
+					
+					switch (helper.getAttributeValue(literal, "Type")) {
+						case "int",
+						case "long": {
+							var l = Long.parseLong(oldValue.replaceAll("[Ll]",""))
+							var max = Math.min(Math.abs(l), Integer.MAX_VALUE) as int
+							max = max == 0 ? max=Short.MAX_VALUE : max=max // we don't want zero
+							newValue += rng.nextInt(max) * (Math.signum(l) as int)
+						}
+						case "char": {
+							newValue += rng.nextInt(Character.MAX_VALUE) as char
+						}
+						case "double",
+						case "float": {
+							newValue += rng.nextDouble * (Math.signum(Double.parseDouble(oldValue)) as int)
+						}
+						case "String": {
+							newValue = "L" + new Random().nextInt(Integer.MAX_VALUE);
+						}
+					}
 				
-				// Find a valid substitute:
-				switch (ident.standardizedNodeType) {
-					// A variable declaration with the same type (or method with the right return type and no arguments (not implemented))
-					case ARGUMENT,
-					case EXPRESSION: {
-						
-						// This could also be a parameter of a calling method (not implemented)
-						val declaration = tree.root.depthFirstSearch.findFirst[ n | n.standardizedNodeType == VARIABLE_DECLARATOR
-							&& helper.getAttributeValue(n, "Name") == identName
-						]
-						
-						if(declaration === null) {
-							System.err.println('''Error with «m.name» modification: No Declaration Found For «identName»''')
-						} else {
-							
-							val substitute = tree.root.depthFirstSearch.findFirst[ n | n.standardizedNodeType == VARIABLE_DECLARATOR
-								&& helper.getAttributeValue(declaration, "Type") == helper.getAttributeValue(n, "Type")
-								&& n != declaration
-							]
-							
-							if(substitute === null) {
-								System.err.println('''Error with «m.name» modification: No Substitute Found For «identName»''')
-							} else {
-								newIdent = helper.getAttributeValue(substitute, "Name").toString
-							}
-								
-						}
-					}
-					// A method declaration with the same number of arguments with the same type and the same return type
-					case METHOD_CALL: {
-						throw new UnsupportedOperationException("Not yet implemented")
-					}
-					// Can be safely renamed if it was never called anywhere
-					case METHOD_DECLARATION: {
-						if(tree.getMethodDeclarationCalls(ident).isEmpty) {
-							newIdent = "N" + new Random().nextInt(Integer.MAX_VALUE)
-						} else {
-							System.err.println('''Error with «m.name» modification: Can't Substitute Method Decl «identName», because calls exist''')
-						}
-					}
-					// Can be safely renamed if it was never referenced anywhere
-					case VARIABLE_DECLARATOR: {
-						var references = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
-							&& helper.getAttributeValue(n, "Name") == identName]
-							
-						if(references.empty) {
-							newIdent = "N" + new Random().nextInt(Integer.MAX_VALUE)
-						} else {
-							System.err.println('''Error with «m.name» modification: Can't Substitute Variable Decl «identName», because references exist''')
-						}
-					}
-					default: { }
+					m.tryInvoke(literal, newValue)
 				}
+			}
+			
+			case "changeType": {
+				throw new UnsupportedOperationException("Not yet implemented")
+			}
+			
+			default: {
+				throw new UnsupportedOperationException("Not yet implemented")
+			}
+		}
+	}
+	
+	def performType2ModificationNotSyntaxSafe(Tree tree, Method m) {
+		switch (m.name) {
+			case "refactorIdentifiers": {
+				val declaration = tree.root.depthFirstSearch.filter[ n | 
+					#[ARGUMENT, CLASS, COMPILATION_UNIT, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
+					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
+				].random
 				
-				if(newIdent !== null) {
-					m.tryInvoke(ident, newIdent)
-				}
+				m.tryInvoke(declaration, "I" + new Random().nextInt(Integer.MAX_VALUE))
+			}
+			
+			case "replaceIdentifier": {
+				val ident = tree.root.depthFirstSearch.filter[ n | 
+					#[ARGUMENT, CLASS, COMPILATION_UNIT, EXPRESSION, METHOD_CALL, METHOD_DECLARATION, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) &&
+					!n.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty
+				].random	
+				
+				m.tryInvoke(ident, "N" + new Random().nextInt(Integer.MAX_VALUE))
 			}
 			
 			case "literalChange": {
@@ -159,30 +237,7 @@ class Taxonomy {
 					n.standardizedNodeType == LITERAL
 				].random 
 				
-				val oldValue = helper.getAttributeValue(literal, "Value")
-				var newValue = ""
-				
-				switch (helper.getAttributeValue(literal, "Type")) {
-					case "int",
-					case "long": {
-						var l = Long.parseLong(oldValue.replaceAll("[Ll]",""))
-						var max = Math.min(Math.abs(l), Integer.MAX_VALUE) as int
-						max = max == 0 ? max=Short.MAX_VALUE : max=max // we don't want zero
-						newValue += rng.nextInt(max) * (Math.signum(l) as int)
-					}
-					case "char": {
-						newValue += rng.nextInt(Character.MAX_VALUE) as char
-					}
-					case "double",
-					case "float": {
-						newValue += rng.nextDouble * (Math.signum(Double.parseDouble(oldValue)) as int)
-					}
-					case "String": {
-						newValue = "L" + new Random().nextInt(Integer.MAX_VALUE);
-					}
-				}
-				
-				m.tryInvoke(literal, newValue)
+				m.tryInvoke(literal, "L" + new Random().nextInt(Integer.MAX_VALUE))
 			}
 			
 			case "changeType": {
@@ -192,6 +247,10 @@ class Taxonomy {
 				].random
 				
 				m.tryInvoke(declaration, #["boolean", "int", "String", "float", "Object"].random as String)
+			}
+			
+			default: {
+				throw new UnsupportedOperationException("Not yet implemented")
 			}
 		}
 	}
@@ -227,16 +286,174 @@ class Taxonomy {
 	}
 	
 	/** Returns a random method of clone type III */
-	def getType3Method() {
-		return #[
-			this.class.methods.filter[m | m.name == "add"],
-			this.class.methods.filter[m | m.name == "delete"],
-			this.class.methods.filter[m | m.name == "move"]
-		].flatten.random
+	def getType3Method(boolean isSyntaxSafe) {
+		if(isSyntaxSafe) {
+			return #[
+				this.class.methods.filter[m | m.name == "delete"]
+			].flatten.random
+		} else {
+			return #[
+				this.class.methods.filter[m | m.name == "add"],
+				this.class.methods.filter[m | m.name == "delete"],
+				this.class.methods.filter[m | m.name == "move"]
+			].flatten.random
+		}
 	}
 	
-	def performType3Modification(Tree tree) {	
-		val m = getType3Method()
+	def performType3Modification(Tree tree, boolean isSyntaxSafe) {	
+		val m = getType3Method(isSyntaxSafe)
+		
+		if(isSyntaxSafe) {
+			performType3ModificationSyntaxSave(tree, m)
+		} else {
+			performType3ModificationNotSyntaxSave(tree, m)
+		}
+	}
+	
+	def performType3ModificationSyntaxSave(Tree tree, Method m) {
+		switch (m.name) {
+			case "add": {
+				throw new UnsupportedOperationException("Not yet implemented")
+//				val source = tree.root.depthFirstSearch.filter[n | 
+//					#[ASSIGNMENT, CLASS, CONSTRUCTION, FIELD_DECLARATION,
+//						^IF, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO,
+//						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION
+//					].contains(n.standardizedNodeType)
+//				].random 
+//				
+//				if (source === null) {
+//					System.err.println('''Error with «m.name» modification: No Source found''')
+//					return;
+//				}
+//				
+//				// no containment source<->target
+//				// reasonable target depending on source type
+//				var Node target
+//				switch (source.standardizedNodeType) {
+//					// TODO: scoping -> no redefinition
+//					// BODY, CASE Targets
+//					case ASSIGNMENT,
+//					case ^IF,
+//					case LOOP_COLLECTION_CONTROLLED,
+//					case LOOP_COUNT_CONTROLLED,
+//					case LOOP_DO,
+//					case LOOP_WHILE,
+//					case METHOD_CALL,
+//					case SWITCH,
+//					case TRY,
+//					case VARIABLE_DECLARATION: {
+//						target = tree.root.depthFirstSearch.filter[ n | 
+//							#[BLOCK, CASE].contains(n.standardizedNodeType)
+//							&& n.UUID != source.UUID // Make sure to not target the same node
+//							&& !source.depthFirstSearch.exists[c | c.UUID == n.UUID] // The source is not allowed to contain the target
+//						].random
+//					}
+//					// CU, CLASS Targets
+//					// TODO: Have to be renamed as we assume single files for now
+//					case CONSTRUCTION,
+//					case FIELD_DECLARATION,
+//					case METHOD_DECLARATION,
+//					case CLASS: {
+//						target = tree.root.depthFirstSearch.filter[ n | 
+//							#[COMPILATION_UNIT, CLASS].contains(n.standardizedNodeType)
+//							&& n.UUID != source.UUID // Make sure to not target the same node
+//							&& !source.depthFirstSearch.exists[c | c.UUID == n.UUID] // The source is not allowed to contain the target
+//						].random
+//					}
+//					default: {
+//						System.err.println('''Error with «m.name» modification: Target for source «source.standardizedNodeType» cannot be determined''')
+//						return;
+//					}
+//				}
+//				
+//				if (target === null) {
+//					System.err.println('''Error with «m.name» modification: No target found.''')
+//					return;	
+//				}
+//				
+//				add(source, target)	
+			}
+			case "move": {
+				// For syntax correctness move should satisfy the add and delete conditions
+				throw new UnsupportedOperationException("Not yet implemented")
+			}
+			case "delete": {
+				val target = tree.root.depthFirstSearch.filter[n | 
+					// Assignments, if, loops, switch, try can be deleted safely, method calls
+					#[ASSIGNMENT, CONSTRUCTION, EXPRESSION, FIELD_DECLARATION, 
+						^IF, LITERAL, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO, 
+						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION
+						// , CLASS, ARGUMENT
+					].contains(n.standardizedNodeType) &&
+					// In general subexpressions of any kind can't be deleted safely
+					n.parent.standardizedNodeType != EXPRESSION
+				].random
+				
+				var isViable = false;
+				
+				if (target === null) {
+					System.err.println('''Error with «m.name» modification: No target found''')
+					return;	
+				}
+				
+				// Further restrictions
+				switch (target.standardizedNodeType) {
+					// Only literals at the end of an variable declaration can be deleted safely (-> uninitialized variable)
+					case LITERAL: {
+						if(target.parent.standardizedNodeType == VARIABLE_DECLARATOR) isViable = true;
+					}
+					// Only variable and field declarations that are not referenced (unused) can be deleted safely
+					case VARIABLE_DECLARATION,
+					case FIELD_DECLARATION: {
+						// Uses the name in the variable declarator
+						var references = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
+							&& helper.getAttributeValue(target.children.head, "Name") == helper.getAttributeValue(n, "Name")]
+							
+						if(references.isEmpty) isViable = true;
+					}
+					// Only method declarations that are not called (unused) can be deleted safely
+					case METHOD_DECLARATION: {
+						if(tree.getMethodDeclarationCalls(target).isEmpty) isViable = true;
+					}
+					// Only constructions that are not called anywhere (same arguments) can be deleted safely
+					case CONSTRUCTION: {
+						// So they should not be the type of an object creation expression
+						var calls = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
+							&& helper.getAttributeValue(target, "Name") == helper.getAttributeValue(n, "Type")]
+							
+						if(calls.isEmpty) isViable = true;
+					}
+					case ARGUMENT: {
+						// Only arguments of methods that are not called anywhere (same arguments)
+						// And that are not used in the function below (e.g. as arguments or in expressions) can be deleted safely
+//						if (target.parent.parent.standardizedNodeType == METHOD_DECLARATION) {
+//							if(tree.getMethodDeclarationCalls(target.parent.parent).isEmpty) isViable = true;
+//						}
+						throw new UnsupportedOperationException("Not yet implemented")
+					}
+					// Only classes that are not used (construction, field / variable, type cast, ...) can be deleted safely
+					case CLASS: {
+						throw new UnsupportedOperationException("Not yet implemented")
+					}
+					default: {
+						isViable = true
+					}
+				}
+				
+				if (!isViable) {
+					System.err.println('''Error with «m.name» modification: Target not viable for «target.UUID.toString»''')
+					return;
+				}
+				delete(target)
+			}
+			
+			default: {
+				throw new UnsupportedOperationException("Not yet implemented")
+			}
+		}
+	}
+	
+	def performType3ModificationNotSyntaxSave(Tree tree, Method m) {
 		switch (m.name) {
 			case "add",
 			case "move": {
@@ -308,72 +525,23 @@ class Taxonomy {
 			}
 			case "delete": {
 				val target = tree.root.depthFirstSearch.filter[n | 
-					// Assignments, if, loops, switch, try can be deleted safely, method calls
-					#[ASSIGNMENT, CONSTRUCTION, EXPRESSION, FIELD_DECLARATION, 
+					#[ASSIGNMENT, ARGUMENT,	CLASS, CONSTRUCTION, EXPRESSION, FIELD_DECLARATION, 
 						^IF, LITERAL, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO, 
 						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION
-						// , CLASS, ARGUMENT
 					].contains(n.standardizedNodeType) &&
-					// In general subexpressions of any kind can't be deleted safely
-					n.parent.standardizedNodeType != EXPRESSION
+					// Only root expressions may be deleted safely
+					(n.standardizedNodeType != EXPRESSION || n.parent.standardizedNodeType != EXPRESSION)
 				].random
-				
-				var isViable = false;
 				
 				if (target === null) {
 					System.err.println('''Error with «m.name» modification: No target found''')
 					return;	
 				}
-				
-				// Further restrictions
-				switch (target.standardizedNodeType) {
-					// Only literals at the end of an variable declaration can be deleted safely (-> uninitialized variable)
-					case LITERAL: {
-						if(target.parent.standardizedNodeType == VARIABLE_DECLARATOR) isViable = true;
-					}
-					// Only variable and field declarations that are not referenced (unused) can be deleted safely
-					case VARIABLE_DECLARATION,
-					case FIELD_DECLARATION: {
-						// Uses the name in the variable declarator
-						var references = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
-							&& helper.getAttributeValue(target.children.head, "Name") == helper.getAttributeValue(n, "Name")]
-							
-						if(references.isEmpty) isViable = true;
-					}
-					// Only method declarations that are not called (unused) can be deleted safely
-					case METHOD_DECLARATION: {
-						if(tree.getMethodDeclarationCalls(target).isEmpty) isViable = true;
-					}
-					// Only constructions that are not called anywhere (same arguments) can be deleted safely
-					case CONSTRUCTION: {
-						// So they should not be the type of an object creation expression
-						var calls = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
-							&& helper.getAttributeValue(target, "Name") == helper.getAttributeValue(n, "Type")]
-							
-						if(calls.isEmpty) isViable = true;
-					}
-					case ARGUMENT: {
-						// Only arguments of methods that are not called anywhere (same arguments)
-						// And that are not used in the function below (e.g. as arguments or in expressions) can be deleted safely
-//						if (target.parent.parent.standardizedNodeType == METHOD_DECLARATION) {
-//							if(tree.getMethodDeclarationCalls(target.parent.parent).isEmpty) isViable = true;
-//						}
-						throw new UnsupportedOperationException("Not yet implemented")
-					}
-					// Only classes that are not used (construction, field / variable, type cast, ...) can be deleted safely
-					case CLASS: {
-						throw new UnsupportedOperationException("Not yet implemented")
-					}
-					default: {
-						isViable = true
-					}
-				}
-				
-				if (!isViable) {
-					System.err.println('''Error with «m.name» modification: Target not viable for «target.UUID.toString»''')
-					return;
-				}
 				delete(target)
+			}
+			
+			default: {
+				throw new UnsupportedOperationException("Not yet implemented")
 			}
 		}
 	}
