@@ -18,6 +18,7 @@ public class TaxonomyNodeComparison extends AbstractComparsion<Node>{
 	 * 
 	 */
 	private static final long serialVersionUID = 4156127856862331254L;
+	private int numberOfChildComparisons = 0;
 
 	/**
 	 * @param leftArtifact
@@ -62,10 +63,16 @@ public class TaxonomyNodeComparison extends AbstractComparsion<Node>{
 	public float getChildSimilarity() {
 		float childSimilarity = 0f;
 		// call update similarity recursively on all child comparison
+		System.out.println("_____________");
 		for (Comparison<Node> childComparison : getChildComparisons()) {
+			System.out.println("Child Similarity: "+ childComparison.getLeftArtifact().getNodeType()+", "+childComparison.getRightArtifact().getNodeType()); // test
 			childComparison.updateSimilarity();
 			childSimilarity += childComparison.getSimilarity();
+			numberOfChildComparisons++;
 		}
+		
+		System.out.println("C = " + numberOfChildComparisons);
+		
 		// calculate the average value
 		if (!getChildComparisons().isEmpty()) {
 			return childSimilarity / getChildComparisons().size();
@@ -73,6 +80,7 @@ public class TaxonomyNodeComparison extends AbstractComparsion<Node>{
 			//if empty they are similar
 			return (getLeftArtifact()== null || getRightArtifact() == null) ? 0f : 1f;
 		}
+		
 	}
 	
 	@Override

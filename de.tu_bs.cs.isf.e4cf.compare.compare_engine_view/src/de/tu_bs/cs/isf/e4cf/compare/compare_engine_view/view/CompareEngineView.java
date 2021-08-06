@@ -50,7 +50,7 @@ public class CompareEngineView implements Initializable {
 
 	public List<FileTreeElement> artifactFileTrees = new ArrayList<FileTreeElement>();
 	
-	private boolean asymmetry = false;
+	private boolean asymmetry = true;
 
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
@@ -126,8 +126,13 @@ public class CompareEngineView implements Initializable {
 				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 
-				// Send prepared graph to GraphView listener for display
-				services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapRelationshipGraph); 
+				if (artifactGraph.mindMapRelationshipGraph.getChildElements().size() >= 2) {
+					// Send prepared graph to GraphView subscriber for display
+					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapRelationshipGraph); 
+				} else {
+					// Send prepared empty graph to GraphView subscriber to update user
+					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapNoMatchGraph);
+				}
 				
 				// Display Graph View
 				services.partService.showPart(GraphStringTable.GRAPH_VIEW); 
@@ -157,8 +162,13 @@ public class CompareEngineView implements Initializable {
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 				artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
 				
-				// Send prepared graph to GraphView listener for display
-				services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapTaxonomyGraph); 
+				if (artifactGraph.mindMapTaxonomyGraph.getChildElements().size() >= 2) {
+					// Send prepared graph to GraphView subscriber for display
+					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapTaxonomyGraph); 
+				} else {
+					// Send prepared empty graph to GraphView subscriber to update user
+					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapNoMatchGraph);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

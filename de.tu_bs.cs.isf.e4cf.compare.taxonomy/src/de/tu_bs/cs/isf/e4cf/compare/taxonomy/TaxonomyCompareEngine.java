@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.taxonomy;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
@@ -91,31 +92,49 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	@Override
 	public Tree compare(List<Tree> variants) {
 		Tree mergedTree = null;
-		variants.stream().forEach(artifactLeft -> {
-			variants.stream().forEach(artifactRight -> {
-				if (artifactLeft != artifactRight) {
+		if (asymmetry) {
+			variants.stream().forEach(artifactLeft -> {
+				variants.stream().forEach(artifactRight -> {
+					if (artifactLeft != artifactRight) {
 						// Add Comparison to List for GraphView
 						currentLeftArtifact = artifactLeft;
 						currentRightArtifact = artifactRight;
-						TaxonomyNodeComparison root = compare(artifactLeft.getRoot(), artifactRight.getRoot());
-						root.updateSimilarity();
-						getTaxonomyMatcher().calculateMatching(root);
-						root.updateSimilarity();
-						addArtifactComparisonsForGraph(root, artifactLeft.getTreeName(), artifactRight.getTreeName());
-				}
+						compare(artifactLeft.getRoot(), artifactRight.getRoot());
+					}
+				});
 
+				taxonomyResultEngine.matchNodes();
+				artifactIndexCounter++; // Increment artifact/variant counter by one
 			});
+
+		} else {
+			int variantsSize = variants.size();
+			for (int i = 0; i < variantsSize-1; i++) {
+				// Add Comparison to List for GraphView
+				currentLeftArtifact = variants.get(i);
+				currentRightArtifact = variants.get(i + 1);
+				compare(currentLeftArtifact.getRoot(), currentRightArtifact.getRoot());
+				
+				taxonomyResultEngine.matchNodes();
+				artifactIndexCounter++; // Increment artifact/variant counter by one
+			}
 			
-			artifactIndexCounter++; // Increment artifact/variant counter by one
-		});
-		
-		if (asymmetry) {
-			taxonomyResultEngine.matchNodes();
-			taxonomyResultEngine.createRefinedListofNodes();
-			taxonomyResultEngine.computeWeightedSimilarity();
-			artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
+			if (variants.size() > 2) {
+				// Compare First and Last
+				currentLeftArtifact = variants.get(0);
+				currentRightArtifact = variants.get(variantsSize-1);
+				compare(currentLeftArtifact.getRoot(), currentRightArtifact.getRoot());
+				taxonomyResultEngine.matchNodes();
+			}
+			
+
 		}
 		
+		// Finalize Matching
+		taxonomyResultEngine.createRefinedListofNodes();
+		taxonomyResultEngine.computeWeightedSimilarity();
+		artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
+
 		return mergedTree;
 	}
 

@@ -7,5 +7,6 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/olant/Desktop/thesis-playground/gson-2.6.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

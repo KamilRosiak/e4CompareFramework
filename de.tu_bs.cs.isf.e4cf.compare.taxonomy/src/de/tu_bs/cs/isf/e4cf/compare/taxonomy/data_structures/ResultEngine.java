@@ -30,7 +30,7 @@ public class ResultEngine {
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
-	private static final float SIMILARITY_THRESHOLD = 0.4f;
+	private static final float SIMILARITY_THRESHOLD = 0.9f;
 
 	public ResultEngine() {
 
@@ -74,7 +74,7 @@ public class ResultEngine {
 	private void applyThresholdMatching(List<NodeComparisonResult> selectedListOfComparedNodes) {
 		for (NodeComparisonResult aComparedNodesTuple : selectedListOfComparedNodes) {
 			// Remove Matching which are lower than threshold
-			if (aComparedNodesTuple.getSimilarity() <= this.SIMILARITY_THRESHOLD) {
+			if (aComparedNodesTuple.getSimilarity() <= ResultEngine.SIMILARITY_THRESHOLD) {
 				listOfComparedNodesRemoved.add(aComparedNodesTuple);
 			}
 		}
@@ -90,7 +90,7 @@ public class ResultEngine {
 	 * similarity value
 	 */
 	public void matchNodes() {
-		applyThresholdMatching(listOfComparedNodes); // Remove Node comparisons that do not meet threshold
+		applyThresholdMatching(listOfComparedNodes); // Remove Node comparisons that do not meet threshold (under matched or only matched by type)
 		while (directResultMapping.size() > 0) {
 			ResultMapping resultMap = directResultMapping.get(0);
 			if (resultMap.getMappedResults().size() == 0) {
@@ -124,7 +124,9 @@ public class ResultEngine {
 	 */
 	public void createRefinedListofNodes() {
 		for (SimpleResult aSimpleResult : matchingVariantSetMapping) {
+//			System.out.println("Left: "+ aSimpleResult.getLeftNode() +" - Right: "+ aSimpleResult.getRightNode() +", Similarity: "+aSimpleResult.getSimilarity());
 			for (NodeComparisonResult aNodeComparison : listOfComparedNodes) {
+//				System.out.println("locN: Left: "+ aNodeComparison.getLeftNodeSignature() +" - Right: "+ aNodeComparison.getRightNodeSignature() +", Similarity: "+aSimpleResult.getSimilarity());
 				if (aNodeComparison.getLeftNodeSignature().equals(aSimpleResult.getLeftNode())
 						&& aNodeComparison.getRightNodeSignature().equals(aSimpleResult.getRightNode())
 						&& aNodeComparison.getSimilarity() == aSimpleResult.getSimilarity()) {
@@ -142,7 +144,8 @@ public class ResultEngine {
 			float comparisonWeightedSimilarity = 0.0f;
 			comparisonWeightedSimilarity = comparedNodes.getLeftNodeWeight() * comparedNodes.getSimilarity();
 			comparedNodes.setWeightedSimilarity(comparisonWeightedSimilarity);
-
+//			System.out.println();
+//			System.out.println("Left: "+comparedNodes.getLeftNodeSignature() +" - "+ comparedNodes.getLeftNode().getNodeType() +", Right Node: "+comparedNodes.getRightNodeSignature()+" - "+ comparedNodes.getRightNode().getNodeType());
 			addToCumulativeComparisons(comparedNodes.getArtifactOfLeftNode(), comparedNodes.getArtifactOfRightNode(),
 					comparedNodes.getWeightedSimilarity());
 		}

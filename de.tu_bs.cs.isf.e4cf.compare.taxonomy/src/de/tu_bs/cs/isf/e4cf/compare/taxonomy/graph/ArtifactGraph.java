@@ -33,11 +33,22 @@ public class ArtifactGraph {
 
 	public SimpleGraph mindMapRelationshipGraph;
 	public SimpleGraph mindMapTaxonomyGraph;
+	
+	public SimpleGraph mindMapNoMatchGraph;
 
 	public ArtifactGraph(List<ArtifactComparison> _artifactComparisonList) {
 		mindMapRelationshipGraph = new SimpleGraph();
 		mindMapTaxonomyGraph = new SimpleGraph();
 		artifactComparisonList = _artifactComparisonList;
+		
+		// Instantiate Empty Map (In case of no match)
+		mindMapNoMatchGraph = new SimpleGraph();
+		GraphNode noMatchNode = new GraphNode();
+		noMatchNode.setTitle("NO MATCH");
+		noMatchNode.setDescription("The artifacts similarites do not meet threshold value");
+		noMatchNode.setColor(Color.GREENYELLOW);
+		noMatchNode.setBounds(new Rectangle(474, 50, WIDTH, 100));
+		mindMapNoMatchGraph.addChildElement(noMatchNode);
 	}
 	
 	/**
@@ -416,7 +427,7 @@ public class ArtifactGraph {
 	private GraphNode createGraphNode(Node artifact, String artifactName) {
 		GraphNode center = new GraphNode();
 		center.setTitle(artifact.getNodeType());
-		center.setDescription(artifactName);
+		center.setDescription((System.identityHashCode(artifact) +"-"+ artifactName));
 		center.setColor(Color.ALICEBLUE);
 		//center.setBounds(new Rectangle(50 + (xAxisOffset * 200), 50 + (yAxisOffset * 550), WIDTH, 90));
 		center.setBounds(new Rectangle(250, 550 + yAxisOffset, WIDTH, 90));

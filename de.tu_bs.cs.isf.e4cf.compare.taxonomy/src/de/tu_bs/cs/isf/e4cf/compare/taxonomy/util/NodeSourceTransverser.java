@@ -25,12 +25,12 @@ public class NodeSourceTransverser {
 		
 		for (Attribute nodeAttribute : nodeToTransverse.getAttributes()) {
 			List<Value> nodeSource = nodeAttribute.getAttributeValues();
-			nodeSourceCode += " " + joinAttributes(nodeSource);
+			nodeSourceCode += "" + joinAttributes(nodeSource);
 		}
 
 		if (!nodeToTransverse.getChildren().isEmpty()) {
 			for (Node childNode : nodeToTransverse.getChildren()) {
-				nodeSourceCode += " " + getNodeSourceRecursive(childNode);
+				nodeSourceCode += "" + getNodeSourceRecursive(childNode);
 			}
 		}
 
@@ -43,7 +43,7 @@ public class NodeSourceTransverser {
 		
 		for (Attribute nodeAttribute : nodeToTransverse.getAttributes()) {
 			List<Value> nodeSource = nodeAttribute.getAttributeValues();
-			nodeSourceCode += " " + joinAttributes(nodeSource);
+			nodeSourceCode += "" + joinAttributes(nodeSource);
 		}
 		return nodeSourceCode;
 	}
