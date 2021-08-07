@@ -53,7 +53,7 @@ class CloneGenerator {
 				for (var mod = 1; mod <= numModifications; mod++) {
 					
 					// Determine Type
-					if (new Random().nextInt(100) <= options.modificationRatioPercentage) {
+					if (new Random().nextInt(100) < options.modificationRatioPercentage) {
 						// Type II Modification
 						taxonomy.performType2Modification(currentTree, options.isSyntaxSafe)
 					} else {

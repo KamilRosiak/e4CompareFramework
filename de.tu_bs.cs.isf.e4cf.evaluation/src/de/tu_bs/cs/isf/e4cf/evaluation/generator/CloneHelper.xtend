@@ -254,8 +254,6 @@ class CloneHelper {
 		]
 	}
 	
-	// TODO: Create Nodes Function from Seed-Repository
-	
 	// Refactoring
 	
 	

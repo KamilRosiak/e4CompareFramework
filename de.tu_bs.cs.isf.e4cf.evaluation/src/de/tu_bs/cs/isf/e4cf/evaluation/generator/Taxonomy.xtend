@@ -5,6 +5,8 @@ package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager
+import java.io.File
 import java.lang.reflect.Method
 import java.util.Random
 import javax.inject.Inject
@@ -22,6 +24,26 @@ class Taxonomy {
 	
 	@Inject CloneHelper helper;
 	@Inject CloneLogger logger;
+	
+	/**
+	 * Static initializer only executed once
+	 * Reads in the clone repository
+	 */
+	static val CLONE_REPOSITORY = {
+		var map = newHashMap
+		var path = "resources/clone_repository"
+		
+		var f = new File(Taxonomy.getProtectionDomain().getCodeSource().getLocation().getPath() + path);
+		for (File file : f.listFiles) {
+		    if (file.isFile) {
+				var input = new de.tu_bs.cs.isf.e4cf.core.file_structure.components.File(f.toPath.resolve(file.getName).toString)
+				var tree = new ReaderManager().readFile(input)
+				map.put(file.getName, tree)
+		    }
+		}
+		
+		map
+	}
 	
 	// ==========================================================
 	// TYPE I
@@ -285,14 +307,22 @@ class Taxonomy {
 		helper.move(source, target, index)
 	}
 	
+	/** Adds a given source Node composition from the repository to the target Node at specified index */
+	def addFromRepository(Node source, Node target) {
+		logger.logRaw(TAX_ADD_REPO)
+		helper.copyRecursively(source, target)
+	}
+	
 	/** Returns a random method of clone type III */
 	def getType3Method(boolean isSyntaxSafe) {
 		if(isSyntaxSafe) {
 			return #[
+				this.class.methods.filter[m | m.name == "addFromRepository"],
 				this.class.methods.filter[m | m.name == "delete"]
 			].flatten.random
 		} else {
 			return #[
+				this.class.methods.filter[m | m.name == "addFromRepository"],
 				this.class.methods.filter[m | m.name == "add"],
 				this.class.methods.filter[m | m.name == "delete"],
 				this.class.methods.filter[m | m.name == "move"]
@@ -447,6 +477,10 @@ class Taxonomy {
 				delete(target)
 			}
 			
+			case "addFromRepository": {
+				addFromRepository(tree, m, true)
+			}
+			
 			default: {
 				throw new UnsupportedOperationException("Not yet implemented")
 			}
@@ -540,6 +574,10 @@ class Taxonomy {
 				delete(target)
 			}
 			
+			case "addFromRepository": {
+				addFromRepository(tree, m, false)
+			}
+			
 			default: {
 				throw new UnsupportedOperationException("Not yet implemented")
 			}
@@ -554,5 +592,56 @@ class Taxonomy {
 			&& n.children.head.children.size == methodDecl.children.head.children.size
 			// Ideal check same attribute types here
 			]
-	}	
+	}
+	
+	/**
+	 * Choose a random code repository tree,
+	 * then choose a random method or class to be added to the current variant
+	 * This is syntax save as we assume that the methods and classes are side effect free
+	 */
+	def addFromRepository(Tree tree, Method m, boolean isSyntaxSafe) {
+		val sourceRepoTree = CLONE_REPOSITORY.values.random
+		
+		val source = sourceRepoTree.root.depthFirstSearch.filter[n | 
+			#[METHOD_DECLARATION, CLASS].contains(n.standardizedNodeType)
+		].random
+		
+		if (source === null) {
+			System.err.println('''Error with «m.name» modification: No Source found''')
+			return;
+		}
+		
+		// Get a valid target
+		var Node target
+		switch (source.standardizedNodeType) {
+			case METHOD_DECLARATION,
+			case CLASS: {
+				
+				if(isSyntaxSafe) {
+					target = tree.root.depthFirstSearch.filter[ n | 
+						#[COMPILATION_UNIT, CLASS].contains(n.standardizedNodeType) &&
+						// Ensure that the fragment was not added to the same target already
+						!n.children.exists[
+							c  | c.standardizedNodeType == source.standardizedNodeType &&
+							helper.getAttributeValue(c, "Name") == helper.getAttributeValue(source, "Name")]
+					].random
+				} else {
+					target = tree.root.depthFirstSearch.filter[ n | 
+						#[COMPILATION_UNIT, CLASS].contains(n.standardizedNodeType)
+					].random
+				}
+			}
+			default: {
+				System.err.println('''Error with «m.name» modification: Target for source «source.standardizedNodeType» cannot be determined''')
+				return;
+			}
+		}
+		
+		if (target === null) {
+			System.err.println('''Error with «m.name» modification: No target found.''')
+			return;	
+		}
+		
+		addFromRepository(source, target)
+	}
 }

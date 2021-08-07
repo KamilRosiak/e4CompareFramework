@@ -38,6 +38,7 @@ public class CloneST {
 	public static final String TAX_ADD = TAX + "AddSubtree";
 	public static final String TAX_MOVE = TAX + "MoveSubtree";
 	public static final String TAX_DELETE = TAX + "DeleteSubtree";
+	public static final String TAX_ADD_REPO = TAX + "AddFromRepository";
 	
 	// Variant Functions
 	public static final String LOG_SEPARATOR = "==========================================================";
