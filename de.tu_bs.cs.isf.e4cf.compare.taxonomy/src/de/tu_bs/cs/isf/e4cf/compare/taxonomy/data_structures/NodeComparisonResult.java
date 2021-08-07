@@ -3,8 +3,6 @@
  */
 package de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures;
 
-import java.util.List;
-
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;

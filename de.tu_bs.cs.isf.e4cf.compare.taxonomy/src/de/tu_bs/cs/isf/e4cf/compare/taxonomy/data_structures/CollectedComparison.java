@@ -6,6 +6,7 @@ package de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 
 /**
+ * Identifies and Collects compared nodes into their respective variants
  * @author developer-olan
  *
  */

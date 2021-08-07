@@ -1,16 +1,18 @@
 /**
  * 
  */
-package de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures;
+package de.tu_bs.cs.isf.e4cf.compare.taxonomy.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparison.TaxonomyNodeComparison;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.CollectedComparison;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.NodeComparisonResult;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ResultMapping;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.SimpleResult;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
 
 /**
@@ -30,7 +32,7 @@ public class ResultEngine {
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
-	private static final float SIMILARITY_THRESHOLD = 0.9f;
+	private static final float SIMILARITY_THRESHOLD = 0.95f;
 
 	public ResultEngine() {
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ArtifactFileDetails;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.VariantTaxonomyNode;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.util.TaxonomyToJSON;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.graph.core.elements.model.GraphEdge;
 import de.tu_bs.cs.isf.e4cf.graph.core.elements.model.GraphNode;
@@ -30,11 +32,15 @@ public class ArtifactGraph {
 	// Taxonomy Graph class attributes
 	public List<GraphNode> taxonomyArtifactNodes = new ArrayList<GraphNode>();
 	public List<GraphEdge> taxonomyArtifactEdges = new ArrayList<GraphEdge>();
-
+	
+	// Graph Objects
 	public SimpleGraph mindMapRelationshipGraph;
 	public SimpleGraph mindMapTaxonomyGraph;
-	
 	public SimpleGraph mindMapNoMatchGraph;
+	
+	// VariantTaxonomy
+	public VariantTaxonomyNode taxonomyNode; 
+	public TaxonomyToJSON taxonomyToJSON; 
 
 	public ArtifactGraph(List<ArtifactComparison> _artifactComparisonList) {
 		mindMapRelationshipGraph = new SimpleGraph();
@@ -97,12 +103,11 @@ public class ArtifactGraph {
 	 * @return
 	 */
 	public SimpleGraph setUpTaxonomyGraph() {
-		
 		// Identify Root Node
 		GraphNode rootNode = IdentifyRootNode();
 		
 		if (rootNode != null) {
-			
+			taxonomyNode = new VariantTaxonomyNode(rootNode.getDescription(), 0); // Create TaxonomyNode for JSON export
 			// Remove Root Node from the rest
 			allArtifactNodes.remove(rootNode);
 			removeEdgesWithTarget(rootNode);
@@ -112,6 +117,10 @@ public class ArtifactGraph {
 
 			// Add Child Elements Taxonomy Map
 			addAllChildElementsToTaxonomyGraphMap();
+			
+			// Add all Taxonomy Nodes to Graph
+			taxonomyToJSON = new TaxonomyToJSON(); 
+			taxonomyToJSON.convertToJSON(taxonomyNode);
 		}
 		else {
 			
@@ -157,7 +166,12 @@ public class ArtifactGraph {
 
 			// Get the mostSimilar Node out of the List of Similar Nodes
 			childNode = getNodeWithHighestSimilarity(parentNode, mostSimilarNodes);
-
+			
+			// Add ChildNode to Taxonomy Representation 
+			if (childNode != null) {
+				taxonomyNode.addChildNodeFromRoot(childNode.getDescription(), parentNode.getDescription());
+			}
+			
 			// Change Parent Color
 			if (!rootNode) {
 				parentNode.setColor(Color.rgb(91, 127, 255 - colorShade >= 0 ? 255 - colorShade : 0 ));
@@ -255,7 +269,7 @@ public class ArtifactGraph {
 	}
 
 	/***
-	 * Identifies and Returns Root node from a list of compared Artifacts
+	 * Identifies and Returns Root node(s) from a list of compared Artifacts
 	 * 
 	 * @return GraphNode
 	 */
@@ -321,7 +335,7 @@ public class ArtifactGraph {
 			// iterate through list of all artifact file details
 			for (ArtifactFileDetails anArtifactFileDetails : allArtifactFileDetails) {
 				// Find the right artifactFile detail and extract the number of characters
-				if (aPotentialRootNode.getDescription().equals(anArtifactFileDetails.getArtifactName())) {
+				if (aPotentialRootNode.getDescription().substring(0, 3).equals(anArtifactFileDetails.getArtifactID().substring(0, 3))) {
 					// If number of characters of variant lower than previously calculated
 					if (anArtifactFileDetails.getNumberOfCharacters() < rootVariantSize) {
 						// Update rootVariantSize
@@ -425,15 +439,17 @@ public class ArtifactGraph {
 	 * @return
 	 */
 	private GraphNode createGraphNode(Node artifact, String artifactName) {
+		String artifactID = String.valueOf(System.identityHashCode(artifact)).substring(0, 3); 
+		findAndUpdateArtifactID(artifact, artifactName, artifactID); // Update Artifact of the Node
 		GraphNode center = new GraphNode();
 		center.setTitle(artifact.getNodeType());
-		center.setDescription((System.identityHashCode(artifact) +"-"+ artifactName));
+		center.setDescription(artifactID +"-"+ artifactName);
 		center.setColor(Color.ALICEBLUE);
 		//center.setBounds(new Rectangle(50 + (xAxisOffset * 200), 50 + (yAxisOffset * 550), WIDTH, 90));
-		center.setBounds(new Rectangle(250, 550 + yAxisOffset, WIDTH, 90));
+		center.setBounds(new Rectangle(250, 550 + this.yAxisOffset, WIDTH, 90));
 
-		xAxisOffset += 20;
-		yAxisOffset += 20;
+		this.xAxisOffset += 20;
+		this.yAxisOffset += 20;
 		return center;
 	}
 
@@ -445,6 +461,21 @@ public class ArtifactGraph {
 	public void deriveArtifactDetails(List<FileTreeElement> allArtifactTreeElements) {
 		for (FileTreeElement anArtifactFileTreeElement : allArtifactTreeElements) {
 			allArtifactFileDetails.add(new ArtifactFileDetails(anArtifactFileTreeElement));
+		}
+	}
+	
+	/**
+	 * Gets and Updates artifact ID of Artifact Details of a RootNode
+	 * TODO: Update method to account for artifacts with same name
+	 * @param artifact
+	 * @param artifactID
+	 */
+	public void findAndUpdateArtifactID(Node artifact, String artifactName, String artifactID) {
+		for (ArtifactFileDetails anArtifactFileDetails : allArtifactFileDetails) {
+			if (anArtifactFileDetails.getArtifactName().equals(artifactName)) {
+				anArtifactFileDetails.setArtifactID(artifactID);
+				break;
+			}
 		}
 	}
 

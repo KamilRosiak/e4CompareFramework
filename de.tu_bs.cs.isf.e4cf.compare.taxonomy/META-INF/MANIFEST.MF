@@ -18,3 +18,4 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare.taxonomy,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics
+Bundle-ActivationPolicy: lazy

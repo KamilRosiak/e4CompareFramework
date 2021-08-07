@@ -6,8 +6,6 @@ package de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
-
 /**
  * @author developer-olan
  *

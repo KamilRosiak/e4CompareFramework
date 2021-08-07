@@ -17,10 +17,10 @@ import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.SimpleStringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparison.TaxonomyNodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ArtifactFileDetails;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.NodeComparisonResult;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ResultEngine;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMetric;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.util.ResultEngine;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 

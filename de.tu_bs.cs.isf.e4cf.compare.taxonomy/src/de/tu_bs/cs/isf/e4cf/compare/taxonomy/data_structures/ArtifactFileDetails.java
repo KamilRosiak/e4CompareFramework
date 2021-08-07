@@ -16,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 public class ArtifactFileDetails {
 	private FileTreeElement artifactFileTreeElement;
 	private String artifactName;
+	private String artifactID;
 	private String artifactPath;
 	private int artifactLinesOfCode;
 	private int numberOfCharactersInArtifact;
@@ -81,10 +82,17 @@ public class ArtifactFileDetails {
 
 		return numberOfCharacters;
 	}
+	
+	/**
+	 * Returns ID of artifact
+	 * @return <String> artifactID
+	 */
+	public String getArtifactID() {
+		return this.artifactID;
+	}
 
 	/**
 	 * Gets the file name of the specified variant
-	 * 
 	 * @return
 	 */
 	public String getArtifactName() {
@@ -128,6 +136,10 @@ public class ArtifactFileDetails {
 			numberOfChildren = artifactFileTreeElement.getChildren().size();
 		}
 		return numberOfChildren;
+	}
+	
+	public void setArtifactID(String newID) {
+		this.artifactID = newID;
 	}
 
 }

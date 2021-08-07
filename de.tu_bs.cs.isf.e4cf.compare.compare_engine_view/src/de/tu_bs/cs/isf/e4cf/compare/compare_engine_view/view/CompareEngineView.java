@@ -162,7 +162,7 @@ public class CompareEngineView implements Initializable {
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 				artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
 				
-				if (artifactGraph.mindMapTaxonomyGraph.getChildElements().size() >= 2) {
+				if (artifactGraph.mindMapTaxonomyGraph.getChildElements().size() >= 1) {
 					// Send prepared graph to GraphView subscriber for display
 					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapTaxonomyGraph); 
 				} else {
