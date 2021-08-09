@@ -64,7 +64,6 @@ import com.github.javaparser.ast.nodeTypes.NodeWithArguments;
 import com.github.javaparser.ast.nodeTypes.NodeWithBlockStmt;
 import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.nodeTypes.NodeWithCondition;
-import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
 import com.github.javaparser.ast.nodeTypes.NodeWithOptionalBlockStmt;
 import com.github.javaparser.ast.nodeTypes.NodeWithParameters;
 import com.github.javaparser.ast.nodeTypes.NodeWithStatements;
@@ -418,9 +417,6 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 			 * value. In this case the attribute contains the body of the lambda expr.
 			 */
 			jpNode = new LambdaExpr().setEnclosingParameters(attributes.isEnclosingParameters());
-			if (attributes.getValue() != null) {
-				((LambdaExpr) jpNode).setBody(new ExpressionStmt(attributes.getValue()));
-			}
 			break;
 		case LineComment:
 			jpNode = new LineComment(attributes.getComment());
@@ -562,7 +558,7 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 		default:
 			// Switch Expression Broken in GitHub Javaparser
 			// Unlisted Types may be ignored because they are only logical containers in e4cf
-//			System.out.println("Ignored NodeType: " + e4Node.getNodeType());
+			//System.out.println("Ignored NodeType: " + e4Node.getNodeType());
 			break;
 		}
 		
@@ -614,11 +610,11 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 			return;
 		}
 		
-		// No self-references
-//		FIXME ArrayInitializer Expressions make this statement true but can indeed be attached to each other
-//		if (p.equals(c)) {
-//			throw new UnsupportedOperationException("Can not attach a node to itself: " + p.toString());
-//		}
+		/* Self-References may occur, see ArrayInitializerExpr
+		if (p.equals(c)) {
+			throw new UnsupportedOperationException("Can not attach a node to itself: " + p.toString());
+		}
+		*/
 		
 		// Set general parent, does not seems to affect anything
 		c.setParentNode(p);
@@ -636,10 +632,6 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 		{
 			((EnumDeclaration) p).addEntry((EnumConstantDeclaration) c);
 		}
-		else if (p instanceof SynchronizedStmt && c instanceof BlockStmt) 
-		{
-			((SynchronizedStmt) p).setBody((BlockStmt) c);
-		}
 		else if (p instanceof LabeledStmt && c instanceof Statement) 
 		{
 			((LabeledStmt) p).setStatement((Statement) c);
@@ -655,10 +647,6 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 		else if (p instanceof LambdaExpr && c instanceof Statement) 
 		{
 			((LambdaExpr) p).setBody((Statement) c);
-		}
-		else if (p instanceof LambdaExpr && c instanceof Expression) 
-		{
-			((LambdaExpr) p).setBody(new ExpressionStmt((Expression) c));
 		}
 		else if (p instanceof TypeDeclaration && c instanceof BodyDeclaration) 
 		{
@@ -702,10 +690,6 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 		{
 			((UnaryExpr) p).setExpression((Expression) c);
 		}
-		else if (p instanceof NodeWithStatements && c instanceof VariableDeclarator) 
-		{
-			((NodeWithStatements) p).addStatement(new VariableDeclarationExpr((VariableDeclarator) c));
-		}
 		else if (p instanceof NodeWithStatements && c instanceof Statement) 
 		{
 			((NodeWithStatements) p).addStatement((Statement) c);
@@ -717,10 +701,6 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 		else if (p instanceof NodeWithParameters && c instanceof Parameter) 
 		{
 			((NodeWithParameters) p).addParameter((Parameter) c);
-		}
-		else if (p instanceof NodeWithMembers && c instanceof MethodDeclaration) 
-		{
-			((NodeWithMembers<?>) p).addMember((MethodDeclaration) c);
 		}
 		else if (p instanceof NormalAnnotationExpr && c instanceof MemberValuePair) 
 		{
@@ -750,28 +730,10 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 		{
 			// IfStmt logic is done in then andelse
 		}
-		else if (p instanceof IfStmt && c instanceof Statement) 
-		{
-			((IfStmt) p).setThenStmt((Statement) c);
-		}
-		else if (p instanceof IfStmt && c instanceof Expression) 
-		{
-			((IfStmt) p).setThenStmt(new ExpressionStmt((Expression) c));
-		}
 		else if (p instanceof NodeWithArguments && c instanceof Expression) 
 		{
 			// This occurs with method calls
 			((NodeWithArguments)p).addArgument((Expression)c);
-		}
-		else if (p instanceof ObjectCreationExpr && c instanceof BodyDeclaration) 
-		{
-			((ObjectCreationExpr) p).addAnonymousClassBody((BodyDeclaration<?>) c);
-		}
-		else if (p instanceof EnumConstantDeclaration && c instanceof BodyDeclaration) 
-		{
-			NodeList<BodyDeclaration<?>> classBody = ((EnumConstantDeclaration)p).getClassBody();
-			classBody.add((BodyDeclaration<?>) c);
-			((EnumConstantDeclaration) p).setClassBody(classBody);
 		}
 		else if (p instanceof VariableDeclarator && c instanceof Expression) 
 		{
@@ -787,10 +749,6 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 		{
 			((ArrayCreationExpr)p).getLevels().add((ArrayCreationLevel) c);
 		}
-		else if (p instanceof ArrayCreationExpr && c instanceof ArrayInitializerExpr) 
-		{
-			((ArrayCreationExpr)p).setInitializer((ArrayInitializerExpr) c);
-		}
 		else if (p instanceof ArrayCreationLevel && c instanceof Expression) 
 		{
 			((ArrayCreationLevel)p).setDimension((Expression) c);
@@ -798,10 +756,6 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 		else if (p instanceof ArrayInitializerExpr && c instanceof Expression) 
 		{
 			((ArrayInitializerExpr)p).getValues().add((Expression) c);
-		}
-		else if (p instanceof ArrayAccessExpr && c instanceof Expression) 
-		{
-			((ArrayAccessExpr)p).setIndex((Expression) c);
 		}
 		else if (p instanceof ReturnStmt && c instanceof Expression) 
 		{
