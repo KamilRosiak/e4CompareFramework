@@ -38,6 +38,8 @@ public enum NodeType {
 	 * Addition of source code artifacts to a compilation unit
 	 */
 	INCLUDE,
+	/** Used to group expressions in count controlled for statements. Sometimes necessary to differentiate between init, update and body*/
+	INITIALIZATION,
 	INTERFACE,
 	/** 
 	 * Used to express a conjunction of some sets, e.g. for expressing inheritance of multiple 

@@ -62,9 +62,12 @@ public class JavaWriterUtil {
 		 * new node. Take a look at JavaVisitor for more information about the
 		 * conversion.
 		 */
-		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) {
+		if (n.getNodeType().equals(JavaWriter.NODE_TYPE_TREE)) 
+		{
 			jpNode = new CompilationUnit();
-		} else if (isOfType(n, CompilationUnit.class)) {
+		} 
+		else if (isOfType(n, CompilationUnit.class)) 
+		{
 			// Add package to CU created previously
 			if (p instanceof CompilationUnit && !attributes.getPackage().isEmpty()) {
 				((CompilationUnit) p).setPackageDeclaration(attributes.getPackage());
@@ -83,22 +86,38 @@ public class JavaWriterUtil {
 					jpNode = new EnumDeclaration(attributes.getModifier(), attributes.getName());
 				}
 			}
-		} else if (isOfType(n, AnnotationDeclaration.class)) {
+		} 
+		else if (isOfType(n, AnnotationDeclaration.class)) 
+		{
 			jpNode = createAnnotationDeclaration(attributes, p);
-		} else if (isOfType(n, AnnotationMemberDeclaration.class)) {
+		} 
+		else if (isOfType(n, AnnotationMemberDeclaration.class)) 
+		{
 			jpNode = new AnnotationMemberDeclaration(attributes.getModifier(), attributes.getAnnotation(),
 					attributes.getType(), new SimpleName(attributes.getName()), attributes.getValue());
-		} else if (isOfType(n, JavaNodeTypes.Argument)) {
+		} 
+		else if (isOfType(n, JavaNodeTypes.Argument)) 
+		{
 			processArgument(attributes, p, n);
-		} else if (isOfType(n, ArrayAccessExpr.class)) {
+		} 
+		else if (isOfType(n, ArrayAccessExpr.class)) 
+		{
 			jpNode = new ArrayAccessExpr(StaticJavaParser.parseExpression(attributes.getName()), attributes.getValue());
-		} else if (isOfType(n, ArrayCreationExpr.class)) {
+		} 
+		else if (isOfType(n, ArrayCreationExpr.class)) 
+		{
 			jpNode = new ArrayCreationExpr(attributes.getType());
-		} else if (isOfType(n, ArrayCreationLevel.class)) {
+		} 
+		else if (isOfType(n, ArrayCreationLevel.class)) 
+		{
 			jpNode = new ArrayCreationLevel();
-		} else if (isOfType(n, ArrayInitializerExpr.class)) {
+		} 
+		else if (isOfType(n, ArrayInitializerExpr.class)) 
+		{
 			jpNode = new ArrayInitializerExpr();
-		} else if (isOfType(n, ArrayType.class)) {
+		} 
+		else if (isOfType(n, ArrayType.class)) 
+		{
 			// TODO check this
 			/*
 			 * ArrayType requires the annotations as an array, there the nodelist from
@@ -106,16 +125,26 @@ public class JavaWriterUtil {
 			 */
 			jpNode = new ArrayType(attributes.getType(),
 					attributes.getAnnotation().stream().toArray(AnnotationExpr[]::new));
-		} else if (isOfType(n, AssertStmt.class)) {
+		} 
+		else if (isOfType(n, AssertStmt.class)) 
+		{
 			jpNode = new AssertStmt(attributes.getCheck(), attributes.getMessage());
-		} else if (isOfType(n, JavaNodeTypes.Assignment)) {
+		} 
+		else if (isOfType(n, JavaNodeTypes.Assignment)) 
+		{
 			jpNode = new AssignExpr(attributes.getTarget(), attributes.getValue(),
 					AssignExpr.Operator.valueOf(attributes.getOperator()));
-		} else if (isOfType(n, BinaryExpr.class)) {
+		} 
+		else if (isOfType(n, BinaryExpr.class)) 
+		{
 			jpNode = new BinaryExpr();
-		} else if (isOfType(n, BlockComment.class)) {
+		} 
+		else if (isOfType(n, BlockComment.class)) 
+		{
 			jpNode = new BlockComment(attributes.getComment());
-		} else if (isOfType(n, BlockStmt.class) || isOfType(n, JavaNodeTypes.Body)) {
+		} 
+		else if (isOfType(n, BlockStmt.class) || isOfType(n, JavaNodeTypes.Body)) 
+		{
 			if (p instanceof BlockStmt) {
 				/*
 				 * Some conversions might create block stmts themselves but have block stmts as
@@ -127,11 +156,17 @@ public class JavaWriterUtil {
 				// Otherwise create a new block stmt
 				jpNode = new BlockStmt();
 			}
-		} else if (isOfType(n, BooleanLiteralExpr.class)) {
+		} 
+		else if (isOfType(n, BooleanLiteralExpr.class)) 
+		{
 			jpNode = new BooleanLiteralExpr(Boolean.valueOf(attributes.getValue().toString()));
-		} else if (isOfType(n, JavaNodeTypes.Bound)) {
+		} 
+		else if (isOfType(n, JavaNodeTypes.Bound)) 
+		{
 			processBound(attributes, p);
-		} else if (isOfType(n, BreakStmt.class) || isOfType(n, JavaNodeTypes.Break)) {
+		} 
+		else if (isOfType(n, BreakStmt.class) || isOfType(n, JavaNodeTypes.Break)) 
+		{
 			BreakStmt obj = new BreakStmt();
 			/*
 			 * If there is an target for the break stmt, then set it; otherwise remove the
@@ -143,23 +178,39 @@ public class JavaWriterUtil {
 				obj.removeLabel();
 			}
 			jpNode = obj;
-		} else if (isOfType(n, CastExpr.class) || isOfType(n, JavaNodeTypes.Cast)) {
+		} 
+		else if (isOfType(n, CastExpr.class) || isOfType(n, JavaNodeTypes.Cast)) 
+		{
 			jpNode = new CastExpr(attributes.getType(), attributes.getExpression());
-		} else if (isOfType(n, CatchClause.class)) {
+		} 
+		else if (isOfType(n, CatchClause.class)) 
+		{
 			jpNode = new CatchClause();
-		} else if (isOfType(n, CharLiteralExpr.class)) {
+		} 
+		else if (isOfType(n, CharLiteralExpr.class)) 
+		{
 			jpNode = new CharLiteralExpr(attributes.getValue().toString());
-		} else if (isOfType(n, ClassExpr.class)) {
+		} 
+		else if (isOfType(n, ClassExpr.class)) 
+		{
 			jpNode = attributes.getValue();
-		} else if (isOfType(n, JavaNodeTypes.Class)) {
+		} 
+		else if (isOfType(n, JavaNodeTypes.Class)) 
+		{
 			jpNode = createClassOrInterfaceDeclaration(attributes, p);
-		} else if (isOfType(n, ConditionalExpr.class)) {
+		} 
+		else if (isOfType(n, ConditionalExpr.class)) 
+		{
 			jpNode = new ConditionalExpr(attributes.getCondition().getFirst().get(), attributes.getThen(),
 					attributes.getElse());
-		} else if (isOfType(n, ConstructorDeclaration.class)) {
+		}
+		else if (isOfType(n, ConstructorDeclaration.class)) 
+		{
 			jpNode = new ConstructorDeclaration(attributes.getName()).setModifiers(attributes.getModifier())
 					.setAnnotations(attributes.getAnnotation());
-		} else if (isOfType(n, ContinueStmt.class) || isOfType(n, JavaNodeTypes.Continue)) {
+		} 
+		else if (isOfType(n, ContinueStmt.class) || isOfType(n, JavaNodeTypes.Continue)) 
+		{
 			ContinueStmt obj = new ContinueStmt();
 			/*
 			 * If there is an optional label for the continue stmt, then set it; otherwise
@@ -171,11 +222,17 @@ public class JavaWriterUtil {
 				obj.removeLabel();
 			}
 			jpNode = obj;
-		} else if (isOfType(n, DoStmt.class)) {
+		} 
+		else if (isOfType(n, DoStmt.class)) 
+		{
 			jpNode = new DoStmt().setCondition(attributes.getCondition().getFirst().get());
-		} else if (isOfType(n, DoubleLiteralExpr.class)) {
+		} 
+		else if (isOfType(n, DoubleLiteralExpr.class)) 
+		{
 			jpNode = new DoubleLiteralExpr(attributes.getValue().toString());
-		} else if (isOfType(n, JavaNodeTypes.Else)) {
+		} 
+		else if (isOfType(n, JavaNodeTypes.Else)) 
+		{
 			/*
 			 * In the JavaParser if-elif-else branches are nested; in the e4cf framework the
 			 * if-elif-else branches are flat. To reconstruct the depth, the else branches
@@ -189,27 +246,45 @@ public class JavaWriterUtil {
 			ifStmt.setElseStmt(new BlockStmt());
 			p = null;
 			jpNode = ifStmt.getElseStmt().get();
-		} else if (isOfType(n, EmptyStmt.class)) {
+		} 
+		else if (isOfType(n, EmptyStmt.class)) 
+		{
 			jpNode = new EmptyStmt();
-		} else if (isOfType(n, EnclosedExpr.class)) {
+		} 
+		else if (isOfType(n, EnclosedExpr.class)) 
+		{
 			/*
 			 * Only add the enclosed expr to the parent, the inner expr could contain
 			 * anything and is therefore set in the child.
 			 */
 			jpNode = new EnclosedExpr();
-		} else if (isOfType(n, EnumConstantDeclaration.class)) {
+		} 
+		else if (isOfType(n, EnumConstantDeclaration.class)) 
+		{
 			jpNode = new EnumConstantDeclaration(attributes.getName());
-		} else if (isOfType(n, EnumDeclaration.class)) {
+		} 
+		else if (isOfType(n, EnumDeclaration.class)) 
+		{
 			jpNode = new EnumDeclaration(attributes.getModifier(), attributes.getName());
-		} else if (isOfType(n, ExplicitConstructorInvocationStmt.class)) {
+		} 
+		else if (isOfType(n, ExplicitConstructorInvocationStmt.class)) 
+		{
 			jpNode = new ExplicitConstructorInvocationStmt().setThis(attributes.isThis());
-		} else if (isOfType(n, ExpressionStmt.class)) {
+		} 
+		else if (isOfType(n, ExpressionStmt.class)) 
+		{
 			jpNode = new ExpressionStmt();
-		} else if (isOfType(n, FieldAccessExpr.class)) {
+		} 
+		else if (isOfType(n, FieldAccessExpr.class)) 
+		{
 			jpNode = new FieldAccessExpr();
-		} else if (isOfType(n, FieldDeclaration.class)) {
+		} 
+		else if (isOfType(n, FieldDeclaration.class)) 
+		{
 			jpNode = new FieldDeclaration().setModifiers(attributes.getModifier());
-		} else if (isOfType(n, JavaNodeTypes.Finally)) {
+		} 
+		else if (isOfType(n, JavaNodeTypes.Finally)) 
+		{
 			/*
 			 * If the types are correct (parent if try stmt and finally if really block,
 			 * then set finally block. Set parent and node to (virtually) null, so rest of
@@ -386,7 +461,9 @@ public class JavaWriterUtil {
 		} else if (isOfType(n, YieldStmt.class)) {
 			jpNode = new YieldStmt();
 		}
-
+			
+		// FIXME !!!!!! CONTINUE HERE
+		
 		// Set general attributes, which could apply to a set of node types here.
 		if (!(jpNode instanceof Comment) && !attributes.getComment().isEmpty()) {
 			// Set the comment of a node

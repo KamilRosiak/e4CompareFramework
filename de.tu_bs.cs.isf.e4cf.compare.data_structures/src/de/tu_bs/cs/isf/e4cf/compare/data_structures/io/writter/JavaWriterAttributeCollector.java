@@ -7,7 +7,9 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.SuperExpr;
+import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
@@ -57,6 +59,7 @@ public class JavaWriterAttributeCollector {
 	private NodeList<Expression> _resource = new NodeList<Expression>();
 	private Type _returnType = null;
 	private Expression _scope = null;
+	private NodeList<Type> _scopeTypes = null;
 	private Expression _selector = null;
 	private Statement _statement = null;
 	private boolean _static = false;
@@ -66,7 +69,7 @@ public class JavaWriterAttributeCollector {
 	private Expression _then = null;
 	private NodeList<ReferenceType> _throws = new NodeList<ReferenceType>();
 	private Type _type = null;
-	private TypeParameter _typeargument = null;
+	private NodeList<Type> _typearguments = new NodeList<Type>();
 	private NodeList<Type> _typeParameterBound = new NodeList<Type>();
 	private NodeList<ReferenceType> _unionType = new NodeList<ReferenceType>();
 	private NodeList<Expression> _update = new NodeList<Expression>();
@@ -173,14 +176,20 @@ public class JavaWriterAttributeCollector {
 			} else if (key.equals(JavaAttributesTypes.ReturnType.name())) {
 				_returnType = StaticJavaParser.parseType(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Scope.name())) {
-				if (singleVal.equals("super")) {
+				if (singleVal.equals("super")) { // FIXME This is always false...
 					/*
 					 * When the scope is "super" the JavaParser can't parse the expression (v3.18.0)
 					 * so the superexpr is created manually.
 					 */
 					_scope = new SuperExpr();
 				} else {
-					_scope = StaticJavaParser.parseExpression(singleVal.getValue());
+					try {
+						// Try parsing as type to preserve Generics/Typing
+						_scope = new TypeExpr(StaticJavaParser.parseType(singleVal.getValue()));
+					} catch (ParseProblemException ppe) {
+						// Fallback to any expression, if type expr did not match
+						_scope = StaticJavaParser.parseExpression(singleVal.getValue());
+					}
 				}
 			} else if (key.equals(JavaAttributesTypes.Selector.name())) {
 				_selector = StaticJavaParser.parseExpression(singleVal.getValue());
@@ -201,14 +210,20 @@ public class JavaWriterAttributeCollector {
 						.forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue())));
 			} else if (key.equals(JavaAttributesTypes.Type.name())) {
 				if (!singleVal.getValue().contains("|")) {
-					_type = StaticJavaParser.parseType(singleVal.getValue());
+					if (singleVal.getValue() != "null") {
+						_type = StaticJavaParser.parseType(singleVal.getValue());
+					}
 				} else {
 					for (String type : singleVal.getValue().split("\\|")) {
 						_unionType.add(StaticJavaParser.parseClassOrInterfaceType(type));
 					}
 				}
 			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
-				_typeargument = StaticJavaParser.parseTypeParameter(singleVal.getValue());
+				// Might be multiple <A[],B...>
+				attribute.getAttributeValues().forEach(v -> {
+					Type t = StaticJavaParser.parseType((String) v.getValue());
+					_typearguments.add(t);
+					});
 			} else if (key.equals(JavaAttributesTypes.TypeParameterBound.name())) {
 				attribute.getAttributeValues().forEach(val -> {
 					if (val.equals("?")) {
@@ -231,6 +246,11 @@ public class JavaWriterAttributeCollector {
 						values.add(StaticJavaParser.parseExpression(v));
 					}
 					_value = new ArrayInitializerExpr(values);
+				} else if (singleVal.getValue().contains("?")) {
+					// Don't parse it, instead: just append the extendedType here
+					// IMO this shouldn't even be here but I can't find it in Reader
+					String ext = singleVal.getValue().replaceFirst("\\? extends ", "");
+					_typearguments.add(StaticJavaParser.parseType(ext));
 				} else {
 					_value = StaticJavaParser.parseExpression(singleVal.getValue());
 				}
@@ -389,8 +409,8 @@ public class JavaWriterAttributeCollector {
 		return t;
 	}
 
-	public TypeParameter getTypeArgument() {
-		return _typeargument;
+	public NodeList<Type> getTypeArguments() {
+		return _typearguments;
 	}
 
 	public NodeList<Type> getTypeParameterBound() {
@@ -407,5 +427,9 @@ public class JavaWriterAttributeCollector {
 
 	public boolean isEnum() {
 		return _isEnum;
+	}
+	
+	public NodeList<Type> getScopeTypes() {
+		return _scopeTypes;
 	}
 }

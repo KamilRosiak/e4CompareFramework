@@ -104,8 +104,7 @@ public class ArtifactIOUtil {
 	}
 
 	/**
-	 * This method parsers a file into a tree. if no artifact reader is available
-	 * for the specific artifact type it returns null.
+	 * TODO
 	 */
 	public static boolean writeArtifactToFile(Tree tree, String path) {
 		for (ArtifactWriter writer : getAllArtifactWriter()) {
