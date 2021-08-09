@@ -7,12 +7,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 
 public class SynchronizationResult extends ExtractionResult {
 
-	public SynchronizationResult(List<Component> components, List<Tree> trees) {
-		super(components, trees);
-		
+	public SynchronizationResult(List<Component> components, List<Tree> trees, List<ComponentLayer> layers) {
+		super(components, trees, layers);
+
 	}
 
-	
-
-	
 }

@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.extraction;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,15 +21,17 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 
 public class ClusterEngine {
 
-	private CompareEngineHierarchical compareEngine;
-	private final String SCRIPT_PATH = "";
-
+	private CompareEngineHierarchical compareEngine;	
+	private String scriptPath;
+	
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
+		scriptPath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "script/clustering.py").substring(1)).getPath();
+		
 	}
 
 	public List<Set<Node>> detectClusters(Iterable<Node> nodes, float threshold) {
-
+				
 		List<Set<Node>> clusters = new ArrayList<Set<Node>>();
 
 		// Build distance matrix for numpy
@@ -62,7 +65,7 @@ public class ClusterEngine {
 
 		// Execute python clustering algorithm and process result
 		try {
-			ProcessBuilder builder = new ProcessBuilder(SCRIPT_PATH, distanceString, thresholdString);
+			ProcessBuilder builder = new ProcessBuilder("py", scriptPath, distanceString, thresholdString);
 			builder.redirectErrorStream(true);
 			Process process = builder.start();
 			InputStream inputStream = process.getInputStream();
@@ -101,7 +104,6 @@ public class ClusterEngine {
 			return false;
 		}
 		return true;
-
 	}
 
 	private void printMetrics(List<Set<Node>> clusters, float threshold) {

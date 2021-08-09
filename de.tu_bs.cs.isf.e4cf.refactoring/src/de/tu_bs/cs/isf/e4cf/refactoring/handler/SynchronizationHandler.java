@@ -28,6 +28,8 @@ public class SynchronizationHandler {
 			ComponentLayerViewController componentLayerViewController, ExtractionEngine extractionEngine,
 			SynchronizationEngine synchronizationEngine) {
 
+		
+		
 		Tree tree1 = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
 		Tree tree2 = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(1));
 
@@ -51,8 +53,7 @@ public class SynchronizationHandler {
 
 				}
 
-				extractionEngine.manageComponents(synchronizationResult);
-
+				extractionEngine.analyzeComponents(synchronizationResult);
 				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, baseTree);
 			}
 

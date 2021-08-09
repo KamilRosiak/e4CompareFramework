@@ -3,31 +3,28 @@ package de.tu_bs.cs.isf.e4cf.refactoring.extraction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
-import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.ComponentImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.ConfigurationImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ExtractionResult;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ExtractionResult;
 
 @Singleton
 @Creatable
@@ -53,6 +50,7 @@ public class ExtractionEngine {
 		System.out.println("|--------- Extract components ---------|");
 
 		List<Component> components = new ArrayList<Component>();
+
 		for (ComponentLayer layer : componentLayers) {
 			if (layer.refactor()) {
 				components.addAll(extractComponents(getNodesByLayer(tree, layer.getLayer())));
@@ -63,7 +61,8 @@ public class ExtractionEngine {
 		System.out.println("");
 		System.out.println("Extracted components: " + components.size());
 
-		return new ExtractionResult(components, Arrays.asList(tree));
+		return new ExtractionResult(components, Arrays.asList(tree),
+				componentLayers.stream().filter(w -> w.refactor() == true).collect(Collectors.toList()));
 	}
 
 	private List<Component> extractComponents(List<Node> nodes) {
@@ -93,8 +92,13 @@ public class ExtractionEngine {
 
 			for (Node clusterInstance1 : cluster) {
 				for (Node clusterInstance2 : cluster) {
-					Comparison<Node> comparison = compareEngine.compare(clusterInstance1, clusterInstance2);
-					synchronizationUnitEngine.determineSynchronizationUnit(comparison, synchronizationUnit);
+
+					if (clusterInstance1 != clusterInstance2) {
+						synchronizationUnitEngine.determineSynchronizationUnit(
+								compareEngine.compare(clusterInstance1, clusterInstance2), synchronizationUnit);
+
+					}
+
 				}
 
 				Configuration configuration = new ConfigurationImpl();
@@ -121,99 +125,65 @@ public class ExtractionEngine {
 		return components;
 	}
 
-	public void manageComponents(ExtractionResult extractionResult) {
+	public void analyzeComponents(ExtractionResult extractionResult) {
 
 		System.out.println("");
-		System.out.println("|--------- Verify components ---------|");
+		System.out.println("|--------- Rebuild components ---------|");
+
+		List<Component> componentsToAdd = new ArrayList<Component>();
+		List<Component> componentsToDelete = new ArrayList<Component>();
 
 		for (Component component : extractionResult.getComponents()) {
-			List<Node> nodes = new ArrayList<Node>();
+
+			Map<Node, Configuration> nodes = new HashMap<Node, Configuration>();
+
 			for (Configuration configuration : component.getConfigurations()) {
-
-				nodes.add(configuration.getChildren().get(0));
+				nodes.put(configuration.getChildren().get(0), configuration);
 			}
 
-			boolean isValid = clusterEngine.verifyCluster(nodes, DISTANCE);
+			boolean verification = clusterEngine.verifyCluster(nodes.keySet(), DISTANCE);
 
-			if (!isValid) {
+			if (!verification) {
 
-				System.out.println("Found invalid cluster, trying to split");
+				System.out.println("Found invalid cluster.");
+				
+				componentsToDelete.add(component);
+				List<Set<Node>> clusters = clusterEngine.detectClusters(nodes.keySet(), DISTANCE);
 
-				List<Component> newComponents = splitCluster(component, nodes);
-				extractionResult.setComponents(newComponents);
-			}
-		}
+				for (Set<Node> cluster : clusters) {
 
-		System.out.println("All components are valid and synchronized");
+					if (cluster.size() == 1) {
 
-	}
-
-	private List<Component> splitCluster(Component component, List<Node> nodes) {
-
-		List<Set<Node>> clusters = clusterEngine.detectClusters(nodes, DISTANCE);
-		List<Set<Node>> clustersOfSize1 = new ArrayList<Set<Node>>();
-		List<Component> newComponents = new ArrayList<Component>();
-
-		for (Set<Node> cluster : clusters) {
-			if (cluster.size() == 1) {
-				clustersOfSize1.add(cluster);
-				// single cluster: remove component from that place
-				Node node = cluster.iterator().next();
-
-				for (Configuration configuration : component.getConfigurations()) {
-					if (configuration.getChildren().get(0) == node) {
-
-						component.getChildren().remove(configuration);
+						Node clusterInstance = cluster.iterator().next();
+						Configuration configuration = nodes.get(clusterInstance);
 
 						for (Entry<Node, Map<Integer, Configuration>> entry : component.getNodeComponentRelation()
 								.entrySet()) {
 							Node parentNode = entry.getKey();
 							Map<Integer, Configuration> positionMapping = entry.getValue();
-							int position = -1;
 							for (Entry<Integer, Configuration> positionEntry : positionMapping.entrySet()) {
 
 								if (positionEntry.getValue() == configuration) {
-									position = positionEntry.getKey();
-									parentNode.getChildren().remove(position);
-									parentNode.getChildren().add(position, node);
 
-									synchronizationUnitEngine.removeFromSynchronizationUnit(node,
-											component.getSynchronizationUnit());
-
-									break;
+									int index = positionEntry.getKey();
+									parentNode.getChildren().remove(index);
+									parentNode.getChildren().add(index, clusterInstance);
 								}
 
 							}
-
-							if (position != -1) {
-								positionMapping.remove(position);
-							}
-
 						}
 
-					}
-				}
+					} else {
+						Map<Node, Set<Node>> synchronizationUnit = new HashMap<Node, Set<Node>>();
+						Component newComponent = new ComponentImpl(synchronizationUnit);
+						component.setNodeComponentRelation(new HashMap<Node, Map<Integer, Configuration>>());
 
-			}
-		}
+						for (Node clusterInstance : cluster) {
+							Configuration newConfiguration = new ConfigurationImpl();
+							newConfiguration.addChild(clusterInstance);
+							newComponent.addChildWithParent(newConfiguration);
 
-		clusters.removeAll(clustersOfSize1);
-
-		for (Set<Node> cluster : clusters) {
-			Map<Node, Set<Node>> synchronizationUnit = new HashMap<Node, Set<Node>>();
-			for (Node clusterInstance1 : cluster) {
-				for (Node clusterInstance2 : cluster) {
-					Comparison<Node> comparison = compareEngine.compare(clusterInstance1, clusterInstance2);
-					synchronizationUnitEngine.determineSynchronizationUnit(comparison, synchronizationUnit);
-				}
-
-				Component newComponent = new ComponentImpl(synchronizationUnit);
-				Map<Node, Map<Integer, Configuration>> newNodeComponentRelation = new HashMap<Node, Map<Integer, Configuration>>();
-
-				for (Node clusterInstance : cluster) {
-					for (Configuration configuration : component.getConfigurations()) {
-						if (configuration.getChildren().get(0) == clusterInstance) {
-							newComponent.addChildWithParent(configuration);
+							Configuration oldConfiguration = nodes.get(clusterInstance);
 
 							for (Entry<Node, Map<Integer, Configuration>> entry : component.getNodeComponentRelation()
 									.entrySet()) {
@@ -221,40 +191,46 @@ public class ExtractionEngine {
 								Map<Integer, Configuration> positionMapping = entry.getValue();
 								for (Entry<Integer, Configuration> positionEntry : positionMapping.entrySet()) {
 
-									int position = positionEntry.getKey();
-									if (positionEntry.getValue() == configuration) {
-
-										if (!newNodeComponentRelation.containsKey(parentNode)) {
-											newNodeComponentRelation.put(parentNode,
+									if (positionEntry.getValue() == oldConfiguration) {
+										if (!newComponent.getNodeComponentRelation().containsKey(parentNode)) {
+											newComponent.getNodeComponentRelation().put(parentNode,
 													new HashMap<Integer, Configuration>());
 										}
+										newComponent.getNodeComponentRelation().get(parentNode)
+												.put(positionEntry.getKey(), newConfiguration);
 
-										newNodeComponentRelation.get(parentNode).put(positionEntry.getKey(),
-												configuration);
-
-										parentNode.getChildren().remove(position);
-										parentNode.getChildren().add(position, newComponent);
-
-										break;
+										int index = positionEntry.getKey();
+										parentNode.getChildren().remove(index);
+										parentNode.getChildren().add(index, newComponent);
 									}
+
+								}
+							}
+
+						}
+						for (Node clusterInstance1 : cluster) {
+							for (Node clusterInstance2 : cluster) {
+
+								if (clusterInstance1 != clusterInstance2) {
+									synchronizationUnitEngine.determineSynchronizationUnit(
+											compareEngine.compare(clusterInstance1, clusterInstance2),
+											synchronizationUnit);
 
 								}
 
 							}
-
 						}
+						componentsToAdd.add(newComponent);
 					}
+
 				}
-				newComponent.setNodeComponentRelation(newNodeComponentRelation);
-				newComponents.add(newComponent);
 
 			}
+
 		}
 
-		if (component.getChildren().size() != 0) {
-			newComponents.add(component);
-		}
-		return newComponents;
+		extractionResult.getComponents().removeAll(componentsToDelete);
+		extractionResult.getComponents().addAll(componentsToAdd);
 
 	}
 
@@ -262,8 +238,7 @@ public class ExtractionEngine {
 
 		List<Node> nodes = tree.getNodesForType(layer);
 
-		// a cloned method within a cloned method leads to a cycle and must therefore be
-		// removed
+		// a cloned method within a cloned method leads to a cycle and must therefore be removed
 		if (layer.equals("MethodDeclaration")) {
 
 			List<Node> cleanNodes = new ArrayList<Node>();

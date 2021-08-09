@@ -27,9 +27,22 @@ public class ExtractionResult {
 		this.trees = trees;
 	}
 
-	public ExtractionResult(List<Component> components, List<Tree> trees) {
+	public ExtractionResult(List<Component> components, List<Tree> trees, List<ComponentLayer> layers) {
 		super();
 		this.components = components;
 		this.trees = trees;
+		this.layers = layers;
 	}
+	
+	public List<ComponentLayer> getLayers() {
+		return layers;
+	}
+
+	public void setLayers(List<ComponentLayer> layers) {
+		this.layers = layers;
+	}
+
+	private List<ComponentLayer> layers;
+	
+	
 }

@@ -17,6 +17,7 @@ import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ExtractionEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ExtractionResult;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
+import sun.reflect.annotation.TypeAnnotation.LocationInfo.Location;
 
 public class ExtractionHandler {
 
@@ -24,6 +25,8 @@ public class ExtractionHandler {
 	public void execute(ServiceContainer services, ReaderManager readerManager, ExtractionEngine engine,
 			ComponentLayerViewController componentLayerViewController) {
 
+		
+		
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 
 		Set<String> nodeTypes = new HashSet<String>();

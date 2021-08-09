@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.refactoring.extraction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import de.tu_bs.cs.isf.e4cf.refactoring.model.Action;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionType;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.AddAction;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.DeleteAction;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ExtractionResult;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.MoveAction;
@@ -79,8 +81,8 @@ public class SynchronizationEngine {
 		Map<Component, List<Configuration>> configurationsToDelete = new HashMap<Component, List<Configuration>>();
 		Map<ActionScope, List<SynchronizationScope>> actionToSynchronizationScopes = new HashMap<ActionScope, List<SynchronizationScope>>();
 
-		Map<Node,Integer> pseudoNodeToPosition = new HashMap<Node, Integer>();
-		
+		Map<Node, Integer> pseudoNodeToPosition = new HashMap<Node, Integer>();
+
 		for (Comparison<Node> componentComparison : componentComparisons) {
 
 			if (componentComparison.getLeftArtifact() != null && componentComparison.getRightArtifact() != null
@@ -129,7 +131,7 @@ public class SynchronizationEngine {
 					}
 
 				}
-				
+
 				// determine actions between matched configurations
 				List<ActionScope> actionScopes = new ArrayList<ActionScope>();
 				for (Entry<Configuration, Configuration> configurationPair : configurationsToUpdate.entrySet()) {
@@ -147,7 +149,7 @@ public class SynchronizationEngine {
 						for (Node pseudoNode : pseudoNodes) {
 							pseudoNodeToPosition.put(pseudoNode, pseudoNode.getPosition());
 							pseudoNode.getParent().getChildren().remove(pseudoNode);
-							
+
 						}
 
 						actionScopes.addAll(localActionScopes);
@@ -377,7 +379,11 @@ public class SynchronizationEngine {
 		trees.addAll(result1.getTrees());
 		trees.addAll(result2.getTrees());
 
-		return new SynchronizationResult(components, trees);
+		Set<ComponentLayer> layers = new HashSet<ComponentLayer>();
+		layers.addAll(result1.getLayers());
+		layers.addAll(result2.getLayers());
+
+		return new SynchronizationResult(components, trees, new ArrayList<ComponentLayer>(layers));
 
 	}
 
@@ -618,10 +624,10 @@ public class SynchronizationEngine {
 					affectedNode.addChildAtPosition(newNode, 0);
 				} else {
 					int position = affectedNode.getPosition();
-					if(position == -1) {
+					if (position == -1) {
 						position = pseudoNodeToPosition.get(affectedNode);
 					}
-					
+
 					affectedNode.addSiblingAtPosition(newNode, position + 1);
 
 				}

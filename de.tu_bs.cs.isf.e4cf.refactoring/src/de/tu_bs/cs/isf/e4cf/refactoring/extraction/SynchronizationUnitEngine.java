@@ -1,8 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.extraction;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
@@ -13,6 +16,14 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 
 public class SynchronizationUnitEngine {
+
+	private CompareEngineHierarchical compareEngine;
+	private SortingMatcher sortingMatcher;
+
+	public SynchronizationUnitEngine() {
+		sortingMatcher = new SortingMatcher();
+		compareEngine = new CompareEngineHierarchical(sortingMatcher, new MetricImpl("test"));
+	}
 
 	public void determineSynchronizationUnit(Comparison<Node> comparison, Map<Node, Set<Node>> map) {
 
@@ -65,6 +76,7 @@ public class SynchronizationUnitEngine {
 
 	}
 
+	
 	public void removeFromSynchronizationUnit(Node nodeToRemove, Map<Node, Set<Node>> synchronizationUnit) {
 
 		synchronizationUnit.remove(nodeToRemove);
