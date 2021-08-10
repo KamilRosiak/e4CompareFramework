@@ -26,6 +26,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUti
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -38,8 +40,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 /**
  * This class represents the controller implementation of the data structure
@@ -452,6 +452,12 @@ public class DSEditorController {
 			ti.setExpanded(true);
 			treeView.getSelectionModel().select(ti);
 		}
+	}
+	
+	@FXML
+	public void createFeatureModel() {
+		services.eventBroker.send(FDEventTable.CREATE_FEATUREMODEL_FROM_TREEVIEW, currentTree);
+		services.partService.showPart(FDStringTable.BUNDLE_NAME);
 	}
 
 	/**

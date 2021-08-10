@@ -20,6 +20,7 @@ import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -28,6 +29,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener.FeatureModelVi
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.TreeParser;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
@@ -644,6 +646,13 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void sendAllFeature(@UIEventTopic(FDEventTable.SEND_ALL_FEATURE) String receiver) {
 		services.eventBroker.send(FDEventTable.RECEIVE_ALL_FEATURE, getCurrentView().getCurrentModel());
+	}
+	
+	@Optional
+	@Inject 
+	public void createFeatureModelFromTreeView(@UIEventTopic(FDEventTable.CREATE_FEATUREMODEL_FROM_TREEVIEW) Tree tree) {
+		FeatureDiagramm parsedModel = TreeParser.parse(tree);
+		loadFeatureDiagram(parsedModel);
 	}
 
 }

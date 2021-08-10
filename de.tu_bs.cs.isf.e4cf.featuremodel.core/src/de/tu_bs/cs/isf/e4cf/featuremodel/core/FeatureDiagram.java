@@ -2,14 +2,19 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
+import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
+import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import FeatureDiagram.impl.FeatureDiagrammImpl;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureInitializer;
 
 public class FeatureDiagram extends FeatureDiagrammImpl {
 	
     public FeatureDiagram() {
         super();
 		super.setUuid(EcoreUtil.generateUUID());
+		addRoot(this);
     }
     
     public FeatureDiagram(FeatureDiagramm diagram) {
@@ -25,6 +30,8 @@ public class FeatureDiagram extends FeatureDiagrammImpl {
     	throw new UnsupportedOperationException();
     }
 	
-    
-	
+    private void addRoot(FeatureDiagramm diagram) {	
+    	Feature root = FeatureInitializer.createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true);
+		diagram.setRoot(root);
+	}
 }

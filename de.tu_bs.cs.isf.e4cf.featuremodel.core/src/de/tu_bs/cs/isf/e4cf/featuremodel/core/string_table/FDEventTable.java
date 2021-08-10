@@ -101,5 +101,10 @@ public class FDEventTable {
 	public static final String EVENT_SHOW_CONFIGURATION_VIEW = "_showConfigurationView";
 	public static final String EVENT_FEATURE_CONFIGURATION_ELEMENT_SELECTED = "_featureConfigurationElementSelec;ted";
 	public static final String EVENT_RENAME_CONFIGURATIONFEATURE = "RENAME_CONFIGURATIONFEATURE";
+	
+	/**
+	 * Data Structure Editor View
+	 */
+	public static final String CREATE_FEATUREMODEL_FROM_TREEVIEW = "CREATE_FEATUREMODEL_FROM_TREEVIEW";
 
 }
