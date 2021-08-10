@@ -17,6 +17,7 @@ import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
 import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
@@ -34,6 +35,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureInitializer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLogger;
@@ -218,8 +220,10 @@ public class FeatureModelEditorView {
 	}
 
 	private FeatureDiagramm initFeatureDiagram(FeatureDiagramm diagram) {		
-		Feature root = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true, 
-				this.root.getWidth() / 2, this.root.getHeight() / 2);
+		Feature root = createNewFeature(
+				FeatureInitializer.createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true), 
+				this.root.getWidth() / 2, 
+				this.root.getHeight() / 2);
 //		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
 //		root.getGraphicalfeature().setY(this.root.getHeight() / 2); // before: maxWidth
 		diagram.setRoot(root);
@@ -473,7 +477,7 @@ public class FeatureModelEditorView {
 
 		// create new feature and add above the child
 		
-		Feature newFeature = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), "NewFeature", false, xPosNewFeature, yPosNewFeature);
+		Feature newFeature = createNewFeature(FeatureInitializer.createFeature("NewFeature_" + currentModel.getIdentifierIncrement(), false), xPosNewFeature, yPosNewFeature);
 
 		// Reset the parent-child relations
 
@@ -529,7 +533,7 @@ public class FeatureModelEditorView {
 		double yPos = formerRoot.getGraphicalfeature().getY() - 30;
 
 		// create new feature and add above the child
-		Feature newRoot = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), "NewFeature", true, xPos, yPos);
+		Feature newRoot = createNewFeature(FeatureInitializer.createFeature("NewFeature_" + currentModel.getIdentifierIncrement(), true), xPos, yPos);
 		
 		// set parent-child relations
 		formerRoot.setParent(newRoot);
@@ -623,25 +627,10 @@ public class FeatureModelEditorView {
 		}
 	}
 	
-	public Feature createNewFeature(Feature feature, String featureName, boolean isRoot, double x, double y) {
-		feature.setName(featureName);
-		feature.setMandatory(isRoot);
-		feature.setAlternative(false);
-		feature.setOr(false);
-		feature.setAbstract(false);
-		if (feature instanceof ComponentFeature) {
-			feature.setOr(true);
-			((ComponentFeature) feature).setFeaturediagramm(initFeatureDiagram(new FeatureDiagram()));
-			((ComponentFeature) feature).getFeaturediagramm().getRoot().setName(featureName);
-		}
+	public Feature createNewFeature(Feature feature, double x, double y) {
 		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
 		feature.setIdentifier(currentModel.getIdentifierIncrement());
-		GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();
-		feature.setGraphicalfeature(graphicalFeature);
-
-		ArtifactReference artifactReference = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
-		artifactReference.setArtifactClearName(feature.getName());
-		feature.getArtifactReferences().add(artifactReference);
+		
 
 		/**
 		 * Set Feature to x and y position 
@@ -653,13 +642,14 @@ public class FeatureModelEditorView {
 	}
 
 	public FXGraphicalFeature createFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
-		Feature feature = createNewFeature(FeatureDiagramFactoryImpl.eINSTANCE.createFeature(), "NewFeature_" + currentModel.getIdentifierIncrement(), isRoot, x, y);
+		Feature feature = FeatureInitializer.createFeature("NewFeature_" + currentModel.getIdentifierIncrement(), isRoot);
+		createNewFeature(feature, x, y);
 		return createGraphicalFeatureBelow(parent, feature);
 	}
 
 	public FXGraphicalFeature createComponentFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
-		ComponentFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createComponentFeature();
-		createNewFeature(feature, "NewComponentFeature_" + currentModel.getIdentifierIncrement(), isRoot, x, y);
+		ComponentFeature feature = FeatureInitializer.createComponentFeature("NewComponentFeature_" + currentModel.getIdentifierIncrement());
+		createNewFeature(feature, x, y);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 		componentFeatureList.add(newGraFeature);
@@ -667,8 +657,8 @@ public class FeatureModelEditorView {
 		
 	}
 	public FXGraphicalFeature createConfigurationFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
-		ConfigurationFeature feature = FeatureDiagramFactoryImpl.eINSTANCE.createConfigurationFeature();
-		createNewFeature(feature, "NewConfigurationFeature_" + currentModel.getIdentifierIncrement(), isRoot, x, y);
+		ConfigurationFeature feature = FeatureInitializer.createConfigurationFeature("NewConfigurationFeature_" + currentModel.getIdentifierIncrement());
+		createNewFeature(feature, x, y);
 		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
 		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
 		return newGraFeature;
