@@ -39,7 +39,7 @@ public class ArtifactGraph {
 	public SimpleGraph mindMapNoMatchGraph;
 	
 	// VariantTaxonomy
-	public VariantTaxonomyNode taxonomyNode; 
+	public VariantTaxonomyNode taxonomyRootNode; 
 	public TaxonomyToJSON taxonomyToJSON; 
 
 	public ArtifactGraph(List<ArtifactComparison> _artifactComparisonList) {
@@ -107,7 +107,7 @@ public class ArtifactGraph {
 		GraphNode rootNode = IdentifyRootNode();
 		
 		if (rootNode != null) {
-			taxonomyNode = new VariantTaxonomyNode(rootNode.getDescription(), 0); // Create TaxonomyNode for JSON export
+			taxonomyRootNode = new VariantTaxonomyNode(rootNode.getDescription().substring(4), 0); // Create TaxonomyNode for JSON export
 			// Remove Root Node from the rest
 			allArtifactNodes.remove(rootNode);
 			removeEdgesWithTarget(rootNode);
@@ -119,8 +119,8 @@ public class ArtifactGraph {
 			addAllChildElementsToTaxonomyGraphMap();
 			
 			// Add all Taxonomy Nodes to Graph
-			taxonomyToJSON = new TaxonomyToJSON(); 
-			taxonomyToJSON.convertToJSON(taxonomyNode);
+//			taxonomyToJSON = new TaxonomyToJSON(); 
+//			taxonomyToJSON.convertToJSON(taxonomyNode);
 		}
 		else {
 			
@@ -143,8 +143,6 @@ public class ArtifactGraph {
 		List<GraphNode> mostSimilarNodes = new ArrayList<GraphNode>();
 		int noOfReacheableVariants;
 		int noOfReacheableVariantsReferenceValue;
-		// Others
-		int colorShade = 20;
 
 		while (allAvailableArtifactNodes.size() > 0) {
 			mostSimilarNodes.clear(); // P
@@ -169,18 +167,14 @@ public class ArtifactGraph {
 			
 			// Add ChildNode to Taxonomy Representation 
 			if (childNode != null) {
-				taxonomyNode.addChildNodeFromRoot(childNode.getDescription(), parentNode.getDescription());
-			}
-			
-			// Change Parent Color
-			if (!rootNode) {
-				parentNode.setColor(Color.rgb(91, 127, 255 - colorShade >= 0 ? 255 - colorShade : 0 ));
+				taxonomyRootNode.addChildNodeFromRoot(childNode.getDescription().substring(4), parentNode.getDescription().substring(4));
 			}
 
 			// Assign childNode to Parent  
 			GraphEdge parentChildEdge = new GraphEdge();
 			parentChildEdge.setSource(parentNode);
 			parentChildEdge.setTarget(childNode);
+			parentChildEdge.setWeight(this.getHighestWeight(parentNode, childNode));
 			
 			// Add both to taxonomy Lists
 			if (!taxonomyArtifactNodes.contains(parentNode)) {
@@ -202,13 +196,18 @@ public class ArtifactGraph {
 			allAvailableArtifactNodes.remove(childNode);
 			allAvailableArtifactNodes.removeAll(reachableByChild);
 			removeEdgesWithTarget(parentNode);
-			colorShade += 20;
 
 			// Recursively Call for the rest of the child/children Nodes
 			GetChildrenForVariant(childNode, reachableByChild, false);
 
 		}
 
+	}
+	
+	private float getHighestWeight(GraphNode parent, GraphNode Child) {
+		float weight = 0.0f;
+		
+		return weight;
 	}
 	
 	/**
@@ -335,18 +334,19 @@ public class ArtifactGraph {
 			// iterate through list of all artifact file details
 			for (ArtifactFileDetails anArtifactFileDetails : allArtifactFileDetails) {
 				// Find the right artifactFile detail and extract the number of characters
-				if (aPotentialRootNode.getDescription().substring(0, 3).equals(anArtifactFileDetails.getArtifactID().substring(0, 3))) {
+				if (aPotentialRootNode.getDescription().substring(0, 3).equals(anArtifactFileDetails.getArtifactID())) {
 					// If number of characters of variant lower than previously calculated
 					if (anArtifactFileDetails.getNumberOfCharacters() < rootVariantSize) {
 						// Update rootVariantSize
 						rootVariantSize = anArtifactFileDetails.getNumberOfCharacters();
 						// Make variant the new root
-						aPotentialRootNode.setColor(Color.PINK); // Color.rgb(91, 127, 255)
 						rootVariantNode = aPotentialRootNode;
 					}
 				}
 			}
 		}
+
+		rootVariantNode.setColor(Color.PINK); // Change Root variant node Color.rgb(91, 127, 255)
 		return rootVariantNode;
 	}
 
@@ -444,7 +444,7 @@ public class ArtifactGraph {
 		GraphNode center = new GraphNode();
 		center.setTitle(artifact.getNodeType());
 		center.setDescription(artifactID +"-"+ artifactName);
-		center.setColor(Color.ALICEBLUE);
+		center.setColor(Color.GREENYELLOW);
 		//center.setBounds(new Rectangle(50 + (xAxisOffset * 200), 50 + (yAxisOffset * 550), WIDTH, 90));
 		center.setBounds(new Rectangle(250, 550 + this.yAxisOffset, WIDTH, 90));
 

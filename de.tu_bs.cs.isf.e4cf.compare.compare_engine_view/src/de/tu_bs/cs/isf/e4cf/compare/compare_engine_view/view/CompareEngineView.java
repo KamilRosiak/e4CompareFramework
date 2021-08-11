@@ -24,6 +24,7 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.TaxonomyCompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.*;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics.TaxonomyThresholdMatcher;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.util.TaxonomyEvaluator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.*;
 
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
@@ -169,6 +170,14 @@ public class CompareEngineView implements Initializable {
 					// Send prepared empty graph to GraphView subscriber to update user
 					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapNoMatchGraph);
 				}
+				
+				// Evaluate Taxonomy
+				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createProjectExampleGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCodeJamGT(), artifactGraph.taxonomyRootNode);
+				performanceJudge.computeDifferences();
+				performanceJudge.calculateSecondaryMeasures();
+				performanceJudge.printMeasures();
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

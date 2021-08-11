@@ -43,15 +43,15 @@ public class VariantTaxonomyNode {
 	 if (childParentNode == null) {
 		 this.addChildNode(newChildNode);
 		 newChildNode.setParent(this);
-		 newChildNode.setTreeDepth();
 		 childNodeAdded = true;
 	 } else {
 		 // Child Parent Found, now add child to its parent
 		 childParentNode.addChildNode(newChildNode); // Add ChildNode to Tree
 		 newChildNode.setParent(childParentNode);
-		 newChildNode.setTreeDepth();
 		 childNodeAdded = true;
 	 }
+	 
+	 newChildNode.setTreeDepth();
 	 
 	 return childNodeAdded;
  }
