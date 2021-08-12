@@ -192,6 +192,10 @@ public void calculateSecondaryMeasures() {
 	}
 	
 	// Ground Truth Creators
+	/**
+	 * Creates Ground Truth VariantTaxonomy Tree/Graph
+	 * @return <VariantTaxonomyNode>
+	 */
 	public static VariantTaxonomyNode createProjectExampleGT() {
 		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("stmicsBasicStackVariant.java", 0, null);
 		VariantTaxonomyNode level1ChildNode = new VariantTaxonomyNode("stmicsOverflowStackVariant.java", 1, rootNode);
