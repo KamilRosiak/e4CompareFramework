@@ -224,8 +224,6 @@ public class FeatureModelEditorView {
 				FeatureInitializer.createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true), 
 				this.root.getWidth() / 2, 
 				this.root.getHeight() / 2);
-//		root.getGraphicalfeature().setX(this.root.getWidth() / 2);
-//		root.getGraphicalfeature().setY(this.root.getHeight() / 2); // before: maxWidth
 		diagram.setRoot(root);
 		return diagram;
 	}

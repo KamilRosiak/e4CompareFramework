@@ -653,6 +653,7 @@ public class FeatureModelEditorController {
 	public void createFeatureModelFromTreeView(@UIEventTopic(FDEventTable.CREATE_FEATUREMODEL_FROM_TREEVIEW) Tree tree) {
 		FeatureDiagramm parsedModel = TreeParser.parse(tree);
 		loadFeatureDiagram(parsedModel);
+		services.eventBroker.send(FDEventTable.FORMAT_DIAGRAM_EVENT, "");
 	}
 
 }
