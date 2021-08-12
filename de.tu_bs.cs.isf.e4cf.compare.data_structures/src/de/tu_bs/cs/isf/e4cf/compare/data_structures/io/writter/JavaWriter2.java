@@ -112,6 +112,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 public class JavaWriter2 extends AbstractArtifactWriter{
 
 	public final static String FILE_ENDING = "java";
+	public final static String ALT_FILE_ENDING = "tree";
 	public final static String NODE_TYPE_TREE = "JAVA";
 
 	/**
@@ -124,6 +125,15 @@ public class JavaWriter2 extends AbstractArtifactWriter{
 	@Override
 	public String getSuppotedNodeType() {
 		return NODE_TYPE_TREE;
+	}
+	
+	@Override
+	public boolean isFileSupported(String fileExtension) {
+		boolean isSupported = super.isFileSupported(fileExtension);
+		if (!isSupported) {
+			return fileExtension.equals(ALT_FILE_ENDING);
+		}
+		return isSupported;
 	}
 
 	@Override

@@ -13,6 +13,8 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
+import static de.tu_bs.cs.isf.e4cf.compare.data_structures.util.DSValidator.checkSyntax
+import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST
 
 @Singleton 
 @Creatable 
@@ -27,7 +29,9 @@ class CloneGenerator {
 		// store all tree states in serialized form
 		// save a copy of the original tree
 		helper.trackingTree = tree
-		var variants = newArrayList(new Variant(tree, helper.trackingTree, 0, 0))
+		val isOriginalSyntaxCorrect = checkSyntax(tree.root)
+		println("Original Syntax Correct: " + isOriginalSyntaxCorrect)
+		var variants = newArrayList(new Variant(tree, helper.trackingTree, 0, 0, isOriginalSyntaxCorrect))
 		
 		val starttime = System.nanoTime();
 		
@@ -63,8 +67,13 @@ class CloneGenerator {
 					
 				}
 				
+				// Sanity Check
+				val isVariantSyntaxCorrect = checkSyntax(currentTree.root)
+				logger.logRaw(CloneST.SYNTAX_CORRECT_FLAG + isVariantSyntaxCorrect)
+				// println("  Syntax Correct: " + isVariantSyntaxCorrect)
+				
 				// Store Variant
-				variants.add(new Variant(currentTree, helper.trackingTree, predecessor.index, variants.size))
+				variants.add(new Variant(currentTree, helper.trackingTree, predecessor.index, variants.size, isVariantSyntaxCorrect))
 			}
 		} finally {
 			// Save all variants and logs
@@ -110,11 +119,21 @@ class CloneGenerator {
 		public Tree trackingTree
 		public int parentIndex
 		public int index
+		public boolean isCorrect = false
+		
 		new (Tree t, Tree trackingT, int parentIndex, int index) {
 			this.tree = t
 			this.trackingTree = trackingT
 			this.parentIndex = parentIndex
 			this.index = index
+		}
+		
+		new (Tree t, Tree trackingT, int parentIndex, int index, boolean isCorrect) {
+			this.tree = t
+			this.trackingTree = trackingT
+			this.parentIndex = parentIndex
+			this.index = index
+			this.isCorrect = isCorrect
 		}
 	}
 	

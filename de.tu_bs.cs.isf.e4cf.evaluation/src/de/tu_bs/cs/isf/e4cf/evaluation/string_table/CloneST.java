@@ -43,4 +43,5 @@ public class CloneST {
 	// Variant Functions
 	public static final String LOG_SEPARATOR = "==========================================================";
 	public static final String VARIANT = "NewVariant";
+	public static final String SYNTAX_CORRECT_FLAG = "Metadata_SyntaxCorrect:";
 }

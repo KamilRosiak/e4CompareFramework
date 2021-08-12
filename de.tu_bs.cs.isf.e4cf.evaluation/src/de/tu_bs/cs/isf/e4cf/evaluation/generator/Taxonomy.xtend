@@ -216,7 +216,7 @@ class Taxonomy {
 							newValue += rng.nextDouble * (Math.signum(Double.parseDouble(oldValue)) as int)
 						}
 						case "String": {
-							newValue = "L" + new Random().nextInt(Integer.MAX_VALUE);
+							newValue = '''"L«new Random().nextInt(Integer.MAX_VALUE)»"'''
 						}
 					}
 				
@@ -259,10 +259,10 @@ class Taxonomy {
 					n.standardizedNodeType == LITERAL
 				].random 
 				
-				m.tryInvoke(literal, "L" + new Random().nextInt(Integer.MAX_VALUE))
+				m.tryInvoke(literal, '''"L«new Random().nextInt(Integer.MAX_VALUE)»"''')
 			}
 			
-			case "changeType": {
+			case "typeChange": {
 				val declaration = tree.root.depthFirstSearch.filter[ n | 
 					#[ARGUMENT, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) && 
 					!n.attributes.filter[a | a.attributeKey == "Type"].nullOrEmpty
