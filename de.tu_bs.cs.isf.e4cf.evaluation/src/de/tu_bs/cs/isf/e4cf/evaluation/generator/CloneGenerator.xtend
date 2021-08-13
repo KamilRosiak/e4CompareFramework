@@ -13,6 +13,8 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
+import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST
+import java.util.ArrayList
 
 @Singleton 
 @Creatable 
@@ -36,35 +38,59 @@ class CloneGenerator {
 			for (var pass = 1; pass <= options.variants; pass++) {
 				println('''Starting Variant Pass #«pass»''')
 	
-				// TODO Crossover (pass>1) or Modifications
-				
-				// Select Predecessor
-				val predecessor = variants.random
-				logger.logVariant(predecessor.index, variants.size)
-				
-				// Setup new Variant
-				val currentTree = helper.deepCopy(predecessor.tree) // create deep copy because we might have selected that variant before
-				helper.trackingTree = predecessor.trackingTree // tracking tree always deep copies
-				
-				// Modify this Variant
-				val nodeToSourceFactor = 6.0
-				val modToLineFactor = 10
-				val numModifications = Math.ceil(currentTree.root.depthFirstSearch.size / (nodeToSourceFactor * modToLineFactor)) * options.variantChangeDegree
-				for (var mod = 1; mod <= numModifications; mod++) {
+				// Do a crossover between two variants if two variants exist
+				// And not syntax safe
+				if(!options.isSyntaxSafe && pass > 1 && new Random().nextInt(100) < options.crossoverPercentage) {
 					
-					// Determine Type
-					if (new Random().nextInt(100) < options.modificationRatioPercentage) {
-						// Type II Modification
-						taxonomy.performType2Modification(currentTree, options.isSyntaxSafe)
-					} else {
-						// Type III Modification
-						taxonomy.performType3Modification(currentTree, options.isSyntaxSafe)
+					// Select two variants
+					// TODO: stronger condition for crossover? (at least two variants with methods)
+					val receiver = variants.random
+					val donor = variants.filter[v | v != receiver].random
+					// TODO: logger.logVariant(donor.index, variants.size)
+					logger.logVariantCrossover(receiver.index, donor.index, variants.size)
+					
+					// Setup new Variant
+					val currentTree = helper.deepCopy(receiver.tree) // create deep copy because we might have selected that variant before
+					val donorTree = helper.deepCopy(donor.tree)
+					helper.trackingTree = receiver.trackingTree // tracking tree always deep copies
+					
+					// Inject subtree from donor into receiver
+					taxonomy.performCrossOver(currentTree, donorTree)
+					
+					// Store Variant
+					// TODO: variants.add(new Variant(currentTree, helper.trackingTree, predecessor.index, variants.size))
+				}
+				// Mutate from a random variant
+				else {
+				
+					// Select Predecessor
+					val predecessor = variants.random
+					logger.logVariant(predecessor.index, variants.size)
+					
+					// Setup new Variant
+					val currentTree = helper.deepCopy(predecessor.tree) // create deep copy because we might have selected that variant before
+					helper.trackingTree = predecessor.trackingTree // tracking tree always deep copies
+					
+					// Modify this Variant
+					val nodeToSourceFactor = 6.0
+					val modToLineFactor = 10
+					val numModifications = Math.ceil(currentTree.root.depthFirstSearch.size / (nodeToSourceFactor * modToLineFactor)) * options.variantChangeDegree
+					for (var mod = 1; mod <= numModifications; mod++) {
+						
+						// Determine Type
+						if (new Random().nextInt(100) < options.modificationRatioPercentage) {
+							// Type II Modification
+							taxonomy.performType2Modification(currentTree, options.isSyntaxSafe)
+						} else {
+							// Type III Modification
+							taxonomy.performType3Modification(currentTree, options.isSyntaxSafe)
+						}
+						
 					}
 					
+					// Store Variant
+					variants.add(new Variant(currentTree, helper.trackingTree, predecessor.index, variants.size))
 				}
-				
-				// Store Variant
-				variants.add(new Variant(currentTree, helper.trackingTree, predecessor.index, variants.size))
 			}
 		} finally {
 			// Save all variants and logs

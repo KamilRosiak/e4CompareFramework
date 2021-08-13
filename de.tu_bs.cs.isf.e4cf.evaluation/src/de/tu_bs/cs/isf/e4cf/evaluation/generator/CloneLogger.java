@@ -75,6 +75,14 @@ public class CloneLogger {
 		variantLogs.put(variantId, currentVariantLog);
 	}
 	
+	// TODO
+	public void logVariantCrossover(final int targetId, final int donorId, final int variantId) {
+
+		logRaw(CloneST.VARIANT + " " + targetId + "~" + donorId + "~" + variantId);
+		System.out.println("A crossover happened yay: " + targetId + "~" + donorId + "~" + variantId);
+		variantLogs.put(variantId, new ArrayList<>());
+	}
+	
 	/** 
 	 * Reconstructs the sequence of variants up to the given id, 
 	 * e.g.taxonomy will be #[10,6,3,1,0] 
@@ -183,5 +191,4 @@ public class CloneLogger {
 			}
 		}
 	}
-
 }

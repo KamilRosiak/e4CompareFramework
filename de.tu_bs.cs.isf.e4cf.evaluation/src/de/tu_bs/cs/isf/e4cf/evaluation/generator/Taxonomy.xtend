@@ -121,7 +121,7 @@ class Taxonomy {
 			}
 			
 			case "replaceIdentifier": {
-				throw new UnsupportedOperationException("Not yet implemented")
+				throw new UnsupportedOperationException("Not yet implemented «m.name»")
 //				val ident = tree.root.depthFirstSearch.filter[ n |
 //					// Named expression
 //					#[ARGUMENT, EXPRESSION, METHOD_DECLARATION, VARIABLE_DECLARATOR //, METHOD_CALL
@@ -224,12 +224,12 @@ class Taxonomy {
 				}
 			}
 			
-			case "changeType": {
-				throw new UnsupportedOperationException("Not yet implemented")
+			case "typeChange": {
+				throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 			}
 			
 			default: {
-				throw new UnsupportedOperationException("Not yet implemented")
+				throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 			}
 		}
 	}
@@ -262,7 +262,7 @@ class Taxonomy {
 				m.tryInvoke(literal, "L" + new Random().nextInt(Integer.MAX_VALUE))
 			}
 			
-			case "changeType": {
+			case "typeChange": {
 				val declaration = tree.root.depthFirstSearch.filter[ n | 
 					#[ARGUMENT, VARIABLE_DECLARATOR].contains(n.standardizedNodeType) && 
 					!n.attributes.filter[a | a.attributeKey == "Type"].nullOrEmpty
@@ -272,7 +272,7 @@ class Taxonomy {
 			}
 			
 			default: {
-				throw new UnsupportedOperationException("Not yet implemented")
+				throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 			}
 		}
 	}
@@ -343,7 +343,7 @@ class Taxonomy {
 	def performType3ModificationSyntaxSave(Tree tree, Method m) {
 		switch (m.name) {
 			case "add": {
-				throw new UnsupportedOperationException("Not yet implemented")
+				throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 //				val source = tree.root.depthFirstSearch.filter[n | 
 //					#[ASSIGNMENT, CLASS, CONSTRUCTION, FIELD_DECLARATION,
 //						^IF, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO,
@@ -405,7 +405,7 @@ class Taxonomy {
 			}
 			case "move": {
 				// For syntax correctness move should satisfy the add and delete conditions
-				throw new UnsupportedOperationException("Not yet implemented")
+				throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 			}
 			case "delete": {
 				val target = tree.root.depthFirstSearch.filter[n | 
@@ -459,11 +459,11 @@ class Taxonomy {
 //						if (target.parent.parent.standardizedNodeType == METHOD_DECLARATION) {
 //							if(tree.getMethodDeclarationCalls(target.parent.parent).isEmpty) isViable = true;
 //						}
-						throw new UnsupportedOperationException("Not yet implemented")
+						throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 					}
 					// Only classes that are not used (construction, field / variable, type cast, ...) can be deleted safely
 					case CLASS: {
-						throw new UnsupportedOperationException("Not yet implemented")
+						throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 					}
 					default: {
 						isViable = true
@@ -482,7 +482,7 @@ class Taxonomy {
 			}
 			
 			default: {
-				throw new UnsupportedOperationException("Not yet implemented")
+				throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 			}
 		}
 	}
@@ -579,7 +579,7 @@ class Taxonomy {
 			}
 			
 			default: {
-				throw new UnsupportedOperationException("Not yet implemented")
+				throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
 			}
 		}
 	}
@@ -644,4 +644,24 @@ class Taxonomy {
 		
 		addFromRepository(source, target)
 	}
+	
+	def performCrossOver(Tree receiverTree, Tree donorTree) {
+		val source = donorTree.root.depthFirstSearch.filter[n | 
+			#[METHOD_DECLARATION].contains(n.standardizedNodeType)
+		].random
+		
+		val target = receiverTree.root.depthFirstSearch.filter[n | 
+			#[METHOD_DECLARATION].contains(n.standardizedNodeType)
+		].random
+		
+		val parent = target.parent
+		delete(target)
+		add(source, parent)
+		
+		// clean merge log
+		// receiverTree log should be ok
+		// propagate all changes on node of the copied donor subtree into the log of the receiver?
+		
+	}
+	
 }
