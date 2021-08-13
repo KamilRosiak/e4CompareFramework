@@ -34,12 +34,14 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	 * This method creates a Node for a ForEachStmt statement.
 	 */
 	private Node createForEachStmtNode(ForEachStmt stmt, Node parent, JavaVisitor visitor) {
-		Node p = new NodeImpl(NodeType.LOOP_COLLECTION_CONTROLLED, stmt.getClass().getSimpleName(), parent);
+		Node p = new NodeImpl(NodeType.LOOP_COLLECTION_CONTROLLED, JavaNodeTypes.ForEachStmt.name(), parent);
 		// Add Iterator as attribute
 		p.addAttribute(JavaAttributesTypes.Iterator.name(), new StringValueImpl(stmt.getIterable().toString()));
-		// Add the initiliaze values
-		p.addAttribute(JavaAttributesTypes.Initialization.name(), new StringValueImpl(stmt.getVariableDeclarator().getNameAsString()));
-		p.addAttribute(JavaAttributesTypes.Type.name(), new StringValueImpl(stmt.getVariableDeclarator().getTypeAsString()));
+
+		// Initializations
+		Node initializationContainer = new NodeImpl(NodeType.INITIALIZATION, JavaNodeTypes.Initialization.name(), p);
+		stmt.getVariable().accept(visitor, initializationContainer); // visited node excluded in JavaVisitor::visit(ForStmt,...)
+		
 		return p;
 	}
 
@@ -47,11 +49,12 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	 * This method creates a Node for a ForStmt statement.
 	 */
 	private Node createForStmt(ForStmt forStmt, Node parent, JavaVisitor visitor) {
-		Node forStmtNode = new NodeImpl(NodeType.LOOP_COUNT_CONTROLLED, forStmt.getClass().getSimpleName(), parent);
+		Node forStmtNode = new NodeImpl(NodeType.LOOP_COUNT_CONTROLLED, JavaNodeTypes.ForStmt.name(), parent);
 		
 		// Initializations
+		Node initializationContainer = new NodeImpl(NodeType.INITIALIZATION, JavaNodeTypes.Initialization.name(), forStmtNode);
 		for (Expression initializtaionExpr : forStmt.getInitialization()) {
-			initializtaionExpr.accept(visitor, forStmtNode);
+			initializtaionExpr.accept(visitor, initializationContainer);
 		}
 		forStmt.getInitialization().clear();
 		
@@ -59,13 +62,13 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 		// Comparison
 		if (forStmt.getCompare().isPresent()) {
 			Expression compareExpr = forStmt.getCompare().get();
-			Node conditionNode = new NodeImpl(NodeType.CONDITION, compareExpr.getClass().getSimpleName(), forStmtNode);
+			Node conditionNode = new NodeImpl(NodeType.CONDITION, JavaNodeTypes.Condition.name(), forStmtNode);
 			compareExpr.accept(visitor, conditionNode);
 			forStmt.removeCompare();
 		}
 
 		// Updates
-		Node updateContainer = new NodeImpl(NodeType.UPDATE, "Update", forStmtNode);
+		Node updateContainer = new NodeImpl(NodeType.UPDATE, JavaNodeTypes.Update.name(), forStmtNode);
 		for (Expression updateExpr : forStmt.getUpdate()) {
 			updateExpr.accept(visitor, updateContainer);
 		}
@@ -79,8 +82,8 @@ public class StatementNodeFactory implements IStatementNodeFactory {
 	 * This method creates a Node for a IfStmt statement.
 	 */
 	private Node createIfStmtNode(IfStmt ifStmt, Node arg, JavaVisitor visitor) {
-		Node ifStmtNode = new NodeImpl(NodeType.IF, ifStmt.getClass().getSimpleName(), arg);
-		Node conditionNode = new NodeImpl(NodeType.CONDITION, ifStmt.getCondition().getClass().getSimpleName(), ifStmtNode);
+		Node ifStmtNode = new NodeImpl(NodeType.IF, JavaNodeTypes.IfStmt.name(), arg);
+		Node conditionNode = new NodeImpl(NodeType.CONDITION, JavaNodeTypes.Condition.name(), ifStmtNode);
 		ifStmt.getCondition().accept(visitor, conditionNode);
 		
 		// Fall through
