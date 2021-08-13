@@ -17,6 +17,7 @@ import static de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType.*
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
+import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator.Variant
 
 @Creatable
 @Singleton
@@ -645,23 +646,96 @@ class Taxonomy {
 		addFromRepository(source, target)
 	}
 	
-	def performCrossOver(Tree receiverTree, Tree donorTree) {
-		val source = donorTree.root.depthFirstSearch.filter[n | 
-			#[METHOD_DECLARATION].contains(n.standardizedNodeType)
-		].random
+	def getLogFromLastCommonAncestor(int donorId, int receiverId) {
+		val log = logger.logs.get(donorId)
 		
-		val target = receiverTree.root.depthFirstSearch.filter[n | 
-			#[METHOD_DECLARATION].contains(n.standardizedNodeType)
-		].random
+		// Find common ancestor
+		val donorHistory = newArrayList
+		logger.reconstructVariantTaxonomy(donorId, donorHistory)
+		val receiverHistory = newArrayList
+		logger.reconstructVariantTaxonomy(receiverId, receiverHistory)
+	
+		val commonAncestorId = donorHistory.findFirst[h | receiverHistory.contains(h)]
 		
-		val parent = target.parent
+		// If the original variant is the common ancestor, everything changed
+		if(commonAncestorId === null) {
+			return log.toList
+		}
+		
+		var commonAncestorSize = logger.logs.get(commonAncestorId).size()
+		
+		val truncatedLog = newArrayList
+		for (var i=commonAncestorSize; i<log.size(); i++) {
+			truncatedLog.add(log.get(i))
+		}
+		
+		return truncatedLog
+	}
+	
+	def variantHasChangesInSubtree(int donorId, int receiverId, Node subtree) {
+		
+		// Filter for changes in the subtree
+		val hasChanges = subtree.depthFirstSearch.exists[n |
+			getLogFromLastCommonAncestor(donorId, receiverId).exists[l | l.contains(n.UUID.toString)]
+		]
+		
+		return hasChanges
+	}
+	
+	def performCrossOver(Variant receiver, Variant donor) {
+		
+		// Setup new Variant
+		val receiverTree = helper.deepCopy(receiver.tree) // create deep copy because we might have selected that variant before
+		val donorTree = helper.deepCopy(donor.tree)
+		helper.trackingTree = receiver.trackingTree // tracking tree always deep copies
+		
+		val donations = donorTree.root.depthFirstSearch.filter[n | 
+			#[METHOD_DECLARATION].contains(n.standardizedNodeType)
+			&& variantHasChangesInSubtree(donor.index, receiver.index, n)
+		]
+		
+		val targets = receiverTree.root.depthFirstSearch.filter[n | 
+			#[METHOD_DECLARATION].contains(n.standardizedNodeType)
+			&& donations.map[s | helper.getAttributeValue(s, "Name")].contains(helper.getAttributeValue(n, "Name"))
+		]
+	
+		if(targets === null) return null
+		
+		val target = targets.random
+		
+		if(target === null) return null
+		
+		val donation = donations.findFirst[n |
+			helper.getAttributeValue(n, "Name").equals(helper.getAttributeValue(target, "Name"))
+		]
+		
+		if(donation === null) return null
+		
+		logger.logVariantCrossover(receiver.index, donor.index, logger.logs.size + 1)
+		
+		
+		// Do not log these operations
+		logger.isActive = false
 		delete(target)
-		add(source, parent)
+		add(donation, target.parent)
+		logger.isActive = true
 		
-		// clean merge log
-		// receiverTree log should be ok
-		// propagate all changes on node of the copied donor subtree into the log of the receiver?
+		// Check the (to be) replaced node UUIDs and delete log entries referencing them
+		val targetUuids = target.depthFirstSearch.map[n | n.UUID.toString].toList
+		targetUuids.forEach[u | logger.deleteLogsContainingString(u)]
 		
+		// Propagate changes
+		val donationUuids = donation.depthFirstSearch.map[n | n.UUID.toString].toList
+		
+		val entriesToAdd = newArrayList
+		getLogFromLastCommonAncestor(donor.index, receiver.index).forEach[ e |
+			if(donationUuids.exists[u |e.contains(u)]) entriesToAdd.add(e)
+		]
+		entriesToAdd.forEach[e | logger.logRaw(e)]
+		
+		val crossoverVariant = new Variant(receiverTree, helper.trackingTree, receiver.index, logger.logs.size)
+		crossoverVariant.crossOverParentIndex = donor.index
+		return crossoverVariant
 	}
 	
 }

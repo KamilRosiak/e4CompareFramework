@@ -16,6 +16,7 @@ import org.eclipse.e4.core.di.annotations.Creatable
 import static de.tu_bs.cs.isf.e4cf.compare.data_structures.util.DSValidator.checkSyntax
 
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 
 @Singleton 
 @Creatable 
@@ -41,35 +42,18 @@ class CloneGenerator {
 			for (var pass = 1; pass <= options.variants; pass++) {
 				println('''Starting Variant Pass #«pass»''')
 	
+				var crossoverFallback = false
+	
 				// Do a crossover between two variants if two variants exist
 				// And not syntax safe
 				if(!options.isSyntaxSafe && pass > 1 && new Random().nextInt(100) < options.crossoverPercentage) {
-					
-					// Select two variants
-					// TODO: stronger condition for crossover? (at least two variants with methods)
-					val receiver = variants.random
-					val donor = variants.filter[v | v != receiver].random
-					// TODO: logger.logVariant(donor.index, variants.size)
-					logger.logVariantCrossover(receiver.index, donor.index, variants.size)
-					
-					// Setup new Variant
-					val currentTree = helper.deepCopy(receiver.tree) // create deep copy because we might have selected that variant before
-					val donorTree = helper.deepCopy(donor.tree)
-					helper.trackingTree = receiver.trackingTree // tracking tree always deep copies
-					
-					// Inject subtree from donor into receiver
-					taxonomy.performCrossOver(currentTree, donorTree)
-					
-					// TODO
-					// Sanity Check
-//					val isVariantSyntaxCorrect = checkSyntax(currentTree.root)
-//					logger.logRaw(CloneST.SYNTAX_CORRECT_FLAG + isVariantSyntaxCorrect)
-//					
-//					// Store Variant
-//					variants.add(new Variant(currentTree, helper.trackingTree, predecessor.index, variants.size, isVariantSyntaxCorrect))
+					crossoverFallback = doCrossover(variants)
+				} else {
+					crossoverFallback = true
 				}
+				
 				// Mutate from a random variant
-				else {
+				if(crossoverFallback) {
 				
 					// Select Predecessor
 					val predecessor = variants.random
@@ -113,6 +97,43 @@ class CloneGenerator {
 		}
 	}
 	
+	/**
+	 * TODO
+	 */
+	def private doCrossover(List<Variant> variants) {
+		// Select two variants that have at least one method
+		val receiver = variants.filter[v | v.tree.root.breadthFirstSearch.exists[n | n.standardizedNodeType === NodeType.METHOD_DECLARATION]].random
+		
+		if(receiver === null) {
+			return false
+		}
+		val donor = variants.filter[v | 
+			v.tree.root.breadthFirstSearch.exists[n | n.standardizedNodeType === NodeType.METHOD_DECLARATION] 
+			&& v != receiver
+		].random
+		
+		if(receiver === null) {
+			return false
+		}
+		
+		// Inject subtree from donor into receiver
+		val crossoverVariant = taxonomy.performCrossOver(receiver, donor)
+		if(crossoverVariant !== null) {
+			
+			// Sanity Check
+			val isVariantSyntaxCorrect = checkSyntax(crossoverVariant.tree.root)
+			logger.logRaw(CloneST.SYNTAX_CORRECT_FLAG + isVariantSyntaxCorrect)
+			crossoverVariant.isCorrect = isVariantSyntaxCorrect
+						
+			// Store Variant
+			variants.add(crossoverVariant)
+		
+			return true
+		} 
+		
+		return false
+	}
+	
 	/** Saves tree strings to json file and log */
 	def private void save(List<Variant> variants) { 
 		// Set the logger export project
@@ -132,7 +153,13 @@ class CloneGenerator {
 		val selectionFileName = services.rcpSelectionService.getCurrentSelectionFromExplorer().getFileName()
 		for (variant : variants) {
 			val String variantSerialized = gsonExportService.exportTree((variant.tree as TreeImpl))
-			val infix = "." + variant.parentIndex + "~" + variant.index
+			var infix = "." + variant.parentIndex
+			
+			if(variant.crossOverParentIndex !== -1) {
+				infix += ","  + variant.crossOverParentIndex
+			}
+			
+			infix += "~" + variant.index
 			val String fileName = '''«selectionFileName»«infix».tree'''
 			logger.write(outputDirectory, fileName, newArrayList(variantSerialized))
 		}
@@ -143,10 +170,11 @@ class CloneGenerator {
 
 	}
 	
-	private static class Variant {
+	static class Variant {
 		public Tree tree
 		public Tree trackingTree
 		public int parentIndex
+		public int crossOverParentIndex = -1;
 		public int index
 		public boolean isCorrect = false
 		

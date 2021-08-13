@@ -25,6 +25,7 @@ import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 public class CloneLogger {
 
 	public String projectFolderName = " 02 Trees";
+	public boolean isActive = true;
 
 	private Map<Integer, List<String>> variantLogs = new HashMap<>();
 	private List<String> currentVariantLog;
@@ -49,7 +50,7 @@ public class CloneLogger {
 			System.out.println("LOG ERROR: No variant to log to specified!");
 			return;
 		}
-		currentVariantLog.add(message);
+		if(isActive) currentVariantLog.add(message);
 	}
 	
 	/** Create a new Log for a new variant */
@@ -76,18 +77,17 @@ public class CloneLogger {
 	}
 	
 	// TODO
-	public void logVariantCrossover(final int targetId, final int donorId, final int variantId) {
-
-		logRaw(CloneST.VARIANT + " " + targetId + "~" + donorId + "~" + variantId);
-		System.out.println("A crossover happened yay: " + targetId + "~" + donorId + "~" + variantId);
-		variantLogs.put(variantId, new ArrayList<>());
+	public void logVariantCrossover(final int receiverId, final int donorId, final int variantId) {
+		logVariant(receiverId, variantId);
+		logRaw(CloneST.CROSSOVER + " " + donorId);
+		System.out.println("A crossover happened yay: " + receiverId + "~" + donorId + "~" + variantId);
 	}
 	
 	/** 
 	 * Reconstructs the sequence of variants up to the given id, 
 	 * e.g.taxonomy will be #[10,6,3,1,0] 
 	 */
-	private void reconstructVariantTaxonomy(int id, List<Integer> taxonomy) {
+	public void reconstructVariantTaxonomy(int id, List<Integer> taxonomy) {
 		if (variantLogs.containsKey(id)) {
 			taxonomy.add(id);
 			List<String> predecessorLog = variantLogs.get(id);
@@ -182,7 +182,7 @@ public class CloneLogger {
 	}
 	
 	public void deleteLogsContainingString(String contains) {
-		for (int i=0; i < currentVariantLog.size(); i++) {
+		if(isActive) for (int i=0; i < currentVariantLog.size(); i++) {
 			String entry = currentVariantLog.get(i);
 			if(entry.startsWith(CloneST.ATOMIC) 
 					&& !entry.startsWith(CloneST.COPY + CloneST.SOURCE)
