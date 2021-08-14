@@ -62,6 +62,19 @@ public class GeneratorViewController {
                 }
             }
         });
+		
+		// Disable Crossover when syntax correct is set
+		checkSyntaxSafe.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				// Syntax True -> Disable Crossover
+				boolean disable = newValue.booleanValue();
+				if (disable) sliderCrossoverVariants.setValue(0);
+				sliderCrossoverVariants.setDisable(disable);
+				textCrossoverVariants.setDisable(disable);
+			}
+		});
+		
 	}
 	
 	private void restrictTextfieldToNumbers(TextField field) {

@@ -76,16 +76,18 @@ public class CloneLogger {
 		variantLogs.put(variantId, currentVariantLog);
 	}
 	
-	// TODO
+	/** Create a new Log for a new Variant that is a crossover*/
 	public void logVariantCrossover(final int receiverId, final int donorId, final int variantId) {
 		logVariant(receiverId, variantId);
 		logRaw(CloneST.CROSSOVER + " " + donorId);
-		System.out.println("A crossover happened yay: " + receiverId + "~" + donorId + "~" + variantId);
+		System.out.println("A crossover happened yay: " + receiverId + "<-" + donorId + "~" + variantId);
 	}
 	
 	/** 
 	 * Reconstructs the sequence of variants up to the given id, 
-	 * e.g.taxonomy will be #[10,6,3,1,0] 
+	 * e.g.taxonomy will be #[10,6,3,1]
+	 * Note that the original id=0 does not contain a log and will 
+	 * therefore not appear in history
 	 */
 	public void reconstructVariantTaxonomy(int id, List<Integer> taxonomy) {
 		if (variantLogs.containsKey(id)) {

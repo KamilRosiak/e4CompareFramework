@@ -35,7 +35,11 @@ class CloneGenerator {
 		println("Original Syntax Correct: " + isOriginalSyntaxCorrect)
 		var variants = newArrayList(new Variant(tree, helper.trackingTree, 0, 0, isOriginalSyntaxCorrect))
 		
-		val starttime = System.nanoTime();
+		// Determine how many crossover variants should be generated
+		var crossoverTargetNum = Math.ceil(options.variants * (options.crossoverPercentage / 100f)) as int
+		println("Target Crossovers: " + crossoverTargetNum)
+		
+		val starttime = System.nanoTime()
 		
 		try {
 			// Number of mutations (taxonomy calls) given by user
@@ -44,10 +48,12 @@ class CloneGenerator {
 	
 				var crossoverFallback = false
 	
-				// Do a crossover between two variants if two variants exist
-				// And not syntax safe
-				if(!options.isSyntaxSafe && pass > 1 && new Random().nextInt(100) < options.crossoverPercentage) {
-					crossoverFallback = doCrossover(variants)
+				// Do Try crossover in the later half of passes and the crossoverTargetNum allows it
+				if(pass > options.variants/2 && crossoverTargetNum > 0) {
+					// if crossover is unsuccessful then activate fallback to normal generation
+					crossoverFallback = !doCrossover(variants)
+					// Decrease target num if crossover was successful
+					if (!crossoverFallback) crossoverTargetNum--
 				} else {
 					crossoverFallback = true
 				}
@@ -98,7 +104,8 @@ class CloneGenerator {
 	}
 	
 	/**
-	 * TODO
+	 * Performs a crossover on two variants of the given list.
+	 * @return false if the crossover could not be achieved.
 	 */
 	def private doCrossover(List<Variant> variants) {
 		// Select two variants that have at least one method
@@ -108,7 +115,8 @@ class CloneGenerator {
 			return false
 		}
 		val donor = variants.filter[v | 
-			v.tree.root.breadthFirstSearch.exists[n | n.standardizedNodeType === NodeType.METHOD_DECLARATION] 
+			v.index != 0 // Original is not allowed to donate
+			&& v.tree.root.breadthFirstSearch.exists[n | n.standardizedNodeType === NodeType.METHOD_DECLARATION] 
 			&& v != receiver
 		].random
 		

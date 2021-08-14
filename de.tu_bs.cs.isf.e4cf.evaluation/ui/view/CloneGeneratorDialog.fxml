@@ -24,8 +24,8 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" spacing="2.0">
                      <children>
-                        <Slider fx:id="sliderCrossoverVariants" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" />
-                        <TextField fx:id="textCrossoverVariants" prefHeight="25.0" prefWidth="40.0" text="0" />
+                        <Slider fx:id="sliderCrossoverVariants" blockIncrement="1.0" disable="true" majorTickUnit="1.0" max="5.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" />
+                        <TextField fx:id="textCrossoverVariants" disable="true" prefHeight="25.0" prefWidth="40.0" text="0" />
                         <Label text="\% Crossover Variants">
                            <tooltip>
                               <Tooltip text="The percentage of variants that will be the result of crossover operations." />
