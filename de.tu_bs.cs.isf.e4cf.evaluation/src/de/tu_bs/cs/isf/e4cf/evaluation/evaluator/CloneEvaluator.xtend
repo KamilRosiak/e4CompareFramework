@@ -16,10 +16,12 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer
+import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger
 import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST
 import java.nio.file.Files
+import java.nio.file.Path
 import java.util.Collections
 import java.util.List
 import java.util.Map
@@ -28,9 +30,6 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
-
-import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions
-import java.nio.file.Path
 
 @Singleton
 @Creatable
@@ -240,13 +239,26 @@ class CloneEvaluator {
 	private def void taxonomyEvaluation(List<String> allVariantNames, Map<Integer, Tree> allTrees, List<String> evaluatorResults, EvaluatorOptions options) {
 		println("Calculating taxonomy...")
 		
-		// Get expected taxonomy from log names
-		val variantToParentExpected = newHashMap
+		// Get expected taxonomy from file names
+		val variantToParentExpected = newHashMap // variantId -> [parentId, crossoverId (None = -1)]
 		allVariantNames.forEach[v | 
 			val temp = v.split("\\.").get(v.split("\\.").size-2)
+			
+			// Deal with possible two parents because of crossover
+			val parents = "" + temp.split("~").get(0)
+			var int parent
+			var int crossover = -1
+			if (parents.contains(",")) {
+				parent = Integer.parseInt(parents.split(",").get(0))
+				crossover = Integer.parseInt(parents.split(",").get(0))
+			} else {
+				parent = Integer.parseInt(parents)
+			}
+			
 			variantToParentExpected.put(
 				Integer.parseInt("" + temp.split("~").get(1)),
-				Integer.parseInt("" + temp.split("~").get(0)))
+				#[parent, crossover]
+			)
 		]
 		
 		// Simple algorithm to calculate taxonomy from variant trees
@@ -322,7 +334,10 @@ class CloneEvaluator {
 		// That simply has no parent (is its own parent)
 		variantToParentCalculated.put(root, root)
 		
-		return variantToParentCalculated
+		// As we can't handle crossover yet, always assume no crossover
+		var variantToParentCalculatedWithCrossover = variantToParentCalculated.mapValues[v | #[v, -1]]
+		
+		return variantToParentCalculatedWithCrossover
 	}
 	
 	/* UTILITY FUNCTIONS */
