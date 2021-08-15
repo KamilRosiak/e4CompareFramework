@@ -118,6 +118,8 @@ class CloneGenerator {
 			v.index != 0 // Original is not allowed to donate
 			&& v.tree.root.breadthFirstSearch.exists[n | n.standardizedNodeType === NodeType.METHOD_DECLARATION] 
 			&& v != receiver
+			// Also it should not be a direct ancestor of the receiver
+			&& !logger.reconstructVariantTaxonomy(receiver.index).contains(v.index)
 		].random
 		
 		if(receiver === null) {

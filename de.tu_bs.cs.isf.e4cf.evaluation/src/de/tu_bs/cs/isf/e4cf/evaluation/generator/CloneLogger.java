@@ -83,6 +83,12 @@ public class CloneLogger {
 		System.out.println("A crossover happened yay: " + receiverId + "<-" + donorId + "~" + variantId);
 	}
 	
+	public ArrayList<Integer> reconstructVariantTaxonomy(int id) {
+		ArrayList<Integer> taxonomy = new ArrayList<>();
+		reconstructVariantTaxonomy(id, taxonomy);
+		return taxonomy;
+	}
+	
 	/** 
 	 * Reconstructs the sequence of variants up to the given id, 
 	 * e.g.taxonomy will be #[10,6,3,1]
