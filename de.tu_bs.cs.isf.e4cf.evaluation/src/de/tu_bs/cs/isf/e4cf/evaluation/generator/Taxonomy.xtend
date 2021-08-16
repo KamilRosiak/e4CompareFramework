@@ -717,7 +717,7 @@ class Taxonomy {
 		// Do not log these operations
 		logger.isActive = false
 		delete(target)
-		add(donation, target.parent)
+		helper.copyRecursively(donation, target.parent, true) // copy preserving uuids
 		logger.isActive = true
 		
 		// Check the (to be) replaced node UUIDs and delete log entries referencing them

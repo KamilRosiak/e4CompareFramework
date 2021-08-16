@@ -45,15 +45,19 @@ class CloneHelper {
 	 * (Without the source children)
 	 * @param source The node to be cloned.
 	 * @param targetParent The parent for newly created source clone.
+	 * @param preserveUUID If true, the source uuid will be reused instead of a new one being created
 	 * @return The clone of the source node
 	 */
-	def copy(Node source, Node targetParent) {
+	def copy(Node source, Node targetParent, boolean preserveUUID) {
 		if (!(source instanceof NodeImpl)) {
 			return null;
 		}
 		
 		// Create a clone
 		val clone = new NodeImpl()
+		if (preserveUUID) {
+			clone.UUID = UUID.fromString(source.UUID.toString)
+		}
 		clone.nodeType = source.nodeType
 		clone.standardizedNodeType = source.standardizedNodeType
 		clone.variabilityClass = source.variabilityClass
@@ -84,21 +88,35 @@ class CloneHelper {
 	 * 
 	 * @param source The subtrees root node to be moved
 	 * @param targetParent The parent for newly created source clone
+	 * @param preserveUUIDs If true, the sources uuids will be reused instead of new ones being created
 	 * @return The clone of the source node
 	 */
-	def copyRecursively(Node source, Node targetParent) {
+	def copyRecursively(Node source, Node targetParent, boolean preserveUUIDs) {
 		if (!(source instanceof NodeImpl)) {
 			return null
 		}
 		
 		logger.logRaw(RCOPY + SOURCE + source.UUID + TARGET + targetParent.UUID)
-		val clone = _copyRecursively(source, targetParent)
+		val clone = _copyRecursively(source, targetParent, preserveUUIDs)
 		return clone;
 	}
 	
-	private def NodeImpl _copyRecursively(Node source, Node targetParent) {		
-		val clone = copy(source, targetParent)
-		source.children.forEach[c | c._copyRecursively(clone)]
+	/**
+	 * Creates a deep copy of a subtree.
+	 * 
+	 * Make sure that the target parent is not contained in source!
+	 * 
+	 * @param source The subtrees root node to be moved
+	 * @param targetParent The parent for newly created source clone
+	 * @return The clone of the source node
+	 */
+	def copyRecursively(Node source, Node targetParent) {
+		copyRecursively(source, targetParent, false)
+	}
+	
+	private def NodeImpl _copyRecursively(Node source, Node targetParent, boolean preserveUUIDs) {		
+		val clone = copy(source, targetParent, preserveUUIDs)
+		source.children.forEach[c | c._copyRecursively(clone, preserveUUIDs)]
 		return clone
 	}
 	

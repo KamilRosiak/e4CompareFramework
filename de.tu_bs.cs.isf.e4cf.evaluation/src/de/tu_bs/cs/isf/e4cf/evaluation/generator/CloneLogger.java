@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,20 +56,15 @@ public class CloneLogger {
 	public void logVariant(final int parentId, final int variantId) {
 		ArrayList<String> newLog = new ArrayList<>();
 		currentVariantLog = newLog;
-		// reconstruct the logs from the base (id=0) variant up to this parent
-		ArrayList<Integer> parentSequence = new ArrayList<>();
-		reconstructVariantTaxonomy(parentId, parentSequence);
-		// reverse parentSequence to start from 0 for log reconstruction
-		Collections.reverse(parentSequence);
-
-		for (int reconstructionId : parentSequence) {
-			if (variantLogs.containsKey(reconstructionId)) {
-				List<String> predecessorLog = variantLogs.get(reconstructionId);
-				for (String entry : predecessorLog) {
-					logRaw(entry);
-				}
+		
+		if (parentId != 0) {
+			// Original Variant has no log
+			List<String> predecessorLog = variantLogs.get(parentId);
+			for (String entry : predecessorLog) {
+				logRaw(entry);
 			}
 		}
+
 		// begin the section of this variant
 		logRaw(CloneST.VARIANT + " " + parentId + "~" + variantId);
 		variantLogs.put(variantId, currentVariantLog);
@@ -99,7 +93,12 @@ public class CloneLogger {
 		if (variantLogs.containsKey(id)) {
 			taxonomy.add(id);
 			List<String> predecessorLog = variantLogs.get(id);
-			int predecessorId = Integer.parseInt(predecessorLog.get(0).split("[ ,~]")[1]);
+			// Find predecessor id
+			String predecessorVariantEntry = predecessorLog.stream()
+							.filter((e) -> e.startsWith(CloneST.VARIANT))
+							.reduce((first, second) -> second)
+							.orElse("NewVariant 0");
+			int predecessorId = Integer.parseInt(predecessorVariantEntry.split("[ ,~]")[1]);
 			reconstructVariantTaxonomy(predecessorId, taxonomy);
 		} 
 	}
