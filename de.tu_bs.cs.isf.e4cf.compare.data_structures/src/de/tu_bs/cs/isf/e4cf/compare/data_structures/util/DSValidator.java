@@ -14,7 +14,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter2;
  */
 public class DSValidator {
 	
-	public static boolean VERBOSE = false;
+	public static boolean VERBOSE = true;
 	private final static String INFO_PREFIX = "  DSValidator-Info: ";
 
 	/**
@@ -54,7 +54,7 @@ public class DSValidator {
 			
 			return isCorrect.get();
 		} catch (Exception e) {
-			print(INFO_PREFIX + "Encountered an Exception while parsing: " + e.getClass().getSimpleName());
+			System.err.println(INFO_PREFIX + "Encountered an Exception while parsing: " + e.getClass().getSimpleName());
 		}
 		return false;
 	}

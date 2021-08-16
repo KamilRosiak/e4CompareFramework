@@ -88,6 +88,7 @@ class CloneGenerator {
 					
 					// Sanity Check
 					val isVariantSyntaxCorrect = checkSyntax(currentTree.root)
+					println("  Sanity Syntax Check: " + isVariantSyntaxCorrect)
 					logger.logRaw(CloneST.SYNTAX_CORRECT_FLAG + isVariantSyntaxCorrect)
 					
 					// Store Variant

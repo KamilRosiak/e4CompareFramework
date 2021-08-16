@@ -215,7 +215,7 @@ public class JavaWriterAttributeCollector {
 				
 			case Type:
 				if (!singleVal.getValue().contains("|")) {
-					if (singleVal.getValue() != "null") {
+					if (!singleVal.getValue().equals("null")) {
 						_type = StaticJavaParser.parseType(singleVal.getValue());
 					}
 				} else {

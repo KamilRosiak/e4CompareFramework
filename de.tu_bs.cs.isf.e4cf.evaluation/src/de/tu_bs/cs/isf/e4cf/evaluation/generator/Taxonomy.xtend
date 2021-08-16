@@ -204,7 +204,7 @@ class Taxonomy {
 					switch (helper.getAttributeValue(literal, "Type")) {
 						case "int",
 						case "long": {
-							var l = Long.parseLong(oldValue.replaceAll("[Ll]",""))
+							var l = Long.parseLong(oldValue.replaceAll("[Ll\"]",""))
 							var max = Math.min(Math.abs(l), Integer.MAX_VALUE) as int
 							max = max == 0 ? max=Short.MAX_VALUE : max=max // we don't want zero
 							newValue += rng.nextInt(max) * (Math.signum(l) as int)
@@ -218,6 +218,13 @@ class Taxonomy {
 						}
 						case "String": {
 							newValue = '''"L«new Random().nextInt(Integer.MAX_VALUE)»"'''
+						}
+						case "boolean": {
+							newValue = oldValue == "true" ? "false" : "true";
+						}
+						case "null": {
+							// don't
+							return null
 						}
 					}
 				
@@ -335,13 +342,13 @@ class Taxonomy {
 		val m = getType3Method(isSyntaxSafe)
 		
 		if(isSyntaxSafe) {
-			performType3ModificationSyntaxSave(tree, m)
+			performType3ModificationSyntaxSafe(tree, m)
 		} else {
-			performType3ModificationNotSyntaxSave(tree, m)
+			performType3ModificationNotSyntaxSafe(tree, m)
 		}
 	}
 	
-	def performType3ModificationSyntaxSave(Tree tree, Method m) {
+	def performType3ModificationSyntaxSafe(Tree tree, Method m) {
 		switch (m.name) {
 			case "add": {
 				throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
@@ -411,70 +418,19 @@ class Taxonomy {
 			case "delete": {
 				val target = tree.root.depthFirstSearch.filter[n | 
 					// Assignments, if, loops, switch, try can be deleted safely, method calls
-					#[ASSIGNMENT, CONSTRUCTION, EXPRESSION, FIELD_DECLARATION, 
-						^IF, LITERAL, LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO, 
+					#[ASSIGNMENT, CONSTRUCTION, FIELD_DECLARATION, 
+						LOOP_COLLECTION_CONTROLLED, LOOP_COUNT_CONTROLLED, LOOP_DO, 
 						LOOP_WHILE, METHOD_CALL, METHOD_DECLARATION, SWITCH, TRY, VARIABLE_DECLARATION
-						// , CLASS, ARGUMENT
-					].contains(n.standardizedNodeType) &&
-					// In general subexpressions of any kind can't be deleted safely
-					n.parent.standardizedNodeType != EXPRESSION
+						// , CLASS, ARGUMENT, EXPRESSION, LITERAL, ^IF, 
+					].contains(n.standardizedNodeType)
+					&& validateDeleteCandidate(tree, n)
 				].random
-				
-				var isViable = false;
 				
 				if (target === null) {
 					System.err.println('''Error with «m.name» modification: No target found''')
 					return;	
 				}
 				
-				// Further restrictions
-				switch (target.standardizedNodeType) {
-					// Only literals at the end of an variable declaration can be deleted safely (-> uninitialized variable)
-					case LITERAL: {
-						if(target.parent.standardizedNodeType == VARIABLE_DECLARATOR) isViable = true;
-					}
-					// Only variable and field declarations that are not referenced (unused) can be deleted safely
-					case VARIABLE_DECLARATION,
-					case FIELD_DECLARATION: {
-						// Uses the name in the variable declarator
-						var references = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
-							&& helper.getAttributeValue(target.children.head, "Name") == helper.getAttributeValue(n, "Name")]
-							
-						if(references.isEmpty) isViable = true;
-					}
-					// Only method declarations that are not called (unused) can be deleted safely
-					case METHOD_DECLARATION: {
-						if(tree.getMethodDeclarationCalls(target).isEmpty) isViable = true;
-					}
-					// Only constructions that are not called anywhere (same arguments) can be deleted safely
-					case CONSTRUCTION: {
-						// So they should not be the type of an object creation expression
-						var calls = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
-							&& helper.getAttributeValue(target, "Name") == helper.getAttributeValue(n, "Type")]
-							
-						if(calls.isEmpty) isViable = true;
-					}
-					case ARGUMENT: {
-						// Only arguments of methods that are not called anywhere (same arguments)
-						// And that are not used in the function below (e.g. as arguments or in expressions) can be deleted safely
-//						if (target.parent.parent.standardizedNodeType == METHOD_DECLARATION) {
-//							if(tree.getMethodDeclarationCalls(target.parent.parent).isEmpty) isViable = true;
-//						}
-						throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
-					}
-					// Only classes that are not used (construction, field / variable, type cast, ...) can be deleted safely
-					case CLASS: {
-						throw new UnsupportedOperationException('''Not yet implemented «m.name»''')
-					}
-					default: {
-						isViable = true
-					}
-				}
-				
-				if (!isViable) {
-					System.err.println('''Error with «m.name» modification: Target not viable for «target.UUID.toString»''')
-					return;
-				}
 				delete(target)
 			}
 			
@@ -488,7 +444,58 @@ class Taxonomy {
 		}
 	}
 	
-	def performType3ModificationNotSyntaxSave(Tree tree, Method m) {
+	def private validateDeleteCandidate(Tree tree, Node target) {
+		var isViable = false
+		// Further restrictions
+		switch (target.standardizedNodeType) {
+			// Only literals at the end of an variable declaration can be deleted safely (-> uninitialized variable)
+			case LITERAL: {
+				if(target.parent.standardizedNodeType == VARIABLE_DECLARATOR) isViable = true;
+			}
+			// Only variable and field declarations that are not referenced (unused) can be deleted safely
+			case VARIABLE_DECLARATION,
+			case FIELD_DECLARATION: {
+				// Uses the name in the variable declarator
+				var references = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
+					&& helper.getAttributeValue(target.children.head, "Name") == helper.getAttributeValue(n, "Name")]
+					
+				if(references.isEmpty) isViable = true;
+			}
+			// Only method declarations that are not called (unused) can be deleted safely
+			case METHOD_DECLARATION: {
+				if(tree.getMethodDeclarationCalls(target).isEmpty) isViable = true;
+			}
+			case METHOD_CALL: {
+				
+			}
+			// Only constructions that are not called anywhere (same arguments) can be deleted safely
+			case CONSTRUCTION: {
+				// So they should not be the type of an object creation expression
+				var calls = tree.root.depthFirstSearch.filter[ n | n.standardizedNodeType == EXPRESSION
+					&& helper.getAttributeValue(target, "Name") == helper.getAttributeValue(n, "Type")]
+					
+				if(calls.isEmpty) isViable = true;
+			}
+			case ARGUMENT: {
+				// Only arguments of methods that are not called anywhere (same arguments)
+				// And that are not used in the function below (e.g. as arguments or in expressions) can be deleted safely
+//						if (target.parent.parent.standardizedNodeType == METHOD_DECLARATION) {
+//							if(tree.getMethodDeclarationCalls(target.parent.parent).isEmpty) isViable = true;
+//						}
+				isViable = false
+			}
+			// Only classes that are not used (construction, field / variable, type cast, ...) can be deleted safely
+			case CLASS: {
+				isViable = false
+			}
+			default: {
+				isViable = true
+			}
+		}
+		return isViable
+	}
+	
+	def performType3ModificationNotSyntaxSafe(Tree tree, Method m) {
 		switch (m.name) {
 			case "add",
 			case "move": {
