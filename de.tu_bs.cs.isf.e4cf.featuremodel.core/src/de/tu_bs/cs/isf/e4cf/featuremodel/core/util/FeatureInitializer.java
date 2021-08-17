@@ -12,9 +12,9 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 public class FeatureInitializer {
 
 	
-	public static Feature createFeature(String name, boolean isRoot) {
+	public static Feature createFeature(String name, boolean isMandatory) {
 		Feature feature = FeatureDiagramFactoryImpl.eINSTANCE.createFeature();
-		initialize(feature, name, isRoot);
+		initialize(feature, name, isMandatory);
 		return feature;
 	}
 	
@@ -30,9 +30,9 @@ public class FeatureInitializer {
 		return feature;
 	}
 	
-	private static void initialize(Feature feature, String name, boolean isRoot) {
+	private static void initialize(Feature feature, String name, boolean isMandatory) {
 		feature.setName(name);
-		feature.setMandatory(isRoot);
+		feature.setMandatory(isMandatory);
 		feature.setAlternative(false);
 		feature.setOr(false);
 		feature.setAbstract(false);
