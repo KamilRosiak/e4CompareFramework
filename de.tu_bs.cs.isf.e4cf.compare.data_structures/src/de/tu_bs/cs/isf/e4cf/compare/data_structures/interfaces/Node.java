@@ -13,6 +13,27 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  *
  */
 public interface Node {
+	/**
+	 * Returns the start line of the respective artifact in its original artifact
+	 * type.
+	 */
+	public int getStartLine();
+
+	/**
+	 * Returns the end line of the respective artifact in its original artifact
+	 * type.
+	 */
+	public int getEndLine();
+
+	/**
+	 * Setter for the start line
+	 */
+	public void setStartLine(int startLine);
+
+	/**
+	 * Setter for the end line
+	 */
+	public void setEndLine(int endLine);
 
 	/**
 	 * This method returns the type of the node, e.g., class, method, statement.
@@ -93,15 +114,24 @@ public interface Node {
 	 */
 	public List<Node> getNodesOfType(String nodeType);
 
+	public void addChildWithParent(Node child);
+
 	/**
-	 * This method adds a child node to the current node and sets the parent.
+	 * This method adds a child node to the current node at a given position and
+	 * sets the parent.
 	 */
-	public void addChildWithParent(Node node);
+	public void addChildWithParent(Node node, int position);
 
 	/**
 	 * This method adds a child node to the current node and sets the parent.
 	 */
 	public void addChild(Node node);
+	
+	/**
+	 * This method adds a child node to the current node at a given position and
+	 * sets the parent.
+	 */
+	public void addChild(Node node, int position);
 
 	/**
 	 * Returns the total number of child nodes
@@ -139,15 +169,48 @@ public interface Node {
 	 */
 	public void setUUID(UUID uuid);
 
-	/** 
-	 * Sets a customizable, not necessarily consistently defined node type
-	 * Use this method in parsers, when defining more precise types of node than
-	 * available with standardized NodeTypes
+	/**
+	 * Sets a customizable, not necessarily consistently defined node type Use this
+	 * method in parsers, when defining more precise types of node than available
+	 * with standardized NodeTypes
 	 */
+
 	public void setNodeType(String nodeType);
 
 	/**
-	 *  Sets the standardized node type of this node
+	 * This method creates a deep copy of this node.
+	 */
+	public Node cloneNode();
+
+	/**
+	 * This method returns the position of this node.
+	 * 
+	 * @return
+	 */
+	public int getPosition();
+
+	/**
+	 * This method sets the position of this node.
+	 */
+	public void setPosition(int position);
+
+	/**
+	 * This method updates the position of this node.
+	 */
+	public void updatePosition(int position);
+
+	/**
+	 * This method sorts the children by position.
+	 */
+	public void sortChildrenByPosition();
+
+	/**
+	 * This method removes a given child.
+	 */
+	public void removeChild(Node child, int position);
+
+	/**
+	 * Sets the standardized node type of this node
 	 */
 	public void setStandardizedNodeType(NodeType type);
 
@@ -159,7 +222,12 @@ public interface Node {
 	/**
 	 * Changes how the node displays itself when calling .toString()
 	 */
-	public void setRepresenation(String representation);
+	public void setRepresentation(String representation);
+	
+	/**
+	 * Sorting all child elements using start and endline
+	 */
+	public void sortChildNodes();
 	
 	/**
 	 * Traverse the Node composite in a breadth first manner.

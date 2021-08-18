@@ -29,7 +29,7 @@ public class FamilyModelNodeDecorator implements NodeDecorator{
 		// Special Case for Root Node
 		if (node.getValue().isRoot())
 			node.setGraphic(new ImageView(FileTable.rootImage));
-		node.getValue().setRepresenation(node.getValue().getNodeType());
+		node.getValue().setRepresentation(node.getValue().getNodeType());
 		return node;
 	}
 

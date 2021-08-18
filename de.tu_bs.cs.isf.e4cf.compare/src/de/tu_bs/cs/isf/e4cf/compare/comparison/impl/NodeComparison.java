@@ -70,7 +70,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		
 		// all artifacts which are equals
 		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
-			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(ComparisonUtil.MANDATORY_VALUE));
+			// mandatory is a default value if the artifacts was optional in a previous
+			// iteration it should stay as optional
 			return getLeftArtifact();
 		} else {
 			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
@@ -91,7 +92,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				}
 			}
 
-			// put all other attributes from right to left because it wasent contained
+			// put all other attributes from right to left because it wasn't contained
 			// before
 			getRightArtifact().getAttributes().stream().forEach(e -> getLeftArtifact().addAttribute(e));
 
@@ -100,15 +101,20 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			for (Comparison<Node> childComparision : getChildComparisons()) {
 				getLeftArtifact().addChildWithParent(((NodeComparison)childComparision).mergeArtifacts(omitOptionalChildren));
 			}
+			//add artifacts min line number 
+			getLeftArtifact().setStartLine(Math.min(getLeftArtifact().getStartLine(), getRightArtifact().getStartLine()));
+			getLeftArtifact().setEndLine(Math.min(getLeftArtifact().getEndLine(), getRightArtifact().getEndLine()));
+
+			getLeftArtifact().sortChildNodes();
 			return getLeftArtifact();
 		}
 	}
 
 	@Override
 	public boolean areArtifactsOfSameType() {
-		return (getLeftArtifact() != null && getRightArtifact() != null) ? getLeftArtifact().getNodeType().equals(getRightArtifact().getNodeType()) : false;
+		return (getLeftArtifact() != null && getRightArtifact() != null)
+				? getLeftArtifact().getNodeType().equals(getRightArtifact().getNodeType())
+				: false;
 	}
-
-
 
 }

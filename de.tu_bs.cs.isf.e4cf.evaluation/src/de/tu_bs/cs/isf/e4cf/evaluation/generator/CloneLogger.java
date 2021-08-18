@@ -74,7 +74,7 @@ public class CloneLogger {
 	public void logVariantCrossover(final int receiverId, final int donorId, final int variantId) {
 		logVariant(receiverId, variantId);
 		logRaw(CloneST.CROSSOVER + " " + donorId);
-		System.out.println("A crossover happened yay: " + receiverId + "<-" + donorId + "~" + variantId);
+		System.out.println("A crossover happened: " + receiverId + "<-" + donorId + "~" + variantId);
 	}
 	
 	public ArrayList<Integer> reconstructVariantTaxonomy(int id) {

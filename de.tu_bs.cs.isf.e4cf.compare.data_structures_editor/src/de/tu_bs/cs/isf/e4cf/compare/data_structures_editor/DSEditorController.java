@@ -13,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.ConfigurationDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DecorationManager;
@@ -100,7 +101,7 @@ public class DSEditorController {
 	@Inject
 	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
 		setCurrentTree(tree);
-		setContextMenü();
+		setContextMenu();
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(DSEditorST.TREE_VIEW_ID);
@@ -109,7 +110,10 @@ public class DSEditorController {
 		//load decorator and select the first
 		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		decoratorCombo.getSelectionModel().select(0);
+
 		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), getSelectedDecorator());
+		TreeViewUtilities.decorateTreeViewWithSelectedConfigurations(treeView.getRoot(), new ConfigurationDecorator());
+
 		addListener();
 	}
 
@@ -124,7 +128,7 @@ public class DSEditorController {
 		treeView.setShowRoot(true);
 	}
 
-	private void setContextMenü() {
+	private void setContextMenu() {
 		treeView.setContextMenu(contextMenu);
 		treeView.setOnMouseEntered(event -> contextMenu.hide());
 	}
@@ -243,7 +247,7 @@ public class DSEditorController {
 		try {
 			for (TreeItem<Node> ti : copyList) {
 				TreeItem<Node> tempNode = TreeViewUtilities.createTreeItem(ti.getValue(), getSelectedDecorator());
-				// Idee: Index verwalten über expand/collapse All
+				// Idee: Index verwalten Ã¼ber expand/collapse All
 				treeView.getSelectionModel().getSelectedItem().getChildren().add(tempNode);
 				for (TreeItem<Node> child : ti.getChildren()) {
 					tempNode.getChildren().add(TreeViewUtilities.createTreeItem(child.getValue(),getSelectedDecorator()));

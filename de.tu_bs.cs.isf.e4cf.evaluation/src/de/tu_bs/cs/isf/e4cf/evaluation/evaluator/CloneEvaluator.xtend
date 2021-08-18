@@ -250,7 +250,7 @@ class CloneEvaluator {
 			var int crossover = -1
 			if (parents.contains(",")) {
 				parent = Integer.parseInt(parents.split(",").get(0))
-				crossover = Integer.parseInt(parents.split(",").get(0))
+				crossover = Integer.parseInt(parents.split(",").get(1))
 			} else {
 				parent = Integer.parseInt(parents)
 			}

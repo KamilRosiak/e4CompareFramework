@@ -24,7 +24,7 @@ public class TextDecorator implements NodeDecorator {
 			node.setGraphic(new ImageView(FileTable.defaultImage));
 			break;
 		}
-		node.getValue().setRepresenation(node.getValue().getNodeType());
+		node.getValue().setRepresentation(node.getValue().getNodeType());
 		return node;
 	}
 

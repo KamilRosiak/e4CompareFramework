@@ -17,7 +17,7 @@ public class DetailedFamilyModelNodeDecorator extends FamilyModelNodeDecorator {
 		String confusion = getAttributeValueFromNode(nodeimpl, "Confusion");
 		confusion = confusion == "" ? "" : "[" + confusion.trim() + "] ";
 
-		nodeimpl.setRepresenation(confusion + nodeimpl.getStandardizedNodeType() + nodeName + nodeValue + nodeOperator);
+		nodeimpl.setRepresentation(confusion + nodeimpl.getStandardizedNodeType() + nodeName + nodeValue + nodeOperator);
 
 		return node;
 	}
