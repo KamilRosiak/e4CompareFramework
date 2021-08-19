@@ -21,4 +21,8 @@ public class FileTable {
 	public static final Image FV_OPTIONAL_16 = new Image("icons/family/optional_16.png");
 	public static final Image FV_OPTIONAL_24 = new Image("icons/family/optional_24.png");
 	public static final Image FV_OPTIONAL_32 = new Image("icons/family/optional_32.png");
+	
+	public static final Image FV_CONFIGURATION_16 = new Image("icons/refactoring/configuration_16.png");
+	public static final Image FV_CONFIGURATION_24 = new Image("icons/refactoring/configuration_24.png");
+	public static final Image FV_CONFIGURATION_32 = new Image("icons/refactoring/configuration_32.png");
 }

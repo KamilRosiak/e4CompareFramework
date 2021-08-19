@@ -123,7 +123,7 @@ public class JavaWriterAttributeCollector {
 				_expression = StaticJavaParser.parseExpression(singleVal.getValue());
 			} else if (key.equals(JavaAttributesTypes.Identifier.name())) {
 				_identifier = singleVal.getValue();
-			} else if (key.equals(JavaAttributesTypes.Initilization.name())) {
+			} else if (key.equals(JavaAttributesTypes.Initialization.name())) {
 				Expression expr;
 				for (Value val : attribute.getAttributeValues()) {
 					if(val instanceof StringValueImpl) {

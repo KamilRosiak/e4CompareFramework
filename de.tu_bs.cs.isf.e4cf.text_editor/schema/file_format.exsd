@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="de.tu_bs.cs.isf.e4cf.text_editor" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="de.tu_bs.cs.isf.e4cf.text_editor" id="de.tu_bs.cs.isf.e4cf.text_editor.file_format" name="FileFormat"/>
+      </appinfo>
+      <documentation>
+         [Enter description of this extension point.]
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="file_format"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="file_format">
+      <annotation>
+         <documentation>
+            Add a file format to the text editor.
+
+The only required attribute is &apos;file_extension&apos;. The other attributes allow for custom highlighting, indentation or formatting for files of the file format. However, they are not required and can be left blank, when none of those features are desired.
+
+The text editor will only be able to create, open, edit and save files of a  file format, when the file format is registered as an extension of this extension point and the extending plugin is selected in the launch configuration.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="file_extension" type="string" use="required">
+            <annotation>
+               <documentation>
+                  File extension of the file format without a preceeding dot
+e.g.: Java-Files: java; XML-Files: xml; etc...
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="highlighting" type="string">
+            <annotation>
+               <documentation>
+                  Implementation for custom highlighting for files of the file extension . Can either be in a seperate class or be  part of a class that could implement additional interfaces.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IHighlighting"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="css" type="string">
+            <annotation>
+               <documentation>
+                  For total control over the highlighting , set a style-sheet with custom javafx css classes.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="resource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="indentation" type="string">
+            <annotation>
+               <documentation>
+                  Implementation of custom indentation for files of the file extension. Can either be in a seperate class or be part of a class that implements additional interfaces.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IIndenting"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="formatting" type="string">
+            <annotation>
+               <documentation>
+                  Implementation for custom formatting for files of the file extension. Can either be in a seperate class or be part of a class that implements additional interfaces.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":de.tu_bs.cs.isf.e4cf.text_editor.interfaces.IFormatting"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         [Enter the first release in which this extension point appears.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

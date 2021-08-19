@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="file_format" name="FileFormat" schema="schema/file_format.exsd"/>
+   <extension
+         id="de.tu-bs.cs.isf.e4cf.text_editor.project_explorer_file_extension"
+         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+      <project_explorer_file_attr
+            file_extension="java"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.extensions.JavaFileExtension">
+      </project_explorer_file_attr>
+      <project_explorer_file_attr
+            file_extension="xml"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.extensions.XMLFileExtension">
+      </project_explorer_file_attr>
+      <project_explorer_file_attr
+            file_extension="txt"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.text_editor.extensions.TxtFileExtension">
+      </project_explorer_file_attr>
+   </extension>
+
+   <extension
+         id="de.tu-bs.cs.isf.e4cf.text_editor.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi"
+            apply="always">
+      </fragment>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.text_editor.file_format">
+      <file_format
+            file_extension="txt">
+      </file_format>
+      <file_format
+            css="ui/view/style/java-keyword.css"
+            file_extension="java"
+            formatting="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat"
+            highlighting="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat"
+            indentation="de.tu_bs.cs.isf.e4cf.text_editor.format.JavaFormat">
+      </file_format>
+      <file_format
+            css="ui/view/style/xml-keyword.css"
+            file_extension="xml"
+            highlighting="de.tu_bs.cs.isf.e4cf.text_editor.format.XmlFormat"
+            indentation="de.tu_bs.cs.isf.e4cf.text_editor.format.XmlFormat">
+      </file_format>
+   </extension>
+
+</plugin>

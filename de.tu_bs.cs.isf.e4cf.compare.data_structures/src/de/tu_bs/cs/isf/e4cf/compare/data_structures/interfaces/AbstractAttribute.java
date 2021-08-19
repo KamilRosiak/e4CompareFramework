@@ -60,4 +60,6 @@ public abstract class AbstractAttribute implements Attribute {
 	public void setAttributeKey(String attributeKey) {
 		this.attributeKey = attributeKey;
 	}
+	
+	
 }

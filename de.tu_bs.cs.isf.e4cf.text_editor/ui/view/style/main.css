@@ -1,0 +1,23 @@
+/* 
+ * Import the stylesheets for all file-types 
+ * Make sure that all imported css-classes 
+ * have globally unique names
+ */
+@import "java-keyword.css";
+@import "xml-keyword.css";
+
+.blue-color{
+    -fx-fill: blue;
+}
+
+.red-color{
+    -fx-fill: red;
+}
+
+.green-color{
+    -fx-fill: green;
+}
+
+.no-style {
+	
+}

@@ -88,6 +88,10 @@ public enum JavaNodeTypes {
 	 */
 	Import, 
 	/**
+	 * Container node for multiple imports
+	 */
+	Imports,
+	/**
 	 * Node type for an interface
 	 * 
 	 * @see ClassOrInterfaceDeclaration

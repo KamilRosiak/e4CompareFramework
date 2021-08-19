@@ -1,0 +1,20 @@
+.xml-tagmark {
+    -fx-fill: gray;
+}
+.xml-anytag {
+    -fx-fill: crimson;
+}
+.xml-paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.xml-attribute {
+    -fx-fill: darkviolet;
+}
+.xml-avalue {
+    -fx-fill: black;
+}
+
+.xml-comment {
+	-fx-fill: teal;
+}

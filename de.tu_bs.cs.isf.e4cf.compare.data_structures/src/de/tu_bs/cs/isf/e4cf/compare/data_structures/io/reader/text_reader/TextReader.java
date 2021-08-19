@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.text_reader;
 
 import java.nio.file.Paths;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
@@ -26,7 +27,6 @@ public class TextReader extends AbstractArtifactReader {
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
 		Tree tree = null;
-		tree.setFileExtension("txt");
 		if (isFileSupported(element)) {
 			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
 			// Spiting the input by lines
@@ -34,12 +34,13 @@ public class TextReader extends AbstractArtifactReader {
 			// The name is only the file name
 			String name = element.getAbsolutePath().substring(element.getAbsolutePath().lastIndexOf("\\") + 1);
 
-			tree = new TreeImpl(name, new NodeImpl(TextFileTags.TEXT.toString()));
+			tree = new TreeImpl(name, new NodeImpl(NodeType.UNDEFINED, TextFileTags.TEXT.toString()));
+			tree.setFileExtension("txt");
 			for (String line : lines) {
-				Node lineNode = new NodeImpl(TextFileTags.LINE.toString(), tree.getRoot());
+				Node lineNode = new NodeImpl(NodeType.UNDEFINED, TextFileTags.LINE.toString(), tree.getRoot());
 				String[] words = line.split(" ");
 				for (String word : words) {
-					Node wordNode = new NodeImpl(TextFileTags.WORD.toString(), lineNode);
+					Node wordNode = new NodeImpl(NodeType.UNDEFINED, TextFileTags.WORD.toString(), lineNode);
 					wordNode.addAttribute(TextFileTags.TEXT.toString(), new StringValueImpl(word));
 				}
 			}

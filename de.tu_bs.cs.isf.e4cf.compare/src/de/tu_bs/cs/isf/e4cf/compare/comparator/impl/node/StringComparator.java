@@ -28,10 +28,10 @@ public class StringComparator extends AbstractNodeComparator {
 				}
 			}
 		}
-		// calculate the avarage similarity
-		int maxAttributes = Math.max(firstNode.getAttributes().size(), firstNode.getAttributes().size());
+		// calculate the average similarity
+		int maxAttributes = Math.max(firstNode.getAttributes().size(), secondNode.getAttributes().size());
 		float similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
-		// add 0.2 as base similarity becuase this node are of the same type
+		// add keyValueRatio as base similarity because this node are of the same type
 		similarity = similarity * (1.0f - keyValueRatio) + keyValueRatio;
 		return new NodeResultElement(this, similarity);
 	}
@@ -50,6 +50,7 @@ public class StringComparator extends AbstractNodeComparator {
 	/**
 	 * compares the values of a corresponding key returns 1 if a match is found else
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Float compareValues(Attribute firstAttr, Attribute secondAttr) {
 		for (Value firstValue : firstAttr.getAttributeValues()) {
 			for (Value secondValue : secondAttr.getAttributeValues()) {
