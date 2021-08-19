@@ -14,6 +14,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 
+/**
+ * This class helps convert a Tree to a FeatureDiagram
+ * 
+ * @author {Eike Schmitz, Lukas Cronauer}
+ *
+ */
 public class TreeParser {
 
 	public static FeatureDiagramm parse(Tree tree) {
@@ -29,7 +35,7 @@ public class TreeParser {
 		return model;
 	}
 	
-	public static void createFeatureModel(Node node, Feature parent) {
+	private static void createFeatureModel(Node node, Feature parent) {
 		Feature feature = createFeature(node, parent);
 		for (Node n : node.getChildren()) {
 			createFeatureModel(n, feature);
@@ -41,14 +47,12 @@ public class TreeParser {
 		feature.setAlternative(!hasMandatoryChildren(node));
 		ArtifactReference uuid = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
 		uuid.setArtifactClearName(node.getUUID().toString());
-		feature.getArtifactReferences().add(uuid);
-		if (!node.getNodeType().equals("Parameter")) {
-			appendAttr(node, feature, "Name");
-		} else {
-			appendAttr(node, feature, "Type");
-		}
+		feature.getArtifactReferences().add(uuid);	
+		appendAttr(node, feature, "Type");
+		appendAttr(node, feature, "Name");
 		appendAttr(node, feature, "Condition");
 		appendAttr(node, feature, "Iterator");
+		appendAttr(node, feature, "Operator");
 		insertValuesAsChildren(node, feature);
 		
 		return feature;

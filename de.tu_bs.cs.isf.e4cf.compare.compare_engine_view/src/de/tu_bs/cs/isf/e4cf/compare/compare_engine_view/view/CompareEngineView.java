@@ -84,6 +84,7 @@ public class CompareEngineView implements Initializable {
 
 			if (artifacts.size() > 1) {
 				Tree mergedTree = engine.compare(artifacts);
+				services.partService.showPart(DSEditorST.TREE_VIEW_ID);
 				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
 				//JavaWriter writer = new JavaWriter();
 				//writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()

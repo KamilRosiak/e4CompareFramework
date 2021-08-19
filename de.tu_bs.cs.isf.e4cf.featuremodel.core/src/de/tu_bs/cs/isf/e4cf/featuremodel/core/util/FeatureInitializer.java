@@ -9,6 +9,12 @@ import FeatureDiagram.GraphicalFeature;
 import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 
+/**
+ * This class creates instances of Feature and its children and initializes them
+ * 
+ * @author {Eike Schmitz, Lukas Cronauer}
+ *
+ */
 public class FeatureInitializer {
 
 	
