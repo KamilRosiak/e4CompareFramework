@@ -17,6 +17,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAttributesTypes;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaNodeTypes;
 
 public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 
@@ -54,7 +55,7 @@ public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 
 	@Override
 	public void visit(LabeledStmt n, Node arg) {
-		Node labeledStmt = new NodeImpl(NodeType.LABELED_STATEMENT, n.getClass().getSimpleName(), arg);
+		Node labeledStmt = new NodeImpl(NodeType.LABELED_STATEMENT, JavaNodeTypes.LabeledStmt.name(), arg);
 		labeledStmt.addAttribute(JavaAttributesTypes.Name.name(), new StringValueImpl(n.getLabel().asString()));
 		visitor(n, labeledStmt);
 	}

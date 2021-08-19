@@ -15,6 +15,7 @@ import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
 import java.util.Random
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 
 @Creatable
 @Singleton
@@ -44,15 +45,19 @@ class CloneHelper {
 	 * (Without the source children)
 	 * @param source The node to be cloned.
 	 * @param targetParent The parent for newly created source clone.
+	 * @param preserveUUID If true, the source uuid will be reused instead of a new one being created
 	 * @return The clone of the source node
 	 */
-	def copy(Node source, Node targetParent) {
+	def copy(Node source, Node targetParent, boolean preserveUUID) {
 		if (!(source instanceof NodeImpl)) {
 			return null;
 		}
 		
 		// Create a clone
 		val clone = new NodeImpl()
+		if (preserveUUID) {
+			clone.UUID = UUID.fromString(source.UUID.toString)
+		}
 		clone.nodeType = source.nodeType
 		clone.standardizedNodeType = source.standardizedNodeType
 		clone.variabilityClass = source.variabilityClass
@@ -66,10 +71,10 @@ class CloneHelper {
 		shadowClone.UUID = UUID.fromString(clone.UUID.toString)
 		shadowClone.standardizedNodeType = clone.standardizedNodeType
 		shadowClone.variabilityClass = clone.variabilityClass
-		val shadowParent = trackingTree.root.allChildren.findFirst[n | n.UUID == targetParent.UUID]
+		val shadowParent = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == targetParent.UUID]
 		shadowParent.children.add(shadowClone)
 		shadowClone.parent = shadowParent
-		source.attributes.forEach[a | clone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]
+		source.attributes.forEach[a | shadowClone.addAttribute( new AttributeImpl(a.attributeKey, a.attributeValues))]
 		
 		// No further check because a copy itself is always a valid mutation
 		logger.logRaw(COPY + SOURCE + source.UUID + TARGET + targetParent.UUID + CLONE + clone.UUID);
@@ -83,21 +88,35 @@ class CloneHelper {
 	 * 
 	 * @param source The subtrees root node to be moved
 	 * @param targetParent The parent for newly created source clone
+	 * @param preserveUUIDs If true, the sources uuids will be reused instead of new ones being created
 	 * @return The clone of the source node
 	 */
-	def copyRecursively(Node source, Node targetParent) {
+	def copyRecursively(Node source, Node targetParent, boolean preserveUUIDs) {
 		if (!(source instanceof NodeImpl)) {
 			return null
 		}
 		
 		logger.logRaw(RCOPY + SOURCE + source.UUID + TARGET + targetParent.UUID)
-		val clone = _copyRecursively(source, targetParent)
+		val clone = _copyRecursively(source, targetParent, preserveUUIDs)
 		return clone;
 	}
 	
-	private def NodeImpl _copyRecursively(Node source, Node targetParent) {		
-		val clone = copy(source, targetParent)
-		source.children.forEach[c | c._copyRecursively(clone)]
+	/**
+	 * Creates a deep copy of a subtree.
+	 * 
+	 * Make sure that the target parent is not contained in source!
+	 * 
+	 * @param source The subtrees root node to be moved
+	 * @param targetParent The parent for newly created source clone
+	 * @return The clone of the source node
+	 */
+	def copyRecursively(Node source, Node targetParent) {
+		copyRecursively(source, targetParent, false)
+	}
+	
+	private def NodeImpl _copyRecursively(Node source, Node targetParent, boolean preserveUUIDs) {		
+		val clone = copy(source, targetParent, preserveUUIDs)
+		source.children.forEach[c | c._copyRecursively(clone, preserveUUIDs)]
 		return clone
 	}
 	
@@ -115,7 +134,7 @@ class CloneHelper {
 		if(previousMove !== null) {
 			logger.log.remove(previousMove)
 			
-			val originalParentUuid = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID].parent.UUID
+			val originalParentUuid = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == source.UUID].parent.UUID
 			// A move back (target parent == original source parent) kills a previous move
 			if(originalParentUuid != targetParent.UUID) {
 				// If the node was already moved then the target of the previous move operation is replaced by a new one
@@ -136,9 +155,9 @@ class CloneHelper {
 		source.parent = targetParent
 		
 		// Apply operation on shadow tree
-		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
-		trackingTree.root.allChildren.findFirst[n | n.UUID == oldParent.UUID].children.remove(shadowSource) // Remove source from old parent
-		val shadowTargetParent = trackingTree.root.allChildren.findFirst[n | n.UUID == targetParent.UUID]
+		val shadowSource = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == source.UUID]
+		trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == oldParent.UUID].children.remove(shadowSource) // Remove source from old parent
+		val shadowTargetParent = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == targetParent.UUID]
 		shadowTargetParent.addChild(shadowSource) // add source to new parent
 		shadowSource.parent = shadowTargetParent // set parent of source to new parent
 		
@@ -166,7 +185,7 @@ class CloneHelper {
 		if(previousMovePos !== null) {
 			logger.log.remove(previousMovePos)
 			
-			val originalSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
+			val originalSource = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == source.UUID]
 			val originalIndex = originalSource.parent.children.indexOf(originalSource)
 			// A move back (target index == original source index) kills a previous move
 			if(originalIndex != index) {
@@ -186,8 +205,8 @@ class CloneHelper {
 		parent.children.add(index, source)
 		
 		// Apply operation on shadow tree
-		val shadowParent = trackingTree.root.allChildren.findFirst[n | n.UUID == parent.UUID]
-		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID == source.UUID]
+		val shadowParent = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == parent.UUID]
+		val shadowSource = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == source.UUID]
 		shadowParent.children.remove(shadowSource)
 		shadowParent.children.add(index, shadowSource)
 		
@@ -231,7 +250,7 @@ class CloneHelper {
 		// remove node subtree
 		source.parent.children.remove(source)
 		// also remove subtree from tracking tree
-		val shadowSource = trackingTree.root.allChildren.findFirst[n | n.UUID.toString == source.UUID.toString]
+		val shadowSource = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID.toString == source.UUID.toString]
 		shadowSource.parent.children.remove(shadowSource)
 	}
 	
@@ -245,28 +264,11 @@ class CloneHelper {
 		logger.deleteLogsContainingString(source.UUID.toString)
 		logger.logRaw(DELETE + TARGET + source.UUID)
 		
-		source.allChildren.forEach[
+		source.depthFirstSearch.forEach[
 			c | 
 			// Delete invalidates all actions on nodes that are deleted (except clone operations)
 			logger.deleteLogsContainingString(c.UUID.toString);
 			logger.logRaw(DELETE + TARGET + c.UUID);
-		]
-	}
-	
-	// TODO: Create Nodes Function from Seed-Repository
-	
-	/**
-	 * Returns all children of the given node in depth first order
-	 * @param root start node
-	 */
-	def static getAllChildren(Node root) {
-		var nodes = newArrayList
-		root._getAllChildren(nodes)
-		return nodes
-	}
-	
-	private static def void _getAllChildren(Node root, List<Node> nodes) {
-		root.children.forEach[c | nodes.add(c); c._getAllChildren(nodes)
 		]
 	}
 	
@@ -284,8 +286,9 @@ class CloneHelper {
 			
 			// Refactor variable declarations (Class and Methods)
 			// Note: also refactors method arguments with the same name as the field which may not be applicable to every language
+			// CLASS, COMPILATION_UNIT,
 			switch (container.standardizedNodeType) {
-				case VARIABLE_DECLARATION: {
+				case VARIABLE_DECLARATOR: {
 					if (container.attributes.filter[a | a.attributeKey == "Name"].nullOrEmpty) {
 						//abort
 						println("A container for multiple declarations was input here: "+ container.UUID.toString)
@@ -294,21 +297,45 @@ class CloneHelper {
 					body = container.parent.parent
 				}
 				case ARGUMENT: {
-					// refactor method argument
+					// refactor method definition argument itself and every occurrence in the block next to it
 					container.setAttributeValue("Name", newValue)
-					body = container.parent.parent.children.get(1)
+					if (container.parent.parent.standardizedNodeType == NodeType.METHOD_DECLARATION) {
+						// Interfaces have no body
+						if(container.parent.parent.children.size > 1) {
+							body = container.parent.parent.children.get(1)
+						}
+					} else {
+						// probably lambda
+						body = container.parent.children.findFirst[n | n.standardizedNodeType == NodeType.BLOCK]
+					}
+					
 					
 				}
-				case METHOD_DECLARATION: 
-					body = container.parent
+				case METHOD_DECLARATION: {
+					// Scope is the container (~class) of the method definition
+					body = container.parent					
+				}
+				case COMPILATION_UNIT,
+				case CLASS: {
+					// Note that we do not change anything out of file scope
+					body = container
+					while (body.standardizedNodeType != NodeType.COMPILATION_UNIT && body.parent !== null) {
+						body = body.parent
+					}
+					
+				}
 				default: {
 					println("Could not refactor node type: " + container.standardizedNodeType)
 					return
 				}
 			}
 			
-			logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + SCOPE + body.UUID + FROM + oldValue + TO + newValue)
-			_refactor(body, #["Name", "Value"], oldValue, newValue)
+			if(body === null) {
+				System.err.println('''Error with refactoring «oldValue»: No body found''')
+			} else {
+				logger.logRaw(REFACTOR + CONTAINER + container.UUID + TYPE + container.nodeType + SCOPE + body.UUID + FROM + oldValue + TO + newValue)
+				_refactor(body, #["Name", "Value"], oldValue, newValue)
+			}
 		}
 	}
 	
@@ -317,7 +344,7 @@ class CloneHelper {
 	}
 	
 	private def _refactor(Node body, String attrKey, String oldValue, String newValue) {
-		body.allChildren.filter[
+		body.depthFirstSearch.filter[
 			n | n.attributes.exists[
 				a | a.attributeKey == attrKey && n.getAttributeValue(attrKey) == oldValue
 			]
@@ -335,7 +362,7 @@ class CloneHelper {
 		if(previousSetAttr !== null) {
 			logger.log.remove(previousSetAttr)
 			
-			val originaNode = trackingTree.root.allChildren.findFirst[n | n.UUID == node.UUID]		
+			val originaNode = trackingTree.root.depthFirstSearch.findFirst[n | n.UUID == node.UUID]		
 			val originalValue = originaNode.getAttributeValue(attributeKey)
 			
 			// A move back (new value == original value) kills a previous move
@@ -366,6 +393,15 @@ class CloneHelper {
 	def static <T> random(Iterable<T> l){
 		if (l.nullOrEmpty) return null;
 		return l.get(new Random().nextInt(l.size))
+	}
+	
+	/** Returns the root node of a node composite */
+	def static Node getRoot(Node n) {
+		if (n.parent !== null) {
+			return n.parent
+		} else {
+			return n
+		}
 	}
 	
 	// utility: nest nodes e.g. wrap statsequence in control block

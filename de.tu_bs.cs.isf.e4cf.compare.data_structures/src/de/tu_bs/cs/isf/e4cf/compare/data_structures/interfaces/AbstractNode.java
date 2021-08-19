@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeIterator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 
 public abstract class AbstractNode implements Node {
@@ -361,12 +362,22 @@ public abstract class AbstractNode implements Node {
 	public NodeType getStandardizedNodeType() {
 		return standardizedNodeType;
 	}
+	
+	@Override
+	public Iterable<Node> breadthFirstSearch() {
+        return () -> new NodeIterator(this, true);
+    }
+	
+	@Override
+    public Iterable<Node> depthFirstSearch() {
+        return () -> new NodeIterator(this, false);
+    }
 
 	@Override
 	public int getPosition() {
 
 		Attribute attribute = getAttributeForKey("Position");
-		Value value = attribute.getAttributeValues().get(0);
+		Value<?> value = attribute.getAttributeValues().get(0);
 		return Integer.parseInt((String) value.getValue());
 
 	}

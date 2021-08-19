@@ -7,6 +7,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.NewFolderHandler;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.handlers.RemoveFileCommand;
@@ -33,9 +34,11 @@ public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
 	KeyCombination kcRename = new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN);
 	KeyCombination kcNewFolder = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
 	KeyCombination kcExplorer = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN);
+	KeyCombination kcCollapseAll = new KeyCodeCombination(KeyCode.MINUS, KeyCombination.CONTROL_DOWN);
 	
-	public ProjectExplorerKeyListener(IEclipseContext  eclipseContext) {
+	public ProjectExplorerKeyListener(IEclipseContext  eclipseContext, ServiceContainer services) {
 		this.eclipseContext = eclipseContext;
+		this.services = services;
 	}
 	
 	@Override
@@ -54,6 +57,10 @@ public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
 			// Show in Explorer Combo
 			showInExplorer();
 			
+		} else if (kcCollapseAll.match(event)) {
+			// Collapse all Treeview nodes
+			services.eventBroker.send(E4CEventTable.EVENT_COLLAPSE_ALL, null);
+			
 		} else {
 			
 			// Handle single Key Events in switch case
@@ -61,10 +68,6 @@ public class ProjectExplorerKeyListener implements EventHandler<KeyEvent> {
 			switch (keyCode) {
 				case DELETE:
 					removeFile();
-					break;
-					
-				case F2:
-					renameFile();
 					break;
 					
 				default:

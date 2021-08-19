@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,8 @@ import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 @Creatable
 public class CloneLogger {
 
-	private final String DEFAULT_LOG_PATH = " 02 Trees";
+	public String projectFolderName = " 02 Trees";
+	public boolean isActive = true;
 
 	private Map<Integer, List<String>> variantLogs = new HashMap<>();
 	private List<String> currentVariantLog;
@@ -40,7 +40,7 @@ public class CloneLogger {
 	}
 	
 	public Path getOutputPath() {
-		return services.workspaceFileSystem.getWorkspaceDirectory().getFile().resolve(DEFAULT_LOG_PATH);
+		return services.workspaceFileSystem.getWorkspaceDirectory().getFile().resolve(projectFolderName);
 	}
 	
 	/** Directly write a message into the current variants log */
@@ -49,41 +49,56 @@ public class CloneLogger {
 			System.out.println("LOG ERROR: No variant to log to specified!");
 			return;
 		}
-		currentVariantLog.add(message);
+		if(isActive) currentVariantLog.add(message);
 	}
 	
 	/** Create a new Log for a new variant */
 	public void logVariant(final int parentId, final int variantId) {
 		ArrayList<String> newLog = new ArrayList<>();
 		currentVariantLog = newLog;
-		// reconstruct the logs from the base (id=0) variant up to this parent
-		ArrayList<Integer> parentSequence = new ArrayList<>();
-		reconstructVariantTaxonomy(parentId, parentSequence);
-		// reverse parentSequence to start from 0 for log reconstruction
-		Collections.reverse(parentSequence);
-
-		for (int reconstructionId : parentSequence) {
-			if (variantLogs.containsKey(reconstructionId)) {
-				List<String> predecessorLog = variantLogs.get(reconstructionId);
-				for (String entry : predecessorLog) {
-					logRaw(entry);
-				}
+		
+		if (parentId != 0) {
+			// Original Variant has no log
+			List<String> predecessorLog = variantLogs.get(parentId);
+			for (String entry : predecessorLog) {
+				logRaw(entry);
 			}
 		}
+
 		// begin the section of this variant
 		logRaw(CloneST.VARIANT + " " + parentId + "~" + variantId);
 		variantLogs.put(variantId, currentVariantLog);
 	}
 	
+	/** Create a new Log for a new Variant that is a crossover*/
+	public void logVariantCrossover(final int receiverId, final int donorId, final int variantId) {
+		logVariant(receiverId, variantId);
+		logRaw(CloneST.CROSSOVER + " " + donorId);
+		System.out.println("A crossover happened: " + receiverId + "<-" + donorId + "~" + variantId);
+	}
+	
+	public ArrayList<Integer> reconstructVariantTaxonomy(int id) {
+		ArrayList<Integer> taxonomy = new ArrayList<>();
+		reconstructVariantTaxonomy(id, taxonomy);
+		return taxonomy;
+	}
+	
 	/** 
 	 * Reconstructs the sequence of variants up to the given id, 
-	 * e.g.taxonomy will be #[10,6,3,1,0] 
+	 * e.g.taxonomy will be #[10,6,3,1]
+	 * Note that the original id=0 does not contain a log and will 
+	 * therefore not appear in history
 	 */
-	private void reconstructVariantTaxonomy(int id, List<Integer> taxonomy) {
+	public void reconstructVariantTaxonomy(int id, List<Integer> taxonomy) {
 		if (variantLogs.containsKey(id)) {
 			taxonomy.add(id);
 			List<String> predecessorLog = variantLogs.get(id);
-			int predecessorId = Integer.parseInt(predecessorLog.get(0).split("[ ,~]")[1]);
+			// Find predecessor id
+			String predecessorVariantEntry = predecessorLog.stream()
+							.filter((e) -> e.startsWith(CloneST.VARIANT))
+							.reduce((first, second) -> second)
+							.orElse("NewVariant 0");
+			int predecessorId = Integer.parseInt(predecessorVariantEntry.split("[ ,~]")[1]);
 			reconstructVariantTaxonomy(predecessorId, taxonomy);
 		} 
 	}
@@ -104,7 +119,7 @@ public class CloneLogger {
 
 	/**
 	 * Utility for saving content to a file 
-	 * @param targetDir directory relative to the default path (workspace/ 02 Trees)
+	 * @param targetDir directory relative to the project path
 	 * @param fileName The name of the created file
 	 * @param content
 	 */
@@ -125,6 +140,25 @@ public class CloneLogger {
 		}
 	}
 	
+	public Path getOutPutDirBasedOnSelection() {
+		// setup save path based on selection in explorer
+		Path selectedPath = Paths.get(services.rcpSelectionService.getCurrentSelectionFromExplorer().getRelativePath());
+		
+		if (services.rcpSelectionService.getCurrentSelectionFromExplorer().isDirectory()) {
+			if (selectedPath.getNameCount() < 2) {
+				return null;
+			}
+			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount());
+		} else {
+			if (selectedPath.getNameCount() < 3) {
+				return null;
+			}
+			selectedPath = selectedPath.subpath(1, selectedPath.getNameCount() - 1);
+		}
+		
+		return getOutputPath().resolve(selectedPath);
+	}
+	
 	public void read(String filePath) {
 		try {
 			List<String> content = Files.readAllLines(Paths.get(filePath));
@@ -132,7 +166,7 @@ public class CloneLogger {
 			for (String line : content) {
 				if (line.equals(CloneST.LOG_SEPARATOR)) {
 					currentVariantLog = new ArrayList<String>();
-					variantLogs.put(variantLogs.size()-1, currentVariantLog);
+					variantLogs.put(variantLogs.size()+1, currentVariantLog);
 				} else {
 					currentVariantLog.add(line);
 				}
@@ -155,16 +189,13 @@ public class CloneLogger {
 	}
 	
 	public void deleteLogsContainingString(String contains) {
-		yeeeeeeeeeeeeeeet(contains);
-	}
-	
-	private void yeeeeeeeeeeeeeeet(String contains) {
-		for (int i=0; i < currentVariantLog.size(); i++) {
+		if(isActive) for (int i=0; i < currentVariantLog.size(); i++) {
 			String entry = currentVariantLog.get(i);
-			if(!entry.startsWith(CloneST.CLONE) && entry.contains(contains)) {
+			if(entry.startsWith(CloneST.ATOMIC) 
+					&& !entry.startsWith(CloneST.COPY + CloneST.SOURCE)
+					&& entry.contains(contains)) {
 				currentVariantLog.remove(entry);
 			}
 		}
 	}
-
 }

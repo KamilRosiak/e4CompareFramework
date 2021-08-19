@@ -43,13 +43,31 @@ public class NodeComparison extends AbstractComparsion<Node> {
 
 	@Override
 	public Node mergeArtifacts() {
+		return mergeArtifacts(true);
+	}
+	
+	public Node mergeArtifacts(boolean omitOptionalChildren) {
 		// if one of both artifact is null its means that we have an optional and can
 		// keep the implementation below this artifacts.
 		if (getLeftArtifact() == null || getRightArtifact() == null) {
 			Node node = getLeftArtifact() == null ? getRightArtifact() : getLeftArtifact();
-			node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
+			if (omitOptionalChildren) {
+				// Expect children of Optionals to be mandatory for their parents
+				node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
+				
+			} else {
+				
+				// Process the Children as they were compared
+				node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
+				node.getChildren().clear();
+				for (Comparison<Node> childComparision : getChildComparisons()) {
+					node.addChildWithParent(((NodeComparison)childComparision).mergeArtifacts(omitOptionalChildren));
+				}
+			}
+			
 			return node;
 		}
+		
 		// all artifacts which are equals
 		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
 			// mandatory is a default value if the artifacts was optional in a previous
@@ -81,7 +99,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getLeftArtifact().addChildWithParent(childComparision.mergeArtifacts());
+				getLeftArtifact().addChildWithParent(((NodeComparison)childComparision).mergeArtifacts(omitOptionalChildren));
 			}
 			//add artifacts min line number 
 			getLeftArtifact().setStartLine(Math.min(getLeftArtifact().getStartLine(), getRightArtifact().getStartLine()));

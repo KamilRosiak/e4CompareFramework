@@ -4,7 +4,7 @@
     <elements xsi:type="menu:DirectMenuItem" xmi:id="_QwIcEMXgEeu5ks8U2_TfdQ" elementId="de.tu_bs.cs.isf.e4cf.evaluation.directmenuitem.generate" label="Generate Clones" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.evaluation/icons/CloneGenerator24.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.evaluation/de.tu_bs.cs.isf.e4cf.evaluation.handler.CloneGeneratorHandler">
       <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_UihvoMXgEeu5ks8U2_TfdQ" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.evaluation/de.tu_bs.cs.isf.e4cf.evaluation.handler.CloneGeneratorHandler"/>
     </elements>
-    <elements xsi:type="menu:DirectMenuItem" xmi:id="_3tyJoNaNEeu2IqOG5kOE8w" elementId="de.tu_bs.cs.isf.e4cf.evaluation.directmenuitem.evaluate" label="Evaluate Mutation Framework" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.evaluation/de.tu_bs.cs.isf.e4cf.evaluation.handler.CloneEvaluationHandler">
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_3tyJoNaNEeu2IqOG5kOE8w" elementId="de.tu_bs.cs.isf.e4cf.evaluation.directmenuitem.evaluate" label="Evaluate Mutation Framework" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.evaluation/icons/CloneEvaluator24.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.evaluation/de.tu_bs.cs.isf.e4cf.evaluation.handler.CloneEvaluationHandler">
       <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_3tyJodaNEeu2IqOG5kOE8w" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.evaluation/de.tu_bs.cs.isf.e4cf.evaluation.handler.CloneEvaluationHandler"/>
     </elements>
   </fragments>
