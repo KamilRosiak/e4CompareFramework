@@ -42,8 +42,13 @@ public class TreeParser {
 		ArtifactReference uuid = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
 		uuid.setArtifactClearName(node.getUUID().toString());
 		feature.getArtifactReferences().add(uuid);
-		
-		appendName(node, feature);
+		if (!node.getNodeType().equals("Parameter")) {
+			appendAttr(node, feature, "Name");
+		} else {
+			appendAttr(node, feature, "Type");
+		}
+		appendAttr(node, feature, "Condition");
+		appendAttr(node, feature, "Iterator");
 		insertValuesAsChildren(node, feature);
 		
 		return feature;
@@ -65,15 +70,15 @@ public class TreeParser {
 		}
 	}
 
-	private static void appendName(Node node, Feature feature) {
+	private static void appendAttr(Node node, Feature feature, String property) {
 		try {
-			Attribute nameAttr = node.getAttributeForKey("Name");
-			String name = "";
-			for (Value<String> value : nameAttr.getAttributeValues()) {
-				name += " " + value.getValue();
+			Attribute attr = node.getAttributeForKey(property);
+			String append = "";
+			for (Value<String> value : attr.getAttributeValues()) {
+				append += " " + value.getValue();
 				
 			}
-			feature.setName(feature.getName() + ":" + name);
+			feature.setName(feature.getName() + ":" + append);
 		} catch (NoSuchElementException e) {
 		}
 	}
