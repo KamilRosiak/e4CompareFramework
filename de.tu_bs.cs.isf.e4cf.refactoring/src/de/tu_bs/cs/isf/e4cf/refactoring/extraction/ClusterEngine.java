@@ -11,27 +11,53 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.ComponentImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.ConfigurationImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
 
+@Singleton
+@Creatable
 public class ClusterEngine {
-
-	private CompareEngineHierarchical compareEngine;	
+	private CompareEngineHierarchical compareEngine;
 	private String scriptPath;
-	
+
+	private float threshold = 0.15f;
+
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
-		scriptPath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "script/clustering.py").substring(1)).getPath();
-		
+		scriptPath = new File(
+				(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "script/clustering.py")
+						.substring(1)).getPath();
+
 	}
 
-	public List<Set<Node>> detectClusters(Iterable<Node> nodes, float threshold) {
-				
+	public Map<ComponentLayer, List<Set<Node>>> detectClusters(Map<ComponentLayer, List<Node>> nodes) {
+		Map<ComponentLayer, List<Set<Node>>> layersToCluster = new HashMap<ComponentLayer, List<Set<Node>>>();
+
+		for (Entry<ComponentLayer, List<Node>> entry : nodes.entrySet()) {
+			layersToCluster.put(entry.getKey(), detectClusters(entry.getValue()));
+
+		}
+
+		return layersToCluster;
+	}
+
+	private List<Set<Node>> detectClusters(Iterable<Node> nodes) {
+
 		List<Set<Node>> clusters = new ArrayList<Set<Node>>();
 
 		// Build distance matrix for numpy
@@ -97,15 +123,6 @@ public class ClusterEngine {
 
 	}
 
-	public boolean verifyCluster(Iterable<Node> nodes, float threshold) {
-		List<Set<Node>> clusters = detectClusters(nodes, threshold);
-
-		if (clusters.size() != 1) {
-			return false;
-		}
-		return true;
-	}
-
 	private void printMetrics(List<Set<Node>> clusters, float threshold) {
 		int largestCluster = 0;
 		int numberOfClustersWithSingleElement = 0;
@@ -126,6 +143,33 @@ public class ClusterEngine {
 		System.out.println("Number of clusters: " + clusters.size());
 		System.out.println("Largest cluster: " + largestCluster);
 		System.out.println("Clusters of size 1: " + numberOfClustersWithSingleElement);
+
+	}
+
+	public Map<String, List<Set<Node>>> refineComponents(List<Component> components) {
+		Map<String, List<Set<Node>>> layersToClusters = new HashMap<String, List<Set<Node>>>();
+		Map<String, Set<Component>> componentsByGranularities = new HashMap<String, Set<Component>>();
+		for (Component component : components) {
+			if (!componentsByGranularities.containsKey(component.getLayer())) {
+				componentsByGranularities.put(component.getLayer(), new HashSet<Component>());
+			}
+			componentsByGranularities.get(component.getLayer()).add(component);
+		}
+
+		for (Entry<String, Set<Component>> entry : componentsByGranularities.entrySet()) {
+			List<Node> nodes = new ArrayList<Node>();
+			for (Component component : entry.getValue()) {
+				for (Configuration configuration : component.getConfigurations()) {
+					nodes.add(configuration.getChildren().get(0));
+				}
+			}
+
+			List<Set<Node>> clusters = detectClusters(nodes);
+			layersToClusters.put(entry.getKey(), clusters);
+
+		}
+
+		return layersToClusters;
 
 	}
 

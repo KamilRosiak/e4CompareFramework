@@ -1,14 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
-public class ActionScope implements Comparable<ActionScope> {
+public class ActionScope {
 
 	private Action action;
-
+	
 	private boolean apply;
-
-	public boolean apply() {
-		return apply;
-	}
 
 	public Action getAction() {
 		return action;
@@ -16,6 +12,10 @@ public class ActionScope implements Comparable<ActionScope> {
 
 	public void setAction(Action action) {
 		this.action = action;
+	}
+
+	public boolean isApply() {
+		return apply;
 	}
 
 	public void setApply(boolean apply) {
@@ -27,19 +27,8 @@ public class ActionScope implements Comparable<ActionScope> {
 		this.action = action;
 		this.apply = apply;
 	}
-
-	@Override
-	public int compareTo(ActionScope o) {
-
-		if (this.getAction().getActionType() == o.getAction().getActionType()) {
-			return 0;
-		}
-
-		if (this.getAction().getActionType() == ActionType.MOVE) {
-			return -1;
-		}
-
-		return 1;
-	}
-
+	
+	
+	
+	
 }

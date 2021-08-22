@@ -13,14 +13,14 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.SynchronizationScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
 import de.tu_bs.cs.isf.e4cf.refactoring.views.SynchronizationView;
 
 @Singleton
 @Creatable
 public class SynchronizationViewController extends Controller<SynchronizationView> {
 
-	private Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations;
+	private Map<ActionScope, List<ActionScope>> actionsToSynchronizations;
 
 	public SynchronizationViewController() {
 		super(new SynchronizationView());
@@ -34,7 +34,7 @@ public class SynchronizationViewController extends Controller<SynchronizationVie
 
 				TreeItem item = (TreeItem) event.item;
 				ActionScope actionScope = (ActionScope) item.getData();
-				List<SynchronizationScope> synchronizationScopes = actionsToSynchronizations.get(actionScope);
+				List<ActionScope> synchronizationScopes = actionsToSynchronizations.get(actionScope);
 
 				view.createSynchronizationTree(synchronizationScopes);
 
@@ -44,20 +44,20 @@ public class SynchronizationViewController extends Controller<SynchronizationVie
 		view.getSynchronizationTree().addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				TreeItem item = (TreeItem) event.item;
-				SynchronizationScope synchronizationScope = (SynchronizationScope) item.getData();
+				ActionScope synchronizationScope = (ActionScope) item.getData();
 
 				view.getComponentTree().deselectAll();
 
 				for (TreeItem treeItem : view.getComponentTree().getItems()) {
 
-					view.markNodeRecursively(treeItem, synchronizationScope.getNode());
+					view.markNodeRecursively(treeItem, synchronizationScope.getAction().getX());
 				}
 
 				if (event.detail == SWT.CHECK) {
 
 					boolean checked = item.getChecked();
 
-					synchronizationScope.setSynchronize(checked);
+					synchronizationScope.setApply(checked);
 
 					while (item.getParentItem() != null) {
 						item = item.getParentItem();
@@ -70,12 +70,12 @@ public class SynchronizationViewController extends Controller<SynchronizationVie
 
 	}
 
-	public void showView(Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations,
-			Map<Component, List<ActionScope>> componentToActions) {
+	public void showView(Map<ActionScope, List<ActionScope>> actionsToSynchronizations,
+			List<ConfigurationComparison> configurationComparisons) {
 
 		this.actionsToSynchronizations = actionsToSynchronizations;
 
-		view.showView(actionsToSynchronizations, componentToActions);
+		view.showView(actionsToSynchronizations, configurationComparisons);
 
 	}
 

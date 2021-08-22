@@ -1,8 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -13,6 +15,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 
@@ -27,7 +30,7 @@ public class ActionView extends View {
 
 	private Component selectedComponent;
 
-	private Map<Component, List<ActionScope>> componentToActions;
+	private List<ConfigurationComparison> configurationComparisons;
 
 	public Tree getActionTree() {
 		return actionTree;
@@ -64,16 +67,15 @@ public class ActionView extends View {
 
 	}
 
-	public void showView(Map<Component, List<ActionScope>> componentToActions) {
+	public void showView(List<ConfigurationComparison> configurationComparisons) {
 
-		this.componentToActions = componentToActions;
-
+		this.configurationComparisons = configurationComparisons;
 		createComponentTree();
-
 		List<ActionScope> allActionScopes = new ArrayList<ActionScope>();
-		for (List<ActionScope> actionScopeList : componentToActions.values()) {
-			allActionScopes.addAll(actionScopeList);
+		for (ConfigurationComparison configurationComparison : configurationComparisons) {
+			allActionScopes.addAll(configurationComparison.getActionScopes());
 		}
+
 		createActionTree(allActionScopes);
 
 		showView();
@@ -84,8 +86,13 @@ public class ActionView extends View {
 		for (TreeItem item : componentTree.getItems()) {
 			item.dispose();
 		}
+		
+		Set<Component> components = new HashSet<Component>();
+		for (ConfigurationComparison configurationComparison : configurationComparisons) {
+			components.add(configurationComparison.getComponent1());
+		}
 
-		componentTreeBuilder.buildComponentTree(componentToActions.keySet(), componentTree);
+		componentTreeBuilder.buildComponentTree(components, componentTree);
 	}
 
 	public void createActionTree(List<ActionScope> actionScopes) {
@@ -100,8 +107,7 @@ public class ActionView extends View {
 			actionTree.select(actionTree.getItem(0));
 
 			for (TreeItem treeItem : componentTree.getItems()) {
-				markNodeRecursively(treeItem,
-						((ActionScope) actionTree.getItem(0).getData()).getAction().getAffectedNode());
+				markNodeRecursively(treeItem, ((ActionScope) actionTree.getItem(0).getData()).getAction().getX());
 			}
 
 		}

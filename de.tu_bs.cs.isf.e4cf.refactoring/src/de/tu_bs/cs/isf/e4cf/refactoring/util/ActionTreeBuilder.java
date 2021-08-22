@@ -9,9 +9,10 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Action;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionType;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.AddAction;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.MoveAction;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Delete;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Move;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Update;
 
 public class ActionTreeBuilder {
 
@@ -20,62 +21,73 @@ public class ActionTreeBuilder {
 		for (ActionScope actionScope : actionScopes) {
 			Action action = actionScope.getAction();
 
-			TreeItem actionTreeItem = null;
+			TreeItem mainTreeItem = null;
 
 			if (item instanceof Tree) {
-				actionTreeItem = new TreeItem((Tree) item, 0);
+				mainTreeItem = new TreeItem((Tree) item, 0);
 			} else if (item instanceof TreeItem) {
-				actionTreeItem = new TreeItem((TreeItem) item, 0);
+				mainTreeItem = new TreeItem((TreeItem) item, 0);
 			}
 
-			actionTreeItem.setText("Action type: " + action.getActionType());
-			actionTreeItem.setData(actionScope);
-			actionTreeItem.setChecked(actionScope.apply());
+			mainTreeItem.setText("Action type: " + action.getActionType());
+			mainTreeItem.setData(actionScope);
+			mainTreeItem.setChecked(actionScope.isApply());
 
-			TreeItem affectedNodeTreeItem = new TreeItem(actionTreeItem, 0);
+			TreeItem subTreeItem1 = new TreeItem(mainTreeItem, 0);
 
-			affectedNodeTreeItem.setData(actionScope);
-			affectedNodeTreeItem.setChecked(actionScope.apply());
+			subTreeItem1.setData(actionScope);
+			subTreeItem1.setChecked(actionScope.isApply());
 
-			TreeItem actionNodeTreeItem = new TreeItem(actionTreeItem, 0);
+			TreeItem subTreeItem2 = new TreeItem(mainTreeItem, 0);
 
-			actionNodeTreeItem.setData(actionScope);
-			actionNodeTreeItem.setChecked(actionScope.apply());
+			subTreeItem2.setData(actionScope);
+			subTreeItem2.setChecked(actionScope.isApply());
 
-			if (action.getActionType() == ActionType.UPDATE) {
+			if (action instanceof Update) {
 
-				affectedNodeTreeItem.setText("Affected node: " + action.getAffectedNode().getNodeType());
-				actionNodeTreeItem.setText("Action node: " + action.getActionNode().getNodeType());
-				decorateWithAttributes(action.getAffectedNode().getAttributes(), affectedNodeTreeItem, actionScope);
-				decorateWithAttributes(action.getActionNode().getAttributes(), actionNodeTreeItem, actionScope);
+				Update update = (Update) action;
 
-			} else if (action.getActionType() == ActionType.MOVE) {
+				subTreeItem1.setText("Node to update: " + update.getX().getNodeType());
+				subTreeItem2.setText("Update with: " + update.getY().getNodeType());
+				decorateWithAttributes(update.getX().getAttributes(), subTreeItem1, actionScope);
+				decorateWithAttributes(update.getY().getAttributes(), subTreeItem2, actionScope);
 
-				MoveAction moveAction = (MoveAction) action;
+			} else if (action instanceof Move) {
 
-				affectedNodeTreeItem.setText(action.getAffectedNode().getNodeType() + ", position: " + moveAction.getOriginalPosition());
-				actionNodeTreeItem
-						.setText(action.getAffectedNode().getNodeType() + ", position: " + moveAction.getNewPosition());
-			} else if (action.getActionType() == ActionType.ADD) {
+				Move move = (Move) action;
 
-				buildTreeRecursively(action.getActionNode(), actionScope, actionNodeTreeItem);
-				
-				AddAction addAction = (AddAction) action;
+				TreeItem subTreeItem3 = new TreeItem(mainTreeItem, 0);
+				subTreeItem3.setData(actionScope);
+				subTreeItem3.setChecked(actionScope.isApply());
 
-				if (!addAction.addAtPositionZero()) {
-					affectedNodeTreeItem.setText("Add sibling to: " + action.getAffectedNode().getNodeType());
-				} else {
-					affectedNodeTreeItem.setText("Add child to: " + action.getAffectedNode().getNodeType());
-				}
-				
-				actionNodeTreeItem.setText("New node: " + action.getActionNode().getNodeType());
+				subTreeItem1.setText("Node: " + move.getX().getNodeType());
+				subTreeItem2.setText("New parent: " + move.getY().getNodeType());
+				subTreeItem3.setText("Position: " + move.getPosition());
+
+			} else if (action instanceof Insert) {
+
+				Insert insert = (Insert) action;
+
+				buildTreeRecursively(insert.getX(), actionScope, subTreeItem2);
+
+				TreeItem subTreeItem3 = new TreeItem(mainTreeItem, 0);
+				subTreeItem3.setData(actionScope);
+				subTreeItem3.setChecked(actionScope.isApply());
+
+				subTreeItem1.setText("Node: " + insert.getX().getNodeType());
+				subTreeItem2.setText("Parent: " + insert.getY().getNodeType());
+				subTreeItem3.setText("Position: " + insert.getPosition());
+
 			}
 
-			else if (action.getActionType() == ActionType.DELETE) {
+			else if (action instanceof Delete) {
 
-				buildTreeRecursively(action.getAffectedNode(), actionScope, affectedNodeTreeItem);
-				affectedNodeTreeItem.setText("Remove child from: " + action.getAffectedNode().getNodeType());
-				actionNodeTreeItem.setText("Node to remove: " + action.getActionNode().getNodeType());
+				Delete delete = (Delete) action;
+
+				buildTreeRecursively(delete.getX().getParent(), actionScope, subTreeItem1);
+
+				subTreeItem1.setText("Node: " + delete.getX().getNodeType());
+				subTreeItem2.setText("Remove child from: " + delete.getX().getParent().getNodeType());
 
 			}
 
@@ -98,7 +110,7 @@ public class ActionTreeBuilder {
 
 			attributeTreeItem.setText(attribute.getAttributeKey() + ":" + valueString);
 			attributeTreeItem.setData(scope);
-			attributeTreeItem.setChecked(scope.apply());
+			attributeTreeItem.setChecked(scope.isApply());
 
 		}
 	}
@@ -106,7 +118,7 @@ public class ActionTreeBuilder {
 	private void buildTreeRecursively(Node node, ActionScope scope, TreeItem item) {
 
 		item.setText(node.getNodeType());
-		item.setChecked(scope.apply());
+		item.setChecked(scope.isApply());
 		item.setData(scope);
 
 		for (Node child : node.getChildren()) {

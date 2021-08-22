@@ -1,7 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -14,11 +16,10 @@ import com.google.common.collect.Lists;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.SynchronizationScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationTreeBuilder;
-
 
 public class SynchronizationView extends View {
 
@@ -30,7 +31,6 @@ public class SynchronizationView extends View {
 	private Label scopeLabel;
 	private Label componentLabel;
 	private Label taskLabel;
-	
 
 	private Component selectedComponent;
 
@@ -58,12 +58,12 @@ public class SynchronizationView extends View {
 		this.synchronizationTree = synchronizationTree;
 	}
 
-	private Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations;
-	private Map<Component, List<ActionScope>> componentToActions;
+	private Map<ActionScope, List<ActionScope>> actionsToSynchronizations;
 
 	private ComponentTreeBuilder componentTreeBuilder;
 	private ActionTreeBuilder actionTreeBuilder;
 	private SynchronizationTreeBuilder synchronizationTreeBuilder;
+	private List<ConfigurationComparison> configurationComparisons;
 
 	public SynchronizationView() {
 		super(3, "Synchronization application");
@@ -73,11 +73,11 @@ public class SynchronizationView extends View {
 
 	}
 
-	public void showView(Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations,
-			Map<Component, List<ActionScope>> componentToActions) {
+	public void showView(Map<ActionScope, List<ActionScope>> actionsToSynchronizations,
+			List<ConfigurationComparison> configurationComparisons) {
 
 		this.actionsToSynchronizations = actionsToSynchronizations;
-		this.componentToActions = componentToActions;
+		this.configurationComparisons = configurationComparisons;
 		createActionTree(Lists.newArrayList(actionsToSynchronizations.keySet()));
 		createComponentTree();
 
@@ -102,8 +102,12 @@ public class SynchronizationView extends View {
 			item.dispose();
 		}
 
-		componentTreeBuilder.buildComponentTree(componentToActions.keySet(), componentTree);
+		Set<Component> components = new HashSet<Component>();
+		for (ConfigurationComparison configurationComparison : configurationComparisons) {
+			components.add(configurationComparison.getComponent1());
+		}
 
+		componentTreeBuilder.buildComponentTree(components, componentTree);
 	}
 
 	public void createActionTree(List<ActionScope> actionScopes) {
@@ -124,7 +128,7 @@ public class SynchronizationView extends View {
 
 	}
 
-	public void createSynchronizationTree(List<SynchronizationScope> synchronizationScopes) {
+	public void createSynchronizationTree(List<ActionScope> synchronizationScopes) {
 
 		for (TreeItem item : synchronizationTree.getItems()) {
 			item.dispose();
@@ -151,14 +155,14 @@ public class SynchronizationView extends View {
 
 	@Override
 	public void setWidgets() {
-		
+
 		taskLabel = new Label(shell, 0);
 		taskLabel.setText("Choose synchronizations to be applied:");
 
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 3;
 		taskLabel.setLayoutData(gridData);
-		
+
 		actionLabel = new Label(shell, 0);
 		actionLabel.setText("Actions");
 

@@ -1,20 +1,14 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 public class ComponentImpl extends NodeImpl implements Component {
-
-	private Map<Node, Set<Node>> synchronizationUnit;
 
 	private Map<Node, Map<Integer, Configuration>> nodeComponentRelation;
 
@@ -26,22 +20,9 @@ public class ComponentImpl extends NodeImpl implements Component {
 		this.nodeComponentRelation = nodeComponentRelation;
 	}
 
-	public ComponentImpl(Map<Node, Set<Node>> synchronizationUnit) {
+	public ComponentImpl() {
 		super("Component");
-		this.synchronizationUnit = synchronizationUnit;
 
-	}
-
-	private ComponentImpl() {
-
-	}
-
-	public Map<Node, Set<Node>> getSynchronizationUnit() {
-		return synchronizationUnit;
-	}
-
-	public void setSynchronizationUnit(Map<Node, Set<Node>> synchronizationUnit) {
-		this.synchronizationUnit = synchronizationUnit;
 	}
 
 	public List<Configuration> getConfigurations() {
@@ -74,6 +55,19 @@ public class ComponentImpl extends NodeImpl implements Component {
 		}
 
 		return newNode;
+	}
+
+	private String layer;
+
+	@Override
+	public String getLayer() {
+		return layer;
+	}
+
+	@Override
+	public void setLayer(String layer) {
+		this.layer = layer;
+
 	}
 
 }

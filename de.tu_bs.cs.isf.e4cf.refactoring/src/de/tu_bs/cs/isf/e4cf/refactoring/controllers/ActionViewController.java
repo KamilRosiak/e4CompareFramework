@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
 import de.tu_bs.cs.isf.e4cf.refactoring.views.ActionView;
 
 @Singleton
@@ -53,7 +55,13 @@ public class ActionViewController extends Controller<ActionView> {
 				view.getComponentTree().deselectAll();
 
 				for (TreeItem treeItem : view.getComponentTree().getItems()) {
-					view.markNodeRecursively(treeItem, actionScope.getAction().getAffectedNode());
+					if (actionScope.getAction() instanceof Insert) {
+						Insert insert = (Insert) actionScope.getAction();
+						view.markNodeRecursively(treeItem, insert.getY());
+					} else {
+						view.markNodeRecursively(treeItem, actionScope.getAction().getX());
+					}
+
 				}
 
 			}
@@ -61,8 +69,8 @@ public class ActionViewController extends Controller<ActionView> {
 
 	}
 
-	public void showView(Map<Component, List<ActionScope>> scopes) {
-		view.showView(scopes);
+	public void showView(List<ConfigurationComparison> configurationComparisons) {
+		view.showView(configurationComparisons);
 
 	}
 
