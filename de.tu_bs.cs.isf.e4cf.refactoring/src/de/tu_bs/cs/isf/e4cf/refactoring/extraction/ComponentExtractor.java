@@ -18,54 +18,26 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSet;
 
 @Singleton
 @Creatable
 public class ComponentExtractor {
 
-	public List<Component> extractComponents(Map<ComponentLayer, List<Set<Node>>> layerToClusters) {
+	public CloneModel extractComponents(Map<ComponentLayer, List<Set<Node>>> layerToClusters) {
 
-		List<Component> components = new ArrayList<Component>();
+		CloneModel cloneModel = new CloneModel();
+
 		for (Entry<ComponentLayer, List<Set<Node>>> entry : layerToClusters.entrySet()) {
-			components.addAll(extractComponents(entry.getValue(), entry.getKey().getLayer()));
+			extractComponents(entry.getValue(), entry.getKey().getLayer(), cloneModel);
 		}
-		return components;
+		return cloneModel;
 
 	}
 
-	public void rebuildComponents(List<Component> oldComponents, Map<String, List<Set<Node>>> layerToClusters) {
-
-		Map<String, Set<Component>> componentsByGranularities = new HashMap<String, Set<Component>>();
-		for (Component component : oldComponents) {
-			if (!componentsByGranularities.containsKey(component.getLayer())) {
-				componentsByGranularities.put(component.getLayer(), new HashSet<Component>());
-			}
-			componentsByGranularities.get(component.getLayer()).add(component);
-		}
-
-		for (Entry<String, List<Set<Node>>> entry : layerToClusters.entrySet()) {
-			Set<Component> currentComponents = componentsByGranularities.get(entry.getKey());
-
-			for (Set<Node> cluster : entry.getValue()) {
-				Component newComponent = new ComponentImpl();
-				for (Node clusterInstance : cluster) {
-					Configuration configuration = new ConfigurationImpl();
-					configuration.addChild(clusterInstance);
-					newComponent.addChildWithParent(configuration);
-				}
-			}
-
-		}
-		//replace component with new component, that has selected configuration
-
-		// TODO
-
-	}
-
-	private List<Component> extractComponents(List<Set<Node>> clusters, String layer) {
-
-		List<Component> components = new LinkedList<Component>();
+	private CloneModel extractComponents(List<Set<Node>> clusters, String layer, CloneModel cloneModel) {
 
 		// filter clusters
 		List<Set<Node>> filteredClusters = new ArrayList<Set<Node>>();
@@ -77,34 +49,47 @@ public class ComponentExtractor {
 		}
 
 		for (Set<Node> cluster : filteredClusters) {
+
 			Component component = new ComponentImpl();
 			component.setLayer(layer);
-			component.setNodeComponentRelation(new HashMap<Node, Map<Integer, Configuration>>());
+			cloneModel.getComponentInstances().put(component, new HashSet<Component>());
 
 			for (Node clusterInstance1 : cluster) {
+				Component componentInstance = new ComponentImpl();
+				componentInstance.setLayer(layer);
+
+				for (Node clusterInstance2 : cluster) {
+					Configuration configuration = new ConfigurationImpl();
+					configuration.addChild(clusterInstance2);
+					componentInstance.addChildWithParent(configuration);
+
+					if (clusterInstance1 == clusterInstance2) {
+						componentInstance.setSelectedConfiguration(configuration);
+					}
+
+				}
 
 				Configuration configuration = new ConfigurationImpl();
 				configuration.addChild(clusterInstance1);
 				component.addChildWithParent(configuration);
 
 				Node cloneParent = clusterInstance1.getParent();
-				int position = cloneParent.getChildren().indexOf(clusterInstance1);
-
-				if (!component.getNodeComponentRelation().containsKey(cloneParent)) {
-					component.getNodeComponentRelation().put(cloneParent, new HashMap<Integer, Configuration>());
-				}
-				component.getNodeComponentRelation().get(cloneParent).put(position, configuration);
 
 				// replace clone with component
 				int index = cloneParent.getChildren().indexOf(clusterInstance1);
 				cloneParent.getChildren().remove(index);
-				cloneParent.getChildren().add(index, component);
+				cloneParent.getChildren().add(index, componentInstance);
+				componentInstance.setParent(cloneParent);
+
+				cloneModel.getComponentInstances().get(component).add(componentInstance);
 
 			}
 
-			components.add(component);
 		}
-		return components;
+		Map<Component, MultiSet> multiSets = MultiSet.generate(cloneModel.getComponentInstances().keySet());
+		cloneModel.setMultiSets(multiSets);
+
+		return cloneModel;
 	}
 
 }

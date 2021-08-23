@@ -73,7 +73,7 @@ public class ComponentComparator {
 
 					} else {
 						// no configuration match on left side: add configuration
-						Configuration configuration2 = (Configuration) configurationComparison.getLeftArtifact();
+						Configuration configuration2 = (Configuration) configurationComparison.getRightArtifact();
 
 						configurationsToAdd.add(configuration2);
 
@@ -84,10 +84,22 @@ public class ComponentComparator {
 						configurationsToUpdate, configurationsToAdd, configurationsToDelete);
 				componentComparisonResults.add(componentComparisonResult);
 
+			} else if (componentComparison.getLeftArtifact() == null) {
+				Component component2 = (Component) componentComparison.getRightArtifact();
+
+				ComponentComparison componentComparisonResult = new ComponentComparison(null, component2);
+				componentComparisonResults.add(componentComparisonResult);
+
+			} else if (componentComparison.getRightArtifact() == null) {
+
+				Component component1 = (Component) componentComparison.getLeftArtifact();
+
+				ComponentComparison componentComparisonResult = new ComponentComparison(component1, null);
+				componentComparisonResults.add(componentComparisonResult);
 			}
 
 		}
-		
+
 		return componentComparisonResults;
 	}
 

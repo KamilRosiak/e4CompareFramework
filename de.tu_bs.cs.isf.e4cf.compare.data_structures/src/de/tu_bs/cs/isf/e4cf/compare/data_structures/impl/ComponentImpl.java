@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,16 +11,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 public class ComponentImpl extends NodeImpl implements Component {
-
-	private Map<Node, Map<Integer, Configuration>> nodeComponentRelation;
-
-	public Map<Node, Map<Integer, Configuration>> getNodeComponentRelation() {
-		return nodeComponentRelation;
-	}
-
-	public void setNodeComponentRelation(Map<Node, Map<Integer, Configuration>> nodeComponentRelation) {
-		this.nodeComponentRelation = nodeComponentRelation;
-	}
 
 	public ComponentImpl() {
 		super("Component");
@@ -40,7 +32,7 @@ public class ComponentImpl extends NodeImpl implements Component {
 	public Node cloneNode() {
 
 		ComponentImpl newNode = new ComponentImpl();
-		newNode.setNodeComponentRelation(nodeComponentRelation);
+
 		newNode.setNodeType(getNodeType());
 		newNode.setVariabilityClass(getVariabilityClass());
 
@@ -67,6 +59,41 @@ public class ComponentImpl extends NodeImpl implements Component {
 	@Override
 	public void setLayer(String layer) {
 		this.layer = layer;
+
+	}
+
+	private Configuration selectedConfiguration;
+
+	@Override
+	public Configuration getSelectedConfiguration() {
+
+		return selectedConfiguration;
+	}
+
+	@Override
+	public void setSelectedConfiguration(Configuration configuration) {
+		this.selectedConfiguration = configuration;
+
+	}
+
+	@Override
+	public List<Node> getAllTargets() {
+		List<Node> targets = new ArrayList<Node>();
+		for (Configuration configuration : getConfigurations()) {
+			targets.add(configuration.getTarget());
+		}
+
+		return targets;
+	}
+
+	@Override
+	public Map<Node, Configuration> getConfigurationByTarget() {
+
+		Map<Node, Configuration> map = new HashMap<Node, Configuration>();
+		for (Configuration configuration : getConfigurations()) {
+			map.put(configuration.getTarget(), configuration);
+		}
+		return map;
 
 	}
 

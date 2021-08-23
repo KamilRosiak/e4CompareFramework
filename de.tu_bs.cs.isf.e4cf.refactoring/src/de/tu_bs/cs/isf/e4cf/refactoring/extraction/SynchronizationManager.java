@@ -235,17 +235,21 @@ public class SynchronizationManager {
 		List<Node> sequence = SynchronizationUtil.findLongestCommonSubsequence(xClone.getChildren(),
 				zClone.getChildren(), createdComparison.getChildComparisons());
 
-		for (Node child : xClone.getChildren()) {
+		List<Node> newList = new ArrayList<Node>(xClone.getChildren());
+
+		for (Node child : newList) {
 			if (!sequence.contains(child)) {
 
 				Node partner = getPartner(child, createdComparison.getChildComparisons());
 
 				if (partner != null) {
 					int previousPosition = child.getPosition();
-					int newPosition = partner.getPosition();
+
+					int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(xClone, zClone, partner,
+							createdComparison) + 1;
 
 					xClone.getChildren().remove(previousPosition);
-					xClone.addChildAtPosition(child, newPosition);
+					xClone.addChildAtPosition(child, position);
 
 				}
 

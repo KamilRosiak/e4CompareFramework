@@ -16,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ComponentExtractor;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.GranularityManager;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSet;
 
@@ -30,9 +31,9 @@ public class ExtractionHandler {
 		Map<ComponentLayer, List<Node>> layerToNodes = granularityManager.extractNodesOfCertainGranularities(tree);
 		if (layerToNodes != null) {
 
-			List<Component> components = componentExtractor
+			CloneModel cloneModel = componentExtractor
 					.extractComponents(clusterEngine.detectClusters(layerToNodes));
-			Map<Component, MultiSet> multiSets = MultiSet.generate(components);
+		
 
 			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, tree);
 		}

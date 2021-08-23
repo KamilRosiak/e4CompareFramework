@@ -5,16 +5,21 @@ import java.util.Map;
 
 public interface Component extends Node {
 
-	
-	public Map<Node, Map<Integer, Configuration>> getNodeComponentRelation();
-
-	public void setNodeComponentRelation(Map<Node, Map<Integer, Configuration>> nodeComponentRelation);
-
 	public List<Configuration> getConfigurations();
 
 	public void setConfigurations(List<Configuration> configurations);
-	
+
 	public String getLayer();
 
 	public void setLayer(String layer);
+
+	public Configuration getSelectedConfiguration();
+
+	public void setSelectedConfiguration(Configuration configuration);
+	
+	public List<Node> getAllTargets();
+	
+	public Map<Node, Configuration> getConfigurationByTarget();
+	
+
 }

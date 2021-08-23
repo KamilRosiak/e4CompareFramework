@@ -40,13 +40,15 @@ public class ConfigurationComparator {
 		List<ConfigurationComparison> configurationComparisonResults = new ArrayList<ConfigurationComparison>();
 		for (ComponentComparison componentComparison : componentComparisons) {
 
-			for (Entry<Configuration, Configuration> entry : componentComparison.getMatchedConfigurations()
-					.entrySet()) {
-				List<ActionScope> actions = generateEditScript(entry.getKey().getChildren().get(0),
-						entry.getValue().getChildren().get(0));
-				configurationComparisonResults.add(new ConfigurationComparison(entry.getKey(), entry.getValue(),
-						actions, componentComparison.getComponent1(), componentComparison.getComponent2()));
+			if (componentComparison.getComponent1() != null && componentComparison.getComponent2() != null) {
+				for (Entry<Configuration, Configuration> entry : componentComparison.getMatchedConfigurations()
+						.entrySet()) {
+					List<ActionScope> actions = generateEditScript(entry.getKey().getChildren().get(0),
+							entry.getValue().getChildren().get(0));
+					configurationComparisonResults.add(new ConfigurationComparison(entry.getKey(), entry.getValue(),
+							actions, componentComparison.getComponent1(), componentComparison.getComponent2()));
 
+				}
 			}
 
 		}
@@ -89,7 +91,7 @@ public class ConfigurationComparator {
 
 	private List<Comparison<Node>> sortComparisons(List<Comparison<Node>> comparisons) {
 
-		// sort comparisons: ADD, DELETE, MOVE, UPDATE
+		// sort comparisons: INSERT, DELETE, MOVE, UPDATE
 		List<Comparison<Node>> sortedComparison = new ArrayList<Comparison<Node>>();
 
 		for (Comparison<Node> comparison : comparisons) {
@@ -163,8 +165,8 @@ public class ConfigurationComparator {
 			// new artifact on left side
 			if (leftArtifact == null) {
 
-				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(parentComparison.getLeftArtifact(),
-						parentComparison.getRightArtifact(), rightArtifact);
+				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(
+						parentComparison.getLeftArtifact(), parentComparison.getRightArtifact(), rightArtifact);
 
 				Node correspondingNode = cloneMapping.get(parentComparison.getLeftArtifact());
 				Insert insert = new Insert(rightArtifact.cloneNode(), correspondingNode, position + 1);
@@ -181,8 +183,8 @@ public class ConfigurationComparator {
 				Delete delete = new Delete(correspondingNode);
 				actions.add(new ActionScope(delete, true));
 
-				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(parentComparison.getRightArtifact(),
-						parentComparison.getLeftArtifact(), leftArtifact);
+				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(
+						parentComparison.getRightArtifact(), parentComparison.getLeftArtifact(), leftArtifact);
 
 				Node leftArtifactClone = leftArtifact.cloneNode();
 				parentComparison.getRightArtifact().addChildAtPosition(leftArtifactClone, position + 1);
@@ -211,27 +213,29 @@ public class ConfigurationComparator {
 		Comparison<Node> comparison = compareEngine.compare(parentComparison.getLeftArtifact(),
 				parentComparison.getRightArtifact());
 
-		List<Node> sequence = SynchronizationUtil.findLongestCommonSubsequence(parentComparison.getLeftArtifact().getChildren(),
-				parentComparison.getRightArtifact().getChildren(), comparison.getChildComparisons());
+		List<Node> sequence = SynchronizationUtil.findLongestCommonSubsequence(
+				parentComparison.getLeftArtifact().getChildren(), parentComparison.getRightArtifact().getChildren(),
+				comparison.getChildComparisons());
 
 		List<Node> newList = new ArrayList<Node>(parentComparison.getLeftArtifact().getChildren());
-		
+
 		for (Node child : newList) {
 			if (!sequence.contains(child)) {
 
 				Node partner = getPartner(child, comparison.getChildComparisons());
 				Node correspondingNode = cloneMapping.get(child);
 
-				Move move = new Move(correspondingNode, correspondingNode.getParent(), partner.getPosition());
-				actions.add(new ActionScope(move, true));
-				
-				int previousPosition = child.getPosition();
-				int newPosition = partner.getPosition();
-				
-				parentComparison.getLeftArtifact().getChildren().remove(previousPosition);
-				parentComparison.getLeftArtifact().addChildAtPosition(child, newPosition);
+				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(
+						parentComparison.getLeftArtifact(), parentComparison.getRightArtifact(), partner) + 1;
 
-				
+				Move move = new Move(correspondingNode, correspondingNode.getParent(), position);
+				actions.add(new ActionScope(move, true));
+
+				int previousPosition = child.getPosition();
+
+				parentComparison.getLeftArtifact().getChildren().remove(previousPosition);
+				parentComparison.getLeftArtifact().addChildAtPosition(child, position);
+
 			}
 
 		}
@@ -239,8 +243,7 @@ public class ConfigurationComparator {
 		if (!queue.isEmpty()) {
 			Comparison<Node> nextElement = queue.remove();
 			if (nextElement.getLeftArtifact() != null && nextElement.getRightArtifact() != null) {
-				System.out.println("Next element left " + nextElement.getLeftArtifact() + " right "
-						+ nextElement.getRightArtifact());
+
 				getActions(nextElement, nextElement.getChildComparisons(), actions, queue);
 			}
 
@@ -258,11 +261,5 @@ public class ConfigurationComparator {
 		}
 		return null;
 	}
-
-	
-
-	
-
-	
 
 }

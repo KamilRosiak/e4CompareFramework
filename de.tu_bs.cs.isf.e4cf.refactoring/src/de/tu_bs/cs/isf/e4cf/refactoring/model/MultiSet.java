@@ -44,7 +44,7 @@ public class MultiSet {
 		multiSet = new HashMap<Node, Set<Node>>();
 	}
 
-	public static Map<Component, MultiSet> generate(List<Component> components) {
+	public static Map<Component, MultiSet> generate(Iterable<Component> components) {
 
 		Map<Component, MultiSet> componentToMultiSets = new HashMap<Component, MultiSet>();
 
@@ -179,5 +179,7 @@ public class MultiSet {
 		}
 
 	}
+	
+	
 
 }

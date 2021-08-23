@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.ComponentImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
@@ -22,28 +21,8 @@ public class TestUtil {
 
 	public static Tree assembleTree(Tree tree) {
 
-		assembleTree(tree.getRoot());
 		removePositionAttribute(tree.getRoot());
 		return tree;
-	}
-
-	private static void assembleTree(Node node) {
-
-		for (int i = 0; i < node.getChildren().size(); i++) {
-			if (node.getChildren().get(i) instanceof ComponentImpl) {
-				ComponentImpl component = (ComponentImpl) node.getChildren().get(i);
-
-				Node target = component.getNodeComponentRelation().get(node).get(i).getChildren().get(0);
-
-				target = target.cloneNode();
-
-				node.getChildren().remove(i);
-				node.getChildren().add(i, target);
-
-			}
-			assembleTree(node.getChildren().get(i));
-		}
-
 	}
 
 	private static void removePositionAttribute(Node node) {

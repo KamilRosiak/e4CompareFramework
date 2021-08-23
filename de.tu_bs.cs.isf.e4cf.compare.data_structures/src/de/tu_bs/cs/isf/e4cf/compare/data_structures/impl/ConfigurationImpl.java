@@ -14,4 +14,16 @@ public class ConfigurationImpl extends NodeImpl implements Configuration {
 		super("Configuration");
 	}
 
+	@Override
+	public Node getTarget() {
+		return this.getChildren().get(0);
+	}
+
+	@Override
+	public void setTarget(Node node) {
+		this.getChildren().clear();
+		this.getChildren().add(node);
+
+	}
+
 }

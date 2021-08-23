@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,15 @@ public class ComponentComparison {
 		this.matchedConfigurations = matchedConfigurations;
 		this.addedConfigurations = addedConfigurations;
 		this.removedConfigurations = removedConfigurations;
+	}
+	
+	public ComponentComparison(Component component1, Component component2) {
+		super();
+		this.component1 = component1;
+		this.component2 = component2;
+		this.matchedConfigurations = new HashMap<Configuration, Configuration>();
+		this.addedConfigurations = new ArrayList<Configuration>();
+		this.removedConfigurations = new ArrayList<Configuration>();
 	}
 
 	public Component getComponent1() {
