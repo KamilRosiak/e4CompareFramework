@@ -10,3 +10,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.inject;version="1.0.0"
 Bundle-ClassPath: .,
  lib/gson-2.8.6.jar
+Export-Package: de.tu_bs.cs.isf.e4cf.core.import_export.services,
+ de.tu_bs.cs.isf.e4cf.core.import_export.services.gson

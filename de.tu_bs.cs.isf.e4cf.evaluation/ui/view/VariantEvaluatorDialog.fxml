@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="121.0" prefWidth="593.0" spacing="10.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorViewController">
+   <children>
+      <HBox spacing="5.0" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox prefHeight="148.0" prefWidth="280.0" spacing="2.0">
+               <children>
+                  <Label minWidth="125.0" prefHeight="17.0" prefWidth="176.0" text="Evaluation" />
+                  <CheckBox fx:id="checkIntra" disable="true" mnemonicParsing="false" prefWidth="300.0" text="Intra variant similarity evaluation" />
+                  <CheckBox fx:id="checkInter" mnemonicParsing="false" prefWidth="300.0" selected="true" text="Inter variant similarity evaluation" />
+                  <CheckBox fx:id="checkTaxonomy" mnemonicParsing="false" prefWidth="300.0" text="Variant taxonomy evaluation" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+               </padding>
+            </VBox>
+            <VBox prefHeight="109.0" prefWidth="292.0" spacing="2.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="107.0" text="Options" />
+                  <CheckBox fx:id="checkVerbose" mnemonicParsing="false" prefWidth="300.0" text="More verbose output" />
+                  <HBox prefHeight="5.0" prefWidth="600.0" spacing="3.0">
+                     <children>
+                        <VBox alignment="CENTER" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="2.0" />
+                  <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="59.0" spacing="2.0" />
+                  <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="86.0" spacing="2.0" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+               </padding>
+            </VBox>
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </HBox>
+   </children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+   <padding>
+      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+   </padding>
+</VBox>

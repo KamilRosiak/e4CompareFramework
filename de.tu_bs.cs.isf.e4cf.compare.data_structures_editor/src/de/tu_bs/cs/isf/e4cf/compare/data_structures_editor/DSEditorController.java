@@ -101,17 +101,19 @@ public class DSEditorController {
 	@Inject
 	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
 		setCurrentTree(tree);
-		setContextMenü();
+		setContextMenu();
 
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(DSEditorST.TREE_VIEW_ID);
 		closeFile();
 		createTreeRoot(tree);
 		//load decorator and select the first
-		decoratorCombo = new ComboBox<NodeDecorator>(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
+		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		decoratorCombo.getSelectionModel().select(0);
-		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), decoratorCombo.getSelectionModel().getSelectedItem());
+
+		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), getSelectedDecorator());
 		TreeViewUtilities.decorateTreeViewWithSelectedConfigurations(treeView.getRoot(), new ConfigurationDecorator());
+
 		addListener();
 	}
 
@@ -126,7 +128,7 @@ public class DSEditorController {
 		treeView.setShowRoot(true);
 	}
 
-	private void setContextMenü() {
+	private void setContextMenu() {
 		treeView.setContextMenu(contextMenu);
 		treeView.setOnMouseEntered(event -> contextMenu.hide());
 	}
@@ -199,6 +201,13 @@ public class DSEditorController {
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
 		});
+		
+		decoratorCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null) return;
+			decoManager.setCurrentDecorater(newValue);
+			TreeViewUtilities.decorateTree(treeView.getRoot(), decoManager.getCurrentDecorater());
+			services.eventBroker.send(DSEditorST.REFRESH_TREEVIEW_EVENT, true);
+		});
 	}
 
 	/**
@@ -238,7 +247,7 @@ public class DSEditorController {
 		try {
 			for (TreeItem<Node> ti : copyList) {
 				TreeItem<Node> tempNode = TreeViewUtilities.createTreeItem(ti.getValue(), getSelectedDecorator());
-				// Idee: Index verwalten über expand/collapse All
+				// Idee: Index verwalten Ã¼ber expand/collapse All
 				treeView.getSelectionModel().getSelectedItem().getChildren().add(tempNode);
 				for (TreeItem<Node> child : ti.getChildren()) {
 					tempNode.getChildren().add(TreeViewUtilities.createTreeItem(child.getValue(),getSelectedDecorator()));

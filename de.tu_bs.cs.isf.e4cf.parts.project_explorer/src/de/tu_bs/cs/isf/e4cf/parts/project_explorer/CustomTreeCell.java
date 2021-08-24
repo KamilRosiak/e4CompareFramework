@@ -200,8 +200,9 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 	}
 
 	/**
-	 * Will be invoked by pressing F2, Enter, double click (default behavior by
-	 * JavaFX)
+	 * Will be invoked by custom event handlers. 
+	 * pressing F2, Enter, double click (default behavior by JavaFX) is disabled
+	 * Unfortunately FX still consumes F2 and Enter
 	 */
 	@Override
 	public void startEdit() {

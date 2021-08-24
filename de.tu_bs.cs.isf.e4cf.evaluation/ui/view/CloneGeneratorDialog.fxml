@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="149.0" prefWidth="361.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorViewController">
+   <children>
+      <HBox spacing="5.0" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox prefHeight="114.0" prefWidth="345.0" spacing="2.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <HBox prefHeight="5.0" prefWidth="600.0" spacing="3.0">
+                     <children>
+                        <TextField fx:id="textNumberVariants" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="20" HBox.hgrow="NEVER" />
+                        <VBox alignment="CENTER">
+                           <children>
+                              <Label text="Variants" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" spacing="2.0">
+                     <children>
+                        <Slider fx:id="sliderCrossoverVariants" blockIncrement="1.0" disable="true" majorTickUnit="1.0" max="5.0" minorTickCount="0" showTickMarks="true" snapToTicks="true" />
+                        <TextField fx:id="textCrossoverVariants" disable="true" prefHeight="25.0" prefWidth="40.0" text="0" />
+                        <Label text="\% Crossover Variants">
+                           <tooltip>
+                              <Tooltip text="The percentage of variants that will be the result of crossover operations." />
+                           </tooltip>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="59.0" spacing="2.0">
+                     <children>
+                        <Slider fx:id="sliderModificationRatio" blockIncrement="1.0" minorTickCount="0" showTickMarks="true" value="50.0" />
+                        <TextField fx:id="textModificationRatio" prefHeight="25.0" prefWidth="40.0" promptText="passes" text="50" />
+                        <Label text="\% Type II Attribute Changes">
+                           <tooltip>
+                              <Tooltip text="The amount of attribute modifications compared to the total modifications in a variant. The rest will be node modifications." />
+                           </tooltip>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="13.0" layoutY="86.0" spacing="2.0">
+                     <children>
+                        <Slider fx:id="sliderChangeDegree" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3.0" />
+                        <Label text="Variant Change Degree">
+                           <tooltip>
+                              <Tooltip text="How much a variant is modified from its original base." />
+                           </tooltip>
+                           <HBox.margin>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <CheckBox fx:id="checkSyntaxSafe" mnemonicParsing="false" selected="true" text="Syntax Safe" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+               </padding>
+            </VBox>
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </HBox>
+   </children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+   <padding>
+      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+   </padding>
+</VBox>

@@ -14,6 +14,7 @@ Require-Bundle: org.eclipse.jface;bundle-version="3.17.0",
  de.tu_bs.cs.isf.e4cf.core,
  org.eclipse.core.resources
 Export-Package: de.tu_bs.cs.isf.e4cf.compare,
+ de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node,
  de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.comparison.impl,
  de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces,

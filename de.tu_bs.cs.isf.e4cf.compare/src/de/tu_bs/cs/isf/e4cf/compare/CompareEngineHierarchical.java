@@ -37,7 +37,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		root.updateSimilarity();
 		getMatcher().calculateMatching(root);
 		root.updateSimilarity();
-		// Merge
 		return root.mergeArtifacts();
 	}
 
@@ -72,12 +71,9 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 					// compare children recursively
 					first.getChildren().stream().forEach(e -> {
 						second.getChildren().stream().forEach(f -> {
-
 							NodeComparison innerComp = compare(e, f);
-
 							if (innerComp != null) {
 								comparison.addChildComparison(innerComp);
-
 							}
 						});
 					});
@@ -87,13 +83,11 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		} else {
 			return comparison;
 		}
-
 	}
 
 	@Override
 	public Tree compare(Tree first, Tree second) {
 		try {
-
 			return new TreeImpl(first, second, compareMerge(first.getRoot(), second.getRoot()));
 		} catch (Exception e) {
 			e.printStackTrace();
