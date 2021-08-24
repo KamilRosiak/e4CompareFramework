@@ -41,7 +41,7 @@ public class ClusterEngine {
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
 		scriptPath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ "script/clustering_scipy.py").substring(1)).getPath();
+				+ "script/clustering_sklearn.py").substring(1)).getPath();
 
 	}
 
@@ -58,13 +58,20 @@ public class ClusterEngine {
 		return layersToCluster;
 	}
 
-	private List<Set<Node>> detectClusters(Iterable<Node> nodes, String distanceString) {
+	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString) {
 
 		if (!ProcessUtil.isReady()) {
 			ProcessUtil.startProcess(scriptPath);
 		}
 
 		List<Set<Node>> clusters = new ArrayList<Set<Node>>();
+
+		if (nodes.size() == 1) {
+			Set<Node> nodeSet = new HashSet<Node>();
+			nodeSet.add(nodes.get(0));
+			clusters.add(nodeSet);
+			return clusters;
+		}
 
 		String thresholdString = "";
 		thresholdString += threshold;
@@ -140,14 +147,13 @@ public class ClusterEngine {
 				Set<Node> targets = configurationByTarget.keySet();
 				newComponents.add(component);
 
-				List<Set<Node>> clusters = detectClusters(targets, buildDistanceString(Lists.newArrayList(targets)));
+				List<Set<Node>> clusters = detectClusters(Lists.newArrayList(targets), buildDistanceString(Lists.newArrayList(targets)));
 
 				// workaround due to comparison order issues
 				List<Node> targets2 = Lists.newArrayList(targets);
 				for (int i = 0; i < 10; i++) {
 					Collections.shuffle(targets2);
 					List<Set<Node>> clusters2 = detectClusters(targets2, buildDistanceString(targets2));
-
 					if (clusters.size() != clusters2.size()) {
 						// order issue
 						System.out.println("Order issue, aborting..");
