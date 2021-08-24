@@ -13,12 +13,17 @@ def perform_clustering(threshold, distances):
 
 
 if __name__ == '__main__':
-    distances = np.array(eval(sys.argv[1]))
-    threshold = float(sys.argv[2]) + 0.00000001
-    labels = perform_clustering(threshold, distances)
 
-    for i in range(labels.size):
-        print(labels[i], end="")
-        if i != labels.size - 1:
-            print(",", end="")
+    while True:
+        val = input()        
+        val = val.split()
 
+        distances = np.array(eval(val[0]))
+        threshold = float(val[1]) + 0.00000001
+        labels = perform_clustering(threshold, distances)
+
+        for i in range(labels.size):
+            print(labels[i], end="")
+            if i != labels.size - 1:
+                print(",", end="")
+        print(f"\n")

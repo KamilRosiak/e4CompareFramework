@@ -116,15 +116,17 @@ public class SynchronizationManager {
 						Move move = (Move) action;
 
 						if (multiSet.containsKey(move.getY())) {
-							for (Node node : multiSet.get(move.getX())) {
+							if (multiSet.containsKey(move.getX())) {
+								for (Node node : multiSet.get(move.getX())) {
+									ActionScope synchronizationScope = new ActionScope(
+											new Move(node, node.getParent(), move.getPosition()), true);
+									synchronizationScope.getAction().setSourceNode(move.getY());
+									synchronizationScopes.add(synchronizationScope);
+									synchronizationMap.get(actionScope).add(synchronizationScope);
 
-								ActionScope synchronizationScope = new ActionScope(
-										new Move(node, node.getParent(), move.getPosition()), true);
-								synchronizationScope.getAction().setSourceNode(move.getY());
-								synchronizationScopes.add(synchronizationScope);
-								synchronizationMap.get(actionScope).add(synchronizationScope);
-
+								}
 							}
+
 						}
 					}
 

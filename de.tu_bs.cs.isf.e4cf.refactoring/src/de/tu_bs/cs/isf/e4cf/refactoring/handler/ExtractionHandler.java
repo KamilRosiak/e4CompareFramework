@@ -33,7 +33,8 @@ public class ExtractionHandler {
 
 			CloneModel cloneModel = componentExtractor
 					.extractComponents(clusterEngine.detectClusters(layerToNodes));
-		
+			
+			clusterEngine.refineComponents(cloneModel);		
 
 			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, tree);
 		}

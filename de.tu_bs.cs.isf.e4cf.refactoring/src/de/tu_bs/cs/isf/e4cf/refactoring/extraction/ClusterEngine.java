@@ -1,11 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.extraction;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,8 +18,9 @@ import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import com.google.common.collect.Lists;
+
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
-import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -27,6 +28,7 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
 
 @Singleton
 @Creatable
@@ -38,9 +40,8 @@ public class ClusterEngine {
 
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
-		scriptPath = new File(
-				(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "script/clustering.py")
-						.substring(1)).getPath();
+		scriptPath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+				+ "script/clustering_scipy.py").substring(1)).getPath();
 
 	}
 
@@ -48,6 +49,7 @@ public class ClusterEngine {
 		Map<ComponentLayer, List<Set<Node>>> layersToCluster = new HashMap<ComponentLayer, List<Set<Node>>>();
 
 		for (Entry<ComponentLayer, List<Node>> entry : nodes.entrySet()) {
+
 			layersToCluster.put(entry.getKey(),
 					detectClusters(entry.getValue(), buildDistanceString(entry.getValue())));
 
@@ -58,6 +60,10 @@ public class ClusterEngine {
 
 	private List<Set<Node>> detectClusters(Iterable<Node> nodes, String distanceString) {
 
+		if (!ProcessUtil.isReady()) {
+			ProcessUtil.startProcess(scriptPath);
+		}
+
 		List<Set<Node>> clusters = new ArrayList<Set<Node>>();
 
 		String thresholdString = "";
@@ -65,13 +71,14 @@ public class ClusterEngine {
 
 		// Execute python clustering algorithm and process result
 		try {
-			ProcessBuilder builder = new ProcessBuilder("py", scriptPath, distanceString, thresholdString);
-			builder.redirectErrorStream(true);
-			Process process = builder.start();
-			InputStream inputStream = process.getInputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+			BufferedWriter writer = ProcessUtil.getWriter();
+			BufferedReader reader = ProcessUtil.getReader();
+
+			writer.write(distanceString + " " + thresholdString + "\r\n");
+			writer.flush();
 
 			String line = reader.readLine();
+			reader.readLine();
 			String[] results = line.split(",");
 
 			Iterator<Node> iterator = nodes.iterator();
@@ -92,7 +99,7 @@ public class ClusterEngine {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		printMetrics(clusters, threshold);
+		// printMetrics(clusters, threshold);
 		return clusters;
 
 	}
@@ -133,7 +140,21 @@ public class ClusterEngine {
 				Set<Node> targets = configurationByTarget.keySet();
 				newComponents.add(component);
 
-				List<Set<Node>> clusters = detectClusters(targets, buildDistanceString(targets));
+				List<Set<Node>> clusters = detectClusters(targets, buildDistanceString(Lists.newArrayList(targets)));
+
+				// workaround due to comparison order issues
+				List<Node> targets2 = Lists.newArrayList(targets);
+				for (int i = 0; i < 10; i++) {
+					Collections.shuffle(targets2);
+					List<Set<Node>> clusters2 = detectClusters(targets2, buildDistanceString(targets2));
+
+					if (clusters.size() != clusters2.size()) {
+						// order issue
+						System.out.println("Order issue, aborting..");
+						return;
+					}
+				}
+
 				if (clusters.size() > 1) {
 
 					Set<Node> baseSet = clusters.get(0);
@@ -152,7 +173,7 @@ public class ClusterEngine {
 
 			String distanceString = buildDistanceComponentString(newComponents);
 
-			if (newComponents.size() > 1) {
+			if (newComponents.size() > entry.getValue().size()) {
 				List<Set<Node>> clusters = detectClusters(new ArrayList<Node>(newComponents), distanceString);
 
 				List<Set<Node>> filteredClusters = new ArrayList<Set<Node>>();
@@ -189,64 +210,84 @@ public class ClusterEngine {
 
 	}
 
-	private String buildDistanceComponentString(Iterable<Component> components) {
+	private String buildDistanceComponentString(List<Component> components) {
 
-		String distanceString = "(";
-		Iterator<Component> iterator1 = components.iterator();
-		while (iterator1.hasNext()) {
-			distanceString += "[";
-			Component component1 = iterator1.next();
-			Iterator<Component> iterator2 = components.iterator();
-			while (iterator2.hasNext()) {
-				Component component2 = iterator2.next();
-				if (component1 != component2) {
-					float distance = calculateDistance(component1.getAllTargets(), component2.getAllTargets());
-					distanceString += distance;
+		float[][] matrix = new float[components.size()][components.size()];
+		for (int i = 0; i < components.size(); i++) {
+			for (int j = i; j < components.size(); j++) {
+
+				Component component1 = components.get(i);
+				Component component2 = components.get(j);
+
+				if (i == j) {
+					matrix[i][j] = 0.0f;
 				} else {
-					distanceString += "0.00";
+					float distance = calculateDistance(component1.getAllTargets(), component2.getAllTargets());
+					matrix[i][j] = distance;
+					matrix[j][i] = distance;
 				}
-				if (iterator2.hasNext()) {
+
+			}
+
+		}
+		String distanceString = "(";
+		for (int i = 0; i < components.size(); i++) {
+			distanceString += "[";
+			for (int j = 0; j < components.size(); j++) {
+				distanceString += matrix[i][j];
+				if (j != components.size() - 1) {
 					distanceString += ",";
 				}
+
 			}
 			distanceString += "]";
-			if (iterator1.hasNext()) {
+			if (i != components.size() - 1) {
 				distanceString += ",";
 			}
-		}
 
+		}
 		distanceString += ")";
 
 		return distanceString;
 
 	}
 
-	private String buildDistanceString(Iterable<Node> nodes) {
+	private String buildDistanceString(List<Node> nodes) {
 
-		String distanceString = "(";
-		Iterator<Node> iterator1 = nodes.iterator();
-		while (iterator1.hasNext()) {
-			distanceString += "[";
-			Node node1 = iterator1.next();
-			Iterator<Node> iterator2 = nodes.iterator();
-			while (iterator2.hasNext()) {
-				Node node2 = iterator2.next();
-				if (node1 != node2) {
-					Comparison<Node> comparison = compareEngine.compare(node1, node2);
-					distanceString += 1 - comparison.getSimilarity();
+		float[][] matrix = new float[nodes.size()][nodes.size()];
+		for (int i = 0; i < nodes.size(); i++) {
+			for (int j = i; j < nodes.size(); j++) {
+
+				Node node1 = nodes.get(i);
+				Node node2 = nodes.get(j);
+
+				if (i == j) {
+					matrix[i][j] = 0.0f;
 				} else {
-					distanceString += "0.00";
+					float distance = 1 - compareEngine.compare(node1, node2).getSimilarity();
+					matrix[i][j] = distance;
+					matrix[j][i] = distance;
 				}
-				if (iterator2.hasNext()) {
+
+			}
+
+		}
+		String distanceString = "(";
+		for (int i = 0; i < nodes.size(); i++) {
+			distanceString += "[";
+			for (int j = 0; j < nodes.size(); j++) {
+				distanceString += matrix[i][j];
+				if (j != nodes.size() - 1) {
 					distanceString += ",";
 				}
+
 			}
 			distanceString += "]";
-			if (iterator1.hasNext()) {
+			if (i != nodes.size() - 1) {
 				distanceString += ",";
 			}
-		}
 
+		}
 		distanceString += ")";
 
 		return distanceString;
