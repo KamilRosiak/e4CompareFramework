@@ -46,7 +46,7 @@ public class ConfigurationComparator {
 					List<ActionScope> actions = generateEditScript(entry.getKey().getChildren().get(0),
 							entry.getValue().getChildren().get(0));
 					configurationComparisonResults.add(new ConfigurationComparison(entry.getKey(), entry.getValue(),
-							actions, componentComparison.getComponent1(), componentComparison.getComponent2()));
+							actions, componentComparison.getComponent1(), componentComparison.getComponent2(), componentComparison));
 
 				}
 			}

@@ -6,9 +6,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 
 public class ConfigurationComparison {
-	
+
 	private Component component1;
-	
+
 	private Component component2;
 
 	public Component getComponent1() {
@@ -28,11 +28,11 @@ public class ConfigurationComparison {
 	}
 
 	private Configuration configuration1;
-	
+
 	private Configuration configuration2;
-	
+
 	private List<ActionScope> actionScopes;
-	
+
 	public List<ActionScope> getSynchronizationScopes() {
 		return synchronizationScopes;
 	}
@@ -68,16 +68,25 @@ public class ConfigurationComparison {
 	}
 
 	public ConfigurationComparison(Configuration configuration1, Configuration configuration2,
-			List<ActionScope> actionScopes, Component component1, Component component2) {
+			List<ActionScope> actionScopes, Component component1, Component component2,
+			ComponentComparison componentComparison) {
 		super();
 		this.configuration1 = configuration1;
 		this.configuration2 = configuration2;
 		this.actionScopes = actionScopes;
 		this.component1 = component1;
 		this.component2 = component2;
+		this.componentComparison = componentComparison;
 	}
-	
-	
-	
-	
+
+	private ComponentComparison componentComparison;
+
+	public ComponentComparison getComponentComparison() {
+		return componentComparison;
+	}
+
+	public void setComponentComparison(ComponentComparison componentComparison) {
+		this.componentComparison = componentComparison;
+	}
+
 }

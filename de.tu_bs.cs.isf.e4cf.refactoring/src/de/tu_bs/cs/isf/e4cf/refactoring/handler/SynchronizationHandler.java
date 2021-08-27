@@ -53,11 +53,13 @@ public class SynchronizationHandler {
 			List<ComponentComparison> componentComparisons = componentComparator
 					.compareComponents(cloneModel1.getComponents(), cloneModel2.getComponents());
 			List<ConfigurationComparison> configurationComparisons = configurationComparator
-					.compareConfigurations(componentComparisons);
+					.compareConfigurations(componentComparisons);			
 
 			cloneModel1.removeConfigurations(componentComparisons);
-
+			
 			if (actionManager.showActionView(configurationComparisons)) {
+				
+				actionManager.configureConfigurations(configurationComparisons);
 
 				actionManager.applyActions(configurationComparisons, cloneModel1.getMultiSets());
 

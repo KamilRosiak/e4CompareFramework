@@ -9,10 +9,12 @@ import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.controllers.ActionViewController;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Action;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentComparison;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Delete;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
@@ -34,8 +36,23 @@ public class ActionManager {
 	public boolean showActionView(List<ConfigurationComparison> configurationComparisons) {
 
 		actionViewController.showView(configurationComparisons);
+
 		return actionViewController.isResult();
 
+	}
+
+	public void configureConfigurations(List<ConfigurationComparison> configurationComparisons) {
+
+		for (ConfigurationComparison comparison : configurationComparisons) {
+
+			for (ActionScope actionScope : comparison.getActionScopes()) {
+
+				if (!actionScope.isApply()) {
+					comparison.getComponentComparison().getAddedConfigurations().add(comparison.getConfiguration2());
+					break;
+				}
+			}
+		}
 	}
 
 	public void applyActions(List<ConfigurationComparison> configurationComparisons,

@@ -160,15 +160,7 @@ public class SynchronizationManager {
 				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(insert.getY(), z, insert.getX(),
 						comparison);
 				position++;
-
-				int position2 = SynchronizationUtil.getPositionOfLastCommonPredecessor(insert.getY(), z, insert.getX(),
-						comparison);
-				position2++;
-
-				if (position != position2) {
-					System.out.print("asd");
-				}
-
+				
 				insert.setPosition(position);
 				Node savedNode = insert.getX();
 

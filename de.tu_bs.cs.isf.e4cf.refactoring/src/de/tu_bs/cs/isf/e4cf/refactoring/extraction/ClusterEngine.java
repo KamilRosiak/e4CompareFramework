@@ -36,7 +36,7 @@ public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
 	private String scriptPath;
 
-	private float threshold = 0.35f;
+	private float threshold = 0.15f;
 
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
@@ -147,26 +147,15 @@ public class ClusterEngine {
 				Set<Node> targets = configurationByTarget.keySet();
 				newComponents.add(component);
 
-				List<Set<Node>> clusters = detectClusters(Lists.newArrayList(targets), buildDistanceString(Lists.newArrayList(targets)));
-
-				// workaround due to comparison order issues
-				List<Node> targets2 = Lists.newArrayList(targets);
-				for (int i = 0; i < 10; i++) {
-					Collections.shuffle(targets2);
-					List<Set<Node>> clusters2 = detectClusters(targets2, buildDistanceString(targets2));
-					if (clusters.size() != clusters2.size()) {
-						// order issue
-						System.out.println("Order issue, aborting..");
-						return;
-					}
-				}
+				List<Set<Node>> clusters = detectClusters(Lists.newArrayList(targets),
+						buildDistanceString(Lists.newArrayList(targets)));
 
 				if (clusters.size() > 1) {
 
 					Set<Node> baseSet = clusters.get(0);
 
 					for (Node target : targets) {
-						if (baseSet.contains(target)) {
+						if (!baseSet.contains(target)) {
 							Configuration configurationToRemove = configurationByTarget.get(target);
 							Component newComponent = cloneModel.moveConfigurationToNewComponent(component,
 									configurationToRemove);
@@ -179,35 +168,32 @@ public class ClusterEngine {
 
 			String distanceString = buildDistanceComponentString(newComponents);
 
-			if (newComponents.size() > entry.getValue().size()) {
-				List<Set<Node>> clusters = detectClusters(new ArrayList<Node>(newComponents), distanceString);
+			List<Set<Node>> clusters = detectClusters(new ArrayList<Node>(newComponents), distanceString);
 
-				List<Set<Node>> filteredClusters = new ArrayList<Set<Node>>();
+			List<Set<Node>> filteredClusters = new ArrayList<Set<Node>>();
 
-				for (Set<Node> cluster : clusters) {
-					if (cluster.size() == 1) {
-						Component component = (Component) cluster.iterator().next();
-						cloneModel.removeComponent(component);
-					} else {
-						filteredClusters.add(cluster);
-					}
+			for (Set<Node> cluster : clusters) {
+				if (cluster.size() == 1) {
+					Component component = (Component) cluster.iterator().next();
+					cloneModel.removeComponent(component);
+				} else {
+					filteredClusters.add(cluster);
 				}
+			}
 
-				for (Set<Node> cluster : clusters) {
+			for (Set<Node> cluster : clusters) {
 
-					for (Node node1 : cluster) {
-						Component component1 = (Component) node1;
+				for (Node node1 : cluster) {
+					Component component1 = (Component) node1;
 
-						for (Node node2 : cluster) {
-							Component component2 = (Component) node2;
+					for (Node node2 : cluster) {
+						Component component2 = (Component) node2;
 
-							if (node1 != node2) {
-								cloneModel.mergeComponents(component1, component2);
-							}
-
+						if (node1 != node2) {
+							cloneModel.mergeComponents(component1, component2);
 						}
-					}
 
+					}
 				}
 
 			}
