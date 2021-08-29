@@ -129,6 +129,7 @@ public class CompareEngineView implements Initializable {
 
 				if (artifactGraph.mindMapRelationshipGraph.getChildElements().size() >= 2) {
 					// Send prepared graph to GraphView subscriber for display
+					artifactGraph.printArtifactComparison();
 					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapRelationshipGraph); 
 				} else {
 					// Send prepared empty graph to GraphView subscriber to update user
@@ -165,6 +166,7 @@ public class CompareEngineView implements Initializable {
 				
 				if (artifactGraph.mindMapTaxonomyGraph.getChildElements().size() >= 1) {
 					// Send prepared graph to GraphView subscriber for display
+					artifactGraph.printArtifactComparison();
 					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapTaxonomyGraph); 
 				} else {
 					// Send prepared empty graph to GraphView subscriber to update user
@@ -172,8 +174,9 @@ public class CompareEngineView implements Initializable {
 				}
 				
 				// Evaluate Taxonomy
-				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createProjectExampleGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createProjectExampleGT(), artifactGraph.taxonomyRootNode);
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCodeJamGT(), artifactGraph.taxonomyRootNode);
+				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3halyavinGT(), artifactGraph.taxonomyRootNode);
 				performanceJudge.computeDifferences();
 				performanceJudge.calculateSecondaryMeasures();
 				performanceJudge.printMeasures();
