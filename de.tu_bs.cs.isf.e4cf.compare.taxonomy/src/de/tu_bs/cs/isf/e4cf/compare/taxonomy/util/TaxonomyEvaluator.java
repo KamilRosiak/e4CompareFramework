@@ -149,16 +149,13 @@ public class TaxonomyEvaluator {
 		System.out.println("trueNegativesValue" + trueNegativesValue);
 		System.out.println("falsePositivesValue" + falsePositivesValue);
 		System.out.println("falseNegativesValue" + falseNegativesValue);
-		System.out.println(
-				"Total: " + (truePositivesValue + trueNegativesValue + falsePositivesValue + falseNegativesValue));
-
-		System.out.println("Accuracy: " + accuracyValue);
-		System.out.println("Error: " + errorRateValue);
-		System.out.println("Recall: " + recallValue);
+		System.out.println("Total: " + (truePositivesValue + trueNegativesValue + falsePositivesValue + falseNegativesValue));
 		System.out.println("Precision: " + precisionValue);
-
+		System.out.println("Recall: " + recallValue);
 		System.out.println("FalseAcceptanceFPRValue: " + falseAcceptanceFPRValue);
 		System.out.println("MissRateTNRValue: " + missRateTNRValue);
+		System.out.println("Accuracy: " + accuracyValue);
+		System.out.println("Error: " + errorRateValue);
 	}
 
 	public void calculateSecondaryMeasures() {
@@ -230,7 +227,7 @@ public class TaxonomyEvaluator {
 	 * 
 	 * @return <VariantTaxonomyNode>
 	 */
-	public static VariantTaxonomyNode createGoogleCode2008N3halyavinGT() {
+	public static VariantTaxonomyNode createGoogleCode2008N3halyavinDGT() {
 		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-2-D-halyavin.java", 0, null);
 		VariantTaxonomyNode level1ChildNode = new VariantTaxonomyNode("2008-3-D-halyavin.java", 1, rootNode);
 		VariantTaxonomyNode level2ChildNode = new VariantTaxonomyNode("2008-EMEA-D-halyavin.java", 2, level1ChildNode);
@@ -246,7 +243,7 @@ public class TaxonomyEvaluator {
 	 * 
 	 * @return <VariantTaxonomyNode>
 	 */
-	public static VariantTaxonomyNode createGoogleCode2008N3jediknightGT() {
+	public static VariantTaxonomyNode createGoogleCode2008N3jediknightBGT() {
 		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-1C-B-JediKnight.java", 0, null);
 		VariantTaxonomyNode level1ChildNode = new VariantTaxonomyNode("2008-2-B-JediKnight.java", 1, rootNode);
 		VariantTaxonomyNode level2ChildNode = new VariantTaxonomyNode("2008-3-B-JediKnight.java", 2, level1ChildNode);
@@ -279,8 +276,8 @@ public class TaxonomyEvaluator {
 	 * @return <VariantTaxonomyNode>
 	 */
 	public static VariantTaxonomyNode createGoogleCode2008N3kotehokDGT() {
-		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-1A-D-kotehok.java", 0, null);
-		VariantTaxonomyNode level1ChildNode = new VariantTaxonomyNode("2008-2-D-kotehok.java", 1, rootNode);
+		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-2-D-kotehok.java", 0, null);
+		VariantTaxonomyNode level1ChildNode = new VariantTaxonomyNode("2008-3-D-kotehok.java", 1, rootNode);
 		VariantTaxonomyNode level2ChildNode = new VariantTaxonomyNode("2008-FR-D-kotehok.java", 2, level1ChildNode);
 
 		level1ChildNode.addChildNode(level2ChildNode);
