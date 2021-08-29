@@ -110,6 +110,8 @@ public class TaxonomyControlView implements Initializable  {
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
 		});
 		
+		asymmetricRadioButton.setSelected(true);
+		
 	}
 	
 	private void initializeDirectoryMetrics() {
