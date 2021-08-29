@@ -83,12 +83,11 @@
 										</Label>
 										<CheckBox fx:id="directoryNameCheckbox" text="Name" />
 						    			<CheckBox fx:id="directorySizeCheckbox" text="Size" />
-						    			<CheckBox fx:id="directoryDateCreatedCheckbox" text="Date Created" />
-						    			<CheckBox fx:id="directoryDateModifiedCheckbox" text="Date Modified" />
 						    			<CheckBox fx:id="directoryNonSourceCheckbox" text="# Non-source" />
 						    			<CheckBox fx:id="directoryChildenCheckbox" text="# of Children(Source Code)" />
+						    			<!-- 
 						    			<CheckBox fx:id="directoryPathCheckbox" text="Path" />
-						    			<CheckBox fx:id="directoryChildSignatureCheckbox" text="Children Signature" />
+						    			<CheckBox fx:id="directoryChildSignatureCheckbox" text="Children Signature" /> -->
 									</children>
 									<BorderPane.margin>
 										<Insets bottom="5.0" top="5.0" />
@@ -96,10 +95,35 @@
 								</VBox>
 								<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
 									<children>
+										<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+											<children>
+												<RadioButton fx:id="sourceLevelRadioButton" text="Source Level">
+							 		 		   		<HBox.margin>
+														<Insets right="3.0"/>
+													</HBox.margin>
+													<!-- <toggleGroup>
+						       							<ToggleGroup fx:id="group"/>
+						   							</toggleGroup> -->
+												</RadioButton>
+												<RadioButton fx:id="dirLevelRadioButton" text="Directory Level">
+													<HBox.margin>
+														<Insets right="30.0"/>
+													    <Insets bottom="10.0"/>
+													</HBox.margin>
+													<!-- <toggleGroup>
+						       							<fx:reference source="group"/>
+						   							</toggleGroup> -->
+												</RadioButton> 
+											</children>
+											<VBox.margin>
+												<Insets left="5.0" right="5.0" />
+											</VBox.margin>
+										</HBox>
 										<Label alignment="TOP_LEFT" fx:id="languageStructuresLabel"  maxWidth="1.7976931348623157E308" text="(Construct) Dictionaries" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> </Label>
+										<CheckBox fx:id="classesStructuresCheckbox" text="Classes" />
+										<CheckBox fx:id="methodsStructuresCheckbox" text="Methods" />
 										<CheckBox fx:id="controlStructuresCheckbox" text="Control Structures e.g. While-Loop, For-Loop" />
 						    			<CheckBox fx:id="dataStructuresCheckBox" text="Data Structures e.g. int, double, Array, ArrayList" />
-						    			<CheckBox fx:id="dataStructures" text="Children Macth" />
 									</children>
 									<BorderPane.margin>
 										<Insets bottom="5.0" top="5.0" />
