@@ -97,6 +97,7 @@ public class ArtifactGraph {
 		return mindMapRelationshipGraph;
 	}
 	
+	
 	/**
 	 * Computes taxonomy for Display
 	 * 
@@ -119,8 +120,8 @@ public class ArtifactGraph {
 			addAllChildElementsToTaxonomyGraphMap();
 			
 			// Add all Taxonomy Nodes to Graph
-//			taxonomyToJSON = new TaxonomyToJSON(); 
-//			taxonomyToJSON.convertToJSON(taxonomyNode);
+			//taxonomyToJSON = new TaxonomyToJSON(); 
+			//taxonomyToJSON.convertToJSON(taxonomyRootNode);
 		}
 		else {
 			
@@ -478,7 +479,14 @@ public class ArtifactGraph {
 			}
 		}
 	}
-
+	
+	public void printArtifactComparison() {
+		for(ArtifactComparison comparison: artifactComparisonList) {
+			System.out.println(" Left: " + comparison.getLeftArtifactName() + " Right: " + comparison.getRightArtifactName() + " Similarity: " + comparison.getNodeComparison().getSimilarity());
+		}
+	}
+	
+	
 	public SimpleGraph createComplexExample() {
 		SimpleGraph mindMap = new SimpleGraph();
 
