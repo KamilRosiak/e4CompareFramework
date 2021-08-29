@@ -1,9 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.compare.taxonomy;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
+import com.google.common.base.Stopwatch;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -92,6 +94,8 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	@Override
 	public Tree compare(List<Tree> variants) {
 		Tree mergedTree = null;
+		// Creates and starts a new stopwatch
+        Stopwatch stopwatch = Stopwatch.createStarted();
 		if (asymmetry) {
 			variants.stream().forEach(artifactLeft -> {
 				variants.stream().forEach(artifactRight -> {
@@ -134,7 +138,12 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 		taxonomyResultEngine.createRefinedListofNodes();
 		taxonomyResultEngine.computeWeightedSimilarity();
 		artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
-
+		
+		 
+        // stop stopwatch, get elapsed time, expressed in milliseconds
+		stopwatch.stop(); 
+        long timeElapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+		System.out.println("Taxonomy Generation Time: " + timeElapsed/1000 + " secs. (" + timeElapsed +" milliseconds)");
 		return mergedTree;
 	}
 
