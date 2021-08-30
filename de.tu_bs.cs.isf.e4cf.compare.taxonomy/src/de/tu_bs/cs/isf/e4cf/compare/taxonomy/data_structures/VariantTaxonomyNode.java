@@ -60,7 +60,7 @@ public class VariantTaxonomyNode {
 	 VariantTaxonomyNode foundParent = null;
 	  
 	 if (childrenVariants.size() > 0) {
-		 for (VariantTaxonomyNode aChildVariant : this.variantChildren) {
+		 for (VariantTaxonomyNode aChildVariant : childrenVariants) {
 			  if (aChildVariant.getVariantName().equals(parentName)) {
 				  foundParent = aChildVariant;
 				  break;
