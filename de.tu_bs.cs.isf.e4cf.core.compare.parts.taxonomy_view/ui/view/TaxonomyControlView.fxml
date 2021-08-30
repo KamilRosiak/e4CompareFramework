@@ -28,7 +28,7 @@
 			maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_CENTER">
 			<children>
 				<Label fx:id="modeLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" 
-					text="Modes" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" 
+					text="Taxonomy Control" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" 
 					/> </font> 
 				</Label>
 				<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
