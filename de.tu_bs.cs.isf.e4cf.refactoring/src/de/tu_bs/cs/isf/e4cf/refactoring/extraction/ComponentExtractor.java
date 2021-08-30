@@ -19,18 +19,17 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSet;
 
 @Singleton
 @Creatable
 public class ComponentExtractor {
 
-	public CloneModel extractComponents(Map<ComponentLayer, List<Set<Node>>> layerToClusters) {
+	public CloneModel extractComponents(Map<Granularity, List<Set<Node>>> layerToClusters) {
 
 		CloneModel cloneModel = new CloneModel();
-
-		for (Entry<ComponentLayer, List<Set<Node>>> entry : layerToClusters.entrySet()) {
+		for (Entry<Granularity, List<Set<Node>>> entry : layerToClusters.entrySet()) {
 			extractComponents(entry.getValue(), entry.getKey().getLayer(), cloneModel);
 		}
 		return cloneModel;
@@ -39,26 +38,20 @@ public class ComponentExtractor {
 
 	private CloneModel extractComponents(List<Set<Node>> clusters, String layer, CloneModel cloneModel) {
 
-		// filter clusters
-		List<Set<Node>> filteredClusters = new ArrayList<Set<Node>>();
 		for (Set<Node> cluster : clusters) {
-			if (cluster.size() != 1) {
-				filteredClusters.add(cluster);
-			}
 
-		}
-
-		for (Set<Node> cluster : filteredClusters) {
-
+			//create base component
 			Component component = new ComponentImpl();
 			component.setLayer(layer);
 			cloneModel.getComponentInstances().put(component, new HashSet<Component>());
 
 			for (Node clusterInstance1 : cluster) {
+				//create concrete component instance
 				Component componentInstance = new ComponentImpl();
 				componentInstance.setLayer(layer);
 
 				for (Node clusterInstance2 : cluster) {
+					//create concrete configuration instance
 					Configuration configuration = new ConfigurationImpl();
 					configuration.addChild(clusterInstance2);
 					componentInstance.addChildWithParent(configuration);
@@ -69,23 +62,25 @@ public class ComponentExtractor {
 
 				}
 
+				//create base configuration
 				Configuration configuration = new ConfigurationImpl();
 				configuration.addChild(clusterInstance1);
 				component.addChildWithParent(configuration);
 
-				Node cloneParent = clusterInstance1.getParent();
-
-				// replace clone with component
+				//replace clone with component
+				Node cloneParent = clusterInstance1.getParent();				
 				int index = cloneParent.getChildren().indexOf(clusterInstance1);
 				cloneParent.getChildren().remove(index);
 				cloneParent.getChildren().add(index, componentInstance);
 				componentInstance.setParent(cloneParent);
 
+				//add to clone model
 				cloneModel.getComponentInstances().get(component).add(componentInstance);
 
 			}
 
 		}
+		//generate multisets of all components
 		Map<Component, MultiSet> multiSets = MultiSet.generate(cloneModel.getComponentInstances().keySet());
 		cloneModel.setMultiSets(multiSets);
 

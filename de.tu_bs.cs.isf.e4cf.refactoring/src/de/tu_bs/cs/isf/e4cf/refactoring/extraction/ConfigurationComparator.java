@@ -35,8 +35,16 @@ import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 @Creatable
 public class ConfigurationComparator {
 
+	private CompareEngineHierarchical compareEngine;
+
+	public ConfigurationComparator() {
+		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
+
+	}
+
 	public List<ConfigurationComparison> compareConfigurations(List<ComponentComparison> componentComparisons) {
 
+		// generate edit script
 		List<ConfigurationComparison> configurationComparisonResults = new ArrayList<ConfigurationComparison>();
 		for (ComponentComparison componentComparison : componentComparisons) {
 
@@ -46,7 +54,8 @@ public class ConfigurationComparator {
 					List<ActionScope> actions = generateEditScript(entry.getKey().getChildren().get(0),
 							entry.getValue().getChildren().get(0));
 					configurationComparisonResults.add(new ConfigurationComparison(entry.getKey(), entry.getValue(),
-							actions, componentComparison.getComponent1(), componentComparison.getComponent2(), componentComparison));
+							actions, componentComparison.getComponent1(), componentComparison.getComponent2(),
+							componentComparison));
 
 				}
 			}
@@ -54,37 +63,27 @@ public class ConfigurationComparator {
 		}
 
 		return configurationComparisonResults;
-
 	}
 
-	private CompareEngineHierarchical compareEngine;
-	private Map<Node, Node> cloneMapping;
-	private Map<Node, Node> mapping;
+	private List<ActionScope> generateEditScript(Node root1, Node root2) {
+		Map<Node, Node> cloneMapping = new HashMap<Node, Node>();
+		Node cloneRoot1 = root1.cloneNode();
+		Node cloneRoot2 = root2.cloneNode();
+		createMapBetweenOriginalAndClonedNode(root1, cloneRoot1, cloneMapping);
 
-	private Node cloneTree1;
-	private Node cloneTree2;
+		List<ActionScope> actionScopes = new ArrayList<ActionScope>();
+		Comparison<Node> comparison = compareEngine.compare(cloneRoot1, cloneRoot2);
 
-	private void createCloneMapping(Node node, Node clone) {
+		getActions(comparison, actionScopes, new LinkedList<Comparison<Node>>(), cloneMapping);
+		return actionScopes;
+	}
+
+	private void createMapBetweenOriginalAndClonedNode(Node node, Node clone, Map<Node, Node> cloneMapping) {
+
 		cloneMapping.put(node, clone);
 		cloneMapping.put(clone, node);
 		for (int i = 0; i < node.getChildren().size(); i++) {
-			createCloneMapping(node.getChildren().get(i), clone.getChildren().get(i));
-		}
-
-	}
-
-	public ConfigurationComparator() {
-		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
-
-	}
-
-	private void buildMapping(Comparison<Node> comparison) {
-		if (comparison.getLeftArtifact() != null && comparison.getRightArtifact() != null) {
-			mapping.put(comparison.getLeftArtifact(), comparison.getRightArtifact());
-			mapping.put(comparison.getRightArtifact(), comparison.getLeftArtifact());
-		}
-		for (Comparison<Node> childComparison : comparison.getChildComparisons()) {
-			buildMapping(childComparison);
+			createMapBetweenOriginalAndClonedNode(node.getChildren().get(i), clone.getChildren().get(i), cloneMapping);
 		}
 
 	}
@@ -95,31 +94,24 @@ public class ConfigurationComparator {
 		List<Comparison<Node>> sortedComparison = new ArrayList<Comparison<Node>>();
 
 		for (Comparison<Node> comparison : comparisons) {
-
 			if (comparison.getLeftArtifact() == null) {
 				sortedComparison.add(comparison);
 			}
 		}
-
 		for (Comparison<Node> comparison : comparisons) {
 
 			if (comparison.getRightArtifact() == null) {
 				sortedComparison.add(comparison);
-
 			}
 		}
 		for (Comparison<Node> comparison : comparisons) {
-
 			if (comparison.getLeftArtifact() != null && comparison.getRightArtifact() != null) {
-
 				if (comparison.getLeftArtifact().getPosition() != comparison.getRightArtifact().getPosition()) {
 					sortedComparison.add(comparison);
 				}
-
 			}
 		}
 		for (Comparison<Node> comparison : comparisons) {
-
 			if (!sortedComparison.contains(comparison)) {
 				sortedComparison.add(comparison);
 			}
@@ -127,81 +119,65 @@ public class ConfigurationComparator {
 		return sortedComparison;
 	}
 
-	public List<ActionScope> generateEditScript(Node tree1, Node tree2) {
-		cloneMapping = new HashMap<Node, Node>();
-		cloneTree1 = tree1.cloneNode();
-		cloneTree2 = tree2.cloneNode();
-		mapping = new HashMap<Node, Node>();
-		createCloneMapping(tree1, cloneTree1);
-		buildMapping(compareEngine.compare(cloneTree1, cloneTree2));
-
-		List<ActionScope> actionScopes = new ArrayList<ActionScope>();
-		Comparison<Node> comparison = compareEngine.compare(cloneTree1, cloneTree2);
-
-		getActions(comparison, comparison.getChildComparisons(), actionScopes, new LinkedList<Comparison<Node>>());
-		return actionScopes;
-	}
-
-	public void getActions(Comparison<Node> parentComparison, List<Comparison<Node>> childComparisons,
-			List<ActionScope> actions, Queue<Comparison<Node>> queue) {
-
-		queue.addAll(childComparisons);
-
-		childComparisons = sortComparisons(childComparisons);
-		Iterator<Comparison<Node>> iterator = childComparisons.iterator();
+	public void getActions(Comparison<Node> parentComparison, List<ActionScope> actions, Queue<Comparison<Node>> queue,
+			Map<Node, Node> cloneMapping) {
 
 		// perform breadth-first traversal
-		while (iterator.hasNext()) {
-			Comparison<Node> comparison = iterator.next();
+		List<Comparison<Node>> childComparisons = parentComparison.getChildComparisons();
+		queue.addAll(childComparisons);
+		childComparisons = sortComparisons(childComparisons);
+
+		for (Comparison<Node> comparison : childComparisons) {
 
 			Node leftArtifact = comparison.getLeftArtifact();
 			Node rightArtifact = comparison.getRightArtifact();
 
-			// don't compare nested components, maybe TODO
-			if (leftArtifact instanceof Component || rightArtifact instanceof Component) {
+			// don't compare components, they are compared separately
+			if (leftArtifact instanceof Component && rightArtifact instanceof Component) {
 				return;
 			}
 
-			// new artifact on left side
+			// INSERT
 			if (leftArtifact == null) {
 
-				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(
+				int position = SynchronizationUtil.getPositionOfCommonPredecessor(
 						parentComparison.getLeftArtifact(), parentComparison.getRightArtifact(), rightArtifact);
 
-				Node correspondingNode = cloneMapping.get(parentComparison.getLeftArtifact());
-				Insert insert = new Insert(rightArtifact.cloneNode(), correspondingNode, position + 1);
+				Node originalNode = cloneMapping.get(parentComparison.getLeftArtifact());
+
+				Insert insert = new Insert(rightArtifact.cloneNode(), originalNode, position + 1);
 				actions.add(new ActionScope(insert, true));
 
 				Node rightArtifactClone = rightArtifact.cloneNode();
 				parentComparison.getLeftArtifact().addChildAtPosition(rightArtifactClone, position + 1);
 
 			}
-			// deleted artifact on right side
+			// DELETE
 			else if (rightArtifact == null) {
-				Node correspondingNode = cloneMapping.get(leftArtifact);
+				Node originalNode = cloneMapping.get(leftArtifact);
 
-				Delete delete = new Delete(correspondingNode);
+				Delete delete = new Delete(originalNode);
 				actions.add(new ActionScope(delete, true));
 
-				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(
+				int position = SynchronizationUtil.getPositionOfCommonPredecessor(
 						parentComparison.getRightArtifact(), parentComparison.getLeftArtifact(), leftArtifact);
 
 				Node leftArtifactClone = leftArtifact.cloneNode();
 				parentComparison.getRightArtifact().addChildAtPosition(leftArtifactClone, position + 1);
 
 			}
-			// artifacts are matched but different in content
+			// UPDATE
 			else {
 
-				// check for update
+				// check similarity
 				Node cloneLeft = leftArtifact.cloneNode();
 				cloneLeft.getChildren().clear();
 				Node cloneRight = rightArtifact.cloneNode();
 				cloneRight.getChildren().clear();
 				if (compareEngine.compare(cloneLeft, cloneRight).getSimilarity() != 1.0) {
-					Node correspondingNode = cloneMapping.get(leftArtifact);
+					Node originalNode = cloneMapping.get(leftArtifact);
 
-					Update update = new Update(correspondingNode, rightArtifact.cloneNode());
+					Update update = new Update(originalNode, rightArtifact.cloneNode());
 					actions.add(new ActionScope(update, true));
 
 				}
@@ -210,31 +186,49 @@ public class ConfigurationComparator {
 
 		}
 
-		Comparison<Node> comparison = compareEngine.compare(parentComparison.getLeftArtifact(),
-				parentComparison.getRightArtifact());
+		// nodes are aligned; check positions
+		Node leftArtifact = parentComparison.getLeftArtifact();
+		Node rightArtifact = parentComparison.getRightArtifact();
+		Comparison<Node> comparison = compareEngine.compare(leftArtifact, rightArtifact);
+		List<Node> sequence = SynchronizationUtil.findLongestCommonSubsequence(leftArtifact.getChildren(),
+				rightArtifact.getChildren(), comparison.getChildComparisons());
+		
+		List<Node> iterationList = new ArrayList<Node>(leftArtifact.getChildren());
 
-		List<Node> sequence = SynchronizationUtil.findLongestCommonSubsequence(
-				parentComparison.getLeftArtifact().getChildren(), parentComparison.getRightArtifact().getChildren(),
-				comparison.getChildComparisons());
-
-		List<Node> newList = new ArrayList<Node>(parentComparison.getLeftArtifact().getChildren());
-
-		for (Node child : newList) {
+		for (Node child : iterationList) {
 			if (!sequence.contains(child)) {
 
+				//get partner of left child in right node
 				Node partner = getPartner(child, comparison.getChildComparisons());
-				Node correspondingNode = cloneMapping.get(child);
+				Node originalNode = cloneMapping.get(child);
 
-				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(
+				int position = SynchronizationUtil.getPositionOfCommonPredecessor(
 						parentComparison.getLeftArtifact(), parentComparison.getRightArtifact(), partner) + 1;
 
-				Move move = new Move(correspondingNode, correspondingNode.getParent(), position);
-				actions.add(new ActionScope(move, true));
+				//corner case: move node that is inserted before
+				if (originalNode == null) {
+					originalNode = cloneMapping.get(child.getParent());
+					for (ActionScope actionScope : actions) {
+						if (actionScope.getAction() instanceof Insert) {
+							Insert insert = (Insert) actionScope.getAction();
+							if (insert.getX() == child) {
+								Move move = new Move(insert.getX(), originalNode, position);
+								actions.add(new ActionScope(move, true));
+								break;
+							}
+						}
+					}
 
+				} else {
+					Move move = new Move(originalNode, originalNode.getParent(), position);
+					actions.add(new ActionScope(move, true));
+				}
+
+				//apply move
 				int previousPosition = child.getPosition();
-
 				parentComparison.getLeftArtifact().getChildren().remove(previousPosition);
 				parentComparison.getLeftArtifact().addChildAtPosition(child, position);
+				sequence.add(child);
 
 			}
 
@@ -243,8 +237,7 @@ public class ConfigurationComparator {
 		if (!queue.isEmpty()) {
 			Comparison<Node> nextElement = queue.remove();
 			if (nextElement.getLeftArtifact() != null && nextElement.getRightArtifact() != null) {
-
-				getActions(nextElement, nextElement.getChildComparisons(), actions, queue);
+				getActions(nextElement, actions, queue, cloneMapping);
 			}
 
 		}

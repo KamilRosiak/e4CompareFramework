@@ -13,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 
 public class CloneModel {
 
@@ -39,10 +40,54 @@ public class CloneModel {
 	public CloneModel() {
 		this.componentInstances = new HashMap<Component, Set<Component>>();
 		this.multiSets = new HashMap<Component, MultiSet>();
+		this.trees = new ArrayList<Tree>();
+	}
+
+	public void addTree(Tree tree) {
+		this.trees.add(tree);
 	}
 
 	public List<Component> getComponents() {
 		return new ArrayList<Component>(componentInstances.keySet());
+	}
+
+	private List<Tree> trees;
+
+	public List<Tree> getTrees() {
+		return trees;
+	}
+
+	public void setTrees(List<Tree> trees) {
+		this.trees = trees;
+	}
+
+	public List<Node> getNodesNotPartOfComponentsByGranularity(String granularity) {
+
+		List<Node> nodes = new ArrayList<Node>();
+
+		for (Tree tree : trees) {
+			collectNodes(tree.getRoot(), nodes, granularity);
+		}
+		for (Component component : componentInstances.keySet()) {
+			if (component.getLayer() != granularity) {
+				for (Configuration configuration : component.getConfigurations()) {
+					collectNodes(configuration.getTarget(), nodes, granularity);
+				}
+			}
+		}
+		return nodes;
+	}
+
+	private void collectNodes(Node node, List<Node> nodes, String granularity) {
+
+		if (node.getNodeType() == granularity) {
+			nodes.add(node);
+		}
+		for (Node child : node.getChildren()) {
+			if (child.getNodeType() != "Component") {
+				collectNodes(child, nodes, granularity);
+			}
+		}
 	}
 
 	public void addConfigurations(List<ComponentComparison> componentComparisons, CloneModel cloneModel2) {
@@ -62,17 +107,20 @@ public class CloneModel {
 	public void addConfiguration(Component component, Configuration newConfiguration, Component sourceComponent,
 			CloneModel cloneModel2) {
 
+		// create base configuration
 		newConfiguration.setParent(component);
 		component.getChildren().add(newConfiguration);
 		MultiSet multiSet = multiSets.get(component);
 		multiSet.add(newConfiguration);
 
+		// add configuration instance to all component instances
 		for (Component componentInstance : componentInstances.get(component)) {
 			Configuration configurationInstance = new ConfigurationImpl();
 			configurationInstance.setTarget(newConfiguration.getTarget());
 			componentInstance.getChildren().add(configurationInstance);
 		}
 
+		// create new component instance
 		Component newComponentInstance = new ComponentImpl();
 		for (Configuration configuration : component.getConfigurations()) {
 			Configuration configurationInstance = new ConfigurationImpl();
@@ -83,9 +131,9 @@ public class CloneModel {
 			}
 		}
 
+		// collect component instances to remove and remove selected configuration
 		List<Component> componentInstancesToRemove = new ArrayList<Component>();
 		for (Component componentInstance : cloneModel2.getComponentInstances().get(sourceComponent)) {
-
 			if (componentInstance.getSelectedConfiguration().getTarget() == newConfiguration.getTarget()) {
 				int position = componentInstance.getPosition();
 				Node parent = componentInstance.getParent();
@@ -104,7 +152,6 @@ public class CloneModel {
 	}
 
 	public void removeConfigurations(List<ComponentComparison> componentComparisons) {
-
 		for (ComponentComparison componentComparison : componentComparisons) {
 
 			if (componentComparison.getComponent1() != null && componentComparison.getComponent2() != null) {
@@ -136,6 +183,34 @@ public class CloneModel {
 
 	}
 
+	public Component createNewComponent(Node node) {
+
+		Node parent = node.getParent();
+		int position = node.getPosition();
+
+		Component newComponent = new ComponentImpl();
+		Configuration newConfiguration = new ConfigurationImpl();
+		newConfiguration.setTarget(node);
+		newComponent.addChildWithParent(newConfiguration);
+
+		Component newInstance = new ComponentImpl();
+		Configuration newConfigurationInstance = new ConfigurationImpl();
+		newConfigurationInstance.setTarget(node);
+		newInstance.addChildWithParent(newConfigurationInstance);
+		newInstance.setSelectedConfiguration(newConfigurationInstance);
+
+		parent.getChildren().remove(position);
+		parent.addChildAtPosition(newInstance, position);
+
+		componentInstances.put(newComponent, new HashSet<Component>());
+		componentInstances.get(newComponent).add(newInstance);
+
+		multiSets.put(newComponent, MultiSet.generate(newComponent));
+
+		return newComponent;
+
+	}
+
 	public Component moveConfigurationToNewComponent(Component component, Configuration configuration) {
 
 		component.getChildren().remove(configuration);
@@ -146,7 +221,7 @@ public class CloneModel {
 		Configuration newConfiguration = new ConfigurationImpl();
 		newConfiguration.setTarget(configuration.getTarget());
 		newComponent.addChildWithParent(newConfiguration);
-		
+
 		getComponentInstances().put(newComponent, new HashSet<Component>());
 
 		for (Component componentInstance : componentInstances.get(component)) {
@@ -156,6 +231,7 @@ public class CloneModel {
 				Configuration newConfigurationInstance = new ConfigurationImpl();
 				newConfigurationInstance.setTarget(componentInstance.getSelectedConfiguration().getTarget());
 				newInstance.addChildWithParent(newConfigurationInstance);
+				newInstance.setSelectedConfiguration(newConfigurationInstance);
 
 				Node parent = componentInstance.getParent();
 				int position = componentInstance.getPosition();
@@ -186,6 +262,8 @@ public class CloneModel {
 		for (Configuration configuration : component2.getConfigurations()) {
 			addConfiguration(component1, configuration, component2, this);
 		}
+		this.componentInstances.remove(component2);
+		this.multiSets.remove(component2);
 	}
 
 	public void addComponents(List<ComponentComparison> componentComparisons, CloneModel cloneModel2) {
@@ -231,16 +309,16 @@ public class CloneModel {
 		componentInstances.remove(component);
 	}
 
-	public Map<String, Set<Component>> getComponentsByGranularities() {
+	public Map<String, Set<Component>> getGranularityToComponents() {
 
-		Map<String, Set<Component>> componentsByGranularities = new HashMap<String, Set<Component>>();
+		Map<String, Set<Component>> granularityToComponents = new HashMap<String, Set<Component>>();
 		for (Component component : componentInstances.keySet()) {
-			if (!componentsByGranularities.containsKey(component.getLayer())) {
-				componentsByGranularities.put(component.getLayer(), new HashSet<Component>());
+			if (!granularityToComponents.containsKey(component.getLayer())) {
+				granularityToComponents.put(component.getLayer(), new HashSet<Component>());
 			}
-			componentsByGranularities.get(component.getLayer()).add(component);
+			granularityToComponents.get(component.getLayer()).add(component);
 		}
-		return componentsByGranularities;
+		return granularityToComponents;
 	}
 
 	public void replaceComponents(List<ComponentComparison> componentComparisons, CloneModel cloneModel2) {

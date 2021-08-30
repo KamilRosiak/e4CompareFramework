@@ -81,21 +81,16 @@ public class MultiSet {
 	public void add(Node node) {
 		multiSet.put(node, new HashSet<Node>());
 	}
-	
+
 	public void addTo(Node node, Iterable<Node> nodes) {
-		for(Node newNode: nodes) {
+		for (Node newNode : nodes) {
 			addTo(node, newNode);
 		}
 	}
-	
-	
+
 	public void addTo(Node node, Node newNode) {
 		multiSet.get(node).add(newNode);
 	}
-	
-	
-	
-	
 
 	private void generate(Comparison<Node> comparison) {
 
@@ -179,7 +174,5 @@ public class MultiSet {
 		}
 
 	}
-	
-	
 
 }

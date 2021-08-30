@@ -11,34 +11,34 @@ import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 
 public class SynchronizationUtil {
 
 	private static CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
 			new MetricImpl("test"));
 
-	public static List<ComponentLayer> getComponentLayers(Set<String> nodeTypes) {
+	public static List<Granularity> getGranularities(Set<String> nodeTypes) {
 
-		List<ComponentLayer> componentLayers = new ArrayList<ComponentLayer>();
+		List<Granularity> granularities = new ArrayList<Granularity>();
 		for (String nodeType : nodeTypes) {
 			boolean refactor = nodeType.equals("MethodDeclaration");
-			componentLayers.add(new ComponentLayer(nodeType, refactor));
+			granularities.add(new Granularity(nodeType, refactor));
 		}
 
-		return componentLayers;
+		return granularities;
 	}
 
-	public static List<ComponentLayer> getComponentLayers(List<String> nodeTypes1, List<String> nodeTypes2) {
+	public static List<Granularity> getGranularities(List<String> nodeTypes1, List<String> nodeTypes2) {
 
 		Set<String> types = new HashSet<String>();
 		types.addAll(nodeTypes1);
 		types.addAll(nodeTypes2);
 
-		return getComponentLayers(types);
+		return getGranularities(types);
 	}
 
-	public static int getPositionOfLastCommonPredecessor(Node parentLeft, Node parentRight, Node target,
+	public static int getPositionOfCommonPredecessor(Node parentLeft, Node parentRight, Node target,
 			Comparison<Node> comparison) {
 
 		int position = -1;
@@ -65,15 +65,16 @@ public class SynchronizationUtil {
 
 	}
 
-	public static int getPositionOfLastCommonPredecessor(Node parentLeft, Node parentRight, Node target) {
+	public static int getPositionOfCommonPredecessor(Node parentLeft, Node parentRight, Node target) {
 
 		Comparison<Node> comparison = compareEngine.compare(parentLeft, parentRight);
-		return getPositionOfLastCommonPredecessor(parentLeft, parentRight, target, comparison);
+		return getPositionOfCommonPredecessor(parentLeft, parentRight, target, comparison);
 
 	}
 
 	public static List<Node> findLongestCommonSubsequence(List<Node> leftChildren, List<Node> rightChildren,
 			List<Comparison<Node>> comparisons) {
+
 		int m = leftChildren.size();
 		int n = rightChildren.size();
 
@@ -110,7 +111,10 @@ public class SynchronizationUtil {
 			}
 
 		}
-		return Arrays.asList(lcs);
+
+		List<Node> arrayList = new ArrayList<Node>();
+		arrayList.addAll(Arrays.asList(lcs));		
+		return arrayList;
 	}
 
 	private static boolean hasPartner(Node n1, Node n2, List<Comparison<Node>> comparisons) {

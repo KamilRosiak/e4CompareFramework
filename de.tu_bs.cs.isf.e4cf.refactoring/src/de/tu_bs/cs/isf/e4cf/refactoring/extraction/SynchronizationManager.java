@@ -2,11 +2,11 @@ package de.tu_bs.cs.isf.e4cf.refactoring.extraction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
@@ -33,11 +33,11 @@ import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 @Creatable
 public class SynchronizationManager {
 
+	@Inject
 	private SynchronizationViewController synchronizationViewController;
 	private CompareEngineHierarchical compareEngine;
 
 	public SynchronizationManager() {
-		synchronizationViewController = new SynchronizationViewController();
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
 	}
 
@@ -48,38 +48,33 @@ public class SynchronizationManager {
 
 	}
 
-	public void applySynchronizations(List<ConfigurationComparison> configurationComparisons,
+	public void synchronize(List<ConfigurationComparison> configurationComparisons,
 			Map<ActionScope, List<ActionScope>> synchronizationScopes, Map<Component, MultiSet> multisets) {
 
 		for (ConfigurationComparison configurationComparison : configurationComparisons) {
 			MultiSet multiset = multisets.get(configurationComparison.getComponent1());
-			applySelectedSynchronizations(configurationComparison.getSynchronizationScopes(), multiset);
+			synchronize(configurationComparison.getSynchronizationScopes(), multiset);
 		}
 
 	}
 
-	public Map<ActionScope, List<ActionScope>> determineSynchronizations(
+	public Map<ActionScope, List<ActionScope>> translateActionsToSynchronizations(
 			List<ConfigurationComparison> configurationComparisons, Map<Component, MultiSet> multiSets) {
 
 		Map<ActionScope, List<ActionScope>> synchronizationMap = new HashMap<ActionScope, List<ActionScope>>();
 		for (ConfigurationComparison configurationComparison : configurationComparisons) {
 			Component component = configurationComparison.getComponent1();
 			Map<Node, Set<Node>> multiSet = multiSets.get(component).getMultiSet();
-
 			List<ActionScope> synchronizationScopes = new ArrayList<ActionScope>();
 			for (ActionScope actionScope : configurationComparison.getActionScopes()) {
-
 				if (actionScope.isApply()) {
-
 					synchronizationMap.put(actionScope, new ArrayList<ActionScope>());
 					Action action = actionScope.getAction();
-
 					if (action instanceof Insert) {
 						Insert insert = (Insert) action;
 
 						if (multiSet.containsKey(insert.getY())) {
 							for (Node node : multiSet.get(insert.getY())) {
-
 								ActionScope synchronizationScope = new ActionScope(
 										new Insert(insert.getX(), node, insert.getPosition()), true);
 								synchronizationScope.getAction().setSourceNode(insert.getY());
@@ -90,7 +85,6 @@ public class SynchronizationManager {
 						}
 					} else if (action instanceof Update) {
 						Update update = (Update) action;
-
 						if (multiSet.containsKey(update.getX())) {
 							for (Node node : multiSet.get(update.getX())) {
 
@@ -103,7 +97,6 @@ public class SynchronizationManager {
 						}
 					} else if (action instanceof Delete) {
 						Delete delete = (Delete) action;
-
 						if (multiSet.containsKey(delete.getX())) {
 							for (Node node : multiSet.get(delete.getX())) {
 								ActionScope synchronizationScope = new ActionScope(new Delete(node), true);
@@ -114,7 +107,6 @@ public class SynchronizationManager {
 						}
 					} else if (action instanceof Move) {
 						Move move = (Move) action;
-
 						if (multiSet.containsKey(move.getY())) {
 							if (multiSet.containsKey(move.getX())) {
 								for (Node node : multiSet.get(move.getX())) {
@@ -123,7 +115,6 @@ public class SynchronizationManager {
 									synchronizationScope.getAction().setSourceNode(move.getY());
 									synchronizationScopes.add(synchronizationScope);
 									synchronizationMap.get(actionScope).add(synchronizationScope);
-
 								}
 							}
 
@@ -139,13 +130,9 @@ public class SynchronizationManager {
 
 	}
 
-	private void applySelectedSynchronizations(List<ActionScope> actionScopes, MultiSet multiSet) {
+	private void synchronize(List<ActionScope> actionScopes, MultiSet multiSet) {
 
-		// apply actions: first perform insert actions even if they are not applied,
-		// then
-		// move actions and delete actions.
-		// Remove not applied add actions in the end.
-		actionScopes = sortSynchronizationScopes(actionScopes);
+		actionScopes = sortSynchronizations(actionScopes);
 
 		for (ActionScope actionScope : actionScopes) {
 			Action action = actionScope.getAction();
@@ -153,20 +140,18 @@ public class SynchronizationManager {
 			if (action instanceof Insert) {
 				Insert insert = (Insert) action;
 
-				Node z = insert.getSourceNode();
+				// restore comparison with multisets
+				Node sourceNode = insert.getSourceNode();
+				Comparison<Node> comparison = restoreComparison(insert.getY(), sourceNode, multiSet.getMultiSet());
+				int position = SynchronizationUtil.getPositionOfCommonPredecessor(insert.getY(), sourceNode,
+						insert.getX(), comparison) + 1;
 
-				Comparison<Node> comparison = buildComparison(insert.getY(), z, multiSet.getMultiSet());
-
-				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(insert.getY(), z, insert.getX(),
-						comparison);
-				position++;
-				
 				insert.setPosition(position);
 				Node savedNode = insert.getX();
-
 				insert.setX(insert.getX().cloneNode());
 				insert.apply();
 
+				// update multiset
 				multiSet.add(insert.getX());
 				multiSet.addTo(insert.getX(), savedNode);
 
@@ -174,16 +159,15 @@ public class SynchronizationManager {
 
 				if (actionScope.isApply()) {
 					Move move = (Move) action;
-					Node x = move.getY();
-					Node z = move.getSourceNode();
-					align(x, z, multiSet);
+					Node y = move.getY();
+					Node sourceNode = move.getSourceNode();
+					alignNodes(y, sourceNode, multiSet);
 
 				}
 
 			} else if (action instanceof Delete) {
 
 				if (actionScope.isApply()) {
-
 					Delete delete = (Delete) action;
 					delete.apply();
 
@@ -197,7 +181,7 @@ public class SynchronizationManager {
 			}
 		}
 
-		// Remove unapplied insert actions
+		// Remove unapplied insert actions and update multisets
 		for (ActionScope actionScope : actionScopes) {
 
 			if (actionScope.getAction() instanceof Insert && !actionScope.isApply()) {
@@ -205,7 +189,6 @@ public class SynchronizationManager {
 				insert.undo();
 				multiSet.remove(insert.getX());
 			}
-
 			if (actionScope.getAction() instanceof Delete) {
 				Delete delete = (Delete) actionScope.getAction();
 				multiSet.remove(delete.getX());
@@ -215,35 +198,34 @@ public class SynchronizationManager {
 
 	}
 
-	private void align(Node x, Node z, MultiSet multiSet) {
-		Node xClone = x.cloneNode();
-		Node zClone = z.cloneNode();
+	private void alignNodes(Node node1, Node node2, MultiSet multiSet) {
+		Node node1Clone = node1.cloneNode();
+		Node node2Clone = node2.cloneNode();
 
-		Comparison<Node> createdComparison = buildComparison(x, z, multiSet.getMultiSet());
-		Map<Node, Node> mappingX = buildMapping(x, xClone);
-		Map<Node, Node> mappingZ = buildMapping(z, zClone);
-		adaptComparison(xClone, zClone, mappingX, mappingZ, createdComparison);
+		Comparison<Node> restoredComparison = restoreComparison(node1, node2, multiSet.getMultiSet());
+		Map<Node, Node> mapping1 = buildMapping(node1, node1Clone);
+		Map<Node, Node> mapping2 = buildMapping(node2, node2Clone);
+		adaptComparison(node1Clone, node2Clone, mapping1, mapping2, restoredComparison);
 
-		List<Node> addedNodes = adapt(xClone, zClone);
+		List<Node> addedNodes = adaptNodes(node1Clone, node2Clone);
 
-		List<Node> sequence = SynchronizationUtil.findLongestCommonSubsequence(xClone.getChildren(),
-				zClone.getChildren(), createdComparison.getChildComparisons());
+		List<Node> sequence = SynchronizationUtil.findLongestCommonSubsequence(node1Clone.getChildren(),
+				node2Clone.getChildren(), restoredComparison.getChildComparisons());
 
-		List<Node> newList = new ArrayList<Node>(xClone.getChildren());
+		List<Node> newList = new ArrayList<Node>(node1Clone.getChildren());
 
 		for (Node child : newList) {
 			if (!sequence.contains(child)) {
-
-				Node partner = getPartner(child, createdComparison.getChildComparisons());
+				Node partner = getPartner(child, restoredComparison.getChildComparisons());
 
 				if (partner != null) {
 					int previousPosition = child.getPosition();
 
-					int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(xClone, zClone, partner,
-							createdComparison) + 1;
+					int position = SynchronizationUtil.getPositionOfCommonPredecessor(node1Clone, node2Clone,
+							partner, restoredComparison) + 1;
 
-					xClone.getChildren().remove(previousPosition);
-					xClone.addChildAtPosition(child, position);
+					node1Clone.getChildren().remove(previousPosition);
+					node1Clone.addChildAtPosition(child, position);
 
 				}
 
@@ -252,19 +234,19 @@ public class SynchronizationManager {
 		}
 
 		for (Node addedNode : addedNodes) {
-			xClone.getChildren().remove(addedNode);
+			node1Clone.getChildren().remove(addedNode);
 		}
 
 		List<Node> newChildren = new ArrayList<Node>();
-		for (Node child : xClone.getChildren()) {
-			newChildren.add(mappingX.get(child));
+		for (Node child : node1Clone.getChildren()) {
+			newChildren.add(mapping1.get(child));
 		}
 
-		x.getChildren().clear();
-		x.getChildren().addAll(newChildren);
+		node1.getChildren().clear();
+		node1.getChildren().addAll(newChildren);
 	}
 
-	private List<ActionScope> sortSynchronizationScopes(List<ActionScope> actionScopes) {
+	private List<ActionScope> sortSynchronizations(List<ActionScope> actionScopes) {
 
 		// sort action scopes: INSERT, MOVE/UPDATE, DELETE
 		List<ActionScope> sortedActionScopes = new ArrayList<ActionScope>();
@@ -300,39 +282,39 @@ public class SynchronizationManager {
 		return null;
 	}
 
-	private Map<Node, Node> buildMapping(Node x, Node xClone) {
+	private Map<Node, Node> buildMapping(Node node1, Node node2) {
 		Map<Node, Node> mapping = new HashMap<Node, Node>();
-		for (int i = 0; i < x.getChildren().size(); i++) {
-			mapping.put(xClone.getChildren().get(i), x.getChildren().get(i));
-			mapping.put(x.getChildren().get(i), xClone.getChildren().get(i));
+		for (int i = 0; i < node1.getChildren().size(); i++) {
+			mapping.put(node2.getChildren().get(i), node1.getChildren().get(i));
+			mapping.put(node1.getChildren().get(i), node2.getChildren().get(i));
 		}
 		return mapping;
 
 	}
 
-	private void adaptComparison(Node xClone, Node zClone, Map<Node, Node> mapX, Map<Node, Node> mapZ,
+	private void adaptComparison(Node node1, Node node2, Map<Node, Node> mapping1, Map<Node, Node> mapping2,
 			Comparison<Node> comparison) {
 
-		comparison.setLeftArtifact(xClone);
-		comparison.setRightArtifact(zClone);
+		comparison.setLeftArtifact(node1);
+		comparison.setRightArtifact(node2);
 
 		for (Comparison<Node> childComparison : comparison.getChildComparisons()) {
 
 			if (childComparison.getLeftArtifact() != null) {
-				childComparison.setLeftArtifact(mapX.get(childComparison.getLeftArtifact()));
+				childComparison.setLeftArtifact(mapping1.get(childComparison.getLeftArtifact()));
 			}
 
 			if (childComparison.getRightArtifact() != null) {
-				childComparison.setRightArtifact(mapZ.get(childComparison.getRightArtifact()));
+				childComparison.setRightArtifact(mapping2.get(childComparison.getRightArtifact()));
 			}
 		}
 
 	}
 
-	private List<Node> adapt(Node x, Node y) {
+	private List<Node> adaptNodes(Node node1, Node node2) {
 
 		List<Node> addedNodes = new ArrayList<Node>();
-		Comparison<Node> parentComparison = compareEngine.compare(x, y);
+		Comparison<Node> parentComparison = compareEngine.compare(node1, node2);
 
 		for (Comparison<Node> childComparison : parentComparison.getChildComparisons()) {
 
@@ -340,7 +322,7 @@ public class SynchronizationManager {
 			Node rightArtifact = childComparison.getRightArtifact();
 			if (leftArtifact == null) {
 
-				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(
+				int position = SynchronizationUtil.getPositionOfCommonPredecessor(
 						parentComparison.getLeftArtifact(), parentComparison.getRightArtifact(), rightArtifact);
 
 				Node rightArtifactClone = rightArtifact.cloneNode();
@@ -351,7 +333,7 @@ public class SynchronizationManager {
 			// deleted artifact on right side
 			else if (rightArtifact == null) {
 
-				int position = SynchronizationUtil.getPositionOfLastCommonPredecessor(
+				int position = SynchronizationUtil.getPositionOfCommonPredecessor(
 						parentComparison.getRightArtifact(), parentComparison.getLeftArtifact(), leftArtifact);
 
 				Node leftArtifactClone = leftArtifact.cloneNode();
@@ -365,16 +347,16 @@ public class SynchronizationManager {
 
 	}
 
-	private Comparison<Node> buildComparison(Node x, Node z, Map<Node, Set<Node>> multiSet) {
+	private Comparison<Node> restoreComparison(Node node1, Node node2, Map<Node, Set<Node>> multiSet) {
 
 		List<Comparison<Node>> comparisons = new ArrayList<Comparison<Node>>();
-		for (Node childX : x.getChildren()) {
-			if (multiSet.containsKey(childX)) {
-				Set<Node> correspondingNodes = multiSet.get(childX);
+		for (Node child1 : node1.getChildren()) {
+			if (multiSet.containsKey(child1)) {
+				Set<Node> correspondingNodes = multiSet.get(child1);
 				boolean hasPartner = false;
-				for (Node childZ : z.getChildren()) {
-					if (correspondingNodes.contains(childZ)) {
-						Comparison<Node> comparison = new NodeComparison(childX, childZ);
+				for (Node child2 : node2.getChildren()) {
+					if (correspondingNodes.contains(child2)) {
+						Comparison<Node> comparison = new NodeComparison(child1, child2);
 						comparisons.add(comparison);
 						hasPartner = true;
 						break;
@@ -382,28 +364,27 @@ public class SynchronizationManager {
 				}
 
 				if (!hasPartner) {
-					Comparison<Node> comparison = new NodeComparison(childX, null);
+					Comparison<Node> comparison = new NodeComparison(child1, null);
 					comparisons.add(comparison);
 				}
 			}
 		}
 
-		for (Node childZ : z.getChildren()) {
+		for (Node child2 : node2.getChildren()) {
 			boolean hasPartner = false;
 			for (Comparison<Node> comparison : comparisons) {
-
-				if (comparison.getRightArtifact() == childZ) {
+				if (comparison.getRightArtifact() == child2) {
 					hasPartner = true;
 				}
 			}
 			if (!hasPartner) {
-				Comparison<Node> comparison = new NodeComparison(null, childZ);
+				Comparison<Node> comparison = new NodeComparison(null, child2);
 				comparisons.add(comparison);
 			}
 
 		}
 
-		Comparison<Node> comparison = new NodeComparison(x, z);
+		Comparison<Node> comparison = new NodeComparison(node1, node2);
 		comparison.getChildComparisons().addAll(comparisons);
 
 		return comparison;

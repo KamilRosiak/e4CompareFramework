@@ -22,6 +22,7 @@ Import-Package: de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable,
  de.tu_bs.cs.isf.e4cf.compare.matcher,
  de.tu_bs.cs.isf.e4cf.compare.metric,
+ javax.inject;version="1.0.0",
  org.eclipse.e4.core.di.annotations
 Export-Package: de.tu_bs.cs.isf.e4cf.refactoring.model
 Bundle-ClassPath: .

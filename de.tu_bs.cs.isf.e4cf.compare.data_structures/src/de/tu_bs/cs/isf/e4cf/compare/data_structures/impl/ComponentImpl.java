@@ -32,7 +32,6 @@ public class ComponentImpl extends NodeImpl implements Component {
 	public Node cloneNode() {
 
 		ComponentImpl newNode = new ComponentImpl();
-
 		newNode.setNodeType(getNodeType());
 		newNode.setVariabilityClass(getVariabilityClass());
 
@@ -42,8 +41,15 @@ public class ComponentImpl extends NodeImpl implements Component {
 		}
 
 		for (Node child : getChildren()) {
+			if (child == selectedConfiguration) {
+				Configuration configuration = (Configuration) child;
+				Configuration clonedChild = (Configuration) configuration.cloneNode();
+				newNode.setSelectedConfiguration(clonedChild);
+				newNode.addChildWithParent(clonedChild);
+			} else {
+				newNode.addChildWithParent(child.cloneNode());
+			}
 
-			newNode.addChildWithParent(child.cloneNode());
 		}
 
 		return newNode;

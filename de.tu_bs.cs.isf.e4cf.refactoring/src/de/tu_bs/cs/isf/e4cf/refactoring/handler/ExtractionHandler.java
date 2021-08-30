@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ComponentExtractor;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.GranularityManager;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSet;
 
 public class ExtractionHandler {
@@ -28,13 +28,13 @@ public class ExtractionHandler {
 
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 
-		Map<ComponentLayer, List<Node>> layerToNodes = granularityManager.extractNodesOfCertainGranularities(tree);
+		Map<Granularity, List<Node>> layerToNodes = granularityManager.extractNodesOfCertainGranularities(tree);
 		if (layerToNodes != null) {
 
 			CloneModel cloneModel = componentExtractor
 					.extractComponents(clusterEngine.detectClusters(layerToNodes));
-			
-			clusterEngine.refineComponents(cloneModel);		
+			cloneModel.addTree(tree);
+			clusterEngine.analyzeCloneModel(cloneModel);		
 
 			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, tree);
 		}

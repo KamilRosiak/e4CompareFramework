@@ -7,75 +7,71 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.refactoring.controllers.ComponentLayerViewController;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.controllers.GranularityViewController;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 
 @Singleton
 @Creatable
 public class GranularityManager {
 
-	private ComponentLayerViewController componentLayerViewController;
+	@Inject
+	private GranularityViewController granularityViewController;
 
-	public GranularityManager() {
-		componentLayerViewController = new ComponentLayerViewController();
-	}
-
-	public Map<Tree, Map<ComponentLayer, List<Node>>> extractNodesOfCertainGranularities(Tree tree1, Tree tree2) {
+	public Map<Tree, Map<Granularity, List<Node>>> extractNodesOfCertainGranularities(Tree tree1, Tree tree2) {
 
 		Set<String> nodeTypes = new HashSet<String>();
 		nodeTypes.addAll(tree1.getRoot().getAllNodeTypes());
 		nodeTypes.addAll(tree2.getRoot().getAllNodeTypes());
 
-		Map<Tree, Map<ComponentLayer, List<Node>>> treeToLayers = new HashMap<Tree, Map<ComponentLayer,List<Node>>>();
-		Map<ComponentLayer, List<Node>> layerToNodes1 = new HashMap<ComponentLayer, List<Node>>();
-		Map<ComponentLayer, List<Node>> layerToNodes2 = new HashMap<ComponentLayer, List<Node>>();
+		Map<Tree, Map<Granularity, List<Node>>> treeToLayers = new HashMap<Tree, Map<Granularity, List<Node>>>();
+		Map<Granularity, List<Node>> layerToNodes1 = new HashMap<Granularity, List<Node>>();
+		Map<Granularity, List<Node>> layerToNodes2 = new HashMap<Granularity, List<Node>>();
 
-		List<ComponentLayer> componentLayers = SynchronizationUtil.getComponentLayers(nodeTypes);
+		List<Granularity> componentLayers = SynchronizationUtil.getGranularities(nodeTypes);
 
-		componentLayerViewController.showView(componentLayers);
-		if (componentLayerViewController.isResult()) {
+		granularityViewController.showView(componentLayers);
+		if (granularityViewController.isResult()) {
 
-			for (ComponentLayer layer : componentLayers) {
+			for (Granularity layer : componentLayers) {
 				if (layer.refactor()) {
 					layerToNodes1.put(layer, getNodesByLayer(tree1, layer.getLayer()));
 					layerToNodes2.put(layer, getNodesByLayer(tree2, layer.getLayer()));
 				}
 			}
-		}
-		else {
+		} else {
 			return null;
 		}
 
 		treeToLayers.put(tree1, layerToNodes1);
 		treeToLayers.put(tree2, layerToNodes2);
-		
+
 		return treeToLayers;
 	}
 
-	public Map<ComponentLayer, List<Node>> extractNodesOfCertainGranularities(Tree tree) {
+	public Map<Granularity, List<Node>> extractNodesOfCertainGranularities(Tree tree) {
 
-		Map<ComponentLayer, List<Node>> layerToNodes = new HashMap<ComponentLayer, List<Node>>();
+		Map<Granularity, List<Node>> layerToNodes = new HashMap<Granularity, List<Node>>();
 		Set<String> nodeTypes = new HashSet<String>();
 		nodeTypes.addAll(tree.getRoot().getAllNodeTypes());
-		List<ComponentLayer> componentLayers = SynchronizationUtil.getComponentLayers(nodeTypes);
+		List<Granularity> componentLayers = SynchronizationUtil.getGranularities(nodeTypes);
 
-		componentLayerViewController.showView(componentLayers);
-		if (componentLayerViewController.isResult()) {
+		granularityViewController.showView(componentLayers);
+		if (granularityViewController.isResult()) {
 
-			for (ComponentLayer layer : componentLayers) {
+			for (Granularity layer : componentLayers) {
 				if (layer.refactor()) {
 					layerToNodes.put(layer, getNodesByLayer(tree, layer.getLayer()));
 				}
 			}
-		}
-		else {
+		} else {
 			return null;
 		}
 

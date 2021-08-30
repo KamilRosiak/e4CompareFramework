@@ -68,13 +68,11 @@ public class ComponentComparator {
 							&& configurationComparison.getRightArtifact() == null) {
 						// no configuration match on right side: delete saved configuration
 						Configuration configuration1 = (Configuration) configurationComparison.getLeftArtifact();
-
 						configurationsToDelete.add(configuration1);
 
 					} else {
 						// no configuration match on left side: add configuration
 						Configuration configuration2 = (Configuration) configurationComparison.getRightArtifact();
-
 						configurationsToAdd.add(configuration2);
 
 					}

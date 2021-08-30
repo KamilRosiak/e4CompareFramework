@@ -27,7 +27,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
 
 @Singleton
@@ -36,7 +36,7 @@ public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
 	private String scriptPath;
 
-	private float threshold = 0.15f;
+	public final float THRESHOLD = 0.15f;
 
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
@@ -45,27 +45,27 @@ public class ClusterEngine {
 
 	}
 
-	public Map<ComponentLayer, List<Set<Node>>> detectClusters(Map<ComponentLayer, List<Node>> nodes) {
-		Map<ComponentLayer, List<Set<Node>>> layersToCluster = new HashMap<ComponentLayer, List<Set<Node>>>();
+	public Map<Granularity, List<Set<Node>>> detectClusters(Map<Granularity, List<Node>> nodes) {
+		Map<Granularity, List<Set<Node>>> layerToClusters = new HashMap<Granularity, List<Set<Node>>>();
 
-		for (Entry<ComponentLayer, List<Node>> entry : nodes.entrySet()) {
+		for (Entry<Granularity, List<Node>> entry : nodes.entrySet()) {
 
-			layersToCluster.put(entry.getKey(),
+			layerToClusters.put(entry.getKey(),
 					detectClusters(entry.getValue(), buildDistanceString(entry.getValue())));
 
 		}
 
-		return layersToCluster;
+		return layerToClusters;
 	}
 
 	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString) {
 
+		// start process
 		if (!ProcessUtil.isReady()) {
 			ProcessUtil.startProcess(scriptPath);
 		}
 
 		List<Set<Node>> clusters = new ArrayList<Set<Node>>();
-
 		if (nodes.size() == 1) {
 			Set<Node> nodeSet = new HashSet<Node>();
 			nodeSet.add(nodes.get(0));
@@ -74,7 +74,7 @@ public class ClusterEngine {
 		}
 
 		String thresholdString = "";
-		thresholdString += threshold;
+		thresholdString += THRESHOLD;
 
 		// Execute python clustering algorithm and process result
 		try {
@@ -106,96 +106,75 @@ public class ClusterEngine {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		// printMetrics(clusters, threshold);
 		return clusters;
 
 	}
 
-	private void printMetrics(List<Set<Node>> clusters, float threshold) {
-		int largestCluster = 0;
-		int numberOfClustersWithSingleElement = 0;
+	public void analyzeCloneModel(CloneModel cloneModel) {
 
-		for (Set<Node> cluster1 : clusters) {
-			if (cluster1.size() > largestCluster) {
-				largestCluster = cluster1.size();
-			}
-			if (cluster1.size() == 1) {
-				numberOfClustersWithSingleElement += 1;
-			}
+		Map<String, Set<Component>> granularityToComponents = cloneModel.getGranularityToComponents();
 
-		}
+		for (Entry<String, Set<Component>> entry : granularityToComponents.entrySet()) {
 
-		System.out.println("");
-		System.out.println("--- Clustering ----");
-		System.out.println("Distance: " + threshold);
-		System.out.println("Number of clusters: " + clusters.size());
-		System.out.println("Largest cluster: " + largestCluster);
-		System.out.println("Clusters of size 1: " + numberOfClustersWithSingleElement);
-
-	}
-
-	public void refineComponents(CloneModel cloneModel) {
-
-		Map<String, Set<Component>> componentsByGranularities = cloneModel.getComponentsByGranularities();
-
-		for (Entry<String, Set<Component>> entry : componentsByGranularities.entrySet()) {
-
-			List<Component> newComponents = new ArrayList<Component>();
+			List<Component> components = new ArrayList<Component>();
 			for (Component component : entry.getValue()) {
 
-				Map<Node, Configuration> configurationByTarget = component.getConfigurationByTarget();
-				Set<Node> targets = configurationByTarget.keySet();
-				newComponents.add(component);
+				Map<Node, Configuration> targetToConfiguration = component.getConfigurationByTarget();
+				Set<Node> targets = targetToConfiguration.keySet();
+				components.add(component);
 
+				// analyze intra-cluster similarity; exclude all new clusters from component
 				List<Set<Node>> clusters = detectClusters(Lists.newArrayList(targets),
 						buildDistanceString(Lists.newArrayList(targets)));
 
 				if (clusters.size() > 1) {
 
 					Set<Node> baseSet = clusters.get(0);
-
 					for (Node target : targets) {
 						if (!baseSet.contains(target)) {
-							Configuration configurationToRemove = configurationByTarget.get(target);
+							Configuration configurationToRemove = targetToConfiguration.get(target);
 							Component newComponent = cloneModel.moveConfigurationToNewComponent(component,
 									configurationToRemove);
-							newComponents.add(newComponent);
+							components.add(newComponent);
 						}
 
 					}
 				}
 			}
 
-			String distanceString = buildDistanceComponentString(newComponents);
+			// create components for all nodes of certain granularity not belonging to a
+			// component yet
+			for (String granularity : granularityToComponents.keySet()) {
+				for (Node node : cloneModel.getNodesNotPartOfComponentsByGranularity(granularity)) {
+					Component newComponent = cloneModel.createNewComponent(node);
+					components.add(newComponent);
+				}
+			}
 
-			List<Set<Node>> clusters = detectClusters(new ArrayList<Node>(newComponents), distanceString);
-
-			List<Set<Node>> filteredClusters = new ArrayList<Set<Node>>();
-
+			// analyze inter-cluster similarity and merge clusters of components to single
+			// component
+			String distanceString = buildDistanceComponentString(components);
+			List<Set<Node>> clusters = detectClusters(new ArrayList<Node>(components), distanceString);
 			for (Set<Node> cluster : clusters) {
-				if (cluster.size() == 1) {
-					Component component = (Component) cluster.iterator().next();
+
+				Component baseComponent = (Component) cluster.iterator().next();
+
+				for (Node node : cluster) {
+					Component component = (Component) node;
+
+					if (baseComponent != component) {
+						cloneModel.mergeComponents(baseComponent, component);
+					}
+
+				}
+
+			}
+
+			// remove all components of size 1
+			for (Component component : cloneModel.getComponents()) {
+				if (component.getConfigurations().size() <= 1) {
 					cloneModel.removeComponent(component);
-				} else {
-					filteredClusters.add(cluster);
 				}
-			}
-
-			for (Set<Node> cluster : clusters) {
-
-				for (Node node1 : cluster) {
-					Component component1 = (Component) node1;
-
-					for (Node node2 : cluster) {
-						Component component2 = (Component) node2;
-
-						if (node1 != node2) {
-							cloneModel.mergeComponents(component1, component2);
-						}
-
-					}
-				}
-
 			}
 
 		}
@@ -222,18 +201,24 @@ public class ClusterEngine {
 			}
 
 		}
+
+		return getDistanceString(matrix, components.size());
+
+	}
+
+	private String getDistanceString(float[][] matrix, int size) {
 		String distanceString = "(";
-		for (int i = 0; i < components.size(); i++) {
+		for (int i = 0; i < size; i++) {
 			distanceString += "[";
-			for (int j = 0; j < components.size(); j++) {
+			for (int j = 0; j < size; j++) {
 				distanceString += matrix[i][j];
-				if (j != components.size() - 1) {
+				if (j != size - 1) {
 					distanceString += ",";
 				}
 
 			}
 			distanceString += "]";
-			if (i != components.size() - 1) {
+			if (i != size - 1) {
 				distanceString += ",";
 			}
 
@@ -241,7 +226,6 @@ public class ClusterEngine {
 		distanceString += ")";
 
 		return distanceString;
-
 	}
 
 	private String buildDistanceString(List<Node> nodes) {
@@ -264,33 +248,15 @@ public class ClusterEngine {
 			}
 
 		}
-		String distanceString = "(";
-		for (int i = 0; i < nodes.size(); i++) {
-			distanceString += "[";
-			for (int j = 0; j < nodes.size(); j++) {
-				distanceString += matrix[i][j];
-				if (j != nodes.size() - 1) {
-					distanceString += ",";
-				}
 
-			}
-			distanceString += "]";
-			if (i != nodes.size() - 1) {
-				distanceString += ",";
-			}
-
-		}
-		distanceString += ")";
-
-		return distanceString;
-
+		return getDistanceString(matrix, nodes.size());
 	}
 
-	private float calculateDistance(List<Node> targets1, List<Node> targets2) {
-
+	// calculate complete linkage distance between clusters
+	private float calculateDistance(List<Node> nodes1, List<Node> nodes2) {
 		float maxDistance = 0.0f;
-		for (Node node1 : targets1) {
-			for (Node node2 : targets2) {
+		for (Node node1 : nodes1) {
+			for (Node node2 : nodes2) {
 
 				float distance = 1 - compareEngine.compare(node1, node2).getSimilarity();
 

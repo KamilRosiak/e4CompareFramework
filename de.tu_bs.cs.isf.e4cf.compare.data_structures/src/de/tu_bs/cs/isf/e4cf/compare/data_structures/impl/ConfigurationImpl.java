@@ -26,4 +26,15 @@ public class ConfigurationImpl extends NodeImpl implements Configuration {
 
 	}
 
+	@Override
+	public Configuration cloneNode() {
+		Configuration newNode = new ConfigurationImpl();
+		newNode.setNodeType(getNodeType());
+		newNode.setVariabilityClass(getVariabilityClass());
+
+		newNode.setTarget(getTarget().cloneNode());
+
+		return newNode;
+	}
+
 }
