@@ -8,6 +8,7 @@ import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparison.TaxonomyNodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.CollectedComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.NodeComparisonResult;
@@ -32,7 +33,7 @@ public class ResultEngine {
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
-	private static final float SIMILARITY_THRESHOLD = 0.95f;
+	private static final float SIMILARITY_THRESHOLD = 0.45f;
 
 	public ResultEngine() {
 
@@ -64,24 +65,26 @@ public class ResultEngine {
 
 	public void addToListOfComparedNodes(NodeComparisonResult compResult) {
 		this.listOfComparedNodes.add(compResult);
+		if ( compResult.getSimilarity() >= ResultEngine.SIMILARITY_THRESHOLD) {
 		addResultToMapping(this.directResultMapping, compResult.getLeftNodeSignature(),
 				compResult.getLeftNodeSignature(), compResult.getRightNodeSignature(), compResult.getSimilarity());
 		addResultToMapping(this.potentialResultMapping, compResult.getRightNodeSignature(),
 				compResult.getLeftNodeSignature(), compResult.getRightNodeSignature(), compResult.getSimilarity());
+		}
 	}
 
 	/**
 	 * Removes Matchings which don't meet the threshold
 	 */
-	private void applyThresholdMatching(List<NodeComparisonResult> selectedListOfComparedNodes) {
-		for (NodeComparisonResult aComparedNodesTuple : selectedListOfComparedNodes) {
+	private void applyThresholdMatching() {
+		for (NodeComparisonResult aComparedNodesTuple : listOfComparedNodes) {
 			// Remove Matching which are lower than threshold
-			if (aComparedNodesTuple.getSimilarity() <= ResultEngine.SIMILARITY_THRESHOLD) {
+			if (aComparedNodesTuple.getSimilarity() < ResultEngine.SIMILARITY_THRESHOLD) {
 				listOfComparedNodesRemoved.add(aComparedNodesTuple);
 			}
 		}
 
-		selectedListOfComparedNodes.removeAll(listOfComparedNodesRemoved);
+		listOfComparedNodes.removeAll(listOfComparedNodesRemoved);
 
 		System.out.println("Removed: " + listOfComparedNodesRemoved.size());
 		System.out.println("Kept: " + listOfComparedNodes.size());
@@ -92,13 +95,13 @@ public class ResultEngine {
 	 * similarity value
 	 */
 	public void matchNodes() {
-		applyThresholdMatching(listOfComparedNodes); // Remove Node comparisons that do not meet threshold (under matched or only matched by type)
+		applyThresholdMatching(); // Remove Node comparisons that do not meet threshold (under matched or only matched by type)
 		while (directResultMapping.size() > 0) {
 			ResultMapping resultMap = directResultMapping.get(0);
 			if (resultMap.getMappedResults().size() == 0) {
 				directResultMapping.remove(0);
 			} else {
-				resultMap.sortResultsBySimilarity(); // first sort Matches by similarity (descending)
+				resultMap.sortResultsBySimilarity(); // first Sort Matches by similarity (descending)
 				SimpleResult t_bestTriple = resultMap.getMappedResults().get(0); // Then pick that with the highest
 																					// similarity
 				String m_matchedFragment = t_bestTriple.getRightNode();
@@ -115,10 +118,19 @@ public class ResultEngine {
 				// Remove Triple matches of potential matches from original match 
 				// triples (so node is not compared again to other matches)
 				removeTriplesFromEachResultMappings(T_potential_ResultMap.getMappedResults(), directResultMapping); 
+				
+				// Also Remove fragment whose best match has been found in potential (Brute force Removal)
+				removeMappingByKey(directResultMapping, t_bestTriple.getLeftNode()); 
 
 			}
 		}
 
+	}
+	
+	public void printCommulativeResults() {
+		for (SimpleResult aSimpleResult: matchingVariantSetMapping) {
+			System.out.println("Similarity: "+aSimpleResult.getSimilarity()+", Type: "+aSimpleResult.getLeftNode()+" Type: "+ aSimpleResult.getRightNode());
+		}
 	}
 
 	/**
@@ -146,10 +158,27 @@ public class ResultEngine {
 			float comparisonWeightedSimilarity = 0.0f;
 			comparisonWeightedSimilarity = comparedNodes.getLeftNodeWeight() * comparedNodes.getSimilarity();
 			comparedNodes.setWeightedSimilarity(comparisonWeightedSimilarity);
-//			System.out.println();
 //			System.out.println("Left: "+comparedNodes.getLeftNodeSignature() +" - "+ comparedNodes.getLeftNode().getNodeType() +", Right Node: "+comparedNodes.getRightNodeSignature()+" - "+ comparedNodes.getRightNode().getNodeType());
+//			printNodeDetails(comparedNodes);
+			
 			addToCumulativeComparisons(comparedNodes.getArtifactOfLeftNode(), comparedNodes.getArtifactOfRightNode(),
 					comparedNodes.getWeightedSimilarity());
+		}
+	}
+	
+	public void printNodeDetails(NodeComparisonResult comparedNodes) {
+		for (Attribute aNodeAttribute: comparedNodes.getLeftNode().getAttributes()) {
+			for (Value anAttValue: aNodeAttribute.getAttributeValues()) {
+				System.out.println(anAttValue.getValue().toString());
+			}
+		}
+		
+		System.out.println("---------------vs--------------");
+		
+		for (Attribute aNodeAttribute: comparedNodes.getRightNode().getAttributes()) {
+			for (Value anAttValue: aNodeAttribute.getAttributeValues()) {
+				System.out.println(anAttValue.getValue().toString());
+			}
 		}
 	}
 
@@ -181,8 +210,8 @@ public class ResultEngine {
 		}
 	}
 
-	private void removeMappingByKey(List<ResultMapping> potentialResultMapping, String fragmentKey) {
-		potentialResultMapping.removeIf((element) -> {
+	private void removeMappingByKey(List<ResultMapping> givenResultMapping, String fragmentKey) {
+		givenResultMapping.removeIf((element) -> {
 			// Remove all elements whose key matches the above statement
 			return element.getMappingKey().equals(fragmentKey);
 		});
