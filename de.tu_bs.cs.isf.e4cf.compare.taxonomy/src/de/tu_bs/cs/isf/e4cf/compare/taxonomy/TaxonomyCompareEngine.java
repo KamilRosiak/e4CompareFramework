@@ -15,6 +15,7 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectoryNameComparator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectorySizeComparator;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.LevenshteinStringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.SimpleStringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparison.TaxonomyNodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ArtifactFileDetails;
@@ -34,7 +35,11 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
  *
  */
 public class TaxonomyCompareEngine implements ICompareEngine<Node> {
+	private SimpleStringComparator simpleStringComparator = new SimpleStringComparator();
 	private SimpleStringComparator defaultComparator = new SimpleStringComparator();
+//	private LevenshteinStringComparator defaultComparator = new LevenshteinStringComparator();
+
+
 	
 	private DirectoryNameComparator directoryNameComparator = new DirectoryNameComparator();
 	private DirectorySizeComparator directorySizeComparator = new DirectorySizeComparator();
@@ -103,40 +108,26 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 						// Add Comparison to List for GraphView
 						currentLeftArtifact = artifactLeft;
 						currentRightArtifact = artifactRight;
+						System.out.println("Comparing Nodes: "+ artifactLeft.getTreeName() +" and "+artifactRight.getTreeName());
 						compare(artifactLeft.getRoot(), artifactRight.getRoot());
+						taxonomyResultEngine.matchNodes();
+						taxonomyResultEngine.printCommulativeResults();
+						
 					}
+			
 				});
 
-				taxonomyResultEngine.matchNodes();
+				
 				artifactIndexCounter++; // Increment artifact/variant counter by one
 			});
-
-		} else {
-			int variantsSize = variants.size();
-			for (int i = 0; i < variantsSize-1; i++) {
-				// Add Comparison to List for GraphView
-				currentLeftArtifact = variants.get(i);
-				currentRightArtifact = variants.get(i + 1);
-				compare(currentLeftArtifact.getRoot(), currentRightArtifact.getRoot());
-				
-				taxonomyResultEngine.matchNodes();
-				artifactIndexCounter++; // Increment artifact/variant counter by one
-			}
 			
-			if (variants.size() > 2) {
-				// Compare First and Last
-				currentLeftArtifact = variants.get(0);
-				currentRightArtifact = variants.get(variantsSize-1);
-				compare(currentLeftArtifact.getRoot(), currentRightArtifact.getRoot());
-				taxonomyResultEngine.matchNodes();
-			}
-			
+			// Finalize Matching
+			taxonomyResultEngine.createRefinedListofNodes();
+			taxonomyResultEngine.computeWeightedSimilarity();
 
 		}
 		
-		// Finalize Matching
-		taxonomyResultEngine.createRefinedListofNodes();
-		taxonomyResultEngine.computeWeightedSimilarity();
+		
 		artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
 		
 		 
