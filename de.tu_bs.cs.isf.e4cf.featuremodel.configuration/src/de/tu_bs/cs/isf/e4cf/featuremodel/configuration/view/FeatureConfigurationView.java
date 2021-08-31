@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.FXToolbar;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
@@ -36,6 +37,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Pair;
 
@@ -172,7 +174,7 @@ public class FeatureConfigurationView {
 			Feature feature = featureEntry.getKey();
 		
 			FeatureSelectionElement element = new FeatureSelectionElement(featureEntry);
-			CheckBoxTreeItem<FeatureSelectionElement> item = createCheckedItem(element, true);
+			CheckBoxTreeItem<FeatureSelectionElement> item = createCheckedItem(element, false);
 
 			// distinguish the root feature from others 
 			if (feature.getParent() == null) {
@@ -232,9 +234,17 @@ public class FeatureConfigurationView {
 		item.setIndependent(independent);
 		boolean selected = element.isSelected();
 		item.setSelected(selected);
+		if (element.get().getKey().isAlternative()) {
+			item.setGraphic(new ImageView(FileTable.FV_ALTERNATIVE_16));
+		} else if (element.get().getKey().isMandatory()) {
+			item.setGraphic(new ImageView(FileTable.FV_MANDATORY_16));
+		} else {
+			item.setGraphic(new ImageView(FileTable.FV_OPTIONAL_16));
+		}
 		item.addEventHandler(CheckBoxTreeItem.<FeatureSelectionElement>checkBoxSelectionChangedEvent(), (event) -> {
 			// propagate checkbox selection to configuration element
-			item.getValue().setSelected(event.getTreeItem().isSelected());			
+			item.getValue().setSelected(event.getTreeItem().isSelected());
+			item.setIndeterminate(false);
 			event.consume();
 		});
 		

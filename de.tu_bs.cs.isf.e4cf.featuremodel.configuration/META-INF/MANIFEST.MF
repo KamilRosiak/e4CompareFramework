@@ -27,4 +27,5 @@ Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.configuration,
  de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable,
  de.tu_bs.cs.isf.e4cf.featuremodel.configuration.util,
  de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view
-Import-Package: de.tu_bs.cs.isf.e4cf.compare.stringtable
+Import-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable,
+ de.tu_bs.cs.isf.e4cf.compare.stringtable

@@ -44,7 +44,13 @@ public class TreeParser {
 	
 	private static Feature createFeature(Node node) {
 		Feature feature = FeatureInitializer.createFeature(node.getNodeType(), !node.getVariabilityClass().equals(VariabilityClass.OPTIONAL));
-		feature.setAlternative(!hasMandatoryChildren(node));
+		feature.setOr(hasOptionalChildren(node));
+		if (!hasMandatoryChildren(node) && node.getVariabilityClass().equals(VariabilityClass.ALTERNATIVE)) {
+			feature.setOr(false);
+			feature.setAlternative(true);
+		}
+		
+		
 		ArtifactReference uuid = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
 		uuid.setArtifactClearName(node.getUUID().toString());
 		feature.getArtifactReferences().add(uuid);	
@@ -64,6 +70,9 @@ public class TreeParser {
 			Attribute valueAttr = node.getAttributeForKey("Value");
 			for (Value<String> value : valueAttr.getAttributeValues()) {
 				Feature child = FeatureInitializer.createFeature(value.getValue(), true);
+				if (node.getVariabilityClass().equals(VariabilityClass.ALTERNATIVE)) {
+					child.setMandatory(false);
+				}
 				feature.getChildren().add(child);
 				child.setParent(feature);
 			}
@@ -103,7 +112,17 @@ public class TreeParser {
 			}
 			
 		}
-		return node.getChildren().isEmpty();
+		return false;
+	}
+	
+	private static boolean hasOptionalChildren(Node node) {
+		for (Node n : node.getChildren()) {
+			if (n.getVariabilityClass().equals(VariabilityClass.OPTIONAL)) {
+				return true;
+			}
+			
+		} 
+		return false;
 	}
 	
 }
