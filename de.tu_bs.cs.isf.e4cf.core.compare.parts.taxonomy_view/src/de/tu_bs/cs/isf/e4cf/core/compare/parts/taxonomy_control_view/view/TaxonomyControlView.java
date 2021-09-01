@@ -41,31 +41,35 @@ public class TaxonomyControlView implements Initializable  {
 	private String taxonomyJSONTexts;
 	
 	@FXML
+	private RadioButton LevenshteinComparatorRadioButton;
+	@FXML
+	private RadioButton stringComparatorRadioButton;
+	
+	@FXML
 	private CheckBox languageCheckBoxJava;
 	@FXML
 	private CheckBox languageCheckBoxCplusplus;
-	
-	@FXML
-	private RadioButton asymmetricRadioButton;
-	@FXML
-	private RadioButton symmetricRadioButton;
 	
 	@FXML
 	private CheckBox directoryNameCheckbox;
 	@FXML
 	private CheckBox directorySizeCheckbox;
 	@FXML
-	private CheckBox directoryDateCreatedCheckbox;
-	@FXML
-	private CheckBox directoryDateModifiedCheckbox;
-	@FXML
 	private CheckBox directoryNonSourceCheckbox;
 	@FXML
 	private CheckBox directoryChildenCheckbox;
+	
 	@FXML
-	private CheckBox directoryPathCheckbox;
+	private RadioButton sourceLevelRadioButton;
 	@FXML
-	private CheckBox directoryChildSignatureCheckbox;
+	private RadioButton dirLevelRadioButton;
+	
+	@FXML
+	private CheckBox classConstructsCheckbox;
+	@FXML
+	private CheckBox methodConstructsCheckbox;
+	@FXML
+	private CheckBox otherConstructsCheckbox;
 	
 	@FXML
 	private Button saveButton;
@@ -75,10 +79,12 @@ public class TaxonomyControlView implements Initializable  {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		taxonomySettings = new TaxonomyControlSettings();
+		initializeBasicComparators();
 		initializeSourceLanguages();
-		initializeAsymmetryMode();
 		initializeDirectoryMetrics();
+		initializeDictionarySelection();
 		initializeSaveButton();
+		addAllTaxonomyUpdateListeners();
 	}
 	
 	private void initializeSourceLanguages() {
@@ -86,37 +92,172 @@ public class TaxonomyControlView implements Initializable  {
 		languageCheckBoxCplusplus.setSelected(false);
 	}
 	
-	private void initializeAsymmetryMode() {
-		ToggleGroup group = new ToggleGroup();
-		asymmetricRadioButton.setToggleGroup(group);
-		symmetricRadioButton.setToggleGroup(group);
-		asymmetricRadioButton.setSelected(taxonomySettings.getAsymmetryMode());
+	private void addAllTaxonomyUpdateListeners() {
+		
+		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
+		sourceLevelRadioButton.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setSourceLevelComparison(new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
+			    	  
+		});
+		
+		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
+		dirLevelRadioButton.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setSourceLevelComparison(!new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});  
+			
+		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
+		LevenshteinComparatorRadioButton.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setLevenshteinMode(new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
+			    	  
+		});
+		
+		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
+		stringComparatorRadioButton.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setLevenshteinMode(!new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});
+		
+		
+		directoryNameCheckbox.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setDirNameMetric(new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});
+		
+		directorySizeCheckbox.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setDirSizeMetric(new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});
+		
+		directoryNonSourceCheckbox.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setDirNumNonSourceMetric(new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});
+		
+		directoryChildenCheckbox.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setDirNumSourceMetric(new_val);
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});
+		
+		classConstructsCheckbox.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setClassConstructMode(new_val);
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});
+		
+		methodConstructsCheckbox.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setMethodConstructMode(new_val);
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});
+		
+		otherConstructsCheckbox.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setOtherConstructMode(new_val);
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});
+		
+		
+		
+		
+	}
+	
+	private void initializeBasicComparators() {
+		ToggleGroup comparatorGroup = new ToggleGroup();
+		LevenshteinComparatorRadioButton.setToggleGroup(comparatorGroup);
+		stringComparatorRadioButton.setToggleGroup(comparatorGroup);
 		
 		services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, ""); 
 		
-		// Set Action/Event Handlers for Asymmetry Mode Radio Buttons
-		asymmetricRadioButton.selectedProperty().addListener(
+		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
+		LevenshteinComparatorRadioButton.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-			    	  taxonomySettings.setAsymmetryMode(new_val); 
-			    	  symmetricRadioButton.setSelected(!new_val);
+			    	  taxonomySettings.setLevenshteinMode(new_val); 
+			    	  stringComparatorRadioButton.setSelected(!new_val);
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
 		});
 		
-		// Set Action/Event Handlers for Symmetry Mode Radio Buttons
-		symmetricRadioButton.selectedProperty().addListener(
+		// Set Action/Event Handlers for simple string Comparator Mode Radio Buttons
+		stringComparatorRadioButton.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-			    	  taxonomySettings.setAsymmetryMode(!new_val); 
-			    	  asymmetricRadioButton.setSelected(!new_val);
+			    	  taxonomySettings.setLevenshteinMode(!new_val); 
+			    	  LevenshteinComparatorRadioButton.setSelected(!new_val);
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
 		});
 		
-		asymmetricRadioButton.setSelected(true);
+		LevenshteinComparatorRadioButton.setSelected(true);
 		
 	}
 	
 	private void initializeDirectoryMetrics() {
 		directoryNameCheckbox.setSelected(true);
 		directorySizeCheckbox.setSelected(true);
+	}
+	
+	private void initializeDictionarySelection() {
+		ToggleGroup dictionaryGroup = new ToggleGroup();
+		sourceLevelRadioButton.setToggleGroup(dictionaryGroup);
+		dirLevelRadioButton.setToggleGroup(dictionaryGroup);
+		
+		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
+		sourceLevelRadioButton.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  
+			    	  taxonomySettings.setSourceLevelComparison(new_val); // Update setting in taxonomy settings object 
+			    	  dirLevelRadioButton.setSelected(!new_val); // Update second option radio button
+			    	  
+			    	  // Update Directory Metric(s)
+			    	  directoryNameCheckbox.setDisable(true);
+			    	  directorySizeCheckbox.setDisable(true);
+			    	  directoryNonSourceCheckbox.setDisable(true);
+			    	  directoryChildenCheckbox.setDisable(true);
+			    		
+			    	  // Update concerned constructs
+			    	  classConstructsCheckbox.setSelected(true);
+			    	  methodConstructsCheckbox.setSelected(true);
+			    	  otherConstructsCheckbox.setSelected(true);
+			    	  classConstructsCheckbox.setDisable(true);
+			    	  methodConstructsCheckbox.setDisable(true);
+			    	  otherConstructsCheckbox.setDisable(true);
+			    	  
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
+		});
+		
+		// Set Action/Event Handlers for simple string Comparator Mode Radio Buttons
+		dirLevelRadioButton.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setSourceLevelComparison(!new_val); // Update setting in taxonomy settings object 
+			    	  sourceLevelRadioButton.setSelected(!new_val); // Update second option radio button
+			    	  
+			    	  // Update Directory Metric(s)
+			    	  directoryNameCheckbox.setDisable(false);
+			    	  directorySizeCheckbox.setDisable(false);
+			    	  directoryNonSourceCheckbox.setDisable(false);
+			    	  directoryChildenCheckbox.setDisable(false);
+			    	  
+			    	  // Update concerned constructs
+			    	  classConstructsCheckbox.setSelected(true);
+			    	  methodConstructsCheckbox.setSelected(true);
+			    	  otherConstructsCheckbox.setSelected(false);
+			    	  classConstructsCheckbox.setDisable(false);
+			    	  methodConstructsCheckbox.setDisable(false);
+			    	  otherConstructsCheckbox.setDisable(false);
+			    	  
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
+		});
+		
+		sourceLevelRadioButton.setSelected(true);
+		
 	}
 	
 	private void initializeSaveButton() {
