@@ -1,4 +1,4 @@
-#modeLabel, #sourceChoicelabel, #directoryMetricLabel, #languageStructuresLabel  {
+#modeLabel, #sourceChoicelabel, #directoryMetricLabel, #languageStructuresLabel, #defaultComparatorChoicelabel  {
  -fx-text-fill: black;
  -fx-font-weight: normal;
  -fx-font-size: 16px;
