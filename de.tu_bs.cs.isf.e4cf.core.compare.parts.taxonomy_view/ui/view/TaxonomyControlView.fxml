@@ -33,7 +33,7 @@
 				</Label>
 				<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
 					<children>
-						<RadioButton fx:id="asymmetricRadioButton" text="Asymmetric">
+						<RadioButton fx:id="sourceLevelRadioButton" text="Source Level">
 	 		 		   		<HBox.margin>
 								<Insets right="3.0"/>
 							</HBox.margin>
@@ -41,7 +41,7 @@
        							<ToggleGroup fx:id="group"/>
    							</toggleGroup> -->
 						</RadioButton>
-						<RadioButton fx:id="symmetricRadioButton" text="Symmetric">
+						<RadioButton fx:id="dirLevelRadioButton" text="Directory Level">
 							<HBox.margin>
 								<Insets right="30.0"/>
 							    <Insets bottom="10.0"/>
@@ -63,6 +63,18 @@
 					<children>
 		    			<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
 			               <children>
+			               		<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
+									<children>
+										<Label fx:id="defaultComparatorChoicelabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" 
+											text="Basis Comparators" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> 
+										</Label>
+						    			<RadioButton fx:id="LevenshteinComparatorRadioButton" text="Levenshtein"></RadioButton>
+										<RadioButton fx:id="stringComparatorRadioButton" text="String"></RadioButton> 
+									</children>
+									<BorderPane.margin>
+										<Insets bottom="5.0" top="5.0" />
+									</BorderPane.margin>
+								</VBox>
 			               		<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
 									<children>
 										<Label fx:id="sourceChoicelabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" 
@@ -95,35 +107,10 @@
 								</VBox>
 								<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
 									<children>
-										<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-											<children>
-												<RadioButton fx:id="sourceLevelRadioButton" text="Source Level">
-							 		 		   		<HBox.margin>
-														<Insets right="3.0"/>
-													</HBox.margin>
-													<!-- <toggleGroup>
-						       							<ToggleGroup fx:id="group"/>
-						   							</toggleGroup> -->
-												</RadioButton>
-												<RadioButton fx:id="dirLevelRadioButton" text="Directory Level">
-													<HBox.margin>
-														<Insets right="30.0"/>
-													    <Insets bottom="10.0"/>
-													</HBox.margin>
-													<!-- <toggleGroup>
-						       							<fx:reference source="group"/>
-						   							</toggleGroup> -->
-												</RadioButton> 
-											</children>
-											<VBox.margin>
-												<Insets left="5.0" right="5.0" />
-											</VBox.margin>
-										</HBox>
 										<Label alignment="TOP_LEFT" fx:id="languageStructuresLabel"  maxWidth="1.7976931348623157E308" text="(Construct) Dictionaries" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> </Label>
-										<CheckBox fx:id="classesStructuresCheckbox" text="Classes" />
-										<CheckBox fx:id="methodsStructuresCheckbox" text="Methods" />
-										<CheckBox fx:id="controlStructuresCheckbox" text="Control Structures e.g. While-Loop, For-Loop" />
-						    			<CheckBox fx:id="dataStructuresCheckBox" text="Data Structures e.g. int, double, Array, ArrayList" />
+										<CheckBox fx:id="classConstructsCheckbox" text="Classes" />
+										<CheckBox fx:id="methodConstructsCheckbox" text="Methods" />
+										<CheckBox fx:id="otherConstructsCheckbox" text="Other PL Structures e.g. While-Loop, For-Loop" />
 									</children>
 									<BorderPane.margin>
 										<Insets bottom="5.0" top="5.0" />
