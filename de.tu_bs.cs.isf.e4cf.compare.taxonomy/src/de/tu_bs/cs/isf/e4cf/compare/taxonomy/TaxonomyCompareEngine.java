@@ -9,7 +9,6 @@ import com.google.common.base.Stopwatch;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.interfaces.ICompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
@@ -24,6 +23,7 @@ import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.ITaxonomyMetric;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.util.ResultEngine;
+import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
@@ -34,42 +34,36 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
  * @author developer_olan
  *
  */
-public class TaxonomyCompareEngine implements ICompareEngine<Node> {
-	private SimpleStringComparator simpleStringComparator = new SimpleStringComparator();
+public class TaxonomyCompareEngine {
+	private SimpleStringComparator levenshteinStringComparator = new SimpleStringComparator();
 	private SimpleStringComparator defaultComparator = new SimpleStringComparator();
-//	private LevenshteinStringComparator defaultComparator = new LevenshteinStringComparator();
 
-
-	
 	private DirectoryNameComparator directoryNameComparator = new DirectoryNameComparator();
 	private DirectorySizeComparator directorySizeComparator = new DirectorySizeComparator();
-	
+
 	private ITaxonomyMetric metric;
 	private ITaxonomyMatcher matcher;
-	
-	private Boolean asymmetry;
+
+	private TaxonomyControlSettings taxonomySetting;
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 	private int artifactIndexCounter = 0;
-	
+
 	// Taxonomy related class members
 	private Tree currentLeftArtifact = null;
 	private Tree currentRightArtifact = null;
-	
+
 	private List<ArtifactFileDetails> allArtifactFileDetails = new ArrayList<ArtifactFileDetails>();
 
-	
 	public ResultEngine taxonomyResultEngine = new ResultEngine();
-	
 
-	public TaxonomyCompareEngine(ITaxonomyMatcher _selectedMatcher, boolean _asymmetry) {
+	public TaxonomyCompareEngine(ITaxonomyMatcher _selectedMatcher, TaxonomyControlSettings _taxonomySetting) {
 		this.matcher = _selectedMatcher;
-		this.asymmetry = _asymmetry;
+		this.taxonomySetting = _taxonomySetting;
 	}
 
 	@Inject
 	ServiceContainer services;
-
 
 	/**
 	 * Populates list of artifact to prepare for taxonomy computation
@@ -82,9 +76,10 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 			String rightArtifactName) {
 		artifactComparisonList.add(new ArtifactComparison(artifactComparison, leftArtifactName, rightArtifactName));
 	}
-	
+
 	/**
 	 * adds list to all artifacts to engine list of artifacts
+	 * 
 	 * @param allArtifactPaths
 	 */
 	public void deriveArtifactDetails(List<FileTreeElement> allArtifactTreeElements) {
@@ -96,67 +91,73 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 	/**
 	 * Compares variants in a list
 	 */
-	@Override
 	public Tree compare(List<Tree> variants) {
 		Tree mergedTree = null;
 		// Creates and starts a new stopwatch
-        Stopwatch stopwatch = Stopwatch.createStarted();
-		if (asymmetry) {
-			variants.stream().forEach(artifactLeft -> {
-				variants.stream().forEach(artifactRight -> {
-					if (artifactLeft != artifactRight) {
-						// Add Comparison to List for GraphView
-						currentLeftArtifact = artifactLeft;
-						currentRightArtifact = artifactRight;
-						System.out.println("Comparing Nodes: "+ artifactLeft.getTreeName() +" and "+artifactRight.getTreeName());
-						compare(artifactLeft.getRoot(), artifactRight.getRoot());
-						taxonomyResultEngine.matchNodes();
-						taxonomyResultEngine.printCommulativeResults();
-						
-					}
-			
-				});
+		Stopwatch stopwatch = Stopwatch.createStarted();
 
-				
-				artifactIndexCounter++; // Increment artifact/variant counter by one
+		variants.stream().forEach(artifactLeft -> {
+			variants.stream().forEach(artifactRight -> {
+				if (artifactLeft != artifactRight) {
+					// Add Comparison to List for GraphView
+					currentLeftArtifact = artifactLeft;
+					currentRightArtifact = artifactRight;
+					System.out.println(
+							"Comparing Nodes: " + artifactLeft.getTreeName() + " and " + artifactRight.getTreeName());
+					compare(artifactLeft.getRoot(), artifactRight.getRoot());
+					taxonomyResultEngine.matchNodes();
+					taxonomyResultEngine.printCommulativeResults();
+
+				}
+
 			});
-			
-			// Finalize Matching
-			taxonomyResultEngine.createRefinedListofNodes();
-			taxonomyResultEngine.computeWeightedSimilarity();
 
-		}
-		
-		
+			artifactIndexCounter++; // Increment artifact/variant counter by one
+		});
+
+		// Finalize Matching
+		taxonomyResultEngine.createRefinedListofNodes();
+		taxonomyResultEngine.computeWeightedSimilarity();
+
 		artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
-		
-		 
-        // stop stopwatch, get elapsed time, expressed in milliseconds
-		stopwatch.stop(); 
-        long timeElapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-		System.out.println("Taxonomy Generation Time: " + timeElapsed/1000 + " secs. (" + timeElapsed +" milliseconds)");
+
+		// stop stop watch, get elapsed time, expressed in milliseconds
+		stopwatch.stop();
+		long timeElapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+		System.out.println(
+				"Taxonomy Generation Time: " + timeElapsed / 1000 + " secs. (" + timeElapsed + " milliseconds)");
 		return mergedTree;
 	}
 
-	
-	@Override
 	public TaxonomyNodeComparison compare(Node first, Node second) {
 		TaxonomyNodeComparison comparison = new TaxonomyNodeComparison(first, second);
 		// if nodes are of the same type
 		if (first.getNodeType().equals(second.getNodeType())) {
-			
-			comparison.addResultElement(defaultComparator.compare(first, second));
-			
-//			if (first.getNodeType().equals("Directory")) {
-//				comparison.addResultElement(directoryNameComparator.compare(first, second));
-//			} else {
-//				comparison.addResultElement(defaultComparator.compare(first, second));
-//			}
-			
+
+			// If Source Comparison Option selected
+			if (taxonomySetting.getSourceLevelComparison()) {
+				if (taxonomySetting.getLevenshteinMode()) {
+					comparison.addResultElement(levenshteinStringComparator.compare(first, second));
+				} else {
+					comparison.addResultElement(defaultComparator.compare(first, second));
+				}
+			} else {
+				if (first.getNodeType().equals("Directory")) {
+					comparison.addResultElement(directoryNameComparator.compare(first, second));
+				} else {
+					if (taxonomySetting.getLevenshteinMode()) {
+						comparison.addResultElement(levenshteinStringComparator.compare(first, second));
+					} else {
+						comparison.addResultElement(defaultComparator.compare(first, second));
+					}
+				}
+			}
+
 			// Add Result to Node Comparison Result
-			NodeComparisonResult nodeComparisonResult = new NodeComparisonResult(artifactIndexCounter, currentLeftArtifact, first, second, currentRightArtifact, comparison.getResultSimilarity());
+			NodeComparisonResult nodeComparisonResult = new NodeComparisonResult(artifactIndexCounter,
+					currentLeftArtifact, first, second, currentRightArtifact, comparison.getResultSimilarity());
 			taxonomyResultEngine.addToListOfComparedNodes(nodeComparisonResult);
-			
+
 			// if no children available the recursion ends here
 			if (first.getChildren().isEmpty() && second.getChildren().isEmpty()) {
 				return comparison;
@@ -186,35 +187,12 @@ public class TaxonomyCompareEngine implements ICompareEngine<Node> {
 		}
 	}
 
-	@Override
 	public Comparator getDefaultComparator() {
-		return defaultComparator;
+		return this.defaultComparator;
 	}
 
-	
 	public ITaxonomyMatcher getTaxonomyMatcher() {
 		return this.matcher;
 	}
-	
-	@Override
-	public Matcher getMatcher() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public Metric getMetric() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Tree compare(Tree first, Tree second) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 
 }
