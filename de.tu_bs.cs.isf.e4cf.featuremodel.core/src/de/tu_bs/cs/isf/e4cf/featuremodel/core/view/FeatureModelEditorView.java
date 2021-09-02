@@ -75,8 +75,8 @@ public class FeatureModelEditorView {
 	public double mouseX = 0;
 	public double mouseY = 0;
 	private ServiceContainer services;
-	private Pane root;
-	private ResetHandler resetHandler;
+	private Pane rootPane;
+	private ResetHandler resetHandler;	
 	private DragHandler dragHandler;
 	private SelectionAreaHandler selectionHandler;
 	private PrimaryMouseButtonClickedHandler primaryMouseClickedHandler;
@@ -135,12 +135,12 @@ public class FeatureModelEditorView {
 	 */
 	private Pane createScene() {
 		initDataStructure();
-		root = new Pane();
-		root.setStyle("-fx-background-color: white;");
+		rootPane = new Pane();
+		rootPane.setStyle("-fx-background-color: white;");
 		
 		BorderPane arrangementPane = new BorderPane();
 
-		Pane gesturePane = new Pane(root);
+		Pane gesturePane = new Pane(rootPane);
 		gesturePane.setStyle("-fx-background-color: white;");
 
 		arrangementPane.setCenter(gesturePane);
@@ -149,7 +149,7 @@ public class FeatureModelEditorView {
 
 		// Creating and adding the mouse handler that allows zooming in and out with the
 		// mouse wheel.
-		zoomHandler = new ZoomHandler(root);
+		zoomHandler = new ZoomHandler(rootPane);
 		gesturePane.addEventHandler(ScrollEvent.ANY, zoomHandler);
 
 		// creating the selection rectangle
@@ -159,16 +159,16 @@ public class FeatureModelEditorView {
 		setTheme(PreferencesUtil
 				.getValueWithDefault(FDStringTable.BUNDLE_NAME, FDStringTable.FME_THEME_KEY, DefaultTheme.DEFAULT_THEME)
 				.getStringValue());
-		arrangementPane.addEventHandler(KeyEvent.ANY, new KeyTranslateHandler(root, 10d));
+		arrangementPane.addEventHandler(KeyEvent.ANY, new KeyTranslateHandler(rootPane, 10d));
 
 		primaryMouseClickedHandler = new PrimaryMouseButtonClickedHandler(services);
 		gesturePane.addEventHandler(MouseEvent.MOUSE_PRESSED, primaryMouseClickedHandler);
 
-		selectionHandler = new SelectionAreaHandler(gesturePane, root, featureList, selectionRectangle,
+		selectionHandler = new SelectionAreaHandler(gesturePane, rootPane, featureList, selectionRectangle,
 				primaryMouseClickedHandler, services);
 		gesturePane.addEventHandler(MouseEvent.MOUSE_DRAGGED, selectionHandler);
 
-		dragHandler = new DragHandler(root);
+		dragHandler = new DragHandler(rootPane);
 		gesturePane.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragHandler);
 
 		resetHandler = new ResetHandler(dragHandler, selectionHandler);
@@ -178,17 +178,17 @@ public class FeatureModelEditorView {
 		// translate root pane to keep root feature node centered, as long the pane
 		// hasn't been moved before
 		arrangementPane.widthProperty().addListener((obs, oldVal, newVal) -> {
-			root.setTranslateX(root.getTranslateX() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
+			rootPane.setTranslateX(rootPane.getTranslateX() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
 		});
 		arrangementPane.heightProperty().addListener((obs, oldVal, newVal) -> {
-			root.setTranslateY(root.getTranslateY() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
+			rootPane.setTranslateY(rootPane.getTranslateY() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
 		});
 
 		// creating an empty feature diagram
 		createNewFeatureDiagram();
 		
-		root.setTranslateX(-30);
-		root.setTranslateY(-30);
+		rootPane.setTranslateX(-30);
+		rootPane.setTranslateY(-30);
 		return this.arrangementPane;
 	}
 
@@ -204,8 +204,8 @@ public class FeatureModelEditorView {
 		placement.format(currentModel);
 		// Reset the translate offset so that large feature diagrams do not
 		// disappear after formatting
-		root.setTranslateX(0d);
-		root.setTranslateY(0d);
+		rootPane.setTranslateX(0d);
+		rootPane.setTranslateY(0d);
 		loadFeatureDiagram(currentModel, askToSave);
 	}
 
@@ -222,8 +222,8 @@ public class FeatureModelEditorView {
 	private FeatureDiagramm initFeatureDiagram(FeatureDiagramm diagram) {		
 		Feature root = createNewFeature(
 				FeatureInitializer.createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true), 
-				this.root.getWidth() / 2, 
-				this.root.getHeight() / 2);
+				this.rootPane.getWidth() / 2, 
+				this.rootPane.getHeight() / 2);
 		diagram.setRoot(root);
 		return diagram;
 	}
@@ -241,8 +241,14 @@ public class FeatureModelEditorView {
 		currentModel = model;
 		FXGraphicalFeature fxRoot = addFeature(model.getRoot());
 		postProcessFeatureVisibility(fxRoot);
+		double xShift = this.getRootPane().getWidth() / 2 - model.getRoot().getGraphicalfeature().getX();
+		double yShift = this.getRootPane().getHeight() / 2 - model.getRoot().getGraphicalfeature().getY();
 		// add all Feature to front so that no overlapping exists.
 		for (FXGraphicalFeature fxFeature : featureList) {
+			fxFeature.getFeature().getGraphicalfeature().setX(fxFeature.getFeature().getGraphicalfeature().getX() + xShift);
+			fxFeature.getFeature().getGraphicalfeature().setY(fxFeature.getFeature().getGraphicalfeature().getY() + yShift);
+//			fxFeature.setTranslateX(fxFeature.getFeature().getGraphicalfeature().getX());
+//			fxFeature.setTranslateY(fxFeature.getFeature().getGraphicalfeature().getY());
 			fxFeature.toFront();
 			if (fxFeature.getFeature() instanceof ComponentFeature) {
 				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
@@ -251,9 +257,10 @@ public class FeatureModelEditorView {
 				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
 			}
 		}
-
-		root.setTranslateX(0d);
-		root.setTranslateY(0d);
+		System.out.println("x: " + rootPane.getTranslateX() + " y: " + rootPane.getTranslateY() + "\n");
+		rootPane.setTranslateX(xShift);
+		rootPane.setTranslateY(yShift);
+		System.out.println("x: " + rootPane.getTranslateX() + " y: " + rootPane.getTranslateY() + "\n");
 	}
 
 	private void postProcessFeatureVisibility(FXGraphicalFeature fxRoot) {
@@ -289,7 +296,7 @@ public class FeatureModelEditorView {
 	 * This method clears the FeatureDiagramEditor
 	 */
 	public void clearAll() {
-		root.getChildren().clear();
+		rootPane.getChildren().clear();
 		// root.getChildren().add(selectionRectangle);
 		featureLineMap.clear();
 		featureList.clear();
@@ -333,18 +340,22 @@ public class FeatureModelEditorView {
 	public FXGraphicalFeature addFeature(Feature feature) {
 		// log feature added
 		services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE, feature);
-
 		if (feature.getGraphicalfeature() != null) {
 			feature.getGraphicalfeature().setX(feature.getGraphicalfeature().getX());
 			feature.getGraphicalfeature().setY(feature.getGraphicalfeature().getY());
 		}
 		FXGraphicalFeature fxGraFeature = new FXGraphicalFeature(this, feature, services);
+		
+		//TODO: debug statements
+		System.out.println("w: " + feature.getGraphicalfeature().getWidth());
+		System.out.println("h: " + feature.getGraphicalfeature().getHeight());
+		System.out.println();
 
 		if (feature.isAbstract()) {
 			fxGraFeature.getFeatureNameLabel().getStyleClass().add("abstractFeature");
 		}
 
-		root.getChildren().add(fxGraFeature);
+		rootPane.getChildren().add(fxGraFeature);
 		featureList.add(fxGraFeature);
 
 		for (Feature childFeature : feature.getChildren()) {
@@ -352,8 +363,9 @@ public class FeatureModelEditorView {
 			fxGraFeature.addChildFeature(fxChild);
 			fxChild.setParentFxFeature(fxGraFeature);
 			createLineToChildren(fxGraFeature, fxChild);
-
 		}
+		
+		
 
 		if (fxGraFeature.getFeature().isAlternative()) {
 			fxGraFeature.setGroupVariability_ALTERNATIVE();
@@ -363,6 +375,7 @@ public class FeatureModelEditorView {
 
 		return fxGraFeature;
 	}
+	
 
 	/**
 	 * This method adds a feature to FeatureModelEditor to given coordinates.
@@ -427,7 +440,7 @@ public class FeatureModelEditorView {
 		parent.addChildFeatureFormated(newGraFeature);
 
 		// add graphical feature to scene
-		root.getChildren().addAll(newGraFeature);
+		rootPane.getChildren().addAll(newGraFeature);
 
 		// add feature to featureList
 		featureList.add(newGraFeature);
@@ -500,7 +513,7 @@ public class FeatureModelEditorView {
 		fxParentFeature.addChildFeatureFormated(newGraFeature);
 
 		// add graphical feature to scene
-		root.getChildren().addAll(newGraFeature);
+		rootPane.getChildren().addAll(newGraFeature);
 
 		// add feature to featureList
 		featureList.add(newGraFeature);
@@ -545,7 +558,7 @@ public class FeatureModelEditorView {
 		newGraRoot.addChildFeatureFormated(fxfeature);
 
 		// add graphical feature to scene
-		root.getChildren().addAll(newGraRoot);
+		rootPane.getChildren().addAll(newGraRoot);
 
 		// add feature to featureList
 		featureList.add(newGraRoot);
@@ -602,7 +615,7 @@ public class FeatureModelEditorView {
 		});
 
 		featureLineMap.put(child, line);
-		root.getChildren().add(line);
+		rootPane.getChildren().add(line);
 	}
 
 	/**
@@ -616,7 +629,7 @@ public class FeatureModelEditorView {
 			line.startYProperty().unbind();
 			line.endXProperty().unbind();
 			line.endYProperty().unbind();
-			root.getChildren().remove(line);
+			rootPane.getChildren().remove(line);
 			featureLineMap.remove(child);
 
 		} catch (Exception e) {
@@ -663,7 +676,7 @@ public class FeatureModelEditorView {
 	}
 
 	public Pane getRootPane() {
-		return root;
+		return rootPane;
 	}
 
 	/**
@@ -706,8 +719,8 @@ public class FeatureModelEditorView {
 			decision = new FMESimpleDecsionDialog("Remove Feature", "Are you sure").show();
 		}
 		if (decision || !showDialog) {
-			this.root.getChildren().remove(featureLineMap.get(graphicalFeature));
-			this.root.getChildren().remove(graphicalFeature);
+			this.rootPane.getChildren().remove(featureLineMap.get(graphicalFeature));
+			this.rootPane.getChildren().remove(graphicalFeature);
 			removeLine(graphicalFeature);
 			this.featureList.remove(graphicalFeature);
 			if (graphicalFeature.getFeature() instanceof ComponentFeature) {
