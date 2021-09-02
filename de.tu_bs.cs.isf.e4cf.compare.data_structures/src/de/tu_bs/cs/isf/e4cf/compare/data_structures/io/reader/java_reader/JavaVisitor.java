@@ -1907,6 +1907,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	 */
 	private Node createNodeWithValue(com.github.javaparser.ast.Node n, Node arg, NodeType standardizedType) {
 		Node c = new NodeImpl(standardizedType, JavaNodeTypes.getFromClass(n.getClass()).name(), arg);
+		
 		c.addAttribute(JavaAttributesTypes.Value.name(),new StringValueImpl( n.toString()));
 		return c;
 	}
