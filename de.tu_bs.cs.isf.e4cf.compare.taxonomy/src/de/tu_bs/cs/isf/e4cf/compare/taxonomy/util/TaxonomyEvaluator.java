@@ -32,13 +32,22 @@ public class TaxonomyEvaluator {
 	private float falseAcceptanceFPRValue;
 	private float missRateTNRValue;
 
+	// Custom Taxonomy performance measures
+	private float RVPA; // Root Variant Prediction Accuracy
+	private float TDA; // Tree Depth Accuracy
+	private float PCRA; // Parent-Child Relation Accuracy
+	private float VPLA; // Variants Per Level Accuracy
+	private float NDM; // Node Displacement Measure
+
 	// Ground Truth Properties
 	private int gtTotalNodes = 0;
 	private int gtMaxDepth;
 	private int levelMeasureTotal;
 
+	/**
+	 * Compute Primary and Secondary metrics measures for taxonomies
+	 */
 	public void computeDifferences() {
-		// int depth = 0;
 		// Compute Depth and Total Number of Nodes
 		getGTTotalNodes(this.groundTruthTaxonomy);
 		this.levelMeasureTotal = 0;
@@ -78,6 +87,32 @@ public class TaxonomyEvaluator {
 		}
 	}
 
+	/**
+	 * Compute Custom Metrics for Table
+	 */
+	public void computeCustomMeasures() {
+		// Compute Depth and Total Number of Nodes
+		getGTTotalNodes(this.groundTruthTaxonomy);
+		List<VariantTaxonomyNode> allGTNodes = new ArrayList<VariantTaxonomyNode>(); // All Ground Truth Nodes
+		List<VariantTaxonomyNode> allCTNodes = new ArrayList<VariantTaxonomyNode>(); // All Computes Taxonomy Nodes
+		int levelMeasure = gtTotalNodes;
+		
+		// Get All Nodes into a single list for ground truth nodes and computed Taxonomy nodes each
+		for (int i = 0; i <= gtMaxDepth; i++) {
+			List<VariantTaxonomyNode> gtNodesAtLevel = getNodesForLevel(this.groundTruthTaxonomy, i);
+			List<VariantTaxonomyNode> ctNodesAtLevel = getNodesForLevel(this.taxonomyToCompare, i);
+			allGTNodes.addAll(gtNodesAtLevel);
+			allCTNodes.addAll(ctNodesAtLevel);
+		}
+	}
+
+	/**
+	 * Searches for a particular node in a list of Nodes
+	 * 
+	 * @param searchNode
+	 * @param nodesAtLevel
+	 * @return
+	 */
 	public boolean isVariantInList(VariantTaxonomyNode searchNode, List<VariantTaxonomyNode> nodesAtLevel) {
 		boolean isVariantInList = false;
 		for (VariantTaxonomyNode aMemberNode : nodesAtLevel) {
@@ -99,12 +134,26 @@ public class TaxonomyEvaluator {
 		return isVariantInList;
 	}
 
+	/**
+	 * Gets Nodes on a particular level of the supplied taxonomy tree
+	 * 
+	 * @param rootNode
+	 * @param level
+	 * @return
+	 */
 	public List<VariantTaxonomyNode> getNodesForLevel(VariantTaxonomyNode rootNode, int level) {
 		List<VariantTaxonomyNode> nodesAtLevel = new ArrayList<VariantTaxonomyNode>();
 		getNodesForLevelRecursive(rootNode, level, nodesAtLevel);
 		return nodesAtLevel;
 	}
 
+	/**
+	 * Recursively fetches Nodes on a particular level of the supplied taxonomy tree
+	 * 
+	 * @param node
+	 * @param level
+	 * @param nodesAtLevel
+	 */
 	public void getNodesForLevelRecursive(VariantTaxonomyNode node, int level, List<VariantTaxonomyNode> nodesAtLevel) {
 		if (node.getTreeDepth() == level) {
 			nodesAtLevel.add(node);
@@ -137,19 +186,25 @@ public class TaxonomyEvaluator {
 		this.groundTruthTaxonomy = _groundTruth;
 	}
 
+	/**
+	 * Taxonomy Evaluator Constructor
+	 * 
+	 * @param _groundTruthTaxonomy
+	 * @param _compTaxonomy
+	 */
 	public TaxonomyEvaluator(VariantTaxonomyNode _groundTruthTaxonomy, VariantTaxonomyNode _compTaxonomy) {
 		this.groundTruthTaxonomy = _groundTruthTaxonomy;
 		this.taxonomyToCompare = _compTaxonomy;
 	}
 
 	public void printMeasures() {
-		System.out.println(
-				"Total # of Nodes: " + (gtTotalNodes));
+		System.out.println("Total # of Nodes: " + (gtTotalNodes));
 		System.out.println("truePositivesValue" + truePositivesValue);
 		System.out.println("trueNegativesValue" + trueNegativesValue);
 		System.out.println("falsePositivesValue" + falsePositivesValue);
 		System.out.println("falseNegativesValue" + falseNegativesValue);
-		System.out.println("Total: " + (truePositivesValue + trueNegativesValue + falsePositivesValue + falseNegativesValue));
+		System.out.println(
+				"Total: " + (truePositivesValue + trueNegativesValue + falsePositivesValue + falseNegativesValue));
 		System.out.println("Precision: " + precisionValue);
 		System.out.println("Recall: " + recallValue);
 		System.out.println("FalseAcceptanceFPRValue: " + falseAcceptanceFPRValue);
@@ -308,7 +363,7 @@ public class TaxonomyEvaluator {
 	 * @return <VariantTaxonomyNode>
 	 */
 	public static VariantTaxonomyNode createGoogleCode2008N3ymatsuxAGT() {
-		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-QR-A-ymatsux.java", 0, null);
+		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-QR-A-2-ymatsux.java", 0, null);
 		VariantTaxonomyNode level1ChildNode = new VariantTaxonomyNode("2008-APAC-A-ymatsux.java", 1, rootNode);
 		VariantTaxonomyNode level2ChildNode = new VariantTaxonomyNode("2008-FR-A-ymatsux.java", 2, level1ChildNode);
 
@@ -324,10 +379,32 @@ public class TaxonomyEvaluator {
 	 * @return <VariantTaxonomyNode>
 	 */
 	public static VariantTaxonomyNode createGoogleCode2008N3ymatsuxCGT() {
-		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-QR-C-ymatsux.java", 0, null);
+		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-QR-C-2-ymatsux.java", 0, null);
 		VariantTaxonomyNode level1ChildNode = new VariantTaxonomyNode("2008-APAC-C-ymatsux.java", 1, rootNode);
 		VariantTaxonomyNode level2ChildNode = new VariantTaxonomyNode("2008-FR-C-ymatsux.java", 2, level1ChildNode);
 
+		level1ChildNode.addChildNode(level2ChildNode);
+		rootNode.addChildNode(level1ChildNode);
+
+		return rootNode;
+	}
+
+	/**
+	 * N = 4
+	 */
+
+	/**
+	 * Creates Ground Truth VariantTaxonomy Tree/Graph N4-halyavin-B
+	 * 
+	 * @return <VariantTaxonomyNode>
+	 */
+	public static VariantTaxonomyNode createGoogleCode2008N4halyavinBGT() {
+		VariantTaxonomyNode rootNode = new VariantTaxonomyNode("2008-1B-B-halyavin.java", 0, null);
+		VariantTaxonomyNode level1ChildNode = new VariantTaxonomyNode("2008-2-B-halyavin.java", 1, rootNode);
+		VariantTaxonomyNode level2ChildNode = new VariantTaxonomyNode("2008-EMEA-B-halyavin.java", 2, level1ChildNode);
+		VariantTaxonomyNode level3ChildNode = new VariantTaxonomyNode("2008-FR-B-halyavin.java", 3, level2ChildNode);
+
+		level2ChildNode.addChildNode(level3ChildNode);
 		level1ChildNode.addChildNode(level2ChildNode);
 		rootNode.addChildNode(level1ChildNode);
 
@@ -380,4 +457,24 @@ public class TaxonomyEvaluator {
 		return this.missRateTNRValue;
 	}
 
+	// Secondary Custom Measures' Getters
+	public float getRVPA() {
+		return this.RVPA;
+	}
+
+	public float getTDA() {
+		return this.TDA;
+	}
+
+	public float getPCRA() {
+		return this.PCRA;
+	}
+
+	public float getVPLA() {
+		return this.VPLA;
+	}
+
+	public float getNDM() {
+		return this.NDM;
+	}
 }

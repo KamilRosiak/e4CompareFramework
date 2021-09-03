@@ -240,7 +240,6 @@ public class TaxonomyControlView implements Initializable  {
 			    	  sourceLevelRadioButton.setSelected(!new_val); // Update second option radio button
 			    	  
 			    	  // Update Directory Metric(s)
-			    	  directoryNameCheckbox.setDisable(false);
 			    	  directorySizeCheckbox.setDisable(false);
 			    	  directoryNonSourceCheckbox.setDisable(false);
 			    	  directoryChildenCheckbox.setDisable(false);

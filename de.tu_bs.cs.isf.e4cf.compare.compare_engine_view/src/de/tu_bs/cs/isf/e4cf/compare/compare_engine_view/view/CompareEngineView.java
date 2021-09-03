@@ -51,7 +51,7 @@ public class CompareEngineView implements Initializable {
 
 	public List<FileTreeElement> artifactFileTrees = new ArrayList<FileTreeElement>();
 	
-	private boolean asymmetry = true;
+	private TaxonomyControlSettings taxonomySettings = new TaxonomyControlSettings();
 
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
@@ -116,7 +116,7 @@ public class CompareEngineView implements Initializable {
 		try {									
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW); // First Display Graph View 
 			
-			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedTaxonomyMatcher(), getAsymmetry());
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedTaxonomyMatcher(), getTaxonomySettings());
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
@@ -152,7 +152,7 @@ public class CompareEngineView implements Initializable {
 		try {												
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW);  // First Display Graph View 
 			
-			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedTaxonomyMatcher(), getAsymmetry());
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine(getSelectedTaxonomyMatcher(), getTaxonomySettings());
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
@@ -176,7 +176,15 @@ public class CompareEngineView implements Initializable {
 				// Evaluate Taxonomy
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createProjectExampleGT(), artifactGraph.taxonomyRootNode);
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCodeJamGT(), artifactGraph.taxonomyRootNode);
-				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3halyavinGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3halyavinDGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3jediknightBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3kotehokAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3kotehokDGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3wataDGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3ymatsuxAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3ymatsuxCGT(), artifactGraph.taxonomyRootNode);
+				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4halyavinBGT(), artifactGraph.taxonomyRootNode);
+
 				performanceJudge.computeDifferences();
 				performanceJudge.calculateSecondaryMeasures();
 				performanceJudge.printMeasures();
@@ -235,11 +243,12 @@ public class CompareEngineView implements Initializable {
 	}
 	
 	/**
-	 * Gets Asymmetry option for comparison
+	 * Gets taxonomy settings for comparison
 	 */
-	public boolean getAsymmetry() {
-		return asymmetry;
+	public TaxonomyControlSettings getTaxonomySettings() {
+		return this.taxonomySettings;
 	}
+	
 	
 	/**
 	 * Subscribes and sets asymmetry comparison mode based on settings from taxonomy information window
@@ -248,9 +257,9 @@ public class CompareEngineView implements Initializable {
 	 */
 	@Optional
 	@Inject
-	public void setAsymmetryMode(
+	public void updateTaxonomySettings(
 			@UIEventTopic(TaxonomyST.SAVE_TAXONOMY_EVENT) TaxonomyControlSettings taxonomySettings) {
-		this.asymmetry = taxonomySettings.getAsymmetryMode();
+		this.taxonomySettings = taxonomySettings;
 	}
 
 	/**

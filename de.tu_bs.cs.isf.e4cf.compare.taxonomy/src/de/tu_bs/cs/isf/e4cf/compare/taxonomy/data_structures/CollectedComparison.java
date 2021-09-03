@@ -36,6 +36,7 @@ public class CollectedComparison {
 	
 	public void addCummulativeSimilarity(float valueToAdd) {
 		this.cummulativeSimilarity += valueToAdd;
-		System.out.println("Similarity: "+this.cummulativeSimilarity+", Type: "+leftArtifact.getTreeName()+" Type: "+rightArtifact.getTreeName());
+//		System.out.println("Similarity: ("+valueToAdd+") "+this.cummulativeSimilarity+", Type: "+leftArtifact.getTreeName()+" Type: "+rightArtifact.getTreeName());
+//		System.out.println("********************************");
 	}
 }
