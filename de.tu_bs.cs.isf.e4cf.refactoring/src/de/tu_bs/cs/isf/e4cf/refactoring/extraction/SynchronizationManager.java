@@ -21,7 +21,7 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.refactoring.controllers.SynchronizationViewController;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Action;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Delete;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Move;
@@ -33,104 +33,115 @@ import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 @Creatable
 public class SynchronizationManager {
 
-	@Inject
 	private SynchronizationViewController synchronizationViewController;
 	private CompareEngineHierarchical compareEngine;
 
-	public SynchronizationManager() {
+	@Inject
+	public SynchronizationManager(SynchronizationViewController synchronizationViewController) {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
+		this.synchronizationViewController = synchronizationViewController;
 	}
 
-	public boolean showSynchronizationView(List<ConfigurationComparison> configurationComparisons,
+	public boolean showSynchronizationView(CloneModel cloneModel,
 			Map<ActionScope, List<ActionScope>> synchronizationScopes) {
-		synchronizationViewController.showView(synchronizationScopes, configurationComparisons);
+		synchronizationViewController.showView(synchronizationScopes, cloneModel);
 		return synchronizationViewController.isResult();
 
 	}
 
-	public void synchronize(List<ConfigurationComparison> configurationComparisons,
-			Map<ActionScope, List<ActionScope>> synchronizationScopes, Map<Component, MultiSet> multisets) {
+	public void synchronize(Map<ActionScope, List<ActionScope>> synchronizationScopes, CloneModel cloneModel) {
+		List<ActionScope> synchronizationScopesList = new ArrayList<ActionScope>();
 
-		for (ConfigurationComparison configurationComparison : configurationComparisons) {
-			MultiSet multiset = multisets.get(configurationComparison.getComponent1());
-			synchronize(configurationComparison.getSynchronizationScopes(), multiset);
+		for (List<ActionScope> list : synchronizationScopes.values()) {
+			synchronizationScopesList.addAll(list);
 		}
 
+		synchronize(synchronizationScopesList, cloneModel);
 	}
 
-	public Map<ActionScope, List<ActionScope>> translateActionsToSynchronizations(
-			List<ConfigurationComparison> configurationComparisons, Map<Component, MultiSet> multiSets) {
+	public Map<ActionScope, List<ActionScope>> translateActionsToSynchronizations(List<ActionScope> actionScopes,
+			CloneModel cloneModel) {
 
 		Map<ActionScope, List<ActionScope>> synchronizationMap = new HashMap<ActionScope, List<ActionScope>>();
-		for (ConfigurationComparison configurationComparison : configurationComparisons) {
-			Component component = configurationComparison.getComponent1();
-			Map<Node, Set<Node>> multiSet = multiSets.get(component).getMultiSet();
-			List<ActionScope> synchronizationScopes = new ArrayList<ActionScope>();
-			for (ActionScope actionScope : configurationComparison.getActionScopes()) {
-				if (actionScope.isApply()) {
-					synchronizationMap.put(actionScope, new ArrayList<ActionScope>());
-					Action action = actionScope.getAction();
-					if (action instanceof Insert) {
-						Insert insert = (Insert) action;
 
-						if (multiSet.containsKey(insert.getY())) {
-							for (Node node : multiSet.get(insert.getY())) {
-								ActionScope synchronizationScope = new ActionScope(
-										new Insert(insert.getX(), node, insert.getPosition()), true);
-								synchronizationScope.getAction().setSourceNode(insert.getY());
-								synchronizationScopes.add(synchronizationScope);
-								synchronizationMap.get(actionScope).add(synchronizationScope);
+		for (ActionScope actionScope : actionScopes) {
+			if (actionScope.isApply()) {
+				synchronizationMap.put(actionScope, new ArrayList<ActionScope>());
+				Action action = actionScope.getAction();
+				if (action instanceof Insert) {
+					Insert insert = (Insert) action;
 
-							}
-						}
-					} else if (action instanceof Update) {
-						Update update = (Update) action;
-						if (multiSet.containsKey(update.getX())) {
-							for (Node node : multiSet.get(update.getX())) {
+					Component component = actionScope.getComponent();
+					Map<Node, Set<Node>> multiSet = cloneModel.getMultiSets().get(component).getMultiSet();
 
-								ActionScope synchronizationScope = new ActionScope(
-										new Update(node, update.getY().cloneNode()), true);
-								synchronizationScope.getAction().setSourceNode(update.getX());
-								synchronizationScopes.add(synchronizationScope);
-								synchronizationMap.get(actionScope).add(synchronizationScope);
-							}
-						}
-					} else if (action instanceof Delete) {
-						Delete delete = (Delete) action;
-						if (multiSet.containsKey(delete.getX())) {
-							for (Node node : multiSet.get(delete.getX())) {
-								ActionScope synchronizationScope = new ActionScope(new Delete(node), true);
-								synchronizationScope.getAction().setSourceNode(delete.getX());
-								synchronizationScopes.add(synchronizationScope);
-								synchronizationMap.get(actionScope).add(synchronizationScope);
-							}
-						}
-					} else if (action instanceof Move) {
-						Move move = (Move) action;
-						if (multiSet.containsKey(move.getY())) {
-							if (multiSet.containsKey(move.getX())) {
-								for (Node node : multiSet.get(move.getX())) {
-									ActionScope synchronizationScope = new ActionScope(
-											new Move(node, node.getParent(), move.getPosition()), true);
-									synchronizationScope.getAction().setSourceNode(move.getY());
-									synchronizationScopes.add(synchronizationScope);
-									synchronizationMap.get(actionScope).add(synchronizationScope);
-								}
-							}
+					if (multiSet.containsKey(insert.getY())) {
+						for (Node node : multiSet.get(insert.getY())) {
+							ActionScope synchronizationScope = new ActionScope(
+									new Insert(insert.getX(), node, insert.getPosition()), true);
+							synchronizationScope.getAction().setSourceNode(insert.getY());
+							synchronizationMap.get(actionScope).add(synchronizationScope);
+							synchronizationScope.setComponent(actionScope.getComponent());
 
 						}
 					}
+				} else if (action instanceof Update) {
+					Update update = (Update) action;
 
+					Component component = actionScope.getComponent();
+					Map<Node, Set<Node>> multiSet = cloneModel.getMultiSets().get(component).getMultiSet();
+
+					if (multiSet.containsKey(update.getX())) {
+						for (Node node : multiSet.get(update.getX())) {
+
+							ActionScope synchronizationScope = new ActionScope(
+									new Update(node, update.getY().cloneNode()), true);
+							synchronizationScope.getAction().setSourceNode(update.getX());
+							synchronizationMap.get(actionScope).add(synchronizationScope);
+							synchronizationScope.setComponent(actionScope.getComponent());
+						}
+					}
+				} else if (action instanceof Delete) {
+					Delete delete = (Delete) action;
+
+					Component component = actionScope.getComponent();
+					Map<Node, Set<Node>> multiSet = cloneModel.getMultiSets().get(component).getMultiSet();
+
+					if (multiSet.containsKey(delete.getX())) {
+						for (Node node : multiSet.get(delete.getX())) {
+							ActionScope synchronizationScope = new ActionScope(new Delete(node), true);
+							synchronizationScope.getAction().setSourceNode(delete.getX());
+							synchronizationMap.get(actionScope).add(synchronizationScope);
+							synchronizationScope.setComponent(actionScope.getComponent());
+						}
+					}
+				} else if (action instanceof Move) {
+					Move move = (Move) action;
+
+					Component component = actionScope.getComponent();
+					Map<Node, Set<Node>> multiSet = cloneModel.getMultiSets().get(component).getMultiSet();
+
+					if (multiSet.containsKey(move.getY())) {
+						if (multiSet.containsKey(move.getX())) {
+							for (Node node : multiSet.get(move.getX())) {
+								ActionScope synchronizationScope = new ActionScope(
+										new Move(node, node.getParent(), move.getPosition()), true);
+								synchronizationScope.getAction().setSourceNode(move.getY());
+								synchronizationMap.get(actionScope).add(synchronizationScope);
+								synchronizationScope.setComponent(actionScope.getComponent());
+							}
+						}
+
+					}
 				}
 
 			}
-			configurationComparison.setSynchronizationScopes(synchronizationScopes);
+
 		}
 		return synchronizationMap;
 
 	}
 
-	private void synchronize(List<ActionScope> actionScopes, MultiSet multiSet) {
+	private void synchronize(List<ActionScope> actionScopes, CloneModel cloneModel) {
 
 		actionScopes = sortSynchronizations(actionScopes);
 
@@ -142,6 +153,9 @@ public class SynchronizationManager {
 
 				// restore comparison with multisets
 				Node sourceNode = insert.getSourceNode();
+				Component component = actionScope.getComponent();
+				MultiSet multiSet = cloneModel.getMultiSets().get(component);
+
 				Comparison<Node> comparison = restoreComparison(insert.getY(), sourceNode, multiSet.getMultiSet());
 				int position = SynchronizationUtil.getPositionOfCommonPredecessor(insert.getY(), sourceNode,
 						insert.getX(), comparison) + 1;
@@ -161,6 +175,9 @@ public class SynchronizationManager {
 					Move move = (Move) action;
 					Node y = move.getY();
 					Node sourceNode = move.getSourceNode();
+					Component component = cloneModel.getComponent(sourceNode);
+					MultiSet multiSet = cloneModel.getMultiSets().get(component);
+
 					alignNodes(y, sourceNode, multiSet);
 
 				}
@@ -186,11 +203,19 @@ public class SynchronizationManager {
 
 			if (actionScope.getAction() instanceof Insert && !actionScope.isApply()) {
 				Insert insert = (Insert) actionScope.getAction();
+				Component component = actionScope.getComponent();
+				MultiSet multiSet = cloneModel.getMultiSets().get(component);
+
 				insert.undo();
+
 				multiSet.remove(insert.getX());
+
 			}
 			if (actionScope.getAction() instanceof Delete) {
 				Delete delete = (Delete) actionScope.getAction();
+				Component component = actionScope.getComponent();
+				MultiSet multiSet = cloneModel.getMultiSets().get(component);
+
 				multiSet.remove(delete.getX());
 				multiSet.remove(delete.getSourceNode());
 			}
@@ -221,8 +246,8 @@ public class SynchronizationManager {
 				if (partner != null) {
 					int previousPosition = child.getPosition();
 
-					int position = SynchronizationUtil.getPositionOfCommonPredecessor(node1Clone, node2Clone,
-							partner, restoredComparison) + 1;
+					int position = SynchronizationUtil.getPositionOfCommonPredecessor(node1Clone, node2Clone, partner,
+							restoredComparison) + 1;
 
 					node1Clone.getChildren().remove(previousPosition);
 					node1Clone.addChildAtPosition(child, position);
@@ -322,8 +347,8 @@ public class SynchronizationManager {
 			Node rightArtifact = childComparison.getRightArtifact();
 			if (leftArtifact == null) {
 
-				int position = SynchronizationUtil.getPositionOfCommonPredecessor(
-						parentComparison.getLeftArtifact(), parentComparison.getRightArtifact(), rightArtifact);
+				int position = SynchronizationUtil.getPositionOfCommonPredecessor(parentComparison.getLeftArtifact(),
+						parentComparison.getRightArtifact(), rightArtifact);
 
 				Node rightArtifactClone = rightArtifact.cloneNode();
 				addedNodes.add(rightArtifactClone);
@@ -333,8 +358,8 @@ public class SynchronizationManager {
 			// deleted artifact on right side
 			else if (rightArtifact == null) {
 
-				int position = SynchronizationUtil.getPositionOfCommonPredecessor(
-						parentComparison.getRightArtifact(), parentComparison.getLeftArtifact(), leftArtifact);
+				int position = SynchronizationUtil.getPositionOfCommonPredecessor(parentComparison.getRightArtifact(),
+						parentComparison.getLeftArtifact(), leftArtifact);
 
 				Node leftArtifactClone = leftArtifact.cloneNode();
 				parentComparison.getRightArtifact().addChildAtPosition(leftArtifactClone, position + 1);

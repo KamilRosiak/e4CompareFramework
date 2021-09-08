@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
+
 public class ActionScope {
 
 	private Action action;
@@ -20,6 +22,18 @@ public class ActionScope {
 
 	public void setApply(boolean apply) {
 		this.apply = apply;
+	}
+	
+	private Component component;
+	
+	
+
+	public Component getComponent() {
+		return component;
+	}
+
+	public void setComponent(Component component) {
+		this.component = component;
 	}
 
 	public ActionScope(Action action, boolean apply) {

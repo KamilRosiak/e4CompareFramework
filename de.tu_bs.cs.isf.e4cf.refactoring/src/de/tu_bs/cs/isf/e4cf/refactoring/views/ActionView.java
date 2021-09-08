@@ -1,10 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -15,7 +11,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 
@@ -29,8 +25,7 @@ public class ActionView extends View {
 	private Label taskLabel;
 
 	private Component selectedComponent;
-
-	private List<ConfigurationComparison> configurationComparisons;
+	
 
 	public Tree getActionTree() {
 		return actionTree;
@@ -66,17 +61,14 @@ public class ActionView extends View {
 		componentTreeBuilder = new ComponentTreeBuilder();
 
 	}
+	
 
-	public void showView(List<ConfigurationComparison> configurationComparisons) {
+	private CloneModel cloneModel;
 
-		this.configurationComparisons = configurationComparisons;
+	public void showView(CloneModel cloneModel, List<ActionScope> actionScopes) {
+		this.cloneModel = cloneModel;
 		createComponentTree();
-		List<ActionScope> allActionScopes = new ArrayList<ActionScope>();
-		for (ConfigurationComparison configurationComparison : configurationComparisons) {
-			allActionScopes.addAll(configurationComparison.getActionScopes());
-		}
-
-		createActionTree(allActionScopes);
+		createActionTree(actionScopes);
 
 		showView();
 	}
@@ -86,13 +78,8 @@ public class ActionView extends View {
 		for (TreeItem item : componentTree.getItems()) {
 			item.dispose();
 		}
-		
-		Set<Component> components = new HashSet<Component>();
-		for (ConfigurationComparison configurationComparison : configurationComparisons) {
-			components.add(configurationComparison.getComponent1());
-		}
 
-		componentTreeBuilder.buildComponentTree(components, componentTree);
+		componentTreeBuilder.buildComponentTree(cloneModel.getComponents(), componentTree);
 	}
 
 	public void createActionTree(List<ActionScope> actionScopes) {

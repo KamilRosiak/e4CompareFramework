@@ -113,7 +113,7 @@ public class SynchronizationUtil {
 		}
 
 		List<Node> arrayList = new ArrayList<Node>();
-		arrayList.addAll(Arrays.asList(lcs));		
+		arrayList.addAll(Arrays.asList(lcs));
 		return arrayList;
 	}
 

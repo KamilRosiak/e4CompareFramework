@@ -2,20 +2,18 @@ package de.tu_bs.cs.isf.e4cf.refactoring.extraction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.controllers.ActionViewController;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Action;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentComparison;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Delete;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Move;
@@ -26,63 +24,46 @@ import de.tu_bs.cs.isf.e4cf.refactoring.model.Update;
 @Creatable
 public class ActionManager {
 
-	@Inject
 	private ActionViewController actionViewController;
 
-	public boolean showActionView(List<ConfigurationComparison> configurationComparisons) {
-		actionViewController.showView(configurationComparisons);
+	@Inject
+	public ActionManager(ActionViewController actionViewController) {
+		super();
+		this.actionViewController = actionViewController;
+	}
+
+	public boolean showActionView(CloneModel cloneModel, List<ActionScope> actionScopes) {
+		actionViewController.showView(cloneModel, actionScopes);
 		return actionViewController.isResult();
 	}
 
-	public void configureConfigurations(List<ConfigurationComparison> configurationComparisons) {
+	public void update(List<ActionScope> actionScopes, CloneModel cloneModel) {
 
-		// if there is a configuration whose change was not applied, add it as new
-		// configurations
-		for (ConfigurationComparison comparison : configurationComparisons) {
-
-			for (ActionScope actionScope : comparison.getActionScopes()) {
-
-				if (!actionScope.isApply()) {
-					comparison.getComponentComparison().getAddedConfigurations().add(comparison.getConfiguration2());
-					break;
-				}
-			}
-		}
-	}
-
-	public void update(List<ConfigurationComparison> configurationComparisons,
-			Map<Component, MultiSet> multiSets) {
-
-		for (ConfigurationComparison configurationComparison : configurationComparisons) {
-			//move actions on preceding unselected inserts should not be applied
-			for (ActionScope actionScope1 : configurationComparison.getActionScopes()) {
-				if (actionScope1.getAction() instanceof Insert && !actionScope1.isApply()) {
-					Insert insert = (Insert) actionScope1.getAction();
-					for (ActionScope actionScope2 : configurationComparison.getActionScopes()) {
-						if (actionScope2.getAction() instanceof Move && actionScope2.isApply()) {
-							Move move = (Move) actionScope2.getAction();
-							if (move.getX() == insert.getX()) {
-								actionScope2.setApply(false);
-							}
+		// move actions on preceding unselected inserts should not be applied
+		for (ActionScope actionScope1 : actionScopes) {
+			if (actionScope1.getAction() instanceof Insert && !actionScope1.isApply()) {
+				Insert insert = (Insert) actionScope1.getAction();
+				for (ActionScope actionScope2 : actionScopes) {
+					if (actionScope2.getAction() instanceof Move && actionScope2.isApply()) {
+						Move move = (Move) actionScope2.getAction();
+						if (move.getX() == insert.getX()) {
+							actionScope2.setApply(false);
 						}
-
 					}
 
 				}
 
 			}
 
-			update(configurationComparison.getActionScopes(),
-					multiSets.get(configurationComparison.getComponent1()));
 		}
+
+		applyUpdates(actionScopes, cloneModel);
 
 	}
 
-	private void update(List<ActionScope> actionScopes, MultiSet multiSet) {
+	private void applyUpdates(List<ActionScope> actionScopes, CloneModel cloneModel) {
 
 		actionScopes = sortActionScopes(actionScopes);
-
-		List<Node> insertedNodes = new ArrayList<Node>();
 
 		for (ActionScope actionScope : actionScopes) {
 			Action action = actionScope.getAction();
@@ -90,8 +71,8 @@ public class ActionManager {
 			// always apply Insert actions
 			if (action instanceof Insert) {
 				Insert insert = (Insert) action;
-				insertedNodes.add(insert.getX());
-				insert.apply();
+				insert.apply();				
+				
 
 			} else if (action instanceof Move) {
 
@@ -103,7 +84,6 @@ public class ActionManager {
 			} else if (action instanceof Delete) {
 
 				if (actionScope.isApply()) {
-
 					Delete delete = (Delete) action;
 					delete.apply();
 				}
@@ -124,6 +104,10 @@ public class ActionManager {
 				insert.undo();
 			} else if (actionScope.getAction() instanceof Insert && actionScope.isApply()) {
 				Insert insert = (Insert) actionScope.getAction();
+
+				Component component = actionScope.getComponent();
+				MultiSet multiSet = cloneModel.getMultiSets().get(component);			
+
 				multiSet.add(insert.getX());
 
 			}

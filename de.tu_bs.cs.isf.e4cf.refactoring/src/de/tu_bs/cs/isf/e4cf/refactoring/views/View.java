@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -11,18 +14,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
 
 public abstract class View {
-	
+
 	private Button applyButton;
 	private Button abortButton;
-	
-	
+
 	protected Shell shell;
 	private Display display;
-	
+
 	public Button getApplyButton() {
 		return applyButton;
 	}
-	
+
 	public Shell getShell() {
 		return shell;
 	}
@@ -42,7 +44,7 @@ public abstract class View {
 	public void setAbortButton(Button abortButton) {
 		this.abortButton = abortButton;
 	}
-	
+
 	public View(int numberOfColumns, String header) {
 		display = Display.getCurrent();
 		shell = new Shell(display, SWT.CLOSE | SWT.TITLE | SWT.BORDER | SWT.OK | SWT.SYSTEM_MODAL);
@@ -52,27 +54,23 @@ public abstract class View {
 		gridLayout.numColumns = numberOfColumns;
 		gridLayout.makeColumnsEqualWidth = true;
 		shell.setLayout(gridLayout);
-		
+
 		setWidgets();
-		
-		
-		
+
 		applyButton = new Button(shell, SWT.PUSH);
 		applyButton.setText("Apply");
 		applyButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-		
-		if(numberOfColumns == 3) {
+
+		if (numberOfColumns == 3) {
 			Label label = new Label(shell, 0);
 		}
 
 		abortButton = new Button(shell, SWT.PUSH);
-		abortButton.setText("Abort");	
+		abortButton.setText("Abort");
 		abortButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-		
-		
+
 	}
-	
-	
+
 	protected void showView() {
 		Rectangle screenSize = display.getPrimaryMonitor().getBounds();
 		shell.setLocation((screenSize.width - shell.getBounds().width) / 2,
@@ -86,11 +84,11 @@ public abstract class View {
 			}
 		}
 	}
-	
+
 	public void closeView() {
 		shell.close();
 	}
-	
+
 	public void checkTreeRecursively(TreeItem item, boolean checked) {
 
 		item.setChecked(checked);
@@ -100,8 +98,7 @@ public abstract class View {
 		}
 
 	}
-	
-	
+
 	public abstract void setWidgets();
 
 }

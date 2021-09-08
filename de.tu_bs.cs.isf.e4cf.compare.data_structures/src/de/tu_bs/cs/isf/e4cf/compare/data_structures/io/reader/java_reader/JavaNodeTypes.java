@@ -186,6 +186,7 @@ public enum JavaNodeTypes {
 	SwitchStmt,
 	ThrowStmt,
 	TryStmt,
+	ThisExpr,
 	TypeParameter,
 	UnaryExpr,
 	UnionType,

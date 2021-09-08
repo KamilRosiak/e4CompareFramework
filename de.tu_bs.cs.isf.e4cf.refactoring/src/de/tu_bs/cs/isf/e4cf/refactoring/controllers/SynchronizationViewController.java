@@ -11,9 +11,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.views.SynchronizationView;
 
 @Singleton
@@ -21,11 +20,6 @@ import de.tu_bs.cs.isf.e4cf.refactoring.views.SynchronizationView;
 public class SynchronizationViewController extends Controller<SynchronizationView> {
 
 	private Map<ActionScope, List<ActionScope>> actionsToSynchronizations;
-
-	public SynchronizationViewController() {
-		super(new SynchronizationView());
-
-	}
 
 	@Override
 	protected void initView() {
@@ -70,13 +64,10 @@ public class SynchronizationViewController extends Controller<SynchronizationVie
 
 	}
 
-	public void showView(Map<ActionScope, List<ActionScope>> actionsToSynchronizations,
-			List<ConfigurationComparison> configurationComparisons) {
-
+	public void showView(Map<ActionScope, List<ActionScope>> actionsToSynchronizations, CloneModel cloneModel) {
 		this.actionsToSynchronizations = actionsToSynchronizations;
-
-		view.showView(actionsToSynchronizations, configurationComparisons);
-
+		createView(new SynchronizationView());
+		view.showView(actionsToSynchronizations, cloneModel);
 	}
 
 }

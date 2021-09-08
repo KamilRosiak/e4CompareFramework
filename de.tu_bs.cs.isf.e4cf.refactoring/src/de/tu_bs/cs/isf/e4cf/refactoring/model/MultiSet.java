@@ -80,6 +80,10 @@ public class MultiSet {
 
 	public void add(Node node) {
 		multiSet.put(node, new HashSet<Node>());
+		
+		for(Node child: node.getChildren()) {
+			add(child);
+		}
 	}
 
 	public void addTo(Node node, Iterable<Node> nodes) {
@@ -90,6 +94,12 @@ public class MultiSet {
 
 	public void addTo(Node node, Node newNode) {
 		multiSet.get(node).add(newNode);
+		multiSet.get(newNode).add(node);
+		
+		for(int i = 0; i < node.getChildren().size(); i++) {
+			addTo(node.getChildren().get(i), newNode.getChildren().get(i));
+		}
+		
 	}
 
 	private void generate(Comparison<Node> comparison) {

@@ -102,7 +102,9 @@ public class NodeImpl extends AbstractNode {
 	@Override
 	public Node cloneNode() {
 		Node newNode = new NodeImpl();
-		newNode.setNodeType(getNodeType());
+		newNode.setNodeType(this.getNodeType());
+		newNode.setStandardizedNodeType(this.getStandardizedNodeType());
+
 		newNode.setVariabilityClass(getVariabilityClass());
 
 		for (Attribute attribute : getAttributes()) {

@@ -17,11 +17,6 @@ import de.tu_bs.cs.isf.e4cf.refactoring.views.GranularityView;
 @Creatable
 public class GranularityViewController extends Controller<GranularityView> {
 
-	public GranularityViewController() {
-		super(new GranularityView());
-
-	}
-
 	@Override
 	protected void initView() {
 		view.getLayerTree().addListener(SWT.Selection, new Listener() {
@@ -42,6 +37,7 @@ public class GranularityViewController extends Controller<GranularityView> {
 	}
 
 	public void showView(List<Granularity> granularities) {
+		createView(new GranularityView());
 		view.showView(granularities);
 
 	}

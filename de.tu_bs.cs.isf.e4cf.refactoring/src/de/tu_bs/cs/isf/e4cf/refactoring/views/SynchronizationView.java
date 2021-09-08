@@ -1,9 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -16,7 +14,7 @@ import com.google.common.collect.Lists;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ConfigurationComparison;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationTreeBuilder;
@@ -63,7 +61,6 @@ public class SynchronizationView extends View {
 	private ComponentTreeBuilder componentTreeBuilder;
 	private ActionTreeBuilder actionTreeBuilder;
 	private SynchronizationTreeBuilder synchronizationTreeBuilder;
-	private List<ConfigurationComparison> configurationComparisons;
 
 	public SynchronizationView() {
 		super(3, "Synchronization application");
@@ -73,11 +70,12 @@ public class SynchronizationView extends View {
 
 	}
 
-	public void showView(Map<ActionScope, List<ActionScope>> actionsToSynchronizations,
-			List<ConfigurationComparison> configurationComparisons) {
+	private CloneModel cloneModel;
 
+	public void showView(Map<ActionScope, List<ActionScope>> actionsToSynchronizations, CloneModel cloneModel) {
+
+		this.cloneModel = cloneModel;
 		this.actionsToSynchronizations = actionsToSynchronizations;
-		this.configurationComparisons = configurationComparisons;
 		createActionTree(Lists.newArrayList(actionsToSynchronizations.keySet()));
 		createComponentTree();
 
@@ -102,12 +100,7 @@ public class SynchronizationView extends View {
 			item.dispose();
 		}
 
-		Set<Component> components = new HashSet<Component>();
-		for (ConfigurationComparison configurationComparison : configurationComparisons) {
-			components.add(configurationComparison.getComponent1());
-		}
-
-		componentTreeBuilder.buildComponentTree(components, componentTree);
+		componentTreeBuilder.buildComponentTree(cloneModel.getComponents(), componentTree);
 	}
 
 	public void createActionTree(List<ActionScope> actionScopes) {

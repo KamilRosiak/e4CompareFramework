@@ -13,7 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 public class ComponentImpl extends NodeImpl implements Component {
 
 	public ComponentImpl() {
-		super("Component");
+		super("COMPONENT");
 
 	}
 

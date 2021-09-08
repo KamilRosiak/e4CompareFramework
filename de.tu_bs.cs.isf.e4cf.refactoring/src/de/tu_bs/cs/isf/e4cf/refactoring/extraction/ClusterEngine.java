@@ -26,6 +26,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
+import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.StatsLogger;
+import de.tu_bs.cs.isf.e4cf.refactoring.handler.SynchronizationPipeline;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
@@ -36,13 +38,21 @@ public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
 	private String scriptPath;
 
-	public final float THRESHOLD = 0.15f;
+	private float threshold = 0.15f;
 
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
 		scriptPath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
 				+ "script/clustering_sklearn.py").substring(1)).getPath();
 
+	}
+
+	public float getThreshold() {
+		return threshold;
+	}
+
+	public void setThreshold(float threshold) {
+		this.threshold = threshold;
 	}
 
 	public Map<Granularity, List<Set<Node>>> detectClusters(Map<Granularity, List<Node>> nodes) {
@@ -74,7 +84,7 @@ public class ClusterEngine {
 		}
 
 		String thresholdString = "";
-		thresholdString += THRESHOLD;
+		thresholdString += threshold;
 
 		// Execute python clustering algorithm and process result
 		try {
@@ -129,13 +139,16 @@ public class ClusterEngine {
 
 				if (clusters.size() > 1) {
 
+					StatsLogger.getInstance().clusterSplits++;
 					Set<Node> baseSet = clusters.get(0);
 					for (Node target : targets) {
 						if (!baseSet.contains(target)) {
+
 							Configuration configurationToRemove = targetToConfiguration.get(target);
 							Component newComponent = cloneModel.moveConfigurationToNewComponent(component,
 									configurationToRemove);
 							components.add(newComponent);
+
 						}
 
 					}
@@ -145,9 +158,13 @@ public class ClusterEngine {
 			// create components for all nodes of certain granularity not belonging to a
 			// component yet
 			for (String granularity : granularityToComponents.keySet()) {
-				for (Node node : cloneModel.getNodesNotPartOfComponentsByGranularity(granularity)) {
+				Set<Node> nodes = cloneModel.getNodesNotPartOfComponentsByGranularity(granularity);
+
+				for (Node node : nodes) {
 					Component newComponent = cloneModel.createNewComponent(node);
+
 					components.add(newComponent);
+
 				}
 			}
 
@@ -164,6 +181,8 @@ public class ClusterEngine {
 
 					if (baseComponent != component) {
 						cloneModel.mergeComponents(baseComponent, component);
+
+						StatsLogger.getInstance().clusterMerges++;
 					}
 
 				}
@@ -171,9 +190,12 @@ public class ClusterEngine {
 			}
 
 			// remove all components of size 1
-			for (Component component : cloneModel.getComponents()) {
+
+			List<Component> componentList = new ArrayList<Component>(cloneModel.getComponents());
+			for (Component component : componentList) {
 				if (component.getConfigurations().size() <= 1) {
 					cloneModel.removeComponent(component);
+
 				}
 			}
 

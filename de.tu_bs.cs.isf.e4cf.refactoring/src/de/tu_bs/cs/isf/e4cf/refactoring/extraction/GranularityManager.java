@@ -15,6 +15,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.refactoring.controllers.GranularityViewController;
+import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.GranularityCallback;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 
@@ -22,80 +23,96 @@ import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 @Creatable
 public class GranularityManager {
 
-	@Inject
 	private GranularityViewController granularityViewController;
 
-	public Map<Tree, Map<Granularity, List<Node>>> extractNodesOfCertainGranularities(Tree tree1, Tree tree2) {
+	@Inject
+	public GranularityManager(GranularityViewController granularityViewController) {
+		this.granularityViewController = granularityViewController;
+	}
+
+	public Map<Tree, Map<Granularity, List<Node>>> extractNodesOfCertainGranularities(Tree tree1, Tree tree2,
+			GranularityCallback granularityCallback) {
 
 		Set<String> nodeTypes = new HashSet<String>();
 		nodeTypes.addAll(tree1.getRoot().getAllNodeTypes());
 		nodeTypes.addAll(tree2.getRoot().getAllNodeTypes());
 
-		Map<Tree, Map<Granularity, List<Node>>> treeToLayers = new HashMap<Tree, Map<Granularity, List<Node>>>();
-		Map<Granularity, List<Node>> layerToNodes1 = new HashMap<Granularity, List<Node>>();
-		Map<Granularity, List<Node>> layerToNodes2 = new HashMap<Granularity, List<Node>>();
+		Map<Tree, Map<Granularity, List<Node>>> treeToGranularities = new HashMap<Tree, Map<Granularity, List<Node>>>();
+		Map<Granularity, List<Node>> granularityToNodes1 = new HashMap<Granularity, List<Node>>();
+		Map<Granularity, List<Node>> granularityToNodes2 = new HashMap<Granularity, List<Node>>();
 
-		List<Granularity> componentLayers = SynchronizationUtil.getGranularities(nodeTypes);
+		List<Granularity> granularities = SynchronizationUtil.getGranularities(nodeTypes);
 
-		granularityViewController.showView(componentLayers);
-		if (granularityViewController.isResult()) {
+		if (granularityCallback == null) {
+			granularityViewController.showView(granularities);
+			if (!granularityViewController.isResult()) {
+				return null;
 
-			for (Granularity layer : componentLayers) {
-				if (layer.refactor()) {
-					layerToNodes1.put(layer, getNodesByLayer(tree1, layer.getLayer()));
-					layerToNodes2.put(layer, getNodesByLayer(tree2, layer.getLayer()));
-				}
 			}
 		} else {
-			return null;
+			granularityCallback.handle(granularities);
 		}
 
-		treeToLayers.put(tree1, layerToNodes1);
-		treeToLayers.put(tree2, layerToNodes2);
+		for (Granularity granularity : granularities) {
+			if (granularity.refactor()) {
+				granularityToNodes1.put(granularity, getNodesByLayer(tree1, granularity.getLayer()));
+				granularityToNodes2.put(granularity, getNodesByLayer(tree2, granularity.getLayer()));
+			}
+		}
 
-		return treeToLayers;
+		treeToGranularities.put(tree1, granularityToNodes1);
+		treeToGranularities.put(tree2, granularityToNodes2);
+
+		return treeToGranularities;
 	}
 
-	public Map<Granularity, List<Node>> extractNodesOfCertainGranularities(Tree tree) {
+	public Map<Granularity, List<Node>> extractNodesOfCertainGranularities(Tree tree,
+			GranularityCallback granularityCallback) {
 
-		Map<Granularity, List<Node>> layerToNodes = new HashMap<Granularity, List<Node>>();
+		Map<Granularity, List<Node>> granularityToNodes = new HashMap<Granularity, List<Node>>();
 		Set<String> nodeTypes = new HashSet<String>();
 		nodeTypes.addAll(tree.getRoot().getAllNodeTypes());
-		List<Granularity> componentLayers = SynchronizationUtil.getGranularities(nodeTypes);
+		List<Granularity> granularities = SynchronizationUtil.getGranularities(nodeTypes);
 
-		granularityViewController.showView(componentLayers);
-		if (granularityViewController.isResult()) {
-
-			for (Granularity layer : componentLayers) {
-				if (layer.refactor()) {
-					layerToNodes.put(layer, getNodesByLayer(tree, layer.getLayer()));
-				}
+		if (granularityCallback == null) {
+			granularityViewController.showView(granularities);
+			if (!granularityViewController.isResult()) {
+				return null;
 			}
 		} else {
-			return null;
+			granularityCallback.handle(granularities);
 		}
 
-		return layerToNodes;
+		for (Granularity granularity : granularities) {
+			if (granularity.refactor()) {
+				granularityToNodes.put(granularity, getNodesByLayer(tree, granularity.getLayer()));
+			}
+		}
+
+		return granularityToNodes;
 	}
 
 	private List<Node> getNodesByLayer(Tree tree, String layer) {
 
+		List<Node> filteredNodes = new ArrayList<Node>();
 		List<Node> nodes = tree.getNodesForType(layer);
-
-		// a cloned method within a cloned method leads to a cycle and must therefore be
-		// removed
-		if (layer.equals("MethodDeclaration")) {
-
-			List<Node> cleanNodes = new ArrayList<Node>();
-			for (Node node : nodes) {
-				if (node.getParent().getNodeType().equals("CompilationUnit")) {
-					cleanNodes.add(node);
+		for (Node node : nodes) {
+			Node parent = node.getParent();
+			boolean isParentFromSameLayer = false;
+			while (parent != null) {
+				if (parent.getNodeType().equals(layer)) {
+					isParentFromSameLayer = true;
 				}
+				parent = parent.getParent();
 			}
-			return cleanNodes;
+
+			if (!isParentFromSameLayer) {
+				filteredNodes.add(node);
+			}
+
 		}
 
-		return nodes;
+		return filteredNodes;
 	}
 
 }

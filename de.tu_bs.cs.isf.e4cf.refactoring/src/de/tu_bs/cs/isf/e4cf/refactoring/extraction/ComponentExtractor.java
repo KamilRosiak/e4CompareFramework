@@ -40,48 +40,21 @@ public class ComponentExtractor {
 
 		for (Set<Node> cluster : clusters) {
 
-			//create base component
+			// create base component
 			Component component = new ComponentImpl();
 			component.setLayer(layer);
-			cloneModel.getComponentInstances().put(component, new HashSet<Component>());
+			cloneModel.getComponents().add(component);
 
 			for (Node clusterInstance1 : cluster) {
-				//create concrete component instance
-				Component componentInstance = new ComponentImpl();
-				componentInstance.setLayer(layer);
-
-				for (Node clusterInstance2 : cluster) {
-					//create concrete configuration instance
-					Configuration configuration = new ConfigurationImpl();
-					configuration.addChild(clusterInstance2);
-					componentInstance.addChildWithParent(configuration);
-
-					if (clusterInstance1 == clusterInstance2) {
-						componentInstance.setSelectedConfiguration(configuration);
-					}
-
-				}
-
-				//create base configuration
+				// create base configuration
 				Configuration configuration = new ConfigurationImpl();
 				configuration.addChild(clusterInstance1);
 				component.addChildWithParent(configuration);
-
-				//replace clone with component
-				Node cloneParent = clusterInstance1.getParent();				
-				int index = cloneParent.getChildren().indexOf(clusterInstance1);
-				cloneParent.getChildren().remove(index);
-				cloneParent.getChildren().add(index, componentInstance);
-				componentInstance.setParent(cloneParent);
-
-				//add to clone model
-				cloneModel.getComponentInstances().get(component).add(componentInstance);
-
 			}
 
 		}
-		//generate multisets of all components
-		Map<Component, MultiSet> multiSets = MultiSet.generate(cloneModel.getComponentInstances().keySet());
+		// generate multisets of all components
+		Map<Component, MultiSet> multiSets = MultiSet.generate(cloneModel.getComponents());
 		cloneModel.setMultiSets(multiSets);
 
 		return cloneModel;
