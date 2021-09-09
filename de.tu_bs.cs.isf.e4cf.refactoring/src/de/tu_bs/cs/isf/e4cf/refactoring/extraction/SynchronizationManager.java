@@ -167,7 +167,7 @@ public class SynchronizationManager {
 
 				// update multiset
 				multiSet.add(insert.getX());
-				multiSet.addTo(insert.getX(), savedNode);
+				multiSet.addAndExpand(insert.getX(), savedNode);
 
 			} else if (action instanceof Move) {
 
