@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -33,7 +38,7 @@ public class EvaluationHandler {
 		ActionCallback actionCallback = new ActionCallback() {
 
 			@Override
-			public void handle(List<ActionScope> actionScopes) {			
+			public void handle(List<ActionScope> actionScopes) {
 
 			}
 		};
@@ -41,116 +46,98 @@ public class EvaluationHandler {
 		GeneratorOptions generatorOptions = new GeneratorOptions();
 		generatorOptions.variants = 1;
 		generatorOptions.isSyntaxSafe = false;
-
 		List<Metric> metrics = getMetrics();
 
+		ExecutorService executorService = Executors.newFixedThreadPool(10);
+
 		Map<Metric, List<StatsLogger>> logs = new HashMap<Metric, List<StatsLogger>>();
-
+		List<Callable<Boolean>> evaluationCallables = new ArrayList<Callable<Boolean>>();
 		for (Metric metric : metrics) {
-
-			System.out.println("Metric: " + metric.getGranularity() + " Synchronization degree: "
-					+ metric.getSynchronizationDegree() + " Type 2 degree: " + metric.getType2AttributeChangeDegree()
-					+ " Variant degree: " + metric.getVariantChangeDegree());
-
 			Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 
-			logs.put(metric, new ArrayList<StatsLogger>());
+			Callable<Boolean> callable = () -> {
 
-			generatorOptions.modificationRatioPercentage = (int) Math.round(metric.getType2AttributeChangeDegree());
-			generatorOptions.variantChangeDegree = metric.getVariantChangeDegree();
+				logs.put(metric, new ArrayList<StatsLogger>());
 
-			GranularityCallback granularityCallback = new GranularityCallback() {
-				@Override
-				public void handle(List<Granularity> granularities) {
+				generatorOptions.modificationRatioPercentage = (int) Math.round(metric.getType2AttributeChangeDegree());
+				generatorOptions.variantChangeDegree = metric.getVariantChangeDegree();
 
-					for (Granularity granularity : granularities) {
-						if (granularity.getLayer().equals(metric.getGranularity())) {
-							granularity.setRefactor(true);
-						} else {
-							granularity.setRefactor(false);
+				GranularityCallback granularityCallback = new GranularityCallback() {
+					@Override
+					public void handle(List<Granularity> granularities) {
+
+						for (Granularity granularity : granularities) {
+							if (granularity.getLayer().equals(metric.getGranularity())) {
+								granularity.setRefactor(true);
+							} else {
+								granularity.setRefactor(false);
+							}
 						}
+
 					}
+				};
+
+				SynchronizationCallback synchronizationCallback = new SynchronizationCallback() {
+					@Override
+					public void handle(Map<ActionScope, List<ActionScope>> synchronizationScopes) {
+
+						List<ActionScope> allSynchronizations = new ArrayList<ActionScope>();
+						for (List<ActionScope> actionScopes : synchronizationScopes.values()) {
+							allSynchronizations.addAll(actionScopes);
+						}
+
+						for (ActionScope actionScope : allSynchronizations) {
+							actionScope.setApply(false);
+						}
+						Random random = new Random();
+
+						int numberOfElements = (int) (allSynchronizations.size()
+								* (metric.getSynchronizationDegree() / 100));
+
+						for (int i = 0; i < numberOfElements; i++) {
+							int randomIndex = random.nextInt(allSynchronizations.size());
+							ActionScope actionScope = allSynchronizations.get(randomIndex);
+							actionScope.setApply(true);
+						}
+
+					}
+				};
+
+				Tree cloneTree = tree.cloneTree();
+				CloneModel cloneModel = extractionPipeline.pipe(tree, granularityCallback, 0.15f);
+
+				Tree currentTree = null;
+				for (int i = 1; i <= 25; i++) {
+
+					System.out.println("Revision: " + i);
+
+					StatsLogger logger = new StatsLogger();
+					logs.get(metric).add(logger);
+
+					List<Variant> variants = cloneGenerator.go(cloneTree, generatorOptions, false, false);
+					Variant variant1 = variants.get(1);
+					currentTree = variant1.tree;
+
+					cloneModel = pipeline.pipe(cloneModel, variant1.tree, granularityCallback, actionCallback,
+							synchronizationCallback, 0.15f, logger);
+
+					cloneTree = currentTree.cloneTree();
 
 				}
+
+				return true;
 			};
 
-			SynchronizationCallback synchronizationCallback = new SynchronizationCallback() {
-				@Override
-				public void handle(Map<ActionScope, List<ActionScope>> synchronizationScopes) {
-
-					List<ActionScope> allSynchronizations = new ArrayList<ActionScope>();
-					for (List<ActionScope> actionScopes : synchronizationScopes.values()) {
-						allSynchronizations.addAll(actionScopes);
-					}
-
-					for (ActionScope actionScope : allSynchronizations) {
-						actionScope.setApply(false);
-					}
-					Random random = new Random();
-
-					int numberOfElements = (int) (allSynchronizations.size()
-							* (metric.getSynchronizationDegree() / 100));
-
-					for (int i = 0; i < numberOfElements; i++) {
-						int randomIndex = random.nextInt(allSynchronizations.size());
-						ActionScope actionScope = allSynchronizations.get(randomIndex);
-						actionScope.setApply(true);
-					}
-
-				}
-			};
-
-			
-			Tree cloneTree = tree.cloneTree();
-			CloneModel cloneModel = extractionPipeline.pipe(tree, granularityCallback, 0.15f);
-
-			Tree currentTree = null;
-			for (int i = 1; i <= 25; i++) {
-
-				System.out.println("Revision: " + i);
-
-				StatsLogger logger = StatsLogger.create();
-				logs.get(metric).add(logger);				
-
-				//Node target = selectTarget(cloneTree, metric.getGranularity());
-
-				List<Variant> variants = cloneGenerator.go(cloneTree, generatorOptions, false, false);
-				Variant variant1 = variants.get(1);
-				currentTree = variant1.tree;
-
-				cloneModel = pipeline.pipe(cloneModel, variant1.tree, granularityCallback, actionCallback,
-						synchronizationCallback, 0.15f);
-
-				cloneTree = currentTree.cloneTree();
-
-			}
+			evaluationCallables.add(callable);
 
 		}
 
-	}
-
-	private Node selectTarget(Tree tree, String granularity) {
-		List<Node> candidates = tree.getNodesForType(granularity);
-		List<Node> filteredNodes = new ArrayList<Node>();
-		for (Node node : candidates) {
-			Node parent = node.getParent();
-			boolean isParentFromSameLayer = false;
-			while (parent != null) {
-				if (parent.getNodeType().equals(granularity)) {
-					isParentFromSameLayer = true;
-				}
-				parent = parent.getParent();
-			}
-
-			if (!isParentFromSameLayer) {
-				filteredNodes.add(node);
-			}
-
+		try {
+			executorService.invokeAll(evaluationCallables);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		Random random = new Random();
-		int randomIndex = random.nextInt(filteredNodes.size());
-		return filteredNodes.get(randomIndex);
 
 	}
 
@@ -158,7 +145,6 @@ public class EvaluationHandler {
 	public boolean canExecute(ServiceContainer services, RCPSelectionService selectionService) {
 		return services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() == 1;
 	}
-	
 
 	private List<Metric> getMetrics() {
 

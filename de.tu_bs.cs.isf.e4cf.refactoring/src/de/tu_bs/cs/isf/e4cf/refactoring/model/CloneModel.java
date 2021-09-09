@@ -72,6 +72,24 @@ public class CloneModel {
 
 	}
 
+	public void replaceMatchesInTree(RevisionComparison revisionComparison) {
+
+		for (Entry<Container, Node> entry : revisionComparison.getMatchedNodes().entrySet()) {
+
+			Node source = entry.getValue();
+			Node target = entry.getKey().getNode();
+
+			Node parent = source.getParent();
+			int position = source.getPosition();
+			Node clone = target.cloneNode();
+
+			parent.getChildren().remove(position);
+			parent.addChildAtPosition(clone, position);
+
+		}
+
+	}
+
 	private Tree tree;
 
 	public Tree getTree() {

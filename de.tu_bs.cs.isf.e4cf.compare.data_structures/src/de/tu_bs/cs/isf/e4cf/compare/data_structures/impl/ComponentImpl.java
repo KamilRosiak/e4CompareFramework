@@ -41,14 +41,8 @@ public class ComponentImpl extends NodeImpl implements Component {
 		}
 
 		for (Node child : getChildren()) {
-			if (child == selectedConfiguration) {
-				Configuration configuration = (Configuration) child;
-				Configuration clonedChild = (Configuration) configuration.cloneNode();
-				newNode.setSelectedConfiguration(clonedChild);
-				newNode.addChildWithParent(clonedChild);
-			} else {
-				newNode.addChildWithParent(child.cloneNode());
-			}
+
+			newNode.addChildWithParent(child.cloneNode());
 
 		}
 
@@ -65,20 +59,6 @@ public class ComponentImpl extends NodeImpl implements Component {
 	@Override
 	public void setLayer(String layer) {
 		this.layer = layer;
-
-	}
-
-	private Configuration selectedConfiguration;
-
-	@Override
-	public Configuration getSelectedConfiguration() {
-
-		return selectedConfiguration;
-	}
-
-	@Override
-	public void setSelectedConfiguration(Configuration configuration) {
-		this.selectedConfiguration = configuration;
 
 	}
 

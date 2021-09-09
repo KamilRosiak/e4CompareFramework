@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -20,6 +21,7 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.ActionCallback;
 import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.GranularityCallback;
+import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.StatsLogger;
 import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.SynchronizationCallback;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ActionManager;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
@@ -71,24 +73,25 @@ public class SynchronizationPipeline {
 	}
 
 	public CloneModel pipe(Tree tree1, Tree tree2) {
-		return pipe(tree1, tree2, null, null, null, 0.15f);
+		return pipe(tree1, tree2, null, null, null, 0.15f, null);
+	}
+
+	public CloneModel pipe(CloneModel cloneModel, Tree tree2) {
+		return pipe(cloneModel, tree2, null, null, null, 0.15f, null);
 	}
 	
-	public CloneModel pipe(CloneModel cloneModel, Tree tree2) {
-		return pipe(cloneModel, tree2, null, null, null, 0.15f);
-	}
 
 	public CloneModel pipe(CloneModel cloneModel, Tree tree2, GranularityCallback granularityCallback,
-			ActionCallback actionCallback, SynchronizationCallback synchronizationCallback, float threshold) {
+			ActionCallback actionCallback, SynchronizationCallback synchronizationCallback, float threshold, StatsLogger statsLogger) {
 
-		RevisionComparison revisionComparison = revisionComparator.compare(cloneModel, tree2);		
+		RevisionComparison revisionComparison = revisionComparator.compare(cloneModel, tree2);
 		List<ActionScope> actionScopes = editScriptGenerator.generateEditScript(revisionComparison);
 
 		boolean actionManagerResult = false;
 		if (actionCallback == null) {
 			actionManagerResult = actionManager.showActionView(cloneModel, actionScopes);
 		} else {
-			actionCallback.handle(actionScopes); // TODO
+			actionCallback.handle(actionScopes);
 			actionManagerResult = true;
 		}
 
@@ -111,9 +114,12 @@ public class SynchronizationPipeline {
 			if (synchronizationManagerResult) {
 				synchronizationManager.synchronize(synchronizationScopes, cloneModel);
 
-				clusterEngine.analyzeCloneModel(cloneModel);
+				cloneModel.replaceMatchesInTree(revisionComparison);
+
 				cloneModel.setTree(compareEngine.compare(cloneModel.getTree(), tree2));
 
+				clusterEngine.analyzeCloneModel(cloneModel, statsLogger);				
+				
 				return cloneModel;
 			}
 
@@ -123,7 +129,7 @@ public class SynchronizationPipeline {
 	}
 
 	public CloneModel pipe(Tree tree1, Tree tree2, GranularityCallback granularityCallback,
-			ActionCallback actionCallback, SynchronizationCallback synchronizationCallback, float threshold) {
+			ActionCallback actionCallback, SynchronizationCallback synchronizationCallback, float threshold, StatsLogger statsLogger) {
 
 		clusterEngine.setThreshold(threshold);
 
@@ -136,7 +142,7 @@ public class SynchronizationPipeline {
 					.extractComponents(clusterEngine.detectClusters(treeToLayers.get(tree1)));
 			cloneModel.setTree(tree1);
 
-			return pipe(cloneModel, tree2, granularityCallback, actionCallback, synchronizationCallback, threshold);
+			return pipe(cloneModel, tree2, granularityCallback, actionCallback, synchronizationCallback, threshold, statsLogger);
 
 		}
 		return null;

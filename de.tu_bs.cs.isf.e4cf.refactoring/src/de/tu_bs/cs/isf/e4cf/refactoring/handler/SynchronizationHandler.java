@@ -16,14 +16,15 @@ public class SynchronizationHandler {
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, SynchronizationPipeline pipeline) {
 
-		StatsLogger.create();
+		
 		Tree tree1 = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
 		Tree tree2 = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(1));
 
 		CloneModel cloneModel = pipeline.pipe(tree1, tree2);
 
-		for (int i = 3; i <= services.rcpSelectionService.getCurrentSelectionsFromExplorer().size(); i++) {
-			cloneModel = pipeline.pipe(cloneModel, tree2);
+		for (int i = 2; i < services.rcpSelectionService.getCurrentSelectionsFromExplorer().size(); i++) {
+			Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(i));
+			cloneModel = pipeline.pipe(cloneModel, tree);
 		}
 
 		if (cloneModel != null) {

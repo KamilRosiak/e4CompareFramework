@@ -13,7 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.ConfigurationDecorator;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DecorationManager;
@@ -54,7 +54,8 @@ public class DSEditorController {
 	@Inject
 	private ServiceContainer services;
 
-	@Inject DecorationManager decoManager;
+	@Inject
+	DecorationManager decoManager;
 	@FXML
 	private MenuItem properties;
 
@@ -72,7 +73,7 @@ public class DSEditorController {
 
 	@FXML
 	private ContextMenu contextMenu;
-	
+
 	@FXML
 	private ComboBox<NodeDecorator> decoratorCombo;
 
@@ -107,12 +108,11 @@ public class DSEditorController {
 		services.partService.showPart(DSEditorST.TREE_VIEW_ID);
 		closeFile();
 		createTreeRoot(tree);
-		//load decorator and select the first
+		// load decorator and select the first
 		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		decoratorCombo.getSelectionModel().select(0);
 
 		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), getSelectedDecorator());
-		TreeViewUtilities.decorateTreeViewWithSelectedConfigurations(treeView.getRoot(), new ConfigurationDecorator());
 
 		addListener();
 	}
@@ -120,7 +120,7 @@ public class DSEditorController {
 	private NodeDecorator getSelectedDecorator() {
 		return decoratorCombo.getSelectionModel().getSelectedItem();
 	}
-	
+
 	private void createTreeRoot(Tree tree) {
 		treeView.setRoot(new TreeItem<Node>(tree.getRoot()));
 		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
@@ -140,7 +140,8 @@ public class DSEditorController {
 	 * @param attributeValue
 	 */
 	private void addAttribute(String attributeName, String attributeValue) {
-		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, new StringValueImpl(attributeValue));
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName,
+				new StringValueImpl(attributeValue));
 		treeView.refresh();
 	}
 
@@ -201,9 +202,10 @@ public class DSEditorController {
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
 		});
-		
+
 		decoratorCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue == null) return;
+			if (newValue == null)
+				return;
 			decoManager.setCurrentDecorater(newValue);
 			TreeViewUtilities.decorateTree(treeView.getRoot(), decoManager.getCurrentDecorater());
 			services.eventBroker.send(DSEditorST.REFRESH_TREEVIEW_EVENT, true);
@@ -224,7 +226,8 @@ public class DSEditorController {
 	 */
 	@FXML
 	void addChildNode() {
-		commandStack.execute(new AddChildNodeAction(treeView, treeView.getSelectionModel().getSelectedItem(), getSelectedDecorator()));
+		commandStack.execute(new AddChildNodeAction(treeView, treeView.getSelectionModel().getSelectedItem(),
+				getSelectedDecorator()));
 		treeView.refresh();
 	}
 
@@ -250,7 +253,8 @@ public class DSEditorController {
 				// Idee: Index verwalten über expand/collapse All
 				treeView.getSelectionModel().getSelectedItem().getChildren().add(tempNode);
 				for (TreeItem<Node> child : ti.getChildren()) {
-					tempNode.getChildren().add(TreeViewUtilities.createTreeItem(child.getValue(),getSelectedDecorator()));
+					tempNode.getChildren()
+							.add(TreeViewUtilities.createTreeItem(child.getValue(), getSelectedDecorator()));
 				}
 			}
 		} catch (NullPointerException e) {

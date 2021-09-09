@@ -120,8 +120,10 @@ public class ClusterEngine {
 
 	}
 
-	public void analyzeCloneModel(CloneModel cloneModel) {
+	public void analyzeCloneModel(CloneModel cloneModel, StatsLogger statsLogger) {
 
+		int clusterSplits = 0;
+		int clusterMerges = 0;
 		Map<String, Set<Component>> granularityToComponents = cloneModel.getGranularityToComponents();
 
 		for (Entry<String, Set<Component>> entry : granularityToComponents.entrySet()) {
@@ -139,7 +141,8 @@ public class ClusterEngine {
 
 				if (clusters.size() > 1) {
 
-					StatsLogger.getInstance().clusterSplits++;
+					clusterSplits++;
+
 					Set<Node> baseSet = clusters.get(0);
 					for (Node target : targets) {
 						if (!baseSet.contains(target)) {
@@ -182,7 +185,7 @@ public class ClusterEngine {
 					if (baseComponent != component) {
 						cloneModel.mergeComponents(baseComponent, component);
 
-						StatsLogger.getInstance().clusterMerges++;
+						clusterMerges++;
 					}
 
 				}
@@ -199,6 +202,11 @@ public class ClusterEngine {
 				}
 			}
 
+		}
+		
+		if(statsLogger != null) {
+			statsLogger.clusterMerges += clusterMerges;
+			statsLogger.clusterSplits += clusterSplits;
 		}
 
 	}

@@ -14,8 +14,7 @@ public class ExtractionHandler {
 
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, ExtractionPipeline pipeline) {
-
-		StatsLogger.create();
+		
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 		pipeline.pipe(tree);
 		services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, tree);

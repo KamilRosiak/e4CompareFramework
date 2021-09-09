@@ -14,6 +14,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import java.util.Queue;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
+import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -67,17 +68,33 @@ public class EditScriptGenerator {
 		List<ActionScope> actionScopes = new ArrayList<ActionScope>();
 		Comparison<Node> comparison = compareEngine.compare(cloneRoot1, cloneRoot2);
 
+		checkRootUpdate(comparison, actionScopes, cloneMapping);
+
 		getActions(comparison, actionScopes, new LinkedList<Comparison<Node>>(), cloneMapping);
 		return actionScopes;
 	}
 
-	private void createMapBetweenOriginalAndClonedNode(Node node, Node clone, Map<Node, Node> cloneMapping) {
+	private void checkRootUpdate(Comparison<Node> comparison, List<ActionScope> actions, Map<Node, Node> cloneMapping) {
 
-		if (node instanceof Component) {
-			Component component = (Component) node;
-			Node target = component.getSelectedConfiguration().getTarget();
-			node = target;
+		Node leftArtifact = comparison.getLeftArtifact();
+		Node rightArtifact = comparison.getRightArtifact();
+
+		// check similarity
+		Node cloneLeft = leftArtifact.cloneNode();
+		cloneLeft.getChildren().clear();
+		Node cloneRight = rightArtifact.cloneNode();
+		cloneRight.getChildren().clear();
+		if (compareEngine.compare(cloneLeft, cloneRight).getSimilarity() != 1.0) {
+			Node originalNode = cloneMapping.get(leftArtifact);
+
+			Update update = new Update(originalNode, rightArtifact.cloneNode());
+			actions.add(new ActionScope(update, true));
+
 		}
+
+	}
+
+	private void createMapBetweenOriginalAndClonedNode(Node node, Node clone, Map<Node, Node> cloneMapping) {
 
 		cloneMapping.put(node, clone);
 		cloneMapping.put(clone, node);
@@ -125,12 +142,12 @@ public class EditScriptGenerator {
 		List<Comparison<Node>> childComparisons = parentComparison.getChildComparisons();
 		queue.addAll(childComparisons);
 		childComparisons = sortComparisons(childComparisons);
-		
+
 		for (Comparison<Node> comparison : childComparisons) {
 
 			Node leftArtifact = comparison.getLeftArtifact();
 			Node rightArtifact = comparison.getRightArtifact();
-									
+
 			// INSERT
 			if (leftArtifact == null) {
 

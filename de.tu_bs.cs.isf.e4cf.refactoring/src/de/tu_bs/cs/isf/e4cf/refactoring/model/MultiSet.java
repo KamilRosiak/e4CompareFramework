@@ -80,10 +80,30 @@ public class MultiSet {
 
 	public void add(Node node) {
 		multiSet.put(node, new HashSet<Node>());
-		
-		for(Node child: node.getChildren()) {
+
+		for (Node child : node.getChildren()) {
 			add(child);
 		}
+	}
+
+	public void addAndExpand(Node newNode, Node node) {
+
+		multiSet.get(node).add(newNode);
+		multiSet.get(newNode).add(node);
+
+		Set<Node> multiSetNodes = multiSet.get(node);
+		Set<Node> multiSetNodes2 = multiSet.get(newNode);
+		for (Node node1 : multiSetNodes) {
+
+			if (newNode != node1 && !multiSetNodes2.contains(node1)) {
+				addAndExpand(newNode, node1);
+			}
+		}
+
+		for (int i = 0; i < node.getChildren().size(); i++) {
+			addAndExpand(newNode.getChildren().get(i), node.getChildren().get(i));
+		}
+
 	}
 
 	public void addTo(Node node, Iterable<Node> nodes) {
@@ -95,11 +115,11 @@ public class MultiSet {
 	public void addTo(Node node, Node newNode) {
 		multiSet.get(node).add(newNode);
 		multiSet.get(newNode).add(node);
-		
-		for(int i = 0; i < node.getChildren().size(); i++) {
+
+		for (int i = 0; i < node.getChildren().size(); i++) {
 			addTo(node.getChildren().get(i), newNode.getChildren().get(i));
 		}
-		
+
 	}
 
 	private void generate(Comparison<Node> comparison) {

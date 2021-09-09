@@ -13,9 +13,6 @@ public interface Component extends Node {
 
 	public void setLayer(String layer);
 
-	public Configuration getSelectedConfiguration();
-
-	public void setSelectedConfiguration(Configuration configuration);
 	
 	public List<Node> getAllTargets();
 	

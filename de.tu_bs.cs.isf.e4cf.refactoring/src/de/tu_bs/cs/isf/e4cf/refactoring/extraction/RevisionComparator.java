@@ -49,11 +49,16 @@ public class RevisionComparator {
 				Component component = cloneModel.getComponent(leftArtifact);
 				revisionComparison.getMatchedNodes().put(new Container(component, leftArtifact), rightArtifact);
 			}
+			
+			return;
 		}
 
-		for (Comparison<Node> childComparison : comparison.getChildComparisons()) {
-			match(childComparison, revisionComparison, cloneModel);
+		if (leftArtifact != null && rightArtifact != null) {
+			for (Comparison<Node> childComparison : comparison.getChildComparisons()) {
+				match(childComparison, revisionComparison, cloneModel);
+			}
 		}
+
 	}
 
 }
