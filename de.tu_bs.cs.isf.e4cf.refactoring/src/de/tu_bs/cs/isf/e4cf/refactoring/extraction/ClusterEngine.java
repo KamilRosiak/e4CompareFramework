@@ -43,7 +43,7 @@ public class ClusterEngine {
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
 		scriptPath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ "script/clustering_sklearn.py").substring(1)).getPath();
+				+ "script/clustering_sklearn.exe").substring(1)).getPath();
 
 	}
 

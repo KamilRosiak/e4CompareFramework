@@ -17,7 +17,7 @@ public class ProcessUtil {
 
 	public static void startProcess(String path) {
 		try {
-			ProcessBuilder builder = new ProcessBuilder("py", path);
+			ProcessBuilder builder = new ProcessBuilder(path);
 			builder.redirectErrorStream(true);
 			process = builder.start();
 			InputStream inputStream = process.getInputStream();
