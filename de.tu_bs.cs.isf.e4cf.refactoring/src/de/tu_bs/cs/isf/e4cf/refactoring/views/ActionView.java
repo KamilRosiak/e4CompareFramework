@@ -1,8 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -13,6 +11,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 
@@ -26,8 +25,7 @@ public class ActionView extends View {
 	private Label taskLabel;
 
 	private Component selectedComponent;
-
-	private Map<Component, List<ActionScope>> componentToActions;
+	
 
 	public Tree getActionTree() {
 		return actionTree;
@@ -63,18 +61,14 @@ public class ActionView extends View {
 		componentTreeBuilder = new ComponentTreeBuilder();
 
 	}
+	
 
-	public void showView(Map<Component, List<ActionScope>> componentToActions) {
+	private CloneModel cloneModel;
 
-		this.componentToActions = componentToActions;
-
+	public void showView(CloneModel cloneModel, List<ActionScope> actionScopes) {
+		this.cloneModel = cloneModel;
 		createComponentTree();
-
-		List<ActionScope> allActionScopes = new ArrayList<ActionScope>();
-		for (List<ActionScope> actionScopeList : componentToActions.values()) {
-			allActionScopes.addAll(actionScopeList);
-		}
-		createActionTree(allActionScopes);
+		createActionTree(actionScopes);
 
 		showView();
 	}
@@ -85,7 +79,7 @@ public class ActionView extends View {
 			item.dispose();
 		}
 
-		componentTreeBuilder.buildComponentTree(componentToActions.keySet(), componentTree);
+		componentTreeBuilder.buildComponentTree(cloneModel.getComponents(), componentTree);
 	}
 
 	public void createActionTree(List<ActionScope> actionScopes) {
@@ -100,8 +94,7 @@ public class ActionView extends View {
 			actionTree.select(actionTree.getItem(0));
 
 			for (TreeItem treeItem : componentTree.getItems()) {
-				markNodeRecursively(treeItem,
-						((ActionScope) actionTree.getItem(0).getData()).getAction().getAffectedNode());
+				markNodeRecursively(treeItem, ((ActionScope) actionTree.getItem(0).getData()).getAction().getX());
 			}
 
 		}

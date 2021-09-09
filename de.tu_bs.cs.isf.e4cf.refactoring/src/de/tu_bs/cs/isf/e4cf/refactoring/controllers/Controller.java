@@ -22,7 +22,11 @@ public abstract class Controller<T extends View> {
 
 	protected abstract void initView();
 
-	public Controller(T view) {
+	public Controller() {
+
+	}
+
+	public void createView(T view) {
 		this.view = view;
 
 		initView();
@@ -48,7 +52,6 @@ public abstract class Controller<T extends View> {
 				}
 			}
 		});
-
 	}
 
 }

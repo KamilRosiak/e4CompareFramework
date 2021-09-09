@@ -21,17 +21,14 @@ public class ConfigurationDecorator implements NodeDecorator {
 	public TreeItem<Node> decorateNode(TreeItem<Node> treeItem) {
 
 		Node node = treeItem.getValue();
-		
-		if(node instanceof Configuration) {
+
+		if (node instanceof Configuration) {
 			return treeItem;
 		}
 
 		if (node instanceof Component) {
-			TreeItem<Node> parentTreeItem = treeItem.getParent();
-			int position = parentTreeItem.getChildren().indexOf(treeItem);
-			Node parentNode = parentTreeItem.getValue();
 			Component component = (Component) node;
-			Configuration configuration = component.getNodeComponentRelation().get(parentNode).get(position);
+			Configuration configuration = component.getSelectedConfiguration();
 
 			for (TreeItem<Node> child : treeItem.getChildren()) {
 

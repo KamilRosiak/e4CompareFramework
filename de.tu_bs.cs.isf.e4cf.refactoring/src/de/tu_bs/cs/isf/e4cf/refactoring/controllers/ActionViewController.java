@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.controllers;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -11,17 +10,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
 import de.tu_bs.cs.isf.e4cf.refactoring.views.ActionView;
 
 @Singleton
 @Creatable
 public class ActionViewController extends Controller<ActionView> {
-
-	public ActionViewController() {
-		super(new ActionView());
-	}
 
 	@Override
 	protected void initView() {
@@ -53,7 +49,13 @@ public class ActionViewController extends Controller<ActionView> {
 				view.getComponentTree().deselectAll();
 
 				for (TreeItem treeItem : view.getComponentTree().getItems()) {
-					view.markNodeRecursively(treeItem, actionScope.getAction().getAffectedNode());
+					if (actionScope.getAction() instanceof Insert) {
+						Insert insert = (Insert) actionScope.getAction();
+						view.markNodeRecursively(treeItem, insert.getY());
+					} else {
+						view.markNodeRecursively(treeItem, actionScope.getAction().getX());
+					}
+
 				}
 
 			}
@@ -61,8 +63,9 @@ public class ActionViewController extends Controller<ActionView> {
 
 	}
 
-	public void showView(Map<Component, List<ActionScope>> scopes) {
-		view.showView(scopes);
+	public void showView(CloneModel cloneModel, List<ActionScope> actionScopes) {
+		createView(new ActionView());
+		view.showView(cloneModel, actionScopes);
 
 	}
 

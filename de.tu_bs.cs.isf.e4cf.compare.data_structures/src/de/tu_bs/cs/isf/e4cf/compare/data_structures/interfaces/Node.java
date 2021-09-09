@@ -126,7 +126,7 @@ public interface Node {
 	 * This method adds a child node to the current node and sets the parent.
 	 */
 	public void addChild(Node node);
-	
+
 	/**
 	 * This method adds a child node to the current node at a given position and
 	 * sets the parent.
@@ -188,59 +188,47 @@ public interface Node {
 	 * @return
 	 */
 	public int getPosition();
+	
 
+	public void addChildAtPosition(Node child, int position);
+	
 	/**
 	 * This method sets the position of this node.
 	 */
 	public void setPosition(int position);
 
 	/**
-	 * This method updates the position of this node.
-	 */
-	public void updatePosition(int position);
-
-	/**
-	 * This method sorts the children by position.
-	 */
-	public void sortChildrenByPosition();
-
-	/**
-	 * This method removes a given child.
-	 */
-	public void removeChild(Node child, int position);
-
-	/**
 	 * Sets the standardized node type of this node
 	 */
 	public void setStandardizedNodeType(NodeType type);
 
-	/** 
-	 * Gets the standardized node type of this node 
+	/**
+	 * Gets the standardized node type of this node
 	 */
 	public NodeType getStandardizedNodeType();
-	
+
 	/**
 	 * Changes how the node displays itself when calling .toString()
 	 */
 	public void setRepresentation(String representation);
-	
+
 	/**
 	 * Sorting all child elements using start and endline
 	 */
 	public void sortChildNodes();
-	
+
 	/**
-	 * Traverse the Node composite in a breadth first manner.
-	 * Not safe for cycles
+	 * Traverse the Node composite in a breadth first manner. Not safe for cycles
+	 * 
 	 * @return The iterator used for traversal
 	 */
 	public Iterable<Node> breadthFirstSearch();
-	
+
 	/**
-	 * Traverse the Node composite in a depth first manner.
-	 * Not safe for cycles
+	 * Traverse the Node composite in a depth first manner. Not safe for cycles
+	 * 
 	 * @return The iterator used for traversal
 	 */
-    public Iterable<Node> depthFirstSearch();
+	public Iterable<Node> depthFirstSearch();
 
 }

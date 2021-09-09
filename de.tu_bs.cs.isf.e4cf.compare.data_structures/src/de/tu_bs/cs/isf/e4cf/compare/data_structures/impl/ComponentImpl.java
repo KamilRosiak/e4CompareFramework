@@ -1,8 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
@@ -11,34 +12,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 public class ComponentImpl extends NodeImpl implements Component {
 
-	private Map<Node, Set<Node>> synchronizationUnit;
+	public ComponentImpl() {
+		super("COMPONENT");
 
-	private Map<Node, Map<Integer, Configuration>> nodeComponentRelation;
-
-	public Map<Node, Map<Integer, Configuration>> getNodeComponentRelation() {
-		return nodeComponentRelation;
-	}
-
-	public void setNodeComponentRelation(Map<Node, Map<Integer, Configuration>> nodeComponentRelation) {
-		this.nodeComponentRelation = nodeComponentRelation;
-	}
-
-	public ComponentImpl(Map<Node, Set<Node>> synchronizationUnit) {
-		super("Component");
-		this.synchronizationUnit = synchronizationUnit;
-
-	}
-
-	private ComponentImpl() {
-
-	}
-
-	public Map<Node, Set<Node>> getSynchronizationUnit() {
-		return synchronizationUnit;
-	}
-
-	public void setSynchronizationUnit(Map<Node, Set<Node>> synchronizationUnit) {
-		this.synchronizationUnit = synchronizationUnit;
 	}
 
 	public List<Configuration> getConfigurations() {
@@ -56,7 +32,6 @@ public class ComponentImpl extends NodeImpl implements Component {
 	public Node cloneNode() {
 
 		ComponentImpl newNode = new ComponentImpl();
-		newNode.setNodeComponentRelation(nodeComponentRelation);
 		newNode.setNodeType(getNodeType());
 		newNode.setVariabilityClass(getVariabilityClass());
 
@@ -66,11 +41,66 @@ public class ComponentImpl extends NodeImpl implements Component {
 		}
 
 		for (Node child : getChildren()) {
+			if (child == selectedConfiguration) {
+				Configuration configuration = (Configuration) child;
+				Configuration clonedChild = (Configuration) configuration.cloneNode();
+				newNode.setSelectedConfiguration(clonedChild);
+				newNode.addChildWithParent(clonedChild);
+			} else {
+				newNode.addChildWithParent(child.cloneNode());
+			}
 
-			newNode.addChildWithParent(child.cloneNode());
 		}
 
 		return newNode;
+	}
+
+	private String layer;
+
+	@Override
+	public String getLayer() {
+		return layer;
+	}
+
+	@Override
+	public void setLayer(String layer) {
+		this.layer = layer;
+
+	}
+
+	private Configuration selectedConfiguration;
+
+	@Override
+	public Configuration getSelectedConfiguration() {
+
+		return selectedConfiguration;
+	}
+
+	@Override
+	public void setSelectedConfiguration(Configuration configuration) {
+		this.selectedConfiguration = configuration;
+
+	}
+
+	@Override
+	public List<Node> getAllTargets() {
+		List<Node> targets = new ArrayList<Node>();
+		for (Configuration configuration : getConfigurations()) {
+			targets.add(configuration.getTarget());
+		}
+
+		return targets;
+	}
+
+	@Override
+	public Map<Node, Configuration> getConfigurationByTarget() {
+
+		Map<Node, Configuration> map = new HashMap<Node, Configuration>();
+		for (Configuration configuration : getConfigurations()) {
+			map.put(configuration.getTarget(), configuration);
+		}
+		return map;
+
 	}
 
 }

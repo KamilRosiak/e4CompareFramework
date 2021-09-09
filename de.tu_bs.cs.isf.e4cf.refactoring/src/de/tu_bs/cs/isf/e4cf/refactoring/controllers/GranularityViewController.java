@@ -10,17 +10,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ComponentLayer;
-import de.tu_bs.cs.isf.e4cf.refactoring.views.ComponentLayerView;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
+import de.tu_bs.cs.isf.e4cf.refactoring.views.GranularityView;
 
 @Singleton
 @Creatable
-public class ComponentLayerViewController extends Controller<ComponentLayerView> {
-
-	public ComponentLayerViewController() {
-		super(new ComponentLayerView());
-
-	}
+public class GranularityViewController extends Controller<GranularityView> {
 
 	@Override
 	protected void initView() {
@@ -31,7 +26,7 @@ public class ComponentLayerViewController extends Controller<ComponentLayerView>
 
 				if (event.detail == SWT.CHECK) {
 
-					ComponentLayer layer = (ComponentLayer) item.getData();
+					Granularity layer = (Granularity) item.getData();
 					layer.setRefactor(item.getChecked());
 
 				}
@@ -41,8 +36,9 @@ public class ComponentLayerViewController extends Controller<ComponentLayerView>
 
 	}
 
-	public void showView(List<ComponentLayer> refactoringLayers) {
-		view.showView(refactoringLayers);
+	public void showView(List<Granularity> granularities) {
+		createView(new GranularityView());
+		view.showView(granularities);
 
 	}
 

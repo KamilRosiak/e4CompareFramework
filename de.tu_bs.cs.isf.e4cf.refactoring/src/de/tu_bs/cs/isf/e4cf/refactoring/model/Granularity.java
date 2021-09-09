@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
-public class ComponentLayer {
+public class Granularity {
 
 	private String layer;
 
@@ -22,7 +22,7 @@ public class ComponentLayer {
 		this.refactor = refactor;
 	}
 
-	public ComponentLayer(String layer, boolean refactor) {
+	public Granularity(String layer, boolean refactor) {
 		super();
 		this.layer = layer;
 		this.refactor = refactor;

@@ -72,8 +72,8 @@ class Taxonomy {
 	}
 	
 	def literalChange(Node container, String newValue) {
-		logger.logRaw(LITERAL_CHANGE)
-		helper.setAttributeValue(container, "Value", newValue)
+		//logger.logRaw(LITERAL_CHANGE)
+		//helper.setAttributeValue(container, "Value", newValue)
 	}
 	
 	def typeChange(Node container, String newType) {
