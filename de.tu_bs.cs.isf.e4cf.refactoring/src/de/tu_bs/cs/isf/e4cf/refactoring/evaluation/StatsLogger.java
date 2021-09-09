@@ -2,21 +2,26 @@ package de.tu_bs.cs.isf.e4cf.refactoring.evaluation;
 
 public class StatsLogger {
 
-	public int baseComponents;
+	public int components;
 
-	public int baseConfigurations;
+	public int configurations;
 
 	public int clusterSplits;
 
 	public int clusterMerges;
 	
+	public float averageIntraSimilarity;
+	
+	public float averageInterSimilarity;
+	
 	public void printStats() {
 		System.out.println(" ----- Stats ---");
-		System.out.println("Base components: " + baseComponents);
-		System.out.println("Base configurations: " + baseConfigurations);
-
+		System.out.println("Components: " + components);
+		System.out.println("Configurations: " + configurations);
 		System.out.println("Cluster splits: " + clusterSplits);
 		System.out.println("Cluster merges: " + clusterMerges);
+		System.out.println("Average intra similarity: " + averageIntraSimilarity);
+		System.out.println("Average inter similarity" + averageInterSimilarity);
 		System.out.println();
 
 	}

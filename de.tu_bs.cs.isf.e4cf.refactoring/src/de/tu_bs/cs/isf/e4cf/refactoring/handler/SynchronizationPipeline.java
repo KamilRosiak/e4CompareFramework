@@ -20,6 +20,7 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.ActionCallback;
+import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.CloneCallback;
 import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.GranularityCallback;
 import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.StatsLogger;
 import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.SynchronizationCallback;
@@ -36,6 +37,7 @@ import de.tu_bs.cs.isf.e4cf.refactoring.model.Delete;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.RevisionComparison;
+import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
 
 @Creatable
 public class SynchronizationPipeline {
@@ -73,16 +75,16 @@ public class SynchronizationPipeline {
 	}
 
 	public CloneModel pipe(Tree tree1, Tree tree2) {
-		return pipe(tree1, tree2, null, null, null, 0.15f, null);
+		return pipe(tree1, tree2, null, null, null, 0.15f, null, null, null);
 	}
 
 	public CloneModel pipe(CloneModel cloneModel, Tree tree2) {
-		return pipe(cloneModel, tree2, null, null, null, 0.15f, null);
+		return pipe(cloneModel, tree2, null, null, null, 0.15f, null, null, null);
 	}
 	
 
 	public CloneModel pipe(CloneModel cloneModel, Tree tree2, GranularityCallback granularityCallback,
-			ActionCallback actionCallback, SynchronizationCallback synchronizationCallback, float threshold, StatsLogger statsLogger) {
+			ActionCallback actionCallback, SynchronizationCallback synchronizationCallback, float threshold, StatsLogger statsLogger, ProcessUtil process, CloneCallback cloneCallback) {
 
 		RevisionComparison revisionComparison = revisionComparator.compare(cloneModel, tree2);
 		List<ActionScope> actionScopes = editScriptGenerator.generateEditScript(revisionComparison);
@@ -115,10 +117,14 @@ public class SynchronizationPipeline {
 				synchronizationManager.synchronize(synchronizationScopes, cloneModel);
 
 				cloneModel.replaceMatchesInTree(revisionComparison);
+				
+				if(cloneCallback != null) {
+					cloneCallback.handle(tree2);
+				}
 
 				cloneModel.setTree(compareEngine.compare(cloneModel.getTree(), tree2));
 
-				clusterEngine.analyzeCloneModel(cloneModel, statsLogger);				
+				clusterEngine.analyzeCloneModel(cloneModel, statsLogger, process);				
 				
 				return cloneModel;
 			}
@@ -129,7 +135,7 @@ public class SynchronizationPipeline {
 	}
 
 	public CloneModel pipe(Tree tree1, Tree tree2, GranularityCallback granularityCallback,
-			ActionCallback actionCallback, SynchronizationCallback synchronizationCallback, float threshold, StatsLogger statsLogger) {
+			ActionCallback actionCallback, SynchronizationCallback synchronizationCallback, float threshold, StatsLogger statsLogger, ProcessUtil process, CloneCallback cloneCallback) {
 
 		clusterEngine.setThreshold(threshold);
 
@@ -139,10 +145,10 @@ public class SynchronizationPipeline {
 		if (treeToLayers != null) {
 
 			CloneModel cloneModel = componentExtractor
-					.extractComponents(clusterEngine.detectClusters(treeToLayers.get(tree1)));
+					.extractComponents(clusterEngine.detectClusters(treeToLayers.get(tree1), process));
 			cloneModel.setTree(tree1);
 
-			return pipe(cloneModel, tree2, granularityCallback, actionCallback, synchronizationCallback, threshold, statsLogger);
+			return pipe(cloneModel, tree2, granularityCallback, actionCallback, synchronizationCallback, threshold, statsLogger, process, cloneCallback);
 
 		}
 		return null;

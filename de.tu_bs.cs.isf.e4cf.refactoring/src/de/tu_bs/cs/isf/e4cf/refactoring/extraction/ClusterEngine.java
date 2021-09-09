@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,7 +26,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.StatsLogger;
-import de.tu_bs.cs.isf.e4cf.refactoring.handler.SynchronizationPipeline;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
@@ -36,60 +34,77 @@ import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
 @Creatable
 public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
-	private String scriptPath;
+	private static String scriptPathExe;
+	private static String scriptPathPython;
+	private static String scriptPath;
 
 	private float threshold = 0.15f;
 
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
-		scriptPath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+		scriptPathExe = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
 				+ "script/clustering_sklearn.exe").substring(1)).getPath();
+		scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+				+ "script/clustering_sklearn.py").substring(1)).getPath();
+		scriptPath = scriptPathExe;
 
 	}
 
-	public float getThreshold() {
-		return threshold;
+	public static void configureScriptPath(boolean useExe) {
+		scriptPath = useExe ? scriptPathExe : scriptPathPython;
+		ProcessUtil.useExe = useExe;
+	}
+
+	public static String getScriptPath() {
+		return scriptPath;
 	}
 
 	public void setThreshold(float threshold) {
 		this.threshold = threshold;
 	}
 
-	public Map<Granularity, List<Set<Node>>> detectClusters(Map<Granularity, List<Node>> nodes) {
+	public Map<Granularity, List<Set<Node>>> detectClusters(Map<Granularity, List<Node>> nodes, ProcessUtil process) {
 		Map<Granularity, List<Set<Node>>> layerToClusters = new HashMap<Granularity, List<Set<Node>>>();
+
+		if (process == null) {
+			if (processUtil == null) {
+				processUtil = new ProcessUtil();
+				processUtil.startProcess(scriptPath);
+			}
+			process = processUtil;
+		}
 
 		for (Entry<Granularity, List<Node>> entry : nodes.entrySet()) {
 
 			layerToClusters.put(entry.getKey(),
-					detectClusters(entry.getValue(), buildDistanceString(entry.getValue())));
+					detectClusters(entry.getValue(), buildDistanceString(entry.getValue()), process));
 
 		}
 
 		return layerToClusters;
 	}
 
-	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString) {
+	private ProcessUtil processUtil;
 
-		// start process
-		if (!ProcessUtil.isReady()) {
-			ProcessUtil.startProcess(scriptPath);
-		}
+	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString, ProcessUtil process) {
 
-		List<Set<Node>> clusters = new ArrayList<Set<Node>>();
-		if (nodes.size() == 1) {
-			Set<Node> nodeSet = new HashSet<Node>();
-			nodeSet.add(nodes.get(0));
-			clusters.add(nodeSet);
-			return clusters;
-		}
-
-		String thresholdString = "";
-		thresholdString += threshold;
-
-		// Execute python clustering algorithm and process result
 		try {
-			BufferedWriter writer = ProcessUtil.getWriter();
-			BufferedReader reader = ProcessUtil.getReader();
+
+			List<Set<Node>> clusters = new ArrayList<Set<Node>>();
+			if (nodes.size() == 1) {
+				Set<Node> nodeSet = new HashSet<Node>();
+				nodeSet.add(nodes.get(0));
+				clusters.add(nodeSet);
+				return clusters;
+			}
+
+			String thresholdString = "";
+			thresholdString += threshold;
+
+			// Execute python clustering algorithm and process result
+
+			BufferedWriter writer = process.getWriter();
+			BufferedReader reader = process.getReader();
 
 			writer.write(distanceString + " " + thresholdString + "\r\n");
 			writer.flush();
@@ -112,15 +127,29 @@ public class ClusterEngine {
 			for (Set<Node> sets : map.values()) {
 				clusters.add(sets);
 			}
+			return clusters;
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return clusters;
+
+		return null;
 
 	}
 
 	public void analyzeCloneModel(CloneModel cloneModel, StatsLogger statsLogger) {
+		analyzeCloneModel(cloneModel, statsLogger, processUtil);
+	}
+
+	public void analyzeCloneModel(CloneModel cloneModel, StatsLogger statsLogger, ProcessUtil process) {
+
+		if (process == null) {
+			if (processUtil == null) {
+				processUtil = new ProcessUtil();
+				processUtil.startProcess(scriptPath);
+			}
+			process = processUtil;
+		}
 
 		int clusterSplits = 0;
 		int clusterMerges = 0;
@@ -137,7 +166,7 @@ public class ClusterEngine {
 
 				// analyze intra-cluster similarity; exclude all new clusters from component
 				List<Set<Node>> clusters = detectClusters(Lists.newArrayList(targets),
-						buildDistanceString(Lists.newArrayList(targets)));
+						buildDistanceString(Lists.newArrayList(targets)), process);
 
 				if (clusters.size() > 1) {
 
@@ -174,7 +203,7 @@ public class ClusterEngine {
 			// analyze inter-cluster similarity and merge clusters of components to single
 			// component
 			String distanceString = buildDistanceComponentString(components);
-			List<Set<Node>> clusters = detectClusters(new ArrayList<Node>(components), distanceString);
+			List<Set<Node>> clusters = detectClusters(new ArrayList<Node>(components), distanceString, process);
 			for (Set<Node> cluster : clusters) {
 
 				Component baseComponent = (Component) cluster.iterator().next();
@@ -203,10 +232,12 @@ public class ClusterEngine {
 			}
 
 		}
-		
-		if(statsLogger != null) {
+
+		if (statsLogger != null) {
 			statsLogger.clusterMerges += clusterMerges;
 			statsLogger.clusterSplits += clusterSplits;
+			statsLogger.components = cloneModel.getNumberOfComponents();
+			statsLogger.configurations = cloneModel.getNumberOfConfigurations();
 		}
 
 	}

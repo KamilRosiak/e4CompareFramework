@@ -205,6 +205,7 @@ public class CloneModel {
 		newComponent.addChildWithParent(newConfiguration);
 
 		multiSets.put(newComponent, MultiSet.generate(newComponent));
+		components.add(newComponent);
 
 		return newComponent;
 
@@ -218,20 +219,28 @@ public class CloneModel {
 
 		Component newComponent = new ComponentImpl();
 		newComponent.setLayer(component.getLayer());
-		Configuration newConfiguration = new ConfigurationImpl();
-		newConfiguration.setTarget(configuration.getTarget());
-		newComponent.addChildWithParent(newConfiguration);
+		newComponent.addChildWithParent(configuration);
 
 		multiSets.put(newComponent, MultiSet.generate(newComponent));
+
+		components.add(newComponent);
 
 		return newComponent;
 
 	}
 
 	public void mergeComponents(Component component1, Component component2) {
-		List<Configuration> configurations = new ArrayList<Configuration>(component2.getConfigurations());
-		for (Configuration configuration : configurations) {
-			addConfiguration(component1, configuration, component2);
+
+		List<Configuration> configurations2 = new ArrayList<Configuration>(component2.getConfigurations());
+		for (Configuration configuration2 : configurations2) {
+
+			component1.getChildren().add(configuration2);
+			MultiSet multiSet1 = multiSets.get(component1);
+			multiSet1.add(configuration2);
+
+			component2.getChildren().remove(configuration2);
+			MultiSet multiSet2 = multiSets.get(component1);
+			multiSet2.remove(configuration2);
 		}
 		this.components.remove(component2);
 		this.multiSets.remove(component2);

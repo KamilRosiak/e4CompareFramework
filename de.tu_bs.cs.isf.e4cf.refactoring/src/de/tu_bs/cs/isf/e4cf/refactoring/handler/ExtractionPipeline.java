@@ -16,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ComponentExtractor;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.GranularityManager;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
+import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
 
 @Singleton
 @Creatable
@@ -36,17 +37,17 @@ public class ExtractionPipeline {
 	}
 
 	public CloneModel pipe(Tree tree) {
-		return pipe(tree, null, 0.15f);
+		return pipe(tree, null, 0.15f, null);
 	}
 
-	public CloneModel pipe(Tree tree, GranularityCallback granularityCallback, float threshold) {
+	public CloneModel pipe(Tree tree, GranularityCallback granularityCallback, float threshold, ProcessUtil process) {
 		clusterEngine.setThreshold(threshold);
 
 		Map<Granularity, List<Node>> layerToNodes = granularityManager.extractNodesOfCertainGranularities(tree,
 				granularityCallback);
 		if (layerToNodes != null) {
 
-			CloneModel cloneModel = componentExtractor.extractComponents(clusterEngine.detectClusters(layerToNodes));
+			CloneModel cloneModel = componentExtractor.extractComponents(clusterEngine.detectClusters(layerToNodes, process));
 			cloneModel.setTree(tree);
 
 			return cloneModel;

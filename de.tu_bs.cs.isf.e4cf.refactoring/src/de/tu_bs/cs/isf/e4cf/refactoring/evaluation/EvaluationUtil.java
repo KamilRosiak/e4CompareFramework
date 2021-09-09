@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
@@ -32,11 +33,26 @@ public class EvaluationUtil {
 		return null;
 	}
 
-	public static float getIntraSimilarity(Component component) {
+	public static float getAverageIntraSimilarity(Set<Component> components) {
+
+		if (components.size() == 0) {
+			return 0;
+		}
+
+		float similarity = 0;
+		for (Component component : components) {
+			similarity += getIntraSimilarity(component);
+		}
+
+		return similarity / components.size();
+
+	}
+
+	private static float getIntraSimilarity(Component component) {
 
 		List<Node> nodes = component.getAllTargets();
 
-		float lowestSimilarity = 100;
+		float lowestSimilarity = 1;
 		for (Node node1 : nodes) {
 
 			for (Node node2 : nodes) {
@@ -54,21 +70,42 @@ public class EvaluationUtil {
 		return lowestSimilarity;
 	}
 
-	public static float getInterSimilarity(Component component1, Component component2) {
-		
-		float lowestSimilarity = 100;
+	public static float getAverageInterSimilarity(Set<Component> components) {
+
+		if (components.size() <= 1) {
+			return 0;
+		}
+
+		float similarity = 0;
+		int comparisons = 0;
+		for (Component component1 : components) {
+			for (Component component2 : components) {
+				if (component1 != component2) {
+					similarity += getInterSimilarity(component1, component2);
+					comparisons++;
+				}
+			}
+		}
+
+		return similarity / comparisons;
+
+	}
+
+	private static float getInterSimilarity(Component component1, Component component2) {
+
+		float highestSimilarity = 0;
 		for (Node node1 : component1.getAllTargets()) {
 
 			for (Node node2 : component2.getAllTargets()) {
 
 				float similarity = compareEngine.compare(node1, node2).getSimilarity();
-				if (similarity < lowestSimilarity) {
-					lowestSimilarity = similarity;
+				if (similarity > highestSimilarity) {
+					highestSimilarity = similarity;
 				}
 			}
 		}
 
-		return lowestSimilarity;
+		return highestSimilarity;
 	}
 
 }
