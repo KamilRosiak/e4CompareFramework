@@ -33,28 +33,25 @@ public class EvaluationHandler {
 
 	private Semaphore semaphore;
 
-	@Execute
-	public void execute(ServiceContainer services, ReaderManager readerManager, SynchronizationPipeline pipeline,
-			CloneGenerator cloneGenerator, ExtractionPipeline extractionPipeline) {
+	private CloneGenerator cloneGenerator;
 
+	private ExtractionPipeline extractionPipeline;
+
+	private SynchronizationPipeline synchronizationPipeline;
+
+	private Map<Metric, List<StatsLogger>> logs;
+
+	@Execute
+	public void execute(ServiceContainer services, ReaderManager readerManager,
+			SynchronizationPipeline synchronizationPipeline, CloneGenerator cloneGenerator,
+			ExtractionPipeline extractionPipeline) {
+
+		this.cloneGenerator = cloneGenerator;
+		this.synchronizationPipeline = synchronizationPipeline;
 		semaphore = new Semaphore(1);
 
-		ActionCallback actionCallback = new ActionCallback() {
-
-			@Override
-			public void handle(List<ActionScope> actionScopes) {
-
-			}
-		};
-
-		GeneratorOptions generatorOptions = new GeneratorOptions();
-		generatorOptions.variants = 1;
-		generatorOptions.isSyntaxSafe = false;
 		List<Metric> metrics = getMetrics();
-
 		ExecutorService executorService = Executors.newFixedThreadPool(20);
-
-		Map<Metric, List<StatsLogger>> logs = new ConcurrentHashMap<Metric, List<StatsLogger>>();
 		List<Callable<Boolean>> evaluationCallables = new ArrayList<Callable<Boolean>>();
 		for (Metric metric : metrics) {
 			Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
@@ -63,96 +60,7 @@ public class EvaluationHandler {
 
 				try {
 
-					System.out.println("Metric: " + metric.getGranularity() + " Synchronization degree: "
-							+ metric.getSynchronizationDegree() + " Type 2 degree: "
-							+ metric.getType2AttributeChangeDegree() + " Variant degree: "
-							+ metric.getVariantChangeDegree());
-
-					ProcessUtil processUtil = new ProcessUtil();
-					ClusterEngine.configureScriptPath(false);
-					processUtil.startProcess(ClusterEngine.getScriptPath());
-
-					logs.put(metric, new ArrayList<StatsLogger>());
-
-					generatorOptions.modificationRatioPercentage = (int) Math
-							.round(metric.getType2AttributeChangeDegree());
-					generatorOptions.variantChangeDegree = metric.getVariantChangeDegree();
-
-					GranularityCallback granularityCallback = new GranularityCallback() {
-						@Override
-						public void handle(List<Granularity> granularities) {
-
-							for (Granularity granularity : granularities) {
-								if (granularity.getLayer().equals(metric.getGranularity())) {
-									granularity.setRefactor(true);
-								} else {
-									granularity.setRefactor(false);
-								}
-							}
-
-						}
-					};
-
-					SynchronizationCallback synchronizationCallback = new SynchronizationCallback() {
-						@Override
-						public void handle(Map<ActionScope, List<ActionScope>> synchronizationScopes) {
-
-							List<ActionScope> allSynchronizations = new ArrayList<ActionScope>();
-							for (List<ActionScope> actionScopes : synchronizationScopes.values()) {
-								allSynchronizations.addAll(actionScopes);
-							}
-
-							for (ActionScope actionScope : allSynchronizations) {
-								actionScope.setApply(false);
-							}
-							Random random = new Random();
-
-							int numberOfElements = (int) (allSynchronizations.size()
-									* (metric.getSynchronizationDegree() / 100));
-
-							for (int i = 0; i < numberOfElements; i++) {
-								int randomIndex = random.nextInt(allSynchronizations.size());
-								ActionScope actionScope = allSynchronizations.get(randomIndex);
-								actionScope.setApply(true);
-							}
-
-						}
-					};
-
-					Tree cloneTree = tree.cloneTree();
-					Tree currentTree = null;
-
-					CloneCallbackImpl cloneCallback = new CloneCallbackImpl(currentTree);
-
-					CloneModel cloneModel = extractionPipeline.pipe(tree, granularityCallback, 0.15f, processUtil);
-
-					for (int i = 1; i <= 10; i++) {
-
-						System.out.println("Revision: " + i);
-
-						StatsLogger logger = new StatsLogger();
-						logs.get(metric).add(logger);
-
-						semaphore.acquire();
-
-						List<Variant> variants = cloneGenerator.go(cloneTree, generatorOptions, false, false);
-						Variant variant1 = variants.get(1);
-
-						semaphore.release();
-
-						cloneModel = pipeline.pipe(cloneModel, variant1.tree, granularityCallback, actionCallback,
-								synchronizationCallback, 0.15f, logger, processUtil, cloneCallback);
-
-						cloneTree = cloneCallback.getCurrentTree();
-
-						logger.averageInterSimilarity = EvaluationUtil
-								.getAverageInterSimilarity(cloneModel.getComponents());
-						logger.averageIntraSimilarity = EvaluationUtil
-								.getAverageIntraSimilarity(cloneModel.getComponents());
-
-					}
-
-					processUtil.stop();
+					evaluate(tree, metric, 10);
 
 					return true;
 				} catch (Exception ex) {
@@ -170,7 +78,7 @@ public class EvaluationHandler {
 		try {
 			List<Future<Boolean>> futures = executorService.invokeAll(evaluationCallables);
 
-		} catch (InterruptedException e) {		
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 
@@ -179,6 +87,128 @@ public class EvaluationHandler {
 	@CanExecute
 	public boolean canExecute(ServiceContainer services, RCPSelectionService selectionService) {
 		return services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() == 1;
+	}
+
+	public void evaluate(Tree tree, Metric metric, int numberOfRevisions) {
+		try {
+
+			System.out.println("Metric: " + metric.getGranularity() + " Synchronization degree: "
+					+ metric.getSynchronizationDegree() + " Type 2 degree: " + metric.getType2AttributeChangeDegree()
+					+ " Variant degree: " + metric.getVariantChangeDegree());
+
+			ActionCallback actionCallback = new ActionCallback() {
+
+				@Override
+				public void handle(List<ActionScope> actionScopes) {
+
+				}
+			};
+
+			GeneratorOptions generatorOptions = new GeneratorOptions();
+			generatorOptions = new GeneratorOptions();
+			generatorOptions.variants = 1;
+			generatorOptions.isSyntaxSafe = false;
+			generatorOptions.modificationRatioPercentage = (int) Math.round(metric.getType2AttributeChangeDegree());
+			generatorOptions.variantChangeDegree = metric.getVariantChangeDegree();
+
+			ProcessUtil processUtil = new ProcessUtil();
+			ClusterEngine.configureScriptPath(false);
+			processUtil.startProcess(ClusterEngine.getScriptPath());
+
+			logs.put(metric, new ArrayList<StatsLogger>());
+
+			GranularityCallback granularityCallback = new GranularityCallback() {
+				@Override
+				public void handle(List<Granularity> granularities) {
+
+					for (Granularity granularity : granularities) {
+						if (granularity.getLayer().equals(metric.getGranularity())) {
+							granularity.setRefactor(true);
+						} else {
+							granularity.setRefactor(false);
+						}
+					}
+
+				}
+			};
+
+			SynchronizationCallback synchronizationCallback = new SynchronizationCallback() {
+				@Override
+				public void handle(Map<ActionScope, List<ActionScope>> synchronizationScopes) {
+
+					List<ActionScope> allSynchronizations = new ArrayList<ActionScope>();
+					for (List<ActionScope> actionScopes : synchronizationScopes.values()) {
+						allSynchronizations.addAll(actionScopes);
+					}
+
+					for (ActionScope actionScope : allSynchronizations) {
+						actionScope.setApply(false);
+					}
+					Random random = new Random();
+
+					int numberOfElements = (int) (allSynchronizations.size()
+							* (metric.getSynchronizationDegree() / 100));
+
+					for (int i = 0; i < numberOfElements; i++) {
+						int randomIndex = random.nextInt(allSynchronizations.size());
+						ActionScope actionScope = allSynchronizations.get(randomIndex);
+						actionScope.setApply(true);
+					}
+
+				}
+			};
+
+			Tree cloneTree = tree.cloneTree();
+			Tree currentTree = null;
+
+			CloneCallbackImpl cloneCallback = new CloneCallbackImpl(currentTree);
+
+			CloneModel cloneModel = extractionPipeline.pipe(tree, granularityCallback, 0.15f, processUtil);
+
+			for (int i = 1; i <= numberOfRevisions; i++) {
+
+				long endTime = 0;
+				long startTime = System.nanoTime();
+
+				System.out.println("Revision: " + i);
+
+				StatsLogger logger = new StatsLogger();
+				logs.get(metric).add(logger);
+
+				semaphore.acquire();
+
+				List<Variant> variants = cloneGenerator.go(cloneTree, generatorOptions, false, false);
+				Variant variant1 = variants.get(1);
+
+				semaphore.release();
+
+				startTime = System.nanoTime();
+
+				cloneModel = synchronizationPipeline.pipe(cloneModel, variant1.tree, granularityCallback,
+						actionCallback, synchronizationCallback, 0.15f, logger, processUtil, cloneCallback);
+
+				endTime = System.nanoTime();
+
+				cloneTree = cloneCallback.getCurrentTree();
+
+				logger.averageInterSimilarity = EvaluationUtil.getAverageInterSimilarity(cloneModel.getComponents());
+				logger.averageIntraSimilarity = EvaluationUtil.getAverageIntraSimilarity(cloneModel.getComponents());
+				logger.duration += (endTime - startTime);
+
+			}
+
+			processUtil.stop();
+		} catch (Exception ex) {
+
+		}
+
+	}
+
+	public void measurePerformance(Tree tree) {
+		
+		Metric metric = new Metric(100, 5, 100, "MethodDeclaration");				
+		evaluate(tree, metric, 100);
+
 	}
 
 	private List<Metric> getMetrics() {

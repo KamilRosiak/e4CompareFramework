@@ -63,13 +63,19 @@ public class ClusterEngine {
 		this.threshold = threshold;
 	}
 
+	private static ProcessUtil processUtil;
+
+	public static void startProcess() {
+		processUtil = new ProcessUtil();
+		processUtil.startProcess(scriptPath);
+	}
+
 	public Map<Granularity, List<Set<Node>>> detectClusters(Map<Granularity, List<Node>> nodes, ProcessUtil process) {
 		Map<Granularity, List<Set<Node>>> layerToClusters = new HashMap<Granularity, List<Set<Node>>>();
 
 		if (process == null) {
 			if (processUtil == null) {
-				processUtil = new ProcessUtil();
-				processUtil.startProcess(scriptPath);
+				startProcess();
 			}
 			process = processUtil;
 		}
@@ -83,8 +89,6 @@ public class ClusterEngine {
 
 		return layerToClusters;
 	}
-
-	private ProcessUtil processUtil;
 
 	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString, ProcessUtil process) {
 
@@ -145,8 +149,7 @@ public class ClusterEngine {
 
 		if (process == null) {
 			if (processUtil == null) {
-				processUtil = new ProcessUtil();
-				processUtil.startProcess(scriptPath);
+				startProcess();
 			}
 			process = processUtil;
 		}
