@@ -6,7 +6,8 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-
+import org.eclipse.core.runtime.ICoreRunnable;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
@@ -81,13 +82,15 @@ public class CompareEngineView implements Initializable {
 		try {
 			CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
 			List<Tree> artifacts = artifactTable.getItems();
-
+			
 			if (artifacts.size() > 1) {
-				Tree mergedTree = engine.compare(artifacts);
-				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
-				//JavaWriter2 writer = new JavaWriter2();
-				//writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-					//	+ "/" + mergedTree.getTreeName());	
+				//multi threading
+				Job job = Job.create("Compare", (ICoreRunnable) monitor -> {
+					Tree mergedTree = engine.compare(artifacts);
+					services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
+				});
+				// Start the Job
+				job.schedule();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

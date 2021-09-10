@@ -123,7 +123,6 @@ public interface Comparison<Type> extends Serializable {
 				similarity = 0f;
 			}
 		}
-
 		// only results available so the similarity is based on them
 		if (getChildComparisons().isEmpty() && !getResultElements().isEmpty()) {
 			similarity = resultSimilarity;

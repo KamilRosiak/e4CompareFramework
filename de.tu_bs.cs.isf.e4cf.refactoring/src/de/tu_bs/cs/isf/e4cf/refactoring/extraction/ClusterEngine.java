@@ -97,7 +97,7 @@ public class ClusterEngine {
 			String line = reader.readLine();
 			reader.readLine();
 			String[] results = line.split(",");
-
+			
 			Iterator<Node> iterator = nodes.iterator();
 			Map<Integer, Set<Node>> map = new HashMap<Integer, Set<Node>>();
 

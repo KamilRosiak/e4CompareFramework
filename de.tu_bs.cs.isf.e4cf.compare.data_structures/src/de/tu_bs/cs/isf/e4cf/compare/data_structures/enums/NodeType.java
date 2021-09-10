@@ -100,6 +100,11 @@ public enum NodeType {
 	UPDATE,
 	VARIABLE_DECLARATION, // INTERESTING
 	VARIABLE_DECLARATOR,
+	/**
+	 * Refactoring Nodes
+	 */
+	CONFIGURATION,
+	COMPONENT
 	;
 	
 	public static NodeType fromString(String name) {

@@ -145,6 +145,7 @@ public enum JavaNodeTypes {
 	CompilationUnit,
 	Condition,
 	ConditionalExpr,
+	ClassExpr,
 	ConstructorDeclaration,
 	DoStmt,
 	DoubleLiteralExpr,

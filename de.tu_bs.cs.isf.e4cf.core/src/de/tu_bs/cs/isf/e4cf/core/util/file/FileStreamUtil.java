@@ -36,7 +36,12 @@ public class FileStreamUtil {
 		StringBuilder contentBuilder = new StringBuilder();
 
 		try (Stream<String> stream = Files.lines(Paths.get(filePath.toUri()), StandardCharsets.UTF_8)) {
-			stream.forEach(s -> contentBuilder.append(s).append("\n"));
+			stream.forEach(s -> {
+				
+				
+				//System.out.println("VALUE: " + s);
+				contentBuilder.append(s).append("\n");	
+			});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -2,19 +2,13 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.UUID;
-
-import com.google.common.collect.Lists;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeIterator;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 
 public abstract class AbstractNode implements Node {
 	@SuppressWarnings("unused")
@@ -312,6 +306,5 @@ public abstract class AbstractNode implements Node {
 		}
 		getChildren().add(position, child);
 		child.setParent(this);
-
 	}
 }
