@@ -168,6 +168,7 @@ public class CompareEngineView implements Initializable {
 					// Send prepared graph to GraphView subscriber for display
 					artifactGraph.printArtifactComparison();
 					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapTaxonomyGraph); 
+					services.eventBroker.send(TaxonomyST.SAVE_TAXONOMY_EVENT, artifactGraph.computedTaxonomyJSON);  ;
 				} else {
 					// Send prepared empty graph to GraphView subscriber to update user
 					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapNoMatchGraph);
@@ -180,14 +181,32 @@ public class CompareEngineView implements Initializable {
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3jediknightBGT(), artifactGraph.taxonomyRootNode);
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3kotehokAGT(), artifactGraph.taxonomyRootNode);
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3kotehokDGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3wataDGT(), artifactGraph.taxonomyRootNode);
+				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3wataDGT(), artifactGraph.taxonomyRootNode);
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3ymatsuxAGT(), artifactGraph.taxonomyRootNode);
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3ymatsuxCGT(), artifactGraph.taxonomyRootNode);
-				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4halyavinBGT(), artifactGraph.taxonomyRootNode);
+				
+				// N = 4
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4halyavinBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4halyavinCGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4kotehokBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4kotehokCGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4mysticBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4mysticDGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4wataAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4wataBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4wataCGT(), artifactGraph.taxonomyRootNode);
+				
+				// N = 5
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N5halyavinAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N5mysticAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N5mysticCGT(), artifactGraph.taxonomyRootNode);
+
 
 				performanceJudge.computeDifferences();
 				performanceJudge.calculateSecondaryMeasures();
 				performanceJudge.printMeasures();
+				performanceJudge.computeCustomMeasures();
+				performanceJudge.printCustomMeasures();
 				
 			}
 		} catch (Exception e) {
@@ -258,7 +277,7 @@ public class CompareEngineView implements Initializable {
 	@Optional
 	@Inject
 	public void updateTaxonomySettings(
-			@UIEventTopic(TaxonomyST.SAVE_TAXONOMY_EVENT) TaxonomyControlSettings taxonomySettings) {
+			@UIEventTopic(TaxonomyST.SET_TAXONOMY_SETTINGS) TaxonomyControlSettings taxonomySettings) {
 		this.taxonomySettings = taxonomySettings;
 	}
 
