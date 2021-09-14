@@ -12,7 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
+
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table.TaxonomyST;
@@ -269,7 +273,7 @@ public class TaxonomyControlView implements Initializable  {
 	*/
 	private void sendTaxonomySettingsUIMessage() {
 		// Send prepared graph to GraphView listener for display
-		services.eventBroker.send(TaxonomyST.SAVE_TAXONOMY_EVENT, this.taxonomySettings); 
+		services.eventBroker.send(TaxonomyST.SET_TAXONOMY_SETTINGS, this.taxonomySettings); 
 	}
 	
 	
@@ -278,7 +282,7 @@ public class TaxonomyControlView implements Initializable  {
 	 */
 	@FXML
 	public void saveTaxonomy() {
-		this.taxonomyJSONTexts = "Hi";
+		//this.taxonomyJSONTexts = "Hi";
 		if (this.taxonomyJSONTexts != null) {
 			FileChooser fileChooser = new FileChooser();
 			 
@@ -305,6 +309,21 @@ public class TaxonomyControlView implements Initializable  {
 	            Logger.getLogger(TaxonomyControlView.class.getName()).log(Level.SEVERE, null, ex);
 	        }
 	    }
+	
+	
+	/**
+	 * Subscribes and sets computed JSON string ready for export
+	 * 
+	 * @param taxonomySettings
+	 */
+	/*
+	 * @Optional
+	 * 
+	 * @Inject public void updateTaxonomySettings(
+	 * 
+	 * @UIEventTopic(TaxonomyST.SAVE_TAXONOMY_EVENT) String computedTaxonomyJSON) {
+	 * this.taxonomyJSONTexts = computedTaxonomyJSON; }
+	 */
 	
 	
 }
