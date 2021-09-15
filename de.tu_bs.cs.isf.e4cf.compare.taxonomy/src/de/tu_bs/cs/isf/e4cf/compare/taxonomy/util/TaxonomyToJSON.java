@@ -3,8 +3,7 @@
  */
 package de.tu_bs.cs.isf.e4cf.compare.taxonomy.util;
 
-import com.google.gson.*;
-
+import com.google.gson.Gson;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.VariantTaxonomyNode;
 
 /**
@@ -12,15 +11,15 @@ import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.VariantTaxonomyNode
  *
  */
 public class TaxonomyToJSON {
-	public Gson gsonConverter;
+	private Gson gsonConverter;
 	
 	public TaxonomyToJSON() {
 		this.gsonConverter = new Gson();
 	}
 	
-	public String convertToJSON(VariantTaxonomyNode taxonomyToCOnvert) {
+	public String convertToJSON(VariantTaxonomyNode taxonomyToConvert) {
 		String JSONString = null;
-		JSONString = gsonConverter.toJson(taxonomyToCOnvert);
+		JSONString = gsonConverter.toJson(taxonomyToConvert.getVariantName());
 		return JSONString;
 	}
 	public Gson getGsonConverter() {
