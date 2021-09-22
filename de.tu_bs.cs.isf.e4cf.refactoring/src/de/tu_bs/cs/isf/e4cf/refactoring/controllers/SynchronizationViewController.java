@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
 import de.tu_bs.cs.isf.e4cf.refactoring.views.SynchronizationView;
 
 @Singleton
@@ -44,9 +45,14 @@ public class SynchronizationViewController extends Controller<SynchronizationVie
 
 				for (TreeItem treeItem : view.getComponentTree().getItems()) {
 
-					view.markNodeRecursively(treeItem, synchronizationScope.getAction().getX());
-				}
+					if (synchronizationScope.getAction() instanceof Insert) {
+						Insert insert = (Insert) synchronizationScope.getAction();
+						view.markNodeRecursively(treeItem, insert.getY());
 
+					} else {
+						view.markNodeRecursively(treeItem, synchronizationScope.getAction().getX());
+					}
+				}
 				if (event.detail == SWT.CHECK) {
 
 					boolean checked = item.getChecked();

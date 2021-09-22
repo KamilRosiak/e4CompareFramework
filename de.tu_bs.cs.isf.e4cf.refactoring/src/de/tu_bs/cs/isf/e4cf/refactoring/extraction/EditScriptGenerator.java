@@ -5,27 +5,22 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Queue;
 
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import java.util.Queue;
-
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
-import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Container;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Delete;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Move;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.RevisionComparison;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Update;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 
@@ -38,40 +33,6 @@ public class EditScriptGenerator {
 	public EditScriptGenerator() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
 
-	}
-
-	public List<ActionScope> generateEditScript(RevisionComparison revisionComparison) {
-
-		List<ActionScope> allActionScopes = new ArrayList<ActionScope>();
-
-		for (Entry<Container, Node> entry : revisionComparison.getMatchedNodes().entrySet()) {
-			List<ActionScope> actionScopes = generateEditScript(entry.getKey().getNode(), entry.getValue());
-
-			for (ActionScope actionScope : actionScopes) {
-				actionScope.setComponent(entry.getKey().getComponent());
-			}
-
-			allActionScopes.addAll(actionScopes);
-		}
-
-		return allActionScopes;
-
-	}
-
-	private List<ActionScope> generateEditScript(Node root1, Node root2) {
-		Map<Node, Node> cloneMapping = new HashMap<Node, Node>();
-
-		Node cloneRoot1 = root1.cloneNode();
-		Node cloneRoot2 = root2.cloneNode();
-		createMapBetweenOriginalAndClonedNode(root1, cloneRoot1, cloneMapping);
-
-		List<ActionScope> actionScopes = new ArrayList<ActionScope>();
-		Comparison<Node> comparison = compareEngine.compare(cloneRoot1, cloneRoot2);
-
-		checkRootUpdate(comparison, actionScopes, cloneMapping);
-
-		getActions(comparison, actionScopes, new LinkedList<Comparison<Node>>(), cloneMapping);
-		return actionScopes;
 	}
 
 	private void checkRootUpdate(Comparison<Node> comparison, List<ActionScope> actions, Map<Node, Node> cloneMapping) {
@@ -133,6 +94,50 @@ public class EditScriptGenerator {
 			}
 		}
 		return sortedComparison;
+	}
+
+	public List<ActionScope> generateEditScript(Tree tree1, Tree tree2) {
+		Map<Node, Node> cloneMapping = new HashMap<Node, Node>();
+		Node root1 = tree1.getRoot();
+		Node root2 = tree2.getRoot();
+
+		Node cloneRoot1 = root1.cloneNode();
+		Node cloneRoot2 = root2.cloneNode();
+		createMapBetweenOriginalAndClonedNode(root1, cloneRoot1, cloneMapping);
+
+		List<ActionScope> actionScopes = new ArrayList<ActionScope>();
+		Comparison<Node> comparison = compareEngine.compare(cloneRoot1, cloneRoot2);
+
+		checkRootUpdate(comparison, actionScopes, cloneMapping);
+
+		getActions(comparison, actionScopes, new LinkedList<Comparison<Node>>(), cloneMapping);
+		return sortActionScopes(actionScopes);
+
+	}
+
+	private List<ActionScope> sortActionScopes(List<ActionScope> actionScopes) {
+
+		// sort action scopes: INSERT, MOVE/UPDATE, DELETE
+		List<ActionScope> sortedActionScopes = new ArrayList<ActionScope>();
+		for (ActionScope actionScope : actionScopes) {
+			if (actionScope.getAction() instanceof Insert) {
+				sortedActionScopes.add(actionScope);
+			}
+		}
+
+		for (ActionScope actionScope : actionScopes) {
+			if (actionScope.getAction() instanceof Move || actionScope.getAction() instanceof Update) {
+				sortedActionScopes.add(actionScope);
+			}
+		}
+
+		for (ActionScope actionScope : actionScopes) {
+			if (actionScope.getAction() instanceof Delete) {
+				sortedActionScopes.add(actionScope);
+			}
+		}
+		return sortedActionScopes;
+
 	}
 
 	public void getActions(Comparison<Node> parentComparison, List<ActionScope> actions, Queue<Comparison<Node>> queue,

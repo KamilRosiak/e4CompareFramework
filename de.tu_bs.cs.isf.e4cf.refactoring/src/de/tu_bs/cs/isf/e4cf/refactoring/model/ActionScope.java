@@ -1,11 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
-
 public class ActionScope {
 
 	private Action action;
-	
+
 	private boolean apply;
 
 	public Action getAction() {
@@ -23,26 +21,28 @@ public class ActionScope {
 	public void setApply(boolean apply) {
 		this.apply = apply;
 	}
-	
-	private Component component;
-	
-	
-
-	public Component getComponent() {
-		return component;
-	}
-
-	public void setComponent(Component component) {
-		this.component = component;
-	}
 
 	public ActionScope(Action action, boolean apply) {
 		super();
 		this.action = action;
 		this.apply = apply;
 	}
-	
-	
-	
-	
+
+	public ActionScope(Action action, boolean apply, MultiSetNode multiSetNode) {
+		super();
+		this.action = action;
+		this.apply = apply;
+		this.multiSetNode = multiSetNode;
+	}
+
+	private MultiSetNode multiSetNode;
+
+	public MultiSetNode getMultiSetNode() {
+		return multiSetNode;
+	}
+
+	public void setMultiSetNode(MultiSetNode multiSetNode) {
+		this.multiSetNode = multiSetNode;
+	}
+
 }

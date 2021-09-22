@@ -1,7 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -43,6 +45,7 @@ public class DSPropertiesController {
 	private TableView<Attribute> propertiesTable;
 
 	private Node selectedNode;
+	private Object cloneModel;
 
 	private CommandStack propertiesManager = new CommandStack();
 
@@ -81,11 +84,22 @@ public class DSPropertiesController {
 		String s = PropertiesViewUtilities.getInput("Please enter new property designation");
 		String oldName = "";
 		if (s != null) {
+
 			AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
 			oldName = getSelectedItem().getAttributeKey();
 			attr.setAttributeKey(s);
 			propertiesManager.execute(
 					new RenamePropertyAction("renameProperty", oldName, (AbstractAttribute) getSelectedItem()));
+
+			if (cloneModel != null) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put(DSEditorST.ATTRIBUTE, attr);
+				map.put(DSEditorST.SELECTED_NODE, selectedNode);
+				map.put(DSEditorST.KEY, s);
+				map.put(DSEditorST.CLONE_MODEL, cloneModel);
+				services.eventBroker.send(DSEditorST.ATTRIBUTE_EDIT_KEY_EVENT, map);
+			}
+
 			refreshGUI();
 		}
 	}
@@ -100,10 +114,24 @@ public class DSPropertiesController {
 		List<Value> newAttributeValues;
 
 		if (newValue != null) {
+
+			Value editedValue = new StringValueImpl(newValue);
+			Attribute selectedAttribute = getSelectedItem();
+
 			getSelectedItem().getAttributeValues().clear();
-			getSelectedItem().getAttributeValues().add(new StringValueImpl(newValue));
+			getSelectedItem().getAttributeValues().add(editedValue);
 			newAttributeValues = getSelectedItem().getAttributeValues();
 			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
+
+			if (cloneModel != null) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put(DSEditorST.ATTRIBUTE, selectedAttribute);
+				map.put(DSEditorST.SELECTED_NODE, selectedNode);
+				map.put(DSEditorST.VALUE, editedValue);
+				map.put(DSEditorST.CLONE_MODEL, cloneModel);
+				services.eventBroker.send(DSEditorST.ATTRIBUTE_EDIT_VALUE_EVENT, map);
+			}
+
 			refreshGUI();
 		}
 	}
@@ -119,6 +147,14 @@ public class DSPropertiesController {
 			services.eventBroker.send(DSEditorST.ASK_FOR_SELECTED_ITEM_EVENT, true);
 			NodeAttributePair pair = new NodeAttributePair(selectedNode, deletedAttribute);
 			propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
+
+			if (cloneModel != null) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put(DSEditorST.ATTRIBUTE, pair.getAttribute());
+				map.put(DSEditorST.SELECTED_NODE, pair.getOwner());
+				map.put(DSEditorST.CLONE_MODEL, cloneModel);
+				services.eventBroker.send(DSEditorST.ATTRIBUTE_DELETE_EVENT, map);
+			}
 			refreshGUI();
 		}
 
@@ -133,9 +169,23 @@ public class DSPropertiesController {
 		List<Value> newAttributeValues;
 		String s = PropertiesViewUtilities.getInput("Please enter another Value");
 		if (s != null) {
-			getSelectedItem().getAttributeValues().add(new StringValueImpl(s));
-			newAttributeValues = getSelectedItem().getAttributeValues();
+			Value newValue = new StringValueImpl(s);
+			Attribute selectedAttribute = getSelectedItem();
+
+			selectedAttribute.getAttributeValues().add(newValue);
+			newAttributeValues = selectedAttribute.getAttributeValues();
 			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
+
+			if (cloneModel != null) {
+
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put(DSEditorST.ATTRIBUTE, selectedAttribute);
+				map.put(DSEditorST.SELECTED_NODE, selectedNode);
+				map.put(DSEditorST.CLONE_MODEL, cloneModel);
+				map.put(DSEditorST.VALUE, newValue);
+				services.eventBroker.send(DSEditorST.ATTRIBUTE_ADD_VALUE_EVENT, map);
+			}
+
 			refreshGUI();
 		}
 	}
@@ -179,8 +229,24 @@ public class DSPropertiesController {
 	@Inject
 	public void showProperties(@UIEventTopic(DSEditorST.NODE_PROPERTIES_EVENT) Node node) {
 		propertiesTable.getColumns().clear();
+		this.selectedNode = node;
+		this.cloneModel = null;
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
+
+	}
+
+	/**
+	 * 
+	 * @param node to be shown in the properties table
+	 */
+	@Optional
+	@Inject
+	public void showProperties(@UIEventTopic(DSEditorST.NODE_PROPERTIES_EVENT) Map<String, Object> event) {
+		Node node = (Node) event.get(DSEditorST.NODE);
+		showProperties(node);
+		this.cloneModel = event.get(DSEditorST.CLONE_MODEL);
+
 	}
 
 }

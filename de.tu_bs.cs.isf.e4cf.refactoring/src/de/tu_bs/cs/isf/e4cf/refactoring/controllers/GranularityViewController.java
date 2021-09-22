@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.controllers;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -36,7 +37,7 @@ public class GranularityViewController extends Controller<GranularityView> {
 
 	}
 
-	public void showView(List<Granularity> granularities) {
+	public void showView(Set<Granularity> granularities) {
 		createView(new GranularityView());
 		view.showView(granularities);
 

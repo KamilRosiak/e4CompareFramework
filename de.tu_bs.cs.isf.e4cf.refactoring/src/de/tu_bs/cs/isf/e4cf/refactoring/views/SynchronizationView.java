@@ -1,7 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -11,10 +13,11 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import com.google.common.collect.Lists;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetReferenceTree;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationTreeBuilder;
@@ -30,13 +33,13 @@ public class SynchronizationView extends View {
 	private Label componentLabel;
 	private Label taskLabel;
 
-	private Component selectedComponent;
+	private MultiSetTree selectedComponent;
 
-	public Component getSelectedComponent() {
+	public MultiSetTree getSelectedComponent() {
 		return selectedComponent;
 	}
 
-	public void setSelectedComponent(Component selectedComponent) {
+	public void setSelectedComponent(MultiSetTree selectedComponent) {
 		this.selectedComponent = selectedComponent;
 	}
 
@@ -99,8 +102,13 @@ public class SynchronizationView extends View {
 		for (TreeItem item : componentTree.getItems()) {
 			item.dispose();
 		}
+		
+		List<MultiSetTree> components = new ArrayList<MultiSetTree>();
+		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
+			components.addAll(entry.getValue());
+		}
 
-		componentTreeBuilder.buildComponentTree(cloneModel.getComponents(), componentTree);
+		componentTreeBuilder.buildComponentTree(components, componentTree);
 	}
 
 	public void createActionTree(List<ActionScope> actionScopes) {
