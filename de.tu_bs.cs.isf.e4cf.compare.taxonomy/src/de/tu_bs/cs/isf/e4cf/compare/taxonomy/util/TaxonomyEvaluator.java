@@ -51,9 +51,10 @@ public class TaxonomyEvaluator {
 	/**
 	 * Compute Primary and Secondary metrics measures for taxonomies
 	 */
-	public void computeDifferences() {
+	public void computePrimaryMeasures() {
 		this.levelMeasureTotal = 0;
 		int levelMeasure = gtTotalNodes;
+		
 		for (int i = 0; i <= gtMaxDepth; i++) {
 			int tp = 0;
 			int tn = 0;
@@ -90,6 +91,118 @@ public class TaxonomyEvaluator {
 		}
 	}
 
+	/**
+	 * Compute Primary metrics measures for the taxonomy accuracy using Predecessors and Successors prediction accuracy
+	 */
+	public void computePrimaryMeasuresPS() {
+		// Compute Depth and Total Number of Nodes
+				List<VariantTaxonomyNode> allGTNodes = new ArrayList<VariantTaxonomyNode>(); // All Ground Truth Nodes
+				List<VariantTaxonomyNode> allCTNodes = new ArrayList<VariantTaxonomyNode>(); // All Computes Taxonomy Nodes
+
+				for (int i = 0; i <= gtMaxDepth; i++) {
+					List<VariantTaxonomyNode> gtNodesAtLevel = getNodesForLevel(this.groundTruthTaxonomy, i);
+					List<VariantTaxonomyNode> ctNodesAtLevel = getNodesForLevel(this.computedTaxonomy, i);	
+					// Flatten Nodes
+					allGTNodes.addAll(gtNodesAtLevel);
+					allCTNodes.addAll(ctNodesAtLevel);
+				}
+				
+				for (VariantTaxonomyNode computedNode: allCTNodes) {
+					int pTP = 0, sTP = 0;
+					int pTN = 0, sTN = 0;
+					int pFP = 0, sFP = 0;
+					int pFN = 0, sFN = 0;
+					
+					// Get Successors for Node - Computed taxonomy
+					List<VariantTaxonomyNode> nodeCTSuccessors = getNodeSuccessors(computedNode);
+					// Get Predecessors for Node - Computed taxonomy
+					List<VariantTaxonomyNode> nodeCTPredecessors = getNodePredecessors(computedNode);
+					
+					// Get Successors for Node - Computed taxonomy
+					List<VariantTaxonomyNode> nodeGTSuccessors = getNodeSuccessors(fetchVariantInList(computedNode, allGTNodes));
+					// Get Predecessors for Node - Computed taxonomy
+					List<VariantTaxonomyNode> nodeGTPredecessors = getNodePredecessors(fetchVariantInList(computedNode, allGTNodes));
+					
+					// Compute TP, TN, FP, FN for successors
+					for (VariantTaxonomyNode aNodeGTSuccessor : nodeGTSuccessors) {
+						if (!isVariantInList(aNodeGTSuccessor, nodeCTSuccessors)) {
+							sFN += 1;
+						} else {
+							sTP += 1;
+						}
+					}
+					
+					for (VariantTaxonomyNode aNodeCTSuccessor : nodeCTSuccessors) {
+						if (!isVariantInList(aNodeCTSuccessor, nodeGTSuccessors)) {
+							// Compared List not in ground truth
+							sFP += 1;
+						}
+					}
+					
+					// Compute TP, TN, FP, FN for predecessors
+					for (VariantTaxonomyNode aNodeGTPredecessors : nodeGTPredecessors) {
+						if (!isVariantInList(aNodeGTPredecessors, nodeCTPredecessors)) {
+							pFN += 1;
+						} else {
+							pTP += 1;
+						}
+					}
+					
+					for (VariantTaxonomyNode aNodeCTPredecessors : nodeCTPredecessors) {
+						if (!isVariantInList(aNodeCTPredecessors, nodeGTPredecessors)) {
+							// Compared List not in ground truth
+							pFP += 1;
+						}
+					}
+					
+					
+
+					truePositivesValue += (pTP+sTP);
+					trueNegativesValue += (pTN+sTN);
+					falsePositivesValue += (pFP+sFP);
+					falseNegativesValue += (pFN+sFN);
+				}
+				
+	}
+	
+	/**
+	 * Get Nodes which are Successors of a particular Node
+	 * @param givenNode
+	 * @return
+	 */
+	public List<VariantTaxonomyNode> getNodeSuccessors(VariantTaxonomyNode givenNode) {
+		List<VariantTaxonomyNode> foundNodes = new ArrayList<VariantTaxonomyNode>();
+		if (givenNode != null) {
+			for(VariantTaxonomyNode aChildNode : givenNode.getVariantChildren()) {
+				foundNodes.add(aChildNode);
+				if (aChildNode.getVariantChildren().size() > 0) {
+					foundNodes.addAll(getNodeSuccessors(aChildNode));
+				}
+			}
+		}
+		
+		return foundNodes;
+	}
+	
+	/**
+	 * Get Nodes which are predecessors of a particular Node
+	 * @param givenNode
+	 * @return
+	 */
+	public List<VariantTaxonomyNode> getNodePredecessors(VariantTaxonomyNode givenNode) {
+		List<VariantTaxonomyNode> foundNodes = new ArrayList<VariantTaxonomyNode>();
+		if (givenNode != null) {
+			VariantTaxonomyNode givenNodeParent = givenNode.getVariantParent();
+			if (givenNodeParent != null) {
+				foundNodes.add(givenNodeParent);
+				if (givenNodeParent.getVariantParent() != null) {
+					foundNodes.addAll(getNodePredecessors(givenNodeParent));
+				}
+			}
+		}
+
+		return foundNodes;
+	}
 	
 	/**
 	 * Compute Custom Metrics for Table
@@ -202,6 +315,7 @@ public class TaxonomyEvaluator {
 //				}
 				
 				isVariantInList = true;
+				break;
 
 			}
 		}
@@ -289,7 +403,7 @@ public class TaxonomyEvaluator {
 	}
 
 	/**
-	 * 
+	 * Evaluator Constructor with ground truth only
 	 */
 	public TaxonomyEvaluator(VariantTaxonomyNode _groundTruth) {
 		this.groundTruthTaxonomy = _groundTruth;
@@ -325,7 +439,6 @@ public class TaxonomyEvaluator {
 		System.out.println("Accuracy: " + accuracyValue);
 		System.out.println("Error: " + errorRateValue);
 	}
-	
 	
 	public void printCustomMeasures() {
 		System.out.println("======================");
