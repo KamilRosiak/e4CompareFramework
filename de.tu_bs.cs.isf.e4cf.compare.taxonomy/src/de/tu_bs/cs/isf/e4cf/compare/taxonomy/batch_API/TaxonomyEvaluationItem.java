@@ -25,6 +25,10 @@ public class TaxonomyEvaluationItem {
 		this.groundTruthTaxonomy = _groundTruthTaxonomy;
 	}
 	
+	public String getItemName() {
+		return this.itemName;
+	}
+	
 	public String getPathToVariants() {
 		return this.pathToVariants;
 	}
