@@ -14,11 +14,10 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
-import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
+import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomySettings;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table.TaxonomyST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import javafx.beans.value.ObservableValue;
@@ -40,7 +39,7 @@ public class TaxonomyControlView implements Initializable  {
 	@Inject
 	ServiceContainer services;
 		
-	private TaxonomyControlSettings taxonomySettings;
+	private TaxonomySettings taxonomySettings;
 	
 	private String taxonomyJSONTexts;
 	
@@ -67,6 +66,10 @@ public class TaxonomyControlView implements Initializable  {
 	private RadioButton sourceLevelRadioButton;
 	@FXML
 	private RadioButton dirLevelRadioButton;
+	@FXML
+	private RadioButton treeTaxonomyRadioButton;
+	@FXML
+	private RadioButton graphTaxonomyRadioButton;
 	
 	@FXML
 	private CheckBox classConstructsCheckbox;
@@ -82,11 +85,12 @@ public class TaxonomyControlView implements Initializable  {
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		taxonomySettings = new TaxonomyControlSettings();
+		taxonomySettings = new TaxonomySettings();
 		initializeBasicComparators();
 		initializeSourceLanguages();
 		initializeDirectoryMetrics();
-		initializeDictionarySelection();
+		initializeLevelSelection();
+		initializeTaxonomyType();
 		initializeSaveButton();
 		addAllTaxonomyUpdateListeners();
 	}
@@ -98,7 +102,7 @@ public class TaxonomyControlView implements Initializable  {
 	
 	private void addAllTaxonomyUpdateListeners() {
 		
-		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
+		// Set Action/Event Handlers for source level Comparison 
 		sourceLevelRadioButton.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 			    	  taxonomySettings.setSourceLevelComparison(new_val); 
@@ -106,12 +110,28 @@ public class TaxonomyControlView implements Initializable  {
 			    	  
 		});
 		
-		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
+		// Set Action/Event Handlers for source level Comparison 
 		dirLevelRadioButton.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 			    	  taxonomySettings.setSourceLevelComparison(!new_val); 
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
 		});  
+		
+		// Set Action/Event Handlers for Taxonomy Type 
+		treeTaxonomyRadioButton.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setTaxonomyTypeAsTree(new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
+			    	  
+		});
+				
+		// Set Action/Event Handlers for Taxonomy Type 
+		graphTaxonomyRadioButton.selectedProperty().addListener(
+			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			    	  taxonomySettings.setTaxonomyTypeAsTree(!new_val); 
+			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
+		});  
+		
 			
 		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
 		LevenshteinComparatorRadioButton.selectedProperty().addListener(
@@ -205,13 +225,12 @@ public class TaxonomyControlView implements Initializable  {
 	
 	private void initializeDirectoryMetrics() {
 		directoryNameCheckbox.setSelected(true);
-		directorySizeCheckbox.setSelected(true);
 	}
 	
-	private void initializeDictionarySelection() {
-		ToggleGroup dictionaryGroup = new ToggleGroup();
-		sourceLevelRadioButton.setToggleGroup(dictionaryGroup);
-		dirLevelRadioButton.setToggleGroup(dictionaryGroup);
+	private void initializeLevelSelection() {
+		ToggleGroup levelGroup = new ToggleGroup();
+		sourceLevelRadioButton.setToggleGroup(levelGroup);
+		dirLevelRadioButton.setToggleGroup(levelGroup);
 		
 		// Set Action/Event Handlers for Levenshtein Comparator Mode Radio Buttons
 		sourceLevelRadioButton.selectedProperty().addListener(
@@ -261,6 +280,13 @@ public class TaxonomyControlView implements Initializable  {
 		
 		sourceLevelRadioButton.setSelected(true);
 		
+	}
+	
+	private void initializeTaxonomyType() {
+		ToggleGroup taxonomyTypeGroup = new ToggleGroup();
+		treeTaxonomyRadioButton.setToggleGroup(taxonomyTypeGroup);
+		graphTaxonomyRadioButton.setToggleGroup(taxonomyTypeGroup);
+		treeTaxonomyRadioButton.setSelected(true);
 	}
 	
 	private void initializeSaveButton() {
@@ -314,16 +340,15 @@ public class TaxonomyControlView implements Initializable  {
 	/**
 	 * Subscribes and sets computed JSON string ready for export
 	 * 
-	 * @param taxonomySettings
+	 * @param computedTaxonomyJSON
 	 */
-	/*
-	 * @Optional
-	 * 
-	 * @Inject public void updateTaxonomySettings(
-	 * 
-	 * @UIEventTopic(TaxonomyST.SAVE_TAXONOMY_EVENT) String computedTaxonomyJSON) {
-	 * this.taxonomyJSONTexts = computedTaxonomyJSON; }
-	 */
+	
+	  @Optional
+	  @Inject 
+	  public void updateTaxonomySettings(@UIEventTopic(TaxonomyST.SAVE_TAXONOMY_EVENT) String computedTaxonomyJSON) {
+		  this.taxonomyJSONTexts = computedTaxonomyJSON; 
+	  }
+	 
 	
 	
 }
