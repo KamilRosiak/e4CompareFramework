@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ArtifactFileDetails;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.VariantTaxonomyNode;
@@ -18,6 +19,7 @@ import org.eclipse.gef.geometry.planar.Rectangle;
  *
  */
 public class ArtifactGraph {
+	
 	private static final double WIDTH = 150;
 
 	private double xAxisOffset = 0;
@@ -41,7 +43,10 @@ public class ArtifactGraph {
 	// VariantTaxonomy
 	public VariantTaxonomyNode taxonomyRootNode; 
 	public TaxonomyToJSON taxonomyToJSON; 
+	public String computedTaxonomyJSON;
 
+	
+	
 	public ArtifactGraph(List<ArtifactComparison> _artifactComparisonList) {
 		mindMapRelationshipGraph = new SimpleGraph();
 		mindMapTaxonomyGraph = new SimpleGraph();
@@ -106,8 +111,10 @@ public class ArtifactGraph {
 	public SimpleGraph setUpTaxonomyGraph() {
 		// Identify Root Node
 		GraphNode rootNode = IdentifyRootNode();
+
 		
 		if (rootNode != null) {
+			try {
 			taxonomyRootNode = new VariantTaxonomyNode(rootNode.getDescription().substring(4), 0); // Create TaxonomyNode for JSON export
 			// Remove Root Node from the rest
 			allArtifactNodes.remove(rootNode);
@@ -120,8 +127,12 @@ public class ArtifactGraph {
 			addAllChildElementsToTaxonomyGraphMap();
 			
 			// Add all Taxonomy Nodes to Graph
-			//taxonomyToJSON = new TaxonomyToJSON(); 
-			//taxonomyToJSON.convertToJSON(taxonomyRootNode);
+			taxonomyToJSON = new TaxonomyToJSON();
+			computedTaxonomyJSON = taxonomyToJSON.convertToJSON(taxonomyRootNode);
+			
+			} catch (Exception ex) {
+				System.out.println("What an error! Details: "+ ex.getMessage());
+			}
 		}
 		else {
 			
@@ -131,6 +142,141 @@ public class ArtifactGraph {
 		return mindMapTaxonomyGraph;
 	}
 
+	
+	/**
+	 * Computes DAG taxonomy for Display
+	 * 
+	 * @return
+	 */
+	public SimpleGraph setUpDAGTaxonomyGraph() {
+		
+		// Remove weaker edges of Pair-wise Comparisons
+		removeWeakerEdges();
+		
+		// Remove cyclic edges
+		removeCyclicEdges();
+					
+		// Identify Root Node
+		GraphNode rootNode = IdentifyRootNode();
+		
+		if (rootNode != null) {
+			try {
+					
+			taxonomyRootNode = new VariantTaxonomyNode(rootNode.getDescription().substring(4), 0); // Create TaxonomyNode for JSON export
+			// Remove Root Node from the rest
+			allArtifactNodes.remove(rootNode);
+			removeEdgesWithTarget(rootNode);
+			
+					
+			// Identify other parents and their respective child nodes (recursively)
+			GetChildrenForVariantDAG(rootNode, allArtifactNodes, true);
+
+			
+			
+			// Add Child Elements Taxonomy Map
+			addAllChildElementsToTaxonomyGraphMap();
+			
+			// Add all Taxonomy Nodes to Graph
+			taxonomyToJSON = new TaxonomyToJSON();
+			computedTaxonomyJSON = taxonomyToJSON.convertToJSON(taxonomyRootNode);
+			
+			} catch (Exception ex) {
+				System.out.println("What an error! Details: "+ ex.getMessage());
+			}
+		}
+		else {
+			
+		}
+	
+		
+
+		return mindMapTaxonomyGraph;
+	}
+
+	private void removeWeakerEdges() {
+		List<GraphEdge> edgesToRemove = new ArrayList<GraphEdge>();
+
+		for (GraphEdge firstArtifactEdge : allConnectionEdges) {
+			for (GraphEdge secondArtifactEdge : allConnectionEdges) {
+				if (!firstArtifactEdge.equals(secondArtifactEdge)) {
+					if (firstArtifactEdge.getSource().equals(secondArtifactEdge.getTarget()) && firstArtifactEdge.getTarget().equals(secondArtifactEdge.getSource())) {
+						if (firstArtifactEdge.getWeight() > secondArtifactEdge.getWeight()) {
+							edgesToRemove.add(secondArtifactEdge);
+						} else {
+							edgesToRemove.add(firstArtifactEdge);
+						}
+					}
+				}
+			}
+		}
+
+		allConnectionEdges.removeAll(edgesToRemove);
+	}
+	
+	private void removeCyclicEdges() {
+		List<GraphEdge> edgesToRemove = new ArrayList<GraphEdge>(); 
+		
+		for (GraphEdge firstArtifactEdge : allConnectionEdges) {
+			for (GraphEdge secondArtifactEdge : allConnectionEdges) {
+				if (!firstArtifactEdge.equals(secondArtifactEdge)) {
+					// If 2 edges share the same source/parent
+					if (firstArtifactEdge.getSource().equals(secondArtifactEdge.getSource())) {
+					// Find connection between parent sharing Nodes, Remove Cycles
+					for (GraphEdge artifactEdgeToRemove : allConnectionEdges) {
+						
+						if ((artifactEdgeToRemove.getSource().equals(firstArtifactEdge.getTarget()) && artifactEdgeToRemove.getTarget().equals(secondArtifactEdge.getTarget())) || (artifactEdgeToRemove.getSource().equals(secondArtifactEdge.getTarget()) && artifactEdgeToRemove.getTarget().equals(firstArtifactEdge.getTarget()))) {
+							List<GraphEdge> listOfEdges = new ArrayList<GraphEdge>();
+							listOfEdges.add(firstArtifactEdge);
+							listOfEdges.add(secondArtifactEdge);
+							listOfEdges.add(artifactEdgeToRemove);
+							
+							float minWeight = 1.0f;
+							
+							// Find and Remove Edge with least weight
+							for (GraphEdge anEdge: listOfEdges) {
+								if (anEdge.getWeight() < minWeight) {
+									edgesToRemove.clear();
+									minWeight = anEdge.getWeight();
+									edgesToRemove.add(anEdge);
+								}
+							}
+							// Remove edges between nodes of same parent if only its weight is lower than
+//							float firstEdgeWeight = firstArtifactEdge.getWeight();
+//							float secondEdgeWeight = secondArtifactEdge.getWeight();
+//							float bottomEdgeWeight = artifactEdgeToRemove.getWeight();
+//							
+//							
+							
+//							if ((bottomEdgeWeight < firstEdgeWeight) && (bottomEdgeWeight < secondEdgeWeight)) {
+//								edgesToRemove.add(artifactEdgeToRemove);
+//							} 
+//							
+//							else if ((firstEdgeWeight > bottomEdgeWeight) && (secondEdgeWeight < bottomEdgeWeight)) {
+//								edgesToRemove.add(secondArtifactEdge);
+//							} else if ((firstEdgeWeight < bottomEdgeWeight) && (secondEdgeWeight > bottomEdgeWeight)) {
+//								edgesToRemove.add(firstArtifactEdge);
+//							} else if ((firstEdgeWeight < bottomEdgeWeight) && (secondEdgeWeight < bottomEdgeWeight)) {
+//								if (firstEdgeWeight > secondEdgeWeight) {
+//									edgesToRemove.add(secondArtifactEdge);
+//								} else {
+//									edgesToRemove.add(firstArtifactEdge);
+//								}
+//							}
+							
+						}
+					}
+				}
+			}
+		}
+		}
+		
+
+		allConnectionEdges.removeAll(edgesToRemove);
+	}
+	
+	
+	
+	
 	/**
 	 * Gets Children of a Variant for taxonomy (sub)tree
 	 * 
@@ -205,9 +351,93 @@ public class ArtifactGraph {
 
 	}
 	
-	private float getHighestWeight(GraphNode parent, GraphNode Child) {
+	/**
+	 * Gets Children of a Variant for taxonomy (sub)tree
+	 * 
+	 * @param parentNode
+	 */
+	private void GetChildrenForVariantDAG(GraphNode parentNode, List<GraphNode> allAvailableArtifactNodes,
+			boolean rootNode) {
+		// After For-Loop Variables
+		List<GraphNode> childrenNodes = null;
+		// For-Loop Variables
+		List<GraphNode> mostSimilarNodes = new ArrayList<GraphNode>();
+		int noOfReacheableVariants;
+		int noOfReacheableVariantsReferenceValue;
+
+		while (allAvailableArtifactNodes.size() > 0) {
+			mostSimilarNodes.clear(); // P
+			noOfReacheableVariants = 0; // x
+			noOfReacheableVariantsReferenceValue = 0; // ref
+			// Get Nodes with the highest reachability
+			for (GraphNode anArtifactNode : allAvailableArtifactNodes) {
+				noOfReacheableVariants = getNumberOfEdgesFrom(parentNode, anArtifactNode);
+
+				if (noOfReacheableVariants > noOfReacheableVariantsReferenceValue) {
+					mostSimilarNodes.clear();
+					noOfReacheableVariantsReferenceValue = noOfReacheableVariants;
+				}
+
+				if (noOfReacheableVariants == noOfReacheableVariantsReferenceValue) {
+					mostSimilarNodes.add(anArtifactNode);
+				}
+			}
+
+			// Get the mostSimilar Node out of the List of Similar Nodes
+			childrenNodes = getNodeWithHighestSimilarityDAG(parentNode, mostSimilarNodes);
+			
+			// Add ChildNode to Taxonomy Representation 
+			if (childrenNodes != null && childrenNodes.size() > 0) {
+				for (GraphNode aChildNode: childrenNodes) {
+					taxonomyRootNode.addChildNodeFromRoot(aChildNode.getDescription().substring(4), parentNode.getDescription().substring(4));
+					
+					// Assign childNode to Parent  
+					GraphEdge parentChildEdge = new GraphEdge();
+					parentChildEdge.setSource(parentNode);
+					parentChildEdge.setTarget(aChildNode);
+					parentChildEdge.setWeight(this.getHighestWeight(parentNode, aChildNode));
+					
+					// Add both to taxonomy Lists
+					if (!taxonomyArtifactNodes.contains(parentNode)) {
+						taxonomyArtifactNodes.add(parentNode);
+					}
+
+					if (!taxonomyArtifactNodes.contains(aChildNode)) {
+						taxonomyArtifactNodes.add(aChildNode);
+					}
+					
+					
+					taxonomyArtifactEdges.add(parentChildEdge);
+					
+					// Get Reachable variants of child node
+					List<GraphNode> reachableByChild = new ArrayList<GraphNode>();
+					reachableByChild = getAllNodesReacheablebyNode(aChildNode, parentNode);
+
+					// Remove child Node and remaining from Available list of Variants
+					allAvailableArtifactNodes.remove(aChildNode);
+					allAvailableArtifactNodes.removeAll(reachableByChild);
+					removeEdgesWithTarget(parentNode);
+
+					// Recursively Call for the rest of the child/children Nodes
+					GetChildrenForVariantDAG(aChildNode, reachableByChild, false);
+				}
+			}
+
+		}
+
+	}
+	
+	
+	private float getHighestWeight(GraphNode parent, GraphNode child) {
 		float weight = 0.0f;
-		
+		for (GraphEdge aConnectingEdge : allConnectionEdges) {
+			if((aConnectingEdge.getSource().getDescription().equals(parent.getDescription()) && aConnectingEdge.getTarget().getDescription().equals(child.getDescription()))
+					|| (aConnectingEdge.getSource().getDescription().equals(child.getDescription()) && aConnectingEdge.getTarget().getDescription().equals(parent.getDescription())) ) {
+				if (weight < aConnectingEdge.getWeight()) {
+					weight = aConnectingEdge.getWeight();	
+				}
+			}
+		}
 		return weight;
 	}
 	
@@ -257,12 +487,46 @@ public class ArtifactGraph {
 		GraphNode mostSimilar = new GraphNode();
 		float maxSimilarityValue = 0;
 		for (GraphEdge aConectingEdge : allConnectionEdges) {
-			if (parentNode.getDescription().equals(aConectingEdge.getSource().getDescription())) {
-				if (aConectingEdge.getWeight() > maxSimilarityValue) {
-					mostSimilar = aConectingEdge.getTarget();
-					maxSimilarityValue = aConectingEdge.getWeight();
+			for (GraphNode aSimilarNode : mostSimilarNodes) {
+				if (parentNode.getDescription().equals(aConectingEdge.getSource().getDescription()) && (aConectingEdge.getTarget().getDescription().equals(aSimilarNode.getDescription()))) {
+					if (aConectingEdge.getWeight() > maxSimilarityValue) {
+						mostSimilar = aConectingEdge.getTarget();
+						maxSimilarityValue = aConectingEdge.getWeight();
+					} else if (aConectingEdge.getWeight() == maxSimilarityValue) {
+						mostSimilar = aConectingEdge.getTarget();
+					}
 				}
+
 			}
+
+		}
+
+		return mostSimilar;
+	}
+	
+	/**
+	 * Find nodes most similar to parent node
+	 * @param parentNode
+	 * @param mostSimilarNodes
+	 * @return
+	 */
+	private List<GraphNode> getNodeWithHighestSimilarityDAG(GraphNode parentNode, List<GraphNode> mostSimilarNodes) {
+		List<GraphNode> mostSimilar = new ArrayList<GraphNode>();
+		float maxSimilarityValue = 0;
+		for (GraphEdge aConectingEdge : allConnectionEdges) {
+			for (GraphNode aSimilarNode : mostSimilarNodes) {
+				if (parentNode.getDescription().equals(aConectingEdge.getSource().getDescription()) && (aConectingEdge.getTarget().getDescription().equals(aSimilarNode.getDescription()))) {
+					if (aConectingEdge.getWeight() > maxSimilarityValue) {
+						mostSimilar.clear();
+						mostSimilar.add(aConectingEdge.getTarget());
+						maxSimilarityValue = aConectingEdge.getWeight();
+					} else if (aConectingEdge.getWeight() == maxSimilarityValue) {
+						mostSimilar.add(aConectingEdge.getTarget());
+					}
+				}
+
+			}
+
 		}
 
 		return mostSimilar;
@@ -302,7 +566,7 @@ public class ArtifactGraph {
 	 * @param sourceNode
 	 * @return
 	 */
-	private int getNumberOfEdgesFrom(GraphNode sourceNode, GraphNode parentNode) {
+	private int getNumberOfEdgesFrom(GraphNode sourceNode, GraphNode targetNode) {
 		int numberOfEdges = 0;
 
 		for (GraphEdge aConectingEdge : allConnectionEdges) {
@@ -310,10 +574,10 @@ public class ArtifactGraph {
 			// function and the target node of the edge is not parent node
 			// then increase count
 			if (sourceNode.getDescription().equals(aConectingEdge.getSource().getDescription()))
-				if (parentNode == null) {
+				if (targetNode == null) {
 					numberOfEdges++;
 				} else {
-					if (!aConectingEdge.getTarget().getDescription().equals(parentNode.getDescription())) {
+					if (!aConectingEdge.getTarget().getDescription().equals(targetNode.getDescription())) {
 						numberOfEdges++;
 					}
 				}
@@ -327,7 +591,7 @@ public class ArtifactGraph {
 	 * Gets Node with the smallest number of characters from the root Node
 	 */
 	private GraphNode getSmallestRootNode(List<GraphNode> potentialRootNodes) {
-		int rootVariantSize = getHighestNumberOfCharacters();
+		int rootVariantSize = getHighestSizeInVariants();
 		GraphNode rootVariantNode = null;
 
 		// iterate through all potential root nodes
@@ -337,9 +601,9 @@ public class ArtifactGraph {
 				// Find the right artifactFile detail and extract the number of characters
 				if (aPotentialRootNode.getDescription().substring(0, 3).equals(anArtifactFileDetails.getArtifactID())) {
 					// If number of characters of variant lower than previously calculated
-					if (anArtifactFileDetails.getNumberOfCharacters() < rootVariantSize) {
+					if (anArtifactFileDetails.getVariantSize() < rootVariantSize) {
 						// Update rootVariantSize
-						rootVariantSize = anArtifactFileDetails.getNumberOfCharacters();
+						rootVariantSize = anArtifactFileDetails.getVariantSize();
 						// Make variant the new root
 						rootVariantNode = aPotentialRootNode;
 					}
@@ -352,13 +616,14 @@ public class ArtifactGraph {
 	}
 
 	/**
-	 * Gets value of the highest number of Characters from the variants
+	 * Gets value of the highest number of Characters from the variants (for file variants)
+	 * or size(byte size) of largest variant (for folder variants)
 	 */
-	private int getHighestNumberOfCharacters() {
+	private int getHighestSizeInVariants() {
 		int max = 0;
 		for (ArtifactFileDetails anArtifactFileDetails : allArtifactFileDetails) {
-			if (anArtifactFileDetails.getNumberOfCharacters() > max) {
-				max = anArtifactFileDetails.getNumberOfCharacters();
+			if (anArtifactFileDetails.getVariantSize() > max) {
+				max = anArtifactFileDetails.getVariantSize();
 			}
 		}
 
@@ -486,45 +751,4 @@ public class ArtifactGraph {
 		}
 	}
 	
-	
-	public SimpleGraph createComplexExample() {
-		SimpleGraph mindMap = new SimpleGraph();
-
-		GraphNode center = new GraphNode();
-		center.setTitle("The Core Idea");
-		center.setDescription("This is my Core idea");
-		center.setColor(Color.GREENYELLOW);
-		center.setBounds(new Rectangle(250, 50, WIDTH, 100));
-
-		mindMap.addChildElement(center);
-
-		GraphNode child = null;
-		for (int i = 0; i < 5; i++) {
-			child = new GraphNode();
-			child.setTitle("Association #" + i);
-			child.setDescription("Node1");
-			child.setColor(Color.ALICEBLUE);
-
-			child.setBounds(new Rectangle(50 + (i * 200), 250, WIDTH, 100));
-			mindMap.addChildElement(child);
-
-			GraphEdge conn = new GraphEdge();
-			conn.connect(center, child);
-			mindMap.addChildElement(conn);
-		}
-
-		GraphNode child2 = new GraphNode();
-		child2.setTitle("Association #4-2");
-		child2.setDescription("Node 2");
-		child2.setColor(Color.LIGHTGRAY);
-		child2.setBounds(new Rectangle(250, 550, WIDTH, 100));
-		mindMap.addChildElement(child2);
-
-		GraphEdge conn = new GraphEdge();
-		conn.connect(child, child2);
-		mindMap.addChildElement(conn);
-
-		return mindMap;
-	}
-
 }
