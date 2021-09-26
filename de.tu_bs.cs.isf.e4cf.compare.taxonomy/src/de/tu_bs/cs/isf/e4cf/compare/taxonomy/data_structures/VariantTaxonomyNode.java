@@ -12,11 +12,11 @@ import java.util.List;
  */
 public class VariantTaxonomyNode {
 
- private String dateCreated;
- private String varaintName;
- private int treeDepth;
- private VariantTaxonomyNode variantParent;
- private List<VariantTaxonomyNode> variantChildren  = new ArrayList<VariantTaxonomyNode>();
+ public String dateCreated;
+ public String varaintName;
+ public int treeDepth;
+ public VariantTaxonomyNode variantParent;
+ public List<VariantTaxonomyNode> variantChildren  = new ArrayList<VariantTaxonomyNode>();
 
  
  public VariantTaxonomyNode(String _variantName, int _treeDepth, VariantTaxonomyNode _variantParent) {
