@@ -7,6 +7,11 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.*;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectoryNameComparator;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectoryNonSourceFileComparator;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectorySizeComparator;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.comparators.DirectorySourceFileComparator;
+import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomySettings;
 
 /**
  * @author developer-olan
@@ -58,12 +63,12 @@ public class TaxonomyNodeComparison extends AbstractComparsion<Node>{
 		//if one of both artifacts is null the similarity is 0 because its an optional
 		return (getLeftArtifact()== null || getRightArtifact() == null) ? 0f : resultSimilarity;
 	}
+	
 
 	@Override 
 	public float getChildSimilarity() {
 		float childSimilarity = 0f;
 		// call update similarity recursively on all child comparison
-		System.out.println("_____________");
 		for (Comparison<Node> childComparison : getChildComparisons()) {
 			System.out.println("Child Similarity: "+ childComparison.getLeftArtifact().getNodeType()+", "+childComparison.getRightArtifact().getNodeType()); // test
 			childComparison.updateSimilarity();
@@ -116,4 +121,44 @@ public class TaxonomyNodeComparison extends AbstractComparsion<Node>{
 		setSimilarity(similarity);
 	}
 
+	
+	public float calculateSimilarity(TaxonomySettings settings) {
+		float resultSimilarity = 0.0f;
+		
+		if (settings.getSourceLevelComparison()) {
+			// Return result similarity using all utilized source code file-level metrics/comparators
+			resultSimilarity = this.getResultSimilarity();
+		} else {
+			float weightSum = 0.0f;
+			ResultElement<Node> dirNameResult = null;
+			// Iterate through all ResultElements
+			for (ResultElement<Node> result : getResultElements()) {
+				// Get weight from configuration
+				if (result.getUsedComparator().getClass().equals(new DirectoryNameComparator().getClass())) {
+					dirNameResult = result;
+				}
+				
+				// Computed Weighted Similarity of static weighted comparators
+				if (result.getUsedComparator().getClass().equals(new DirectorySourceFileComparator().getClass())) {
+					resultSimilarity += (result.getSimilarity() * 0.25f);
+					weightSum += 0.25f;
+				} else if (result.getUsedComparator().getClass().equals(new DirectoryNonSourceFileComparator().getClass())) {
+					resultSimilarity += (result.getSimilarity() * 0.15f);
+					weightSum += 0.15f;
+				} else if (result.getUsedComparator().getClass().equals(new DirectorySizeComparator().getClass())) {
+					resultSimilarity += (result.getSimilarity() * 0.10f);
+					weightSum += 0.10f;
+				}
+			}
+			
+			// Add Weighted similarity of Directory
+			if (dirNameResult != null) {
+				resultSimilarity += (dirNameResult.getSimilarity() * (1.0f - weightSum));
+			} else {
+				resultSimilarity = this.getResultSimilarity();
+			}
+		}
+		
+		return resultSimilarity;
+	}
 }
