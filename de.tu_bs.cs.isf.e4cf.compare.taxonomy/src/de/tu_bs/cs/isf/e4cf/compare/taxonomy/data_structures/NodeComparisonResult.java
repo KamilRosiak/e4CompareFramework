@@ -31,9 +31,8 @@ public class NodeComparisonResult {
 
 	// Computed Values
 	private float leftNodeWeight;
-
-	// Util
-	private NodeSourceTransverser sourceTransverser = new NodeSourceTransverser();
+	
+	private boolean isDirectory;
 
 
 	public NodeComparisonResult(int _artifactIndexOfLeftNode, Tree _artifactOfLeftNode, Node _leftNode, Node _rightNode, Tree _artifactOfRightNode,
@@ -50,15 +49,17 @@ public class NodeComparisonResult {
 		this.leftNodeSignature = extractNodeSignature(leftNode);
 		this.rightNodeSignature = extractNodeSignature(rightNode);
 		
+		this.isDirectory = this.leftNode.getNodeType().equals("Directory") ? true : false;
+		
 	}
 
 	public float computeLeftNodeWeight() {
 		float nodeWeight = 0.0f;
 		// Get variant number of Characters
-		String artifactSource = sourceTransverser.getNodeSourceRecursive(artifactOfLeftNode.getRoot());
+		String artifactSource = NodeSourceTransverser.getNodeSourceRecursive(artifactOfLeftNode.getRoot());
 		
 		// Compute Number of character in leftNode
-		String leftNodeSource = sourceTransverser.getNodeSource(leftNode);
+		String leftNodeSource = NodeSourceTransverser.getNodeSource(leftNode);
 		
 		// Compute Weight
 		nodeWeight = (float)leftNodeSource.length()/(float)artifactSource.length();
@@ -118,6 +119,10 @@ public class NodeComparisonResult {
 	
 	public float getLeftNodeWeight() {
 		return leftNodeWeight;
+	}
+	
+	public boolean IsDirectory() {
+		return this.isDirectory;
 	}
 	
 	public void setWeightedSimilarity(float newSimilarityValue) {

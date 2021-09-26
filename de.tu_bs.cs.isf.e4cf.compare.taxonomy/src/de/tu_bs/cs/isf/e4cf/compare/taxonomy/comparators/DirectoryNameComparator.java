@@ -27,8 +27,7 @@ public class DirectoryNameComparator extends AbstractNodeComparator {
 	@Override
 	public NodeResultElement compare(Node firstNode, Node secondNode) {
 		float similarity = 0.0f;
-		similarity = compareDirectoryName(firstNode.getAttributeForKey(DIRECTORY_NAME_ATTRIBUTE_KEY), secondNode.getAttributeForKey("DIRECTORY_NAME"));
-		System.out.println("Similarity: "+ similarity);
+		similarity = compareDirectoryName(firstNode.getAttributeForKey(DIRECTORY_NAME_ATTRIBUTE_KEY), secondNode.getAttributeForKey(DIRECTORY_NAME_ATTRIBUTE_KEY));
 		return new NodeResultElement(this, similarity);
 	}
 	
@@ -39,12 +38,9 @@ public class DirectoryNameComparator extends AbstractNodeComparator {
 		for (Value leftFolderName : leftDirectoryNameAttribute.getAttributeValues()) {
 			for (Value rightFolderName : rightDirectoryNameAttribute.getAttributeValues()) {
 				if (leftFolderName != null && rightFolderName != null) {
-					System.out.println("Comparing folders: "+leftFolderName.getValue().toString()+", "+rightFolderName.getValue().toString());
-					float levenstheinDistance= (float) LevenstheinDistance.computeLevenshteinDistance(leftFolderName.toString(), rightFolderName.toString());	
-					int leftFolderNameValueLength = leftFolderName.getValue().toString().length();
-					int rightFolderNameValueLength = rightFolderName.getValue().toString().length();
-					int longerNameLength =  Math.max(leftFolderNameValueLength, rightFolderNameValueLength);
-					similarity =  Math.abs(1 - (levenstheinDistance/longerNameLength));
+					int levDist = LevenstheinDistance.computeLevenshteinDistance(leftFolderName.getValue().toString(), rightFolderName.getValue().toString());
+					int maxValue = Math.max(leftFolderName.getValue().toString().length(), rightFolderName.getValue().toString().length());
+					similarity = ((float)maxValue - (float)levDist)/(float)maxValue;
 				}
 			}
 		}
