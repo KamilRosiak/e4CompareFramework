@@ -22,12 +22,14 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.TaxonomyCompareEngine;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.batch_API.BatchEvaluator;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.batch_API.GCJGroundTruth;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces.*;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics.TaxonomyThresholdMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.util.TaxonomyEvaluator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.*;
 
-import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomyControlSettings;
+import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomySettings;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table.TaxonomyST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
@@ -51,7 +53,7 @@ public class CompareEngineView implements Initializable {
 
 	public List<FileTreeElement> artifactFileTrees = new ArrayList<FileTreeElement>();
 	
-	private TaxonomyControlSettings taxonomySettings = new TaxonomyControlSettings();
+	private TaxonomySettings taxonomySettings = new TaxonomySettings();
 
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
@@ -72,10 +74,6 @@ public class CompareEngineView implements Initializable {
 	}
 
 	private void initButtons() {
-
-	}
-
-	private void initMetricControll() {
 
 	}
 
@@ -120,9 +118,9 @@ public class CompareEngineView implements Initializable {
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
-				// Create graph for artifacts
-				engine.compare(artifacts);
-				engine.deriveArtifactDetails(artifactFileTrees); // Get details of artifact e.g. lines of Codes, no. of characters etc.
+				// Get details of artifact e.g. lines of Codes, no. of characters etc. 
+				// and Compare variants
+				engine.deriveAndCompare(artifacts, artifactFileTrees);
 				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
 				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
@@ -158,11 +156,16 @@ public class CompareEngineView implements Initializable {
 			if (artifacts.size() > 1) {
 				
 				// Create graph for artifacts
-				engine.compare(artifacts);
+				engine.deriveAndCompare(artifacts, artifactFileTrees);
 				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
 				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
-				artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
+				
+				if (this.taxonomySettings.getTaxonomyTypeAsTree()) {
+					artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
+				} else {
+					artifactGraph.setUpDAGTaxonomyGraph();
+				}
 				
 				if (artifactGraph.mindMapTaxonomyGraph.getChildElements().size() >= 1) {
 					// Send prepared graph to GraphView subscriber for display
@@ -175,38 +178,43 @@ public class CompareEngineView implements Initializable {
 				}
 				
 				// Evaluate Taxonomy
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createProjectExampleGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCodeJamGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3halyavinDGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3jediknightBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3kotehokAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3kotehokDGT(), artifactGraph.taxonomyRootNode);
-				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3wataDGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3ymatsuxAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N3ymatsuxCGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createProjectExampleGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCodeJamGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3halyavinDGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3jediknightBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3kotehokAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3kotehokDGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3wataDGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3ymatsuxAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3ymatsuxCGT(), artifactGraph.taxonomyRootNode);
 				
 				// N = 4
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4halyavinBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4halyavinCGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4kotehokBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4kotehokCGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4mysticBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4mysticDGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4wataAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4wataBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N4wataCGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4halyavinBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4halyavinCGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4kotehokBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4kotehokCGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4mysticBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4mysticDGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4wataAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4wataBGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4wataCGT(), artifactGraph.taxonomyRootNode);
 				
 				// N = 5
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N5halyavinAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N5mysticAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(TaxonomyEvaluator.createGoogleCode2008N5mysticCGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N5halyavinAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N5mysticAGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N5mysticCGT(), artifactGraph.taxonomyRootNode);
 
 
-				performanceJudge.computeDifferences();
-				performanceJudge.calculateSecondaryMeasures();
-				performanceJudge.printMeasures();
-				performanceJudge.computeCustomMeasures();
-				performanceJudge.printCustomMeasures();
+//				performanceJudge.computePrimaryMeasures();
+//				performanceJudge.calculateSecondaryMeasures();
+//				performanceJudge.printMeasures();
+//				performanceJudge.computeCustomMeasures();
+//				performanceJudge.printCustomMeasures();
+				
+				
+//				BatchEvaluator batchEvaluator = new BatchEvaluator();
+//				batchEvaluator.startEvaluation();
+//				batchEvaluator.exportResults();
 				
 			}
 		} catch (Exception e) {
@@ -264,7 +272,7 @@ public class CompareEngineView implements Initializable {
 	/**
 	 * Gets taxonomy settings for comparison
 	 */
-	public TaxonomyControlSettings getTaxonomySettings() {
+	public TaxonomySettings getTaxonomySettings() {
 		return this.taxonomySettings;
 	}
 	
@@ -277,7 +285,7 @@ public class CompareEngineView implements Initializable {
 	@Optional
 	@Inject
 	public void updateTaxonomySettings(
-			@UIEventTopic(TaxonomyST.SET_TAXONOMY_SETTINGS) TaxonomyControlSettings taxonomySettings) {
+			@UIEventTopic(TaxonomyST.SET_TAXONOMY_SETTINGS) TaxonomySettings taxonomySettings) {
 		this.taxonomySettings = taxonomySettings;
 	}
 
