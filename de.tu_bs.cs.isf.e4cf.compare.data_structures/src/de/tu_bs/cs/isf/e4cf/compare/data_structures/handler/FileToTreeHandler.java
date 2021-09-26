@@ -19,10 +19,10 @@ public class FileToTreeHandler {
 		List<Tree> artifactList = new ArrayList<Tree>();
 		List<FileTreeElement> parsedFiles = new ArrayList<FileTreeElement>();
 
-		//transform every file element into an tree.
+		//transform every file element into a Tree element.
 		services.rcpSelectionService.getCurrentSelectionsFromExplorer().stream().forEach(e -> artifactList.add(readerManager.readFile(e)));
 		
-		//transform every file element into a file tree Element
+		//simply add File Element to a list for use in Taxonomy generation process
 		services.rcpSelectionService.getCurrentSelectionsFromExplorer().stream().forEach(e -> parsedFiles.add(e));
 		
 		services.partService.showPart(CompareST.BUNDLE_NAME); // Open View for Artifact comparison 
