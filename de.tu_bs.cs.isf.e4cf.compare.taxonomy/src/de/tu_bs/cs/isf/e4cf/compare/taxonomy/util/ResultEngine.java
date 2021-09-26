@@ -21,6 +21,7 @@ import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
  *
  */
 public class ResultEngine {
+	// Data storage for Level Comparison
 	private List<NodeComparisonResult> listOfComparedNodes = new ArrayList<NodeComparisonResult>();
 	private List<NodeComparisonResult> listOfComparedNodesRemoved = new ArrayList<NodeComparisonResult>();
 	private List<NodeComparisonResult> listOfComparedNodesRefined = new ArrayList<NodeComparisonResult>();
@@ -29,11 +30,11 @@ public class ResultEngine {
 	private List<ResultMapping> potentialResultMapping = new ArrayList<ResultMapping>();
 	private List<SimpleResult> matchingVariantSetMapping = new ArrayList<SimpleResult>();
 
-	private List<CollectedComparison> cumulativeComparisons = new ArrayList<CollectedComparison>();
+	private List<CollectedComparison> cummulativeComparisons = new ArrayList<CollectedComparison>();
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
-	private static final float SIMILARITY_THRESHOLD = 1.0f;
+	private static final float SIMILARITY_THRESHOLD = 0.7f;
 
 	public ResultEngine() {
 
@@ -44,9 +45,9 @@ public class ResultEngine {
 	}
 
 	public void addToCumulativeComparisons(Tree leftArtifactToInsert, Tree rightArtifactToInsert,
-			float similarityToAdd) {
+			float similarityToAdd, boolean isDirectory) {
 		CollectedComparison foundComparison = null;
-		for (CollectedComparison eachComparison : cumulativeComparisons) {
+		for (CollectedComparison eachComparison : cummulativeComparisons) {
 			if (eachComparison.getLeftArtifact().equals(leftArtifactToInsert)
 					&& eachComparison.getRightArtifact().equals(rightArtifactToInsert)) {
 				foundComparison = eachComparison;
@@ -55,21 +56,21 @@ public class ResultEngine {
 		}
 
 		if (foundComparison != null) {
-			foundComparison.addCummulativeSimilarity(similarityToAdd);
+			foundComparison.addCummulativeSimilarity(similarityToAdd, isDirectory);
 		} else {
-			cumulativeComparisons
-					.add(new CollectedComparison(leftArtifactToInsert, rightArtifactToInsert, similarityToAdd));
+			cummulativeComparisons
+					.add(new CollectedComparison(leftArtifactToInsert, rightArtifactToInsert, similarityToAdd, isDirectory));
 		}
 
 	}
 
 	public void addToListOfComparedNodes(NodeComparisonResult compResult) {
 		this.listOfComparedNodes.add(compResult);
-		if ( compResult.getSimilarity() >= ResultEngine.SIMILARITY_THRESHOLD) {
-		addResultToMapping(this.directResultMapping, compResult.getLeftNodeSignature(),
-				compResult.getLeftNodeSignature(), compResult.getRightNodeSignature(), compResult.getSimilarity());
-		addResultToMapping(this.potentialResultMapping, compResult.getRightNodeSignature(),
-				compResult.getLeftNodeSignature(), compResult.getRightNodeSignature(), compResult.getSimilarity());
+		if (compResult.getSimilarity() >= ResultEngine.SIMILARITY_THRESHOLD) {
+			addResultToMapping(this.directResultMapping, compResult.getLeftNodeSignature(),
+					compResult.getLeftNodeSignature(), compResult.getRightNodeSignature(), compResult.getSimilarity());
+			addResultToMapping(this.potentialResultMapping, compResult.getRightNodeSignature(),
+					compResult.getLeftNodeSignature(), compResult.getRightNodeSignature(), compResult.getSimilarity());
 		}
 	}
 
@@ -128,9 +129,9 @@ public class ResultEngine {
 	}
 	
 	public void printCommulativeResults() {
-//		for (SimpleResult aSimpleResult: matchingVariantSetMapping) {
-//			System.out.println("Similarity: "+aSimpleResult.getSimilarity()+", Type: "+aSimpleResult.getLeftNode()+" Type: "+ aSimpleResult.getRightNode());
-//		}
+		for (SimpleResult aSimpleResult: matchingVariantSetMapping) {
+			System.out.println("Similarity: "+aSimpleResult.getSimilarity()+", Type: "+aSimpleResult.getLeftNode()+" Type: "+ aSimpleResult.getRightNode());
+		}
 	}
 
 	/**
@@ -154,12 +155,17 @@ public class ResultEngine {
 	public void computeWeightedSimilarity() {
 		for (NodeComparisonResult comparedNodes : listOfComparedNodesRefined) {
 			float comparisonWeightedSimilarity = 0.0f;
-			comparisonWeightedSimilarity = comparedNodes.getLeftNodeWeight() * comparedNodes.getSimilarity();
+			if (!comparedNodes.IsDirectory()) {
+				comparisonWeightedSimilarity = comparedNodes.getLeftNodeWeight() * comparedNodes.getSimilarity();
+			} else {
+				comparisonWeightedSimilarity = comparedNodes.getSimilarity();
+			}
+			
 			comparedNodes.setWeightedSimilarity(comparisonWeightedSimilarity);
 			//printNodeDetails(comparedNodes);
 			
 			addToCumulativeComparisons(comparedNodes.getArtifactOfLeftNode(), comparedNodes.getArtifactOfRightNode(),
-					comparedNodes.getWeightedSimilarity());
+					comparedNodes.getWeightedSimilarity(), comparedNodes.IsDirectory());
 		}
 	}
 	
@@ -183,7 +189,7 @@ public class ResultEngine {
 	 * STEP 4: Creates artifact comparison for graph
 	 */
 	public List<ArtifactComparison> createArtifactComparison() {
-		for (CollectedComparison cummulative : cumulativeComparisons) {
+		for (CollectedComparison cummulative : cummulativeComparisons) {
 
 			TaxonomyNodeComparison newArtifactNodeComparison = new TaxonomyNodeComparison(cummulative.getLeftArtifact().getRoot(),
 					cummulative.getRightArtifact().getRoot(), cummulative.getCummulativeSimilarity());
@@ -238,6 +244,7 @@ public class ResultEngine {
 
 	public void printMatchingResults() {
 		for (NodeComparisonResult aComparedNodesTuple : listOfComparedNodes) {
+			System.out.print(aComparedNodesTuple.IsDirectory());
 			System.out.print(aComparedNodesTuple.getArtifactIndex());
 			System.out.print(aComparedNodesTuple.getArtifactOfLeftNode().getTreeName().toString() + " 			| "
 					+ aComparedNodesTuple.getLeftNode().getNodeType().toString());

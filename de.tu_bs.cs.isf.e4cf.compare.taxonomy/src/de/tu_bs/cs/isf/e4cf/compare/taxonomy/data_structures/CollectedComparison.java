@@ -13,12 +13,19 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 public class CollectedComparison {
 	private Tree leftArtifact;
 	private Tree rightArtifact;
-	private float cummulativeSimilarity;
+	private float cumulativeSimilaritySource;
+	private float cumulativeSimilarityDirectory;
+
 	
-	public CollectedComparison(Tree _leftArtifact, Tree _rightArtifact, Float _cummulativeSimilarity) {
+	public CollectedComparison(Tree _leftArtifact, Tree _rightArtifact, Float _cummulativeSimilarity, boolean isDirectory) {
 		this.leftArtifact = _leftArtifact;
 		this.rightArtifact = _rightArtifact;
-		this.cummulativeSimilarity = _cummulativeSimilarity;
+		
+		if (!isDirectory) {
+			this.cumulativeSimilaritySource = _cummulativeSimilarity;
+		} else {
+			this.cumulativeSimilarityDirectory = _cummulativeSimilarity;	
+		}
 	}
 	
 	
@@ -31,12 +38,30 @@ public class CollectedComparison {
 	}
 	
 	public float getCummulativeSimilarity() {
-		return cummulativeSimilarity;
+		if (this.cumulativeSimilarityDirectory > 0.0f) {
+			return getTotalSimilarity();
+		} else {
+			return cumulativeSimilaritySource;
+		}
 	}
 	
-	public void addCummulativeSimilarity(float valueToAdd) {
-		this.cummulativeSimilarity += valueToAdd;
-//		System.out.println("Similarity: ("+valueToAdd+") "+this.cummulativeSimilarity+", Type: "+leftArtifact.getTreeName()+" Type: "+rightArtifact.getTreeName());
-//		System.out.println("********************************");
+	public float getCummulativeSimilarityDirectory() {
+		return cumulativeSimilarityDirectory;
+	}
+	
+	public float getTotalSimilarity() {
+		return (0.8f * cumulativeSimilaritySource) + (0.2f * cumulativeSimilarityDirectory);
+	}
+	
+	public void addCummulativeSimilarity(float valueToAdd, boolean isDirectory) {
+		if (!isDirectory) {
+			this.cumulativeSimilaritySource += valueToAdd;
+		} else {
+			this.cumulativeSimilarityDirectory += valueToAdd;
+		}
+	}
+	
+	public void addCummulativeSimilarityDirectory(float valueToAdd) {
+		this.cumulativeSimilaritySource += valueToAdd;
 	}
 }
