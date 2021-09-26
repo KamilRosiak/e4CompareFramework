@@ -21,6 +21,7 @@ public class ArtifactFileDetails {
 	private int artifactLinesOfCode;
 	private int numberOfCharactersInArtifact;
 	private boolean isDirectory;
+	private long totalByteSize = 0;
 
 	public ArtifactFileDetails(FileTreeElement _artifactFileTreeElement) {
 		this.isDirectory = _artifactFileTreeElement.isDirectory();
@@ -31,6 +32,7 @@ public class ArtifactFileDetails {
 		this.artifactLinesOfCode = this.countLinesOfCode(Paths.get(_artifactFileTreeElement.getAbsolutePath()));
 		this.numberOfCharactersInArtifact = this
 				.countNumberOfCharacters(Paths.get(_artifactFileTreeElement.getAbsolutePath()));
+		computeSizeInBytes(this.artifactFileTreeElement);
 	}
 
 	/**
@@ -107,7 +109,10 @@ public class ArtifactFileDetails {
 	public String getArtifactPath() {
 		return artifactPath;
 	}
-
+	
+	public FileTreeElement getFileTree() {
+		return this.artifactFileTreeElement;
+	}
 	/**
 	 * Returns the number of lines of code contained in a specific variant
 	 * 
@@ -122,8 +127,12 @@ public class ArtifactFileDetails {
 	 * 
 	 * @return
 	 */
-	public int getNumberOfCharacters() {
-		return numberOfCharactersInArtifact;
+	public int getVariantSize() {
+		if (artifactFileTreeElement.isDirectory()) {
+			return (int)totalByteSize;
+		} else {
+			return numberOfCharactersInArtifact;
+		}
 	}
 
 	/**
@@ -133,10 +142,24 @@ public class ArtifactFileDetails {
 	public int getNumberOfChildren() {
 		int numberOfChildren = 0;
 		if (isDirectory) {
-			numberOfChildren = artifactFileTreeElement.getChildren().size();
+			numberOfChildren = (int)artifactFileTreeElement.getSize();
 		}
 		return numberOfChildren;
 	}
+	
+	
+	/**
+	 * Returns the number of children if artifact is a directory
+	 * @return
+	 */
+	public void computeSizeInBytes(FileTreeElement tree) {
+		if (tree.isDirectory()) {
+			tree.getChildren().stream().forEach(e -> computeSizeInBytes(e));
+		} else {
+			this.totalByteSize += tree.getSize();
+		}
+	}
+	
 	
 	public void setArtifactID(String newID) {
 		this.artifactID = newID;
