@@ -59,6 +59,7 @@ public class SimpleStringComparator extends AbstractNodeComparator {
 	/**
 	 * compares the values of a corresponding key returns 1 if a match is found else
 	 */
+	@SuppressWarnings("unchecked")
 	private Float compareValues(Attribute firstAttr, Attribute secondAttr) {
 		for (Value firstValue : firstAttr.getAttributeValues()) {
 			for (Value secondValue : secondAttr.getAttributeValues()) {

@@ -9,6 +9,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.templates.AbstractNodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.ArtifactFileDetails;
+import de.tu_bs.cs.isf.e4cf.core.compare.algorithm.LevenstheinDistance;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 
 /**
@@ -143,6 +144,22 @@ public class DirectoryNodeComparator extends AbstractNodeComparator {
 		} 
 		
 		return pathToFileTree;
+	}
+	
+	/**
+	 * compares the 2 string values using Levensthein Distance and returns similarity
+	 */
+	public Float compareStringValues(String firstString, String secondString) {
+		// Compare folder content strings
+		float similarity = 0.0f;
+		int levDist = LevenstheinDistance.computeLevenshteinDistance(firstString, secondString);
+		int maxValue = Math.max(firstString.length(), secondString.length());
+		
+		if (maxValue != 0) {
+			similarity = ((float)maxValue - (float)levDist)/(float)maxValue;
+		}
+		
+		return similarity;
 	}
 	
 	
