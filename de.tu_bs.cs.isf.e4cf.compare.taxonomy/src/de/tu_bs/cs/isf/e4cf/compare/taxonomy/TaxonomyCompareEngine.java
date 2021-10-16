@@ -112,14 +112,25 @@ public class TaxonomyCompareEngine {
 		variants.stream().forEach(artifactLeft -> {
 			variants.stream().forEach(artifactRight -> {
 				if (artifactLeft != artifactRight) {
+					Stopwatch singleCompSw = Stopwatch.createStarted();
 					// Add Comparison to List for GraphView
 					currentLeftArtifact = artifactLeft;
 					currentRightArtifact = artifactRight;
-//					System.out.println(
-//							"Comparing Nodes: " + artifactLeft.getTreeName() + " and " + artifactRight.getTreeName());
+					System.out.println(
+							"Comparing Variants: " + artifactLeft.getTreeName() + " and " + artifactRight.getTreeName());
 					compare(artifactLeft.getRoot(), artifactRight.getRoot());
+					singleCompSw.stop();
+					long scTimeElapsed = singleCompSw.elapsed(TimeUnit.MILLISECONDS);
+					System.out.println("Single Comparison Time: " + scTimeElapsed / 1000 + " secs. (" + scTimeElapsed + " milliseconds)");
+					singleCompSw.reset();
+					singleCompSw.start();
 					taxonomyResultEngine.matchNodes();
-					taxonomyResultEngine.printCommulativeResults();
+					singleCompSw.stop();
+					scTimeElapsed = singleCompSw.elapsed(TimeUnit.MILLISECONDS);
+					System.out.println("Single Comparison (Match Time) : " + scTimeElapsed / 1000 + " secs. (" + scTimeElapsed + " milliseconds)");
+					
+					
+//					taxonomyResultEngine.printCommulativeResults();
 					
 				}
 
@@ -138,10 +149,8 @@ public class TaxonomyCompareEngine {
 		stopwatch.stop();
 		long timeElapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
 		System.out.println(
-				"Taxonomy Generation Time: " + timeElapsed / 1000 + " secs. (" + timeElapsed + " milliseconds)");
-		
-		taxonomyResultEngine.printMatchingResults();
-		
+				"Variants Matching Time: " + timeElapsed / 1000 + " secs. (" + timeElapsed + " milliseconds)");
+				
 		return mergedTree;
 	}
 
@@ -149,7 +158,7 @@ public class TaxonomyCompareEngine {
 		TaxonomyNodeComparison comparison = new TaxonomyNodeComparison(first, second);
 		// if nodes are of the same type
 		if (first.getNodeType().equals(second.getNodeType())) {
-
+			//System.out.println();
 			// If Source Comparison Option selected
 			if (taxonomySetting.getSourceLevelComparison()) {
 				if (taxonomySetting.getLevenshteinMode()) {
@@ -164,21 +173,22 @@ public class TaxonomyCompareEngine {
 						DirectoryNameComparator directoryNameComparator = new DirectoryNameComparator();
 						comparison.addResultElement(directoryNameComparator.compare(first, second));
 					} 
-					
-					if (taxonomySetting.getDirNumSourceMetric()) {
-						DirectorySourceFileComparator directorySourceFileComparator = new DirectorySourceFileComparator();
-						comparison.addResultElement(directorySourceFileComparator.compare(first, second));
-					}
-					
-					if (taxonomySetting.getDirNumNonSourceMetric()) {
-						DirectoryNonSourceFileComparator directoryNonSourceFileComparator = new DirectoryNonSourceFileComparator();
-						comparison.addResultElement(directoryNonSourceFileComparator.compare(first, second));
-					}
-					
+
 					if (taxonomySetting.getDirSizeMetric()) {
 						DirectorySizeComparator directorySizeComparator = new DirectorySizeComparator();
 						comparison.addResultElement(directorySizeComparator.compareWithDetail(allArtifactFileDetails, first, second));
 					}
+					
+					if (taxonomySetting.getDirNumSourceMetric()) {
+						DirectorySourceFileComparator directorySourceFileComparator = new DirectorySourceFileComparator();
+						comparison.addResultElement(directorySourceFileComparator.compareWithDetail(allArtifactFileDetails, first, second));
+					}
+					
+					if (taxonomySetting.getDirNumNonSourceMetric()) {
+						DirectoryNonSourceFileComparator directoryNonSourceFileComparator = new DirectoryNonSourceFileComparator();
+						comparison.addResultElement(directoryNonSourceFileComparator.compareWithDetail(allArtifactFileDetails, first, second));
+					}
+					
 					
 				} else {
 					if (taxonomySetting.getLevenshteinMode()) {
@@ -222,86 +232,6 @@ public class TaxonomyCompareEngine {
 			return comparison;
 		}
 	}
-
-	
-	/**
-	 * Compares variants in a list
-	 */
-//	public Tree batchCompare(List<Tree> variants) {
-//		Tree mergedTree = null;
-//		// Creates and starts a new stopwatch
-//		Stopwatch stopwatch = Stopwatch.createStarted();
-//
-//		variants.stream().forEach(artifactLeft -> {
-//			variants.stream().forEach(artifactRight -> {
-//				if (artifactLeft != artifactRight) {
-//					// Add Comparison to List for GraphView
-//					currentLeftArtifact = artifactLeft;
-//					currentRightArtifact = artifactRight;
-//					batchCompare(artifactLeft.getRoot(), artifactRight.getRoot());
-//					taxonomyResultEngine.matchNodes();
-//					taxonomyResultEngine.printCommulativeResults();
-//				}
-//			});
-//			artifactIndexCounter++; // Increment artifact/variant counter by one
-//		});
-//
-//		// Finalize Matching
-//		taxonomyResultEngine.createRefinedListofNodes();
-//		taxonomyResultEngine.computeWeightedSimilarity();
-//
-//		artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
-//
-//		// stop stop watch, get elapsed time, expressed in milliseconds
-//		stopwatch.stop();
-//		long timeElapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-//		System.out.println(
-//				"Taxonomy Generation Time: " + timeElapsed / 1000 + " secs. (" + timeElapsed + " milliseconds)");
-//		return mergedTree;
-//	}
-	
-//	public TaxonomyNodeComparison batchCompare(Node first, Node second) {
-//		TaxonomyNodeComparison comparison = new TaxonomyNodeComparison(first, second);
-//		// if nodes are of the same type
-//		if (first.getNodeType().equals(second.getNodeType())) {
-//		
-//			comparison.addResultElement(defaultComparator.compare(first, second));
-//			
-//			// Add Result to Node Comparison Result
-//			NodeComparisonResult nodeComparisonResult = new NodeComparisonResult(artifactIndexCounter,
-//					currentLeftArtifact, first, second, currentRightArtifact, comparison.getResultSimilarity());
-//			
-//			// Add comparison to list of artifact comparisons
-//			taxonomyResultEngine.addToListOfComparedNodes(nodeComparisonResult);
-//
-//			// if no children available the recursion ends here
-//			if (first.getChildren().isEmpty() && second.getChildren().isEmpty()) {
-//				return comparison;
-//			} else {
-//				// if one of both has no children the other elements are optional
-//				if (first.getChildren().isEmpty() || second.getChildren().isEmpty()) {
-//					first.getChildren().stream()
-//							.forEach(e -> comparison.addChildComparison(new NodeComparison(e, null, 0f)));
-//					second.getChildren().stream()
-//							.forEach(e -> comparison.addChildComparison(new NodeComparison(null, e, 0f)));
-//				} else {
-//					// compare children recursively
-//					first.getChildren().stream().forEach(e -> {
-//						second.getChildren().stream().forEach(f -> {
-//
-//							TaxonomyNodeComparison innerComp = batchCompare(e, f);
-//							if (innerComp != null) {
-//								comparison.addChildComparison(innerComp);
-//							}
-//						});
-//					});
-//				}
-//			}
-//			return comparison;
-//		} else {
-//			return comparison;
-//		}
-//	}
 	
 	public void setTaxnomySettings(TaxonomySettings newSetting) {
 		this.taxonomySetting = newSetting;
