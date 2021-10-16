@@ -32,7 +32,7 @@ public class BatchResult {
 	/**
 	 * Class Constructor
 	 */
-	public BatchResult(String _mode, String _itemName,String _pathToVariants, float _recallValue, float _precisionValue,float _accuracyValue, float _errorRateValue) {
+	public BatchResult(String _mode, String _itemName,String _pathToVariants, float _recallValue, float _precisionValue,float _accuracyValue, float _errorRateValue, float _parentChildRAccuracy, float _nodeDisplacement) {
 		// Ask the Lord for help when in need
 		this.mode = _mode;
 		this.itemName = _itemName;
@@ -41,10 +41,15 @@ public class BatchResult {
 		this.precisionValue = _recallValue;
 		this.accuracyValue = _accuracyValue;
 		this.errorRateValue = _errorRateValue;
+		
+		this.PCRA = _parentChildRAccuracy;
+		this.NDM = _nodeDisplacement;
+
+
 	}
 	
 	public String getPropertyAsCSVString() {
-		return this.mode+ "," + this.itemName + "," + this.pathToVariants + "," + this.recallValue + "," + this.precisionValue + "," + this.accuracyValue + "," + this.errorRateValue;
+		return this.mode+ "," + this.itemName + "," + this.pathToVariants + "," + this.recallValue + "," + this.precisionValue + "," + this.accuracyValue + "," + this.errorRateValue+ "," + this.PCRA+ "," + this.NDM+ "," + this.RVPA;
 	}
 
 }
