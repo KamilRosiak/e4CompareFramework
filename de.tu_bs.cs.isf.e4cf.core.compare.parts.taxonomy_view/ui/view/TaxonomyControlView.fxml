@@ -119,8 +119,8 @@
 										</Label>
 										<CheckBox fx:id="directoryNameCheckbox" text="Name" />
 						    			<CheckBox fx:id="directorySizeCheckbox" text="Size" />
-						    			<CheckBox fx:id="directoryNonSourceCheckbox" text="# Non-source" />
-						    			<CheckBox fx:id="directoryChildenCheckbox" text="# of Children(Source Code)" />
+						    			<CheckBox fx:id="directoryNonSourceCheckbox" text="Non-source Content" />
+						    			<CheckBox fx:id="directoryChildenCheckbox" text="Source Code Content" />
 						    			<!-- 
 						    			<CheckBox fx:id="directoryPathCheckbox" text="Path" />
 						    			<CheckBox fx:id="directoryChildSignatureCheckbox" text="Children Signature" /> -->
