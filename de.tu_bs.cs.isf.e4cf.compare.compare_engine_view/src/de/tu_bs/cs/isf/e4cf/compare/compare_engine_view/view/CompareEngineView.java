@@ -154,7 +154,6 @@ public class CompareEngineView implements Initializable {
 			List<Tree> artifacts = artifactTable.getItems();
 
 			if (artifacts.size() > 1) {
-				
 				// Create graph for artifacts
 				engine.deriveAndCompare(artifacts, artifactFileTrees);
 				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
@@ -179,43 +178,15 @@ public class CompareEngineView implements Initializable {
 				
 				// Evaluate Taxonomy
 //				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createProjectExampleGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCodeJamGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3halyavinDGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3jediknightBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3kotehokAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3kotehokDGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3wataDGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3ymatsuxAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N3ymatsuxCGT(), artifactGraph.taxonomyRootNode);
-				
-				// N = 4
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4halyavinBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4halyavinCGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4kotehokBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4kotehokCGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4mysticBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4mysticDGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4wataAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4wataBGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N4wataCGT(), artifactGraph.taxonomyRootNode);
-				
-				// N = 5
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N5halyavinAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N5mysticAGT(), artifactGraph.taxonomyRootNode);
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGoogleCode2008N5mysticCGT(), artifactGraph.taxonomyRootNode);
-
-
 //				performanceJudge.computePrimaryMeasures();
 //				performanceJudge.calculateSecondaryMeasures();
-//				performanceJudge.printMeasures();
-//				performanceJudge.computeCustomMeasures();
-//				performanceJudge.printCustomMeasures();
 				
-				
-//				BatchEvaluator batchEvaluator = new BatchEvaluator();
-//				batchEvaluator.startEvaluation();
-//				batchEvaluator.exportResults();
-				
+			} else {
+				BatchEvaluator batchEvaluator = new BatchEvaluator();
+//				 batchEvaluator.startSameDeveloperEvaluation();
+				//batchEvaluator.startDifferentDevelopersEvaluation();
+				batchEvaluator.startGITJavapoetEvaluation();
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
