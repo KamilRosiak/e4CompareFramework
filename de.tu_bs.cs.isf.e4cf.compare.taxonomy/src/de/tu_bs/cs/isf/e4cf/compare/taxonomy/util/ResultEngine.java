@@ -34,7 +34,7 @@ public class ResultEngine {
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
-	private static final float SIMILARITY_THRESHOLD = 0.7f;
+	private static final float SIMILARITY_THRESHOLD = 1.0f;
 
 	public ResultEngine() {
 
@@ -65,8 +65,8 @@ public class ResultEngine {
 	}
 
 	public void addToListOfComparedNodes(NodeComparisonResult compResult) {
-		this.listOfComparedNodes.add(compResult);
 		if (compResult.getSimilarity() >= ResultEngine.SIMILARITY_THRESHOLD) {
+			this.listOfComparedNodes.add(compResult);
 			addResultToMapping(this.directResultMapping, compResult.getLeftNodeSignature(),
 					compResult.getLeftNodeSignature(), compResult.getRightNodeSignature(), compResult.getSimilarity());
 			addResultToMapping(this.potentialResultMapping, compResult.getRightNodeSignature(),
@@ -78,6 +78,9 @@ public class ResultEngine {
 	 * Removes Matchings which don't meet the threshold
 	 */
 	private void applyThresholdMatching() {
+		System.out.println("Before:" + listOfComparedNodes.size());
+		System.out.println("Removed list: " + listOfComparedNodesRemoved.size());
+		
 		for (NodeComparisonResult aComparedNodesTuple : listOfComparedNodes) {
 			// Remove Matching which are lower than threshold
 			if (aComparedNodesTuple.getSimilarity() < ResultEngine.SIMILARITY_THRESHOLD) {
@@ -86,9 +89,8 @@ public class ResultEngine {
 		}
 
 		listOfComparedNodes.removeAll(listOfComparedNodesRemoved);
-
-//		System.out.println("Removed: " + listOfComparedNodesRemoved.size());
-//		System.out.println("Kept: " + listOfComparedNodes.size());
+		System.out.println("After: "+ listOfComparedNodes.size());
+		System.out.println("Removed: " + listOfComparedNodesRemoved.size());
 	}
 
 	/**
@@ -96,7 +98,7 @@ public class ResultEngine {
 	 * similarity value
 	 */
 	public void matchNodes() {
-		applyThresholdMatching(); // Remove Node comparisons that do not meet threshold (under matched or only matched by type)
+		//applyThresholdMatching(); // Remove Node comparisons that do not meet threshold (under matched or only matched by type)
 		while (directResultMapping.size() > 0) {
 			ResultMapping resultMap = directResultMapping.get(0);
 			if (resultMap.getMappedResults().size() == 0) {
