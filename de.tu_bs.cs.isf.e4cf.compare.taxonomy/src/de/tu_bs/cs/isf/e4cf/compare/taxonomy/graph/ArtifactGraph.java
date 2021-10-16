@@ -591,9 +591,10 @@ public class ArtifactGraph {
 	 * Gets Node with the smallest number of characters from the root Node
 	 */
 	private GraphNode getSmallestRootNode(List<GraphNode> potentialRootNodes) {
-		int rootVariantSize = getHighestSizeInVariants();
 		GraphNode rootVariantNode = null;
-
+		try {
+		int rootVariantSize = getHighestSizeInVariants();
+		
 		// iterate through all potential root nodes
 		for (GraphNode aPotentialRootNode : potentialRootNodes) {
 			// iterate through list of all artifact file details
@@ -607,11 +608,22 @@ public class ArtifactGraph {
 						// Make variant the new root
 						rootVariantNode = aPotentialRootNode;
 					}
+					
+					if (potentialRootNodes.size() == 1) {
+						rootVariantNode = aPotentialRootNode;
+					}
 				}
 			}
 		}
-
-		rootVariantNode.setColor(Color.PINK); // Change Root variant node Color.rgb(91, 127, 255)
+		if (rootVariantNode != null) {
+			rootVariantNode.setColor(Color.PINK); // Change Root variant node Color.rgb(91, 127, 255)
+		} else {
+			System.out.println("Could not mine root node");
+		}
+		
+		} catch (Exception ex) {
+			System.out.println("Error finding root node: "+ ex.getMessage());
+		}
 		return rootVariantNode;
 	}
 
