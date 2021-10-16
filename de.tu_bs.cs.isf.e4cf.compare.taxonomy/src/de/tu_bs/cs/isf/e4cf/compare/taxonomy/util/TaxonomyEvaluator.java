@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.data_structures.VariantTaxonomyNode;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
 
 /**
  * @author developer-olan
@@ -42,7 +41,7 @@ public class TaxonomyEvaluator {
 	// Ground Truth Properties
 	private int gtTotalNodes = 0;
 	private int gtMaxDepth;
-	private int levelMeasureTotal;
+	//private int levelMeasureTotal;
 	
 	// Ground Truth Properties
 	private int ctTotalNodes = 0;
@@ -52,8 +51,8 @@ public class TaxonomyEvaluator {
 	 * Compute Primary and Secondary metrics measures for taxonomies
 	 */
 	public void computePrimaryMeasures() {
-		this.levelMeasureTotal = 0;
-		int levelMeasure = gtTotalNodes;
+		//this.levelMeasureTotal = 0;
+//		int levelMeasure = gtTotalNodes;
 		
 		for (int i = 0; i <= gtMaxDepth; i++) {
 			int tp = 0;
@@ -87,13 +86,14 @@ public class TaxonomyEvaluator {
 			falsePositivesValue += fp;
 			falseNegativesValue += fn;
 
-			levelMeasure -= gtNodesAtLevel.size();
+//			levelMeasure -= gtNodesAtLevel.size();
 		}
 	}
 
 	/**
 	 * Compute Primary metrics measures for the taxonomy accuracy using Predecessors and Successors prediction accuracy
 	 */
+	@SuppressWarnings("unused")
 	public void computePrimaryMeasuresPS() {
 		// Compute Depth and Total Number of Nodes
 				List<VariantTaxonomyNode> allGTNodes = new ArrayList<VariantTaxonomyNode>(); // All Ground Truth Nodes
@@ -157,10 +157,15 @@ public class TaxonomyEvaluator {
 					
 					
 
-					truePositivesValue += (pTP+sTP);
-					trueNegativesValue += (pTN+sTN);
-					falsePositivesValue += (pFP+sFP);
-					falseNegativesValue += (pFN+sFN);
+//					truePositivesValue += (pTP+sTP);
+//					trueNegativesValue += (pTN+sTN);
+//					falsePositivesValue += (pFP+sFP);
+//					falseNegativesValue += (pFN+sFN);
+					
+					truePositivesValue += (pTP);
+					trueNegativesValue += (pTN);
+					falsePositivesValue += (pFP);
+					falseNegativesValue += (pFN);
 				}
 				
 	}
@@ -351,7 +356,7 @@ public class TaxonomyEvaluator {
 	 */
 	public List<VariantTaxonomyNode> getNodesForLevel(VariantTaxonomyNode rootNode, int level) {
 		List<VariantTaxonomyNode> nodesAtLevel = new ArrayList<VariantTaxonomyNode>();
-		getNodesForLevelRecursive(rootNode, level, nodesAtLevel);
+		nodesAtLevel.addAll(getNodesForLevelRecursive(rootNode, level));
 		return nodesAtLevel;
 	}
 
@@ -362,14 +367,16 @@ public class TaxonomyEvaluator {
 	 * @param level
 	 * @param nodesAtLevel
 	 */
-	public void getNodesForLevelRecursive(VariantTaxonomyNode node, int level, List<VariantTaxonomyNode> nodesAtLevel) {
+	public List<VariantTaxonomyNode> getNodesForLevelRecursive(VariantTaxonomyNode node, int level) {
+		List<VariantTaxonomyNode> nodesAtLevel = new ArrayList<VariantTaxonomyNode>();
 		if (node.getTreeDepth() == level) {
 			nodesAtLevel.add(node);
 		} else if (node.getVariantChildren().size() > 0 && node.getTreeDepth() < level) {
 			for (VariantTaxonomyNode aChildVariantNode : node.getVariantChildren()) {
-				getNodesForLevelRecursive(aChildVariantNode, level, nodesAtLevel);
+				nodesAtLevel.addAll(getNodesForLevelRecursive(aChildVariantNode, level));
 			}
 		}
+		return nodesAtLevel;
 	}
 
 	/**
