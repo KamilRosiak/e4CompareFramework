@@ -14,14 +14,13 @@ public class ProcessUtil {
 	private BufferedReader reader;
 	private BufferedWriter writer;
 	private Process process;
+	
 
-	public static boolean useExe = true;
-
-	public void startProcess(String path) {
+	public void startProcess(String path, boolean isPython) {
 		try {
 
 			ProcessBuilder builder = null;
-			if (useExe) {
+			if (!isPython) {
 				builder = new ProcessBuilder(path);
 			} else {
 				builder = new ProcessBuilder("py", path);

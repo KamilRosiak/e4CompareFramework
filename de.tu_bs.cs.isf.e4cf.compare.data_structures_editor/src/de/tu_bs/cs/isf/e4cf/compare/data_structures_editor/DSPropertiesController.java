@@ -84,13 +84,7 @@ public class DSPropertiesController {
 		String s = PropertiesViewUtilities.getInput("Please enter new property designation");
 		String oldName = "";
 		if (s != null) {
-
 			AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
-			oldName = getSelectedItem().getAttributeKey();
-			attr.setAttributeKey(s);
-			propertiesManager.execute(
-					new RenamePropertyAction("renameProperty", oldName, (AbstractAttribute) getSelectedItem()));
-
 			if (cloneModel != null) {
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put(DSEditorST.ATTRIBUTE, attr);
@@ -98,9 +92,15 @@ public class DSPropertiesController {
 				map.put(DSEditorST.KEY, s);
 				map.put(DSEditorST.CLONE_MODEL, cloneModel);
 				services.eventBroker.send(DSEditorST.ATTRIBUTE_EDIT_KEY_EVENT, map);
+			} else {
+
+				oldName = getSelectedItem().getAttributeKey();
+				attr.setAttributeKey(s);
+				propertiesManager.execute(
+						new RenamePropertyAction("renameProperty", oldName, (AbstractAttribute) getSelectedItem()));
+				refreshGUI();
 			}
 
-			refreshGUI();
 		}
 	}
 
@@ -118,11 +118,6 @@ public class DSPropertiesController {
 			Value editedValue = new StringValueImpl(newValue);
 			Attribute selectedAttribute = getSelectedItem();
 
-			getSelectedItem().getAttributeValues().clear();
-			getSelectedItem().getAttributeValues().add(editedValue);
-			newAttributeValues = getSelectedItem().getAttributeValues();
-			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
-
 			if (cloneModel != null) {
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put(DSEditorST.ATTRIBUTE, selectedAttribute);
@@ -130,9 +125,15 @@ public class DSPropertiesController {
 				map.put(DSEditorST.VALUE, editedValue);
 				map.put(DSEditorST.CLONE_MODEL, cloneModel);
 				services.eventBroker.send(DSEditorST.ATTRIBUTE_EDIT_VALUE_EVENT, map);
-			}
+			} else {
+				getSelectedItem().getAttributeValues().clear();
+				getSelectedItem().getAttributeValues().add(editedValue);
+				newAttributeValues = getSelectedItem().getAttributeValues();
+				propertiesManager
+						.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
 
-			refreshGUI();
+				refreshGUI();
+			}
 		}
 	}
 
@@ -142,20 +143,23 @@ public class DSPropertiesController {
 	@FXML
 	public void removeNodeAttribute() {
 		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
+
 			Attribute deletedAttribute = getSelectedItem();
-			services.eventBroker.send(DSEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
+
 			services.eventBroker.send(DSEditorST.ASK_FOR_SELECTED_ITEM_EVENT, true);
 			NodeAttributePair pair = new NodeAttributePair(selectedNode, deletedAttribute);
-			propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
-
 			if (cloneModel != null) {
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put(DSEditorST.ATTRIBUTE, pair.getAttribute());
 				map.put(DSEditorST.SELECTED_NODE, pair.getOwner());
 				map.put(DSEditorST.CLONE_MODEL, cloneModel);
 				services.eventBroker.send(DSEditorST.ATTRIBUTE_DELETE_EVENT, map);
+			} else {
+				services.eventBroker.send(DSEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
+				propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
+				refreshGUI();
 			}
-			refreshGUI();
+
 		}
 
 	}
@@ -172,10 +176,6 @@ public class DSPropertiesController {
 			Value newValue = new StringValueImpl(s);
 			Attribute selectedAttribute = getSelectedItem();
 
-			selectedAttribute.getAttributeValues().add(newValue);
-			newAttributeValues = selectedAttribute.getAttributeValues();
-			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
-
 			if (cloneModel != null) {
 
 				Map<String, Object> map = new HashMap<String, Object>();
@@ -184,9 +184,14 @@ public class DSPropertiesController {
 				map.put(DSEditorST.CLONE_MODEL, cloneModel);
 				map.put(DSEditorST.VALUE, newValue);
 				services.eventBroker.send(DSEditorST.ATTRIBUTE_ADD_VALUE_EVENT, map);
+			} else {
+				selectedAttribute.getAttributeValues().add(newValue);
+				newAttributeValues = selectedAttribute.getAttributeValues();
+				propertiesManager
+						.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
+				refreshGUI();
 			}
 
-			refreshGUI();
 		}
 	}
 

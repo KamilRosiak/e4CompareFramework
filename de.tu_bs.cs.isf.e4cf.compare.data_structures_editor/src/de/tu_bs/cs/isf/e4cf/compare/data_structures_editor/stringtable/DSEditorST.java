@@ -34,8 +34,7 @@ public class DSEditorST {
 
 	public static final String ADD_CHILD_EVENT = "ADD_CHILD_EVENT";
 	public static final String ADDED_NODE = "ADDED_NODE";
-	public static final String SELECTED_NODE = "SELECTED_NODE";
-	public static final String CALLBACK = "CALLBACK";
+	public static final String SELECTED_NODE = "SELECTED_NODE";	
 	public static final String VALUE = "VALUE";
 	public static final String KEY = "KEY";
 	public static final String TREE = "TREE";

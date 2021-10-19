@@ -27,10 +27,12 @@ public class DeleteAttributeEventHandler extends EventHandlerBase {
 		Node selectedNode = (Node) event.getProperty(DSEditorST.SELECTED_NODE);
 		Attribute attribute = (Attribute) event.getProperty(DSEditorST.ATTRIBUTE);
 		CloneModel cloneModel = (CloneModel) event.getProperty(DSEditorST.CLONE_MODEL);
+			
+		cloneModel.deleteAttribute(selectedNode, attribute);
 		
-		cloneModel.removeAttribute(selectedNode, attribute);
+		refreshTree(cloneModel);
 		
-		clusterEngine.analyzeCloneModel(cloneModel, null);
+		
 		
 	}
 

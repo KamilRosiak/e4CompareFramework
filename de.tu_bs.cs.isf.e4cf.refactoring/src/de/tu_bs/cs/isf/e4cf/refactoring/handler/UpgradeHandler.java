@@ -8,6 +8,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
+import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 
 public class UpgradeHandler {
@@ -15,6 +16,8 @@ public class UpgradeHandler {
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, IntegrationPipeline integrationPipeline,
 			UpgradePipeline upgradePipeline) {
+
+		ClusterEngine.startProcess();
 
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 		CloneModel cloneModel = integrationPipeline.pipe(tree, null);
@@ -25,7 +28,7 @@ public class UpgradeHandler {
 						.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(i));
 				upgradePipeline.pipe(cloneModel, tree2);
 			}
-			
+
 			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, cloneModel.restoreIntegratedTrees().get(0));
 		}
 

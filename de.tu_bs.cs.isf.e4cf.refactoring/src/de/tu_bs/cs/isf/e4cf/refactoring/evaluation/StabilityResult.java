@@ -29,13 +29,15 @@ public class StabilityResult {
 		this.clusterMerges = clusterMerges;
 	}
 
-	private ChangeAction changeAction;
+	private ChangeActionType changeAction;
+	
+	
 
-	public ChangeAction getChangeAction() {
+	public ChangeActionType getChangeAction() {
 		return changeAction;
 	}
 
-	public void setChangeAction(ChangeAction changeAction) {
+	public void setChangeAction(ChangeActionType changeAction) {
 		this.changeAction = changeAction;
 	}
 
@@ -65,7 +67,7 @@ public class StabilityResult {
 		}
 		clusterMergeString += ")";
 
-		return clusterSplitString + "," + clusterMergeString + "," + changeAction.getChangeActionType();
+		return clusterSplitString + "," + clusterMergeString + "," + changeAction.toString();
 	}
 
 }

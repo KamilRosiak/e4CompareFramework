@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetReferenceTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetTree;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ReferenceTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 
@@ -82,7 +82,7 @@ public class ActionView extends View {
 
 		List<MultiSetTree> components = new ArrayList<MultiSetTree>();
 
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
+		for (Entry<ReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
 			components.addAll(entry.getValue());
 		}
 

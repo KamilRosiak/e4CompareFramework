@@ -20,6 +20,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.google.common.collect.Lists;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
+import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -27,8 +28,8 @@ import de.tu_bs.cs.isf.e4cf.refactoring.evaluation.StabilityResult;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetNode;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetReferenceTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetTree;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.ReferenceTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
 
 @Singleton
@@ -37,9 +38,8 @@ public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
 	private static String scriptPathExe;
 	private static String scriptPathPython;
-	private static String scriptPath;
-
 	public static float THRESHOLD = 0.15f;
+	public static boolean PYTHON = true;
 
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
@@ -48,47 +48,44 @@ public class ClusterEngine {
 		scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
 				+ "script/clustering_sklearn.py").substring(1)).getPath();
 
-		scriptPath = scriptPathExe;
-
 	}
 
-	public static void configureScriptPath(boolean useExe) {
-		scriptPath = useExe ? scriptPathExe : scriptPathPython;
-		ProcessUtil.useExe = useExe;
+	private static ProcessUtil process;
+	private StabilityResult stabilityResult;
+
+	public StabilityResult getStabilityResult() {
+		return stabilityResult;
 	}
 
-	public String getScriptPath() {
-		return scriptPath;
+	public void setStabilityResult(StabilityResult stabilityResult) {
+		this.stabilityResult = stabilityResult;
 	}
-
-	private static ProcessUtil processUtil;
 
 	public static void startProcess() {
-		processUtil = new ProcessUtil();
-		processUtil.startProcess(scriptPath);
+		if (process == null) {
+			process = new ProcessUtil();
+			if (PYTHON) {
+				process.startProcess(scriptPathPython, true);
+			} else {
+				process.startProcess(scriptPathExe, false);
+			}
+		}
 	}
 
-	public Map<Granularity, List<Set<Node>>> detectClusters(Map<Granularity, List<Node>> nodes, ProcessUtil process) {
+	public Map<Granularity, List<Set<Node>>> detectClusters(Map<Granularity, List<Node>> nodes) {
 		Map<Granularity, List<Set<Node>>> layerToClusters = new HashMap<Granularity, List<Set<Node>>>();
-
-		if (process == null) {
-			if (processUtil == null) {
-				startProcess();
-			}
-			process = processUtil;
-		}
 
 		for (Entry<Granularity, List<Node>> entry : nodes.entrySet()) {
 
 			layerToClusters.put(entry.getKey(),
-					detectClusters(entry.getValue(), buildDistanceString(entry.getValue()), process));
+					detectClusters(entry.getValue(), buildDistanceString(entry.getValue())));
 
 		}
 
 		return layerToClusters;
 	}
 
-	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString, ProcessUtil process) {
+	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString) {
 
 		try {
 
@@ -100,7 +97,7 @@ public class ClusterEngine {
 				return clusters;
 			}
 
-			String[] results = getClusterResults(distanceString, process);
+			String[] results = getClusterResults(distanceString);
 
 			Iterator<Node> iterator = nodes.iterator();
 			Map<Integer, Set<Node>> map = new HashMap<Integer, Set<Node>>();
@@ -126,7 +123,7 @@ public class ClusterEngine {
 
 	}
 
-	private String[] getClusterResults(String distanceString, ProcessUtil process) throws IOException {
+	private String[] getClusterResults(String distanceString) throws IOException {
 		String thresholdString = "";
 		thresholdString += THRESHOLD;
 		BufferedWriter writer = process.getWriter();
@@ -139,8 +136,7 @@ public class ClusterEngine {
 		return results;
 	}
 
-	private List<Set<MultiSetTree>> detectMultiSetClusters(List<MultiSetTree> nodes, String distanceString,
-			ProcessUtil process) {
+	private List<Set<MultiSetTree>> detectComponentClusters(List<MultiSetTree> nodes, String distanceString) {
 
 		try {
 
@@ -152,7 +148,7 @@ public class ClusterEngine {
 				return clusters;
 			}
 
-			String[] results = getClusterResults(distanceString, process);
+			String[] results = getClusterResults(distanceString);
 
 			Iterator<MultiSetTree> iterator = nodes.iterator();
 			Map<Integer, Set<MultiSetTree>> map = new HashMap<Integer, Set<MultiSetTree>>();
@@ -178,22 +174,11 @@ public class ClusterEngine {
 
 	}
 
-	public void analyzeCloneModel(CloneModel cloneModel, ProcessUtil process) {
-		analyzeCloneModel(cloneModel, process, null);
-	}
+	public void analyzeCloneModel(CloneModel cloneModel) {
 
-	public void analyzeCloneModel(CloneModel cloneModel, ProcessUtil process, StabilityResult stabilityResult) {
+		for (Entry<ReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
 
-		if (process == null) {
-			if (processUtil == null) {
-				startProcess();
-			}
-			process = processUtil;
-		}
-
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
-
-			MultiSetReferenceTree completeTree = entry.getKey();
+			ReferenceTree completeTree = entry.getKey();
 
 			Map<String, List<MultiSetTree>> granularityMapping = cloneModel.getGranularitiesToComponents(completeTree);
 
@@ -202,14 +187,14 @@ public class ClusterEngine {
 				List<MultiSetTree> newMultiSetTrees = new ArrayList<MultiSetTree>();
 
 				for (MultiSetTree multiSetTree : innerEntry.getValue()) {
-					analyzeIntraSimilarity(process, newMultiSetTrees, multiSetTree, completeTree, stabilityResult);
+					analyzeIntraSimilarity(newMultiSetTrees, multiSetTree, completeTree);
 				}
 
 				List<MultiSetTree> allMultiSetTrees = new ArrayList<MultiSetTree>();
 				allMultiSetTrees.addAll(innerEntry.getValue());
 				allMultiSetTrees.addAll(newMultiSetTrees);
 
-				analyzeInterSimilarity(cloneModel, process, completeTree, allMultiSetTrees, stabilityResult);
+				analyzeInterSimilarity(cloneModel, completeTree, allMultiSetTrees);
 
 			}
 
@@ -217,26 +202,17 @@ public class ClusterEngine {
 
 	}
 
-	private void analyzeInterSimilarity(CloneModel cloneModel, ProcessUtil process, MultiSetReferenceTree completeTree,
-			List<MultiSetTree> allMultiSetTrees, StabilityResult stabilityResult) {
+	private void analyzeInterSimilarity(CloneModel cloneModel, ReferenceTree completeTree,
+			List<MultiSetTree> allMultiSetTrees) {
 		String distanceString = buildDistanceComponentString(allMultiSetTrees);
-		List<Set<MultiSetTree>> clusters = detectMultiSetClusters(new ArrayList<MultiSetTree>(allMultiSetTrees),
-				distanceString, process);
+		List<Set<MultiSetTree>> clusters = detectComponentClusters(new ArrayList<MultiSetTree>(allMultiSetTrees),
+				distanceString);
 		for (Set<MultiSetTree> cluster : clusters) {
-
 			MultiSetTree baseComponent = (MultiSetTree) cluster.iterator().next();
-
 			for (MultiSetTree node : cluster) {
-
 				if (baseComponent != node) {
 					cloneModel.mergeTrees(completeTree, baseComponent, node);
-
-					if (stabilityResult != null) {
-						Map<String, Integer> clusterMerges = stabilityResult.getClusterMerges();
-						int count = clusterMerges.get(baseComponent.getGranularity().getLayer()) + 1;
-						clusterMerges.put(baseComponent.getGranularity().getLayer(), count);
-					}
-
+					countMerge(baseComponent);
 				}
 
 			}
@@ -244,8 +220,8 @@ public class ClusterEngine {
 		}
 	}
 
-	private void analyzeIntraSimilarity(ProcessUtil process, List<MultiSetTree> newMultiSetTrees,
-			MultiSetTree multiSetTree, MultiSetReferenceTree completeTree, StabilityResult stabilityResult) {
+	private void analyzeIntraSimilarity(List<MultiSetTree> newMultiSetTrees, MultiSetTree multiSetTree,
+			ReferenceTree completeTree) {
 		Map<Node, MultiSetNode> mapping = new HashMap<Node, MultiSetNode>();
 		for (MultiSetNode multiSetNode : multiSetTree.getRoots()) {
 			Node node = multiSetNode.restoreNode();
@@ -254,7 +230,7 @@ public class ClusterEngine {
 
 		Set<Node> nodes = mapping.keySet();
 		List<Set<Node>> clusters = detectClusters(Lists.newArrayList(nodes),
-				buildDistanceString(Lists.newArrayList(nodes)), process);
+				buildDistanceString(Lists.newArrayList(nodes)));
 
 		if (clusters.size() > 1) {
 			Set<Node> baseSet = clusters.get(0);
@@ -264,15 +240,27 @@ public class ClusterEngine {
 					MultiSetTree newTree = multiSetTree.removeRootAndCreateNewTree(multiSetNode);
 					newMultiSetTrees.add(newTree);
 
-					if (stabilityResult != null) {
-						Map<String, Integer> clusterSplits = stabilityResult.getClusterSplits();
-						int count = clusterSplits.get(multiSetTree.getGranularity().getLayer()) + 1;
-						clusterSplits.put(multiSetTree.getGranularity().getLayer(), count);
-					}
+					countSplit(multiSetTree);
 
 				}
 
 			}
+		}
+	}
+
+	private void countSplit(MultiSetTree multiSetTree) {
+		if (stabilityResult != null) {
+			Map<String, Integer> clusterSplits = stabilityResult.getClusterSplits();
+			int count = clusterSplits.get(multiSetTree.getGranularity().getLayer()) + 1;
+			clusterSplits.put(multiSetTree.getGranularity().getLayer(), count);
+		}
+	}
+
+	private void countMerge(MultiSetTree multiSetTree) {
+		if (stabilityResult != null) {
+			Map<String, Integer> clusterMerges = stabilityResult.getClusterMerges();
+			int count = clusterMerges.get(multiSetTree.getGranularity().getLayer()) + 1;
+			clusterMerges.put(multiSetTree.getGranularity().getLayer(), count);
 		}
 	}
 
@@ -322,7 +310,6 @@ public class ClusterEngine {
 	}
 
 	private String buildDistanceString(List<Node> nodes) {
-
 		float[][] matrix = new float[nodes.size()][nodes.size()];
 		for (int i = 0; i < nodes.size(); i++) {
 			for (int j = i; j < nodes.size(); j++) {
@@ -337,11 +324,8 @@ public class ClusterEngine {
 					matrix[i][j] = distance;
 					matrix[j][i] = distance;
 				}
-
 			}
-
 		}
-
 		return getDistanceString(matrix, nodes.size());
 	}
 
@@ -349,16 +333,13 @@ public class ClusterEngine {
 		float maxDistance = 0.0f;
 		for (MultiSetNode node1 : nodes1) {
 			for (MultiSetNode node2 : nodes2) {
-
 				Node restored1 = node1.restoreNode();
 				Node restored2 = node2.restoreNode();
-
-				float distance = 1 - compareEngine.compare(restored1, restored2).getSimilarity();
-
+				Comparison<Node> comparison = compareEngine.compare(restored1, restored2);
+				float distance = 1 - comparison.getSimilarity();
 				if (distance > maxDistance) {
 					maxDistance = distance;
 				}
-
 			}
 		}
 		return maxDistance;

@@ -1,14 +1,24 @@
-package de.tu_bs.cs.isf.e4cf.refactoring.evaluation;
+package de.tu_bs.cs.isf.e4cf.refactoring.model.result;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
-public class EditAttributeValueAction extends ChangeAction {
+public class EditAttributeValueResult {
+
+	private Node node;
 
 	private Attribute attribute;
 
 	private Value value;
+
+	public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
+	}
 
 	public Attribute getAttribute() {
 		return attribute;
@@ -26,11 +36,11 @@ public class EditAttributeValueAction extends ChangeAction {
 		this.value = value;
 	}
 
-	public EditAttributeValueAction(Node node, Attribute attribute, Value value) {
-		super(node, ChangeActionType.EDIT_ATTRIBUTE_VALUE);
+	public EditAttributeValueResult(Node node, Attribute attribute, Value value) {
+		super();
+		this.node = node;
 		this.attribute = attribute;
 		this.value = value;
-
 	}
 
 }

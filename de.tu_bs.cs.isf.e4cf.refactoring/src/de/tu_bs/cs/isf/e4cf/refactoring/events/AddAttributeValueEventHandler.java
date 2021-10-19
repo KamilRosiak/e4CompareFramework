@@ -31,8 +31,8 @@ public class AddAttributeValueEventHandler extends EventHandlerBase {
 		CloneModel cloneModel = (CloneModel) event.getProperty(DSEditorST.CLONE_MODEL);
 		
 		cloneModel.addAttributeValue(selectedNode, attribute, value);
-
-		clusterEngine.analyzeCloneModel(cloneModel, null);
+		refreshTree(cloneModel);	
+		
 
 	}
 

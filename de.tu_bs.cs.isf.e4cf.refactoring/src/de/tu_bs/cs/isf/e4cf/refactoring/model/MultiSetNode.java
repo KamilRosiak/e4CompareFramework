@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,12 +9,35 @@ import java.util.Map;
 import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.AddAttributeResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.AddAttributeValueResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.AddChildResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.DeleteAttributeResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.DeleteResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.EditAttributeKeyResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.EditAttributeValueResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.MoveResult;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 
 public class MultiSetNode {
+
+	public Set<MultiSetNode> getReferences() {
+		return references;
+	}
+
+	private Set<MultiSetNode> references;
+
+	private MultiSetNode parent;
+
+	private List<MultiSetNode> children;
+
+	private Node node;
+
+	private List<MultiSetAttribute> attributes;
 
 	private boolean isRoot;
 
@@ -25,22 +49,36 @@ public class MultiSetNode {
 		return isRoot;
 	}
 
-	private Node node;
+	public void addReference(MultiSetNode multiSetNode) {
+		this.references.add(multiSetNode);
+	}
 
-	private List<MultiSetAttribute> attributes;
+	public void setNode(Node node) {
+		this.node = node;
+	}
 
-	private Set<MultiSetNode> references;
+	public List<MultiSetNode> getChildren() {
+		return children;
+	}
 
-	private List<MultiSetNode> children;
+	public List<MultiSetAttribute> getAttributes() {
+		return attributes;
+	}
 
-	private MultiSetNode parent;
+	public Node getNode() {
+		return node;
+	}
+
+	public MultiSetNode getParent() {
+		return parent;
+	}
 
 	public MultiSetNode(Node node) {
-		super();
+
+		this.references = new HashSet<MultiSetNode>();
+		this.children = new ArrayList<MultiSetNode>();
 		this.node = node;
-		references = new HashSet<MultiSetNode>();
-		children = new ArrayList<MultiSetNode>();
-		attributes = new ArrayList<MultiSetAttribute>();
+		this.attributes = new ArrayList<MultiSetAttribute>();
 
 		for (Attribute attribute : node.getAttributes()) {
 			attributes.add(new MultiSetAttribute(attribute, this));
@@ -48,494 +86,498 @@ public class MultiSetNode {
 
 	}
 
-	public MultiSetNode(Node node, boolean isRoot) {
-		this(node);
-		this.isRoot = isRoot;
+	public List<DeleteResult> delete(Set<Node> deletedNodes) {
+		return delete(deletedNodes, null);
+	}
+
+	public List<DeleteResult> delete(Set<Node> deletedNodes, Set<MultiSetNode> selectedReferences) {
+
+		List<DeleteResult> deleteResults = new ArrayList<DeleteResult>();
+
+		deletedNodes.add(node);
+		if (!isRoot) {
+			parent.children.remove(this);
+		}
+		deleteResults.add(new DeleteResult(node));
+
+		Set<MultiSetNode> referenceList = selectedReferences == null ? references : selectedReferences;
+
+		for (MultiSetNode reference : referenceList) {
+
+			deletedNodes.add(reference.node);
+			if (!reference.isRoot) {
+				reference.parent.children.remove(reference);
+			}
+			deleteResults.add(new DeleteResult(reference.node));
+
+		}
+		return deleteResults;
+	}
+
+	public List<AddAttributeResult> addAttribute(Attribute attribute, Map<Node, Attribute> nodeToAttribute) {
+		return addAttribute(attribute, nodeToAttribute, null);
+	}
+
+	public List<AddAttributeResult> addAttribute(Attribute attribute, Map<Node, Attribute> nodeToAttribute,
+			Set<MultiSetNode> selectedReferences) {
+
+		List<AddAttributeResult> addAttributeResults = new ArrayList<AddAttributeResult>();
+
+		Attribute clonedAttribute = null;
+		if (!nodeToAttribute.containsKey(node)) {
+			clonedAttribute = attribute.cloneAttribute();
+			node.addAttribute(clonedAttribute);
+			nodeToAttribute.put(node, clonedAttribute);
+		} else {
+			clonedAttribute = nodeToAttribute.get(node);
+		}
+
+		addAttributeResults.add(new AddAttributeResult(node, clonedAttribute));
+
+		MultiSetAttribute newMultiSetAttribute = new MultiSetAttribute(clonedAttribute, this);
+		this.attributes.add(newMultiSetAttribute);
+
+		List<MultiSetAttribute> newAttributes = new ArrayList<MultiSetAttribute>();
+		newAttributes.add(newMultiSetAttribute);
+
+		Set<MultiSetNode> referenceList = selectedReferences == null ? references : selectedReferences;
+
+		for (MultiSetNode reference : referenceList) {
+
+			if (!nodeToAttribute.containsKey(reference.node)) {
+				clonedAttribute = attribute.cloneAttribute();
+				reference.node.addAttribute(clonedAttribute);
+				nodeToAttribute.put(reference.node, clonedAttribute);
+			} else {
+				clonedAttribute = nodeToAttribute.get(reference.node);
+			}
+
+			MultiSetAttribute newMultiSetReferenceAttribute = new MultiSetAttribute(clonedAttribute, reference);
+			newAttributes.add(newMultiSetReferenceAttribute);
+			reference.attributes.add(newMultiSetReferenceAttribute);
+
+			addAttributeResults.add(new AddAttributeResult(reference.node, clonedAttribute));
+
+		}
+
+		for (MultiSetAttribute multiSetAttribute1 : newAttributes) {
+			for (MultiSetAttribute multiSetAttribute2 : newAttributes) {
+
+				if (multiSetAttribute1 != multiSetAttribute2) {
+					multiSetAttribute1.addReference(multiSetAttribute2);
+					multiSetAttribute2.addReference(multiSetAttribute1);
+				}
+			}
+		}
+
+		return addAttributeResults;
 
 	}
 
-	public void addReference(MultiSetNode reference) {
-		references.add(reference);
+	public List<DeleteAttributeResult> deleteAttribute(Attribute attribute, Set<Attribute> deletedAttributes) {
+		return deleteAttribute(attribute, deletedAttributes, null);
 	}
 
-	public MultiSetAttribute getByAttribute(Attribute attribute) {
+	public List<DeleteAttributeResult> deleteAttribute(Attribute attribute, Set<Attribute> deletedAttributes,
+			Set<MultiSetAttribute> selectedReferences) {
+
+		List<DeleteAttributeResult> deleteAttributeResults = new ArrayList<DeleteAttributeResult>();
+
+		MultiSetAttribute multiSetAttribute = getAttribute(attribute);
+
+		multiSetAttribute.getMultiSetNode().attributes.remove(multiSetAttribute);
+		deletedAttributes.add(attribute);
+
+		deleteAttributeResults.add(new DeleteAttributeResult(this.node, attribute));
+
+		Set<MultiSetAttribute> referenceList = selectedReferences == null ? multiSetAttribute.getReferences()
+				: selectedReferences;
+
+		for (MultiSetAttribute reference : referenceList) {
+
+			reference.getMultiSetNode().attributes.remove(reference);
+			deletedAttributes.add(reference.getAttribute());
+
+			deleteAttributeResults
+					.add(new DeleteAttributeResult(reference.getMultiSetNode().node, reference.getAttribute()));
+		}
+
+		return deleteAttributeResults;
+
+	}
+
+	public List<MoveResult> move(int position) {
+		return move(position, null);
+	}
+
+	public List<MoveResult> move(int position, Set<MultiSetNode> selectedReferences) {
+
+		List<MoveResult> results = new ArrayList<MoveResult>();
+
+		int currentPosition = this.getPosition();
+
+		Collections.swap(parent.children, currentPosition, position);
+
+		results.add(new MoveResult(node, position));
+
+		Set<MultiSetNode> referenceList = selectedReferences == null ? references : selectedReferences;
+
+		for (MultiSetNode reference : referenceList) {
+			List<MultiSetNode> subsequence = SynchronizationUtil.findLongestCommonSubsequence(reference.parent.children,
+					this.parent.children);
+
+			List<MultiSetNode> childList = new ArrayList<MultiSetNode>(reference.parent.children);
+
+			for (MultiSetNode child : childList) {
+
+				if (!subsequence.contains(child)) {
+
+					int referencePosition = -1;
+					for (MultiSetNode childReference : child.references) {
+
+						if (parent.children.contains(childReference)) {
+							referencePosition = childReference.getPosition();
+							break;
+						}
+					}
+
+					if (referencePosition != -1) {
+						subsequence.add(child);
+						int currentReferencePosition = child.getPosition();
+
+						Collections.swap(reference.parent.children, currentReferencePosition, referencePosition);
+
+						results.add(new MoveResult(reference.node, referencePosition));
+
+					}
+
+				}
+
+			}
+
+		}
+
+		return results;
+
+	}
+
+	public List<AddAttributeValueResult> addAttributeValue(Attribute attribute, Value value,
+			Map<Attribute, Value> attributeToValue) {
+		return addAttributeValue(attribute, value, attributeToValue, null);
+	}
+
+	public List<AddAttributeValueResult> addAttributeValue(Attribute attribute, Value value,
+			Map<Attribute, Value> attributeToValue, Set<MultiSetAttribute> selectedReferences) {
+		List<AddAttributeValueResult> addAttributeValueResults = new ArrayList<AddAttributeValueResult>();
+
+		MultiSetAttribute multiSetAttribute = getAttribute(attribute);
+
+		Value clonedValue = null;
+		if (!attributeToValue.containsKey(attribute)) {
+			clonedValue = new StringValueImpl((String) value.getValue());
+			attributeToValue.put(attribute, clonedValue);
+		} else {
+			clonedValue = attributeToValue.get(attribute);
+		}
+
+		multiSetAttribute.addValue(clonedValue);
+
+		addAttributeValueResults.add(new AddAttributeValueResult(attribute, clonedValue, node));
+
+		Set<MultiSetAttribute> referenceList = selectedReferences == null ? multiSetAttribute.getReferences()
+				: selectedReferences;
+
+		for (MultiSetAttribute reference : referenceList) {
+			if (!attributeToValue.containsKey(reference.getAttribute())) {
+				clonedValue = new StringValueImpl((String) value.getValue());
+				attributeToValue.put(reference.getAttribute(), clonedValue);
+			} else {
+				clonedValue = attributeToValue.get(reference.getAttribute());
+			}
+
+			reference.addValue(clonedValue);
+			addAttributeValueResults.add(new AddAttributeValueResult(reference.getAttribute(), clonedValue,
+					reference.getMultiSetNode().getNode()));
+		}
+
+		return addAttributeValueResults;
+	}
+
+	public List<EditAttributeValueResult> editAttributeValue(Attribute attribute, Value value,
+			Map<Attribute, Value> attributeToValue) {
+		return editAttributeValue(attribute, value, attributeToValue, null);
+	}
+
+	public List<EditAttributeValueResult> editAttributeValue(Attribute attribute, Value value,
+			Map<Attribute, Value> attributeToValue, Set<MultiSetAttribute> selectedReferences) {
+		List<EditAttributeValueResult> editAttributeValueResults = new ArrayList<EditAttributeValueResult>();
+		MultiSetAttribute multiSetAttribute = getAttribute(attribute);
+
+		Value clonedValue = null;
+		if (!attributeToValue.containsKey(attribute)) {
+			clonedValue = new StringValueImpl((String) value.getValue());
+			attributeToValue.put(attribute, clonedValue);
+		} else {
+			clonedValue = attributeToValue.get(attribute);
+		}
+
+		multiSetAttribute.editValue(clonedValue);
+		editAttributeValueResults.add(new EditAttributeValueResult(node, attribute, clonedValue));
+		Set<MultiSetAttribute> referenceList = selectedReferences == null ? multiSetAttribute.getReferences()
+				: selectedReferences;
+
+		for (MultiSetAttribute reference : referenceList) {
+			clonedValue = null;
+			if (!attributeToValue.containsKey(attribute)) {
+				clonedValue = new StringValueImpl((String) value.getValue());
+				attributeToValue.put(attribute, clonedValue);
+			} else {
+				clonedValue = attributeToValue.get(attribute);
+			}
+
+			reference.editValue(clonedValue);
+			editAttributeValueResults.add(new EditAttributeValueResult(reference.getMultiSetNode().getNode(),
+					reference.getAttribute(), clonedValue));
+		}
+
+		return editAttributeValueResults;
+	}
+
+	public List<EditAttributeKeyResult> editAttributeKey(Attribute attribute, String key,
+			Set<Attribute> editedAttributes) {
+		return editAttributeKey(attribute, key, editedAttributes, null);
+	}
+
+	public List<EditAttributeKeyResult> editAttributeKey(Attribute attribute, String key,
+			Set<Attribute> editedAttributes, Set<MultiSetAttribute> selectedReferences) {
+
+		List<EditAttributeKeyResult> editAttributeKeyResults = new ArrayList<EditAttributeKeyResult>();
+
+		MultiSetAttribute multiSetAttribute = getAttribute(attribute);
+		multiSetAttribute.setKey(key);
+
+		editAttributeKeyResults.add(new EditAttributeKeyResult(node, attribute, key));
+		editedAttributes.add(attribute);
+
+		Set<MultiSetAttribute> referenceList = selectedReferences == null ? multiSetAttribute.getReferences()
+				: selectedReferences;
+
+		for (MultiSetAttribute reference : referenceList) {
+			reference.setKey(key);
+			editedAttributes.add(reference.getAttribute());
+			editAttributeKeyResults.add(
+					new EditAttributeKeyResult(reference.getMultiSetNode().getNode(), reference.getAttribute(), key));
+		}
+
+		return editAttributeKeyResults;
+
+	}
+
+	public List<AddChildResult> addChild(Node child, int position, Map<Node, Node> parentToChild) {
+		return addChild(child, position, parentToChild, null);
+	}
+
+	public List<AddChildResult> addChild(Node child, int position, Map<Node, Node> parentToChild,
+			Set<MultiSetNode> selectedReferences) {
+
+		List<AddChildResult> addChildResults = new ArrayList<AddChildResult>();
+
+		MultiSetNode multiSetNodeChild = null;
+		if (!parentToChild.containsKey(node)) {
+			Node childClone = child.cloneNode();
+			node.getChildren().add(position, childClone);
+			childClone.setParent(node);
+
+			multiSetNodeChild = MultiSetNode.create(childClone);
+			position = position > children.size() ? children.size() : position;
+			children.add(position, multiSetNodeChild);
+			parentToChild.put(node, childClone);
+			addChildResults.add(new AddChildResult(node, position, childClone));
+
+		} else if (parentToChild.containsKey(node)) {
+			multiSetNodeChild = MultiSetNode.create(parentToChild.get(node));
+			position = position > children.size() ? children.size() : position;
+			children.add(position, multiSetNodeChild);
+			addChildResults.add(new AddChildResult(node, position, parentToChild.get(node)));
+		}
+
+		multiSetNodeChild.parent = this;
+
+		List<MultiSetNode> newChildReferences = new ArrayList<MultiSetNode>();
+		newChildReferences.add(multiSetNodeChild);
+
+		Set<MultiSetNode> referenceList = selectedReferences == null ? references : selectedReferences;
+
+		for (MultiSetNode reference : referenceList) {
+			int referencePosition = getPositionOfCommonPredecessor(multiSetNodeChild, reference);
+
+			MultiSetNode multiSetNodeReferenceChild = null;
+
+			if (!reference.node.getChildren().contains(child) && !parentToChild.containsKey(reference.node)) {
+				Node childClone = child.cloneNode();
+				reference.node.getChildren().add(referencePosition, childClone);
+				childClone.setParent(reference.node);
+				multiSetNodeReferenceChild = MultiSetNode.create(childClone);
+				reference.children.add(referencePosition, multiSetNodeReferenceChild);
+				parentToChild.put(reference.node, childClone);
+
+				addChildResults.add(new AddChildResult(reference.node, referencePosition, childClone));
+
+			} else if (parentToChild.containsKey(reference.node)) {
+				multiSetNodeReferenceChild = MultiSetNode.create(parentToChild.get(reference.node));
+				reference.children.add(referencePosition, multiSetNodeReferenceChild);
+
+				addChildResults.add(new AddChildResult(reference.node, referencePosition, parentToChild.get(node)));
+			}
+
+			multiSetNodeReferenceChild.parent = reference;
+
+			newChildReferences.add(multiSetNodeReferenceChild);
+
+		}
+
+		addReferences(newChildReferences);
+
+		return addChildResults;
+
+	}
+
+	private void addReferences(List<MultiSetNode> multiSetNodes) {
+
+		for (MultiSetNode multiSetNode1 : multiSetNodes) {
+
+			for (MultiSetNode multiSetNode2 : multiSetNodes) {
+				if (multiSetNode1 != multiSetNode2) {
+					multiSetNode1.references.add(multiSetNode2);
+					multiSetNode2.references.add(multiSetNode1);
+
+					for (MultiSetAttribute multiSetAttribute1 : multiSetNode1.attributes) {
+						for (MultiSetAttribute multiSetAttribute2 : multiSetNode2.attributes) {
+							if (multiSetAttribute1.getKey().equals(multiSetAttribute2.getKey())) {
+								multiSetAttribute1.addReference(multiSetAttribute2);
+								multiSetAttribute2.addReference(multiSetAttribute1);
+							}
+
+						}
+					}
+
+					addReferencesRecursively(multiSetNode1, multiSetNode2);
+				}
+			}
+		}
+
+	}
+
+	private void addReferencesRecursively(MultiSetNode multiSetNode1, MultiSetNode multiSetNode2) {
+		for (int i = 0; i < multiSetNode1.children.size(); i++) {
+			multiSetNode1.children.get(i).references.add(multiSetNode2.children.get(i));
+			multiSetNode2.children.get(i).references.add(multiSetNode1.children.get(i));
+
+			for (MultiSetAttribute multiSetAttribute1 : multiSetNode1.children.get(i).attributes) {
+				for (MultiSetAttribute multiSetAttribute2 : multiSetNode2.children.get(i).attributes) {
+					if (multiSetAttribute1.getKey().equals(multiSetAttribute2.getKey())) {
+						multiSetAttribute1.addReference(multiSetAttribute2);
+						multiSetAttribute2.addReference(multiSetAttribute1);
+					}
+
+				}
+			}
+			addReferencesRecursively(multiSetNode1.children.get(i), multiSetNode2.children.get(i));
+
+		}
+	}
+
+	private int getPosition() {
+		return parent.children.indexOf(this);
+	}
+
+	private MultiSetNode getPredecessor() {
+
+		int position = getPosition();
+		if (position == 0) {
+			return null;
+		}
+
+		return parent.children.get(position - 1);
+
+	}
+
+	private int getPositionOfCommonPredecessor(MultiSetNode original, MultiSetNode target) {
+
+		MultiSetNode predecessor = original.getPredecessor();
+
+		while (predecessor != null) {
+			for (MultiSetNode reference : predecessor.references) {
+				if (target.children.contains(reference)) {
+					return reference.getPosition() + 1;
+				}
+			}
+			predecessor = predecessor.getPredecessor();
+		}
+		return 0;
+
+	}
+
+	public static MultiSetNode create(Node node) {
+		MultiSetNode multiSetNode = new MultiSetNode(node);
+		for (Node child : node.getChildren()) {
+			MultiSetNode childMultiSetNode = create(child);
+			childMultiSetNode.parent = multiSetNode;
+			multiSetNode.children.add(childMultiSetNode);
+		}
+		return multiSetNode;
+	}
+
+	public MultiSetNode getByNode(Node node) {
+		if (this.node.equals(node)) {
+			return this;
+		}
+		for (MultiSetNode multiSetNodeChild : children) {
+			MultiSetNode multiSetNode = multiSetNodeChild.getByNode(node);
+			if (multiSetNode != null) {
+				return multiSetNode;
+			}
+		}
+		return null;
+	}
+
+	public boolean containsNode(Node node) {
+		return getByNode(node) != null;
+	}
+
+	public MultiSetAttribute getAttribute(Attribute attribute) {
 		for (MultiSetAttribute multiSetAttribute : attributes) {
 			if (multiSetAttribute.getAttribute().equals(attribute)) {
 				return multiSetAttribute;
 			}
 		}
 		return null;
-
 	}
 
-	public MultiSetAttribute getByAttributeKey(String attributeKey) {
+	public MultiSetAttribute getAttribute(String attributeKey) {
 		for (MultiSetAttribute multiSetAttribute : attributes) {
 			if (multiSetAttribute.getKey().equals(attributeKey)) {
 				return multiSetAttribute;
 			}
 		}
 		return null;
-
-	}
-
-	public Node getNode() {
-		return node;
-	}
-
-	public void setNode(Node node) {
-		this.node = node;
-	}
-
-	public static MultiSetNode build(Node node) {
-
-		MultiSetNode multiSetNode = new MultiSetNode(node);
-
-		for (Node child : node.getChildren()) {
-			MultiSetNode childMultiSetNode = build(child);
-			childMultiSetNode.parent = multiSetNode;
-			multiSetNode.children.add(childMultiSetNode);
-		}
-
-		return multiSetNode;
-	}
-
-	public List<MultiSetNode> getByNode(Node node) {
-
-		List<MultiSetNode> multiSetNodes = new ArrayList<MultiSetNode>();
-		if (this.node.equals(node)) {
-			multiSetNodes.add(this);
-		}
-
-		for (MultiSetNode multiSetNodeChild : children) {
-			multiSetNodes.addAll(multiSetNodeChild.getByNode(node));
-		}
-
-		return multiSetNodes;
-
 	}
 
 	public List<MultiSetNode> getByGranularity(String granularity) {
-
 		List<MultiSetNode> multiSetNodes = new ArrayList<MultiSetNode>();
 		if (this.node.getNodeType().equals(granularity)) {
 			multiSetNodes.add(this);
 		}
-
 		for (MultiSetNode multiSetNodeChild : children) {
-			multiSetNodes.addAll(multiSetNodeChild.getByNode(node));
+			MultiSetNode multiSetNode = multiSetNodeChild.getByNode(node);
+
+			if (multiSetNode != null) {
+				multiSetNodes.add(multiSetNode);
+			}
 		}
 
 		return multiSetNodes;
 
-	}
-
-	public int getPosition() {
-		return parent.children.indexOf(this);
-	}
-
-	public DeleteActionResult delete(Set<MultiSetNode> selectedReferences) {
-
-		Set<Node> deletedNodes = new HashSet<Node>();
-		Map<MultiSetNode, MultiSetNode> deletedMultiSetNodes = new HashMap<MultiSetNode, MultiSetNode>();
-
-		if (!isRoot) {
-			parent.children.remove(this);
-			deletedMultiSetNodes.put(parent, this);
-		} else {
-			deletedMultiSetNodes.put(new MultiSetNode(node), this);
-		}
-
-		List<MultiSetNode> exclude = new ArrayList<MultiSetNode>();
-
-		exclude.add(this);
-		Set<MultiSetNode> referenceList = selectedReferences == null ? references : selectedReferences;
-
-		for (MultiSetNode reference : referenceList) {
-			if (!exclude.contains(reference)) {
-				reference.delete(exclude, deletedNodes, deletedMultiSetNodes);
-			}
-		}
-
-		for (MultiSetNode deletedNode : deletedMultiSetNodes.values()) {
-
-			deleteRecursively(deletedNode);
-
-		}
-
-		return new DeleteActionResult(deletedNodes, deletedMultiSetNodes);
-	}
-
-	private void delete(List<MultiSetNode> exclude, Set<Node> deletedNodes,
-			Map<MultiSetNode, MultiSetNode> deletedMultiSetNodes) {
-
-		if (isRoot) {
-			node.getParent().getChildren().remove(node);
-			deletedMultiSetNodes.put(new MultiSetNode(node), this);
-		} else {
-			parent.node.getChildren().remove(this.node);
-			parent.children.remove(this);
-			deletedMultiSetNodes.put(parent, this);
-		}
-
-		deletedNodes.add(node);
-
-		exclude.add(this);
-		for (MultiSetNode reference : references) {
-			if (!exclude.contains(reference)) {
-				reference.delete(exclude, deletedNodes, deletedMultiSetNodes);
-			}
-		}
-
-	}
-
-	private void deleteRecursively(MultiSetNode node) {
-		for (MultiSetNode reference : node.getReferences()) {
-			reference.getReferences().remove(node);
-		}
-
-		for (MultiSetAttribute attribute : node.getAttributes()) {
-			for (MultiSetAttribute reference : attribute.getReferences()) {
-				reference.getReferences().remove(attribute);
-			}
-		}
-
-		for (MultiSetNode child : node.getChildren()) {
-			deleteRecursively(child);
-		}
-
-	}
-
-	public Set<MultiSetNode> getReferences() {
-		return references;
-	}
-
-	public MoveActionResult move(int position, Set<MultiSetNode> selectedReferences) {
-
-		Map<MultiSetNode, Integer> moveMultiSetNodesWithPosition = new HashMap<MultiSetNode, Integer>();
-
-		int currentPosition = this.getPosition();
-		parent.children.remove(currentPosition);
-		parent.children.add(position, this);
-
-		List<MultiSetNode> exclude = new ArrayList<MultiSetNode>();
-		exclude.add(this);
-
-		Set<MultiSetNode> referenceList = selectedReferences == null ? references: selectedReferences;
-		
-		for (MultiSetNode reference : referenceList) {
-			if (!exclude.contains(reference)) {
-
-				List<MultiSetNode> subsequence = SynchronizationUtil
-						.findLongestCommonSubsequence2(reference.parent.children, this.parent.children);
-
-				List<MultiSetNode> childList = new ArrayList<MultiSetNode>(reference.parent.children);
-
-				for (MultiSetNode child : childList) {
-
-					if (!subsequence.contains(child)) {
-
-						int referencePosition = -1;
-						for (MultiSetNode childReference : child.references) {
-
-							if (childReference.equals(this)) {
-								referencePosition = childReference.getPosition();
-								break;
-							}
-
-						}
-
-						if (referencePosition != -1) {
-							subsequence.add(child);
-							int currentReferencePosition = child.getPosition();
-							reference.parent.children.remove(currentReferencePosition);
-							reference.parent.children.add(referencePosition, reference);
-							moveMultiSetNodesWithPosition.put(reference, referencePosition);
-						}
-
-					}
-
-				}
-
-			}
-		}
-
-		return new MoveActionResult(moveMultiSetNodesWithPosition);
-
-	}
-
-	public AddActionResult addChild(Node node, int position, Set<MultiSetNode> selectedReferences) {
-
-		Set<Node> affectedNodes = new HashSet<Node>();
-		Map<Node, Integer> affectedNodesWithPosition = new HashMap<Node, Integer>();
-		Map<MultiSetNode, MultiSetNode> addedMultiSetNodes = new HashMap<MultiSetNode, MultiSetNode>();
-
-		MultiSetNode multiSetNode = new MultiSetNode(node);
-		multiSetNode.parent = this;
-		if (position == -1) {
-			children.add(multiSetNode);
-		} else {
-
-			if (position > children.size()) {
-				position = children.size();
-			}
-
-			children.add(position, multiSetNode);
-		}
-
-		addChildRecursively(multiSetNode, node);
-
-		List<MultiSetNode> exclude = new ArrayList<MultiSetNode>();
-		Set<MultiSetNode> createdNodes = new HashSet<MultiSetNode>();
-		createdNodes.add(multiSetNode);
-		exclude.add(this);
-		addedMultiSetNodes.put(this, multiSetNode);
-
-		MultiSetNode predecessor = (this.children.size() == 1 || multiSetNode.getPosition() == 0) ? null
-				: this.children.get(multiSetNode.getPosition() - 1);
-
-		Set<MultiSetNode> referenceList = selectedReferences == null ? references : selectedReferences;
-
-		for (MultiSetNode reference : referenceList) {
-			if (!exclude.contains(reference)) {
-				reference.addChild(node, exclude, affectedNodes, createdNodes, predecessor, affectedNodesWithPosition,
-						addedMultiSetNodes);
-			}
-		}
-
-		for (MultiSetNode multiSetNode1 : createdNodes) {
-			for (MultiSetNode multiSetNode2 : createdNodes) {
-				if (!multiSetNode1.equals(multiSetNode2)) {
-					updateReferences(multiSetNode1, multiSetNode2);
-				}
-
-			}
-		}
-
-		return new AddActionResult(affectedNodes, createdNodes, affectedNodesWithPosition, addedMultiSetNodes);
-
-	}
-
-	private void addChildRecursively(MultiSetNode multiSetNode, Node node) {
-
-		for (Node child : node.getChildren()) {
-
-			MultiSetNode childMultiSetNode = new MultiSetNode(child);
-			childMultiSetNode.parent = multiSetNode;
-			multiSetNode.getChildren().add(childMultiSetNode);
-			addChildRecursively(childMultiSetNode, child);
-
-		}
-
-	}
-
-	private void updateReferences(MultiSetNode multiSetNode1, MultiSetNode multiSetNode2) {
-
-		multiSetNode1.addReference(multiSetNode2);
-
-		for (MultiSetAttribute multiSetAttribute1 : multiSetNode1.getAttributes()) {
-
-			for (MultiSetAttribute multiSetAttribute2 : multiSetNode2.getAttributes()) {
-
-				if (multiSetAttribute1.getAttribute().equals(multiSetAttribute2.getAttribute())) {
-
-					multiSetAttribute1.addReference(multiSetAttribute2);
-					multiSetAttribute2.addReference(multiSetAttribute1);
-				}
-
-			}
-
-		}
-
-		for (int i = 0; i < multiSetNode1.children.size(); i++) {
-			updateReferences(multiSetNode1.getChildren().get(i), multiSetNode2.getChildren().get(i));
-		}
-
-	}
-
-	public MultiSetNode getParent() {
-		return parent;
-	}
-
-	public List<MultiSetNode> getChildren() {
-		return children;
-	}
-
-	private void addChild(Node node, List<MultiSetNode> exclude, Set<Node> affectedNodes,
-			Set<MultiSetNode> createdNodes, MultiSetNode predecessor, Map<Node, Integer> affectedNodesWithPosition,
-			Map<MultiSetNode, MultiSetNode> addedMultiSetNodes) {
-
-		affectedNodes.add(this.node);
-
-		MultiSetNode multiSetNode = new MultiSetNode(node);
-		multiSetNode.parent = this;
-
-		int position = this.children.size();
-		if (predecessor == null) {
-			children.add(0, multiSetNode);
-		} else {
-			position = 0;
-			for (MultiSetNode predecessorReference : predecessor.references) {
-
-				for (MultiSetNode child : children) {
-
-					if (predecessorReference.equals(child)) {
-						position = child.getPosition() + 1;
-						break;
-					}
-				}
-
-			}
-			children.add(position, multiSetNode);
-
-		}
-		if (!this.node.getChildren().contains(node)) {
-			this.node.addChild(node, position);
-		}
-
-		addChildRecursively(multiSetNode, node);
-		affectedNodesWithPosition.put(this.node, position);
-		createdNodes.add(multiSetNode);
-		addedMultiSetNodes.put(this, multiSetNode);
-
-		exclude.add(this);
-		for (MultiSetNode reference : references) {
-			if (!exclude.contains(reference)) {
-				reference.addChild(node, exclude, affectedNodes, createdNodes, predecessor, affectedNodesWithPosition,
-						addedMultiSetNodes);
-			}
-
-		}
-
-	}
-
-	public AttributeActionResult addAttribute(Attribute attribute, Set<MultiSetNode> selectedReferences) {
-
-		Set<Node> affectedNodes = new HashSet<Node>();
-		Set<MultiSetNode> affectedMultiSetNodes = new HashSet<MultiSetNode>();
-		Map<MultiSetNode, MultiSetAttribute> affectedMultiSetAttributes = new HashMap<MultiSetNode, MultiSetAttribute>();
-		List<MultiSetAttribute> createdAttributes = new ArrayList<MultiSetAttribute>();
-
-		if (getByAttribute(attribute) == null) {
-			MultiSetAttribute newAttribute = new MultiSetAttribute(attribute, this);
-			attributes.add(newAttribute);
-			createdAttributes.add(newAttribute);
-			affectedMultiSetAttributes.put(this, newAttribute);
-
-			if (!node.getAttributes().contains(attribute)) {
-				node.getAttributes().add(attribute);
-			}
-
-		}
-
-		List<MultiSetNode> exclude = new ArrayList<MultiSetNode>();
-		exclude.add(this);
-
-		Set<MultiSetNode> referenceList = selectedReferences == null ? references : selectedReferences;
-		for (MultiSetNode reference : referenceList) {
-			if (!exclude.contains(reference)) {
-				reference.addAttribute(attribute, exclude, createdAttributes, affectedMultiSetNodes, affectedNodes,
-						affectedMultiSetAttributes);
-			}
-		}
-
-		for (MultiSetAttribute multiSetAttribute1 : createdAttributes) {
-			for (MultiSetAttribute multiSetAttribute2 : createdAttributes) {
-				if (!multiSetAttribute1.equals(multiSetAttribute2)) {
-					multiSetAttribute1.addReference(multiSetAttribute2);
-				}
-
-			}
-		}
-
-		return new AttributeActionResult(affectedNodes, affectedMultiSetNodes, affectedMultiSetAttributes);
-
-	}
-
-	public List<MultiSetAttribute> getAttributes() {
-		return attributes;
-	}
-
-	private void addAttribute(Attribute attribute, List<MultiSetNode> exclude,
-			List<MultiSetAttribute> createdAttributes, Set<MultiSetNode> affectedMultiSetNodes, Set<Node> affectedNodes,
-			Map<MultiSetNode, MultiSetAttribute> affectedMultiSetAttributes) {
-
-		if (getByAttribute(attribute) == null) {
-			MultiSetAttribute newAttribute = new MultiSetAttribute(attribute, this);
-			attributes.add(newAttribute);
-			createdAttributes.add(newAttribute);
-			affectedMultiSetAttributes.put(this, newAttribute);
-		}
-
-		affectedMultiSetNodes.add(this);
-
-		if (!node.getAttributes().contains(attribute)) {
-			node.addAttribute(attribute);
-		}
-
-		exclude.add(this);
-		for (MultiSetNode reference : references) {
-			if (!exclude.contains(reference)) {
-				reference.addAttribute(attribute, exclude, createdAttributes, affectedMultiSetNodes, affectedNodes,
-						affectedMultiSetAttributes);
-			}
-		}
-
-	}
-
-	public AttributeActionResult removeAttribute(Attribute attribute, Set<MultiSetNode> selectedMultiSetNodes) {
-
-		Set<Node> affectedNodes = new HashSet<Node>();
-		Set<MultiSetNode> affectedMultiSetNodes = new HashSet<MultiSetNode>();
-		Map<MultiSetNode, MultiSetAttribute> affectedMultiSetAttributes = new HashMap<MultiSetNode, MultiSetAttribute>();
-
-		MultiSetAttribute target = getByAttribute(attribute);
-
-		this.node.getAttributes().remove(target.getAttribute());
-		attributes.remove(target);
-
-		affectedMultiSetAttributes.put(this, target);
-		Set<MultiSetAttribute> exclude = new HashSet<MultiSetAttribute>();
-		exclude.add(target);
-
-		Set<MultiSetAttribute> referenceAttributes = new HashSet<MultiSetAttribute>();
-		if (selectedMultiSetNodes != null) {
-			for (MultiSetAttribute referenceAttribute : target.getReferences()) {
-
-				if (selectedMultiSetNodes.contains(referenceAttribute.getMultiSetNode())) {
-					referenceAttributes.add(referenceAttribute);
-				}
-			}
-		} else {
-			referenceAttributes = target.getReferences();
-		}
-
-		for (MultiSetAttribute reference : referenceAttributes) {
-			if (!exclude.contains(reference)) {
-				reference.getMultiSetNode().removeAttribute(reference, exclude, affectedMultiSetAttributes,
-						affectedMultiSetNodes);
-			}
-		}
-
-		return new AttributeActionResult(affectedNodes, affectedMultiSetNodes, affectedMultiSetAttributes);
-
-	}
-
-	private void removeAttribute(MultiSetAttribute multiSetAttribute, Set<MultiSetAttribute> exclude,
-			Map<MultiSetNode, MultiSetAttribute> affectedMultiSetAttributes, Set<MultiSetNode> affectedMultiSetNodes) {
-
-		this.attributes.remove(multiSetAttribute);
-		this.node.getAttributes().remove(multiSetAttribute.getAttribute());
-
-		affectedMultiSetAttributes.put(this, multiSetAttribute);
-		affectedMultiSetNodes.add(this);
-
-		exclude.add(multiSetAttribute);
-		for (MultiSetAttribute reference : multiSetAttribute.getReferences()) {
-			if (!exclude.contains(reference)) {
-				reference.getMultiSetNode().removeAttribute(reference, exclude, affectedMultiSetAttributes,
-						affectedMultiSetNodes);
-			}
-		}
 	}
 
 	public Node restoreNode() {
@@ -565,16 +607,12 @@ public class MultiSetNode {
 		}
 
 		multiSetNode.references.clear();
-
 		for (MultiSetAttribute multiSetAttribute : attributes) {
-
 			for (MultiSetAttribute reference : multiSetAttribute.getReferences()) {
 				reference.getReferences().remove(multiSetAttribute);
 			}
-
 			multiSetAttribute.getReferences().clear();
 		}
-
 		for (MultiSetNode child : multiSetNode.children) {
 			separate(child);
 		}
@@ -594,30 +632,6 @@ public class MultiSetNode {
 			restoredNode.addChild(multiSetNodeChild.restoreNodeWithMapping(mapping));
 		}
 		return restoredNode;
-
-	}
-
-	public Set<MultiSetAttribute> addAttributeValue(Attribute attribute, Value value) {
-
-		MultiSetAttribute target = getByAttribute(attribute);
-
-		return target.addValue(value);
-
-	}
-
-	public Set<MultiSetAttribute> editAttributeValue(Attribute attribute, Value value) {
-
-		MultiSetAttribute target = getByAttribute(attribute);
-
-		return target.editValue(value);
-
-	}
-
-	public Set<MultiSetAttribute> editAttributeKey(Attribute attribute, String key) {
-
-		MultiSetAttribute target = getByAttribute(attribute);
-
-		return target.editKey(key);
 
 	}
 

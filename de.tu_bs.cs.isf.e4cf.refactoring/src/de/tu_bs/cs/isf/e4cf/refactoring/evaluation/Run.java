@@ -16,7 +16,7 @@ import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator.Variant;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 
-public class Metric {
+public class Run {
 
 	private String directory;
 
@@ -42,7 +42,7 @@ public class Metric {
 		this.variants = variants;
 	}
 
-	public Metric(Granularity granularity, boolean attributeChange, boolean nodeChange,
+	public Run(Granularity granularity, boolean attributeChange, boolean nodeChange,
 			GeneratorOptions generatorOptions) {
 		super();
 		this.granularity = granularity;
@@ -166,10 +166,35 @@ public class Metric {
 
 	}
 
-	public void saveResults(List<Tree> restoredTrees, GsonExportService exportService) {
+	public void saveRestoredTrees(List<Tree> restoredTrees, GsonExportService exportService) {
+		String restoredTreesDirectory = "Restored trees";
+
+		try {
+
+			File file = new File(directory + "\\" + restoredTreesDirectory + "\\");
+			file.mkdir();
+			for (Tree restoredTree : restoredTrees) {
+				TreeImpl tree = (TreeImpl) restoredTree;
+
+				String json = exportService.exportTree(tree);
+
+				file = new File(directory + "\\" + restoredTreesDirectory + "\\" + tree.getTreeName() + ".tree");
+
+				file.createNewFile();
+				Files.write(json.getBytes(), file);
+
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+
+		}
+
+	}
+
+	public void saveStabilityResults() {
 
 		String stabilityResultName = "stabilityResult.csv";
-		String restoredTreesDirectory = "Restored trees";
 
 		try {
 
@@ -186,20 +211,6 @@ public class Metric {
 				printWriter.println(stabilityResult.toString());
 			}
 			printWriter.close();
-
-			file = new File(directory + "\\" + restoredTreesDirectory + "\\");
-			file.mkdir();
-			for (Tree restoredTree : restoredTrees) {
-				TreeImpl tree = (TreeImpl) restoredTree;
-
-				String json = exportService.exportTree(tree);
-
-				file = new File(directory + "\\" + restoredTreesDirectory + "\\" + tree.getTreeName() + ".tree");
-
-				file.createNewFile();
-				Files.write(json.getBytes(), file);
-
-			}
 
 		} catch (IOException e) {
 			e.printStackTrace();

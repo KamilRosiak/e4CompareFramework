@@ -8,7 +8,6 @@ import org.osgi.service.event.Event;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
@@ -29,10 +28,11 @@ public class EditAttributeKeyEventHandler extends EventHandlerBase {
 		Attribute attribute = (Attribute) event.getProperty(DSEditorST.ATTRIBUTE);
 		String key = (String) event.getProperty(DSEditorST.KEY);
 		CloneModel cloneModel = (CloneModel) event.getProperty(DSEditorST.CLONE_MODEL);
-
+				
 		cloneModel.editAttributeKey(selectedNode, attribute, key);
-
-		clusterEngine.analyzeCloneModel(cloneModel, null);
+		refreshTree(cloneModel);
+		
+		
 
 	}
 

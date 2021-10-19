@@ -47,7 +47,6 @@ public class EditScriptGenerator {
 		cloneRight.getChildren().clear();
 		if (compareEngine.compare(cloneLeft, cloneRight).getSimilarity() != 1.0) {
 			Node originalNode = cloneMapping.get(leftArtifact);
-
 			Update update = new Update(originalNode, rightArtifact.cloneNode());
 			actions.add(new ActionScope(update, true));
 

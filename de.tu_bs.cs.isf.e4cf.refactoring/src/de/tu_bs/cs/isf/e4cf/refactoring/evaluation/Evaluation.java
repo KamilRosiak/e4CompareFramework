@@ -12,11 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,13 +19,10 @@ import javax.inject.Singleton;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
-import com.google.common.io.Files;
-
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -46,23 +38,18 @@ import de.tu_bs.cs.isf.e4cf.refactoring.handler.IntegrationPipeline;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetTree;
-import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
 
 @Singleton
 @Creatable
 public class Evaluation {
 
 	private IntegrationPipeline integrationPipeline;
-
 	private CloneGenerator cloneGenerator;
-
 	private Map<String, AggregatedClusteringResult> aggregatedClusteringResults;
-
 	private Map<String, AggregatedStabilityResult> aggregatedStabilityResults;
-
 	private float threshold = 0.15f;
-
 	private static final String outputDirectory = "";
+	private CompareEngineHierarchical compareEngine;
 
 	@Inject
 	public Evaluation(IntegrationPipeline integrationPipeline, CloneGenerator cloneGenerator,
@@ -72,6 +59,7 @@ public class Evaluation {
 		this.cloneGenerator = cloneGenerator;
 		this.aggregatedClusteringResults = new HashMap<String, AggregatedClusteringResult>();
 		this.aggregatedStabilityResults = new HashMap<String, AggregatedStabilityResult>();
+		this.compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
 	}
 
 	private void clean() {
@@ -86,47 +74,39 @@ public class Evaluation {
 	}
 
 	public void evaluate(Tree seed) {
-
 		clean();
-
-		List<Metric> metrics = getMetrics();
-		ClusterEngine.configureScriptPath(false);
-		ClusterEngine.THRESHOLD = threshold;
-
-		System.out.println("Starting clone model extraction");
 		ClusterEngine clusterEngine = new ClusterEngine();
-		ProcessUtil processUtil = new ProcessUtil();
-		processUtil.startProcess(clusterEngine.getScriptPath());
-
-		for (int i = 0; i < metrics.size(); i++) {
-
+		ClusterEngine.startProcess();
+		List<Run> runs = getRuns();
+		for (int i = 0; i < runs.size(); i++) {
 			Tree clonedSeed = seed.cloneTree();
-			Metric metric = metrics.get(i);
-			CloneModel cloneModel = generateCloneModel(clonedSeed, metric, processUtil);
-			metric.setVariants(null);
+			Run run = runs.get(i);
+			CloneModel cloneModel = generateCloneModel(clonedSeed, run);
 
-			evaluate(cloneModel, metric, clusterEngine, processUtil);
+			evaluate(cloneModel, run, clusterEngine);
 
-			metric.saveClusteringResults();
 			List<Tree> restoredTrees = cloneModel.restoreIntegratedTrees();
-			metric.saveResults(restoredTrees, new GsonExportService());
+			run.saveClusteringResults();
+			run.saveRestoredTrees(restoredTrees, new GsonExportService());
+			run.saveStabilityResults();
+			run.getVariants().clear();
 
 		}
 
-		for (Metric metric : metrics) {
+		for (Run run : runs) {
 
-			if (!aggregatedStabilityResults.containsKey(metric.getGranularity().getLayer())) {
-				aggregatedStabilityResults.put(metric.getGranularity().getLayer(), new AggregatedStabilityResult());
+			if (!aggregatedStabilityResults.containsKey(run.getGranularity().getLayer())) {
+				aggregatedStabilityResults.put(run.getGranularity().getLayer(), new AggregatedStabilityResult());
 			}
 
 			AggregatedStabilityResult aggregatedStabilityResult = aggregatedStabilityResults
-					.get(metric.getGranularity().getLayer());
+					.get(run.getGranularity().getLayer());
 
-			for (StabilityResult stabilityResult : metric.getStabilityResults()) {
+			for (StabilityResult stabilityResult : run.getStabilityResults()) {
 				aggregatedStabilityResult.clusterMerges += stabilityResult.getClusterMerges()
-						.get(metric.getGranularity().getLayer());
+						.get(run.getGranularity().getLayer());
 				aggregatedStabilityResult.clusterSplits += stabilityResult.getClusterSplits()
-						.get(metric.getGranularity().getLayer());
+						.get(run.getGranularity().getLayer());
 			}
 
 		}
@@ -135,154 +115,110 @@ public class Evaluation {
 
 	}
 
-	private void evaluate(CloneModel cloneModel, Metric metric, ClusterEngine clusterEngine, ProcessUtil processUtil) {
+	private void evaluate(CloneModel cloneModel, Run run, ClusterEngine clusterEngine) {
 
 		Set<Granularity> granularities = new HashSet<Granularity>();
-		granularities.add(metric.getGranularity());
+		granularities.add(run.getGranularity());
 
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 50; i++) {
 
-			System.out.println("Run " + i);
 			StabilityResult stabilityResult = new StabilityResult(granularities);
-
 			int changeType = 0;
-			if (metric.isAttributeChange() && metric.isNodeChange()) {
+			if (run.isAttributeChange() && run.isNodeChange()) {
 				Random random = new Random();
 				changeType = random.nextInt(2);
-			} else if (metric.isAttributeChange()) {
+			} else if (run.isAttributeChange()) {
 				changeType = 0;
-			} else if (metric.isNodeChange()) {
+			} else if (run.isNodeChange()) {
 				changeType = 1;
 			}
 
+			int method = 0;
 			if (changeType == 0) {
 
 				Node target = null;
 				do {
-					target = getRandomNode(cloneModel, metric.getGranularity().getLayer());
+					target = getRandomNode(cloneModel, run.getGranularity().getLayer());
 				} while (target.getAttributes().size() == 0);
 
 				Attribute attribute = getRandomAttribute(target);
 				Random random = new Random();
-				int method = random.nextInt(8 - 4) + 4;
-
-				ChangeAction changeAction = null;
+				method = random.nextInt(7 - 4) + 4;
 
 				if (method == ChangeActionType.ADD_ATTRIBUTE_VALUE.getValue()) {
-					System.out.println("Action " + ChangeActionType.ADD_ATTRIBUTE_VALUE);
 					Value value = new StringValueImpl(getRandomString());
-					changeAction = new AddAttributeValueAction(target, attribute, value);
 					cloneModel.addAttributeValue(target, attribute, value);
 				} else if (method == ChangeActionType.EDIT_ATTRIBUTE_KEY.getValue()) {
-					System.out.println("Action " + ChangeActionType.EDIT_ATTRIBUTE_KEY);
 					String key = getRandomString();
-					changeAction = new EditAttributeKeyAction(target, attribute, key);
 					cloneModel.editAttributeKey(target, attribute, key);
 				} else if (method == ChangeActionType.EDIT_ATTRIBUTE_VALUE.getValue()) {
-
-					System.out.println("Action " + ChangeActionType.EDIT_ATTRIBUTE_VALUE);
-
 					Value value = new StringValueImpl(getRandomString());
-					changeAction = new EditAttributeValueAction(target, attribute, value);
 					cloneModel.editAttributeValue(target, attribute, value);
-				} else if (method == ChangeActionType.DELETE_ATTRIBUTE_VALUE.getValue()) {
-
-					System.out.println("Action " + ChangeActionType.DELETE_ATTRIBUTE_VALUE);
-
-					changeAction = new DeleteAttributeAction(target, attribute);
-					cloneModel.removeAttribute(target, attribute);
 				}
-
-				stabilityResult.setChangeAction(changeAction);
-
-				clusterEngine.analyzeCloneModel(cloneModel, processUtil, stabilityResult);
-				metric.getStabilityResults().add(stabilityResult);
 
 			} else if (changeType == 1) {
 				Random random = new Random();
-				int method = random.nextInt(4);
+				method = random.nextInt(4);
 
 				Node target = null;
-
 				if (method == ChangeActionType.DELETE_ATTRIBUTE.getValue()) {
 					do {
-						target = getRandomNode(cloneModel, metric.getGranularity().getLayer());
+						target = getRandomNode(cloneModel, run.getGranularity().getLayer());
 					} while (target.getAttributes().size() == 0);
 				} else {
-					target = getRandomNode(cloneModel, metric.getGranularity().getLayer());
+					target = getRandomNode(cloneModel, run.getGranularity().getLayer());
 				}
-
-				ChangeAction changeAction = null;
 
 				if (method == ChangeActionType.ADD_ATTRIBUTE.getValue()) {
-					System.out.println("Action " + ChangeActionType.ADD_ATTRIBUTE);
 					Attribute newAttribute = generateRandomAttribute();
-					changeAction = new AddAttributeAction(target, newAttribute);
 					cloneModel.addAttribute(target, newAttribute);
 				} else if (method == ChangeActionType.ADD_CHILD_NODE.getValue()) {
-					System.out.println("Action " + ChangeActionType.ADD_CHILD_NODE);
 					Node child = generateRandomNode();
-					changeAction = new AddChildNodeAction(target, child);
 					int position = target.getChildren().size() == 0 ? 0 : target.getChildren().size();
-
 					cloneModel.addChild(target, child, position);
 				} else if (method == ChangeActionType.DELETE_NODE.getValue()) {
-					System.out.println("Action " + ChangeActionType.DELETE_NODE);
-					changeAction = new DeleteNodeAction(target);
 					cloneModel.delete(target);
 				} else if (method == ChangeActionType.DELETE_ATTRIBUTE.getValue()) {
-
-					System.out.println("Action " + ChangeActionType.DELETE_ATTRIBUTE);
 					Attribute attribute = getRandomAttribute(target);
-					changeAction = new DeleteAttributeAction(target, attribute);
-					cloneModel.removeAttribute(target, attribute);
+					cloneModel.deleteAttribute(target, attribute);
 				}
-				stabilityResult.setChangeAction(changeAction);
-				clusterEngine.analyzeCloneModel(cloneModel, processUtil, stabilityResult);
-				metric.getStabilityResults().add(stabilityResult);
 
 			}
+			stabilityResult.setChangeAction(ChangeActionType.values()[method]);
+			clusterEngine.setStabilityResult(stabilityResult);
+			clusterEngine.analyzeCloneModel(cloneModel);
+			run.getStabilityResults().add(stabilityResult);
 
 		}
 
 	}
 
-	private CloneModel generateCloneModel(Tree seed, Metric metric, ProcessUtil processUtil) {
+	private CloneModel generateCloneModel(Tree seed, Run run) {
 
 		Set<Granularity> granularities = new HashSet<Granularity>();
-		CloneModel cloneModel = null;
-		List<Variant> variants = cloneGenerator.go(seed, metric.getGeneratorOptions(), false, false);
+		List<Variant> variants = cloneGenerator.go(seed, run.getGeneratorOptions(), false, false);
 
-		metric.setVariants(variants);
-		metric.saveVariants(new GsonExportService());
+		run.setVariants(variants);
+		run.saveVariants(new GsonExportService());
 
-		granularities.add(metric.getGranularity());
+		granularities.add(run.getGranularity());
 		Tree baseTree = variants.get(0).tree;
 
-		cloneModel = integrationPipeline.pipe(baseTree, granularities, processUtil);
+		CloneModel cloneModel = integrationPipeline.pipe(baseTree, granularities);
 
 		ClusteringResult clusteringResult = getClusteringResult(cloneModel);
-		aggregateClusteringResult(metric, cloneModel, clusteringResult);
-		metric.getClusteringResults().add(clusteringResult);
+		aggregateClusteringResult(run, cloneModel, clusteringResult);
+		run.getClusteringResults().add(clusteringResult);
 
 		for (int i = 1; i < variants.size(); i++) {
-			CloneModel cloneModel2 = integrationPipeline.pipe(variants.get(i).tree, cloneModel.getGranularities(),
-					processUtil);
-
+			CloneModel cloneModel2 = integrationPipeline.pipe(variants.get(i).tree, cloneModel.getGranularities());
 			clusteringResult = getClusteringResult(cloneModel2);
-			aggregateClusteringResult(metric, cloneModel2, clusteringResult);
-
-			metric.getClusteringResults().add(clusteringResult);
-
+			aggregateClusteringResult(run, cloneModel2, clusteringResult);
+			run.getClusteringResults().add(clusteringResult);
 			cloneModel.merge(cloneModel2);
-
 		}
 
-		metric.getVariants().clear();
-		variants = null;
-
 		return cloneModel;
-
 	}
 
 	private ClusteringResult getClusteringResult(CloneModel cloneModel2) {
@@ -294,21 +230,21 @@ public class Evaluation {
 		return clusteringResult;
 	}
 
-	private void aggregateClusteringResult(Metric metric, CloneModel cloneModel2, ClusteringResult clusteringResult) {
+	private void aggregateClusteringResult(Run run, CloneModel cloneModel, ClusteringResult clusteringResult) {
 
-		if (!aggregatedClusteringResults.containsKey(metric.getGranularity().getLayer())) {
-			aggregatedClusteringResults.put(metric.getGranularity().getLayer(), new AggregatedClusteringResult());
+		if (!aggregatedClusteringResults.containsKey(run.getGranularity().getLayer())) {
+			aggregatedClusteringResults.put(run.getGranularity().getLayer(), new AggregatedClusteringResult());
 		}
 
 		AggregatedClusteringResult aggregatedClusteringResult = aggregatedClusteringResults
-				.get(metric.getGranularity().getLayer());
+				.get(run.getGranularity().getLayer());
 
 		aggregatedClusteringResult.models++;
 		aggregatedClusteringResult.insufficientClustering += clusteringResult.insufficientClusters;
 		aggregatedClusteringResult.sufficientClustering += (clusteringResult.numberOfClusters
 				- clusteringResult.insufficientClusters);
 		aggregatedClusteringResult.numberOfClusters += clusteringResult.numberOfClusters;
-		aggregatedClusteringResult.numberOfConfigurations += getNumberOfConfigurations(cloneModel2.getAllComponents());
+		aggregatedClusteringResult.numberOfConfigurations += getNumberOfConfigurations(cloneModel.getAllComponents());
 		aggregatedClusteringResult.totalInterSimilarity += clusteringResult.getAverageInterSimilarity();
 		aggregatedClusteringResult.totalIntraSimilarity += clusteringResult.getAverageIntraSimilarity();
 	}
@@ -357,16 +293,15 @@ public class Evaluation {
 	}
 
 	private Attribute getRandomAttribute(Node node) {
-
 		Random random = new Random();
 		int index = random.nextInt(node.getAttributes().size());
 		return node.getAttributes().get(index);
 	}
 
-	private List<Metric> getMetrics() {
+	private List<Run> getRuns() {
 
 		String[] granularities = new String[] { "MethodDeclaration", "IfStmt", "JAVA", "CompilationUnit", "ForStmt" };
-		List<Metric> metrics = new ArrayList<Metric>();
+		List<Run> runs = new ArrayList<Run>();
 
 		for (int variantChangeDegree = 5; variantChangeDegree <= 5; variantChangeDegree++) {
 
@@ -380,23 +315,23 @@ public class Evaluation {
 					generatorOptions.variantChangeDegree = variantChangeDegree;
 					generatorOptions.modificationRatioPercentage = (int) Math.round(type2AttributeChangeDegree);
 
-					Metric metric = new Metric(new Granularity(granularity, true), true, false, generatorOptions);
-					metrics.add(metric);
-					metric = new Metric(new Granularity(granularity, true), false, true, generatorOptions);
-					metrics.add(metric);
-					metric = new Metric(new Granularity(granularity, true), true, true, generatorOptions);
-					metrics.add(metric);
+					Run run = new Run(new Granularity(granularity, true), true, false, generatorOptions);
+					runs.add(run);
+					run = new Run(new Granularity(granularity, true), false, true, generatorOptions);
+					runs.add(run);
+					run = new Run(new Granularity(granularity, true), true, true, generatorOptions);
+					runs.add(run);
 				}
 
 			}
 
 		}
 
-		for (int i = 0; i < metrics.size(); i++) {
-			metrics.get(i).setDirectory(outputDirectory + "\\Metric_" + i);
+		for (int i = 0; i < runs.size(); i++) {
+			runs.get(i).setDirectory(outputDirectory + "\\Run_" + i);
 		}
 
-		return metrics;
+		return runs;
 	}
 
 	private void measureAverageIntraSimilarity(List<MultiSetTree> components, ClusteringResult clusteringResult) {
@@ -416,9 +351,6 @@ public class Evaluation {
 	}
 
 	private float getIntraSimilarity(MultiSetTree component) {
-
-		CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
-				new MetricImpl("test"));
 
 		List<Node> nodes = new ArrayList<Node>();
 		List<Tree> trees = component.restoreTrees();

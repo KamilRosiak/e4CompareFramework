@@ -28,9 +28,7 @@ public class SynchronizationUtil {
 		}
 
 		return granularities;
-	}
-
-	
+	}	
 
 	public static int getPositionOfCommonPredecessor(Node parentLeft, Node parentRight, Node target,
 			Comparison<Node> comparison) {
@@ -111,7 +109,7 @@ public class SynchronizationUtil {
 		return arrayList;
 	}
 
-	public static List<MultiSetNode> findLongestCommonSubsequence2(List<MultiSetNode> leftChildren,
+	public static List<MultiSetNode> findLongestCommonSubsequence(List<MultiSetNode> leftChildren,
 			List<MultiSetNode> rightChildren) {
 
 		int m = leftChildren.size();
@@ -164,7 +162,8 @@ public class SynchronizationUtil {
 
 		return false;
 	}
-
+	
+	
 	private static boolean hasPartner(Node n1, Node n2, List<Comparison<Node>> comparisons) {
 
 		for (Comparison<Node> comparison : comparisons) {

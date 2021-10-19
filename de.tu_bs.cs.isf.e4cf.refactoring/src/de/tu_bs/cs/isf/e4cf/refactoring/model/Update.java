@@ -18,7 +18,5 @@ public class Update extends Action {
 	public void setY(Node y) {
 		this.y = y;
 	}
-
 	
-
 }

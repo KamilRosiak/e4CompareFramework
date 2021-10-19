@@ -12,7 +12,6 @@ public class EvaluationHandler {
 
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, Evaluation evaluation) {
-
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 		evaluation.evaluate(tree);
 

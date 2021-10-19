@@ -1,15 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.google.common.collect.Lists;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
@@ -19,14 +17,24 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.AddAttributeResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.AddAttributeValueResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.AddChildResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.DeleteAttributeResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.DeleteResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.EditAttributeKeyResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.EditAttributeValueResult;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.result.MoveResult;
 
 public class CloneModel {
 
-	private Map<MultiSetReferenceTree, List<MultiSetTree>> components;
-
-	private Map<String, MultiSetReferenceTree> integratedTrees;
-
 	private Tree tree;
+
+	private Map<ReferenceTree, List<MultiSetTree>> components;
+
+	private CompareEngineHierarchical compareEngine;
+
+	private Map<String, ReferenceTree> integratedTrees;
 
 	private Set<Granularity> granularities;
 
@@ -34,145 +42,19 @@ public class CloneModel {
 		return granularities;
 	}
 
-	public void setGranularities(Set<Granularity> granularities) {
+	public CloneModel(List<MultiSetTree> components, ReferenceTree integratedTree, String name,
+			Set<Granularity> granularities) {
+		super();
+
+		this.compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
+
+		this.components = new HashMap<ReferenceTree, List<MultiSetTree>>();
+		this.components.put(integratedTree, components);
+
+		this.integratedTrees = new HashMap<String, ReferenceTree>();
+		this.integratedTrees.put(name, integratedTree);
 		this.granularities = granularities;
-	}
 
-	public Map<Node, Integer> addChild(Node target, Node newNode) {
-
-		return addChild(target, newNode, -1, null);
-	}
-
-	public Set<MultiSetNode> collectReferencesNodes(Node target) {
-
-		Set<MultiSetNode> referenceNodes = new HashSet<MultiSetNode>();
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
-
-			for (MultiSetTree component : entry.getValue()) {
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-					referenceNodes.addAll(multiSetNode.getReferences());
-
-				}
-			}
-
-		}
-
-		return referenceNodes;
-	}
-
-	public Map<Node, Integer> addChild(Node target, Node newNode, int position) {
-		return addChild(target, newNode, position, null);
-	}
-
-	public Map<Node, Integer> addChild(Node target, Node newNode, int position, Set<MultiSetNode> selectedReferences) {
-
-		if (!target.getChildren().contains(newNode)) {
-			target.addChild(newNode, position);
-		}
-
-		Map<Node, Integer> affectedNodesWithPosition = new HashMap<Node, Integer>();
-		Map<MultiSetNode, MultiSetNode> updatedReferenceNodes = new HashMap<MultiSetNode, MultiSetNode>();
-
-		Set<MultiSetNode> affectedMultiSetNodes = new HashSet<MultiSetNode>();
-
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
-
-			MultiSetReferenceTree referenceTree = entry.getKey();
-			for (MultiSetTree component : entry.getValue()) {
-
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-
-					if (affectedMultiSetNodes.contains(multiSetNode)) {
-						continue;
-					}
-
-					AddActionResult actionResult = multiSetNode.addChild(newNode, position, selectedReferences);
-					affectedMultiSetNodes.add(multiSetNode);
-					affectedMultiSetNodes.addAll(multiSetNode.getReferences());
-					affectedNodesWithPosition.putAll(actionResult.getAffectedNodesWithPosition());
-
-					for (Entry<MultiSetNode, MultiSetNode> addedMultiSetNodes : actionResult.getAddedMultiSetNodes()
-							.entrySet()) {
-
-						MultiSetNode mappedNode = referenceTree.getMapped(addedMultiSetNodes.getKey());
-
-						if (!updatedReferenceNodes.containsKey(mappedNode)) {
-							AddActionResult referenceResult = mappedNode.addChild(newNode,
-									addedMultiSetNodes.getValue().getPosition(), null);
-
-							MultiSetNode createdReferenceNode = referenceResult.getAddedMultiSetNodes().entrySet()
-									.iterator().next().getValue();
-
-							updatedReferenceNodes.put(mappedNode, createdReferenceNode);
-
-						}
-						MultiSetNode createdReferenceNode = updatedReferenceNodes.get(mappedNode);
-						referenceTree.addMapRecursively(addedMultiSetNodes.getValue(), createdReferenceNode);
-
-					}
-
-				}
-			}
-
-		}
-
-		MultiSetTree newTree = null;
-
-		List<Granularity> matchedGranularities = granularities.stream()
-				.filter(w -> w.getLayer().equals(newNode.getNodeType())).collect(Collectors.toList());
-
-		if (matchedGranularities.size() == 1) {
-
-			Granularity granularity = matchedGranularities.get(0);
-
-			newTree = MultiSetTree.build(Lists.newArrayList(newNode), granularity);
-
-			for (MultiSetReferenceTree multiSetReferenceTree : integratedTrees.values()) {
-
-				List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
-
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-
-					if (updatedReferenceNodes.containsKey(multiSetNode)) {
-						MultiSetNode addedMultiSetNode = updatedReferenceNodes.get(multiSetNode);
-						multiSetReferenceTree.addMap(newTree.getRoots().get(0), addedMultiSetNode);
-					} else {
-						AddActionResult actionResult = multiSetNode.addChild(newNode, position, null);
-						MultiSetNode createdReferenceNode = actionResult.getAddedMultiSetNodes().entrySet().iterator()
-								.next().getValue();
-						updatedReferenceNodes.put(multiSetNode, createdReferenceNode);
-					}
-				}
-
-				this.components.get(multiSetReferenceTree).add(newTree);
-
-			}
-		} else {
-
-		}
-
-		for (MultiSetReferenceTree multiSetReferenceTree : this.integratedTrees.values()) {
-
-			List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
-
-			for (MultiSetNode multiSetNode : multiSetNodes) {
-
-				if (!updatedReferenceNodes.containsKey(multiSetNode)) {
-					AddActionResult actionResult = multiSetNode.addChild(newNode, position, null);
-					MultiSetNode createdReferenceNode = actionResult.getAddedMultiSetNodes().entrySet().iterator()
-							.next().getValue();
-					updatedReferenceNodes.put(multiSetNode, createdReferenceNode);
-
-				}
-
-			}
-
-		}
-
-		return affectedNodesWithPosition;
 	}
 
 	public Map<String, List<MultiSetTree>> getGranularitiesToComponents(MultiSetTree target) {
@@ -189,215 +71,11 @@ public class CloneModel {
 
 	}
 
-	public Map<MultiSetReferenceTree, List<MultiSetTree>> getComponents() {
-		return components;
-	}
-
-	public List<MultiSetTree> getAllComponents() {
-
-		List<MultiSetTree> allComponents = new ArrayList<MultiSetTree>();
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
-			allComponents.addAll(entry.getValue());
-		}
-		return allComponents;
-
-	}
-
-	public Set<Node> delete(Node target) {
-		return delete(target, null);
-	}
-
-	public Set<Node> delete(Node target, Set<MultiSetNode> selectedReferences) {
-
-		Set<Node> affectedNodes = new HashSet<Node>();
-		Set<MultiSetNode> affectedMultiSetNodes = new HashSet<MultiSetNode>();
-		Set<MultiSetNode> deletedMultiSetReferenceNodes = new HashSet<MultiSetNode>();
-
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
-
-			MultiSetReferenceTree referenceTree = entry.getKey();
-			List<MultiSetTree> componentList = new ArrayList<MultiSetTree>(entry.getValue());
-
-			for (MultiSetTree component : componentList) {
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-
-					if (affectedMultiSetNodes.contains(multiSetNode)) {
-						continue;
-					}
-
-					DeleteActionResult actionResult = multiSetNode.delete(selectedReferences);
-					affectedNodes.addAll(actionResult.getDeletedNodes());
-					affectedMultiSetNodes.add(multiSetNode);
-					affectedMultiSetNodes.addAll(actionResult.getDeletedMultiSetNodes().values());
-
-					for (Entry<MultiSetNode, MultiSetNode> innerEntry : actionResult.getDeletedMultiSetNodes()
-							.entrySet()) {
-
-						MultiSetNode node = referenceTree.getMapped(innerEntry.getValue());
-
-						if (!deletedMultiSetReferenceNodes.contains(node)) {
-							node.delete(null);
-							deletedMultiSetReferenceNodes.add(node);
-						}
-
-						referenceTree.deleteMap(innerEntry.getValue());
-
-						if (innerEntry.getValue().isRoot()) {
-							component.removeRoot(innerEntry.getValue());
-						}
-
-					}
-
-				}
-				if (component.getNumberOfRoots() == 0) {
-					components.get(referenceTree).remove(component);
-				}
-
-			}
-
-		}
-
-		for (MultiSetReferenceTree multiSetReferenceTree : this.integratedTrees.values()) {
-
-			List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
-
-			for (MultiSetNode multiSetNode : multiSetNodes) {
-
-				if (!deletedMultiSetReferenceNodes.contains(multiSetNode)) {
-					multiSetNode.delete(null);
-				}
-
-			}
-
-		}
-
-		return affectedNodes;
-	}
-
-	public void addAttributeValue(Node target, Attribute attribute, Value value) {
-
-		if (!attribute.containsValue(value)) {
-			attribute.addAttributeValue(value);
-		}
-
-		List<MultiSetAttribute> updatedReferenceAttributes = new ArrayList<MultiSetAttribute>();
-		List<MultiSetNode> updatedReferenceNodes = new ArrayList<MultiSetNode>();
-		Set<MultiSetAttribute> affectedMultiSetAttributes = new HashSet<MultiSetAttribute>();
-
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
-
-			MultiSetReferenceTree referenceTree = entry.getKey();
-			for (MultiSetTree component : entry.getValue()) {
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-
-					if (affectedMultiSetAttributes.contains(multiSetNode.getByAttribute(attribute))) {
-						continue;
-					}
-
-					if (multiSetNode.getByAttribute(attribute) != null) {
-						Set<MultiSetAttribute> affectedAttributes = multiSetNode.addAttributeValue(attribute, value);
-
-						affectedMultiSetAttributes.addAll(affectedAttributes);
-
-						for (MultiSetAttribute affectedAttribute : affectedAttributes) {
-							MultiSetAttribute mappedAttribute = referenceTree.getMapped(affectedAttribute);
-							updatedReferenceNodes.add(mappedAttribute.getMultiSetNode());
-							if (!updatedReferenceAttributes.contains(mappedAttribute)) {
-								mappedAttribute.addValue(value);
-								updatedReferenceAttributes.add(mappedAttribute);
-							}
-						}
-					}
-
-				}
-			}
-		}
-
-		for (MultiSetReferenceTree multiSetReferenceTree : this.integratedTrees.values()) {
-
-			List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
-
-			for (MultiSetNode multiSetNode : multiSetNodes) {
-
-				if (!updatedReferenceNodes.contains(multiSetNode)) {
-					if (multiSetNode.getByAttribute(attribute) != null) {
-						multiSetNode.addAttributeValue(attribute, value);
-					}
-				}
-
-			}
-
-		}
-
-	}
-
-	public void editAttributeValue(Node target, Attribute attribute, Value value) {
-
-		if (!attribute.containsValue(value)) {
-			attribute.getAttributeValues().clear();
-			attribute.addAttributeValue(value);
-		}
-
-		List<MultiSetAttribute> updatedReferenceAttributes = new ArrayList<MultiSetAttribute>();
-		List<MultiSetNode> updatedReferenceNodes = new ArrayList<MultiSetNode>();
-
-		Set<MultiSetAttribute> affectedMultiSetAttributes = new HashSet<MultiSetAttribute>();
-
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
-
-			MultiSetReferenceTree referenceTree = entry.getKey();
-			for (MultiSetTree component : entry.getValue()) {
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-
-					if (affectedMultiSetAttributes.contains(multiSetNode.getByAttribute(attribute))) {
-						continue;
-					}
-
-					if (multiSetNode.getByAttribute(attribute) != null) {
-						Set<MultiSetAttribute> affectedAttributes = multiSetNode.editAttributeValue(attribute, value);
-
-						affectedMultiSetAttributes.addAll(affectedAttributes);
-
-						for (MultiSetAttribute affectedAttribute : affectedAttributes) {
-							MultiSetAttribute mappedAttribute = referenceTree.getMapped(affectedAttribute);
-							updatedReferenceNodes.add(mappedAttribute.getMultiSetNode());
-
-							if (!updatedReferenceAttributes.contains(mappedAttribute)) {
-								mappedAttribute.editValue(value);
-								updatedReferenceAttributes.add(mappedAttribute);
-							}
-						}
-					}
-
-				}
-			}
-		}
-		for (MultiSetReferenceTree multiSetReferenceTree : this.integratedTrees.values()) {
-
-			List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
-
-			for (MultiSetNode multiSetNode : multiSetNodes) {
-
-				if (!updatedReferenceNodes.contains(multiSetNode)) {
-					if (multiSetNode.getByAttribute(attribute) != null) {
-						multiSetNode.editAttributeValue(attribute, value);
-					}
-				}
-
-			}
-
-		}
-
-	}
-
 	public Set<Node> getAllNodes() {
 
 		List<MultiSetNode> multiSetNodes = new ArrayList<MultiSetNode>();
 		Set<Node> nodes = new HashSet<Node>();
-		for (Entry<String, MultiSetReferenceTree> entry : integratedTrees.entrySet()) {
+		for (Entry<String, ReferenceTree> entry : integratedTrees.entrySet()) {
 			collectMultiSetNodes(entry.getValue().getRoots().get(0), multiSetNodes);
 		}
 
@@ -409,11 +87,21 @@ public class CloneModel {
 
 	}
 
+	public List<MultiSetTree> getAllComponents() {
+
+		List<MultiSetTree> allComponents = new ArrayList<MultiSetTree>();
+		for (Entry<ReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
+			allComponents.addAll(entry.getValue());
+		}
+		return allComponents;
+
+	}
+
 	public Set<Node> getAllNodes(String frameType) {
 
 		List<MultiSetNode> multiSetNodes = new ArrayList<MultiSetNode>();
 		Set<Node> nodes = new HashSet<Node>();
-		for (Entry<String, MultiSetReferenceTree> entry : integratedTrees.entrySet()) {
+		for (Entry<String, ReferenceTree> entry : integratedTrees.entrySet()) {
 			collectMultiSetNodes(entry.getValue().getRoots().get(0), multiSetNodes, frameType);
 		}
 
@@ -431,142 +119,172 @@ public class CloneModel {
 
 			multiSetNodes.add(multiSetNode);
 			for (MultiSetNode child : multiSetNode.getChildren()) {
-
 				collectMultiSetNodes(child, multiSetNodes);
-
 			}
 		}
-
 		for (MultiSetNode child : multiSetNode.getChildren()) {
-
 			collectMultiSetNodes(child, multiSetNodes, frameType);
-
 		}
 
 	}
 
 	private void collectMultiSetNodes(MultiSetNode multiSetNode, List<MultiSetNode> multiSetNodes) {
-
 		multiSetNodes.add(multiSetNode);
-
 		for (MultiSetNode child : multiSetNode.getChildren()) {
-
 			collectMultiSetNodes(child, multiSetNodes);
+		}
+	}
 
+	public void setGranularities(Set<Granularity> granularities) {
+		this.granularities = granularities;
+	}
+
+	public Set<MultiSetNode> collectReferenceNodes(Node node) {
+
+		Set<MultiSetNode> references = new HashSet<MultiSetNode>();
+
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
+
+				MultiSetNode multiSetNode = component.getByNode(node);
+
+				if (multiSetNode != null) {
+					references.addAll(multiSetNode.getReferences());
+				}
+
+			}
 		}
 
+		return references;
+
+	}
+
+	public void move(Node target, int position) {
+		move(target, position, null);
 	}
 
 	public void move(Node target, int position, Set<MultiSetNode> selectedReferences) {
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
+			ReferenceTree referenceTree = referenceComponentEntry.getKey();
 
-		List<MultiSetNode> updatedReferenceNodes = new ArrayList<MultiSetNode>();
-		Set<MultiSetNode> affectedMultiSetNodes = new HashSet<MultiSetNode>();
+			List<MoveResult> results = new ArrayList<MoveResult>();
 
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
 
-			MultiSetReferenceTree referenceTree = entry.getKey();
-			List<MultiSetTree> componentList = new ArrayList<MultiSetTree>(entry.getValue());
+				MultiSetNode multiSetNode = component.getByNode(target);
 
-			for (MultiSetTree component : componentList) {
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-
-					if (affectedMultiSetNodes.contains(multiSetNode)) {
-						continue;
-					}
-
-					MoveActionResult actionResult = multiSetNode.move(position, selectedReferences);
-					affectedMultiSetNodes.add(multiSetNode);
-					affectedMultiSetNodes.addAll(actionResult.getMovedNodesWithPosition().keySet());
-
-					MultiSetNode node = referenceTree.getMapped(multiSetNode);
-
-					node.move(position, null);
-
-					for (Entry<MultiSetNode, Integer> positionEntry : actionResult.getMovedNodesWithPosition()
-							.entrySet()) {
-
-						node = referenceTree.getMapped(positionEntry.getKey());
-						updatedReferenceNodes.add(node);
-						node.move(positionEntry.getValue(), null);
-					}
-
+				if (multiSetNode != null) {
+					results.addAll(multiSetNode.move(position, selectedReferences));
 				}
-
 			}
-
+			referenceTree.move(results);
 		}
+	}
 
-		for (MultiSetReferenceTree multiSetReferenceTree : this.integratedTrees.values()) {
+	public void addChild(Node target, Node child, int position) {
+		addChild(target, child, position, null);
+	}
 
-			List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
+	public void addChild(Node target, Node child, int position, Set<MultiSetNode> selectedReferences) {
 
-			for (MultiSetNode multiSetNode : multiSetNodes) {
-				if (!updatedReferenceNodes.contains(multiSetNode)) {
-					multiSetNode.move(position, null);
+		boolean hasComponentGranularity = granularities.stream().filter(w -> w.getLayer().equals(child.getNodeType()))
+				.toArray().length != 0;
+		Map<Node, Node> parentToChild = new HashMap<Node, Node>();
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
+			ReferenceTree referenceTree = referenceComponentEntry.getKey();
+			List<AddChildResult> results = new ArrayList<AddChildResult>();
+
+			List<MultiSetTree> componentsToAdd = new ArrayList<MultiSetTree>();
+
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
+
+				MultiSetNode multiSetNode = component.getByNode(target);
+
+				if (multiSetNode != null) {
+					List<AddChildResult> provResults = multiSetNode.addChild(child, position, parentToChild,
+							selectedReferences);
+
+					if (hasComponentGranularity) {
+						List<Node> nodes = new ArrayList<Node>();
+						for (AddChildResult addChildResult : provResults) {
+							nodes.add(addChildResult.getChild());
+						}
+						MultiSetTree newComponent = MultiSetTree.create(nodes,
+								new Granularity(child.getNodeType(), true));
+						componentsToAdd.add(newComponent);
+					}
+
+					results.addAll(provResults);
+				}
+			}
+
+			if (results.isEmpty()) {
+				Node childClone = child.cloneNode();
+				parentToChild.put(target, childClone);
+				childClone.setParent(target);
+				target.getChildren().add(position, childClone);
+
+				results.add(new AddChildResult(target, position, childClone));
+
+				if (hasComponentGranularity) {
+					MultiSetTree newComponent = MultiSetTree.create(Arrays.asList(childClone),
+							new Granularity(child.getNodeType(), true));
+					componentsToAdd.add(newComponent);
 				}
 
 			}
-
+			referenceTree.addChild(results, parentToChild);
+			referenceComponentEntry.getValue().addAll(componentsToAdd);
 		}
 
 	}
 
-	public void editAttributeKey(Node target, Attribute attribute, String key) {
+	public void delete(Node target) {
+		delete(target, null);
+	}
 
-		if (!attribute.getAttributeKey().equals(key)) {
-			attribute.setAttributeKey(key);
+	public void delete(Node target, Set<MultiSetNode> selectedReferences) {
+		Set<Node> deletedNodes = new HashSet<Node>();
+
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
+
+			ReferenceTree referenceTree = referenceComponentEntry.getKey();
+
+			List<DeleteResult> results = new ArrayList<DeleteResult>();
+			List<MultiSetTree> componentsToDelete = new ArrayList<MultiSetTree>();
+
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
+
+				MultiSetNode multiSetNode = component.getByNode(target);
+				if (multiSetNode != null) {
+					if (multiSetNode.isRoot()) {
+						componentsToDelete.add(component);
+					}
+					results.addAll(multiSetNode.delete(deletedNodes, selectedReferences));
+				}
+			}
+			if (results.isEmpty()) {
+				results.add(new DeleteResult(target));
+			}
+
+			referenceTree.delete(results, deletedNodes);
+			referenceComponentEntry.getValue().removeAll(componentsToDelete);
 		}
 
-		List<MultiSetAttribute> updatedReferenceAttributes = new ArrayList<MultiSetAttribute>();
-		List<MultiSetNode> updatedReferenceNodes = new ArrayList<MultiSetNode>();
-		Set<MultiSetAttribute> affectedMultiSetAttributes = new HashSet<MultiSetAttribute>();
-
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
-
-			MultiSetReferenceTree referenceTree = entry.getKey();
-			for (MultiSetTree component : entry.getValue()) {
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-
-					if (affectedMultiSetAttributes.contains(multiSetNode.getByAttribute(attribute))) {
-						continue;
-					}
-
-					if (multiSetNode.getByAttribute(attribute) != null) {
-						Set<MultiSetAttribute> affectedAttributes = multiSetNode.editAttributeKey(attribute, key);
-						affectedMultiSetAttributes.addAll(affectedAttributes);
-
-						for (MultiSetAttribute affectedAttribute : affectedAttributes) {
-							MultiSetAttribute mappedAttribute = referenceTree.getMapped(affectedAttribute);
-							updatedReferenceNodes.add(mappedAttribute.getMultiSetNode());
-
-							if (!updatedReferenceAttributes.contains(mappedAttribute)) {
-								mappedAttribute.editKey(key);
-								updatedReferenceAttributes.add(mappedAttribute);
-							}
-						}
-					}
-
+		Set<Node> nodesNotToDelete = new HashSet<Node>();
+		for (Node node : deletedNodes) {
+			for (ReferenceTree referenceTree : integratedTrees.values()) {
+				if (referenceTree.getByNode(node) != null) {
+					nodesNotToDelete.add(node);
 				}
 			}
 		}
-		for (MultiSetReferenceTree multiSetReferenceTree : this.integratedTrees.values()) {
 
-			List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
+		deletedNodes.removeAll(nodesNotToDelete);
 
-			for (MultiSetNode multiSetNode : multiSetNodes) {
-
-				if (!updatedReferenceNodes.contains(multiSetNode)) {
-					if (multiSetNode.getByAttribute(attribute) != null) {
-						multiSetNode.editAttributeKey(attribute, key);
-					}
-				}
-
-			}
-
+		for (Node node : deletedNodes) {
+			node.getParent().getChildren().remove(node);
 		}
-
 	}
 
 	public void addAttribute(Node target, Attribute attribute) {
@@ -574,129 +292,160 @@ public class CloneModel {
 	}
 
 	public void addAttribute(Node target, Attribute attribute, Set<MultiSetNode> selectedReferences) {
+		Map<Node, Attribute> nodeToAttribute = new HashMap<Node, Attribute>();
 
-		if (!target.getAttributes().contains(attribute)) {
-			target.addAttribute(attribute);
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
+
+			ReferenceTree referenceTree = referenceComponentEntry.getKey();
+
+			List<AddAttributeResult> results = new ArrayList<AddAttributeResult>();
+
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
+
+				MultiSetNode multiSetNode = component.getByNode(target);
+
+				if (multiSetNode != null) {
+					results.addAll(multiSetNode.addAttribute(attribute, nodeToAttribute, selectedReferences));
+				}
+			}
+			if (results.isEmpty()) {
+				results.add(new AddAttributeResult(target, attribute));
+			}
+
+			referenceTree.addAttribute(results, nodeToAttribute);
+		}
+	}
+
+	public void editAttributeKey(Node target, Attribute attribute, String newKey) {
+		editAttributeKey(target, attribute, newKey, null);
+	}
+
+	public void editAttributeKey(Node target, Attribute attribute, String newKey,
+			Set<MultiSetAttribute> selectedReferences) {
+
+		Set<Attribute> editedAttributes = new HashSet<Attribute>();
+
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
+
+			ReferenceTree referenceTree = referenceComponentEntry.getKey();
+
+			List<EditAttributeKeyResult> results = new ArrayList<EditAttributeKeyResult>();
+
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
+
+				MultiSetNode multiSetNode = component.getByNode(target);
+
+				if (multiSetNode != null) {
+					results.addAll(
+							multiSetNode.editAttributeKey(attribute, newKey, editedAttributes, selectedReferences));
+				}
+			}
+			if (results.isEmpty()) {
+				results.add(new EditAttributeKeyResult(target, attribute, newKey));
+			}
+
+			referenceTree.editAttributeKey(results, editedAttributes);
 		}
 
-		Map<MultiSetNode, MultiSetAttribute> updatedReferenceNodes = new HashMap<MultiSetNode, MultiSetAttribute>();
+		Set<Attribute> attributesToUpdate = new HashSet<Attribute>();
+		for (Attribute editedAttribute : editedAttributes) {
+			for (ReferenceTree referenceTree : integratedTrees.values()) {
 
-		Set<MultiSetNode> affectedMultiSetNodes = new HashSet<MultiSetNode>();
+				MultiSetAttribute referenceAttribute = referenceTree.getByAttribute(editedAttribute);
+				if (referenceAttribute != null) {
 
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
-
-			MultiSetReferenceTree referenceTree = entry.getKey();
-			for (MultiSetTree component : entry.getValue()) {
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-				for (MultiSetNode multiSetNode : multiSetNodes) {
-
-					if (affectedMultiSetNodes.contains(multiSetNode)) {
-						continue;
-					}
-
-					AttributeActionResult actionResult = multiSetNode.addAttribute(attribute, selectedReferences);
-					affectedMultiSetNodes.addAll(actionResult.getAffectedMultiSetNodes());
-					affectedMultiSetNodes.add(multiSetNode);
-
-					for (Entry<MultiSetNode, MultiSetAttribute> innerEntry : actionResult.getAffectedAttributes()
-							.entrySet()) {
-
-						MultiSetNode node = referenceTree.getMapped(innerEntry.getKey());
-
-						if (!updatedReferenceNodes.containsKey(node)) {
-							AttributeActionResult actionResult2 = node.addAttribute(attribute, null);
-
-							MultiSetAttribute newAttribute = actionResult2.getAffectedAttributes().entrySet().iterator()
-									.next().getValue();
-
-							referenceTree.addMap(innerEntry.getValue(), newAttribute);
-							updatedReferenceNodes.put(node, newAttribute);
-						}
-						MultiSetAttribute multiSetAttribute = updatedReferenceNodes.get(node);
-						referenceTree.addMap(innerEntry.getValue(), multiSetAttribute);
-
+					if (referenceAttribute.getKey().equals(newKey)) {
+						attributesToUpdate.add(editedAttribute);
 					}
 
 				}
 			}
-
 		}
-		for (MultiSetReferenceTree multiSetReferenceTree : this.integratedTrees.values()) {
 
-			List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
+		for (Attribute attributeToUpdate : attributesToUpdate) {
+			attributeToUpdate.setAttributeKey(newKey);
+		}
 
-			for (MultiSetNode multiSetNode : multiSetNodes) {
-				if (!updatedReferenceNodes.containsKey(multiSetNode)) {
-					multiSetNode.addAttribute(attribute, null);
+	}
+
+	public void addAttributeValue(Node target, Attribute attribute, Value value) {
+		addAttributeValue(target, attribute, value, null);
+	}
+
+	public void addAttributeValue(Node target, Attribute attribute, Value value,
+			Set<MultiSetAttribute> selectedReferences) {
+
+		Map<Attribute, Value> attributeToValue = new HashMap<Attribute, Value>();
+
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
+
+			ReferenceTree referenceTree = referenceComponentEntry.getKey();
+			List<AddAttributeValueResult> results = new ArrayList<AddAttributeValueResult>();
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
+				MultiSetNode multiSetNode = component.getByNode(target);
+				if (multiSetNode != null) {
+					results.addAll(
+							multiSetNode.addAttributeValue(attribute, value, attributeToValue, selectedReferences));
 				}
 
+			}
+			if (results.isEmpty()) {
+				results.add(new AddAttributeValueResult(attribute, value, target));
+			}
+			referenceTree.addAttributeValue(results, attributeToValue);
+
+		}
+
+		for (Entry<Attribute, Value> entry : attributeToValue.entrySet()) {
+			if (!entry.getKey().containsValue(entry.getValue())) {
+				entry.getKey().addAttributeValue(entry.getValue());
 			}
 
 		}
 
 	}
 
-	public void removeAttribute(Node target, Attribute attribute) {
-		removeAttribute(target, attribute, null);
+	public void editAttributeValue(Node target, Attribute attribute, Value value) {
+		editAttributeValue(target, attribute, value, null);
 	}
 
-	public void removeAttribute(Node target, Attribute attribute, Set<MultiSetNode> selectedReferences) {
+	public void editAttributeValue(Node target, Attribute attribute, Value value,
+			Set<MultiSetAttribute> selectedReferences) {
 
-		if (target.getAttributes().contains(attribute)) {
-			target.getAttributes().remove(attribute);
-		}
+		Map<Attribute, Value> attributeToValue = new HashMap<Attribute, Value>();
 
-		Map<MultiSetNode, MultiSetAttribute> updatedReferenceNodes = new HashMap<MultiSetNode, MultiSetAttribute>();
-		Set<MultiSetNode> affectedMultiSetNodes = new HashSet<MultiSetNode>();
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
 
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : components.entrySet()) {
+			ReferenceTree referenceTree = referenceComponentEntry.getKey();
 
-			MultiSetReferenceTree referenceTree = entry.getKey();
-			for (MultiSetTree component : entry.getValue()) {
-				List<MultiSetNode> multiSetNodes = component.getByNode(target);
-				for (MultiSetNode multiSetNode : multiSetNodes) {
+			List<EditAttributeValueResult> results = new ArrayList<EditAttributeValueResult>();
 
-					if (affectedMultiSetNodes.contains(multiSetNode)) {
-						continue;
-					}
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
 
-					if (multiSetNode.getByAttribute(attribute) != null) {
-						AttributeActionResult actionResult = multiSetNode.removeAttribute(attribute,
-								selectedReferences);
-						affectedMultiSetNodes.addAll(actionResult.getAffectedMultiSetNodes());
-						affectedMultiSetNodes.add(multiSetNode);
+				MultiSetNode multiSetNode = component.getByNode(target);
 
-						for (Entry<MultiSetNode, MultiSetAttribute> innerEntry : actionResult.getAffectedAttributes()
-								.entrySet()) {
-							MultiSetNode node = referenceTree.getMapped(innerEntry.getKey());
-
-							if (!updatedReferenceNodes.containsKey(node)) {
-
-								MultiSetAttribute attributeToRemove = referenceTree.getMapped(innerEntry.getValue());
-
-								node.removeAttribute(attributeToRemove.getAttribute(), null);
-								updatedReferenceNodes.put(node, attributeToRemove);
-
-							}
-
-							referenceTree.deleteMap(innerEntry.getValue());
-
-						}
-					}
-
+				if (multiSetNode != null) {
+					results.addAll(
+							multiSetNode.editAttributeValue(attribute, value, attributeToValue, selectedReferences));
 				}
-
 			}
+			if (results.isEmpty()) {
+				results.add(new EditAttributeValueResult(target, attribute, value));
+			}
+
+			referenceTree.editAttributeValue(results, attributeToValue);
 		}
-		for (MultiSetReferenceTree multiSetReferenceTree : this.integratedTrees.values()) {
 
-			List<MultiSetNode> multiSetNodes = multiSetReferenceTree.getByNode(target);
+		Map<Attribute, Value> attributesToAdd = new HashMap<Attribute, Value>();
+		for (Entry<Attribute, Value> entry : attributeToValue.entrySet()) {
 
-			for (MultiSetNode multiSetNode : multiSetNodes) {
+			for (ReferenceTree referenceTree : integratedTrees.values()) {
 
-				if (!updatedReferenceNodes.containsKey(multiSetNode)) {
-					if (multiSetNode.getByAttribute(attribute) != null) {
-						multiSetNode.removeAttribute(attribute, null);
+				MultiSetAttribute multiSetAttribute = referenceTree.getByAttribute(entry.getKey());
+
+				if (multiSetAttribute != null) {
+					if (!multiSetAttribute.containsValue(entry.getValue())) {
+						attributesToAdd.put(entry.getKey(), entry.getValue());
 					}
 				}
 
@@ -704,6 +453,69 @@ public class CloneModel {
 
 		}
 
+		for (Entry<Attribute, Value> entry : attributesToAdd.entrySet()) {
+			entry.getKey().addAttributeValue(entry.getValue());
+		}
+
+		for (Entry<Attribute, Value> entry : attributeToValue.entrySet()) {
+			if (!attributesToAdd.containsKey(entry.getKey())) {
+				entry.getKey().getAttributeValues().clear();
+				entry.getKey().addAttributeValue(entry.getValue());
+			}
+		}
+
+	}
+
+	public void deleteAttribute(Node target, Attribute attribute) {
+		deleteAttribute(target, attribute, null);
+	}
+
+	public void deleteAttribute(Node target, Attribute attribute, Set<MultiSetAttribute> selectedReferences) {
+		Set<Attribute> deletedAttributes = new HashSet<Attribute>();
+
+		for (Entry<ReferenceTree, List<MultiSetTree>> referenceComponentEntry : components.entrySet()) {
+
+			ReferenceTree referenceTree = referenceComponentEntry.getKey();
+
+			List<DeleteAttributeResult> results = new ArrayList<DeleteAttributeResult>();
+
+			for (MultiSetTree component : referenceComponentEntry.getValue()) {
+
+				MultiSetNode multiSetNode = component.getByNode(target);
+
+				if (multiSetNode != null) {
+					results.addAll(multiSetNode.deleteAttribute(attribute, deletedAttributes, selectedReferences));
+				}
+			}
+			if (results.isEmpty()) {
+				results.add(new DeleteAttributeResult(target, attribute));
+			}
+			referenceTree.deleteAttribute(results, deletedAttributes);
+		}
+
+		Set<Attribute> attributesNotToDelete = new HashSet<Attribute>();
+		for (Attribute deletedAttribute : deletedAttributes) {
+			for (ReferenceTree referenceTree : integratedTrees.values()) {
+				if (referenceTree.getByAttribute(deletedAttribute) != null) {
+					attributesNotToDelete.add(deletedAttribute);
+				}
+			}
+		}
+
+		deletedAttributes.removeAll(attributesNotToDelete);
+
+		for (Attribute deletedAttribute : deletedAttributes) {
+			deleteAttributeRecursively(tree.getRoot(), deletedAttribute);
+		}
+	}
+
+	private void deleteAttributeRecursively(Node node, Attribute attribute) {
+		if (node.getAttributes().contains(attribute)) {
+			node.getAttributes().remove(attribute);
+		}
+		for (Node child : node.getChildren()) {
+			deleteAttributeRecursively(child, attribute);
+		}
 	}
 
 	public Tree getTree() {
@@ -714,12 +526,13 @@ public class CloneModel {
 		this.tree = tree;
 	}
 
+	public Map<ReferenceTree, List<MultiSetTree>> getComponents() {
+		return components;
+	}
+
 	public void merge(CloneModel cloneModel) {
 
-		CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
-				new MetricImpl("test"));
-
-		for (Entry<MultiSetReferenceTree, List<MultiSetTree>> entry : cloneModel.components.entrySet()) {
+		for (Entry<ReferenceTree, List<MultiSetTree>> entry : cloneModel.components.entrySet()) {
 
 			this.components.put(entry.getKey(), new ArrayList<MultiSetTree>());
 
@@ -734,10 +547,10 @@ public class CloneModel {
 
 		tree = compareEngine.compare(tree, cloneModel.tree);
 
-		for (Entry<String, MultiSetReferenceTree> entry : cloneModel.integratedTrees.entrySet()) {
+		for (Entry<String, ReferenceTree> entry : cloneModel.integratedTrees.entrySet()) {
 
 			String name = entry.getKey();
-			MultiSetReferenceTree multiSetTree = entry.getValue();
+			ReferenceTree multiSetTree = entry.getValue();
 
 			int counter = 1;
 			String currentName = name;
@@ -753,10 +566,10 @@ public class CloneModel {
 	public List<Tree> restoreIntegratedTrees() {
 
 		List<Tree> trees = new ArrayList<Tree>();
-		for (Entry<String, MultiSetReferenceTree> entry : integratedTrees.entrySet()) {
+		for (Entry<String, ReferenceTree> entry : integratedTrees.entrySet()) {
 
 			String name = entry.getKey();
-			MultiSetReferenceTree multiSetTree = entry.getValue();
+			ReferenceTree multiSetTree = entry.getValue();
 
 			Tree tree = multiSetTree.restoreTrees().get(0);
 			Tree newTree = new TreeImpl(name, tree.getRoot());
@@ -771,19 +584,6 @@ public class CloneModel {
 		multiSetTree1.merge(multiSetTree2);
 		List<MultiSetTree> list = components.get(original);
 		list.remove(multiSetTree2);
-
-	}
-
-	public CloneModel(List<MultiSetTree> components, MultiSetReferenceTree integratedTree, String name,
-			Set<Granularity> granularities) {
-		super();
-
-		this.components = new HashMap<MultiSetReferenceTree, List<MultiSetTree>>();
-		this.components.put(integratedTree, components);
-
-		this.integratedTrees = new HashMap<String, MultiSetReferenceTree>();
-		this.integratedTrees.put(name, integratedTree);
-		this.granularities = granularities;
 
 	}
 

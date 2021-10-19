@@ -1,14 +1,16 @@
-package de.tu_bs.cs.isf.e4cf.refactoring.evaluation;
+package de.tu_bs.cs.isf.e4cf.refactoring.model.result;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
-public class DeleteAttributeValueAction extends ChangeAction {
-
+public class AddAttributeValueResult {
+	
 	private Attribute attribute;
-
+	
 	private Value value;
+	
+	private Node node;
 
 	public Attribute getAttribute() {
 		return attribute;
@@ -26,11 +28,24 @@ public class DeleteAttributeValueAction extends ChangeAction {
 		this.value = value;
 	}
 
-	public DeleteAttributeValueAction(Node node, Attribute attribute, Value value) {
-		super(node, ChangeActionType.DELETE_ATTRIBUTE_VALUE);
+	public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
+	}
+
+	public AddAttributeValueResult(Attribute attribute, Value value, Node node) {
+		super();
 		this.attribute = attribute;
 		this.value = value;
-
+		this.node = node;
 	}
+
+	
+	
+	
+	
 
 }

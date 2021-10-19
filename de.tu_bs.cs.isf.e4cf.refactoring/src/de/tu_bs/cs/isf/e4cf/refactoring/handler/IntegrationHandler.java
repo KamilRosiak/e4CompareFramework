@@ -12,6 +12,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorS
 import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
+import de.tu_bs.cs.isf.e4cf.refactoring.events.EventHandlerBase;
 import de.tu_bs.cs.isf.e4cf.refactoring.events.EventManager;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
@@ -22,22 +23,26 @@ public class IntegrationHandler {
 	public void execute(ServiceContainer services, ReaderManager readerManager, IntegrationPipeline integrationPipeline,
 			GsonExportService exportService, ClusterEngine clusterEngine, EventManager eventManager) {
 
+		ClusterEngine.startProcess();
+
 		Tree tree1 = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
-		CloneModel cloneModel1 = integrationPipeline.pipe(tree1, null);
+		CloneModel cloneModel1 = integrationPipeline.pipe(tree1);
 
 		if (cloneModel1 != null) {
 			for (int i = 1; i < services.rcpSelectionService.getCurrentSelectionsFromExplorer().size(); i++) {
 				Tree tree2 = readerManager
 						.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(i));
-				CloneModel cloneModel2 = integrationPipeline.pipe(tree2, cloneModel1.getGranularities(), null);
+				CloneModel cloneModel2 = integrationPipeline.pipe(tree2, cloneModel1.getGranularities());
+
 				cloneModel1.merge(cloneModel2);
 			}
-		}
 
-		Map<String, Object> event = new HashMap<String, Object>();
-		event.put(DSEditorST.TREE, cloneModel1.getTree());
-		event.put(DSEditorST.CLONE_MODEL, cloneModel1);
-		services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, event);
+			EventHandlerBase.services = services;
+			Map<String, Object> event = new HashMap<String, Object>();
+			event.put(DSEditorST.TREE, cloneModel1.getTree());
+			event.put(DSEditorST.CLONE_MODEL, cloneModel1);
+			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, event);
+		}
 
 	}
 

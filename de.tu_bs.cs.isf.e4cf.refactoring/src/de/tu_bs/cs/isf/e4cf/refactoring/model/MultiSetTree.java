@@ -19,9 +19,56 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 
 public class MultiSetTree {
 
-	protected Granularity granularity;
-
 	protected List<MultiSetNode> roots;
+	protected CompareEngineHierarchical compareEngine;
+
+	public MultiSetTree() {
+		compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
+				new MetricImpl("test"));
+		roots = new ArrayList<MultiSetNode>();
+	}
+
+	public List<MultiSetNode> getRoots() {
+		return roots;
+	}
+
+	public MultiSetNode getByNode(Node node) {
+		for (MultiSetNode root : roots) {
+			MultiSetNode target = root.getByNode(node);
+			if (target != null) {
+				return target;
+			}
+		}
+		return null;
+	}
+
+	public MultiSetAttribute getByAttribute(Attribute attribute) {
+		for (MultiSetNode root : roots) {
+			MultiSetAttribute target = getByAttributeRecursively(root, attribute);
+			if (target != null) {
+				return target;
+			}
+		}
+		return null;
+	}
+
+	private MultiSetAttribute getByAttributeRecursively(MultiSetNode multiSetNode, Attribute attribute) {
+
+		if (multiSetNode.getAttribute(attribute) != null) {
+			return multiSetNode.getAttribute(attribute);
+		}
+
+		for (MultiSetNode child : multiSetNode.getChildren()) {
+			MultiSetAttribute multiSetAttribute = getByAttributeRecursively(child, attribute);
+			if (multiSetAttribute != null) {
+				return multiSetAttribute;
+			}
+		}
+		return null;
+
+	}
+
+	protected Granularity granularity;
 
 	public MultiSetTree(Granularity granularity) {
 		this.roots = new ArrayList<MultiSetNode>();
@@ -30,7 +77,6 @@ public class MultiSetTree {
 	}
 
 	public void integrate(Tree integrateIn, Tree tree) {
-
 		Comparison<Node> comparison = compareEngine.compare(integrateIn.getRoot(), tree.getRoot());
 		integrate(comparison);
 	}
@@ -43,9 +89,9 @@ public class MultiSetTree {
 
 		if (comparison.getLeftArtifact() != null && comparison.getRightArtifact() != null) {
 
-			List<MultiSetNode> nodes = getByNode(comparison.getRightArtifact());
+			MultiSetNode multiSetNode = getByNode(comparison.getRightArtifact());
 
-			for (MultiSetNode multiSetNode : nodes) {
+			if (multiSetNode != null) {
 				multiSetNode.setNode(comparison.getLeftArtifact());
 
 				NodeResultElement element = (NodeResultElement) comparison.getResultElements().get(0);
@@ -53,20 +99,19 @@ public class MultiSetTree {
 				for (Entry<String, Float> entry : element.getAttributeSimilarities().entrySet()) {
 
 					String key = entry.getKey();
-					float similarity = entry.getValue();
-
+				
 					Attribute attribute1 = comparison.getLeftArtifact().getAttributeForKey(key);
 					Attribute attribute2 = comparison.getRightArtifact().getAttributeForKey(key);
 
 					if (attribute1 != null && attribute2 != null
 							&& attribute1.getAttributeKey().equals(attribute2.getAttributeKey())) {
 
-						MultiSetAttribute multiSetAttribute2 = multiSetNode.getByAttribute(attribute2);
+						MultiSetAttribute multiSetAttribute2 = multiSetNode.getAttribute(attribute2);
 						multiSetAttribute2.setAttribute(attribute1);
 
 					}
-				}
 
+				}
 			}
 
 			for (Comparison<Node> childComparison : comparison.getChildComparisons()) {
@@ -77,40 +122,26 @@ public class MultiSetTree {
 
 	}
 
-	public static MultiSetTree build(Collection<Node> nodes, Granularity granularity) {
+	public static MultiSetTree create(Collection<Node> nodes, Granularity granularity) {
 
 		MultiSetTree multiSetTree = new MultiSetTree(granularity);
 
 		for (Node node : nodes) {
-			MultiSetNode multiSetNode = MultiSetNode.build(node);
+			MultiSetNode multiSetNode = MultiSetNode.create(node);
 			multiSetTree.roots.add(multiSetNode);
 			multiSetNode.setRoot(true);
-
 		}
 
 		for (MultiSetNode root1 : multiSetTree.roots) {
 			for (MultiSetNode root2 : multiSetTree.roots) {
-
 				if (!root1.equals(root2)) {
-
 					Comparison<Node> comparison = multiSetTree.compareEngine.compare(root1.getNode(), root2.getNode());
-					buildReferences(comparison, root1, root2);
+					createReferences(comparison, root1, root2);
 				}
 			}
 		}
 
 		return multiSetTree;
-	}
-
-	public List<MultiSetNode> getByNode(Node node) {
-
-		List<MultiSetNode> multiSetNodes = new ArrayList<MultiSetNode>();
-
-		for (MultiSetNode multiSetNode : roots) {
-			multiSetNodes.addAll(multiSetNode.getByNode(node));
-		}
-		return multiSetNodes;
-
 	}
 
 	public List<MultiSetNode> getByGranularity(String granularity) {
@@ -123,55 +154,48 @@ public class MultiSetTree {
 		return multiSetNodes;
 	}
 
-	protected static void buildReferences(Comparison<Node> comparison, MultiSetNode multiSetNode1,
+	protected static void createReferences(Comparison<Node> comparison, MultiSetNode multiSetNode1,
 			MultiSetNode multiSetNode2) {
 
 		if (comparison.getLeftArtifact() != null && comparison.getRightArtifact() != null) {
 
-			List<MultiSetNode> targets1 = multiSetNode1.getByNode(comparison.getLeftArtifact());
-			List<MultiSetNode> targets2 = multiSetNode2.getByNode(comparison.getRightArtifact());
+			MultiSetNode target1 = multiSetNode1.getByNode(comparison.getLeftArtifact());
+			MultiSetNode target2 = multiSetNode2.getByNode(comparison.getRightArtifact());
 
-			for (MultiSetNode target1 : targets1) {
-				for (MultiSetNode target2 : targets2) {
-					target1.addReference(target2);
-					target2.addReference(target1);
+			target1.addReference(target2);
+			target2.addReference(target1);
 
-					buildAttributeReference(comparison, target1, target2);
-
-				}
-
-			}
+			createAttributeReference(comparison, target1, target2);
 
 			for (Comparison<Node> childComparison : comparison.getChildComparisons()) {
-				buildReferences(childComparison, multiSetNode1, multiSetNode2);
+				createReferences(childComparison, multiSetNode1, multiSetNode2);
 			}
 
 		}
 
 	}
 
-	private static void buildAttributeReference(Comparison<Node> comparison, MultiSetNode target1,
+	private static void createAttributeReference(Comparison<Node> comparison, MultiSetNode target1,
 			MultiSetNode target2) {
 		NodeResultElement element = (NodeResultElement) comparison.getResultElements().get(0);
 
 		for (Entry<String, Float> entry : element.getAttributeSimilarities().entrySet()) {
-			String key = entry.getKey();
-			float similarity = entry.getValue();
+			String key = entry.getKey();			
 
 			Attribute attribute1 = comparison.getLeftArtifact().getAttributeForKey(key);
 			Attribute attribute2 = comparison.getRightArtifact().getAttributeForKey(key);
 
 			if (attribute1 != null && attribute2 != null) {
-				MultiSetAttribute multiSetAttribute1 = target1.getByAttribute(attribute1);
+				MultiSetAttribute multiSetAttribute1 = target1.getAttribute(attribute1);
 
 				if (multiSetAttribute1 == null) {
-					multiSetAttribute1 = target1.getByAttributeKey(attribute1.getAttributeKey());
+					multiSetAttribute1 = target1.getAttribute(attribute1.getAttributeKey());
 				}
 
-				MultiSetAttribute multiSetAttribute2 = target2.getByAttribute(attribute2);
+				MultiSetAttribute multiSetAttribute2 = target2.getAttribute(attribute2);
 
 				if (multiSetAttribute2 == null) {
-					multiSetAttribute2 = target2.getByAttributeKey(attribute2.getAttributeKey());
+					multiSetAttribute2 = target2.getAttribute(attribute2.getAttributeKey());
 				}
 
 				multiSetAttribute1.addReference(multiSetAttribute2);
@@ -222,10 +246,6 @@ public class MultiSetTree {
 
 	}
 
-	public List<MultiSetNode> getRoots() {
-		return roots;
-	}
-
 	public MultiSetTree removeRootAndCreateNewTree(MultiSetNode root) {
 
 		MultiSetTree multiSetTree = new MultiSetTree(granularity);
@@ -250,7 +270,7 @@ public class MultiSetTree {
 
 				Comparison<Node> comparison = compareEngine.compare(nodeRoot1, nodeRoot2);
 
-				buildReferences(comparison, mapping);
+				createReferences(comparison, mapping);
 			}
 
 		}
@@ -259,7 +279,7 @@ public class MultiSetTree {
 
 	}
 
-	protected void buildReferences(Comparison<Node> comparison, Map<Node, MultiSetNode> mapping) {
+	protected void createReferences(Comparison<Node> comparison, Map<Node, MultiSetNode> mapping) {
 
 		if (comparison.getLeftArtifact() != null && comparison.getRightArtifact() != null) {
 
@@ -269,17 +289,15 @@ public class MultiSetTree {
 			target1.addReference(target2);
 			target2.addReference(target1);
 
-			buildAttributeReference(comparison, target1, target2);
+			createAttributeReference(comparison, target1, target2);
 
 			for (Comparison<Node> childComparison : comparison.getChildComparisons()) {
-				buildReferences(childComparison, mapping);
+				createReferences(childComparison, mapping);
 			}
 
 		}
 
 	}
 
-	protected CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
-			new MetricImpl("test"));
-
+	
 }

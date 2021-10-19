@@ -59,7 +59,7 @@ public class AddChildNodeAction extends AbstractTreeAction {
 		
 		if(!getParentNode().getValue().getChildren().contains(addedChild)) {
 			getParentNode().getValue().getChildren().add(position, addedChild);
-		}
+		} 
 		
 		
 	}

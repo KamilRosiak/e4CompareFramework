@@ -18,7 +18,6 @@ import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ComponentExtractor;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.GranularityManager;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
-import de.tu_bs.cs.isf.e4cf.refactoring.util.ProcessUtil;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 
 @Singleton
@@ -42,7 +41,7 @@ public class IntegrationPipeline {
 		this.granularityViewController = granularityViewController;
 	}
 
-	public CloneModel pipe(Tree tree, ProcessUtil process) {
+	public CloneModel pipe(Tree tree) {
 
 		Set<String> nodeTypes = new HashSet<String>();
 		nodeTypes.addAll(tree.getRoot().getAllNodeTypes());
@@ -51,7 +50,7 @@ public class IntegrationPipeline {
 		granularityViewController.showView(granularities);
 		if (granularityViewController.isResult()) {
 
-			return pipe(tree, granularities, process);
+			return pipe(tree, granularities);
 
 		}
 
@@ -59,11 +58,11 @@ public class IntegrationPipeline {
 
 	}
 
-	public CloneModel pipe(Tree tree, Set<Granularity> granularities, ProcessUtil process) {
+	public CloneModel pipe(Tree tree, Set<Granularity> granularities) {
 		Map<Granularity, List<Node>> layerToNodes = granularityManager.extractNodesOfCertainGranularities(tree,
 				granularities);
-		CloneModel cloneModel = componentExtractor
-				.extractComponents(clusterEngine.detectClusters(layerToNodes, process), tree);
+
+		CloneModel cloneModel = componentExtractor.extractComponents(clusterEngine.detectClusters(layerToNodes), tree);
 		cloneModel.setTree(tree);
 
 		return cloneModel;
