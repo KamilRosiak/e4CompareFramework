@@ -39,7 +39,7 @@ public class ClusterEngine {
 	private static String scriptPathExe;
 	private static String scriptPathPython;
 	public static float THRESHOLD = 0.15f;
-	public static boolean PYTHON = true;
+	public static boolean PYTHON = false;
 
 	public ClusterEngine() {
 		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
