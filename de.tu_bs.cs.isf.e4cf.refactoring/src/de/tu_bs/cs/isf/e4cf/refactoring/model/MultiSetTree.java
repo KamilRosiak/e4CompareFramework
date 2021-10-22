@@ -20,11 +20,10 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 public class MultiSetTree {
 
 	protected List<MultiSetNode> roots;
-	protected CompareEngineHierarchical compareEngine;
+	public static CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
+			new MetricImpl("test"));
 
 	public MultiSetTree() {
-		compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
-				new MetricImpl("test"));
 		roots = new ArrayList<MultiSetNode>();
 	}
 
@@ -135,7 +134,7 @@ public class MultiSetTree {
 		for (MultiSetNode root1 : multiSetTree.roots) {
 			for (MultiSetNode root2 : multiSetTree.roots) {
 				if (!root1.equals(root2)) {
-					Comparison<Node> comparison = multiSetTree.compareEngine.compare(root1.getNode(), root2.getNode());
+					Comparison<Node> comparison = compareEngine.compare(root1.getNode(), root2.getNode());
 					createReferences(comparison, root1, root2);
 				}
 			}
