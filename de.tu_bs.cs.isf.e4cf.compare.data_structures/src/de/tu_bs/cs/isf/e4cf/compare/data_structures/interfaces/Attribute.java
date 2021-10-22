@@ -8,6 +8,12 @@ public interface Attribute extends Serializable {
 	 * Returns the attribute key
 	 */
 	public String getAttributeKey();
+	
+	/**
+	 * Set the attribute key
+	 */
+	public void setAttributeKey(String attributeKey);
+
 
 	/**
 	 * Returns the value of this attributes , e.g., String key or void

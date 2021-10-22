@@ -48,7 +48,7 @@ public abstract class View {
 	public View(int numberOfColumns, String header) {
 		display = Display.getCurrent();
 		shell = new Shell(display, SWT.CLOSE | SWT.TITLE | SWT.BORDER | SWT.OK | SWT.SYSTEM_MODAL);
-		shell.setSize(800, 800);
+		shell.setSize(450, 600);
 		shell.setText(header);
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = numberOfColumns;

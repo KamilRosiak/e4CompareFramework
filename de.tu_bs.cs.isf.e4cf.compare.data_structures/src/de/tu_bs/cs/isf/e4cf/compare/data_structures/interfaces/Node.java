@@ -230,5 +230,8 @@ public interface Node {
 	 * @return The iterator used for traversal
 	 */
 	public Iterable<Node> depthFirstSearch();
+	
+	
+	public void addNodeAfterwards(Node node);
 
 }

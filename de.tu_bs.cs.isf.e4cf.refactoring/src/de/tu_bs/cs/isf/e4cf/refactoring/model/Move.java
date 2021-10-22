@@ -5,12 +5,10 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 public class Move extends Action {
 
 	public Move(Node x, Node y, int position) {
-		super(ActionType.MOVE, x);		
+		super(ActionType.MOVE, x);
 		this.y = y;
 		this.position = position;
 	}
-
-	
 
 	private Node y;
 
@@ -32,22 +30,4 @@ public class Move extends Action {
 		this.y = y;
 	}
 
-
-
-	private int savedPosition;
-
-	@Override
-	public void apply() {
-		savedPosition = x.getPosition();
-		x.getParent().getChildren().remove(x);
-		y.addChildAtPosition(x, position);
-
-	}
-
-	@Override
-	public void undo() {
-		x.getParent().addChildAtPosition(x, savedPosition);
-		y.getChildren().remove(x);
-
-	}
 }

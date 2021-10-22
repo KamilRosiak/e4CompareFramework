@@ -1,19 +1,22 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.DecorationManager;
@@ -39,8 +42,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 /**
  * This class represents the controller implementation of the data structure
@@ -51,6 +52,9 @@ import javafx.scene.text.Text;
  *
  */
 public class DSEditorController {
+
+	private Object cloneModel;
+
 	@Inject
 	private ServiceContainer services;
 
@@ -101,9 +105,8 @@ public class DSEditorController {
 	@Optional
 	@Inject
 	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
-		setCurrentTree(tree);
-		setContextMenu();
 
+		cloneModel = null;
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(DSEditorST.TREE_VIEW_ID);
 		closeFile();
@@ -117,7 +120,21 @@ public class DSEditorController {
 		addListener();
 	}
 
+	/**
+	 * Method to initialize the treeView from a given Tree and a clone model.
+	 * 
+	 * @param tree
+	 */
+	@Optional
+	@Inject
+	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Map<String, Object> event) {
+		Tree tree = (Tree) event.get(DSEditorST.TREE);
+		showTree(tree);
+		this.cloneModel = event.get(DSEditorST.CLONE_MODEL);
+	}
+
 	private NodeDecorator getSelectedDecorator() {
+
 		return decoratorCombo.getSelectionModel().getSelectedItem();
 	}
 
@@ -198,8 +215,17 @@ public class DSEditorController {
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
 				services.partService.showPart(DSEditorST.PROPERTIES_VIEW_ID);
-				services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
-						treeView.getSelectionModel().getSelectedItem().getValue());
+				if (cloneModel != null) {
+					Map<String, Object> event = new HashMap<String, Object>();
+					event.put(DSEditorST.NODE, treeView.getSelectionModel().getSelectedItem().getValue());
+					event.put(DSEditorST.CLONE_MODEL, cloneModel);
+
+					services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT, event);
+				} else {
+					services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
+							treeView.getSelectionModel().getSelectedItem().getValue());
+				}
+
 			}
 		});
 
@@ -217,7 +243,25 @@ public class DSEditorController {
 	 */
 	@FXML
 	void addNodeAttribute() {
-		commandStack.execute(new AddAttributeAction(getCurrentSelection().getValue()));
+
+		if (cloneModel != null) {
+			String attrName = RCPMessageProvider.inputDialog("Attribute Name", "Enter Attribute Name");
+			String attrValue = RCPMessageProvider.inputDialog("Attribute Value", "Enter Attribute Value");
+			Attribute addedAttr = new AttributeImpl(attrName, new StringValueImpl(attrValue));
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put(DSEditorST.ATTRIBUTE, addedAttr);
+			map.put(DSEditorST.SELECTED_NODE, getCurrentSelection().getValue());
+			map.put(DSEditorST.CLONE_MODEL, cloneModel);
+
+			services.eventBroker.send(DSEditorST.ATTRIBUTE_ADD_EVENT, map);
+
+		} else {
+			AddAttributeAction action = new AddAttributeAction(getCurrentSelection().getValue());
+			commandStack.execute(action);
+
+		}
+
 		treeView.refresh();
 	}
 
@@ -226,9 +270,36 @@ public class DSEditorController {
 	 */
 	@FXML
 	void addChildNode() {
-		commandStack.execute(new AddChildNodeAction(treeView, treeView.getSelectionModel().getSelectedItem(),
-				getSelectedDecorator()));
+
+		Node selectedNode = treeView.getSelectionModel().getSelectedItem().getValue();
+
+		if (cloneModel != null) {
+			Node newNode = new NodeImpl(RCPMessageProvider.inputDialog("Create New Child", "Node Type"));
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put(DSEditorST.SELECTED_NODE, selectedNode);
+			map.put(DSEditorST.ADDED_NODE, newNode);
+			map.put(DSEditorST.CLONE_MODEL, cloneModel);
+
+			services.eventBroker.send(DSEditorST.ADD_CHILD_EVENT, map);
+		} else {
+			TreeItem<Node> selectedItem = treeView.getSelectionModel().getSelectedItem();
+			AddChildNodeAction action = new AddChildNodeAction(treeView, selectedItem, getSelectedDecorator());
+			commandStack.execute(action);
+
+		}
+
 		treeView.refresh();
+	}
+
+	@FXML
+	public void restoreTrees() {
+
+		if (cloneModel != null) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put(DSEditorST.CLONE_MODEL, cloneModel);
+			services.eventBroker.send(DSEditorST.RESTORE_TREES_EVENT, map);
+		}
+
 	}
 
 	/**
@@ -330,9 +401,20 @@ public class DSEditorController {
 	 * Method to delete a Node
 	 */
 	private void deleteNode() {
-		TreeItem<Node> ti = treeView.getSelectionModel().getSelectedItem();
-		commandStack.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
-		ti.getParent().getChildren().remove(ti);
+
+		TreeItem<Node> selectedItem = treeView.getSelectionModel().getSelectedItem();
+		Node nodeToDelete = selectedItem.getValue();
+
+		if (cloneModel != null) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put(DSEditorST.DELETED_NODE, nodeToDelete);
+			map.put(DSEditorST.CLONE_MODEL, cloneModel);
+
+			services.eventBroker.send(DSEditorST.DELETE_EVENT, map);
+		} else {
+			commandStack.execute(new DeleteNodeAction("deleteNode", selectedItem, selectedItem.getParent()));
+
+		}
 
 		unselectAllNodes();
 		treeView.refresh();
@@ -513,6 +595,7 @@ public class DSEditorController {
 	@Inject
 	private void addAttribute(@UIEventTopic(DSEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
 		pair.getOwner().getAttributes().add(pair.getAttribute());
+
 		treeView.refresh();
 	}
 
@@ -527,4 +610,5 @@ public class DSEditorController {
 		services.eventBroker.send(DSEditorST.RECEIVE_SELECTED_NODE_EVENT,
 				treeView.getSelectionModel().getSelectedItem().getValue());
 	}
+
 }
