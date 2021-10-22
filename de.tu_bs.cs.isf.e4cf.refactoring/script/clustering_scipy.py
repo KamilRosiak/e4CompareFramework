@@ -1,4 +1,4 @@
-#compile with: pyinstaller --onefile --hidden-import="sklearn.neighbors._typedefs" --hidden-import="sklearn.utils._weight_vector" --hidden-import="sklearn.neighbors._quad_tree" clustering.py
+#compile with: pyinstaller --onefile clustering_scipy.py
 
 from scipy.cluster.hierarchy import complete, fcluster
 from scipy.spatial.distance import squareform

@@ -7,13 +7,21 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
 
 public class SynchronizationTreeBuilder {
 
 	public void buildSynchronizationTree(List<ActionScope> synchronizationScopes, Tree tree) {
 
 		for (ActionScope scope : synchronizationScopes) {
-			buildTreeRecursively(scope.getAction().getX(), scope, new TreeItem(tree, 0));
+			if (scope.getAction() instanceof Insert) {
+				Insert insert = (Insert) scope.getAction();
+				buildTreeRecursively(insert.getY(), scope, new TreeItem(tree, 0));
+
+			} else {
+
+				buildTreeRecursively(scope.getAction().getX(), scope, new TreeItem(tree, 0));
+			}
 
 		}
 

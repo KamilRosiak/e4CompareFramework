@@ -1,4 +1,4 @@
-#compile with: pyinstaller --onefile --hidden-import="sklearn.neighbors._typedefs" --hidden-import="sklearn.utils._weight_vector" --hidden-import="sklearn.neighbors._quad_tree" clustering.py
+#compile with: pyinstaller --onefile --hidden-import="sklearn.neighbors._typedefs" --hidden-import="sklearn.utils._weight_vector" --hidden-import="sklearn.neighbors._quad_tree" clustering_sklearn.py
 
 from sklearn.cluster import AgglomerativeClustering
 import numpy as np

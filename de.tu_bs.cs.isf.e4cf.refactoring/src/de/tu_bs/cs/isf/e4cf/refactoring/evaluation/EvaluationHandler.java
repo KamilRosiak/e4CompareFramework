@@ -1,176 +1,25 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.evaluation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
-import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions;
-import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator;
-import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator.Variant;
-import de.tu_bs.cs.isf.e4cf.refactoring.handler.ExtractionPipeline;
-import de.tu_bs.cs.isf.e4cf.refactoring.handler.SynchronizationPipeline;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
 
 public class EvaluationHandler {
 
 	@Execute
-	public void execute(ServiceContainer services, ReaderManager readerManager, SynchronizationPipeline pipeline,
-			CloneGenerator cloneGenerator, ExtractionPipeline extractionPipeline) {
-
-		ActionCallback actionCallback = new ActionCallback() {
-
-			@Override
-			public void handle(List<ActionScope> actionScopes) {
-
-			}
-		};
-
-		GeneratorOptions generatorOptions = new GeneratorOptions();
-		generatorOptions.variants = 1;
-		generatorOptions.isSyntaxSafe = false;
-		List<Metric> metrics = getMetrics();
-
-		ExecutorService executorService = Executors.newFixedThreadPool(10);
-
-		Map<Metric, List<StatsLogger>> logs = new HashMap<Metric, List<StatsLogger>>();
-		List<Callable<Boolean>> evaluationCallables = new ArrayList<Callable<Boolean>>();
-		for (Metric metric : metrics) {
-			Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
-
-			Callable<Boolean> callable = () -> {
-
-				logs.put(metric, new ArrayList<StatsLogger>());
-
-				generatorOptions.modificationRatioPercentage = (int) Math.round(metric.getType2AttributeChangeDegree());
-				generatorOptions.variantChangeDegree = metric.getVariantChangeDegree();
-
-				GranularityCallback granularityCallback = new GranularityCallback() {
-					@Override
-					public void handle(List<Granularity> granularities) {
-
-						for (Granularity granularity : granularities) {
-							if (granularity.getLayer().equals(metric.getGranularity())) {
-								granularity.setRefactor(true);
-							} else {
-								granularity.setRefactor(false);
-							}
-						}
-
-					}
-				};
-
-				SynchronizationCallback synchronizationCallback = new SynchronizationCallback() {
-					@Override
-					public void handle(Map<ActionScope, List<ActionScope>> synchronizationScopes) {
-
-						List<ActionScope> allSynchronizations = new ArrayList<ActionScope>();
-						for (List<ActionScope> actionScopes : synchronizationScopes.values()) {
-							allSynchronizations.addAll(actionScopes);
-						}
-
-						for (ActionScope actionScope : allSynchronizations) {
-							actionScope.setApply(false);
-						}
-						Random random = new Random();
-
-						int numberOfElements = (int) (allSynchronizations.size()
-								* (metric.getSynchronizationDegree() / 100));
-
-						for (int i = 0; i < numberOfElements; i++) {
-							int randomIndex = random.nextInt(allSynchronizations.size());
-							ActionScope actionScope = allSynchronizations.get(randomIndex);
-							actionScope.setApply(true);
-						}
-
-					}
-				};
-
-				Tree cloneTree = tree.cloneTree();
-				CloneModel cloneModel = extractionPipeline.pipe(tree, granularityCallback, 0.15f);
-
-				Tree currentTree = null;
-				for (int i = 1; i <= 25; i++) {
-
-					System.out.println("Revision: " + i);
-
-					StatsLogger logger = new StatsLogger();
-					logs.get(metric).add(logger);
-
-					List<Variant> variants = cloneGenerator.go(cloneTree, generatorOptions, false, false);
-					Variant variant1 = variants.get(1);
-					currentTree = variant1.tree;
-
-					cloneModel = pipeline.pipe(cloneModel, variant1.tree, granularityCallback, actionCallback,
-							synchronizationCallback, 0.15f, logger);
-
-					cloneTree = currentTree.cloneTree();
-
-				}
-
-				return true;
-			};
-
-			evaluationCallables.add(callable);
-
-		}
-
-		try {
-			executorService.invokeAll(evaluationCallables);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void execute(ServiceContainer services, ReaderManager readerManager, Evaluation evaluation) {
+		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
+		evaluation.evaluate(tree);
 
 	}
 
 	@CanExecute
 	public boolean canExecute(ServiceContainer services, RCPSelectionService selectionService) {
 		return services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() == 1;
-	}
-
-	private List<Metric> getMetrics() {
-
-		String[] granularities = new String[] { "CompilationUnit", "MethodDeclaration", "IfStmt" };
-		List<Metric> metrics = new ArrayList<Metric>();
-
-		for (int variantChangeDegree = 1; variantChangeDegree <= 5; variantChangeDegree++) {
-
-			for (float type2AttributeChangeDegree = 25; type2AttributeChangeDegree <= 100; type2AttributeChangeDegree += 25) {
-
-				for (float synchronizationDegree = 0; synchronizationDegree <= 100; synchronizationDegree += 25) {
-
-					for (String granularity : granularities) {
-
-						Metric metric = new Metric(type2AttributeChangeDegree, variantChangeDegree,
-								synchronizationDegree, granularity);
-						metrics.add(metric);
-
-					}
-
-				}
-			}
-
-		}
-
-		return metrics;
 	}
 
 }

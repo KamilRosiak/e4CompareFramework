@@ -30,15 +30,4 @@ public class Insert extends Action {
 		this.y = y;
 	}
 
-	@Override
-	public void apply() {
-		y.addChildAtPosition(x, position);
-	}
-
-	@Override
-	public void undo() {
-		y.getChildren().remove(x);
-
-	}
-
 }

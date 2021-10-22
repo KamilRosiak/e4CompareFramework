@@ -217,7 +217,7 @@ class CloneGenerator {
 		public int parentIndex
 		public int crossOverParentIndex = -1;
 		public int index
-		public boolean isCorrect = false
+		public boolean isCorrect = false		
 
 		new(Tree t, Tree trackingT, int parentIndex, int index) {
 			this.tree = t

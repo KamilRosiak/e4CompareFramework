@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -34,13 +35,13 @@ public class GranularityView extends View {
 
 	}
 
-	public void showView(List<Granularity> granularities) {
+	public void showView(Set<Granularity> granularities) {
 
 		createLayerTree(granularities);
 		showView();
 	}
 
-	public void createLayerTree(List<Granularity> granularities) {
+	public void createLayerTree(Set<Granularity> granularities) {
 
 		for (TreeItem item : granularityTree.getItems()) {
 			item.dispose();

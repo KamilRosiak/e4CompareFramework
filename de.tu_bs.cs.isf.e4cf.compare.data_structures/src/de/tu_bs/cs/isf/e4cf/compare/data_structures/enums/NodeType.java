@@ -100,9 +100,6 @@ public enum NodeType {
 	UPDATE,
 	VARIABLE_DECLARATION, // INTERESTING
 	VARIABLE_DECLARATOR,
-	/**
-	 * Refactoring Nodes
-	 */
 	CONFIGURATION,
 	COMPONENT
 	;
@@ -111,8 +108,13 @@ public enum NodeType {
 	    try {
 	    	return valueOf(name);
 	    } catch (IllegalArgumentException ex) {
-	    	System.err.println("Tried to create unkown Standardized Node Type: " + name);
+	    	if(VERBOSE) {
+	    		System.err.println("Tried to create unkown Standardized Node Type: " + name);
+	    	}
+	    	
 	    	return UNDEFINED;
 	    }
 	}
+	
+	public static boolean VERBOSE;
 }

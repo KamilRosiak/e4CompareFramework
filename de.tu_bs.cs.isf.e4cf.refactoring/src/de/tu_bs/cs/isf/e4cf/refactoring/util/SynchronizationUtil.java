@@ -12,31 +12,23 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
+import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetNode;
 
 public class SynchronizationUtil {
 
 	private static CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(new SortingMatcher(),
 			new MetricImpl("test"));
 
-	public static List<Granularity> getGranularities(Set<String> nodeTypes) {
+	public static Set<Granularity> getGranularities(Set<String> nodeTypes) {
 
-		List<Granularity> granularities = new ArrayList<Granularity>();
+		Set<Granularity> granularities = new HashSet<Granularity>();
 		for (String nodeType : nodeTypes) {
 			boolean refactor = nodeType.equals("MethodDeclaration");
 			granularities.add(new Granularity(nodeType, refactor));
 		}
 
 		return granularities;
-	}
-
-	public static List<Granularity> getGranularities(List<String> nodeTypes1, List<String> nodeTypes2) {
-
-		Set<String> types = new HashSet<String>();
-		types.addAll(nodeTypes1);
-		types.addAll(nodeTypes2);
-
-		return getGranularities(types);
-	}
+	}	
 
 	public static int getPositionOfCommonPredecessor(Node parentLeft, Node parentRight, Node target,
 			Comparison<Node> comparison) {
@@ -117,6 +109,61 @@ public class SynchronizationUtil {
 		return arrayList;
 	}
 
+	public static List<MultiSetNode> findLongestCommonSubsequence(List<MultiSetNode> leftChildren,
+			List<MultiSetNode> rightChildren) {
+
+		int m = leftChildren.size();
+		int n = rightChildren.size();
+
+		int[][] L = new int[m + 1][n + 1];
+
+		for (int i = 0; i <= m; i++) {
+			for (int j = 0; j <= n; j++) {
+				if (i == 0 || j == 0) {
+					L[i][j] = 0;
+				} else if (hasPartner(leftChildren.get(i - 1), rightChildren.get(j - 1))) {
+					L[i][j] = L[i - 1][j - 1] + 1;
+				} else {
+					L[i][j] = Math.max(L[i - 1][j], L[i][j - 1]);
+				}
+			}
+		}
+
+		int index = L[m][n];
+
+		MultiSetNode[] lcs = new MultiSetNode[index];
+
+		int i = m;
+		int j = n;
+		while (i > 0 && j > 0) {
+			if (hasPartner(leftChildren.get(i - 1), rightChildren.get(j - 1))) {
+				lcs[index - 1] = leftChildren.get(i - 1);
+				i--;
+				j--;
+				index--;
+			} else if (L[i - 1][j] > L[i][j - 1]) {
+				i--;
+			} else {
+				j--;
+			}
+
+		}
+
+		List<MultiSetNode> arrayList = new ArrayList<MultiSetNode>();
+		arrayList.addAll(Arrays.asList(lcs));
+		return arrayList;
+	}
+
+	private static boolean hasPartner(MultiSetNode node1, MultiSetNode node2) {
+
+		if (node1.getReferences().contains(node2) && node2.getReferences().contains(node1)) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	
 	private static boolean hasPartner(Node n1, Node n2, List<Comparison<Node>> comparisons) {
 
 		for (Comparison<Node> comparison : comparisons) {

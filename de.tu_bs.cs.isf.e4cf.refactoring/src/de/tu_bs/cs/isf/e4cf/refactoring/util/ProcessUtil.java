@@ -10,14 +10,22 @@ import java.io.OutputStreamWriter;
 
 public class ProcessUtil {
 
-	private static boolean isProcessReady;
-	private static BufferedReader reader;
-	private static BufferedWriter writer;
-	private static Process process;
+	private boolean isProcessReady;
+	private BufferedReader reader;
+	private BufferedWriter writer;
+	private Process process;
+	
 
-	public static void startProcess(String path) {
+	public void startProcess(String path, boolean isPython) {
 		try {
-			ProcessBuilder builder = new ProcessBuilder("py", path);
+
+			ProcessBuilder builder = null;
+			if (!isPython) {
+				builder = new ProcessBuilder(path);
+			} else {
+				builder = new ProcessBuilder("py", path);
+			}
+
 			builder.redirectErrorStream(true);
 			process = builder.start();
 			InputStream inputStream = process.getInputStream();
@@ -29,17 +37,21 @@ public class ProcessUtil {
 			e.printStackTrace();
 		}
 	}
-	
-	public static BufferedReader getReader() {
+
+	public BufferedReader getReader() {
 		return reader;
 	}
 
-	public static BufferedWriter getWriter() {
+	public BufferedWriter getWriter() {
 		return writer;
 	}
-	
-	public static boolean isReady() {
+
+	public boolean isReady() {
 		return isProcessReady;
+	}
+
+	public void stop() {
+		process.destroyForcibly();
 	}
 
 }

@@ -298,7 +298,7 @@ public abstract class AbstractNode implements Node {
 	public int getEndLine() {
 		return this.endLine;
 	}
-	
+
 	@Override
 	public void addChildAtPosition(Node child, int position) {
 		if (position > getChildren().size()) {
@@ -306,5 +306,17 @@ public abstract class AbstractNode implements Node {
 		}
 		getChildren().add(position, child);
 		child.setParent(this);
+	}
+
+	@Override
+	public void addNodeAfterwards(Node node) {
+
+		int position = getPosition();
+		if (position == parent.getChildren().size() - 1) {
+			this.parent.getChildren().add(node);
+		} else {
+			this.parent.getChildren().add(position + 1, node);
+		}
+
 	}
 }

@@ -14,7 +14,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter2;
  */
 public class DSValidator {
 	
-	public static boolean VERBOSE = true;
+	public static boolean VERBOSE = false;
 	private final static String INFO_PREFIX = "  DSValidator-Info: ";
 
 	/**
@@ -28,7 +28,7 @@ public class DSValidator {
 		case "JAVA":
 			return checkJavaSyntax(root);
 		default:
-			System.out.println(INFO_PREFIX + "No Syntax Validator Available for " + root.getNodeType());
+			//System.out.println(INFO_PREFIX + "No Syntax Validator Available for " + root.getNodeType());
 			return false;
 		}
 
