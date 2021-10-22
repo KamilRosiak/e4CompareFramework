@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;

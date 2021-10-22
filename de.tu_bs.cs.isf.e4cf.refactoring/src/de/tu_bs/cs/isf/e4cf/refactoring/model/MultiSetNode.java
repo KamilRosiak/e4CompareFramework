@@ -2,7 +2,6 @@ package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

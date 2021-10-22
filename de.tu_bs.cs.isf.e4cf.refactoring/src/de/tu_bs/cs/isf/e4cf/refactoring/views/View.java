@@ -1,8 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
-import javax.inject.Singleton;
-
-import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
