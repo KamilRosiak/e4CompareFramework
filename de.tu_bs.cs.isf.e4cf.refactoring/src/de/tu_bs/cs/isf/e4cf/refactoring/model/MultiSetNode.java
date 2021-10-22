@@ -427,7 +427,7 @@ public class MultiSetNode {
 				multiSetNodeReferenceChild = MultiSetNode.create(parentToChild.get(reference.node));
 				reference.children.add(referencePosition, multiSetNodeReferenceChild);
 
-				addChildResults.add(new AddChildResult(reference.node, referencePosition, parentToChild.get(node)));
+				addChildResults.add(new AddChildResult(reference.node, referencePosition, parentToChild.get(reference.node)));
 			}
 
 			multiSetNodeReferenceChild.parent = reference;
