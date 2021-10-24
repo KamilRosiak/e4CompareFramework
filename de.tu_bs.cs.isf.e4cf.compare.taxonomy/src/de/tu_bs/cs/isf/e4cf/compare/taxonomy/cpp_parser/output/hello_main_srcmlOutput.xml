@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.srcML.org/srcML/src" xmlns:cpp="http://www.srcML.org/srcML/cpp" revision="1.0.0" language="C++" filename="C:\Users\olant\runtime-de.tu_bs.cs.isf.e4cf.core.product\ 02 Trees\hello_main.cpp"><cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;cstdio&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;iostream&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;ctime&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;iomanip&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;cstdlib&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;algorithm&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;vector&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;set&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;map&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;string&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;cstring&gt;</cpp:file></cpp:include>
+<using>using <namespace>namespace <name>std</name>;</namespace></using>
+
+<decl_stmt><decl><type><name>bool</name></type> <name><name>used</name><index>[<expr><literal type="number">100</literal></expr>]</index></name></decl>;</decl_stmt>
+<decl_stmt><decl><type><name>int</name></type> <name>T</name></decl>, <decl><type ref="prev"/><name>x</name></decl>, <decl><type ref="prev"/><name>C</name></decl>;</decl_stmt>
+
+<function><type><name>void</name></type> <name>kk</name><parameter_list>(<parameter><decl><type><name>int</name></type> <name>x</name></decl></parameter>)</parameter_list> <block>{<block_content>
+	<while>while <condition>(<expr><name>x</name></expr>)</condition> <block>{<block_content>
+		<expr_stmt><expr><name><name>used</name><index>[<expr><name>x</name> <operator>%</operator> <literal type="number">10</literal></expr>]</index></name> <operator>=</operator> <literal type="boolean">true</literal></expr>;</expr_stmt>
+		<expr_stmt><expr><name>x</name> <operator>/=</operator> <literal type="number">10</literal></expr>;</expr_stmt>
+	</block_content>}</block></while>
+</block_content>}</block></function>
+
+<function><type><name>int</name></type> <name>main</name><parameter_list>()</parameter_list> <block>{<block_content>
+	<expr_stmt><expr><call><name>scanf</name><argument_list>(<argument><expr><literal type="string">"%d"</literal></expr></argument>, <argument><expr><operator>&amp;</operator><name>T</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+	<while>while <condition>(<expr><name>T</name><operator>--</operator></expr>)</condition> <block>{<block_content>
+		<expr_stmt><expr><call><name>scanf</name><argument_list>(<argument><expr><literal type="string">"%d"</literal></expr></argument>, <argument><expr><operator>&amp;</operator><name>x</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+		<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr><literal type="string">"Case #%d: "</literal></expr></argument>, <argument><expr><operator>++</operator><name>C</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+		<if_stmt><if>if <condition>(<expr><operator>!</operator><name>x</name></expr>)</condition><block type="pseudo"><block_content>
+			<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr><literal type="string">"INSOMNIA\n"</literal></expr></argument>)</argument_list></call></expr>;</expr_stmt></block_content></block></if>
+		<else>else <block>{<block_content>
+			<expr_stmt><expr><call><name>memset</name><argument_list>(<argument><expr><name>used</name></expr></argument>, <argument><expr><literal type="boolean">false</literal></expr></argument>, <argument><expr><sizeof>sizeof <name>used</name></sizeof></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+			<for>for <control>(<init><decl><type><name>int</name></type> <name>i</name> <init>= <expr><literal type="number">1</literal></expr></init></decl>;</init> <condition>;</condition> <incr><expr><name>i</name><operator>++</operator></expr></incr>)</control> <block>{<block_content>
+				<expr_stmt><expr><call><name>kk</name><argument_list>(<argument><expr><name>i</name> <operator>*</operator> <name>x</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+				<decl_stmt><decl><type><name>int</name></type> <name>c</name> <init>= <expr><literal type="number">0</literal></expr></init></decl>;</decl_stmt>
+				<for>for <control>(<init><decl><type><name>int</name></type> <name>j</name> <init>= <expr><literal type="number">0</literal></expr></init></decl>;</init> <condition><expr><name>j</name> <operator>&lt;</operator> <literal type="number">10</literal></expr>;</condition> <incr><expr><name>j</name><operator>++</operator></expr></incr>)</control><block type="pseudo"><block_content>
+					<expr_stmt><expr><name>c</name> <operator>+=</operator> <call><name>int</name><argument_list>(<argument><expr><name><name>used</name><index>[<expr><name>j</name></expr>]</index></name></expr></argument>)</argument_list></call></expr>;</expr_stmt></block_content></block></for>
+				<if_stmt><if>if <condition>(<expr><name>c</name> <operator>==</operator> <literal type="number">10</literal></expr>)</condition> <block>{<block_content>
+					<expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr><literal type="string">"%d\n"</literal></expr></argument>, <argument><expr><name>i</name> <operator>*</operator> <name>x</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+					<break>break;</break>
+				</block_content>}</block></if></if_stmt>
+			</block_content>}</block></for>
+		</block_content>}</block></else></if_stmt>
+	</block_content>}</block></while>
+</block_content>}</block></function></unit>
