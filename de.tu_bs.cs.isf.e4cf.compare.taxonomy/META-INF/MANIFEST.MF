@@ -24,5 +24,7 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare.taxonomy,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics,
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_cpp_parser,
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_java_parser,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.util
 Bundle-ActivationPolicy: lazy
