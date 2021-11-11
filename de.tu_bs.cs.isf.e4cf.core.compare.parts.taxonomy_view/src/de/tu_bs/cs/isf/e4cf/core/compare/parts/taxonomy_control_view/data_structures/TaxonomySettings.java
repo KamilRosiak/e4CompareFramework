@@ -23,8 +23,8 @@ public class TaxonomySettings {
 
 	
 	public TaxonomySettings() {
-		this.sourceLevelComparison = true;
-		this.levenshteinMode = false;
+		this.sourceLevelComparison = false;
+		this.levenshteinMode = true;
 		this.languageJava = true;
 		this.dirNameMetric = true;
 	}
