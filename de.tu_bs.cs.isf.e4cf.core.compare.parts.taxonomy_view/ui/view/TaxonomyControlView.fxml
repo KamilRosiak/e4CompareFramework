@@ -57,7 +57,7 @@
 				</HBox>
 				<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
 					<children>
-						<RadioButton fx:id="treeTaxonomyRadioButton" text="Taxonomy as Tree">
+						<RadioButton fx:id="treeTaxonomyRadioButton" text="Time Taxonomy">
 	 		 		   		<HBox.margin>
 								<Insets right="3.0"/>
 							</HBox.margin>
@@ -65,7 +65,7 @@
        							<ToggleGroup fx:id="group"/>
    							</toggleGroup> -->
 						</RadioButton>
-						<RadioButton fx:id="graphTaxonomyRadioButton" text="Taxonomy as Graph">
+						<RadioButton fx:id="graphTaxonomyRadioButton" text="Space Taxonomy">
 							<HBox.margin>
 								<Insets right="30.0"/>
 							    <Insets bottom="10.0"/>
@@ -129,7 +129,7 @@
 										<Insets bottom="5.0" top="5.0" />
 									</BorderPane.margin>
 								</VBox>
-								<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
+								<!-- <VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
 									<children>
 										<Label alignment="TOP_LEFT" fx:id="languageStructuresLabel"  maxWidth="1.7976931348623157E308" text="(Construct) Dictionaries" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> </Label>
 										<CheckBox fx:id="classConstructsCheckbox" text="Classes" />
@@ -139,7 +139,7 @@
 									<BorderPane.margin>
 										<Insets bottom="5.0" top="5.0" />
 									</BorderPane.margin>
-								</VBox>
+								</VBox> -->
 			               </children>
 			               <VBox.margin>
 			                  <Insets left="5.0" right="5.0" />
