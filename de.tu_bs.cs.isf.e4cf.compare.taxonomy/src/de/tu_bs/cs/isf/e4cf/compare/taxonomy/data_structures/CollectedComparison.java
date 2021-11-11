@@ -50,7 +50,9 @@ public class CollectedComparison {
 	}
 	
 	public float getTotalSimilarity() {
-		return (0.8f * cumulativeSimilaritySource) + (0.2f * cumulativeSimilarityDirectory);
+		float totalSimilarity = (0.8f * cumulativeSimilaritySource) + (0.2f * cumulativeSimilarityDirectory);
+		
+		return totalSimilarity;
 	}
 	
 	public void addCummulativeSimilarity(float valueToAdd, boolean isDirectory) {
