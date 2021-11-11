@@ -1,0 +1,30 @@
+diff a/de.tu_bs.cs.isf.e4cf.compare.taxonomy/src/de/tu_bs/cs/isf/e4cf/compare/taxonomy/TaxonomyCompareEngine.java b/de.tu_bs.cs.isf.e4cf.compare.taxonomy/src/de/tu_bs/cs/isf/e4cf/compare/taxonomy/TaxonomyCompareEngine.java	(rejected hunks)
+@@ -112,14 +112,25 @@
+ 		variants.stream().forEach(artifactLeft -> {
+ 			variants.stream().forEach(artifactRight -> {
+ 				if (artifactLeft != artifactRight) {
++					Stopwatch singleCompSw = Stopwatch.createStarted();
+ 					// Add Comparison to List for GraphView
+ 					currentLeftArtifact = artifactLeft;
+ 					currentRightArtifact = artifactRight;
+-//					System.out.println(
+-//							"Comparing Nodes: " + artifactLeft.getTreeName() + " and " + artifactRight.getTreeName());
++					System.out.println(
++							"Comparing Variants: " + artifactLeft.getTreeName() + " and " + artifactRight.getTreeName());
+ 					compare(artifactLeft.getRoot(), artifactRight.getRoot());
++					singleCompSw.stop();
++					long scTimeElapsed = singleCompSw.elapsed(TimeUnit.MILLISECONDS);
++					System.out.println("Single Comparison Time: " + scTimeElapsed / 1000 + " secs. (" + scTimeElapsed + " milliseconds)");
++					singleCompSw.reset();
++					singleCompSw.start();
+ 					taxonomyResultEngine.matchNodes();
+-					taxonomyResultEngine.printCommulativeResults();
++					singleCompSw.stop();
++					scTimeElapsed = singleCompSw.elapsed(TimeUnit.MILLISECONDS);
++					System.out.println("Single Comparison (Match Time) : " + scTimeElapsed / 1000 + " secs. (" + scTimeElapsed + " milliseconds)");
++					
++					
++//					taxonomyResultEngine.printCommulativeResults();
+ 					
+ 				}
+ 
