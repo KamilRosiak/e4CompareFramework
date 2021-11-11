@@ -11,7 +11,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
 public class SimpleStringComparator extends AbstractNodeComparator {
-	float keyValueRatio = 0.4f;
+	float keyValueRatio = 0.0f;
 
 	public SimpleStringComparator() {
 		super(WILDCARD);
@@ -41,7 +41,7 @@ public class SimpleStringComparator extends AbstractNodeComparator {
 		float similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
 		// add 0.4 as base similarity because this node are of the same type
 		similarity = similarity * (1.0f - keyValueRatio) + keyValueRatio;
-		
+//		similarity = similarity > 1.0f ? 1.0f : similarity;
 		return new NodeResultElement(this, similarity);
 	}
 

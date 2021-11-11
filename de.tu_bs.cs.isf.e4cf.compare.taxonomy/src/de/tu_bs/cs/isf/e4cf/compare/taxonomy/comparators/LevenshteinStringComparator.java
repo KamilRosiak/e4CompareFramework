@@ -7,7 +7,6 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.templates.AbstractNodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.core.compare.algorithm.LevenstheinDistance;
 
@@ -19,22 +18,25 @@ import de.tu_bs.cs.isf.e4cf.core.compare.algorithm.LevenstheinDistance;
  *
  */
 public class LevenshteinStringComparator extends AbstractNodeComparator {
-	float keyValueRatio = 0.4f;
+	float keyValueRatio = 0.0f;
 	//private LevenstheinDistance distance = new LevenshteinDistance();
 
 	public LevenshteinStringComparator() {
 		super(WILDCARD);
 	}
 
-	public NodeResultElement compare(Tree variant, Node firstNode, Node secondNode) {
-		
+
+	
+	@Override
+	public NodeResultElement compare(Node firstNode, Node secondNode) {
 		NodeResultElement resultElement = compare(firstNode, secondNode);
 		
 		return resultElement;
 	}
 	
-	@Override
-	public NodeResultElement compare(Node firstNode, Node secondNode) {
+	
+	public NodeResultElement compare(boolean isSrcMLParser, Node firstNode, Node secondNode) {
+
 		List<Float> similarities = new ArrayList<Float>();
 		// compares for every attribute key, which is unique the corresponding values
 		for (Attribute firstAttr : firstNode.getAttributes()) {
@@ -42,15 +44,23 @@ public class LevenshteinStringComparator extends AbstractNodeComparator {
 				// check if attributes are the same
 				if (firstAttr.keyEquals(secondAttr)) {
 					similarities.add(compareValues(firstAttr, secondAttr));
-				} 
+				}
 			}
 		}
-		
-		int maxAttributes  = Math.max(firstNode.getAttributes().size(), firstNode.getAttributes().size());
-		float similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
+
+		int maxAttributes = Math.max(firstNode.getAttributes().size(), secondNode.getAttributes().size());
+		float similarity = 0.0f;
+		if (!isSrcMLParser) {
+			similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
+		} else {
+			// Get mean similarity
+//			similarity = maxAttributes > 0 ? sum(similarities) / similarities.size() : 1f;
+			similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
+		}
+
 		// add 0.4 as base similarity because this node are of the same type
 		similarity = similarity * (1.0f - keyValueRatio) + keyValueRatio;
-		
+//	similarity = similarity > 1.0f ? 1.0f : similarity;
 		return new NodeResultElement(this, similarity);
 	}
 
