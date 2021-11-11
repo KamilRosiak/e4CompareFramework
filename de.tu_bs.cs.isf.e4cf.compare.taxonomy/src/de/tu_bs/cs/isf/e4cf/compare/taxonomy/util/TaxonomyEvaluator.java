@@ -155,17 +155,19 @@ public class TaxonomyEvaluator {
 						}
 					}
 					
+					pTN = nodeGTPredecessors.size() - (pTP + pFP + pFN) > 0 ? nodeGTPredecessors.size() - (pTP + pFP + pFN) : 0;
+					sTN = nodeGTSuccessors.size() - (sTP + sFP + sFN) > 0 ? nodeGTSuccessors.size() - (sTP + sFP + sFN) : 0;
 					
 
-//					truePositivesValue += (pTP+sTP);
-//					trueNegativesValue += (pTN+sTN);
-//					falsePositivesValue += (pFP+sFP);
-//					falseNegativesValue += (pFN+sFN);
+					truePositivesValue += (pTP+sTP);
+					trueNegativesValue += (pTN+sTN);
+					falsePositivesValue += (pFP+sFP);
+					falseNegativesValue += (pFN+sFN);
 					
-					truePositivesValue += (pTP);
-					trueNegativesValue += (pTN);
-					falsePositivesValue += (pFP);
-					falseNegativesValue += (pFN);
+//					truePositivesValue += (pTP);
+//					trueNegativesValue += (pTN);
+//					falsePositivesValue += (pFP);
+//					falseNegativesValue += (pFN);
 				}
 				
 	}
