@@ -14,7 +14,7 @@ import java.util.List;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.TaxonomyCompareEngine;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactGraph;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactGraphCompact;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.util.TaxonomyEvaluator;
 import de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures.TaxonomySettings;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
@@ -28,14 +28,13 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.DefaultTreeBuilder;
  */
 public class BatchEvaluator {
 
-	// public final static String[] SUPPORTED_FILE_ENDINGS = { "java", "h", "cpp" };
-	public final static String SUPPORTED_FILE_ENDINGS = "java";
+	private final static List<String> SUPPORTED_FILE_ENDINGS = new ArrayList<String>();
 	private final static String datasetHomePath = "C:\\Users\\olant\\runtime-de.tu_bs.cs.isf.e4cf.core.product\\ 01 RAW\\";
 	private final static String gcjStrategy1DatasetLocation = "GCJ\\2008-SP-SD-SL\\";
 	private final static String gcjStrategy2DatasetLocation = "GCJ\\2008-SP-DD-SL\\";
 	private final static String gcjStrategy3DatasetLocation = "GCJ\\2008-SP-DD-DL\\";
 	private final static String directoryDatasetLocation = "Branches\\";
-
+	private String taxonomyMode = "";
 
 	
 	private String exportFileName = "taxonomyResults" + LocalDate.now().toString() + "-"+ LocalTime.now().toString().replace(":", "-") +".csv";
@@ -54,6 +53,7 @@ public class BatchEvaluator {
 	 */
 	public BatchEvaluator() {
 		initializeTaxonomySettings();
+		initializeAcceptedSourceFileTypes();
 	}
 	
 	/**
@@ -63,12 +63,14 @@ public class BatchEvaluator {
 
 	}
 	
-	public void exportResults() throws IOException {
-		String fileName = "C:\\Users\\olant\\Desktop\\thesis-playground\\Results\\"+exportFileName;
+	public void exportResults(String evaluationMode) throws IOException {
+		String fileName = "C:\\Users\\olant\\Desktop\\thesis-playground\\Results\\" + evaluationMode +"-"+ this.taxonomyMode +"-"+exportFileName;
 	    FileWriter fileWriter = new FileWriter(fileName);
 	    PrintWriter printWriter = new PrintWriter(fileWriter);
-	    printWriter.println("Mode,ItemName,PathToVariants,Recall,Precision,Accuracy,ErrorRate,PCRA,NDM,RVPA");
 	    
+	    printWriter.println("MEAN VALUES,,,,,,"+getMeanPrecision()+ ","+ getMeanRecall() + ","+getMeanAccuracy()+ ",,"+getMeanPCRA()+","+getMeanNDM()+",,"+getMeanRVPA());
+	    
+	    printWriter.println("Mode,Item Name,Developer,Problem Class,Variants Code,Path To Variants,Precision,Recall,Accuracy,ErrorRate,CPRA,NDM,TDA,RVPA");
 		for (BatchResult aBatchResult: this.batchResults) {
 			printWriter.println(aBatchResult.getPropertyAsCSVString());
 		}
@@ -76,13 +78,27 @@ public class BatchEvaluator {
 		printWriter.close();
 	}
 	
+	@SuppressWarnings("serial")
+	public void initializeAcceptedSourceFileTypes() {
+		SUPPORTED_FILE_ENDINGS.addAll(
+				new ArrayList<String>() {
+					{
+						add("java");
+						add("cpp");
+					}
+				});
+		
+	}
+	
 	public void initializeTaxonomySettings() {
-		this.taxonomySettings.setLevenshteinMode(true);
-		this.taxonomySettings.setSourceLevelComparison(false);
-		this.taxonomySettings.setTaxonomyTypeAsTree(true);
+		this.taxonomySettings.setLevenshteinMode(true);				// Set String difference setter
+		this.taxonomySettings.setSourceLevelComparison(true);		// Set Comparison Level
+		this.taxonomySettings.setTaxonomyTypeAsTree(true);			// Set Tree Type
+		this.taxonomySettings.setLanguageJava(true);				// Set Language Java Type
+		this.taxonomySettings.setLanguageCplusplus(true);			// Set Language Type
 		
 		if (!this.taxonomySettings.getSourceLevelComparison()) {
-			this.taxonomySettings.setDirSizeMetric(true);
+			this.taxonomySettings.setDirNameMetric(true);			// Set Directory Name Metric
 		}
 	}
 	
@@ -111,7 +127,7 @@ public class BatchEvaluator {
 		// Read all Java Files in the folder
 		if (variantFolder.exists()) {
 			for (FileTreeElement sourceFileChild : variantFolder.getChildren()) {
-				if ((!sourceFileChild.isDirectory()) && sourceFileChild.getExtension().equals(SUPPORTED_FILE_ENDINGS)) {
+				if ((!sourceFileChild.isDirectory()) && SUPPORTED_FILE_ENDINGS.contains(sourceFileChild.getExtension())) {
 					System.out.println("File:" + sourceFileChild.getFileName());
 					foundVariants.add(sourceFileChild);
 				}
@@ -153,12 +169,84 @@ public class BatchEvaluator {
 		return convertedTrees;
 	}
 	
+	private float getMeanPrecision() {
+		List<Float> batchMetricResults = new ArrayList<Float>(); 
+		
+		for (BatchResult aBatchResult: this.batchResults) {
+			batchMetricResults.add(aBatchResult.precisionValue);
+		}
+		
+		return getMeanValue(batchMetricResults);
+	}
+	
+	private float getMeanRecall() {
+		List<Float> batchMetricResults = new ArrayList<Float>(); 
+		
+		for (BatchResult aBatchResult: this.batchResults) {
+			batchMetricResults.add(aBatchResult.recallValue);
+		}
+		
+		return getMeanValue(batchMetricResults);
+	}
+	
+	private float getMeanAccuracy() {
+		List<Float> batchMetricResults = new ArrayList<Float>(); 
+		
+		for (BatchResult aBatchResult: this.batchResults) {
+			batchMetricResults.add(aBatchResult.accuracyValue);
+		}
+		
+		return getMeanValue(batchMetricResults);
+	}
+	
+	private float getMeanPCRA() {
+		List<Float> batchMetricResults = new ArrayList<Float>(); 
+		
+		for (BatchResult aBatchResult: this.batchResults) {
+			batchMetricResults.add(aBatchResult.PCRA);
+		}
+		
+		return getMeanValue(batchMetricResults);
+	}
+	
+	private float getMeanNDM() {
+		List<Float> batchMetricResults = new ArrayList<Float>(); 
+		
+		for (BatchResult aBatchResult: this.batchResults) {
+			batchMetricResults.add(aBatchResult.NDM);
+		}
+		
+		return getMeanValue(batchMetricResults);
+	}
+	
+	private float getMeanRVPA() {
+		List<Float> batchMetricResults = new ArrayList<Float>(); 
+		
+		for (BatchResult aBatchResult: this.batchResults) {
+			batchMetricResults.add(aBatchResult.RVPA);
+		}
+		
+		return getMeanValue(batchMetricResults);
+	}
+	
+	private float getMeanValue(List<Float> values) {
+		float sum = 0;
+		for(float floatNum: values) {
+			sum += floatNum;
+		}
+		
+		return sum/(float)values.size();
+	}
+	
 	/**
 	 * Starts Same Developer Source Evaluation (Strategy 1)
 	 */
 	public void startSameDeveloperEvaluation() {
 		// Clear previously entered Data
 		this.datasetBatch.clear();
+		// Define Mode
+		String evalautionMode = "Same Developer";
+		
 		// Add data to Batch before evaluation
 		addGCJSourceVariantsSameDeveloperN3();	// Add GCJ Variants for N = 3
 		addGCJSourceVariantsSameDeveloperN4();	// Add GCJ Variants for N = 4
@@ -174,17 +262,18 @@ public class BatchEvaluator {
 			if (artifacts.size() > 1) {
 				// Create graph for artifacts
 				engine.compare(artifacts);
-				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
+				ArtifactGraphCompact artifactGraph = new ArtifactGraphCompact(engine.artifactComparisonList);
+				artifactGraph.setMatchingResults(engine.getMatchingResult());
 				artifactGraph.deriveArtifactDetails(artifactFiles);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
-				 
-				// Set up taxonomy graph for display
-				if (this.taxonomySettings.getTaxonomyTypeAsTree()) {
-					artifactGraph.setUpTaxonomyGraph();
-				} else {
-					artifactGraph.setUpDAGTaxonomyGraph();
-				}
+				artifactGraph.printArtifactComparison(); //Print similarities between variants
 				
+				artifactGraph.setUpTaxonomyGraph();
+//				artifactGraph.setUpTaxonomyGraphMarcHentze();
+//				artifactGraph.setUpDAGTaxonomyGraph();
+				
+				// Updated Taxonomy Mode String
+				this.taxonomyMode = artifactGraph.getTaxonomyMode();
 				
 				//3. Compare Ground truth taxonomy and Computed taxonomy 
 				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(aTaxonomyItem.getGroundTruth(), artifactGraph.taxonomyRootNode);
@@ -195,12 +284,12 @@ public class BatchEvaluator {
 				performanceJudge.computeCustomMeasures();
 				performanceJudge.printCustomMeasures();
 				
-				BatchResult newBatch = new BatchResult("New Metric Definition", aTaxonomyItem.getItemName(), aTaxonomyItem.getPathToVariants(), performanceJudge.getRecallValue(), performanceJudge.getPrecisionValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM());
+				BatchResult newBatch = new BatchResult(evalautionMode + "-" +artifactGraph.getTaxonomyMode(), aTaxonomyItem.getItemName(), aTaxonomyItem.getVariantsDeveloper() , aTaxonomyItem.getProblemClass(), aTaxonomyItem.getNoOfVariants(), aTaxonomyItem.getPathToVariants(), performanceJudge.getPrecisionValue(), performanceJudge.getRecallValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM(), performanceJudge.getTDA(), performanceJudge.getRVPA());
 				batchResults.add(newBatch);
 				try {
-				exportResults();
+				exportResults(evalautionMode);
 				} catch (Exception ex) {
-				 System.out.println("Could not print ");	
+				 System.out.println("Could not print: "+ ex.getMessage());	
 				}
 			}
 		}
@@ -212,9 +301,11 @@ public class BatchEvaluator {
 	public void startDifferentDevelopersEvaluation() {
 		// Clear previously entered Data
 		this.datasetBatch.clear();
+		// Define Mode
+		String evalautionMode = "DD-SL";
 		// Add data to Batch before evaluation
-		addGCJSourceVariantsDifferentDevelopersN3();	// Add GCJ Variants for N = 3
-		addGCJSourceVariantsDifferentDevelopersN4();	// Add GCJ Variants for N = 4
+//		addGCJSourceVariantsDifferentDevelopersN3();	// Add GCJ Variants for N = 3
+//		addGCJSourceVariantsDifferentDevelopersN4();	// Add GCJ Variants for N = 4
 		addGCJSourceVariantsDifferentDevelopersN5();	// Add GCJ Variants for N = 5
 		addGCJSourceVariantsDifferentDevelopersN6();	// Add GCJ Variants for N = 6
 		
@@ -228,17 +319,18 @@ public class BatchEvaluator {
 			if (artifacts.size() > 1) {
 				// Create graph for artifacts
 				engine.compare(artifacts);
-				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
+				ArtifactGraphCompact artifactGraph = new ArtifactGraphCompact(engine.artifactComparisonList);
+				artifactGraph.setMatchingResults(engine.getMatchingResult());
 				artifactGraph.deriveArtifactDetails(artifactFiles);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
-				 
-				// Set up taxonomy graph for display
-				if (this.taxonomySettings.getTaxonomyTypeAsTree()) {
-					artifactGraph.setUpTaxonomyGraph();
-				} else {
-					artifactGraph.setUpDAGTaxonomyGraph();
-				}
+				artifactGraph.printArtifactComparison(); //Print similarities between variants
 				
+				artifactGraph.setUpTaxonomyGraph();
+//				artifactGraph.setUpTaxonomyGraphMarcHentze();
+//				artifactGraph.setUpDAGTaxonomyGraph();
+				
+				// Updated Taxonomy Mode String
+				this.taxonomyMode = artifactGraph.getTaxonomyMode();
 				
 				//3. Compare Ground truth taxonomy and Computed taxonomy 
 				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(aTaxonomyItem.getGroundTruth(), artifactGraph.taxonomyRootNode);
@@ -249,25 +341,84 @@ public class BatchEvaluator {
 				performanceJudge.computeCustomMeasures();
 				performanceJudge.printCustomMeasures();
 				
-				BatchResult newBatch = new BatchResult("New Metric Definition", aTaxonomyItem.getItemName(), aTaxonomyItem.getPathToVariants(), performanceJudge.getRecallValue(), performanceJudge.getPrecisionValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM());
+				BatchResult newBatch = new BatchResult(evalautionMode + "-" +artifactGraph.getTaxonomyMode(), aTaxonomyItem.getItemName(), aTaxonomyItem.getVariantsDeveloper() , aTaxonomyItem.getProblemClass(), aTaxonomyItem.getNoOfVariants(), aTaxonomyItem.getPathToVariants(), performanceJudge.getPrecisionValue(), performanceJudge.getRecallValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM(), performanceJudge.getTDA(), performanceJudge.getRVPA());
+
 				batchResults.add(newBatch);
 				try {
-				exportResults();
+				exportResults(evalautionMode);
 				} catch (Exception ex) {
-				 System.out.println("Could not print ");	
+					 System.out.println("Could not print: "+ ex.getMessage());	
 				}
 			}
 		}
 	}
 	
 	/**
-	 * Starts RunningExampleDirectory Evaluation
+	 * Starts Different Developers Source Evaluation (Strategy 2)
 	 */
-	public void startGITJavapoetEvaluation() {
+	public void startDifferentLanguagesEvaluation() {
 		// Clear previously entered Data
 		this.datasetBatch.clear();
+		// Define Mode
+		String evalautionMode = "DD-DL";
 		// Add data to Batch before evaluation
-		addGITJavapoetN6Time();	// Add GIT Javapoet Variants for N = 6
+		addGCJSourceVariantsDifferentLanguagesN5();	// Add GCJ Variants for N = 5
+		addGCJSourceVariantsDifferentLanguagesN6();	// Add GCJ Variants for N = 6
+		
+		for (TaxonomyEvaluationItem aTaxonomyItem: this.datasetBatch) {
+			TaxonomyCompareEngine engine = new TaxonomyCompareEngine();
+			engine.setTaxnomySettings(this.taxonomySettings);
+			//1.  Get variants by parsing paths
+			List<FileTreeElement> artifactFiles = parseSourceVariantsInPath(aTaxonomyItem.getPathToVariants(), "3");
+			List<Tree> artifacts = convertToTree(artifactFiles);
+			//2.  Compute taxonomy
+			if (artifacts.size() > 1) {
+				// Create graph for artifacts
+				engine.compare(artifacts);
+				ArtifactGraphCompact artifactGraph = new ArtifactGraphCompact(engine.artifactComparisonList);
+				artifactGraph.deriveArtifactDetails(artifactFiles);
+				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
+				artifactGraph.printArtifactComparison(); //Print similarities between variants
+				
+				artifactGraph.setUpTaxonomyGraph();
+//				artifactGraph.setUpTaxonomyGraphMarcHentze();
+//				artifactGraph.setUpDAGTaxonomyGraph();
+				
+				// Updated Taxonomy Mode String
+				this.taxonomyMode = artifactGraph.getTaxonomyMode();
+				
+				//3. Compare Ground truth taxonomy and Computed taxonomy 
+				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(aTaxonomyItem.getGroundTruth(), artifactGraph.taxonomyRootNode);
+				//performanceJudge.computePrimaryMeasures();
+				performanceJudge.computePrimaryMeasuresPS();
+				performanceJudge.calculateSecondaryMeasures();
+				performanceJudge.printMeasures();
+				performanceJudge.computeCustomMeasures();
+				performanceJudge.printCustomMeasures();
+				
+				BatchResult newBatch = new BatchResult(evalautionMode + "-" +artifactGraph.getTaxonomyMode(), aTaxonomyItem.getItemName(), aTaxonomyItem.getVariantsDeveloper() , aTaxonomyItem.getProblemClass(), aTaxonomyItem.getNoOfVariants(), aTaxonomyItem.getPathToVariants(), performanceJudge.getPrecisionValue(), performanceJudge.getRecallValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM(), performanceJudge.getTDA(), performanceJudge.getRVPA());
+				batchResults.add(newBatch);
+				try {
+				exportResults(evalautionMode);
+				} catch (Exception ex) {
+					 System.out.println("Could not print: "+ ex.getMessage());	
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * Starts RunningExampleDirectory Evaluation
+	 */
+	public void startGITLoggerEvaluation() {
+		// Clear previously entered Data
+		this.datasetBatch.clear();
+		// Define Mode
+		String evalautionMode = "GIT-Logger";
+		
+		// Add data to Batch before evaluation
+		addGITLoggerN6Time();	// Add GIT Logger Variants for N = 6
 		
 		for (TaxonomyEvaluationItem aTaxonomyItem: this.datasetBatch) {
 			TaxonomyCompareEngine engine = new TaxonomyCompareEngine();
@@ -279,32 +430,29 @@ public class BatchEvaluator {
 			if (artifacts.size() > 1) {
 				// Create graph for artifacts
 				engine.compare(artifacts);
-				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
+				ArtifactGraphCompact artifactGraph = new ArtifactGraphCompact(engine.artifactComparisonList);
 				artifactGraph.deriveArtifactDetails(artifactFolders);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
+				artifactGraph.printArtifactComparison(); //Print similarities between variants
 				 
-				// Set up taxonomy graph for display
-				if (this.taxonomySettings.getTaxonomyTypeAsTree()) {
-					artifactGraph.setUpTaxonomyGraph();
-				} else {
-					artifactGraph.setUpDAGTaxonomyGraph();
-				}
+				artifactGraph.setUpTaxonomyGraph();
+//				artifactGraph.setUpTaxonomyGraphMarcHentze();
+//				artifactGraph.setUpDAGTaxonomyGraph();
 				
 				
 				//3. Compare Ground truth taxonomy and Computed taxonomy 
 				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(aTaxonomyItem.getGroundTruth(), artifactGraph.taxonomyRootNode);
-				performanceJudge.computePrimaryMeasures();
-				//performanceJudge.computePrimaryMeasuresPS();
+				performanceJudge.computePrimaryMeasuresPS();
 				performanceJudge.calculateSecondaryMeasures();
 				performanceJudge.printMeasures();
 				performanceJudge.computeCustomMeasures();
 				performanceJudge.printCustomMeasures();
 				
-				BatchResult newBatch = new BatchResult("New Metric Definition", aTaxonomyItem.getItemName(), aTaxonomyItem.getPathToVariants(), performanceJudge.getRecallValue(), performanceJudge.getPrecisionValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM());
+				BatchResult newBatch = new BatchResult("GIT-Logger", aTaxonomyItem.getItemName(), aTaxonomyItem.getVariantsDeveloper() , aTaxonomyItem.getProblemClass(), aTaxonomyItem.getNoOfVariants(), aTaxonomyItem.getPathToVariants(), performanceJudge.getPrecisionValue(), performanceJudge.getRecallValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM(), performanceJudge.getTDA(), performanceJudge.getRVPA());
 				batchResults.add(newBatch);
 				
 				try {
-					exportResults();
+					exportResults(evalautionMode);
 				} catch (Exception ex) {
 					System.out.println("Could not Export Results: "+ex.getMessage());	
 				}
@@ -312,12 +460,15 @@ public class BatchEvaluator {
 		}
 	}
 	
+	 
 	/**
 	 * Starts RunningExampleDirectory Evaluation
 	 */
 	public void startRunningExampleDirectoryEvaluation() {
 		// Clear previously entered Data
 		this.datasetBatch.clear();
+		// Define Mode
+		String evalautionMode = "RunningExampleDirectoryEvaluation";
 		// Add data to Batch before evaluation
 		addGitDirectoryRunningExampleVariants();	// Add GCJ Variants for N = 3
 		
@@ -331,9 +482,10 @@ public class BatchEvaluator {
 			if (artifacts.size() > 1) {
 				// Create graph for artifacts
 				engine.compare(artifacts);
-				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
+				ArtifactGraphCompact artifactGraph = new ArtifactGraphCompact(engine.artifactComparisonList);
 				artifactGraph.deriveArtifactDetails(artifactFolders);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
+				artifactGraph.printArtifactComparison(); //Print similarities between variants
 				 
 				// Set up taxonomy graph for display
 				if (this.taxonomySettings.getTaxonomyTypeAsTree()) {
@@ -352,11 +504,11 @@ public class BatchEvaluator {
 				performanceJudge.computeCustomMeasures();
 				performanceJudge.printCustomMeasures();
 				
-				BatchResult newBatch = new BatchResult("New Metric Definition", aTaxonomyItem.getItemName(), aTaxonomyItem.getPathToVariants(), performanceJudge.getRecallValue(), performanceJudge.getPrecisionValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM());
+				BatchResult newBatch = new BatchResult("RunningExampleDirectoryEvaluation", aTaxonomyItem.getItemName(), aTaxonomyItem.getVariantsDeveloper() , aTaxonomyItem.getProblemClass(), aTaxonomyItem.getNoOfVariants(), aTaxonomyItem.getPathToVariants(), performanceJudge.getPrecisionValue(), performanceJudge.getRecallValue(), performanceJudge.getAccuracyValue(), performanceJudge.getErrorRateValue(), performanceJudge.getPCRA(), performanceJudge.getNDM(), performanceJudge.getTDA(), performanceJudge.getRVPA());
 				batchResults.add(newBatch);
 				
 				try {
-					exportResults();
+					exportResults(evalautionMode);
 				} catch (Exception ex) {
 					System.out.println("Could not Export Results: "+ex.getMessage());	
 				}
@@ -373,13 +525,13 @@ public class BatchEvaluator {
 	 */
 	public void addGCJSourceVariantsSameDeveloperN3() {
 		// Mid N=3
-		TaxonomyEvaluationItem halyavinN3D = new TaxonomyEvaluationItem("halyavinN3D", "N=3\\halyavin\\Problem-D", GCJGroundTruth.createGoogleCode2008N3halyavinDGT());
-		TaxonomyEvaluationItem jediknightN3B = new TaxonomyEvaluationItem("jediknightN3B", "N=3\\jediknight\\Problem-B", GCJGroundTruth.createGoogleCode2008N3jediknightBGT());
-		TaxonomyEvaluationItem kotehokN3A = new TaxonomyEvaluationItem("kotehokN3A", "N=3\\kotehok\\Problem-A", GCJGroundTruth.createGoogleCode2008N3kotehokAGT());
-		TaxonomyEvaluationItem kotehokN3D = new TaxonomyEvaluationItem("kotehokN3D", "N=3\\kotehok\\Problem-D", GCJGroundTruth.createGoogleCode2008N3kotehokDGT());
-		TaxonomyEvaluationItem wataN3D = new TaxonomyEvaluationItem("wataN3D", "N=3\\wata\\Problem-D", GCJGroundTruth.createGoogleCode2008N3wataDGT());
-		TaxonomyEvaluationItem ymatsuxN3A = new TaxonomyEvaluationItem("ymatsuxN3A", "N=3\\ymatsux\\Problem-A", GCJGroundTruth.createGoogleCode2008N3ymatsuxAGT());
-		TaxonomyEvaluationItem ymatsuxN3C = new TaxonomyEvaluationItem("ymatsuxN3C", "N=3\\ymatsux\\Problem-C", GCJGroundTruth.createGoogleCode2008N3ymatsuxCGT());
+		TaxonomyEvaluationItem halyavinN3D = new TaxonomyEvaluationItem("halyavinN3D", "halyavin", "Problem-D", "N=3", "N=3\\halyavin\\Problem-D", GCJGroundTruth.createGoogleCode2008N3halyavinDGT());
+		TaxonomyEvaluationItem jediknightN3B = new TaxonomyEvaluationItem("jediknightN3B", "jediknight", "Problem-B", "N=3", "N=3\\jediknight\\Problem-B", GCJGroundTruth.createGoogleCode2008N3jediknightBGT());
+		TaxonomyEvaluationItem kotehokN3A = new TaxonomyEvaluationItem("kotehokN3A", "kotehok", "Problem-A", "N=3", "N=3\\kotehok\\Problem-A", GCJGroundTruth.createGoogleCode2008N3kotehokAGT());
+		TaxonomyEvaluationItem kotehokN3D = new TaxonomyEvaluationItem("kotehokN3D", "kotehok", "Problem-D", "N=3", "N=3\\kotehok\\Problem-D", GCJGroundTruth.createGoogleCode2008N3kotehokDGT());
+		TaxonomyEvaluationItem wataN3D = new TaxonomyEvaluationItem("wataN3D", "wata", "Problem-D", "N=3", "N=3\\wata\\Problem-D", GCJGroundTruth.createGoogleCode2008N3wataDGT());
+		TaxonomyEvaluationItem ymatsuxN3A = new TaxonomyEvaluationItem("ymatsuxN3A", "ymatsux", "Problem-A", "N=3", "N=3\\ymatsux\\Problem-A", GCJGroundTruth.createGoogleCode2008N3ymatsuxAGT());
+		TaxonomyEvaluationItem ymatsuxN3C = new TaxonomyEvaluationItem("ymatsuxN3C", "ymatsux", "Problem-C", "N=3", "N=3\\ymatsux\\Problem-C", GCJGroundTruth.createGoogleCode2008N3ymatsuxCGT());
 		
 		datasetBatch.add(halyavinN3D);
 		datasetBatch.add(jediknightN3B);
@@ -397,15 +549,15 @@ public class BatchEvaluator {
 	 */
 	public void addGCJSourceVariantsSameDeveloperN4() {
 		// Mid N=4
-		TaxonomyEvaluationItem halyavinN4B = new TaxonomyEvaluationItem("halyavinN4B", "N=4\\halyavin\\Problem-B", GCJGroundTruth.createGoogleCode2008N4halyavinBGT());
-		TaxonomyEvaluationItem halyavinN4C = new TaxonomyEvaluationItem("halyavinN4C", "N=4\\halyavin\\Problem-C", GCJGroundTruth.createGoogleCode2008N4halyavinCGT());
-		TaxonomyEvaluationItem kotehokN4B = new TaxonomyEvaluationItem("kotehokN4B", "N=4\\kotehok\\Problem-B", GCJGroundTruth.createGoogleCode2008N4kotehokBGT());
-		TaxonomyEvaluationItem kotehokN4C = new TaxonomyEvaluationItem("kotehokN4C", "N=4\\kotehok\\Problem-C", GCJGroundTruth.createGoogleCode2008N4kotehokCGT());
-		TaxonomyEvaluationItem mysticN4B = new TaxonomyEvaluationItem("mysticN4B", "N=4\\mystic\\Problem-B", GCJGroundTruth.createGoogleCode2008N4mysticBGT());
-		TaxonomyEvaluationItem mysticN4D = new TaxonomyEvaluationItem("mysticN4D", "N=4\\mystic\\Problem-D", GCJGroundTruth.createGoogleCode2008N4mysticDGT());
-		TaxonomyEvaluationItem wataN4A = new TaxonomyEvaluationItem("wataN4A", "N=4\\wata\\Problem-A", GCJGroundTruth.createGoogleCode2008N4wataAGT());	
-		TaxonomyEvaluationItem wataN4B = new TaxonomyEvaluationItem("wataN4B", "N=4\\wata\\Problem-B", GCJGroundTruth.createGoogleCode2008N4wataBGT());	
-		TaxonomyEvaluationItem wataN4C = new TaxonomyEvaluationItem("wataN4C", "N=4\\wata\\Problem-C", GCJGroundTruth.createGoogleCode2008N4wataCGT());	
+		TaxonomyEvaluationItem halyavinN4B = new TaxonomyEvaluationItem("halyavinN4B", "halyavin", "Problem-B", "N=4", "N=4\\halyavin\\Problem-B", GCJGroundTruth.createGoogleCode2008N4halyavinBGT());
+		TaxonomyEvaluationItem halyavinN4C = new TaxonomyEvaluationItem("halyavinN4C", "halyavin", "Problem-C", "N=4", "N=4\\halyavin\\Problem-C", GCJGroundTruth.createGoogleCode2008N4halyavinCGT());
+		TaxonomyEvaluationItem kotehokN4B = new TaxonomyEvaluationItem("kotehokN4B", "kotehok", "Problem-B", "N=4", "N=4\\kotehok\\Problem-B", GCJGroundTruth.createGoogleCode2008N4kotehokBGT());
+		TaxonomyEvaluationItem kotehokN4C = new TaxonomyEvaluationItem("kotehokN4C", "kotehok", "Problem-C", "N=4", "N=4\\kotehok\\Problem-C", GCJGroundTruth.createGoogleCode2008N4kotehokCGT());
+		TaxonomyEvaluationItem mysticN4B = new TaxonomyEvaluationItem("mysticN4B", "mystic", "Problem-B", "N=4", "N=4\\mystic\\Problem-B", GCJGroundTruth.createGoogleCode2008N4mysticBGT());
+		TaxonomyEvaluationItem mysticN4D = new TaxonomyEvaluationItem("mysticN4D", "mystic", "Problem-D", "N=4", "N=4\\mystic\\Problem-D", GCJGroundTruth.createGoogleCode2008N4mysticDGT());
+		TaxonomyEvaluationItem wataN4A = new TaxonomyEvaluationItem("wataN4A", "wata", "Problem-A", "N=4", "N=4\\wata\\Problem-A", GCJGroundTruth.createGoogleCode2008N4wataAGT());	
+		TaxonomyEvaluationItem wataN4B = new TaxonomyEvaluationItem("wataN4B", "wata", "Problem-B", "N=4", "N=4\\wata\\Problem-B", GCJGroundTruth.createGoogleCode2008N4wataBGT());	
+		TaxonomyEvaluationItem wataN4C = new TaxonomyEvaluationItem("wataN4C", "wata", "Problem-C", "N=4", "N=4\\wata\\Problem-C", GCJGroundTruth.createGoogleCode2008N4wataCGT());	
 		
 		datasetBatch.add(halyavinN4B);
 		datasetBatch.add(halyavinN4C);
@@ -426,9 +578,9 @@ public class BatchEvaluator {
 	 */
 	public void addGCJSourceVariantsSameDeveloperN5() {
 		// Mid N=5
-		TaxonomyEvaluationItem halyavinN5A = new TaxonomyEvaluationItem("halyavinN5A", "N=5\\halyavin\\Problem-A", GCJGroundTruth.createGoogleCode2008N5halyavinAGT());
-		TaxonomyEvaluationItem mysticN5A = new TaxonomyEvaluationItem("mysticN5A", "N=5\\mystic\\Problem-A", GCJGroundTruth.createGoogleCode2008N5mysticAGT());
-		TaxonomyEvaluationItem mysticN5C = new TaxonomyEvaluationItem("mysticN5C", "N=5\\mystic\\Problem-C", GCJGroundTruth.createGoogleCode2008N5mysticCGT());
+		TaxonomyEvaluationItem halyavinN5A = new TaxonomyEvaluationItem("halyavinN5A", "halyavin", "Problem-A", "N=5", "N=5\\halyavin\\Problem-A", GCJGroundTruth.createGoogleCode2008N5halyavinAGT());
+		TaxonomyEvaluationItem mysticN5A = new TaxonomyEvaluationItem("mysticN5A", "mystic", "Problem-A", "N=5", "N=5\\mystic\\Problem-A", GCJGroundTruth.createGoogleCode2008N5mysticAGT());
+		TaxonomyEvaluationItem mysticN5C = new TaxonomyEvaluationItem("mysticN5C", "mystic", "Problem-C", "N=5", "N=5\\mystic\\Problem-C", GCJGroundTruth.createGoogleCode2008N5mysticCGT());
 		
 		datasetBatch.add(halyavinN5A);
 		datasetBatch.add(mysticN5A);
@@ -609,9 +761,73 @@ public class BatchEvaluator {
 		datasetBatch.add(set4N6B);
 	}
 	
+	/* Data Set for Source Strategy 2- SPDSDDDL (Different Languages)*/
+	
+	/**
+	 * Create GCJ Evaluation Items  and Add to Batch
+	 * SPDSDDSL - Same Problem class, Different Stages, Different Developers, Same Language
+	 * Number of Variants, N = 5
+	 */
+	public void addGCJSourceVariantsDifferentLanguagesN5() {
+		// Mid N=5, ProblemA
+		TaxonomyEvaluationItem set1N5DLA = new TaxonomyEvaluationItem("set1N5DLA", "Several", "A", "N=5", "N=5\\Problem-A\\Set-1", GCJGroundTruth.createGoogleCode2008N5DLSet1AGT());
+		TaxonomyEvaluationItem set2N5DLA = new TaxonomyEvaluationItem("set2N5DLA", "Several", "A", "N=5", "N=5\\Problem-A\\Set-2", GCJGroundTruth.createGoogleCode2008N5DLSet2AGT());
+		TaxonomyEvaluationItem set3N5DLA = new TaxonomyEvaluationItem("set3N5DLA", "Several", "A", "N=5", "N=5\\Problem-A\\Set-3", GCJGroundTruth.createGoogleCode2008N5DLSet3AGT());
+		TaxonomyEvaluationItem set4N5DLA = new TaxonomyEvaluationItem("set4N5DLA", "Several", "A", "N=5", "N=5\\Problem-A\\Set-4", GCJGroundTruth.createGoogleCode2008N5DLSet4AGT());
+	
+		// Add Problem-A Sets
+		datasetBatch.add(set1N5DLA);
+		datasetBatch.add(set2N5DLA);
+		datasetBatch.add(set3N5DLA);
+		datasetBatch.add(set4N5DLA);
+
+		// Mid N=5, Problem-B
+		TaxonomyEvaluationItem set1N5DLB = new TaxonomyEvaluationItem("set1N5DLB", "Several", "B", "N=5", "N=5\\Problem-B\\Set-1", GCJGroundTruth.createGoogleCode2008N5DLSet1BGT());
+		TaxonomyEvaluationItem set2N5DLB = new TaxonomyEvaluationItem("set2N5DLB", "Several", "B", "N=5", "N=5\\Problem-B\\Set-2", GCJGroundTruth.createGoogleCode2008N5DLSet2BGT());
+		TaxonomyEvaluationItem set3N5DLB = new TaxonomyEvaluationItem("set3N5DLB", "Several", "B", "N=5", "N=5\\Problem-B\\Set-3", GCJGroundTruth.createGoogleCode2008N5DLSet3BGT());
+		TaxonomyEvaluationItem set4N5DLB = new TaxonomyEvaluationItem("set4N5DLB", "Several", "B", "N=5", "N=5\\Problem-B\\Set-4", GCJGroundTruth.createGoogleCode2008N5DLSet4BGT());
+
+		// Add Problem-B Sets
+		datasetBatch.add(set1N5DLB);
+		datasetBatch.add(set2N5DLB);
+		datasetBatch.add(set3N5DLB);
+		datasetBatch.add(set4N5DLB);
+	}
+	
+	/**
+	 * Create GCJ Evaluation Items  and Add to Batch
+	 * SPDSDDSL - Same Problem class, Different Stages, Different Developers, Same Language
+	 * Number of Variants, N = 6
+	 */
+	public void addGCJSourceVariantsDifferentLanguagesN6() {
+		// Mid N=6, Problem-A
+		TaxonomyEvaluationItem set1N6DLA = new TaxonomyEvaluationItem("set1N6DLA", "Several", "A", "N=6", "N=6\\Problem-A\\Set-1", GCJGroundTruth.createGoogleCode2008N6DLSet1AGT());
+		TaxonomyEvaluationItem set2N6DLA = new TaxonomyEvaluationItem("set2N6DLA", "Several", "A", "N=6", "N=6\\Problem-A\\Set-2", GCJGroundTruth.createGoogleCode2008N6DLSet2AGT());
+		TaxonomyEvaluationItem set3N6DLA = new TaxonomyEvaluationItem("set3N6DLA", "Several", "A", "N=6", "N=6\\Problem-A\\Set-3", GCJGroundTruth.createGoogleCode2008N6DLSet3AGT());
+		TaxonomyEvaluationItem set4N6DLA = new TaxonomyEvaluationItem("set4N6DLA", "Several", "A", "N=6", "N=6\\Problem-A\\Set-4", GCJGroundTruth.createGoogleCode2008N6DLSet4AGT());
+		
+		// Add Problem-A Sets
+		datasetBatch.add(set1N6DLA);
+		datasetBatch.add(set2N6DLA);
+		datasetBatch.add(set3N6DLA);
+		datasetBatch.add(set4N6DLA);
+		
+		// Mid N=6, Problem-B
+		TaxonomyEvaluationItem set1N6DLB = new TaxonomyEvaluationItem("set1N6DLB", "Several", "B", "N=6", "N=6\\Problem-B\\Set-1", GCJGroundTruth.createGoogleCode2008N6DLSet1BGT());
+		TaxonomyEvaluationItem set2N6DLB = new TaxonomyEvaluationItem("set2N6DLB", "Several", "B", "N=6", "N=6\\Problem-B\\Set-2", GCJGroundTruth.createGoogleCode2008N6DLSet2BGT());
+		TaxonomyEvaluationItem set3N6DLB = new TaxonomyEvaluationItem("set3N6DLB", "Several", "B", "N=6", "N=6\\Problem-B\\Set-3", GCJGroundTruth.createGoogleCode2008N6DLSet3BGT());
+		TaxonomyEvaluationItem set4N6DLB = new TaxonomyEvaluationItem("set4N6DLB", "Several", "B", "N=6", "N=6\\Problem-B\\Set-4", GCJGroundTruth.createGoogleCode2008N6DLSet4BGT());
+		
+		// Add Problem-B Sets
+		datasetBatch.add(set1N6DLB);
+		datasetBatch.add(set2N6DLB);
+		datasetBatch.add(set3N6DLB);
+		datasetBatch.add(set4N6DLB);
+	}
+
+	
 	
 	/* Sample Data Set for Directory Strategy 0 */
-	
 	/**
 	 * Create GIT Evaluation Items  and Add to Batch
 	 * Number of Variants, N = 3
@@ -628,18 +844,17 @@ public class BatchEvaluator {
 	
 	
 	/* Sample Data Set for Directory Strategy 0 */
-	
 	/**
 	 * Create GIT Evaluation Items  and Add to Batch
 	 * Number of Variants, N = 6
 	 */
-	public void addGITJavapoetN6Time() {
+	public void addGITLoggerN6Time() {
 		
 		// Mid N=6, Problem-A
-		TaxonomyEvaluationItem set1Commits = new TaxonomyEvaluationItem("GIT-Javapoet set1Commits", "square", "Time Variants", "N=6", "Git\\time\\N=6\\javapoet\\Set-1", GCJGroundTruth.createGITJavapoetN6TimeSet1GT());
-		TaxonomyEvaluationItem set2Commits = new TaxonomyEvaluationItem("GIT-Javapoet  set2Commits", "square", "Time Variants", "N=6", "Git\\time\\N=6\\javapoet\\Set-2", GCJGroundTruth.createGITJavapoetN6TimeSet2GT());
-		TaxonomyEvaluationItem set3Commits = new TaxonomyEvaluationItem("GIT-Javapoet  set3Commits", "square", "Time Variants", "N=6", "Git\\time\\N=6\\javapoet\\Set-3", GCJGroundTruth.createGITJavapoetN6TimeSet3GT());
-		TaxonomyEvaluationItem set4Commits = new TaxonomyEvaluationItem("GIT-Javapoet  set4Commits", "square", "Time Variants", "N=6", "Git\\time\\N=6\\javapoet\\Set-4", GCJGroundTruth.createGITJavapoetN6TimeSet4GT());
+		TaxonomyEvaluationItem set1Commits = new TaxonomyEvaluationItem("GIT-Logger set1Commits", "orhanobut", "Time Variants", "N=6", "Git\\time\\N=6\\logger\\Set-1", GCJGroundTruth.createGITLoggerN6TimeSet1GT());
+		TaxonomyEvaluationItem set2Commits = new TaxonomyEvaluationItem("GIT-Logger set2Commits", "orhanobut", "Time Variants", "N=6", "Git\\time\\N=6\\logger\\Set-2", GCJGroundTruth.createGITLoggerN6TimeSet2GT());
+		TaxonomyEvaluationItem set3Commits = new TaxonomyEvaluationItem("GIT-Logger set3Commits", "orhanobut", "Time Variants", "N=6", "Git\\time\\N=6\\logger\\Set-3", GCJGroundTruth.createGITLoggerN6TimeSet3GT());
+		TaxonomyEvaluationItem set4Commits = new TaxonomyEvaluationItem("GIT-Logger set4Commits", "orhanobut", "Time Variants", "N=6", "Git\\time\\N=6\\logger\\Set-4", GCJGroundTruth.createGITLoggerN6TimeSet4GT());
 
 		// Add Problem-A Sets
 		datasetBatch.add(set1Commits);
