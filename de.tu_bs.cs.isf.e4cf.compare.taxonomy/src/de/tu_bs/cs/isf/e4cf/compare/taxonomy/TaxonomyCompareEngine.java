@@ -108,50 +108,30 @@ public class TaxonomyCompareEngine {
 	 */
 	public Tree compare(List<Tree> variants) {
 		Tree mergedTree = null;
-		// Creates and starts a new stopwatch
-		Stopwatch stopwatch = Stopwatch.createStarted();
 
 		variants.stream().forEach(artifactLeft -> {
 			leftArtifactSourceLength = SourceNodeTraverser.getAllSourceInVariant(artifactLeft.getRoot()).length();
 			variants.stream().forEach(artifactRight -> {
 				if (artifactLeft != artifactRight) {
-					Stopwatch singleCompSw = Stopwatch.createStarted();
 					// Add Comparison to List for GraphView
 					currentLeftArtifact = artifactLeft;
 					currentRightArtifact = artifactRight;
 					System.out.println(
 							"Comparing Variants: " + artifactLeft.getTreeName() + " and " + artifactRight.getTreeName());
 					compare(artifactLeft.getRoot(), artifactRight.getRoot(), true);
-					singleCompSw.stop();
-					long scTimeElapsed = singleCompSw.elapsed(TimeUnit.MILLISECONDS);
-					System.out.println("Single Comparison Time: " + scTimeElapsed / 1000 + " secs. (" + scTimeElapsed + " milliseconds)");
-					Stopwatch singleTaxMiningSw = Stopwatch.createStarted();
-					taxonomyResultEngine.matchNodes();
-					singleTaxMiningSw.stop();
-					scTimeElapsed = singleTaxMiningSw.elapsed(TimeUnit.MILLISECONDS);
-					System.out.println("Single Matching Time: " + scTimeElapsed / 1000 + " secs. (" + scTimeElapsed + " milliseconds)");
-//					taxonomyResultEngine.printCommulativeResults();
-					
+					taxonomyResultEngine.matchNodes();								// Step 1
+//					taxonomyResultEngine.printCommulativeResults();			
 				}
-
 			});
-			
+			System.out.println("Size of Comps: " + taxonomyResultEngine.listOfComparedNodes.size());
+			taxonomyResultEngine.createRefinedListofNodes();						// Step 2
+			taxonomyResultEngine.listOfComparedNodes.clear();
 			artifactIndexCounter++; // Increment artifact/variant counter by one
 		});
 
 		// Finalize Matching
-		taxonomyResultEngine.createRefinedListofNodes();
-		taxonomyResultEngine.computeWeightedSimilarity();
-//		taxonomyResultEngine.printMatchingResults();
-
-		artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
-
-		// stop stop watch, get elapsed time, expressed in milliseconds
-		stopwatch.stop();
-		long timeElapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-		System.out.println(
-				"Taxonomy Generation Time: " + timeElapsed / 1000 + " secs. (" + timeElapsed + " milliseconds)");
-		
+		taxonomyResultEngine.computeWeightedSimilarity(); 							// Step 3
+		artifactComparisonList = taxonomyResultEngine.createArtifactComparison();	// Step 4
 		taxonomyResultEngine.printMatchingResults();
 		
 		return mergedTree;
@@ -250,84 +230,6 @@ public class TaxonomyCompareEngine {
 	}
 
 	
-	/**
-	 * Compares variants in a list
-	 */
-//	public Tree batchCompare(List<Tree> variants) {
-//		Tree mergedTree = null;
-//		// Creates and starts a new stopwatch
-//		Stopwatch stopwatch = Stopwatch.createStarted();
-//
-//		variants.stream().forEach(artifactLeft -> {
-//			variants.stream().forEach(artifactRight -> {
-//				if (artifactLeft != artifactRight) {
-//					// Add Comparison to List for GraphView
-//					currentLeftArtifact = artifactLeft;
-//					currentRightArtifact = artifactRight;
-//					batchCompare(artifactLeft.getRoot(), artifactRight.getRoot());
-//					taxonomyResultEngine.matchNodes();
-//					taxonomyResultEngine.printCommulativeResults();
-//				}
-//			});
-//			artifactIndexCounter++; // Increment artifact/variant counter by one
-//		});
-//
-//		// Finalize Matching
-//		taxonomyResultEngine.createRefinedListofNodes();
-//		taxonomyResultEngine.computeWeightedSimilarity();
-//
-//		artifactComparisonList = taxonomyResultEngine.createArtifactComparison();
-//
-//		// stop stop watch, get elapsed time, expressed in milliseconds
-//		stopwatch.stop();
-//		long timeElapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-//		System.out.println(
-//				"Taxonomy Generation Time: " + timeElapsed / 1000 + " secs. (" + timeElapsed + " milliseconds)");
-//		return mergedTree;
-//	}
-	
-//	public TaxonomyNodeComparison batchCompare(Node first, Node second) {
-//		TaxonomyNodeComparison comparison = new TaxonomyNodeComparison(first, second);
-//		// if nodes are of the same type
-//		if (first.getNodeType().equals(second.getNodeType())) {
-//		
-//			comparison.addResultElement(defaultComparator.compare(first, second));
-//			
-//			// Add Result to Node Comparison Result
-//			NodeComparisonResult nodeComparisonResult = new NodeComparisonResult(artifactIndexCounter,
-//					currentLeftArtifact, first, second, currentRightArtifact, comparison.getResultSimilarity());
-//			
-//			// Add comparison to list of artifact comparisons
-//			taxonomyResultEngine.addToListOfComparedNodes(nodeComparisonResult);
-//
-//			// if no children available the recursion ends here
-//			if (first.getChildren().isEmpty() && second.getChildren().isEmpty()) {
-//				return comparison;
-//			} else {
-//				// if one of both has no children the other elements are optional
-//				if (first.getChildren().isEmpty() || second.getChildren().isEmpty()) {
-//					first.getChildren().stream()
-//							.forEach(e -> comparison.addChildComparison(new NodeComparison(e, null, 0f)));
-//					second.getChildren().stream()
-//							.forEach(e -> comparison.addChildComparison(new NodeComparison(null, e, 0f)));
-//				} else {
-//					// compare children recursively
-//					first.getChildren().stream().forEach(e -> {
-//						second.getChildren().stream().forEach(f -> {
-//
-//							TaxonomyNodeComparison innerComp = batchCompare(e, f);
-//							if (innerComp != null) {
-//								comparison.addChildComparison(innerComp);
-//							}
-//						});
-//					});
-//				}
-//			}
-//			return comparison;
-//		} else {
-//			return comparison;
-//		}
-//	}
 	
 	public void setTaxnomySettings(TaxonomySettings newSetting) {
 		this.taxonomySetting = newSetting;
