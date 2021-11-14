@@ -121,7 +121,7 @@ public class CompareEngineView implements Initializable {
 				// Get details of artifact e.g. lines of Codes, no. of characters etc. 
 				// and Compare variants
 				engine.deriveAndCompare(artifacts, artifactFileTrees);
-				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
+				ArtifactGraphCompact artifactGraph = new ArtifactGraphCompact(engine.artifactComparisonList);
 				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 
@@ -156,14 +156,20 @@ public class CompareEngineView implements Initializable {
 			if (artifacts.size() > 1) {
 				// Create graph for artifacts
 				engine.deriveAndCompare(artifacts, artifactFileTrees);
-				ArtifactGraph artifactGraph = new ArtifactGraph(engine.artifactComparisonList);
+				ArtifactGraphCompact artifactGraph = new ArtifactGraphCompact(engine.artifactComparisonList);
+				artifactGraph.setMatchingResults(engine.getMatchingResult());
 				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 				
+				artifactGraph.printArtifactComparison();
+				
+
 				if (this.taxonomySettings.getTaxonomyTypeAsTree()) {
-					artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
+//					artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
+					artifactGraph.setUpTaxonomyGraphRevised();
 				} else {
-					artifactGraph.setUpDAGTaxonomyGraph();
+//					artifactGraph.setUpDAGTaxonomyGraph();
+					artifactGraph.setUpTaxonomyGraphRevised();
 				}
 				
 				if (artifactGraph.mindMapTaxonomyGraph.getChildElements().size() >= 1) {
@@ -177,15 +183,22 @@ public class CompareEngineView implements Initializable {
 				}
 				
 				// Evaluate Taxonomy
-//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createProjectExampleGT(), artifactGraph.taxonomyRootNode);
-//				performanceJudge.computePrimaryMeasures();
-//				performanceJudge.calculateSecondaryMeasures();
+				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createSpareTimeGT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGITMaterialAnimationsN9TimeSet1GT(), artifactGraph.taxonomyRootNode);
+//				TaxonomyEvaluator performanceJudge = new TaxonomyEvaluator(GCJGroundTruth.createGITLoggerN9TimeSet4GT(), artifactGraph.taxonomyRootNode);
+
+				performanceJudge.computePrimaryMeasuresPS();
+				performanceJudge.calculateSecondaryMeasures();
+				performanceJudge.printMeasures();
+				performanceJudge.computeCustomMeasures();
+				performanceJudge.printCustomMeasures();
 				
 			} else {
 				BatchEvaluator batchEvaluator = new BatchEvaluator();
-//				 batchEvaluator.startSameDeveloperEvaluation();
-				//batchEvaluator.startDifferentDevelopersEvaluation();
-				batchEvaluator.startGITJavapoetEvaluation();
+//				batchEvaluator.startSameDeveloperEvaluation();
+//				batchEvaluator.startDifferentDevelopersEvaluation();
+				batchEvaluator.startDifferentLanguagesEvaluation();
+//				batchEvaluator.startGITLoggerEvaluation();
 
 			}
 		} catch (Exception e) {
