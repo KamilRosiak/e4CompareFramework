@@ -67,16 +67,9 @@ public class TaxonomyControlView implements Initializable  {
 	@FXML
 	private RadioButton dirLevelRadioButton;
 	@FXML
-	private RadioButton treeTaxonomyRadioButton;
+	private RadioButton timeOnlyTaxonomyRadioButton;
 	@FXML
-	private RadioButton graphTaxonomyRadioButton;
-	
-	@FXML
-	private CheckBox classConstructsCheckbox;
-	@FXML
-	private CheckBox methodConstructsCheckbox;
-	@FXML
-	private CheckBox otherConstructsCheckbox;
+	private RadioButton spaceMarcTaxonomyRadioButton;
 	
 	@FXML
 	private Button saveButton;
@@ -118,7 +111,7 @@ public class TaxonomyControlView implements Initializable  {
 		});  
 		
 		// Set Action/Event Handlers for Taxonomy Type 
-		treeTaxonomyRadioButton.selectedProperty().addListener(
+		timeOnlyTaxonomyRadioButton.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 			    	  taxonomySettings.setTaxonomyTypeAsTree(new_val); 
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
@@ -126,7 +119,7 @@ public class TaxonomyControlView implements Initializable  {
 		});
 				
 		// Set Action/Event Handlers for Taxonomy Type 
-		graphTaxonomyRadioButton.selectedProperty().addListener(
+		spaceMarcTaxonomyRadioButton.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 			    	  taxonomySettings.setTaxonomyTypeAsTree(!new_val); 
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
@@ -173,25 +166,17 @@ public class TaxonomyControlView implements Initializable  {
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
 		});
 		
-		classConstructsCheckbox.selectedProperty().addListener(
+		languageCheckBoxJava.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-			    	  taxonomySettings.setClassConstructMode(new_val);
+			    	  taxonomySettings.setLanguageJava(new_val);
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
 		});
 		
-		methodConstructsCheckbox.selectedProperty().addListener(
+		languageCheckBoxCplusplus.selectedProperty().addListener(
 			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-			    	  taxonomySettings.setMethodConstructMode(new_val);
+			    	  taxonomySettings.setLanguageCplusplus(new_val);
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
 		});
-		
-		otherConstructsCheckbox.selectedProperty().addListener(
-			      (ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-			    	  taxonomySettings.setOtherConstructMode(new_val);
-			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers	    	  
-		});
-		
-		
 		
 		
 	}
@@ -244,14 +229,6 @@ public class TaxonomyControlView implements Initializable  {
 			    	  directorySizeCheckbox.setDisable(true);
 			    	  directoryNonSourceCheckbox.setDisable(true);
 			    	  directoryChildenCheckbox.setDisable(true);
-			    		
-			    	  // Update concerned constructs
-			    	  classConstructsCheckbox.setSelected(true);
-			    	  methodConstructsCheckbox.setSelected(true);
-			    	  otherConstructsCheckbox.setSelected(true);
-			    	  classConstructsCheckbox.setDisable(true);
-			    	  methodConstructsCheckbox.setDisable(true);
-			    	  otherConstructsCheckbox.setDisable(true);
 			    	  
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
 		});
@@ -267,14 +244,6 @@ public class TaxonomyControlView implements Initializable  {
 			    	  directoryNonSourceCheckbox.setDisable(false);
 			    	  directoryChildenCheckbox.setDisable(false);
 			    	  
-			    	  // Update concerned constructs
-			    	  classConstructsCheckbox.setSelected(true);
-			    	  methodConstructsCheckbox.setSelected(true);
-			    	  otherConstructsCheckbox.setSelected(false);
-			    	  classConstructsCheckbox.setDisable(false);
-			    	  methodConstructsCheckbox.setDisable(false);
-			    	  otherConstructsCheckbox.setDisable(false);
-			    	  
 			    	  sendTaxonomySettingsUIMessage(); // Update Subscribers
 		});
 		
@@ -284,9 +253,10 @@ public class TaxonomyControlView implements Initializable  {
 	
 	private void initializeTaxonomyType() {
 		ToggleGroup taxonomyTypeGroup = new ToggleGroup();
-		treeTaxonomyRadioButton.setToggleGroup(taxonomyTypeGroup);
-		graphTaxonomyRadioButton.setToggleGroup(taxonomyTypeGroup);
-		treeTaxonomyRadioButton.setSelected(true);
+		timeOnlyTaxonomyRadioButton.setToggleGroup(taxonomyTypeGroup);
+		spaceMarcTaxonomyRadioButton.setToggleGroup(taxonomyTypeGroup);
+		
+		spaceMarcTaxonomyRadioButton.setSelected(true);
 	}
 	
 	private void initializeSaveButton() {
