@@ -8,6 +8,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_parser.ParserDictionary;
 
 import java.util.*;
 import java.io.*;
@@ -23,10 +24,6 @@ public class SAXJavaParser extends DefaultHandler {
 	private final Stack<AttributeImpl> attributeStack = new Stack<AttributeImpl>();
 	Node lastNode = null;
 	boolean isLastAttributeKey = false;
-	private List<String> languageDictionary = new ArrayList<String>();
-	private List<String> attributeDictionary = new ArrayList<String>();
-	private List<String> attributeKeyDictionary = new ArrayList<String>();
-
 
 	static public Node startParsing(InputStream fileInputStream, Node _rootNode) throws Exception {
 		//String filename = fileURL;
@@ -59,7 +56,7 @@ public class SAXJavaParser extends DefaultHandler {
 
 	public void startDocument() throws SAXException {
 		tags = new Hashtable();
-		implementDictionaryAndAttributes();
+		ParserDictionary.implementDictionaryAndAttributes();
 		
 		System.out.println("Parsing JavaFile");
 		
@@ -72,7 +69,7 @@ public class SAXJavaParser extends DefaultHandler {
 		String key = localName;
 
 		// Check if struct in language dictionary
-		if (languageDictionary.contains(key)) {
+		if (ParserDictionary.languageDictionary.contains(key)) {
 			Node elementNode = null;
 //			System.out.printf("Starting Element: key=%s  qName=%s\n", key, qName);
 			
@@ -85,7 +82,7 @@ public class SAXJavaParser extends DefaultHandler {
 		}
 		
 		// Check if attribute in dictionary
-		if (attributeDictionary.contains(key) && nodeStack.size() > 0) {
+		if (ParserDictionary.attributeDictionary.contains(key) && nodeStack.size() > 0) {
 			AttributeImpl elementAttribute = new AttributeImpl(key);
 			if (attributeStack.size() > 0) {
 				if (!(attributeStack.peek().getAttributeKey().equals("name"))) {
@@ -98,7 +95,7 @@ public class SAXJavaParser extends DefaultHandler {
 			}
 		}
 		
-		if (attributeKeyDictionary.contains(key)) {
+		if (ParserDictionary.attributeKeyDictionary.contains(key)) {
 			// Signal that attribute key can now be extracted from XML
 			isLastAttributeKey = true;
 		}
@@ -128,7 +125,7 @@ public class SAXJavaParser extends DefaultHandler {
 		String key = localName;
 		
 		// Set End element conditions for main language constructs
-		if (languageDictionary.contains(key)) {
+		if (ParserDictionary.languageDictionary.contains(key)) {
 //			System.out.printf("Ending Element: key=%s  qName=%s\n", key, qName);
 			
 			if (nodeStack.size() > 0) {
@@ -141,7 +138,7 @@ public class SAXJavaParser extends DefaultHandler {
 		}
 		
 		// Set End element conditions for attributes
-		if (attributeDictionary.contains(key)) {
+		if (ParserDictionary.attributeDictionary.contains(key)) {
 //			System.out.printf("Ending Attribute: key=%s  qName=%s\n", key, qName);
 			if (attributeStack.size() > 0 && nodeStack.size() > 0) {
 				// Only Add attributes with values
@@ -160,55 +157,6 @@ public class SAXJavaParser extends DefaultHandler {
 		System.err.println("Usage: SAXLocalNameCount <file.xml>");
 		System.err.println("       -usage or -help = this message");
 		System.exit(1);
-	}
-
-	private void implementDictionaryAndAttributes() {
-		languageDictionary.addAll(new ArrayList<String>() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = -1130839144112597073L;
-
-			{
-				add("class");
-				add("function");
-				add("constructor");
-				add("decl_stmt");
-				add("expr_stmt");
-				add("typedef");
-				add("if");
-				add("else");
-				add("for");
-				add("while");
-				add("do");
-				add("return");
-			}
-		});
-		
-		attributeDictionary.addAll(new ArrayList<String>() {/**
-			 * 
-			 */
-			private static final long serialVersionUID = 2768596879716055759L;
-
-		{
-				add("expr");
-				add("type");
-				add("name");
-			}
-		});
-		
-		
-		attributeKeyDictionary.addAll(new ArrayList<String>() {/**
-			 * 
-			 */
-			private static final long serialVersionUID = -3717663497299769476L;
-
-		{
-				add("name");
-				add("operator");
-				add("literal");
-			}
-		});
 	}
 
 	private static class MyErrorHandler implements ErrorHandler {
