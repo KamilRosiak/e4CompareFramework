@@ -18,9 +18,9 @@ public class TaxonomyEvaluator {
 
 	// Primary Taxonomy performance Measures
 	private float truePositivesValue;
-	private float trueNegativesValue;
-	private float falsePositivesValue;
-	private float falseNegativesValue;
+	private float trueNegativesValue = 0;
+	private float falsePositivesValue = 0;
+	private float falseNegativesValue = 0;
 
 	// Secondary Taxonomy performance Measures
 	private float recallValue;
@@ -460,14 +460,14 @@ public class TaxonomyEvaluator {
 
 	public void calculateSecondaryMeasures() {
 
-		recallValue = truePositivesValue / (truePositivesValue + falseNegativesValue);
-		precisionValue = truePositivesValue / (truePositivesValue + falsePositivesValue);
+		recallValue = truePositivesValue / ((truePositivesValue + falseNegativesValue) == 0 ? 1.0f : (truePositivesValue + falseNegativesValue));
+		precisionValue = truePositivesValue / ((truePositivesValue + falsePositivesValue) == 0 ? 1.0f : (truePositivesValue + falsePositivesValue));
 		accuracyValue = (truePositivesValue + trueNegativesValue)
 				/ (truePositivesValue + falsePositivesValue + trueNegativesValue + falseNegativesValue);
 		errorRateValue = 1 - accuracyValue;
 
-		falseAcceptanceFPRValue = falsePositivesValue / (falsePositivesValue + trueNegativesValue);
-		missRateTNRValue = falseNegativesValue / (truePositivesValue + falseNegativesValue);
+		falseAcceptanceFPRValue = falsePositivesValue / ((falsePositivesValue + trueNegativesValue) == 0 ? 1.0f : (falsePositivesValue + trueNegativesValue));
+		missRateTNRValue = falseNegativesValue / ((truePositivesValue + falseNegativesValue) == 0 ? 1.0f : (truePositivesValue + falseNegativesValue));
 	}
 
 	public void setComparedTaxonomy(VariantTaxonomyNode _comparedTaxonomy) {
