@@ -146,7 +146,7 @@ public class TaxonomyNodeComparison extends AbstractComparsion<Node>{
 					resultSimilarity += (result.getSimilarity() * 0.15f);
 					weightSum += 0.15f;
 				} else if (result.getUsedComparator().getClass().equals(new DirectorySizeComparator().getClass())) {
-					resultSimilarity += (result.getSimilarity() * 0.10f);
+					resultSimilarity += (result.getSimilarity() * 0.05f);
 					weightSum += 0.10f;
 				}
 			}
