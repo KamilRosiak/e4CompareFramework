@@ -160,21 +160,14 @@ public class CompareEngineView implements Initializable {
 				artifactGraph.setMatchingResults(engine.getMatchingResult());
 				artifactGraph.deriveArtifactDetails(artifactFileTrees);
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
-				
 				artifactGraph.printArtifactComparison();
-				
 
-				if (this.taxonomySettings.getTaxonomyTypeAsTree()) {
-//					artifactGraph.setUpTaxonomyGraph(); // Set up taxonomy graph for display
-					artifactGraph.setUpTaxonomyGraphRevised();
-				} else {
-//					artifactGraph.setUpDAGTaxonomyGraph();
-					artifactGraph.setUpTaxonomyGraphRevised();
-				}
+//				artifactGraph.setUpTaxonomyGraph();
+				artifactGraph.setUpTaxonomyGraphMarcHentze();
+//				artifactGraph.setUpDAGTaxonomyGraph();
 				
 				if (artifactGraph.mindMapTaxonomyGraph.getChildElements().size() >= 1) {
 					// Send prepared graph to GraphView subscriber for display
-					artifactGraph.printArtifactComparison();
 					services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, artifactGraph.mindMapTaxonomyGraph); 
 					services.eventBroker.send(TaxonomyST.SAVE_TAXONOMY_EVENT, artifactGraph.computedTaxonomyJSON);  ;
 				} else {
@@ -196,8 +189,8 @@ public class CompareEngineView implements Initializable {
 			} else {
 				BatchEvaluator batchEvaluator = new BatchEvaluator();
 //				batchEvaluator.startSameDeveloperEvaluation();
-//				batchEvaluator.startDifferentDevelopersEvaluation();
-				batchEvaluator.startDifferentLanguagesEvaluation();
+				batchEvaluator.startDifferentDevelopersEvaluation();
+//				batchEvaluator.startDifferentLanguagesEvaluation();
 //				batchEvaluator.startGITLoggerEvaluation();
 
 			}
