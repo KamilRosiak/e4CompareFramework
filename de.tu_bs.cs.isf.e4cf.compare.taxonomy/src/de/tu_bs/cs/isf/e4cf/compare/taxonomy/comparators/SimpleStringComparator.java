@@ -11,7 +11,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
 public class SimpleStringComparator extends AbstractNodeComparator {
-	float keyValueRatio = 0.0f;
+	float keyValueRatio = 0.3f;
 
 	public SimpleStringComparator() {
 		super(WILDCARD);
