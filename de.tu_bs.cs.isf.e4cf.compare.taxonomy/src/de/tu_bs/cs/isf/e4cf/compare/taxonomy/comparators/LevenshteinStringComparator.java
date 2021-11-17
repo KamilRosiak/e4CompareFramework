@@ -18,7 +18,7 @@ import de.tu_bs.cs.isf.e4cf.core.compare.algorithm.LevenstheinDistance;
  *
  */
 public class LevenshteinStringComparator extends AbstractNodeComparator {
-	float keyValueRatio = 0.3f;
+	float keyValueRatio = 0.4f;
 	//private LevenstheinDistance distance = new LevenshteinDistance();
 
 	public LevenshteinStringComparator() {

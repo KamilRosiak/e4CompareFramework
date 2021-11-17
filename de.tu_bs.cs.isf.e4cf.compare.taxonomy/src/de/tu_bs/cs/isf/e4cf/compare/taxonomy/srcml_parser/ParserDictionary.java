@@ -33,7 +33,7 @@ public class ParserDictionary {
 				private static final long serialVersionUID = -1130839144112597073L;
 
 				{
-//					add("class");
+					add("class");
 					add("function");
 					add("constructor");
 					add("decl_stmt");

@@ -33,7 +33,7 @@ public class ResultEngineCompact {
 
 	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
-	private static final float SIMILARITY_THRESHOLD = 0.45f;
+	private static final float SIMILARITY_THRESHOLD = 1.0f;
 	
 	private static final String EMPTY_TREE_NAME = "00000";
 

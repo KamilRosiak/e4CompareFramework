@@ -325,8 +325,8 @@ public class BatchEvaluator {
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 				artifactGraph.printArtifactComparison(); //Print similarities between variants
 				
-				artifactGraph.setUpTaxonomyGraph();
-//				artifactGraph.setUpTaxonomyGraphMarcHentze();
+//				artifactGraph.setUpTaxonomyGraph();
+				artifactGraph.setUpTaxonomyGraphMarcHentze();
 //				artifactGraph.setUpDAGTaxonomyGraph();
 				
 				// Updated Taxonomy Mode String
@@ -354,7 +354,7 @@ public class BatchEvaluator {
 	}
 	
 	/**
-	 * Starts Different Developers Source Evaluation (Strategy 2)
+	 * Starts Different Developers Source Evaluation (Strategy 3)
 	 */
 	public void startDifferentLanguagesEvaluation() {
 		// Clear previously entered Data
@@ -380,8 +380,8 @@ public class BatchEvaluator {
 				artifactGraph.setUpRelationshipGraph(); // Set up relation graph for display
 				artifactGraph.printArtifactComparison(); //Print similarities between variants
 				
-				artifactGraph.setUpTaxonomyGraph();
-//				artifactGraph.setUpTaxonomyGraphMarcHentze();
+//				artifactGraph.setUpTaxonomyGraph();
+				artifactGraph.setUpTaxonomyGraphMarcHentze();
 //				artifactGraph.setUpDAGTaxonomyGraph();
 				
 				// Updated Taxonomy Mode String
