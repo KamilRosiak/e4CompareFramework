@@ -2,17 +2,20 @@ package de.tu_bs.cs.isf.e4cf.compare;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
+import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.ICompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 
 /**
  * Decomposes two trees and compares , match and merges them hierarchical which
@@ -37,7 +40,21 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		root.updateSimilarity();
 		getMatcher().calculateMatching(root);
 		root.updateSimilarity();
-		return root.mergeArtifacts();
+		//Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root.findOptionalMatchings();
+
+		Node rootNode = root.mergeArtifacts();
+
+		return rootNode;
+	}
+
+	@Override
+	public NodeComparison compare(Node first, Node second) {
+		NodeComparison root = compareNode(first, second);
+		// match
+		root.updateSimilarity();
+		getMatcher().calculateMatching(root);
+		root.updateSimilarity();
+		return root;
 	}
 
 	private NodeComparison compareNode(Node first, Node second) {
@@ -108,17 +125,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			}
 		}
 		return mergedTree;
-	}
-
-	@Override
-	public NodeComparison compare(Node first, Node second) {
-		NodeComparison root = compareNode(first, second);
-		// match
-		root.updateSimilarity();
-		getMatcher().calculateMatching(root);
-		root.updateSimilarity();
-		// Merge
-		return root;
 	}
 
 	@Override

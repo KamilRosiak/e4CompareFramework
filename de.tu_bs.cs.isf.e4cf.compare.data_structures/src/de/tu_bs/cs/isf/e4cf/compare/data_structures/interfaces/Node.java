@@ -233,5 +233,22 @@ public interface Node {
 	
 	
 	public void addNodeAfterwards(Node node);
+	
+	/**
+	 * This method returns the number of optional elements within this comparison.
+	 */
+	public int numberOfOptionals();
 
+	/**
+	 * This method returns the number of alternative elements within this
+	 * comparison.
+	 */
+	public int numberOfAlternatives();
+
+	/**
+	 * This method returns the number of mandatory elements within this comparison.
+	 */
+	public int numberOfMandatories();
+	
+	
 }

@@ -1,12 +1,17 @@
 package de.tu_bs.cs.isf.e4cf.compare.comparison.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 
 /**
  * The implementation for the comparison of artifacts of type Node.
@@ -41,9 +46,55 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		setSimilarity(source.getSimilarity());
 	}
 
+	public Pair<Map<String, List<Comparison<Node>>>,Map<String, List<Comparison<Node>>>> findOptionalMatchings() {
+		Map<String, List<Comparison<Node>>> leftOptionals = new HashMap<String, List<Comparison<Node>>>();
+		Map<String, List<Comparison<Node>>> rightOptionals = new HashMap<String, List<Comparison<Node>>>();
+		findOptionalMatchingsRecursivly(this, leftOptionals, rightOptionals);
+		return new Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>>(leftOptionals, rightOptionals);
+	}
+
+	/**
+	 * Visits every node comparison and stores all optional elements in two maps
+	 * 
+	 * @param nextNode
+	 */
+	private void findOptionalMatchingsRecursivly(Comparison<Node> nextNode,
+			Map<String, List<Comparison<Node>>> leftOptionals, Map<String, List<Comparison<Node>>> rightOptionals) {
+		// Collect Optional elements
+		if (nextNode.getLeftArtifact() == null) {
+			String nodeType = nextNode.getRightArtifact().getNodeType();
+			if (!rightOptionals.containsKey(nodeType)) {
+				rightOptionals.put(nodeType, new ArrayList<Comparison<Node>>());
+			} else {
+				rightOptionals.get(nodeType).add(nextNode);
+			}
+		} else if (nextNode.getRightArtifact() == null) {
+			String nodeType = nextNode.getLeftArtifact().getNodeType();
+			if (!leftOptionals.containsKey(nodeType)) {
+				leftOptionals.put(nodeType, new ArrayList<Comparison<Node>>());
+			} else {
+				leftOptionals.get(nodeType).add(nextNode);
+			}
+		}
+		//call recursively for each element
+		nextNode.getChildComparisons().forEach(childNode -> {
+			findOptionalMatchingsRecursivly(childNode, leftOptionals, rightOptionals);
+		});
+	}
+
 	@Override
 	public Node mergeArtifacts() {
 		return mergeArtifacts(true);
+	}
+	
+	/**
+	 * Sets the variability class of nodes and their children to optional
+	 */
+	public void setNodeOptionalWithChildren(Node node) {
+		node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
+		node.getChildren().forEach(childNode-> {
+			setNodeOptionalWithChildren(childNode);
+		});
 	}
 	
 	public Node mergeArtifacts(boolean omitOptionalChildren) {
@@ -52,22 +103,19 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		if (getLeftArtifact() == null || getRightArtifact() == null) {
 			Node node = getLeftArtifact() == null ? getRightArtifact() : getLeftArtifact();
 			if (omitOptionalChildren) {
-				// Expect children of Optionals to be mandatory for their parents
-				node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
-				
+				// Set all nodes to optional 
+				setNodeOptionalWithChildren(node);
 			} else {
-				
 				// Process the Children as they were compared
 				node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
 				node.getChildren().clear();
 				for (Comparison<Node> childComparision : getChildComparisons()) {
-					node.addChildWithParent(((NodeComparison)childComparision).mergeArtifacts(omitOptionalChildren));
+					node.addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren));
 				}
 			}
-			
 			return node;
 		}
-		
+
 		// all artifacts which are equals
 		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
 			// mandatory is a default value if the artifacts was optional in a previous
@@ -99,10 +147,12 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getLeftArtifact().addChildWithParent(((NodeComparison)childComparision).mergeArtifacts(omitOptionalChildren));
+				getLeftArtifact()
+						.addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren));
 			}
-			//add artifacts min line number 
-			getLeftArtifact().setStartLine(Math.min(getLeftArtifact().getStartLine(), getRightArtifact().getStartLine()));
+			// add artifacts min line number
+			getLeftArtifact()
+					.setStartLine(Math.min(getLeftArtifact().getStartLine(), getRightArtifact().getStartLine()));
 			getLeftArtifact().setEndLine(Math.min(getLeftArtifact().getEndLine(), getRightArtifact().getEndLine()));
 
 			getLeftArtifact().sortChildNodes();
