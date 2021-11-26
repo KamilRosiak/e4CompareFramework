@@ -1,19 +1,20 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Taxonomy
-Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare.taxonomy
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare.taxonomy;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.taxonomy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: de.tu_bs.cs.isf.e4cf.compare,
- de.tu_bs.cs.isf.e4cf.compare.data_structures,
  de.tu_bs.cs.isf.e4cf.graph.core,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.core.compare,
  javax.inject,
  org.eclipse.gef.geometry,
- de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view,
- com.google.gson
+ de.tu_bs.cs.isf.e4cf.compare.data_structures,
+ com.google.gson,
+ org.eclipse.e4.core.contexts;bundle-version="1.8.400",
+ de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_view
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.taxonomy,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.batch_API,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,

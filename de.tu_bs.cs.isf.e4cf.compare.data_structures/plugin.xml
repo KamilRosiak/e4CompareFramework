@@ -5,12 +5,6 @@
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactReader">
       <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_cpp_parser.SrcMLCppReader">
-      </artifactReader>
-      <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_java_parser.SrcMLJavaReader">
-      </artifactReader>
-      <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaReader">
       </artifactReader>
    </extension>

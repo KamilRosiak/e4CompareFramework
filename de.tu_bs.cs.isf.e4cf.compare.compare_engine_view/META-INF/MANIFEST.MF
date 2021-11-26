@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.1.500",
  de.tu_bs.cs.isf.e4cf.compare.data_structures_editor,
  de.tu_bs.cs.isf.e4cf.graph.core,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy,
- de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view
+ de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_view
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.compare.engine
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: de.tu_bs.cs.isf.e4cf.graph.core.string_table

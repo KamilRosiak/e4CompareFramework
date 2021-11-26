@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactReader">
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_cpp_parser.SrcMLCppReader">
+      </artifactReader>
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_java_parser.SrcMLJavaReader">
+      </artifactReader>
+   </extension>
+</plugin>
