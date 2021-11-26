@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,11 +11,10 @@ import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.compare.interfaces.ICompareEngine;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph.ArtifactComparison;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 /**
  * Decomposes two trees and compares , match and merges them hierarchical which
@@ -30,7 +28,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	private Metric metric;
 	private Matcher matcher;
 
-	public List<ArtifactComparison> artifactComparisonList = new ArrayList<ArtifactComparison>();
 
 	public CompareEngineHierarchical(Matcher selectedMatcher, Metric selectedMetric) {
 		this.metric = selectedMetric;

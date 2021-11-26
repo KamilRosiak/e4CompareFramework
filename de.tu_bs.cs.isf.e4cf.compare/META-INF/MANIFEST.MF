@@ -13,8 +13,7 @@ Require-Bundle: org.eclipse.jface;bundle-version="3.17.0",
  de.tu_bs.cs.isf.e4cf.core.compare;bundle-version="1.0.0",
  de.tu_bs.cs.isf.e4cf.core,
  org.eclipse.core.resources,
- de.tu_bs.cs.isf.e4cf.graph.core,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy;bundle-version="1.0.0"
+ de.tu_bs.cs.isf.e4cf.graph.core
 Export-Package: de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node,
  de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces,
@@ -28,6 +27,5 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.metric.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.metric.util
 Import-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,
  javax.inject,
  org.eclipse.gef.geometry.planar

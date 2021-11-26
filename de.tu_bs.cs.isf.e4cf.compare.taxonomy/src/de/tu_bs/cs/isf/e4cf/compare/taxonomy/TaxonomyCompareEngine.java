@@ -2,10 +2,9 @@ package de.tu_bs.cs.isf.e4cf.compare.taxonomy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import com.google.common.base.Stopwatch;
+
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;

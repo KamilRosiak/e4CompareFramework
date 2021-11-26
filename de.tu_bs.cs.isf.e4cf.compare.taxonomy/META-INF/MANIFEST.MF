@@ -5,20 +5,15 @@ Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare.taxonomy
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.taxonomy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.google.common.base;version="21.0.0",
- com.google.gson;version="2.6.2",
- de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node,
- de.tu_bs.cs.isf.e4cf.compare.comparator.templates,
- de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures,
- de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table,
- org.eclipse.e4.core.di.annotations;version="1.6.0",
- org.eclipse.gef.geometry.planar
 Require-Bundle: de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.data_structures,
  de.tu_bs.cs.isf.e4cf.graph.core,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.core.compare,
- javax.inject
+ javax.inject,
+ org.eclipse.gef.geometry,
+ de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view,
+ com.google.gson
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.taxonomy,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.batch_API,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,
