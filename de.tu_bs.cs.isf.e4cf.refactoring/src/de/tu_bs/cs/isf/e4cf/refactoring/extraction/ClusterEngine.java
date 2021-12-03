@@ -88,7 +88,12 @@ public class ClusterEngine {
 
 		try {
 
-			List<Set<Node>> clusters = new ArrayList<Set<Node>>();
+			List<Set<Node>> clusters = new ArrayList<Set<Node>>();			
+			
+			if(nodes.size() == 0) {
+				return clusters;
+			}
+			
 			if (nodes.size() == 1) {
 				Set<Node> nodeSet = new HashSet<Node>();
 				nodeSet.add(nodes.get(0));

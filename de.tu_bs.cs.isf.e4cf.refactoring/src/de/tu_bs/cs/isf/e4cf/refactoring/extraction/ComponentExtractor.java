@@ -31,6 +31,7 @@ public class ComponentExtractor {
 		Map<String, List<Set<MultiSetNode>>> allClusters = new HashMap<String, List<Set<MultiSetNode>>>();
 
 		for (Entry<Granularity, List<Set<Node>>> entry : layerToClusters.entrySet()) {
+			
 			List<MultiSetTree> multiSetTreeList = extractComponents(entry.getValue(), entry.getKey());
 			List<Set<MultiSetNode>> list = new ArrayList<Set<MultiSetNode>>();
 			for (MultiSetTree multiSetTree : multiSetTreeList) {

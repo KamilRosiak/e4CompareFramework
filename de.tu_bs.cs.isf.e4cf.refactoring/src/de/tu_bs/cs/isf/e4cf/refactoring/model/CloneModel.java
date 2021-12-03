@@ -218,7 +218,7 @@ public class CloneModel {
 				}
 			}
 
-			if (results.isEmpty()) {
+			if (results.isEmpty() && referenceTree.getByNode(target) != null) {
 				Node childClone = child.cloneNode();
 				parentToChild.put(target, childClone);
 				childClone.setParent(target);
@@ -263,7 +263,7 @@ public class CloneModel {
 					results.addAll(multiSetNode.delete(deletedNodes, selectedReferences));
 				}
 			}
-			if (results.isEmpty()) {
+			if (results.isEmpty() && referenceTree.getByNode(target) != null) {
 				results.add(new DeleteResult(target));
 			}
 
@@ -308,7 +308,7 @@ public class CloneModel {
 					results.addAll(multiSetNode.addAttribute(attribute, nodeToAttribute, selectedReferences));
 				}
 			}
-			if (results.isEmpty()) {
+			if (results.isEmpty() && referenceTree.getByNode(target) != null) {
 				results.add(new AddAttributeResult(target, attribute));
 			}
 
@@ -340,7 +340,7 @@ public class CloneModel {
 							multiSetNode.editAttributeKey(attribute, newKey, editedAttributes, selectedReferences));
 				}
 			}
-			if (results.isEmpty()) {
+			if (results.isEmpty() && referenceTree.getByNode(target) != null && referenceTree.getByAttribute(attribute) != null) {
 				results.add(new EditAttributeKeyResult(target, attribute, newKey));
 			}
 
@@ -389,7 +389,7 @@ public class CloneModel {
 				}
 
 			}
-			if (results.isEmpty()) {
+			if (results.isEmpty() && referenceTree.getByNode(target) != null && referenceTree.getByAttribute(attribute) != null) {
 				results.add(new AddAttributeValueResult(attribute, value, target));
 			}
 			referenceTree.addAttributeValue(results, attributeToValue);
@@ -429,7 +429,7 @@ public class CloneModel {
 							multiSetNode.editAttributeValue(attribute, value, attributeToValue, selectedReferences));
 				}
 			}
-			if (results.isEmpty()) {
+			if (results.isEmpty() && referenceTree.getByNode(target) != null && referenceTree.getByAttribute(attribute) != null) {
 				results.add(new EditAttributeValueResult(target, attribute, value));
 			}
 
@@ -483,7 +483,7 @@ public class CloneModel {
 
 				MultiSetNode multiSetNode = component.getByNode(target);
 
-				if (multiSetNode != null) {
+				if (multiSetNode != null && referenceTree.getByNode(target) != null && referenceTree.getByAttribute(attribute) != null) {
 					results.addAll(multiSetNode.deleteAttribute(attribute, deletedAttributes, selectedReferences));
 				}
 			}
