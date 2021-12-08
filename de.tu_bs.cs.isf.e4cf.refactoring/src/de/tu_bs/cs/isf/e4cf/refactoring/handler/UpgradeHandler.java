@@ -8,8 +8,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
-import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
 
 public class UpgradeHandler {
 

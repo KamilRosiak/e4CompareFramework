@@ -10,9 +10,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Insert;
 import de.tu_bs.cs.isf.e4cf.refactoring.views.ActionView;
 
 @Singleton

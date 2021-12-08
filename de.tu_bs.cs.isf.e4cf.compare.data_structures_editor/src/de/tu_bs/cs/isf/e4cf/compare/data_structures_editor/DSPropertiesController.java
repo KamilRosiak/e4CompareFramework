@@ -24,6 +24,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorS
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.PropertiesViewUtilities;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableView;
@@ -37,6 +39,9 @@ public class DSPropertiesController {
 
 	@Inject
 	private ServiceContainer services;
+	
+	@Inject
+	private ClusterEngine clusterEngine;
 
 	@FXML
 	private ContextMenu contextMenu;
@@ -45,7 +50,7 @@ public class DSPropertiesController {
 	private TableView<Attribute> propertiesTable;
 
 	private Node selectedNode;
-	private Object cloneModel;
+	private CloneModel cloneModel;
 
 	private CommandStack propertiesManager = new CommandStack();
 
@@ -86,12 +91,11 @@ public class DSPropertiesController {
 		if (s != null) {
 			AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
 			if (cloneModel != null) {
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put(DSEditorST.ATTRIBUTE, attr);
-				map.put(DSEditorST.SELECTED_NODE, selectedNode);
-				map.put(DSEditorST.KEY, s);
-				map.put(DSEditorST.CLONE_MODEL, cloneModel);
-				services.eventBroker.send(DSEditorST.ATTRIBUTE_EDIT_KEY_EVENT, map);
+								
+				cloneModel.editAttributeKey(selectedNode, attr, s);
+				clusterEngine.analyzeCloneModel(cloneModel);
+			
+				
 			} else {
 
 				oldName = getSelectedItem().getAttributeKey();
@@ -119,12 +123,9 @@ public class DSPropertiesController {
 			Attribute selectedAttribute = getSelectedItem();
 
 			if (cloneModel != null) {
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put(DSEditorST.ATTRIBUTE, selectedAttribute);
-				map.put(DSEditorST.SELECTED_NODE, selectedNode);
-				map.put(DSEditorST.VALUE, editedValue);
-				map.put(DSEditorST.CLONE_MODEL, cloneModel);
-				services.eventBroker.send(DSEditorST.ATTRIBUTE_EDIT_VALUE_EVENT, map);
+				cloneModel.editAttributeValue(selectedNode, selectedAttribute, editedValue);
+				clusterEngine.analyzeCloneModel(cloneModel);				
+				
 			} else {
 				getSelectedItem().getAttributeValues().clear();
 				getSelectedItem().getAttributeValues().add(editedValue);
@@ -149,11 +150,8 @@ public class DSPropertiesController {
 			services.eventBroker.send(DSEditorST.ASK_FOR_SELECTED_ITEM_EVENT, true);
 			NodeAttributePair pair = new NodeAttributePair(selectedNode, deletedAttribute);
 			if (cloneModel != null) {
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put(DSEditorST.ATTRIBUTE, pair.getAttribute());
-				map.put(DSEditorST.SELECTED_NODE, pair.getOwner());
-				map.put(DSEditorST.CLONE_MODEL, cloneModel);
-				services.eventBroker.send(DSEditorST.ATTRIBUTE_DELETE_EVENT, map);
+				cloneModel.deleteAttribute(pair.getOwner(),  pair.getAttribute());
+				clusterEngine.analyzeCloneModel(cloneModel);
 			} else {
 				services.eventBroker.send(DSEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
 				propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
@@ -177,13 +175,9 @@ public class DSPropertiesController {
 			Attribute selectedAttribute = getSelectedItem();
 
 			if (cloneModel != null) {
-
-				Map<String, Object> map = new HashMap<String, Object>();
-				map.put(DSEditorST.ATTRIBUTE, selectedAttribute);
-				map.put(DSEditorST.SELECTED_NODE, selectedNode);
-				map.put(DSEditorST.CLONE_MODEL, cloneModel);
-				map.put(DSEditorST.VALUE, newValue);
-				services.eventBroker.send(DSEditorST.ATTRIBUTE_ADD_VALUE_EVENT, map);
+				cloneModel.addAttributeValue(selectedNode, selectedAttribute, newValue);
+				clusterEngine.analyzeCloneModel(cloneModel);
+				
 			} else {
 				selectedAttribute.getAttributeValues().add(newValue);
 				newAttributeValues = selectedAttribute.getAttributeValues();
@@ -250,7 +244,7 @@ public class DSPropertiesController {
 	public void showProperties(@UIEventTopic(DSEditorST.NODE_PROPERTIES_EVENT) Map<String, Object> event) {
 		Node node = (Node) event.get(DSEditorST.NODE);
 		showProperties(node);
-		this.cloneModel = event.get(DSEditorST.CLONE_MODEL);
+		this.cloneModel = (CloneModel) event.get(DSEditorST.CLONE_MODEL);
 
 	}
 

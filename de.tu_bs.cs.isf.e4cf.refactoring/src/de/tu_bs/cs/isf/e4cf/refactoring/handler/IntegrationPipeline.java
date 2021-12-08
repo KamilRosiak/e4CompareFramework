@@ -13,12 +13,12 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.refactoring.controllers.GranularityViewController;
-import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
-import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ComponentExtractor;
-import de.tu_bs.cs.isf.e4cf.refactoring.extraction.GranularityManager;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
-import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ComponentExtractor;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.GranularityManager;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Granularity;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.util.SynchronizationUtil;
 
 @Singleton
 @Creatable

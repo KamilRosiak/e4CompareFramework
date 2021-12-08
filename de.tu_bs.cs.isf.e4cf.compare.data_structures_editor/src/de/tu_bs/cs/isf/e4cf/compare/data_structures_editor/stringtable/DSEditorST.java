@@ -31,25 +31,14 @@ public class DSEditorST {
 	public static final String EXCEPTION_MESSAGE = "A %s occured.";
 	public static final String ATTENTION_REQUIRED = "Attention required";
 	public static final String CONFIRMATION_REQUIRED = "Confirmation required";
-
-	public static final String ADD_CHILD_EVENT = "ADD_CHILD_EVENT";
-	public static final String ADDED_NODE = "ADDED_NODE";
-	public static final String SELECTED_NODE = "SELECTED_NODE";	
+	
 	public static final String VALUE = "VALUE";
 	public static final String KEY = "KEY";
 	public static final String TREE = "TREE";
-	public static final String CLONE_MODEL = "CLONE_MODEL";
-	
-	public static final String DELETE_EVENT = "DELETE_EVENT";
-	public static final String DELETED_NODE = "DELETED_NODE";
+	public static final String CLONE_MODEL = "CLONE_MODEL";	
 
-	public static final String ATTRIBUTE_ADD_EVENT = "ATTRIBUTE_ADD_EVENT";
 	public static final String ATTRIBUTE = "ATTRIBUTE";
 	public static final String NODE = "NODE";
-	public static final String ATTRIBUTE_DELETE_EVENT = "ATTRIBUTE_DELETE_EVENT";
-	public static final String ATTRIBUTE_EDIT_VALUE_EVENT = "ATTRIBUTE_EDIT_VALUE_EVENT";
-	public static final String ATTRIBUTE_EDIT_KEY_EVENT = "ATTRIBUTE_EDIT_KEY_EVENT";
-
-	public static final String ATTRIBUTE_ADD_VALUE_EVENT = "ATTRIBUTE_ADD_VALUE_EVENT";
-	public static final String RESTORE_TREES_EVENT = "RESTORE_TREES_EVENT";
+	
+	
 }

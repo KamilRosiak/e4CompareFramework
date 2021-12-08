@@ -5,7 +5,7 @@ import java.util.Set;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Granularity;
 
 public class GranularityTreeBuilder {
 

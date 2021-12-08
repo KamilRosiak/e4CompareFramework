@@ -16,16 +16,16 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.refactoring.controllers.ActionViewController;
 import de.tu_bs.cs.isf.e4cf.refactoring.controllers.SynchronizationViewController;
-import de.tu_bs.cs.isf.e4cf.refactoring.extraction.EditScriptGenerator;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Action;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Delete;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Move;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetAttribute;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetNode;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Update;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.EditScriptGenerator;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Action;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Delete;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Insert;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Move;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetAttribute;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetNode;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Update;
 
 @Singleton
 @Creatable

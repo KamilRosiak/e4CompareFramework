@@ -7,12 +7,12 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Action;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Delete;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Move;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Update;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Action;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Delete;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Insert;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Move;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Update;
 
 public class ActionTreeBuilder {
 

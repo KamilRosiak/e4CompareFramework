@@ -6,8 +6,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Insert;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Insert;
 
 public class SynchronizationTreeBuilder {
 

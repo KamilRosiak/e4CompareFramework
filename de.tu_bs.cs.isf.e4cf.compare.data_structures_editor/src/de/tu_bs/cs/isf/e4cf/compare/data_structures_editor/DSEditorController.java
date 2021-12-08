@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,10 +12,11 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
-
+import com.google.common.io.Files;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -27,9 +31,14 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeA
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
+import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -53,7 +62,13 @@ import javafx.scene.image.ImageView;
  */
 public class DSEditorController {
 
-	private Object cloneModel;
+	private CloneModel cloneModel;
+	
+	@Inject
+	private ClusterEngine clusterEngine;
+	
+	@Inject
+	private GsonExportService exportService;
 
 	@Inject
 	private ServiceContainer services;
@@ -130,8 +145,15 @@ public class DSEditorController {
 	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Map<String, Object> event) {
 		Tree tree = (Tree) event.get(DSEditorST.TREE);
 		showTree(tree);
-		this.cloneModel = event.get(DSEditorST.CLONE_MODEL);
+		this.cloneModel = (CloneModel) event.get(DSEditorST.CLONE_MODEL);
 	}
+	
+	private void refreshCloneModel() {
+		CloneModel savedModel = cloneModel;		
+		showTree(savedModel.getTree());		
+		this.cloneModel = savedModel;
+	}
+	
 
 	private NodeDecorator getSelectedDecorator() {
 
@@ -247,14 +269,11 @@ public class DSEditorController {
 		if (cloneModel != null) {
 			String attrName = RCPMessageProvider.inputDialog("Attribute Name", "Enter Attribute Name");
 			String attrValue = RCPMessageProvider.inputDialog("Attribute Value", "Enter Attribute Value");
-			Attribute addedAttr = new AttributeImpl(attrName, new StringValueImpl(attrValue));
-
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put(DSEditorST.ATTRIBUTE, addedAttr);
-			map.put(DSEditorST.SELECTED_NODE, getCurrentSelection().getValue());
-			map.put(DSEditorST.CLONE_MODEL, cloneModel);
-
-			services.eventBroker.send(DSEditorST.ATTRIBUTE_ADD_EVENT, map);
+			Attribute addedAttr = new AttributeImpl(attrName, new StringValueImpl(attrValue));		
+			
+			cloneModel.addAttribute(getCurrentSelection().getValue(), addedAttr);
+			clusterEngine.analyzeCloneModel(cloneModel);
+			refreshCloneModel();
 
 		} else {
 			AddAttributeAction action = new AddAttributeAction(getCurrentSelection().getValue());
@@ -275,12 +294,11 @@ public class DSEditorController {
 
 		if (cloneModel != null) {
 			Node newNode = new NodeImpl(RCPMessageProvider.inputDialog("Create New Child", "Node Type"));
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put(DSEditorST.SELECTED_NODE, selectedNode);
-			map.put(DSEditorST.ADDED_NODE, newNode);
-			map.put(DSEditorST.CLONE_MODEL, cloneModel);
-
-			services.eventBroker.send(DSEditorST.ADD_CHILD_EVENT, map);
+						
+			cloneModel.addChild(selectedNode, newNode, 0);
+			clusterEngine.analyzeCloneModel(cloneModel);
+			refreshCloneModel();
+			
 		} else {
 			TreeItem<Node> selectedItem = treeView.getSelectionModel().getSelectedItem();
 			AddChildNodeAction action = new AddChildNodeAction(treeView, selectedItem, getSelectedDecorator());
@@ -295,9 +313,54 @@ public class DSEditorController {
 	public void restoreTrees() {
 
 		if (cloneModel != null) {
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put(DSEditorST.CLONE_MODEL, cloneModel);
-			services.eventBroker.send(DSEditorST.RESTORE_TREES_EVENT, map);
+			try {
+				
+				List<Tree> trees = cloneModel.restoreIntegratedTrees();
+
+				Directory directory = services.workspaceFileSystem.getWorkspaceDirectory();
+				boolean createNewDirectory = true;
+
+				File baseDirectory = null;
+				for (FileTreeElement subElement : directory.getChildren()) {
+
+					if (subElement.getFileName().equals("Restored trees")) {
+						createNewDirectory = false;
+						baseDirectory = new File(subElement.getAbsolutePath());
+						break;
+					}
+				}
+
+				if (createNewDirectory) {
+					baseDirectory = new File(directory.getAbsolutePath() + "/Restored trees");
+					baseDirectory.mkdir();
+
+				}
+
+				int count = 0;
+				for (File subElement : baseDirectory.listFiles()) {
+					if (subElement.getName().equals("Result_" + count)) {
+						count++;
+					}
+
+				}
+
+				File resultDirectory = new File(baseDirectory.getAbsolutePath() + "/" + "Result_" + count);
+				resultDirectory.mkdir();
+
+				for (Tree tree : trees) {
+
+					String json = exportService.exportTree((TreeImpl) tree);
+
+					File concreteElement = new File(resultDirectory.getAbsolutePath() + "/" + tree.getTreeName() + ".tree");
+					concreteElement.createNewFile();
+
+					Files.write(json.getBytes(), new File(concreteElement.getAbsolutePath()));
+
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -405,12 +468,12 @@ public class DSEditorController {
 		TreeItem<Node> selectedItem = treeView.getSelectionModel().getSelectedItem();
 		Node nodeToDelete = selectedItem.getValue();
 
-		if (cloneModel != null) {
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put(DSEditorST.DELETED_NODE, nodeToDelete);
-			map.put(DSEditorST.CLONE_MODEL, cloneModel);
-
-			services.eventBroker.send(DSEditorST.DELETE_EVENT, map);
+		if (cloneModel != null) {				
+			
+			cloneModel.delete(nodeToDelete);
+			clusterEngine.analyzeCloneModel(cloneModel);
+			refreshCloneModel();
+			
 		} else {
 			commandStack.execute(new DeleteNodeAction("deleteNode", selectedItem, selectedItem.getParent()));
 

@@ -9,19 +9,15 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
-import de.tu_bs.cs.isf.e4cf.refactoring.events.EventHandlerBase;
-import de.tu_bs.cs.isf.e4cf.refactoring.events.EventManager;
-import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
 
 public class IntegrationHandler {
 
 	@Execute
-	public void execute(ServiceContainer services, ReaderManager readerManager, IntegrationPipeline integrationPipeline,
-			GsonExportService exportService, ClusterEngine clusterEngine, EventManager eventManager) {
+	public void execute(ServiceContainer services, ReaderManager readerManager, IntegrationPipeline integrationPipeline, ClusterEngine clusterEngine) {
 
 		ClusterEngine.startProcess();
 
@@ -37,7 +33,7 @@ public class IntegrationHandler {
 				cloneModel1.merge(cloneModel2);
 			}
 
-			EventHandlerBase.services = services;
+		
 			Map<String, Object> event = new HashMap<String, Object>();
 			event.put(DSEditorST.TREE, cloneModel1.getTree());
 			event.put(DSEditorST.CLONE_MODEL, cloneModel1);

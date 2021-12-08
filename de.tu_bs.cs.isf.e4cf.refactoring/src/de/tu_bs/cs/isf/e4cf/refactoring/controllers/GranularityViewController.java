@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.Granularity;
 import de.tu_bs.cs.isf.e4cf.refactoring.views.GranularityView;
 
 @Singleton

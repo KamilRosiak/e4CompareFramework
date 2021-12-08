@@ -3,8 +3,8 @@ package de.tu_bs.cs.isf.e4cf.refactoring.util;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetNode;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.MultiSetTree;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetNode;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetTree;
 
 public class ComponentTreeBuilder {
 
