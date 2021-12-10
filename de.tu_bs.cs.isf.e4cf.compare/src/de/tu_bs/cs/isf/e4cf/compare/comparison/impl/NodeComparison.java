@@ -2,9 +2,11 @@ package de.tu_bs.cs.isf.e4cf.compare.comparison.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
@@ -46,11 +48,12 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		setSimilarity(source.getSimilarity());
 	}
 
-	public Pair<Map<String, List<Comparison<Node>>>,Map<String, List<Comparison<Node>>>> findOptionalMatchings() {
+	public Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> findOptionalMatchings() {
 		Map<String, List<Comparison<Node>>> leftOptionals = new HashMap<String, List<Comparison<Node>>>();
 		Map<String, List<Comparison<Node>>> rightOptionals = new HashMap<String, List<Comparison<Node>>>();
 		findOptionalMatchingsRecursivly(this, leftOptionals, rightOptionals);
-		return new Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>>(leftOptionals, rightOptionals);
+		return new Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>>(leftOptionals,
+				rightOptionals);
 	}
 
 	/**
@@ -76,7 +79,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				leftOptionals.get(nodeType).add(nextNode);
 			}
 		}
-		//call recursively for each element
+		// call recursively for each element
 		nextNode.getChildComparisons().forEach(childNode -> {
 			findOptionalMatchingsRecursivly(childNode, leftOptionals, rightOptionals);
 		});
@@ -86,24 +89,24 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	public Node mergeArtifacts() {
 		return mergeArtifacts(true);
 	}
-	
+
 	/**
 	 * Sets the variability class of nodes and their children to optional
 	 */
 	public void setNodeOptionalWithChildren(Node node) {
 		node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
-		node.getChildren().forEach(childNode-> {
+		node.getChildren().forEach(childNode -> {
 			setNodeOptionalWithChildren(childNode);
 		});
 	}
-	
+
 	public Node mergeArtifacts(boolean omitOptionalChildren) {
 		// if one of both artifact is null its means that we have an optional and can
 		// keep the implementation below this artifacts.
 		if (getLeftArtifact() == null || getRightArtifact() == null) {
 			Node node = getLeftArtifact() == null ? getRightArtifact() : getLeftArtifact();
 			if (omitOptionalChildren) {
-				// Set all nodes to optional 
+				// Set all nodes to optional
 				setNodeOptionalWithChildren(node);
 			} else {
 				// Process the Children as they were compared
@@ -124,25 +127,29 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		} else {
 			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
 			// first merge attributes
-
+			Set<Attribute> containedAttrs = new HashSet<Attribute>();
 			for (Attribute leftAttr : getLeftArtifact().getAttributes()) {
-				Iterator<Attribute> rightAttrs = getRightArtifact().getAttributes().iterator();
-				while (rightAttrs.hasNext()) {
-					Attribute rightAttr = rightAttrs.next();
+				for (Attribute rightAttr : getRightArtifact().getAttributes()) {
+					// same attr type
 					if (leftAttr.keyEquals(rightAttr)) {
+						
 						for (Value rightValue : rightAttr.getAttributeValues()) {
 							if (!leftAttr.containsValue(rightValue)) {
 								leftAttr.addAttributeValue(rightValue);
+							} else {
+								rightValue.setUUID(leftAttr.getAttributeValue(rightValue).getUUID());
 							}
 						}
-						rightAttrs.remove();
+						containedAttrs.add(rightAttr);
 					}
 				}
 			}
-
+			//remove all contained attrs from all others 
+			Set<Attribute> allAttrs = new HashSet<Attribute>(getRightArtifact().getAttributes());
+			allAttrs.removeAll(containedAttrs);
 			// put all other attributes from right to left because it wasn't contained
 			// before
-			getRightArtifact().getAttributes().stream().forEach(e -> getLeftArtifact().addAttribute(e));
+			getRightArtifact().getAttributes().addAll(allAttrs);
 
 			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();

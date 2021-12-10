@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
@@ -349,4 +350,9 @@ public abstract class AbstractNode implements Node {
 		return countVariabilityClassNodes(this, 0, VariabilityClass.MANDATORY);
 	}
 	
+
+	@Override
+	public Configuration createConfiguration() {
+		return null;
+	}
 }

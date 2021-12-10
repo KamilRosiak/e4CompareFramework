@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.core.import_export.services;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.services;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 

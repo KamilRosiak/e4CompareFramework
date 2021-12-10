@@ -2,7 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 
 public abstract class AbstractTree implements Tree {
@@ -10,6 +10,7 @@ public abstract class AbstractTree implements Tree {
 	private Node root;
 	private String treeName;
 	private String fileExtension = "NONE";
+	private List<Configuration> configurations;
 
 	@Override
 	public int getSize() {
@@ -55,6 +56,15 @@ public abstract class AbstractTree implements Tree {
 	/***********************************************
 	 * GETTER AND SETTER
 	 */
+	@Override
+	public List<Configuration> getConfigurations() {
+		return this.configurations;
+	}
+
+	public void setConfigurations(List<Configuration> configurations) {
+		this.configurations = configurations;
+	}
+
 	@Override
 	public Node getRoot() {
 		return root;

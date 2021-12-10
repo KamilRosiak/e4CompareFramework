@@ -1,21 +1,22 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonImportService
 import java.util.List
+import java.util.NoSuchElementException
+import java.util.Random
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
-import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*;
-import java.util.NoSuchElementException
-import java.util.UUID
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonImportService
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
-import java.util.Random
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
+
+import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 
 @Creatable
 @Singleton

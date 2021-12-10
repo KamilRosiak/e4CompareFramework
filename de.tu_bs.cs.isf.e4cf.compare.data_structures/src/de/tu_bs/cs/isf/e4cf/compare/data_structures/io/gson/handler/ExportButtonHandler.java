@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.core.import_export.handler;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.handler;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 

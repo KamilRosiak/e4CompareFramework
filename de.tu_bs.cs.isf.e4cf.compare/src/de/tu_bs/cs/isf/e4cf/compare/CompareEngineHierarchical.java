@@ -40,7 +40,8 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		root.updateSimilarity();
 		getMatcher().calculateMatching(root);
 		root.updateSimilarity();
-		//Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root.findOptionalMatchings();
+		Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root
+				.findOptionalMatchings();
 
 		Node rootNode = root.mergeArtifacts();
 

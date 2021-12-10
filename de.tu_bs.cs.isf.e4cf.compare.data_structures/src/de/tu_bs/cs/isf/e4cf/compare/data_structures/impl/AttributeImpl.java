@@ -47,6 +47,4 @@ public class AttributeImpl extends AbstractAttribute {
 		return attribute;
 		
 	}
-	
-
 }

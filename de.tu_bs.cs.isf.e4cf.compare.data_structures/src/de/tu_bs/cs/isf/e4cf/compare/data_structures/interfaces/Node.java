@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 import java.util.List;
 import java.util.UUID;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 
@@ -250,5 +251,10 @@ public interface Node {
 	 */
 	public int numberOfMandatories();
 	
+	/**
+	 * Returns the configuration of a single variant
+	 * @return
+	 */
+	public Configuration createConfiguration(); 
 	
 }

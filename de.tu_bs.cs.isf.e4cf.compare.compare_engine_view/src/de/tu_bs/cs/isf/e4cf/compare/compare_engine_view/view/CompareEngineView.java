@@ -85,6 +85,7 @@ public class CompareEngineView implements Initializable {
 			
 			if (artifacts.size() > 1) {
 				//multi threading
+				services.partService.showPart("de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view");
 				Job job = Job.create("Compare", (ICoreRunnable) monitor -> {
 					Tree mergedTree = engine.compare(artifacts);
 					services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);

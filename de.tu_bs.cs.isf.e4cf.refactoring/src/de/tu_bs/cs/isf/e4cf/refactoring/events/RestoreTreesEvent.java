@@ -14,10 +14,10 @@ import com.google.common.io.Files;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.refactoring.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.CloneModel;

@@ -1,7 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
-
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
@@ -24,6 +25,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 @Singleton
 @Creatable
 public class ReaderManager {
+	@Inject IEclipseContext context;
 
 	public Tree readFile(FileTreeElement fte) {
 		Tree tree = new TreeImpl(fte.getFileName(), readFileRecursivly(null, fte));
@@ -44,7 +46,8 @@ public class ReaderManager {
 			fte.getChildren().stream().forEach(childFte -> nextNode.addChildWithParent(readFileRecursivly(nextNode, childFte)));
 			return nextNode;
 		} else {
-			ArtifactReader reader = ArtifactIOUtil.getReaderForType(fte);
+			ArtifactReader reader = ArtifactIOUtil.getReaderForType(fte,context);
+			
 			if (reader != null) {
 				return reader.readArtifact(fte).getRoot();
 			} else {

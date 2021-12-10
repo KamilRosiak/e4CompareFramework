@@ -11,7 +11,7 @@ import com.google.common.io.Files;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator.Variant;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.Granularity;

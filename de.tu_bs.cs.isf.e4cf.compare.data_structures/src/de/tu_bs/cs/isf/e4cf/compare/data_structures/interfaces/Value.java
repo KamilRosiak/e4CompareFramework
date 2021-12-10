@@ -10,6 +10,12 @@ public interface Value<Type> {
 	 * returns the uuid of this value.
 	 */
 	public UUID getUUID();
+	
+	/**
+	 * returns the uuid of this value.
+	 */
+	public void setUUID(UUID uuid);
+	
 
 	/**
 	 * returns the value of the specific type

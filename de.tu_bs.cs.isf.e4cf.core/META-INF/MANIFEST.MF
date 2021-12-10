@@ -14,6 +14,7 @@ Bundle-ClassPath: .,
 Bundle-Activator: de.tu_bs.cs.isf.e4cf.core.Activator
 Export-Package: 
  com.google.common.collect,
+ com.google.common.reflect,
  de.tu_bs.cs.isf.e4cf.core.benchmark,
  de.tu_bs.cs.isf.e4cf.core.dnd.drop,
  de.tu_bs.cs.isf.e4cf.core.file_structure,

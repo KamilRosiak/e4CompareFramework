@@ -20,7 +20,7 @@
         <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem accelerator="Shortcut+s" mnemonicParsing="false" onAction="#saveFile" text="Save" />
-            <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As…" />
+            <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As" />
              <MenuItem accelerator="Shortcut+w" mnemonicParsing="false" onAction="#closeFile" text="Close" />
           </items>
         </Menu>

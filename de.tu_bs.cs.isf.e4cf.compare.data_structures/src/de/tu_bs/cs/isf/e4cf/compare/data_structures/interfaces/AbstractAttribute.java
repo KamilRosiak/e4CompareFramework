@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class AbstractAttribute implements Attribute {
 	/**
@@ -10,7 +11,8 @@ public abstract class AbstractAttribute implements Attribute {
 	private static final long serialVersionUID = 1L;
 	private String attributeKey;
 	private List<Value> attributeValues;
-
+	private UUID uuid = UUID.randomUUID();
+	
 	public AbstractAttribute() {
 		setAttributeValues(new ArrayList<Value>());
 	}
@@ -60,6 +62,23 @@ public abstract class AbstractAttribute implements Attribute {
 	public void setAttributeKey(String attributeKey) {
 		this.attributeKey = attributeKey;
 	}
-	
+
+	@Override
+	public Value getAttributeValue(Value value) {
+		for(Value attrValue : getAttributeValues()) {
+			if(attrValue.equals(value)) {
+				return attrValue;
+			}
+		}
+		return null;
+	}
+
+	public UUID getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
+	}
 	
 }

@@ -37,10 +37,7 @@ public class FileStreamUtil {
 
 		try (Stream<String> stream = Files.lines(Paths.get(filePath.toUri()), StandardCharsets.UTF_8)) {
 			stream.forEach(s -> {
-				
-				
-				//System.out.println("VALUE: " + s);
-				contentBuilder.append(s).append("\n");	
+				contentBuilder.append(s).append("\n");
 			});
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -79,7 +76,6 @@ public class FileStreamUtil {
 	 */
 	public static Object deepCopy(Object object) {
 		try {
-			
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			ObjectOutputStream outputStrm = new ObjectOutputStream(outputStream);
 			outputStrm.writeObject(object);
