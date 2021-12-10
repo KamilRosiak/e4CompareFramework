@@ -20,7 +20,7 @@ public class UpgradeHandler {
 		ClusterEngine.startProcess();
 
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
-		CloneModel cloneModel = integrationPipeline.pipe(tree, null);
+		CloneModel cloneModel = integrationPipeline.pipe(tree);
 
 		if (cloneModel != null) {
 			for (int i = 1; i < services.rcpSelectionService.getCurrentSelectionsFromExplorer().size(); i++) {
@@ -36,7 +36,7 @@ public class UpgradeHandler {
 
 	@CanExecute
 	public boolean canExecute(ServiceContainer services, RCPSelectionService selectionService) {
-		return services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() >= 1;
+		return services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 1;
 	}
 
 }

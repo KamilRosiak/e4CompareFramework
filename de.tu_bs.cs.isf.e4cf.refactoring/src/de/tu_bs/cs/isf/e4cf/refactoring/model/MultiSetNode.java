@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import de.tu_bs.cs.isf.e4cf.refactoring.model.result.DeleteResult;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.result.EditAttributeKeyResult;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.result.EditAttributeValueResult;
 import de.tu_bs.cs.isf.e4cf.refactoring.model.result.MoveResult;
-import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationUtil;
 
 public class MultiSetNode {
 
@@ -214,45 +212,24 @@ public class MultiSetNode {
 		List<MoveResult> results = new ArrayList<MoveResult>();
 
 		int currentPosition = this.getPosition();
-
-		Collections.swap(parent.children, currentPosition, position);
-
+		parent.children.remove(currentPosition);
+		parent.children.add(position, this);	
+		
+		
 		results.add(new MoveResult(node, position));
 
 		Set<MultiSetNode> referenceList = selectedReferences == null ? references : selectedReferences;
 
 		for (MultiSetNode reference : referenceList) {
-			List<MultiSetNode> subsequence = SynchronizationUtil.findLongestCommonSubsequence(reference.parent.children,
-					this.parent.children);
 
-			List<MultiSetNode> childList = new ArrayList<MultiSetNode>(reference.parent.children);
+			int referencePosition = getPositionOfCommonPredecessor(this, reference);
+			referencePosition = referencePosition == 0 ? 0 : referencePosition + 1;
 
-			for (MultiSetNode child : childList) {
-
-				if (!subsequence.contains(child)) {
-
-					int referencePosition = -1;
-					for (MultiSetNode childReference : child.references) {
-
-						if (parent.children.contains(childReference)) {
-							referencePosition = childReference.getPosition();
-							break;
-						}
-					}
-
-					if (referencePosition != -1) {
-						subsequence.add(child);
-						int currentReferencePosition = child.getPosition();
-
-						Collections.swap(reference.parent.children, currentReferencePosition, referencePosition);
-
-						results.add(new MoveResult(reference.node, referencePosition));
-
-					}
-
-				}
-
-			}
+			currentPosition = reference.getPosition();
+			reference.parent.children.remove(currentPosition);
+			reference.parent.children.add(referencePosition, reference);			
+			
+			results.add(new MoveResult(reference.node, referencePosition));
 
 		}
 
@@ -426,7 +403,8 @@ public class MultiSetNode {
 				multiSetNodeReferenceChild = MultiSetNode.create(parentToChild.get(reference.node));
 				reference.children.add(referencePosition, multiSetNodeReferenceChild);
 
-				addChildResults.add(new AddChildResult(reference.node, referencePosition, parentToChild.get(reference.node)));
+				addChildResults
+						.add(new AddChildResult(reference.node, referencePosition, parentToChild.get(reference.node)));
 			}
 
 			multiSetNodeReferenceChild.parent = reference;
