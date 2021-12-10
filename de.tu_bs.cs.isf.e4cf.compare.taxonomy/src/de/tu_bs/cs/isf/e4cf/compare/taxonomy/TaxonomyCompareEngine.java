@@ -117,7 +117,9 @@ public class TaxonomyCompareEngine {
 					currentRightArtifact = artifactRight;
 					System.out.println(
 							"Comparing Variants: " + artifactLeft.getTreeName() + " and " + artifactRight.getTreeName());
-					compare(artifactLeft.getRoot(), artifactRight.getRoot(), true);
+					
+					compare(artifactLeft.getRoot(), artifactRight.getRoot(), true);				
+				
 					taxonomyResultEngine.matchNodes();								// Step 1
 //					taxonomyResultEngine.printCommulativeResults();			
 				}
@@ -143,7 +145,7 @@ public class TaxonomyCompareEngine {
 			comparison = compare(first, second);
 		} else if (first.getNodeType().equals(second.getNodeType()) && !isArtifactComparison) {
 			comparison = compare(first, second);
-		}
+		}		
 		
 		return comparison;
 	}

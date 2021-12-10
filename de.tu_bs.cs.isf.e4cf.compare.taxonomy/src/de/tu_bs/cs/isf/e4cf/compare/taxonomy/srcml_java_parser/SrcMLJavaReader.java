@@ -3,6 +3,7 @@
  */
 package de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_java_parser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -39,12 +40,15 @@ public class SrcMLJavaReader extends AbstractArtifactReader {
 		Node rootNode = new NodeImpl(JavaWriter.NODE_TYPE_TREE);
 
 		if (isFileSupported(element)) {
-			String srcMLExePath = "C:\\Program Files\\srcML\\srcml.exe";
-			String xmlOutputPath = "C:\\Users\\olant\\source\\repos\\e4CompareFramework\\de.tu_bs.cs.isf.e4cf.compare.taxonomy\\src\\de\\tu_bs\\cs\\isf\\e4cf\\compare\\taxonomy\\java_parser\\output\\"+Paths.get(element.getAbsolutePath()).getFileName().toString().replace(".java","")+"_srcmlOutput.xml";
-			String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
-			
 			// Try to parse artifact
 			try {
+				
+				String srcMLExePath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+						+ "lib/srcml/srcml.exe").substring(1)).getPath();							
+				String xmlOutputPath = File.createTempFile("Temp", Long.toString(System.nanoTime())).getAbsolutePath();			
+				
+				String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
+				
 				InputStream xmlOutputStream = CppXMLExtractor.parseWithsrcML(srcMLExePath, Paths.get(element.getAbsolutePath()), xmlOutputPath);
 				if (xmlOutputStream != null) {
 					try {
@@ -53,11 +57,12 @@ public class SrcMLJavaReader extends AbstractArtifactReader {
 						e.printStackTrace();
 					}
 				}
+				tree = new TreeImpl(fileName, rootNode);
+				tree.setFileExtension(SUPPORTED_FILE_ENDINGS[0]);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			tree = new TreeImpl(fileName, rootNode);
-			tree.setFileExtension(SUPPORTED_FILE_ENDINGS[0]);
+			
 		}
 		return tree;
 	}

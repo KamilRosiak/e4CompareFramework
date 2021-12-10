@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_u3hqoO-nEeuNx96d6AzuoA">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0BcKwO-nEeuNx96d6AzuoA" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.information_window">
-    <elements xsi:type="basic:Part" xmi:id="_H57YIO-oEeuNx96d6AzuoA" elementId="de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view/de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.TaxonomyController" label="Taxonomy Control" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_view/icons/fm_16.png" tooltip="Taxonomy Controls"/>
+    <elements xsi:type="basic:Part" xmi:id="_H57YIO-oEeuNx96d6AzuoA" elementId="de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view/de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.TaxonomyController" label="Taxonomy Control" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view/icons/fm_16.png" tooltip="Taxonomy Controls"/>
   </fragments>
 </fragment:ModelFragments>

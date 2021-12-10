@@ -14,7 +14,7 @@ Require-Bundle: de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.data_structures,
  com.google.gson,
  org.eclipse.e4.core.contexts;bundle-version="1.8.400",
- de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_view
+ de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.taxonomy,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.batch_API,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,

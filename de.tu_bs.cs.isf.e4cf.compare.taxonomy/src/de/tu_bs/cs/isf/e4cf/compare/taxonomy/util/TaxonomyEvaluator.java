@@ -41,8 +41,8 @@ public class TaxonomyEvaluator {
 	// Ground Truth Properties
 	private int gtTotalNodes = 0;
 	private int gtMaxDepth;
-	//private int levelMeasureTotal;
-	
+	// private int levelMeasureTotal;
+
 	// Ground Truth Properties
 	private int ctTotalNodes = 0;
 	private int ctMaxDepth;
@@ -51,9 +51,9 @@ public class TaxonomyEvaluator {
 	 * Compute Primary and Secondary metrics measures for taxonomies
 	 */
 	public void computePrimaryMeasures() {
-		//this.levelMeasureTotal = 0;
+		// this.levelMeasureTotal = 0;
 //		int levelMeasure = gtTotalNodes;
-		
+
 		for (int i = 0; i <= gtMaxDepth; i++) {
 			int tp = 0;
 			int tn = 0;
@@ -78,8 +78,8 @@ public class TaxonomyEvaluator {
 				}
 			}
 
-			//tn = levelMeasure - (tp + fp + fn) > 0 ? levelMeasure - (tp + fp + fn) : 0;
-			tn =  0;
+			// tn = levelMeasure - (tp + fp + fn) > 0 ? levelMeasure - (tp + fp + fn) : 0;
+			tn = 0;
 
 			truePositivesValue += tp;
 			trueNegativesValue += tn;
@@ -91,108 +91,112 @@ public class TaxonomyEvaluator {
 	}
 
 	/**
-	 * Compute Primary metrics measures for the taxonomy accuracy using Predecessors and Successors prediction accuracy
+	 * Compute Primary metrics measures for the taxonomy accuracy using Predecessors
+	 * and Successors prediction accuracy
 	 */
 	@SuppressWarnings("unused")
 	public void computePrimaryMeasuresPS() {
 		// Compute Depth and Total Number of Nodes
-				List<VariantTaxonomyNode> allGTNodes = new ArrayList<VariantTaxonomyNode>(); // All Ground Truth Nodes
-				List<VariantTaxonomyNode> allCTNodes = new ArrayList<VariantTaxonomyNode>(); // All Computes Taxonomy Nodes
+		List<VariantTaxonomyNode> allGTNodes = new ArrayList<VariantTaxonomyNode>(); // All Ground Truth Nodes
+		List<VariantTaxonomyNode> allCTNodes = new ArrayList<VariantTaxonomyNode>(); // All Computes Taxonomy Nodes
 
-				for (int i = 0; i <= gtMaxDepth; i++) {
-					List<VariantTaxonomyNode> gtNodesAtLevel = getNodesForLevel(this.groundTruthTaxonomy, i);
-					List<VariantTaxonomyNode> ctNodesAtLevel = getNodesForLevel(this.computedTaxonomy, i);	
-					// Flatten Nodes
-					allGTNodes.addAll(gtNodesAtLevel);
-					allCTNodes.addAll(ctNodesAtLevel);
+		for (int i = 0; i <= gtMaxDepth; i++) {
+			List<VariantTaxonomyNode> gtNodesAtLevel = getNodesForLevel(this.groundTruthTaxonomy, i);
+			List<VariantTaxonomyNode> ctNodesAtLevel = getNodesForLevel(this.computedTaxonomy, i);
+			// Flatten Nodes
+			allGTNodes.addAll(gtNodesAtLevel);
+			allCTNodes.addAll(ctNodesAtLevel);
+		}
+
+		for (VariantTaxonomyNode computedNode : allCTNodes) {
+			int pTP = 0, sTP = 0;
+			int pTN = 0, sTN = 0;
+			int pFP = 0, sFP = 0;
+			int pFN = 0, sFN = 0;
+
+			// Get Successors for Node - Computed taxonomy
+			List<VariantTaxonomyNode> nodeCTSuccessors = getNodeSuccessors(computedNode);
+			// Get Predecessors for Node - Computed taxonomy
+			List<VariantTaxonomyNode> nodeCTPredecessors = getNodePredecessors(computedNode);
+
+			// Get Successors for Node - Computed taxonomy
+			List<VariantTaxonomyNode> nodeGTSuccessors = getNodeSuccessors(
+					fetchVariantInList(computedNode, allGTNodes));
+			// Get Predecessors for Node - Computed taxonomy
+			List<VariantTaxonomyNode> nodeGTPredecessors = getNodePredecessors(
+					fetchVariantInList(computedNode, allGTNodes));
+
+			// Compute TP, TN, FP, FN for successors
+			for (VariantTaxonomyNode aNodeGTSuccessor : nodeGTSuccessors) {
+				if (!isVariantInList(aNodeGTSuccessor, nodeCTSuccessors)) {
+					sFN += 1;
+				} else {
+					sTP += 1;
 				}
-				
-				for (VariantTaxonomyNode computedNode: allCTNodes) {
-					int pTP = 0, sTP = 0;
-					int pTN = 0, sTN = 0;
-					int pFP = 0, sFP = 0;
-					int pFN = 0, sFN = 0;
-					
-					// Get Successors for Node - Computed taxonomy
-					List<VariantTaxonomyNode> nodeCTSuccessors = getNodeSuccessors(computedNode);
-					// Get Predecessors for Node - Computed taxonomy
-					List<VariantTaxonomyNode> nodeCTPredecessors = getNodePredecessors(computedNode);
-					
-					// Get Successors for Node - Computed taxonomy
-					List<VariantTaxonomyNode> nodeGTSuccessors = getNodeSuccessors(fetchVariantInList(computedNode, allGTNodes));
-					// Get Predecessors for Node - Computed taxonomy
-					List<VariantTaxonomyNode> nodeGTPredecessors = getNodePredecessors(fetchVariantInList(computedNode, allGTNodes));
-					
-					// Compute TP, TN, FP, FN for successors
-					for (VariantTaxonomyNode aNodeGTSuccessor : nodeGTSuccessors) {
-						if (!isVariantInList(aNodeGTSuccessor, nodeCTSuccessors)) {
-							sFN += 1;
-						} else {
-							sTP += 1;
-						}
-					}
-					
-					for (VariantTaxonomyNode aNodeCTSuccessor : nodeCTSuccessors) {
-						if (!isVariantInList(aNodeCTSuccessor, nodeGTSuccessors)) {
-							// Compared List not in ground truth
-							sFP += 1;
-						}
-					}
-					
-					// Compute TP, TN, FP, FN for predecessors
-					for (VariantTaxonomyNode aNodeGTPredecessors : nodeGTPredecessors) {
-						if (!isVariantInList(aNodeGTPredecessors, nodeCTPredecessors)) {
-							pFN += 1;
-						} else {
-							pTP += 1;
-						}
-					}
-					
-					for (VariantTaxonomyNode aNodeCTPredecessors : nodeCTPredecessors) {
-						if (!isVariantInList(aNodeCTPredecessors, nodeGTPredecessors)) {
-							// Compared List not in ground truth
-							pFP += 1;
-						}
-					}
-					
-					pTN = nodeGTPredecessors.size() - (pTP + pFP + pFN) > 0 ? nodeGTPredecessors.size() - (pTP + pFP + pFN) : 0;
-					sTN = nodeGTSuccessors.size() - (sTP + sFP + sFN) > 0 ? nodeGTSuccessors.size() - (sTP + sFP + sFN) : 0;
-					
+			}
 
-					truePositivesValue += (pTP+sTP);
-					trueNegativesValue += (pTN+sTN);
-					falsePositivesValue += (pFP+sFP);
-					falseNegativesValue += (pFN+sFN);
-					
+			for (VariantTaxonomyNode aNodeCTSuccessor : nodeCTSuccessors) {
+				if (!isVariantInList(aNodeCTSuccessor, nodeGTSuccessors)) {
+					// Compared List not in ground truth
+					sFP += 1;
+				}
+			}
+
+			// Compute TP, TN, FP, FN for predecessors
+			for (VariantTaxonomyNode aNodeGTPredecessors : nodeGTPredecessors) {
+				if (!isVariantInList(aNodeGTPredecessors, nodeCTPredecessors)) {
+					pFN += 1;
+				} else {
+					pTP += 1;
+				}
+			}
+
+			for (VariantTaxonomyNode aNodeCTPredecessors : nodeCTPredecessors) {
+				if (!isVariantInList(aNodeCTPredecessors, nodeGTPredecessors)) {
+					// Compared List not in ground truth
+					pFP += 1;
+				}
+			}
+
+			pTN = nodeGTPredecessors.size() - (pTP + pFP + pFN) > 0 ? nodeGTPredecessors.size() - (pTP + pFP + pFN) : 0;
+			sTN = nodeGTSuccessors.size() - (sTP + sFP + sFN) > 0 ? nodeGTSuccessors.size() - (sTP + sFP + sFN) : 0;
+
+			truePositivesValue += (pTP + sTP);
+			trueNegativesValue += (pTN + sTN);
+			falsePositivesValue += (pFP + sFP);
+			falseNegativesValue += (pFN + sFN);
+
 //					truePositivesValue += (pTP);
 //					trueNegativesValue += (pTN);
 //					falsePositivesValue += (pFP);
 //					falseNegativesValue += (pFN);
-				}
-				
+		}
+
 	}
-	
+
 	/**
 	 * Get Nodes which are Successors of a particular Node
+	 * 
 	 * @param givenNode
 	 * @return
 	 */
 	public List<VariantTaxonomyNode> getNodeSuccessors(VariantTaxonomyNode givenNode) {
 		List<VariantTaxonomyNode> foundNodes = new ArrayList<VariantTaxonomyNode>();
 		if (givenNode != null) {
-			for(VariantTaxonomyNode aChildNode : givenNode.getVariantChildren()) {
+			for (VariantTaxonomyNode aChildNode : givenNode.getVariantChildren()) {
 				foundNodes.add(aChildNode);
 				if (aChildNode.getVariantChildren().size() > 0) {
 					foundNodes.addAll(getNodeSuccessors(aChildNode));
 				}
 			}
 		}
-		
+
 		return foundNodes;
 	}
-	
+
 	/**
 	 * Get Nodes which are predecessors of a particular Node
+	 * 
 	 * @param givenNode
 	 * @return
 	 */
@@ -210,7 +214,7 @@ public class TaxonomyEvaluator {
 
 		return foundNodes;
 	}
-	
+
 	/**
 	 * Compute Custom Metrics for Table
 	 */
@@ -218,15 +222,14 @@ public class TaxonomyEvaluator {
 		// Compute Depth and Total Number of Nodes
 		List<VariantTaxonomyNode> allGTNodes = new ArrayList<VariantTaxonomyNode>(); // All Ground Truth Nodes
 		List<VariantTaxonomyNode> allCTNodes = new ArrayList<VariantTaxonomyNode>(); // All Computes Taxonomy Nodes
-		
+
 		// Initialize Custom Secondary metrics
 		this.RVPA = 0.0f; // Root Variant Prediction Accuracy
 		this.TDA = 0.0f; // Tree Depth Accuracy
 		this.PCRA = 0.0f; // Parent-Child Relation Accuracy
 		this.VPLA = 0.0f;// Variants Per Level Accuracy
 		this.NDM = 0.0f; // Node Displacement Measure
-		
-		
+
 		for (int i = 0; i <= gtMaxDepth; i++) {
 			List<VariantTaxonomyNode> gtNodesAtLevel = getNodesForLevel(this.groundTruthTaxonomy, i);
 			List<VariantTaxonomyNode> ctNodesAtLevel = getNodesForLevel(this.computedTaxonomy, i);
@@ -237,30 +240,30 @@ public class TaxonomyEvaluator {
 					if (isVariantInList(gtNodeOnLvl, ctNodesAtLevel)) {
 						RVPA += 1.0f;
 					}
-					
+
 				}
-				
-				RVPA = RVPA/(float)gtNodesAtLevel.size();
+
+				RVPA = RVPA / (float) gtNodesAtLevel.size();
 			}
-			
+
 			// Sum VPLA
 			if (gtNodesAtLevel.size() == ctNodesAtLevel.size()) {
 				VPLA += 1.0f;
 			}
-			
+
 			// Flatten Nodes
 			allGTNodes.addAll(gtNodesAtLevel);
 			allCTNodes.addAll(ctNodesAtLevel);
 		}
-		
+
 		// Compute VPLA
-		VPLA = VPLA/((float)gtMaxDepth + 1.0f);
-		
+		VPLA = VPLA / ((float) gtMaxDepth + 1.0f);
+
 		// Compute TDA
 		if (gtTotalNodes == ctTotalNodes) {
-			this.TDA = 1.0f;	
+			this.TDA = 1.0f;
 		}
-		
+
 		// Compute PCRA & NDM
 		for (VariantTaxonomyNode aGTNode : allGTNodes) {
 			VariantTaxonomyNode foundNode = fetchVariantInList(aGTNode, allCTNodes);
@@ -290,12 +293,12 @@ public class TaxonomyEvaluator {
 				}
 			}
 		}
-		
+
 		// Compute PCRA
-		PCRA = PCRA/(float)allGTNodes.size();
-		
+		PCRA = PCRA / (float) allGTNodes.size();
+
 		// Compute NDM
-		NDM = 1.0f - (NDM/(float)allGTNodes.size());
+		NDM = 1.0f - (NDM / (float) allGTNodes.size());
 	}
 
 	/**
@@ -309,7 +312,7 @@ public class TaxonomyEvaluator {
 		boolean isVariantInList = false;
 		for (VariantTaxonomyNode aMemberNode : nodesAtLevel) {
 			if (aMemberNode.getVariantName().equals(searchNode.getVariantName())) {
-				
+
 //				if (aMemberNode.getVariantParent() == null && searchNode.getVariantParent() == null) {
 //					isVariantInList = true;
 //					break;
@@ -320,7 +323,7 @@ public class TaxonomyEvaluator {
 //						break;
 //					}
 //				}
-				
+
 				isVariantInList = true;
 				break;
 
@@ -337,18 +340,19 @@ public class TaxonomyEvaluator {
 	 * @param nodesAtLevel
 	 * @return
 	 */
-	public VariantTaxonomyNode fetchVariantInList(VariantTaxonomyNode searchNode, List<VariantTaxonomyNode> listToSearch) {
+	public VariantTaxonomyNode fetchVariantInList(VariantTaxonomyNode searchNode,
+			List<VariantTaxonomyNode> listToSearch) {
 		VariantTaxonomyNode isVariantInList = null;
 		for (VariantTaxonomyNode aMemberNode : listToSearch) {
 			if (aMemberNode.getVariantName().equals(searchNode.getVariantName())) {
-					isVariantInList = aMemberNode;
-					break;
+				isVariantInList = aMemberNode;
+				break;
 			}
 		}
 
 		return isVariantInList;
 	}
-	
+
 	/**
 	 * Gets Nodes on a particular level of the supplied taxonomy tree
 	 * 
@@ -395,7 +399,7 @@ public class TaxonomyEvaluator {
 			}
 		}
 	}
-	
+
 	/**
 	 * Gets the total number of Nodes in the as well as the highest depth
 	 */
@@ -409,6 +413,7 @@ public class TaxonomyEvaluator {
 				getCTTotalNodes(aChildVariantNode);
 			}
 		}
+
 	}
 
 	/**
@@ -439,7 +444,8 @@ public class TaxonomyEvaluator {
 		System.out.println("trueNegativesValue" + trueNegativesValue);
 		System.out.println("falsePositivesValue" + falsePositivesValue);
 		System.out.println("falseNegativesValue" + falseNegativesValue);
-		System.out.println("Total: " + (truePositivesValue + trueNegativesValue + falsePositivesValue + falseNegativesValue));
+		System.out.println(
+				"Total: " + (truePositivesValue + trueNegativesValue + falsePositivesValue + falseNegativesValue));
 		System.out.println("======================");
 		System.out.println("Precision: " + precisionValue);
 		System.out.println("Recall: " + recallValue);
@@ -448,7 +454,7 @@ public class TaxonomyEvaluator {
 		System.out.println("Accuracy: " + accuracyValue);
 		System.out.println("Error: " + errorRateValue);
 	}
-	
+
 	public void printCustomMeasures() {
 		System.out.println("======================");
 		System.out.println("RVPA: " + this.RVPA);
@@ -460,14 +466,18 @@ public class TaxonomyEvaluator {
 
 	public void calculateSecondaryMeasures() {
 
-		recallValue = truePositivesValue / ((truePositivesValue + falseNegativesValue) == 0 ? 1.0f : (truePositivesValue + falseNegativesValue));
-		precisionValue = truePositivesValue / ((truePositivesValue + falsePositivesValue) == 0 ? 1.0f : (truePositivesValue + falsePositivesValue));
+		recallValue = truePositivesValue
+				/ ((truePositivesValue + falseNegativesValue) == 0 ? 1.0f : (truePositivesValue + falseNegativesValue));
+		precisionValue = truePositivesValue
+				/ ((truePositivesValue + falsePositivesValue) == 0 ? 1.0f : (truePositivesValue + falsePositivesValue));
 		accuracyValue = (truePositivesValue + trueNegativesValue)
 				/ (truePositivesValue + falsePositivesValue + trueNegativesValue + falseNegativesValue);
 		errorRateValue = 1 - accuracyValue;
 
-		falseAcceptanceFPRValue = falsePositivesValue / ((falsePositivesValue + trueNegativesValue) == 0 ? 1.0f : (falsePositivesValue + trueNegativesValue));
-		missRateTNRValue = falseNegativesValue / ((truePositivesValue + falseNegativesValue) == 0 ? 1.0f : (truePositivesValue + falseNegativesValue));
+		falseAcceptanceFPRValue = falsePositivesValue
+				/ ((falsePositivesValue + trueNegativesValue) == 0 ? 1.0f : (falsePositivesValue + trueNegativesValue));
+		missRateTNRValue = falseNegativesValue
+				/ ((truePositivesValue + falseNegativesValue) == 0 ? 1.0f : (truePositivesValue + falseNegativesValue));
 	}
 
 	public void setComparedTaxonomy(VariantTaxonomyNode _comparedTaxonomy) {
@@ -481,7 +491,6 @@ public class TaxonomyEvaluator {
 	public VariantTaxonomyNode getComparedTaxonomy() {
 		return this.computedTaxonomy;
 	}
-
 
 	// Primary Measures' Getters
 	public float getTruePositivesValue() {
