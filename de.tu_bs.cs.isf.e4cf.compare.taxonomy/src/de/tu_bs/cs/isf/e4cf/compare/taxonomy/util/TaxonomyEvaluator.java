@@ -106,6 +106,7 @@ public class TaxonomyEvaluator {
 			// Flatten Nodes
 			allGTNodes.addAll(gtNodesAtLevel);
 			allCTNodes.addAll(ctNodesAtLevel);
+						
 		}
 
 		for (VariantTaxonomyNode computedNode : allCTNodes) {
@@ -431,10 +432,13 @@ public class TaxonomyEvaluator {
 	 */
 	public TaxonomyEvaluator(VariantTaxonomyNode _groundTruthTaxonomy, VariantTaxonomyNode _compTaxonomy) {
 		this.groundTruthTaxonomy = _groundTruthTaxonomy;
-		this.computedTaxonomy = _compTaxonomy;
+		//workaround if engine could not find taxonomy
+		this.computedTaxonomy = _compTaxonomy != null ? _compTaxonomy : new VariantTaxonomyNode("");
 		// Compute Depth and Total Number of Nodes
-		getGTTotalNodes(this.groundTruthTaxonomy);
+		getGTTotalNodes(this.groundTruthTaxonomy);		
 		getCTTotalNodes(this.computedTaxonomy);
+		
+		
 	}
 
 	public void printMeasures() {

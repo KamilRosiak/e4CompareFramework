@@ -62,7 +62,7 @@ public class SAXCppParser extends DefaultHandler {
 		System.out.println("Parsing C++File");
 
 		// create starting Node
-		compilationUnitNode = new NodeImpl("Compilation Unit", rootNode);
+		compilationUnitNode = new NodeImpl("CompilationUnit", rootNode);
 	}
 
 	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
