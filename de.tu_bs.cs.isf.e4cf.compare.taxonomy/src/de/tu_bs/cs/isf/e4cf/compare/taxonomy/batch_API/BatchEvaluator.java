@@ -3,6 +3,7 @@
  */
 package de.tu_bs.cs.isf.e4cf.compare.taxonomy.batch_API;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,13 +29,13 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.DefaultTreeBuilder;
  */
 public class BatchEvaluator {
 
-	private final static List<String> SUPPORTED_FILE_ENDINGS = new ArrayList<String>();
-	private final static String datasetHomePath = "C:\\Users\\olant\\runtime-de.tu_bs.cs.isf.e4cf.core.product\\ 01 RAW\\";
-	private final static String gcjStrategy1DatasetLocation = "GCJ\\2008-SP-SD-SL\\";
-	private final static String gcjStrategy2DatasetLocation = "GCJ\\2008-SP-DD-SL\\";
-	private final static String gcjStrategy3DatasetLocation = "GCJ\\2008-SP-DD-DL\\";
-	private final static String directoryDatasetLocation = "Branches\\";
+	private final static List<String> SUPPORTED_FILE_ENDINGS = new ArrayList<String>();	
+	private String gcjStrategy1DatasetLocation;
+	private String gcjStrategy2DatasetLocation;
+	private String gcjStrategy3DatasetLocation;
+	private String directoryDatasetLocation;
 	private String taxonomyMode = "";
+	private String exportPath;
 
 	
 	private String exportFileName = "taxonomyResults" + LocalDate.now().toString() + "-"+ LocalTime.now().toString().replace(":", "-") +".csv";
@@ -52,8 +53,19 @@ public class BatchEvaluator {
 	 * Constructor
 	 */
 	public BatchEvaluator() {
+		
+		gcjStrategy1DatasetLocation = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+				+ "lib/evaluation_data/GCJ/2008-SP-SD-SL/").substring(1)).getPath() + "\\";		
+		gcjStrategy2DatasetLocation = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+				+ "lib/evaluation_data/GCJ/2008-SP-DD-SL/").substring(1)).getPath()+ "\\";		
+		gcjStrategy3DatasetLocation = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+				+ "lib/evaluation_data/GCJ/2008-SP-DD-DL/").substring(1)).getPath()+ "\\";	
+		
+		exportPath = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+				+ "lib/evaluation_data/results/").substring(1)).getPath() + "\\";
+		
 		initializeTaxonomySettings();
-		initializeAcceptedSourceFileTypes();
+		initializeAcceptedSourceFileTypes();	
 	}
 	
 	/**
@@ -64,7 +76,7 @@ public class BatchEvaluator {
 	}
 	
 	public void exportResults(String evaluationMode) throws IOException {
-		String fileName = "C:\\Users\\olant\\Desktop\\thesis-playground\\Results\\" + evaluationMode +"-"+ this.taxonomyMode +"-"+exportFileName;
+		String fileName = exportPath + evaluationMode +"-"+ this.taxonomyMode +"-"+exportFileName;
 	    FileWriter fileWriter = new FileWriter(fileName);
 	    PrintWriter printWriter = new PrintWriter(fileWriter);
 	    
@@ -110,11 +122,11 @@ public class BatchEvaluator {
 		FileTreeElement variantFolder = null;
 		
 		if (strategy.equals("1")) { 
-			variantFolder = new Directory(datasetHomePath + gcjStrategy1DatasetLocation + pathToVariants);
+			variantFolder = new Directory(gcjStrategy1DatasetLocation + pathToVariants);
 		} else if (strategy.equals("2")) {
-			variantFolder = new Directory(datasetHomePath + gcjStrategy2DatasetLocation + pathToVariants);
+			variantFolder = new Directory(gcjStrategy2DatasetLocation + pathToVariants);
 		} else if (strategy.equals("3")) {
-			variantFolder = new Directory(datasetHomePath + gcjStrategy3DatasetLocation + pathToVariants);
+			variantFolder = new Directory(gcjStrategy3DatasetLocation + pathToVariants);
 		}
 		
 		DefaultTreeBuilder treeBuilder = new DefaultTreeBuilder(3);
@@ -141,7 +153,7 @@ public class BatchEvaluator {
 		// pathToVariants.
 		List<FileTreeElement> foundVariants = new ArrayList<FileTreeElement>();
 		// Open a folder
-		FileTreeElement variantFolder = new Directory(datasetHomePath + directoryDatasetLocation + pathToVariants);
+		FileTreeElement variantFolder = new Directory(directoryDatasetLocation + pathToVariants);
 		
 		DefaultTreeBuilder treeBuilder = new DefaultTreeBuilder(3);
 		try {

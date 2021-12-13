@@ -1,0 +1,36 @@
+2008-QR-B-2-ymatsux	|	2008-QR-B-rem.cpp	|	2008-QR-B-jacek.cpp
+2008-1A-B-kotehok
+2008-1B-B-halyavin	|	2008-1B-B-misof.cpp	|	2008-1B-B-nika.cpp
+2008-2-B-darnley	|	2008-2-B-misof.cpp
+2008-3-B-elizarov	
+2008-APAC-B-wata	|	2008-APAC-B-ACRush.cpp
+2008-EMEA-B-dgozman	|	2008-EMEA-B-bmerry.cpp
+2008-FR-B-mystic
+
+Set-1
+2008-QR-B-rem.cpp
+2008-1A-B-kotehok
+2008-2-B-misof.cpp
+2008-3-B-elizarov
+2008-APAC-B-ACRush.cpp
+
+Set-2
+2008-QR-B-2-ymatsux
+2008-1B-B-misof.cpp
+2008-3-B-elizarov
+2008-EMEA-B-bmerry.cpp
+2008-FR-B-mystic
+
+Set-3
+2008-QR-B-2-ymatsux
+2008-1B-B-misof.cpp
+2008-2-B-misof.cpp
+2008-APAC-B-ACRush.cpp
+2008-FR-B-mystic
+
+Set-4
+2008-1A-B-kotehok
+2008-2-B-misof.cpp
+2008-3-B-elizarov
+2008-EMEA-B-bmerry.cpp
+2008-FR-B-mystic
