@@ -1,6 +1,8 @@
-package de.tu_bs.cs.isf.e4cf.evaluation.reader;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.tree_reader;
 
 import java.nio.file.Paths;
+
+import javax.inject.Inject;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -9,27 +11,17 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
 public class TreeReader extends AbstractArtifactReader {
-
 	public final static String[] SUPPORTED_FILE_ENDINGS = { "tree" };
-	
-	GsonImportService importService;
+	@Inject
+	GsonImportService importer;
 
 	public TreeReader() {
 		super(SUPPORTED_FILE_ENDINGS);
-		importService = new GsonImportService();
 	}
 
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
-		Tree tree = null;
-
-		if (isFileSupported(element)) {
-			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-			
-			tree = importService.importTree(s);
-		
-		}
-		return tree;
+		return importer.importTree(FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath())));
 	}
 
 }

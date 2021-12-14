@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.core.import_export.services.gson;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson;
 
 import javax.inject.Singleton;
 
@@ -10,10 +10,10 @@ import com.google.gson.GsonBuilder;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.ImportService;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.adapter.NodeDeserializer;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.adapter.NodeInstanceCreator;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.adapter.TreeInstanceCreator;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.adapter.NodeDeserializer;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.adapter.NodeInstanceCreator;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.adapter.TreeInstanceCreator;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.services.ImportService;
 
 /**
  * Implementation of the import service with GSON.

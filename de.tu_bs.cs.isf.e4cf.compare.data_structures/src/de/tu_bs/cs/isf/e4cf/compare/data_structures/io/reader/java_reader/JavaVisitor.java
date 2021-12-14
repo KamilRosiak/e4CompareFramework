@@ -783,7 +783,7 @@ public class JavaVisitor extends AbstractJavaVisitor {
 	@Override
 	public void visit(MethodCallExpr n, Node arg) {
 		Node c = new NodeImpl(NodeType.METHOD_CALL, JavaNodeTypes.MethodCallExpr.name(), arg);
-
+		
 		// Scope
 		if (n.getScope().isPresent()) {
 			c.addAttribute(JavaAttributesTypes.Scope.name(), new StringValueImpl(n.getScope().get().toString()));

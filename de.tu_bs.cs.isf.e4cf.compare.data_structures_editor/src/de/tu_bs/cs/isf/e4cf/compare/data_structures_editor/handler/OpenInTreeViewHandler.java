@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.handler;
 
 import java.util.List;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 
@@ -42,11 +43,14 @@ public class OpenInTreeViewHandler {
 	 * @return
 	 */
 	@Evaluate
-	public boolean isFileReaderAvailable(ServiceContainer services, ReaderManager manager) {
+	public boolean isFileReaderAvailable(ServiceContainer services, ReaderManager manager, IEclipseContext context) {
 		List<FileTreeElement> selections = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
-		if (selections.size() != 1) return false;
-		if (selections.get(0).isDirectory()) return true;
-		if (null == ArtifactIOUtil.getReaderForType(selections.get(0))) return false;
+		if (selections.size() != 1)
+			return false;
+		if (selections.get(0).isDirectory())
+			return true;
+		if (null == ArtifactIOUtil.getReaderForType(selections.get(0), context))
+			return false;
 		return true;
 	}
 }

@@ -2,19 +2,14 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.UUID;
 
-import com.google.common.collect.Lists;
-
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeIterator;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 
 public abstract class AbstractNode implements Node {
 	@SuppressWarnings("unused")
@@ -312,18 +307,52 @@ public abstract class AbstractNode implements Node {
 		}
 		getChildren().add(position, child);
 		child.setParent(this);
-
 	}
 
 	@Override
 	public void addNodeAfterwards(Node node) {
-
 		int position = getPosition();
 		if (position == parent.getChildren().size() - 1) {
 			this.parent.getChildren().add(node);
 		} else {
 			this.parent.getChildren().add(position + 1, node);
 		}
+	}
+	
+	@Override
+	public int numberOfOptionals() {
+		return countVariabilityClassNodes(this, 0, VariabilityClass.OPTIONAL);
+	}
 
+	/**
+	 * Iterates over all comparisons recursively and counts optional elements.
+	 */
+	private int countVariabilityClassNodes(Node node, int number, VariabilityClass varClass) {
+		//if the node is an optional count number up
+		int nodeNumber = 0;
+		if (node.getVariabilityClass().equals(varClass)) {
+			nodeNumber++;
+		}
+		//process child nodes
+		for (Node childNode : node.getChildren()) {
+			nodeNumber =  nodeNumber + countVariabilityClassNodes(childNode, 0, varClass);
+		}
+		return nodeNumber;
+	}
+
+	@Override
+	public int numberOfAlternatives() {
+		return countVariabilityClassNodes(this, 0, VariabilityClass.ALTERNATIVE);
+	}
+
+	@Override
+	public int numberOfMandatories() {
+		return countVariabilityClassNodes(this, 0, VariabilityClass.MANDATORY);
+	}
+	
+
+	@Override
+	public Configuration createConfiguration() {
+		return null;
 	}
 }

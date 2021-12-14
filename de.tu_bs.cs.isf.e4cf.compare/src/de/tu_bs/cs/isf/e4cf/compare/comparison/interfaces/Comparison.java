@@ -2,8 +2,11 @@ package de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 
 /**
  * A data structure for the storage of the comparison results between two
@@ -14,26 +17,27 @@ public interface Comparison<Type> extends Serializable {
 	 * returns true if nodes are of same type.
 	 */
 	public boolean areArtifactsOfSameType();
+
 	/**
-	 * Merges both nodes 
+	 * Merges both nodes
 	 */
 	public Type mergeArtifacts();
-	
+
 	/**
 	 * Returns the left artifact of this comparison.
 	 */
 	public Type getLeftArtifact();
-	
+
 	/**
 	 * Returns the right artifact of this comparison.
 	 */
 	public Type getRightArtifact();
-	
+
 	/**
 	 * Sets the right artifact of this comparison
 	 */
 	public void setRightArtifact(Type artifact);
-	
+
 	/**
 	 * Sets the left artifact of this comparison
 	 */
@@ -48,22 +52,22 @@ public interface Comparison<Type> extends Serializable {
 	 * Adds a given comparison as child element
 	 */
 	public void addChildComparison(Comparison<Type> comparison);
-	
+
 	/**
 	 * This method adds the given result element to the comparison's results.
 	 */
 	public void addResultElement(ResultElement<Type> result);
-	
+
 	/**
 	 * This method returns all comparison result elements from this comparison
 	 */
 	public List<ResultElement<Type>> getResultElements();
-	
+
 	/**
 	 * This method returns the similarity value of this comparison.
 	 */
 	public float getSimilarity();
-	
+
 	/**
 	 * This method sets the similarity value of this comparison
 	 */
@@ -81,13 +85,13 @@ public interface Comparison<Type> extends Serializable {
 		if (!getResultElements().isEmpty()) {
 			resultSimilarity = resultSimilarity / getResultElements().size();
 		}
-		//if one of both artifacts is null the similarity is 0 because its an optional
-		return (getLeftArtifact()== null || getRightArtifact() == null) ? 0f : resultSimilarity;
+		// if one of both artifacts is null the similarity is 0 because its an optional
+		return (getLeftArtifact() == null || getRightArtifact() == null) ? 0f : resultSimilarity;
 	}
-
+	
 	/**
-	 * This method calls updateSimilarity recursively on all child elements to update
-	 * them first and then returns the average similarity value of all child
+	 * This method calls updateSimilarity recursively on all child elements to
+	 * update them first and then returns the average similarity value of all child
 	 * comparisons. stored in result elements.
 	 */
 	public default float getChildSimilarity() {
@@ -101,12 +105,11 @@ public interface Comparison<Type> extends Serializable {
 		if (!getChildComparisons().isEmpty()) {
 			return childSimilarity / getChildComparisons().size();
 		} else {
-			//if empty they are similar
-			return (getLeftArtifact()== null || getRightArtifact() == null) ? 0f : 1f;
+			// if empty they are similar
+			return (getLeftArtifact() == null || getRightArtifact() == null) ? 0f : 1f;
 		}
 	}
-	
-	
+
 	/**
 	 * This method updates the similarity of this node and all child nodes recursive
 	 */
@@ -117,13 +120,12 @@ public interface Comparison<Type> extends Serializable {
 
 		// no children node attributes so they are equal on their type
 		if (getChildComparisons().isEmpty() && getResultElements().isEmpty()) {
-			if(areArtifactsOfSameType()) {
+			if (areArtifactsOfSameType()) {
 				similarity = 1f;
 			} else {
 				similarity = 0f;
 			}
 		}
-
 		// only results available so the similarity is based on them
 		if (getChildComparisons().isEmpty() && !getResultElements().isEmpty()) {
 			similarity = resultSimilarity;

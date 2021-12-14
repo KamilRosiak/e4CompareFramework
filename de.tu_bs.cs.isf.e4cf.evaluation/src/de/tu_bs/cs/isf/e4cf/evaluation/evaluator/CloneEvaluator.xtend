@@ -14,7 +14,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper
@@ -30,6 +29,7 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService
 
 @Singleton
 @Creatable

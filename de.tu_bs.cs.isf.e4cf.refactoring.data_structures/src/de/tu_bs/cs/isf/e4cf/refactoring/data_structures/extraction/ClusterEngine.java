@@ -70,7 +70,6 @@ public class ClusterEngine {
 
 			layerToClusters.put(entry.getKey(),
 					detectClusters(entry.getValue(), buildDistanceString(entry.getValue())));
-
 		}
 
 		return layerToClusters;

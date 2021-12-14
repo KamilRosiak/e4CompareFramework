@@ -3,6 +3,9 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.ArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.ArtifactWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -36,8 +39,12 @@ public class ArtifactIOUtil {
 	 * Returns the artifact reader for a given artifact type. The artifact type is
 	 * the type of the root node.
 	 */
-	public static ArtifactReader getReaderForType(FileTreeElement fte) {
-		for (ArtifactReader reader : getAllArtifactReader()) {
+	public static ArtifactReader getReaderForType(FileTreeElement fte, IEclipseContext context) {
+		List<ArtifactReader> readerList = getAllArtifactReader();
+		readerList.forEach(reader -> {
+			ContextInjectionFactory.inject(reader, context);
+		});
+		for (ArtifactReader reader : readerList) {
 			if (reader.isFileSupported(fte)) {
 				return reader;
 			}
@@ -108,7 +115,6 @@ public class ArtifactIOUtil {
 	 */
 	public static boolean writeArtifactToFile(Tree tree, String path) {
 		for (ArtifactWriter writer : getAllArtifactWriter()) {
-
 			if (writer.isFileSupported(tree.getFileExtension())) {
 				writer.writeArtifact(tree, path + "." + tree.getFileExtension());
 				return true;

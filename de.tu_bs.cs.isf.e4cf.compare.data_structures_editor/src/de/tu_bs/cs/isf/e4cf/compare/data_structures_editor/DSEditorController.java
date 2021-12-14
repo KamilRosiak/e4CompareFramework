@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+
 import com.google.common.io.Files;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
@@ -20,6 +23,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
@@ -31,12 +35,13 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeA
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
-import de.tu_bs.cs.isf.e4cf.core.import_export.services.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
 import javafx.collections.FXCollections;
@@ -74,7 +79,8 @@ public class DSEditorController {
 	private ServiceContainer services;
 
 	@Inject
-	DecorationManager decoManager;
+	DecorationManager decoManager;	
+
 	@FXML
 	private MenuItem properties;
 
@@ -120,12 +126,12 @@ public class DSEditorController {
 	@Optional
 	@Inject
 	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
-
 		cloneModel = null;
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(DSEditorST.TREE_VIEW_ID);
 		closeFile();
 		createTreeRoot(tree);
+		setCurrentTree(tree);
 		// load decorator and select the first
 		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		decoratorCombo.getSelectionModel().select(0);
@@ -352,8 +358,8 @@ public class DSEditorController {
 					String json = exportService.exportTree((TreeImpl) tree);
 
 					File concreteElement = new File(resultDirectory.getAbsolutePath() + "/" + tree.getTreeName() + ".tree");
-					concreteElement.createNewFile();
-
+					concreteElement.createNewFile();										
+					
 					Files.write(json.getBytes(), new File(concreteElement.getAbsolutePath()));
 
 				}
@@ -499,8 +505,17 @@ public class DSEditorController {
 	 */
 	@FXML
 	void saveFile() {
-		ArtifactIOUtil.writeArtifactToFile(currentTree,
-				RCPContentProvider.getCurrentWorkspacePath() + "/" + getTreeName());
+		String fileName = RCPMessageProvider.inputDialog("Filename", "Enter a File Name");
+		try {
+
+			String path = RCPContentProvider.getCurrentWorkspacePath() + CompareST.FAMILY_MODELS + "/" + fileName
+					+ ".tree";
+			String gson = exportService.exportTree((TreeImpl) currentTree);
+			FileStreamUtil.writeTextToFile(path, gson);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

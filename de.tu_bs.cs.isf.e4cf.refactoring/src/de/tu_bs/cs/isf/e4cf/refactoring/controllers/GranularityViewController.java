@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.controllers;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Singleton;
