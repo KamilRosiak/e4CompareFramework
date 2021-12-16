@@ -12,10 +12,12 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.LabeledStmt;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaAttributesTypes;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaNodeTypes;
 
 public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 
@@ -27,7 +29,11 @@ public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 	 * @param exceptions Nodes that should not be visited
 	 */
 	protected synchronized void visitor(com.github.javaparser.ast.Node n, Node arg, com.github.javaparser.ast.Node... exceptions) {
-		// Comments are no child nodes. Therefore they are added explicitly.
+		//setting the start and endline of the artifact
+		arg.setStartLine(n.getRange().get().begin.line);
+		arg.setEndLine(n.getRange().get().end.line);
+		
+		// JavaDoc Comments are no child nodes. Therefore they are added explicitly.
 		n.getComment().ifPresent(comment -> arg.addAttribute(JavaAttributesTypes.Comment.name(), new StringValueImpl(comment.getContent())));
 		NodeList<com.github.javaparser.ast.Node> exceptionList = NodeList.nodeList(exceptions);
 		for (com.github.javaparser.ast.Node childNode : n.getChildNodes()) {
@@ -50,7 +56,7 @@ public abstract class AbstractJavaVisitor implements VoidVisitor<Node> {
 
 	@Override
 	public void visit(LabeledStmt n, Node arg) {
-		Node labeledStmt = new NodeImpl(n.getClass().getSimpleName(), arg);
+		Node labeledStmt = new NodeImpl(NodeType.LABELED_STATEMENT, JavaNodeTypes.LabeledStmt.name(), arg);
 		labeledStmt.addAttribute(JavaAttributesTypes.Name.name(), new StringValueImpl(n.getLabel().asString()));
 		visitor(n, labeledStmt);
 	}

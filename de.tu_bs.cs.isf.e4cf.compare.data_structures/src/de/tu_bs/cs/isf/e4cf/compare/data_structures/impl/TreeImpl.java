@@ -30,4 +30,11 @@ public class TreeImpl extends AbstractTree {
 		this(first.getTreeName()+"_"+second.getTreeName(), root);
 		setFileExtension(first.getFileExtension());
 	}
+	
+	@Override
+	public Tree cloneTree() {		
+		Tree newTree = new TreeImpl(getTreeName(), getRoot().cloneNode());
+		newTree.setFileExtension(getFileExtension());
+		return newTree;		
+	}
 }

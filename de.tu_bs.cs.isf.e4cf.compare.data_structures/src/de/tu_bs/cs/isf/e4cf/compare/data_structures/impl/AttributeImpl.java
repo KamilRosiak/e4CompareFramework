@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractAttribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
 /**
@@ -34,5 +35,16 @@ public class AttributeImpl extends AbstractAttribute {
 	public AttributeImpl(String attrKey, List<Value> attrValues) {
 		this(attrKey);
 		getAttributeValues().addAll(attrValues);
+	}
+	
+	public Attribute cloneAttribute() {
+		Attribute attribute = new AttributeImpl(this.getAttributeKey());
+		
+		for(Value value : this.getAttributeValues()) {
+			attribute.addAttributeValue(new StringValueImpl((String)value.getValue()));
+		}
+		
+		return attribute;
+		
 	}
 }

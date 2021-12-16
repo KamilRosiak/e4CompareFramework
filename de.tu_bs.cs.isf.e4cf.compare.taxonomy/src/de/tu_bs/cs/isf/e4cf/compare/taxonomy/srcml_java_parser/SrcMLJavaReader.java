@@ -13,7 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter2;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy.srcml_cpp_parser.CppXMLExtractor;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 
@@ -37,7 +37,7 @@ public class SrcMLJavaReader extends AbstractArtifactReader {
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
 		Tree tree = null;
-		Node rootNode = new NodeImpl(JavaWriter.NODE_TYPE_TREE);
+		Node rootNode = new NodeImpl(JavaWriter2.NODE_TYPE_TREE);
 
 		if (isFileSupported(element)) {
 			// Try to parse artifact

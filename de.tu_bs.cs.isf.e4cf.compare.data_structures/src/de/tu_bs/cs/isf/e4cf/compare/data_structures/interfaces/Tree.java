@@ -3,7 +3,11 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 import java.io.Serializable;
 import java.util.List;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
+
 public interface Tree extends Serializable {
+	public List<Configuration> getConfigurations();
+	
 	/**
 	 * @return the root node of this tree.
 	 */
@@ -60,9 +64,6 @@ public interface Tree extends Serializable {
 	 */
 	public List<Node> getPath(Node startingNode,Node targetNode);
 	
-	
+	public Tree cloneTree();
 
-	
-	
-	
 }

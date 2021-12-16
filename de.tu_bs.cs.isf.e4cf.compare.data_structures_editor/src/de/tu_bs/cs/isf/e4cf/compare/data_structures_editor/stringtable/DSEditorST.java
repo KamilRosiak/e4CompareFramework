@@ -31,4 +31,14 @@ public class DSEditorST {
 	public static final String EXCEPTION_MESSAGE = "A %s occured.";
 	public static final String ATTENTION_REQUIRED = "Attention required";
 	public static final String CONFIRMATION_REQUIRED = "Confirmation required";
+	
+	public static final String VALUE = "VALUE";
+	public static final String KEY = "KEY";
+	public static final String TREE = "TREE";
+	public static final String CLONE_MODEL = "CLONE_MODEL";	
+
+	public static final String ATTRIBUTE = "ATTRIBUTE";
+	public static final String NODE = "NODE";
+	
+	
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:diagram="http://www.eclipse.org/sirius/diagram/1.1.0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" xsi:schemaLocation="http://www.eclipse.org/sirius/description/1.1.0 http://www.eclipse.org/sirius/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/style/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description/style">
-  <viewpoint:DAnalysis uid="_t2B5MI-aEeqMjqWJsoFGsA" selectedViews="_u15awI-aEeqMjqWJsoFGsA _u2CksI-aEeqMjqWJsoFGsA _u2DLwI-aEeqMjqWJsoFGsA _u2IEQI-aEeqMjqWJsoFGsA" version="14.1.0.201810161215">
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:diagram="http://www.eclipse.org/sirius/diagram/1.1.0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.3/notation" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" xsi:schemaLocation="http://www.eclipse.org/sirius/description/1.1.0 http://www.eclipse.org/sirius/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description http://www.eclipse.org/sirius/diagram/description/style/1.1.0 http://www.eclipse.org/sirius/diagram/1.1.0#//description/style">
+  <viewpoint:DAnalysis uid="_t2B5MI-aEeqMjqWJsoFGsA" selectedViews="_u15awI-aEeqMjqWJsoFGsA _u2CksI-aEeqMjqWJsoFGsA _u2DLwI-aEeqMjqWJsoFGsA _u2IEQI-aEeqMjqWJsoFGsA" version="14.5.0.202104161500">
     <semanticResources>family_model.ecore</semanticResources>
     <semanticResources>http://www.eclipse.org/emf/2002/Ecore</semanticResources>
     <semanticResources>platform:/resource/org.eclipse.emf.ecore/model/Ecore.ecore</semanticResources>
@@ -8,7 +8,7 @@
     <semanticResources>platform:/resource/org.eclipse.emf.ecore/model/Ecore.genmodel</semanticResources>
     <ownedViews xmi:type="viewpoint:DView" uid="_u15awI-aEeqMjqWJsoFGsA">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_wXTjII-aEeqMjqWJsoFGsA" name="FamilyModel class diagram" repPath="#_wXH88I-aEeqMjqWJsoFGsA">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_wXTjII-aEeqMjqWJsoFGsA" name="FamilyModel class diagram" repPath="#_wXH88I-aEeqMjqWJsoFGsA" changeId="e14e0a7e-1cc9-4a17-919f-f919d3027148">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']"/>
         <target xmi:type="ecore:EPackage" href="family_model.ecore#/"/>
       </ownedRepresentationDescriptors>
@@ -27,7 +27,7 @@
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Generation']"/>
     </ownedViews>
   </viewpoint:DAnalysis>
-  <diagram:DSemanticDiagram uid="_wXH88I-aEeqMjqWJsoFGsA" name="FamilyModel class diagram">
+  <diagram:DSemanticDiagram uid="_wXH88I-aEeqMjqWJsoFGsA">
     <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_wXH88Y-aEeqMjqWJsoFGsA" source="DANNOTATION_CUSTOMIZATION_KEY">
       <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="_wXH88o-aEeqMjqWJsoFGsA">
         <computedStyleDescriptions xmi:type="style:BundledImageDescription" xmi:id="_xmQCgI-aEeqMjqWJsoFGsA" labelExpression="service:renderAsNode" labelAlignment="LEFT" tooltipExpression="service:renderTooltip" sizeComputationExpression="1">
@@ -221,7 +221,7 @@
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']/@style"/>
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']/@ownedRepresentations[name='Entities']/@defaultLayer/@containerMappings[name='EC%20EClass']"/>
-      <ownedElements xmi:type="diagram:DNodeListElement" uid="_LgMoMJkAEeqhyfv_kLJzLg" name="identifier : EString = null" tooltipText="">
+      <ownedElements xmi:type="diagram:DNodeListElement" uid="_LgMoMJkAEeqhyfv_kLJzLg" name="identifier : EString" tooltipText="">
         <target xmi:type="ecore:EAttribute" href="family_model.ecore#//Variant/identifier"/>
         <semanticElements xmi:type="ecore:EAttribute" href="family_model.ecore#//Variant/identifier"/>
         <ownedStyle xmi:type="diagram:BundledImage" uid="_LgNPQJkAEeqhyfv_kLJzLg" labelAlignment="LEFT">
@@ -377,7 +377,7 @@
     <activatedLayers xmi:type="description_1:AdditionalLayer" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Archetype']/@ownedRepresentationExtensions[name='Entities%20With%20Archetypes']/@layers[name='Archetypes']"/>
     <target xmi:type="ecore:EPackage" href="family_model.ecore#/"/>
   </diagram:DSemanticDiagram>
-  <diagram:DSemanticDiagram uid="_OxwfkJkAEeqhyfv_kLJzLg" name="FamilyModel class diagram">
+  <diagram:DSemanticDiagram uid="_OxwfkJkAEeqhyfv_kLJzLg">
     <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_Ox6QkJkAEeqhyfv_kLJzLg" source="DANNOTATION_CUSTOMIZATION_KEY">
       <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="_Ox6QkZkAEeqhyfv_kLJzLg">
         <computedStyleDescriptions xmi:type="style:BundledImageDescription" xmi:id="_PPhZoZkAEeqhyfv_kLJzLg" labelExpression="service:renderAsNode" labelAlignment="LEFT" tooltipExpression="service:renderTooltip" sizeComputationExpression="1">

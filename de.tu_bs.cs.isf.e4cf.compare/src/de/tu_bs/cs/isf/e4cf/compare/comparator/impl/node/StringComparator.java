@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.templates.AbstractNodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
@@ -17,31 +17,32 @@ public class StringComparator extends AbstractNodeComparator {
 
 	@Override
 	public NodeResultElement compare(Node firstNode, Node secondNode) {
-		List<Float> similarities = new ArrayList<Float>();
+		Map<String, Float> similarities = new HashMap<>();
 
 		// compares for every attribute key, which is unique the corresponding values
 		for (Attribute firstAttr : firstNode.getAttributes()) {
 			for (Attribute secondAttr : secondNode.getAttributes()) {
 				// check if attributes are the same
 				if (firstAttr.keyEquals(secondAttr)) {
-					similarities.add(compareValues(firstAttr, secondAttr));
+					similarities.put(firstAttr.getAttributeKey(), compareValues(firstAttr, secondAttr));
 				}
 			}
 		}
+
 		// calculate the avarage similarity
 		int maxAttributes = Math.max(firstNode.getAttributes().size(), secondNode.getAttributes().size());
 		float similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
-		// add 0.2 as base similarity becuase this node are of the same type
+		// add keyValueRatio as base similarity because this node are of the same type
 		similarity = similarity * (1.0f - keyValueRatio) + keyValueRatio;
-		return new NodeResultElement(this, similarity);
+		return new NodeResultElement(this, similarity, similarities);
 	}
 
 	/**
-	 * calculates the sum of a list of floats
+	 * calculates the sum of a map of floats ignoring keys
 	 */
-	private float sum(List<Float> values) {
+	private float sum(Map<String, Float> values) {
 		float sum = 0;
-		for (float value : values) {
+		for (float value : values.values()) {
 			sum += value;
 		}
 		return sum;
@@ -50,6 +51,7 @@ public class StringComparator extends AbstractNodeComparator {
 	/**
 	 * compares the values of a corresponding key returns 1 if a match is found else
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Float compareValues(Attribute firstAttr, Attribute secondAttr) {
 		for (Value firstValue : firstAttr.getAttributeValues()) {
 			for (Value secondValue : secondAttr.getAttributeValues()) {
