@@ -13,6 +13,9 @@
       <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.tree_reader.TreeReader">
       </artifactReader>
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.srcml_reader.SrcMLReader">
+      </artifactReader>
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactWriter">

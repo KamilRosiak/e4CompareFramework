@@ -26,4 +26,6 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table
 Import-Package: de.tu_bs.cs.isf.e4cf.compare.taxonomy,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.batch_API,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.graph,
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy.interfaces,
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy.metrics,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy.util
