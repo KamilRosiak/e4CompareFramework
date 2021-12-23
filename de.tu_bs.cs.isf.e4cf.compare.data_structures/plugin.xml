@@ -12,10 +12,7 @@
       </artifactReader>
       <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.tree_reader.TreeReader">
-      </artifactReader>
-      <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.srcml_reader.SrcMLReader">
-      </artifactReader>
+      </artifactReader>     
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactWriter">
@@ -26,6 +23,4 @@
             artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter2">
       </artifactWriter>
    </extension>
-
-
 </plugin>

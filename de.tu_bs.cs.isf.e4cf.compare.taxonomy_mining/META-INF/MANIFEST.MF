@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Taxonomymining
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.taxonomy.mining
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: de.tu_bs.cs.isf.e4cf.compare,
+ de.tu_bs.cs.isf.e4cf.compare.comparison.impl,
+ de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces,
+ de.tu_bs.cs.isf.e4cf.compare.matcher,
+ de.tu_bs.cs.isf.e4cf.compare.metric,
+ de.tu_bs.cs.isf.e4cf.core.file_structure
+Require-Bundle: de.tu_bs.cs.isf.e4cf.compare;bundle-version="1.0.0",
+ de.tu_bs.cs.isf.e4cf.compare.data_structures;bundle-version="1.0.0"

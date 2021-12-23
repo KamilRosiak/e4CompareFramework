@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.srcml_reader;
+package de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.io.reader;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,16 +23,16 @@ public class SrcMLReader extends AbstractArtifactReader {
 
 	private String srcMLExePath;
 
-	public static String[] SUPPORTED_FILE_ENDINGS = { "cpp" };
+	public static String[] SUPPORTED_FILE_ENDINGS = { "cpp", "java" };
 
-	private SAXHandler saxHandler;
+	private AbstractSAXHandler saxHandler;
 
 	public SrcMLReader() {
 		super(SUPPORTED_FILE_ENDINGS);
 		srcMLExePath = new File(
 				(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "lib/srcml/srcml.exe")
 						.substring(1)).getPath();
-		saxHandler = new SAXHandler();
+		saxHandler = new TaxonomySAXHandler();
 	}
 
 	@Override
@@ -55,6 +55,7 @@ public class SrcMLReader extends AbstractArtifactReader {
 					XMLReader xmlReader = saxParser.getXMLReader();
 					xmlReader.setContentHandler(saxHandler);
 					xmlReader.setErrorHandler(saxHandler);
+					saxHandler.setExtension(element.getExtension());
 
 					InputSource inputSource = new InputSource(inputStream);
 					xmlReader.parse(inputSource);

@@ -146,6 +146,7 @@ public class CompareEngineView implements Initializable {
 	 */
 	@FXML
 	public void compareArtifactsForTaxonomy() {
+		
 		try {												
 			services.partService.showPart(GraphStringTable.GRAPH_VIEW);  // First Display Graph View 
 			
@@ -195,7 +196,7 @@ public class CompareEngineView implements Initializable {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 
 	/**

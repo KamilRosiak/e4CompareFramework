@@ -189,10 +189,9 @@ public interface Node {
 	 * @return
 	 */
 	public int getPosition();
-	
 
 	public void addChildAtPosition(Node child, int position);
-	
+
 	/**
 	 * This method sets the position of this node.
 	 */
@@ -231,10 +230,9 @@ public interface Node {
 	 * @return The iterator used for traversal
 	 */
 	public Iterable<Node> depthFirstSearch();
-	
-	
+
 	public void addNodeAfterwards(Node node);
-	
+
 	/**
 	 * This method returns the number of optional elements within this comparison.
 	 */
@@ -250,11 +248,12 @@ public interface Node {
 	 * This method returns the number of mandatory elements within this comparison.
 	 */
 	public int numberOfMandatories();
-	
+
 	/**
 	 * Returns the configuration of a single variant
+	 * 
 	 * @return
 	 */
-	public Configuration createConfiguration(); 
-	
+	public Configuration createConfiguration();
+
 }
