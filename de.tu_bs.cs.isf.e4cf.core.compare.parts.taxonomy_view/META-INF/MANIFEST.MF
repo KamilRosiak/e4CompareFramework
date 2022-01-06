@@ -13,5 +13,5 @@ Require-Bundle: org.eclipse.e4.core.services,
  org.eclipse.e4.core.contexts;bundle-version="1.8.400"
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.core.compare.parts.taxonomy.view
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.data_structures,
- de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.string_table
+Import-Package: de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare
+

@@ -9,27 +9,26 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.FloatValueImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.IntegerValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.util.AttributeDictionary;
 
 public class TaxonomySAXHandler extends AbstractSAXHandler {
 
 	private Stack<Node> nodeStack;
-	private String sourceCodeAttributeKey = "SourceCode";
-	private String weightAttributeKey = "Weight";
-	private String positionAttributeKey = "Position";	
 
-	
 	public TaxonomySAXHandler() {
 		nodeStack = new Stack<Node>();
 		nodeTypes = ParserDictionary.CPP_TAXONOMY_NODE_TYPES;
 	}
-	
+
 	@Override
-	public void startDocument() throws SAXException {		
+	public void startDocument() throws SAXException {
 		nodeStack.clear();
 	}
 
@@ -45,7 +44,8 @@ public class TaxonomySAXHandler extends AbstractSAXHandler {
 			rootNode = elementNode;
 		}
 		nodeStack.push(elementNode);
-		elementNode.addAttribute(new AttributeImpl(sourceCodeAttributeKey, new StringValueImpl("")));
+		elementNode.addAttribute(
+				new AttributeImpl(AttributeDictionary.SOURCE_CODE_ATTRIBUTE_KEY, new StringValueImpl("")));
 
 	}
 
@@ -60,7 +60,7 @@ public class TaxonomySAXHandler extends AbstractSAXHandler {
 			while (iterator.hasNext()) {
 
 				Node node = iterator.next();
-				Attribute attribute = node.getAttributeForKey(sourceCodeAttributeKey);
+				Attribute attribute = node.getAttributeForKey(AttributeDictionary.SOURCE_CODE_ATTRIBUTE_KEY);
 				attribute.addAttributeValue(value);
 
 			}
@@ -81,7 +81,7 @@ public class TaxonomySAXHandler extends AbstractSAXHandler {
 	@Override
 	public void endDocument() throws SAXException {
 		List<Value> completeSourceCode = new ArrayList<Value>(
-				rootNode.getAttributeForKey(sourceCodeAttributeKey).getAttributeValues());
+				rootNode.getAttributeForKey(AttributeDictionary.SOURCE_CODE_ATTRIBUTE_KEY).getAttributeValues());
 		removeUnknownNodeTypes(rootNode);
 		propagateAttributes(rootNode);
 		addPositionAttribute(rootNode);
@@ -116,11 +116,12 @@ public class TaxonomySAXHandler extends AbstractSAXHandler {
 
 	public void addWeightAttribute(List<Value> allContent, Node node) {
 
-		List<Value> nodeValues = node.getAttributeForKey(sourceCodeAttributeKey).getAttributeValues();
+		List<Value> nodeValues = node.getAttributeForKey(AttributeDictionary.SOURCE_CODE_ATTRIBUTE_KEY)
+				.getAttributeValues();
 
 		float weight = (float) nodeValues.size() / allContent.size();
 
-		node.addAttribute(new AttributeImpl(weightAttributeKey, new StringValueImpl("" + weight)));
+		node.addAttribute(new AttributeImpl(AttributeDictionary.WEIGHT_ATTRIBUTE_KEY, new FloatValueImpl(weight)));
 
 		for (Node child : node.getChildren()) {
 			addWeightAttribute(allContent, child);
@@ -130,10 +131,10 @@ public class TaxonomySAXHandler extends AbstractSAXHandler {
 
 	public void propagateAttributes(Node node) {
 
-		Attribute nodeAttribute = node.getAttributeForKey(sourceCodeAttributeKey);
+		Attribute nodeAttribute = node.getAttributeForKey(AttributeDictionary.SOURCE_CODE_ATTRIBUTE_KEY);
 
 		for (Node child : node.getChildren()) {
-			Attribute childAttribute = child.getAttributeForKey(sourceCodeAttributeKey);
+			Attribute childAttribute = child.getAttributeForKey(AttributeDictionary.SOURCE_CODE_ATTRIBUTE_KEY);
 			nodeAttribute.getAttributeValues().removeAll(childAttribute.getAttributeValues());
 		}
 
@@ -146,13 +147,14 @@ public class TaxonomySAXHandler extends AbstractSAXHandler {
 	public void addPositionAttribute(Node node) {
 
 		if (node.isRoot()) {
-			node.addAttribute(new AttributeImpl(positionAttributeKey, new StringValueImpl("0")));
+			node.addAttribute(new AttributeImpl(AttributeDictionary.POSITION_ATTRIBUTE_KEY, new IntegerValueImpl(0)));
 		}
 
 		int position = 0;
 
 		for (Node child : node.getChildren()) {
-			child.addAttribute(new AttributeImpl(positionAttributeKey, new StringValueImpl("" + position)));
+			child.addAttribute(
+					new AttributeImpl(AttributeDictionary.POSITION_ATTRIBUTE_KEY, new IntegerValueImpl(position)));
 			addPositionAttribute(child);
 			position++;
 		}

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -17,76 +22,12 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.*?>
 
-<BorderPane maxHeight="1.7976931348623157E308"
-	maxWidth="1.7976931348623157E308" style="-fx-background-color: #E6E6E6"
-	stylesheets="@../../css/taxonomy_control_view.css"
-	xmlns="http://javafx.com/javafx/11.0.1"
-	xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.view.TaxonomyControlView">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #E6E6E6" stylesheets="@../../css/taxonomy_control_view.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view.view.TaxonomyControlView">
 	<top>
-		<VBox maxHeight="1.7976931348623157E308"
-			maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_CENTER">
+		<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_CENTER">
 			<children>
-				<Label fx:id="modeLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" 
-					text="Taxonomy Control" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" 
-					/> </font> 
+				<Label fx:id="modeLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Taxonomy Control" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> 
 				</Label>
-				<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-					<children>
-						<RadioButton fx:id="sourceLevelRadioButton" text="Source Level">
-	 		 		   		<HBox.margin>
-								<Insets right="3.0"/>
-							</HBox.margin>
-							<!-- <toggleGroup>
-       							<ToggleGroup fx:id="group"/>
-   							</toggleGroup> -->
-						</RadioButton>
-						<RadioButton fx:id="dirLevelRadioButton" text="Directory Level">
-							<HBox.margin>
-								<Insets right="30.0"/>
-							    <Insets bottom="10.0"/>
-							</HBox.margin>
-							<!-- <toggleGroup>
-       							<fx:reference source="group"/>
-   							</toggleGroup> -->
-						</RadioButton> 
-					</children>
-					<VBox.margin>
-						<Insets left="5.0" right="5.0" />
-					</VBox.margin>
-				</HBox>
-				<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-					<children>
-						<RadioButton fx:id="timeOnlyTaxonomyRadioButton" text="Simple Taxonomy  ">
-	 		 		   		<HBox.margin>
-								<Insets right="3.0"/>
-							</HBox.margin>
-							<!-- <toggleGroup>
-       							<ToggleGroup fx:id="group"/>
-   							</toggleGroup> -->
-						</RadioButton>
-						<RadioButton fx:id="spaceMarcTaxonomyRadioButton" text="Space (Marc Hentze) Taxonomy  ">
-							<HBox.margin>
-								<Insets right="30.0"/>
-							    <Insets bottom="10.0"/>
-							</HBox.margin>
-							<!-- <toggleGroup>
-       							<fx:reference source="group"/>
-   							</toggleGroup> -->
-						</RadioButton>
-					<!-- 	<RadioButton fx:id="spaceDAGTaxonomyRadioButton" text="Space (DAG) Taxonomy">
-	 		 		   		<HBox.margin>
-								<Insets right="3.0"/>
-							</HBox.margin>
-							<toggleGroup>
-       							<ToggleGroup fx:id="group"/>
-   							</toggleGroup>
-						</RadioButton> -->
-					</children>
-					<VBox.margin>
-						<Insets left="5.0" right="5.0" />
-					</VBox.margin>
-				</HBox>
 			</children>
 		</VBox>
 	</top>
@@ -97,41 +38,10 @@
 			               <children>
 			               		<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
 									<children>
-										<Label fx:id="defaultComparatorChoicelabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" 
-											text="Basis Comparators" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> 
+										<Label fx:id="defaultComparatorChoicelabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" text="String comparison" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> 
 										</Label>
-						    			<RadioButton fx:id="LevenshteinComparatorRadioButton" text="Levenshtein"></RadioButton>
-										<RadioButton fx:id="stringComparatorRadioButton" text="String"></RadioButton> 
-									</children>
-									<BorderPane.margin>
-										<Insets bottom="5.0" top="5.0" />
-									</BorderPane.margin>
-								</VBox>
-			               		<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
-									<children>
-										<Label fx:id="sourceChoicelabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" 
-											text="Source Language(s)" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> 
-										</Label>
-										<CheckBox fx:id="languageCheckBoxJava" text="Java" HBox.hgrow="ALWAYS"/>
-						    			<CheckBox fx:id="languageCheckBoxCplusplus" text="C++" HBox.hgrow="ALWAYS"/>
-									</children>
-									<BorderPane.margin>
-										<Insets bottom="5.0" top="5.0" />
-									</BorderPane.margin>
-								</VBox>
-			               
-			                  	<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
-									<children>
-										<Label fx:id="directoryMetricLabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" 
-											text="Directory Metric(s)" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> 
-										</Label>
-										<CheckBox fx:id="directoryNameCheckbox" text="Name" />
-						    			<CheckBox fx:id="directorySizeCheckbox" text="Size" />
-						    			<CheckBox fx:id="directoryNonSourceCheckbox" text="Non-source Content" />
-						    			<CheckBox fx:id="directoryChildenCheckbox" text="Source Code Content" />
-						    			<!-- 
-						    			<CheckBox fx:id="directoryPathCheckbox" text="Path" />
-						    			<CheckBox fx:id="directoryChildSignatureCheckbox" text="Children Signature" /> -->
+						    			<RadioButton fx:id="levenshteinComparatorRadioButton" text="Levenshtein" />
+										<RadioButton fx:id="stringComparatorRadioButton" text="String" /> 
 									</children>
 									<BorderPane.margin>
 										<Insets bottom="5.0" top="5.0" />
@@ -159,27 +69,6 @@
 					</BorderPane.margin>
 		</VBox>
 	</center>
-	<bottom>
-		<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
-			<children>
-				<HBox alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-					<children>
-						<Button fx:id="saveButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#saveTaxonomy" text="Save Taxonomy">
-							<HBox.margin>
-								<Insets right="5.0" top="5.0" bottom="5.0"/>
-							</HBox.margin>
-						</Button>
-					</children>
-					<VBox.margin>
-						<Insets left="5.0" right="5.0" bottom="5.0"/>
-					</VBox.margin>
-				</HBox>
-			</children>
-			<BorderPane.margin>
-            	<Insets bottom="5.0" />
-         	</BorderPane.margin>
-		</VBox>
-	</bottom>
 
 	<cursor>
 		<Cursor fx:constant="DEFAULT" />

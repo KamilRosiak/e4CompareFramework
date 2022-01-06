@@ -62,7 +62,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		NodeComparison comparison = new NodeComparison(first, second);
 		// if nodes are of the same type
 		if (first.getNodeType().equals(second.getNodeType())) {
-
+						
 			List<Comparator> comparators = metric.getComparatorForNodeType(first.getNodeType());
 			// check if the metric contains attribute for the comparison of this node type
 			if (!comparators.isEmpty()) {
