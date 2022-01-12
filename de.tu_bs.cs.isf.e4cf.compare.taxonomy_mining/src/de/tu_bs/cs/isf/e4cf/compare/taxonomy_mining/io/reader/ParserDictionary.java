@@ -14,10 +14,18 @@ public class ParserDictionary {
 
 	public static List<String> JAVA_NODE_TYPES = Arrays.asList("block", "break", "assert", "case", "continue", "do",
 			"expr_stmt", "for", "if_stmt", "return", "switch", "while", "control", "then", "decl_stmt", "import",
-			"package", "synchronized", "finally", "throw", "throws", "try", "expr_stmt", "class", "constructor",
-			"do", "enum", "function", "interface_decl", "interface", "comment");
+			"package", "synchronized", "finally", "throw", "throws", "try", "expr_stmt", "class", "constructor", "do",
+			"enum", "function", "interface_decl", "interface", "comment", "annotation", "implements");
+
+	public static List<String> CSHARP_NODE_TYPES = Arrays.asList("block", "break", "case", "continue", "do",
+			"expr_stmt", "for", "if_stmt", "return", "switch", "while", "then", "decl_stmt", "finally",
+			"throw", "try", "expr_stmt", "class", "constructor", "do", "enum", "function", "interface", "comment",
+			"attribute", "by", "checked", "constraint", "delegate", "destructor", "event", "equals", "finally",
+			"foreach", "from", "function_decl", "in", "linq", "into", "join", "let", "lock", "modifier", "namespace",
+			"on", "orderby", "select", "sizeof", "struct", "typeof", "unchecked", "using", "unsafe", "where", "init");
 	
-	public static List<String> CPP_TAXONOMY_NODE_TYPES = Arrays.asList("unit", "class", "function", "constructor",
+	
+	public static List<String> BASE_TAXONOMY_NODE_TYPES = Arrays.asList("unit", "class", "function", "constructor",
 			"decl_stmt", "expr_stmt", "if", "else", "for", "while", "do", "return");
 
 }

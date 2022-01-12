@@ -21,9 +21,12 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare.TaxonomySettings;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.io.reader.SrcMLReader;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.RelationGraph;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomyGraph;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomyReachabilityGraph;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomySimilarityGraph;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.util.TaxonomyConstruction;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
@@ -46,7 +49,7 @@ public class CompareEngineView implements Initializable {
 	public static final int TYPE_COLUMN_WIDTH_PERCENT = 40;
 
 	public List<FileTreeElement> artifactFileTrees = new ArrayList<FileTreeElement>();
-	
+
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
 	@FXML
@@ -98,20 +101,6 @@ public class CompareEngineView implements Initializable {
 		}
 	}
 
-	/**
-	 * Compares Artifacts for similarity computation and displays Relation graph
-	 */
-	@FXML
-	public void compareArtifactsForRelationGraph() {
-
-		services.partService.showPart(GraphStringTable.GRAPH_VIEW);
-
-		List<Tree> artifacts = parseArtifactsWithSrcML();
-		RelationGraph relationGraph = new RelationGraph(artifacts);
-		SimpleGraph simpleGraph = relationGraph.createSimpleGraph();
-		services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, simpleGraph);		
-	}
-
 	private List<Tree> parseArtifactsWithSrcML() {
 		SrcMLReader srcMLReader = new SrcMLReader();
 		List<Tree> artifacts = new ArrayList<Tree>();
@@ -130,11 +119,16 @@ public class CompareEngineView implements Initializable {
 
 		services.partService.showPart(GraphStringTable.GRAPH_VIEW);
 		List<Tree> artifacts = parseArtifactsWithSrcML();
+		TaxonomyGraph taxonomyGraph;
+		if (TaxonomySettings.taxonomyConstruction == TaxonomyConstruction.REACHABILITY) {
+			taxonomyGraph = new TaxonomyReachabilityGraph(artifacts);
+		} else {
+			taxonomyGraph = new TaxonomySimilarityGraph(artifacts);
+		}
 
-		RelationGraph relationGraph = new RelationGraph(artifacts);
-		TaxonomyGraph taxonomyGraph = new TaxonomyGraph(relationGraph);
+		taxonomyGraph.build();
 		SimpleGraph simpleGraph = taxonomyGraph.createSimpleGraph();
-		services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, simpleGraph);		
+		services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, simpleGraph);
 	}
 
 	/**
@@ -178,9 +172,6 @@ public class CompareEngineView implements Initializable {
 	public Matcher getSelectedMatcher() {
 		return matcherCombo.getSelectionModel().getSelectedItem();
 	}
-
-	
-	
 
 	/**
 	 * Subscribes to compare artifacts publisher messages from project explorer and

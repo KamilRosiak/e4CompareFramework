@@ -26,10 +26,14 @@ public class DirectoryComparator extends BaseComparator {
 			return new TaxonomyResultElement(this, 0.0f);
 		}
 
-		float similarity = getDirectoryNameSimilarity(node1, node2) * DIRECTORY_NAME_WEIGHT
-				+ getSourceCodeFileNameSimilarity(node1, node2) * SOURCE_CODE_FILE_WEIGHT
-				+ getNonSourceCodeFileNameSimilarity(node1, node2) * NON_SOURCE_CODE_FILE_WEIGHT
-				+ getDirectorySizeSimilarity(node1, node2) * DIRECTORY_SIZE_WEIGHT;
+		float directoryNameSimilarity = getDirectoryNameSimilarity(node1, node2) * DIRECTORY_NAME_WEIGHT;
+		float sourceCodeFileNameSimilarity = getSourceCodeFileNameSimilarity(node1, node2) * SOURCE_CODE_FILE_WEIGHT;
+		float nonSourceCodeFileNameSimilarity = getNonSourceCodeFileNameSimilarity(node1, node2)
+				* NON_SOURCE_CODE_FILE_WEIGHT;
+		float directorySizeSimilarity = getDirectorySizeSimilarity(node1, node2) * DIRECTORY_SIZE_WEIGHT;
+
+		float similarity = directoryNameSimilarity + sourceCodeFileNameSimilarity + nonSourceCodeFileNameSimilarity
+				+ directorySizeSimilarity;
 
 		return new TaxonomyResultElement(this, similarity);
 
@@ -85,12 +89,15 @@ public class DirectoryComparator extends BaseComparator {
 	}
 
 	private float computeSimilarityOfFiles(List<Node> files1, List<Node> files2) {
-		
 
 		float totalSimilarity = 0;
 
+		if (files1.isEmpty() || files2.isEmpty()) {
+			return 0;
+		}
+
 		for (Node file1 : files1) {
-			
+
 			float minimumSimilarity = Float.MAX_VALUE;
 
 			String fileName1 = (String) file1.getAttributeForKey(AttributeDictionary.FILE_NAME_ATTRIBUTE_KEY)
@@ -111,7 +118,7 @@ public class DirectoryComparator extends BaseComparator {
 
 		}
 
-		return totalSimilarity / files1.size();
+		return totalSimilarity / (files1.size() == 0 ? 1 : files1.size());
 
 	}
 

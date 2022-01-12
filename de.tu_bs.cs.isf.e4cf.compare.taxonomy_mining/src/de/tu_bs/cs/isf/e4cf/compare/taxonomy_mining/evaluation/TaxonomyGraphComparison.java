@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomyEdge;
@@ -39,49 +37,29 @@ public class TaxonomyGraphComparison {
 		return (float) truePositives / (truePositives + falseNegatives);
 	}
 
+	public float getTrueNegativeRate() {
+		return (float) trueNegatives / (trueNegatives + falsePositives);
+	}
+
+	public float getTruePositiveRate() {
+		return (float) truePositives / (truePositives + falsePositives);
+	}
+
 	public float getAccuracy() {
 		return (float) (truePositives + trueNegatives)
 				/ (truePositives + trueNegatives + falsePositives + falseNegatives);
 	}
 
-	public float getError() {
-		return 1 - getAccuracy();
+	public float getF1Score() {
+		return (float) (2 * truePositives) / (2 * truePositives + falsePositives + falseNegatives);
 	}
 
-	public int getRootPredictionAccuracy() {
-		return groundTruthGraph.getRootVariant().equals(derivedGraph.getRootVariant()) ? 1 : 0;
+	public float getBalancedAccuracy() {
+		return (getTruePositiveRate() + getTrueNegativeRate()) / 2;
 	}
 
 	public int getPredecessorAccuracy() {
 		return truePositives;
-	}
-
-	public float getVariantDisplacementRate() {
-
-		float accumulated = 0;
-
-		for (Tree variant : variants) {
-			
-			int derivedDepth = getVariantDepth(derivedGraph.getRootVariant(), derivedGraph.getEdges(), variant);
-			int truthDepth = getVariantDepth(groundTruthGraph.getRootVariant(), groundTruthGraph.getEdges(), variant);
-
-			Set<Tree> derivedPredecessors = getPredecessors(derivedGraph.getEdges(), variant);
-			Set<Tree> truthPredecessors = getPredecessors(groundTruthGraph.getEdges(), variant);
-
-			int totalNumberOfPredecessors = derivedPredecessors.size() + truthPredecessors.size();
-
-			derivedPredecessors.retainAll(truthPredecessors);
-
-			int commonPredecessors = derivedPredecessors.size();
-			int sameDepth = derivedDepth == truthDepth ? 1 : 0;
-			float predecessorWeight = (float) commonPredecessors / totalNumberOfPredecessors;
-
-			accumulated += 0.6 * predecessorWeight + sameDepth * 0.4;
-
-		}
-
-		return accumulated / variants.size();
-
 	}
 
 	private void compareTaxonomyGraphs() {
@@ -91,8 +69,7 @@ public class TaxonomyGraphComparison {
 			boolean foundEdge = false;
 			for (TaxonomyEdge calculatedEdge : derivedGraph.getEdges()) {
 
-				if (calculatedEdge.getVariant1().equals(truthEdge.getVariant1())
-						&& calculatedEdge.getVariant2().equals(truthEdge.getVariant2())) {
+				if (hasEdge(calculatedEdge, truthEdge.getVariant1(), truthEdge.getVariant2())) {
 					truePositives++;
 					foundEdge = true;
 					break;
@@ -110,10 +87,8 @@ public class TaxonomyGraphComparison {
 			boolean foundEdge = false;
 			for (TaxonomyEdge truthEdge : groundTruthGraph.getEdges()) {
 
-				if (calculatedEdge.getVariant1().equals(truthEdge.getVariant1())
-						&& calculatedEdge.getVariant2().equals(truthEdge.getVariant2())) {
+				if (hasEdge(truthEdge, calculatedEdge.getVariant1(), calculatedEdge.getVariant2())) {
 					foundEdge = true;
-					break;
 				}
 
 			}
@@ -132,8 +107,7 @@ public class TaxonomyGraphComparison {
 
 			for (TaxonomyEdge truthEdge : groundTruthGraph.getEdges()) {
 
-				if (truthEdge.getVariant1().equals(edgeCombination.getVariant1())
-						&& truthEdge.getVariant2().equals(edgeCombination.getVariant2())) {
+				if (hasEdge(truthEdge, edgeCombination.getVariant1(), edgeCombination.getVariant2())) {
 					hasTruthEdge = true;
 					break;
 				}
@@ -142,8 +116,7 @@ public class TaxonomyGraphComparison {
 
 			for (TaxonomyEdge derivedEdge : derivedGraph.getEdges()) {
 
-				if (derivedEdge.getVariant1().equals(edgeCombination.getVariant1())
-						&& derivedEdge.getVariant2().equals(edgeCombination.getVariant2())) {
+				if (hasEdge(derivedEdge, edgeCombination.getVariant1(), edgeCombination.getVariant2())) {
 					hasDerivedEdge = true;
 					break;
 				}
@@ -155,6 +128,16 @@ public class TaxonomyGraphComparison {
 			}
 
 		}
+
+	}
+
+	private boolean hasEdge(TaxonomyEdge edge, Tree variant1, Tree variant2) {
+
+		if ((edge.getVariant1().equals(variant1) && edge.getVariant2().equals(variant2))) {
+			return true;
+		}
+
+		return false;
 
 	}
 
@@ -176,46 +159,13 @@ public class TaxonomyGraphComparison {
 
 	}
 
-	private int getVariantDepth(Tree currentVariant, List<TaxonomyEdge> edges, Tree targetVariant) {
-
-		int depth = 0;
-
-		if (currentVariant.equals(targetVariant)) {
-			return depth;
-		}
-
-		for (TaxonomyEdge edge : edges) {
-
-			if (edge.getVariant1().equals(currentVariant)) {
-				depth += getVariantDepth(edge.getVariant2(), edges, targetVariant);
-			}
-
-		}
-
-		return depth;
-
-	}
-
-	private Set<Tree> getPredecessors(List<TaxonomyEdge> edges, Tree targetVariant) {
-		Set<Tree> predecessors = new HashSet<Tree>();
-
-		for (TaxonomyEdge edge : edges) {
-
-			if (edge.getVariant2().equals(targetVariant)) {
-				predecessors.add(edge.getVariant1());
-			}
-
-		}
-
-		return predecessors;
-	}
-
 	public void toFile(Path path) throws IOException {
 
-		String output = "precision;recall;accuracy;error;rootPredicitionAccuracy;variantDisplacementRate;predecessorAccuracy"
-				+ System.lineSeparator();
-		output += getPrecision() + ";" + getRecall() + ";" + getAccuracy() + ";" + getError() + ";" + getRootPredictionAccuracy() + ";"
-				+ getVariantDisplacementRate() +";" + getPredecessorAccuracy();
+		String output = "precision;recall;balancedAccuracy;f1score;predecessorAccuracy" + System.lineSeparator();
+		output += getPrecision() + ";" + getRecall() + ";" + getBalancedAccuracy() + ";" + getF1Score() + ";"
+				+ getPredecessorAccuracy();
+
+		System.out.println(output);
 
 		Files.write(path, output.getBytes());
 

@@ -29,9 +29,11 @@ public class SourceCodeComparator extends BaseComparator {
 			return new TaxonomyResultElement(this, 0);
 		}
 
-		similarity = getSourceCodeSimilarity(node1, node2) * SOURCE_CODE_WEIGHT
-				+ getNestingSimilarity(node1, node2) * NESTING_WEIGHT
-				+ getPositionSimilarity(node1, node2) * POSITION_WEIGHT;
+		float sourceCodeSimilarity = getSourceCodeSimilarity(node1, node2) * SOURCE_CODE_WEIGHT;
+		float nestingSimilarity = getNestingSimilarity(node1, node2) * NESTING_WEIGHT;
+		float positionSimilarity = getPositionSimilarity(node1, node2) * POSITION_WEIGHT;
+
+		similarity = sourceCodeSimilarity + nestingSimilarity + positionSimilarity;
 
 		return new TaxonomyResultElement(this, similarity);
 	}
@@ -114,12 +116,15 @@ public class SourceCodeComparator extends BaseComparator {
 		List<Node> nestingFragments1 = getNestingFragments(node1);
 		List<Node> nestingFragments2 = getNestingFragments(node2);
 
-		int maxSize = nestingFragments1.size() > nestingFragments2.size() ? nestingFragments1.size()
-				: nestingFragments2.size();
+		int nestingSize = Math.max(nestingFragments1.size(), nestingFragments2.size());
+		int positionSize = Math.max(positionValue1.getValue(), positionValue2.getValue());
 
-		int difference = Math.abs(positionValue1.getValue() - positionValue2.getValue());
+		float nestingDifference = (float) Math.abs(nestingFragments1.size() - nestingFragments2.size())
+				/ (nestingSize == 0 ? 1 : nestingSize);
+		float positionDifference = (float) Math.abs(positionValue1.getValue() - positionValue2.getValue())
+				/ (positionSize == 0 ? 1 : positionSize);
 
-		return difference > 0 ? (1 - ((float) maxSize / difference)) : 1;
+		return (nestingDifference + positionDifference) / 2;
 
 	}
 

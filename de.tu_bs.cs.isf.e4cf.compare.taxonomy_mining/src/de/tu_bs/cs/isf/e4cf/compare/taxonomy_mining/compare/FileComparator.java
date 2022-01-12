@@ -24,9 +24,11 @@ public class FileComparator extends BaseComparator {
 			return new TaxonomyResultElement(this, similarity);
 		}
 
-		similarity = getFileExtensionSimilarity(node1, node2) * FILE_EXTENSION_WEIGHT
-				+ getFileNameSimilarity(node1, node2) * FILE_NAME_WEIGHT + getFileSizeSimilarity(node1, node2)
-				+ FILE_SIZE_WEIGHT;
+		float fileExtensionSimilarity = getFileExtensionSimilarity(node1, node2) * FILE_EXTENSION_WEIGHT;
+		float fileNameSimilarity = getFileNameSimilarity(node1, node2) * FILE_NAME_WEIGHT;
+		float fileSizeSimilarity = getFileSizeSimilarity(node1, node2) * FILE_SIZE_WEIGHT;
+
+		similarity = fileExtensionSimilarity + fileNameSimilarity + fileSizeSimilarity;
 
 		return new TaxonomyResultElement(this, similarity);
 	}

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.*?>
@@ -36,16 +37,35 @@
 					<children>
 		    			<HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
 			               <children>
+                  <VBox alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                     <children>
+                        <Label fx:id="modeLabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" text="Construction" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <RadioButton fx:id="similarityModeRadioButton" text="Similarity" />
+                        <RadioButton fx:id="reachabilityModeRadioButton" text="Reachability" />
+                     </children>
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </VBox>
 			               		<VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
 									<children>
 										<Label fx:id="defaultComparatorChoicelabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" text="String comparison" textFill="WHITE"> <font> <Font name="System Bold" size="14.0" /> </font> 
 										</Label>
 						    			<RadioButton fx:id="levenshteinComparatorRadioButton" text="Levenshtein" />
-										<RadioButton fx:id="stringComparatorRadioButton" text="String" /> 
+										<RadioButton fx:id="damerauLevenshteinComparatorRadioButton" text="Damerau-Levenshtein" />
+                        <RadioButton fx:id="jaccardComparatorRadioButton" text="Jaccard" />
+                        <RadioButton fx:id="simpleComparatorRadioButton" text="Simple" /> 
 									</children>
 									<BorderPane.margin>
 										<Insets bottom="5.0" top="5.0" />
 									</BorderPane.margin>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
 								</VBox>
 								<!-- <VBox alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="TOP_LEFT">
 									<children>

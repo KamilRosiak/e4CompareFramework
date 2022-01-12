@@ -24,11 +24,12 @@ public class TaxonomySAXHandler extends AbstractSAXHandler {
 
 	public TaxonomySAXHandler() {
 		nodeStack = new Stack<Node>();
-		nodeTypes = ParserDictionary.CPP_TAXONOMY_NODE_TYPES;
 	}
 
 	@Override
 	public void startDocument() throws SAXException {
+		nodeTypes = ParserDictionary.BASE_TAXONOMY_NODE_TYPES;
+
 		nodeStack.clear();
 	}
 

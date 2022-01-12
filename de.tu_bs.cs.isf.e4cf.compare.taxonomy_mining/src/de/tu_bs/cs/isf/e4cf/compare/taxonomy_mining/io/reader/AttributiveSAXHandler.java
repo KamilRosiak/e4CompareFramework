@@ -33,8 +33,11 @@ public class AttributiveSAXHandler extends AbstractSAXHandler {
 	public void startDocument() throws SAXException {
 		if (extension.equals("cpp")) {
 			nodeTypes = ParserDictionary.CPP_NODE_TYPES;
-		} else {
+		} else if(extension.equals("java")) {
 			nodeTypes = ParserDictionary.JAVA_NODE_TYPES;
+		}
+		else {
+			nodeTypes = ParserDictionary.CSHARP_NODE_TYPES;
 		}
 		nodeStack.clear();
 		typeStack.clear();

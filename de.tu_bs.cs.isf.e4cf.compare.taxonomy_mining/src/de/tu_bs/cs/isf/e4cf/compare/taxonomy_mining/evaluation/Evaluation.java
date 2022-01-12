@@ -11,8 +11,8 @@ import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.io.reader.SrcMLReader;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.RelationGraph;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomyGraph;
+import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomySimilarityGraph;
 
 public class Evaluation {
 
@@ -31,12 +31,18 @@ public class Evaluation {
 		File evaluationDirectoryFile = new File(
 				(Evaluation.class.getProtectionDomain().getCodeSource().getLocation().getPath()).substring(1))
 						.getParentFile();
-		String evaluationDirectory = Paths.get(evaluationDirectoryFile.getAbsolutePath(), "lib/evaluation").toString();
+		String remoteGitEvaluationDirectory = Paths
+				.get(evaluationDirectoryFile.getAbsolutePath(), "lib/evaluation/remote").toString();
+		String localGitEvaluationDirectory = Paths
+				.get(evaluationDirectoryFile.getAbsolutePath(), "lib/evaluation/local").toString();
 
-		targetDirectories = GitExtractor.extract(evaluationDirectory);
+		targetDirectories = GitExtractor.extractLocal(localGitEvaluationDirectory);
+		targetDirectories.addAll(GitExtractor.extractRemote(remoteGitEvaluationDirectory));
 		evaluateRepositories();
 
 	}
+	
+	
 
 	public static void evaluateRepositories() {
 
@@ -49,22 +55,24 @@ public class Evaluation {
 				Path resultFilePath = Paths.get(targetDirectory.getAbsolutePath(), "result.txt");
 
 				Map<String, Tree> nameToTreeMap = new HashMap<String, Tree>();
-				Map<Tree, String> treeToCommitMap = new HashMap<Tree, String>();
-				
+
 				for (File variant : variantsDirectory.listFiles(File::isDirectory)) {
-					Tree tree = srcMLReader.readArtifact(variant, targetDirectory.getName());										
+					Tree tree = srcMLReader.readArtifact(variant, targetDirectory.getName());
 					nameToTreeMap.put(variant.getName(), tree);
-					treeToCommitMap.put(tree, variant.getName());
+
 				}
 
-				TaxonomyGraph taxonomyGraph = new TaxonomyGraph(
-						new RelationGraph(new ArrayList<Tree>(nameToTreeMap.values())));
+				TaxonomyGraph groundTruthGraph = new TaxonomySimilarityGraph(
+						new ArrayList<Tree>(nameToTreeMap.values()));
+				groundTruthGraph.fromFile(groundTruthFilePath, nameToTreeMap);
 
-				TaxonomyGraph groundTruthGraph = TaxonomyGraph.fromFile(groundTruthFilePath, nameToTreeMap);
+				TaxonomyGraph taxonomyGraph = new TaxonomySimilarityGraph(new ArrayList<Tree>(nameToTreeMap.values()));
+				taxonomyGraph.build();
 
-				taxonomyGraph.toFile(derivedTaxonomyFilePath, treeToCommitMap);
+				taxonomyGraph.toFile(derivedTaxonomyFilePath);
 
-				TaxonomyGraphComparison graphComparison = new TaxonomyGraphComparison(new ArrayList<Tree>(nameToTreeMap.values()), groundTruthGraph, taxonomyGraph);
+				TaxonomyGraphComparison graphComparison = new TaxonomyGraphComparison(
+						new ArrayList<Tree>(nameToTreeMap.values()), groundTruthGraph, taxonomyGraph);
 
 				graphComparison.toFile(resultFilePath);
 

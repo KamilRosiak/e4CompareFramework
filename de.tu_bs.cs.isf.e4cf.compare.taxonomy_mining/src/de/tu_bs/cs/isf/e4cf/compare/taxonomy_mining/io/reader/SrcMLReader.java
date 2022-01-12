@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.io.reader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +33,7 @@ public class SrcMLReader extends AbstractArtifactReader {
 
 	private String srcMLExePath;
 
-	public static String[] SUPPORTED_FILE_ENDINGS = { "cpp", "java" };
+	public static String[] SUPPORTED_FILE_ENDINGS = { "cpp", "java", "cs" };
 
 	private AbstractSAXHandler saxHandler;
 
@@ -50,7 +51,7 @@ public class SrcMLReader extends AbstractArtifactReader {
 		saxHandler = new TaxonomySAXHandler();
 	}
 
-	public Tree readArtifact(FileTreeElement element, String treeName) {
+	public Tree readArtifact(FileTreeElement element, String rootName) {
 		Node rootNode = null;
 
 		int totalNumberOfFiles = getNumberOfNestedFilesInDirectory(element);
@@ -60,7 +61,7 @@ public class SrcMLReader extends AbstractArtifactReader {
 		totalNumberOfBytes = totalNumberOfBytes == 0 ? 1 : totalNumberOfBytes;
 
 		if (element.isDirectory()) {
-			rootNode = createDirectory(element, totalNumberOfFiles);
+			rootNode = createDirectory(element, totalNumberOfFiles, rootName);
 			for (FileTreeElement childElement : element.getChildren()) {
 				createHierarchy(childElement, rootNode, totalNumberOfFiles, totalNumberOfBytes);
 			}
@@ -74,7 +75,7 @@ public class SrcMLReader extends AbstractArtifactReader {
 
 		}
 
-		return new TreeImpl(treeName, rootNode);
+		return new TreeImpl(element.getFileName(), rootNode);
 
 	}
 
@@ -88,14 +89,18 @@ public class SrcMLReader extends AbstractArtifactReader {
 		return readArtifact(constructFileTreeElement(file));
 	}
 
-	public Tree readArtifact(File file, String treeName) {
-		return readArtifact(constructFileTreeElement(file), treeName);
+	public Tree readArtifact(File file, String rootName) {
+		return readArtifact(constructFileTreeElement(file), rootName);
 	}
 
 	private Node createDirectory(FileTreeElement element, int totalNumberOfFiles) {
+		return createDirectory(element, totalNumberOfFiles, element.getFileName());
+	}
+
+	private Node createDirectory(FileTreeElement element, int totalNumberOfFiles, String directoryName) {
 		Node directory = new NodeImpl(NodeType.DIRECTORY);
 		directory.addAttribute(new AttributeImpl(AttributeDictionary.DIRECTORY_NAME_ATTRIBUTE_KEY,
-				new StringValueImpl(element.getFileName())));
+				new StringValueImpl(directoryName)));
 		directory.addAttribute(
 				new AttributeImpl(AttributeDictionary.SIZE_ATTRIBUTE_KEY, new LongValueImpl(element.getSize())));
 
@@ -181,7 +186,8 @@ public class SrcMLReader extends AbstractArtifactReader {
 				xmlReader.setErrorHandler(saxHandler);
 				saxHandler.setExtension(element.getExtension());
 
-				InputSource inputSource = new InputSource(inputStream);
+				
+				InputSource inputSource = new InputSource(new InputStreamReader(inputStream, "UTF-8"));
 				xmlReader.parse(inputSource);
 
 				rootNode = saxHandler.getRootNode();
@@ -212,6 +218,10 @@ public class SrcMLReader extends AbstractArtifactReader {
 		processBuilder.redirectOutput(Redirect.PIPE);
 		Process process = processBuilder.start();
 		inputStream = process.getInputStream();
+		
+		
+		
+		
 
 		return inputStream;
 	}

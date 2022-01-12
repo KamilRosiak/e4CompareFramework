@@ -9,10 +9,12 @@ import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 
 public class TaxonomyMetric extends MetricImpl {
 
+	private static final long serialVersionUID = -961483663873305117L;
+
 	public TaxonomyMetric(String metricName) {
-		super(metricName);		
+		super(metricName);
 	}
-	
+
 	public TaxonomyMetric(String metricName, Comparator... comparators) {
 		this(metricName);
 		addComparators(comparators);

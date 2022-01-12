@@ -8,9 +8,7 @@ public class TaxonomyResultElement extends AbstractResultElement<Node> {
 
 	public TaxonomyResultElement(Comparator<Node> usedComparator, float similarity) {
 		super(usedComparator, similarity);
-		
-	}
 
-	
+	}
 
 }

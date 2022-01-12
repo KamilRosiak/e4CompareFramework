@@ -40,9 +40,5 @@ public class RelationEdge {
 		this.variant2 = variant2;
 		this.weight = weight;
 	}
-	
-	
-	
-	
-	
+
 }

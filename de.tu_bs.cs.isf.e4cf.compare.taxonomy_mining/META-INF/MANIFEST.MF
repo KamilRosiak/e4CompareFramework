@@ -24,4 +24,5 @@ Require-Bundle: de.tu_bs.cs.isf.e4cf.compare;bundle-version="1.0.0",
  org.slf4j.api;bundle-version="1.7.30"
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare,
  de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.io.reader,
- de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model,
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.util

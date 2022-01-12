@@ -4,15 +4,15 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 
 public class MatchSet {
-	
+
 	private Tree variant1;
-	
+
 	private Tree variant2;
-	
+
 	private Node node1;
-	
+
 	private Node node2;
-	
+
 	private float similarity;
 
 	public MatchSet(Tree variant1, Tree variant2, Node node1, Node node2, float similarity) {
@@ -63,10 +63,5 @@ public class MatchSet {
 	public void setSimilarity(float similarity) {
 		this.similarity = similarity;
 	}
-	
-
-	
-	
-	
 
 }

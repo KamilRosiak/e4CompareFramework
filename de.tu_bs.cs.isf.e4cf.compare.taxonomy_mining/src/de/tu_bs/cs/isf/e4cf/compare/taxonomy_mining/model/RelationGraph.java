@@ -19,7 +19,6 @@ import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare.DirectoryComparator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare.FileComparator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare.SourceCodeComparator;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare.TaxonomyMetric;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare.TaxonomySettings;
 import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.util.AttributeDictionary;
 import de.tu_bs.cs.isf.e4cf.graph.core.elements.model.GraphEdge;
 import de.tu_bs.cs.isf.e4cf.graph.core.elements.model.GraphNode;
@@ -33,23 +32,19 @@ public class RelationGraph {
 	private List<Tree> variants;
 	private List<MatchSet> matchSets;
 	private List<VariantCompareUnit> variantCompareUnits;
-	private List<RelationEdge> edges;	
+	private List<RelationEdge> edges;
 
 	public RelationGraph(List<Tree> variants) {
 		this.variants = variants;
 		this.matchSets = new ArrayList<MatchSet>();
 		this.variantCompareUnits = new ArrayList<VariantCompareUnit>();
 		this.edges = new ArrayList<RelationEdge>();
-		
-
 		this.compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new TaxonomyMetric("TaxonomyMetric",
 				new SourceCodeComparator(), new DirectoryComparator(), new FileComparator()));
 
 		compareVariants();
 		createEdges();
 	}
-
-	
 
 	private void compareVariants() {
 		for (Tree variant1 : variants) {
@@ -111,13 +106,14 @@ public class RelationGraph {
 			float weight = edgeBetweenVariants.getWeight();
 			weight = weight + (similarity * originalWeight);
 			edgeBetweenVariants.setWeight(weight);
-			edges.add(edgeBetweenVariants);
+
+			if (!edges.contains(edgeBetweenVariants)) {
+				edges.add(edgeBetweenVariants);
+			}
 
 		}
 
 	}
-
-
 
 	public List<Tree> getVariants() {
 		return variants;
