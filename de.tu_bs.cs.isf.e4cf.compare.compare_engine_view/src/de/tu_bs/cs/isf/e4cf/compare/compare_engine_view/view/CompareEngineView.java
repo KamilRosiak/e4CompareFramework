@@ -21,20 +21,11 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.compare.TaxonomySettings;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.io.reader.SrcMLReader;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomyGraph;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomyReachabilityGraph;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.model.TaxonomySimilarityGraph;
-import de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining.util.TaxonomyConstruction;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.graph.core.elements.model.SimpleGraph;
-import de.tu_bs.cs.isf.e4cf.graph.core.string_table.GraphEvents;
-import de.tu_bs.cs.isf.e4cf.graph.core.string_table.GraphStringTable;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -101,35 +92,7 @@ public class CompareEngineView implements Initializable {
 		}
 	}
 
-	private List<Tree> parseArtifactsWithSrcML() {
-		SrcMLReader srcMLReader = new SrcMLReader();
-		List<Tree> artifacts = new ArrayList<Tree>();
-		for (FileTreeElement element : this.artifactFileTrees) {
-			artifacts.add(srcMLReader.readArtifact(element));
-		}
-		return artifacts;
 
-	}
-
-	/**
-	 * Compares Artifacts for Taxonomy computation
-	 */
-	@FXML
-	public void compareArtifactsForTaxonomy() {
-
-		services.partService.showPart(GraphStringTable.GRAPH_VIEW);
-		List<Tree> artifacts = parseArtifactsWithSrcML();
-		TaxonomyGraph taxonomyGraph;
-		if (TaxonomySettings.taxonomyConstruction == TaxonomyConstruction.REACHABILITY) {
-			taxonomyGraph = new TaxonomyReachabilityGraph(artifacts);
-		} else {
-			taxonomyGraph = new TaxonomySimilarityGraph(artifacts);
-		}
-
-		taxonomyGraph.build();
-		SimpleGraph simpleGraph = taxonomyGraph.createSimpleGraph();
-		services.eventBroker.send(GraphEvents.LOAD_GRAPH_MODEL, simpleGraph);
-	}
 
 	/**
 	 * Add a list of artifacts to the list

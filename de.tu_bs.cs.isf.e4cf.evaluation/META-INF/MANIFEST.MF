@@ -3,12 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Evaluation
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.evaluation;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.eclipse.e4.core.contexts;bundle-version="1.8.400",
+Require-Bundle: org.eclipse.e4.core.contexts,
  org.junit,
  javax.inject;bundle-version="1.0.0",
- org.eclipse.e4.core.di.annotations;bundle-version="1.6.600",
+ org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.ui.model.workbench,
- org.eclipse.e4.core.services;bundle-version="2.2.300",
+ org.eclipse.e4.core.services,
  de.tu_bs.cs.isf.e4cf.parts.project_explorer,
  org.eclipse.xtext.xbase.lib,
  de.tu_bs.cs.isf.e4cf.core,
