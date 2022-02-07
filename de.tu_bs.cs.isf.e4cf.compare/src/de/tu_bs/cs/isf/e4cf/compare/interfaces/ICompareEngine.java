@@ -22,6 +22,7 @@ public interface ICompareEngine<Type> {
 	 * Uses IMatcher , IMerger,
 	 */
 	public Tree compare(List<Tree> variants);
+
 	
 	/**
 	 * This method compares two nodes and all underlying child nodes recursively

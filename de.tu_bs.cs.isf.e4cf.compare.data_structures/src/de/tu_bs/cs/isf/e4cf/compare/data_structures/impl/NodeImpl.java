@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;

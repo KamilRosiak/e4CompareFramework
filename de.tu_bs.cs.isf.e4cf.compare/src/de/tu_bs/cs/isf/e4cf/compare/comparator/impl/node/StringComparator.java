@@ -28,7 +28,8 @@ public class StringComparator extends AbstractNodeComparator {
 				}
 			}
 		}
-		// calculate the average similarity
+
+		// calculate the avarage similarity
 		int maxAttributes = Math.max(firstNode.getAttributes().size(), secondNode.getAttributes().size());
 		float similarity = maxAttributes > 0 ? sum(similarities) / maxAttributes : 1f;
 		// add keyValueRatio as base similarity because this node are of the same type

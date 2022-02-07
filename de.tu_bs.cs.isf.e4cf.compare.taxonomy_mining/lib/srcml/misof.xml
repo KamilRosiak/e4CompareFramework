@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.srcML.org/srcML/src" xmlns:cpp="http://www.srcML.org/srcML/cpp" revision="1.0.0" language="C++" filename="C:\Users\isf\runtime-de.tu_bs.cs.isf.e4cf.core.product\ 01 RAW\GCJ\2008-SP-DD-DL\N=5\Problem-A\Set-1\2008-2-A-misof.cpp"><comment type="line">// another fine solution by misof</comment>
+<comment type="line">// #includes {{{</comment>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;algorithm&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;numeric&gt;</cpp:file></cpp:include>
+
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;iostream&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;sstream&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;string&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;vector&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;queue&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;set&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;map&gt;</cpp:file></cpp:include>
+
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;cstdio&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;cstdlib&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;cctype&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;cassert&gt;</cpp:file></cpp:include>
+
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;cmath&gt;</cpp:file></cpp:include>
+<cpp:include>#<cpp:directive>include</cpp:directive> <cpp:file>&lt;complex&gt;</cpp:file></cpp:include>
+<using>using <namespace>namespace <name>std</name>;</namespace></using>
+<comment type="line">// }}}</comment>
+
+<comment type="line" format="doxygen">/////////////////// PRE-WRITTEN CODE FOLLOWS, LOOK DOWN FOR THE SOLUTION ////////////////////////////////</comment>
+
+<comment type="line">// pre-written code {{{</comment>
+<cpp:define>#<cpp:directive>define</cpp:directive> <cpp:macro><name>FOR</name><parameter_list>(<parameter><type><name>i</name></type></parameter>,<parameter><type><name>a</name></type></parameter>,<parameter><type><name>b</name></type></parameter>)</parameter_list></cpp:macro> <cpp:value>for(int i=(int)(a);i&lt;=(int)(b);++i)</cpp:value></cpp:define>
+<cpp:define>#<cpp:directive>define</cpp:directive> <cpp:macro><name>FORD</name><parameter_list>(<parameter><type><name>i</name></type></parameter>,<parameter><type><name>a</name></type></parameter>,<parameter><type><name>b</name></type></parameter>)</parameter_list></cpp:macro> <cpp:value>for(int i=(int)(a);i&gt;=(int)(b);--i)</cpp:value></cpp:define>
+<comment type="line">// }}}</comment>
+
+<comment type="line" format="doxygen">/////////////////// CODE WRITTEN DURING THE COMPETITION FOLLOWS ////////////////////////////////</comment>
+
+
+
+<function><type><name>int</name></type> <name>main</name><parameter_list>()</parameter_list> <block>{<block_content>
+  <decl_stmt><decl><type><name>int</name></type> <name>T</name></decl>;</decl_stmt>
+  <expr_stmt><expr><name>cin</name> <operator>&gt;&gt;</operator> <name>T</name></expr>;</expr_stmt>
+  <macro><name>FOR</name><argument_list>(<argument>t</argument>,<argument><literal type="number">1</literal></argument>,<argument>T</argument>)</argument_list></macro> <block>{<block_content>
+    <decl_stmt><decl><type><name>int</name></type> <name>M</name></decl>, <decl><type ref="prev"/><name>V</name></decl>;</decl_stmt>
+    <expr_stmt><expr><name>cin</name> <operator>&gt;&gt;</operator> <name>M</name> <operator>&gt;&gt;</operator> <name>V</name></expr>;</expr_stmt>
+    <decl_stmt><decl><type><name><name>vector</name><argument_list type="generic">&lt;<argument><expr><name>int</name></expr></argument>&gt;</argument_list></name></type> <name>type</name><argument_list>(<argument><expr><name>M</name><operator>+</operator><literal type="number">1</literal></expr></argument>)</argument_list></decl>, <decl><type ref="prev"/><name>canChange</name><argument_list>(<argument><expr><name>M</name><operator>+</operator><literal type="number">1</literal></expr></argument>)</argument_list></decl>, <decl><type ref="prev"/><name>value</name><argument_list>(<argument><expr><name>M</name><operator>+</operator><literal type="number">1</literal></expr></argument>,<argument><expr><operator>-</operator><literal type="number">1</literal></expr></argument>)</argument_list></decl>, <decl><type ref="prev"/><name>changesTo0</name><argument_list>(<argument><expr><name>M</name><operator>+</operator><literal type="number">1</literal></expr></argument>)</argument_list></decl>, <decl><type ref="prev"/><name>changesTo1</name><argument_list>(<argument><expr><name>M</name><operator>+</operator><literal type="number">1</literal></expr></argument>)</argument_list></decl>;</decl_stmt>
+    <decl_stmt><decl><type><name>int</name></type> <name>I</name> <init>= <expr><operator>(</operator><name>M</name><operator>-</operator><literal type="number">1</literal><operator>)</operator><operator>/</operator><literal type="number">2</literal></expr></init></decl>;</decl_stmt>
+    <macro><name>FOR</name><argument_list>(<argument>i</argument>,<argument><literal type="number">1</literal></argument>,<argument>I</argument>)</argument_list></macro> <expr_stmt><expr><name>cin</name> <operator>&gt;&gt;</operator> <name><name>type</name><index>[<expr><name>i</name></expr>]</index></name> <operator>&gt;&gt;</operator> <name><name>canChange</name><index>[<expr><name>i</name></expr>]</index></name></expr>;</expr_stmt>
+    <macro><name>FOR</name><argument_list>(<argument>i</argument>,<argument>I+<literal type="number">1</literal></argument>,<argument>M</argument>)</argument_list></macro> <block>{<block_content>
+      <expr_stmt><expr><name>cin</name> <operator>&gt;&gt;</operator> <name><name>value</name><index>[<expr><name>i</name></expr>]</index></name></expr>;</expr_stmt>
+      <expr_stmt><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name> <operator>=</operator> <name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name> <operator>=</operator> <literal type="number">987654321</literal></expr>;</expr_stmt>
+      <if_stmt><if>if <condition>(<expr><name><name>value</name><index>[<expr><name>i</name></expr>]</index></name></expr>)</condition><block type="pseudo"><block_content> <expr_stmt><expr><name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><literal type="number">0</literal></expr>;</expr_stmt></block_content></block></if> <else>else<block type="pseudo"><block_content> <expr_stmt><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><literal type="number">0</literal></expr>;</expr_stmt></block_content></block></else></if_stmt>
+    </block_content>}</block>
+    <macro><name>FORD</name><argument_list>(<argument>i</argument>,<argument>I</argument>,<argument><literal type="number">1</literal></argument>)</argument_list></macro> <block>{<block_content>
+      <expr_stmt><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name> <operator>=</operator> <name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name> <operator>=</operator> <literal type="number">987654321</literal></expr>;</expr_stmt>
+      <if_stmt><if>if <condition>(<expr><name><name>type</name><index>[<expr><name>i</name></expr>]</index></name><operator>==</operator><literal type="number">0</literal></expr>)</condition> <block>{<block_content>
+        <comment type="line">// or gate</comment>
+        <expr_stmt><expr><name><name>value</name><index>[<expr><name>i</name></expr>]</index></name> <operator>=</operator> <name><name>value</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name></expr>]</index></name> <operator>|</operator> <name><name>value</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name><operator>+</operator><literal type="number">1</literal></expr>]</index></name></expr>;</expr_stmt>
+        <if_stmt><if>if <condition>(<expr><name><name>value</name><index>[<expr><name>i</name></expr>]</index></name></expr>)</condition> <block>{<block_content>
+          <expr_stmt><expr><name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><literal type="number">0</literal></expr>;</expr_stmt>
+          <if_stmt><if>if <condition>(<expr><name><name>canChange</name><index>[<expr><name>i</name></expr>]</index></name></expr>)</condition><block type="pseudo"><block_content> <expr_stmt><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><call><name>min</name><argument_list>( <argument><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name></expr></argument>, <argument><expr><literal type="number">1</literal><operator>+</operator><call><name>min</name><argument_list>(<argument><expr><name><name>changesTo0</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name></expr>]</index></name></expr></argument>,<argument><expr><name><name>changesTo0</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name><operator>+</operator><literal type="number">1</literal></expr>]</index></name></expr></argument>)</argument_list></call></expr></argument> )</argument_list></call></expr>;</expr_stmt></block_content></block></if></if_stmt>
+          <expr_stmt><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><call><name>min</name><argument_list>( <argument><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name></expr></argument>, <argument><expr><name><name>changesTo0</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name></expr>]</index></name><operator>+</operator><name><name>changesTo0</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name><operator>+</operator><literal type="number">1</literal></expr>]</index></name></expr></argument> )</argument_list></call></expr>;</expr_stmt>
+        </block_content>}</block></if> <else>else <block>{<block_content>
+          <expr_stmt><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><literal type="number">0</literal></expr>;</expr_stmt>
+          <expr_stmt><expr><name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><call><name>min</name><argument_list>( <argument><expr><name><name>changesTo1</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name></expr>]</index></name></expr></argument>, <argument><expr><name><name>changesTo1</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name><operator>+</operator><literal type="number">1</literal></expr>]</index></name></expr></argument> )</argument_list></call></expr>;</expr_stmt>
+        </block_content>}</block></else></if_stmt>
+      </block_content>}</block></if> <else>else <block>{<block_content>
+        <comment type="line">// and gate</comment>
+        <expr_stmt><expr><name><name>value</name><index>[<expr><name>i</name></expr>]</index></name> <operator>=</operator> <name><name>value</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name></expr>]</index></name> <operator>&amp;</operator> <name><name>value</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name><operator>+</operator><literal type="number">1</literal></expr>]</index></name></expr>;</expr_stmt>
+        <if_stmt><if>if <condition>(<expr><name><name>value</name><index>[<expr><name>i</name></expr>]</index></name></expr>)</condition> <block>{<block_content>
+          <expr_stmt><expr><name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><literal type="number">0</literal></expr>;</expr_stmt>
+          <expr_stmt><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><call><name>min</name><argument_list>( <argument><expr><name><name>changesTo0</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name></expr>]</index></name></expr></argument>, <argument><expr><name><name>changesTo0</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name><operator>+</operator><literal type="number">1</literal></expr>]</index></name></expr></argument> )</argument_list></call></expr>;</expr_stmt>
+        </block_content>}</block></if> <else>else <block>{<block_content>
+          <expr_stmt><expr><name><name>changesTo0</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><literal type="number">0</literal></expr>;</expr_stmt>
+          <if_stmt><if>if <condition>(<expr><name><name>canChange</name><index>[<expr><name>i</name></expr>]</index></name></expr>)</condition><block type="pseudo"><block_content> <expr_stmt><expr><name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><call><name>min</name><argument_list>( <argument><expr><name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name></expr></argument>, <argument><expr><literal type="number">1</literal><operator>+</operator><call><name>min</name><argument_list>(<argument><expr><name><name>changesTo1</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name></expr>]</index></name></expr></argument>,<argument><expr><name><name>changesTo1</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name><operator>+</operator><literal type="number">1</literal></expr>]</index></name></expr></argument>)</argument_list></call></expr></argument> )</argument_list></call></expr>;</expr_stmt></block_content></block></if></if_stmt>
+          <expr_stmt><expr><name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name><operator>=</operator><call><name>min</name><argument_list>( <argument><expr><name><name>changesTo1</name><index>[<expr><name>i</name></expr>]</index></name></expr></argument>, <argument><expr><name><name>changesTo1</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name></expr>]</index></name><operator>+</operator><name><name>changesTo1</name><index>[<expr><literal type="number">2</literal><operator>*</operator><name>i</name><operator>+</operator><literal type="number">1</literal></expr>]</index></name></expr></argument> )</argument_list></call></expr>;</expr_stmt>
+        </block_content>}</block></else></if_stmt>
+      </block_content>}</block></else></if_stmt>
+    </block_content>}</block>
+    <decl_stmt><decl><type><name>int</name></type> <name>res</name><init>=<expr><operator>-</operator><literal type="number">1</literal></expr></init></decl>;</decl_stmt>
+    <if_stmt><if>if <condition>(<expr><name>V</name></expr>)</condition> <block>{<block_content>
+      <if_stmt><if>if <condition>(<expr><name><name>changesTo1</name><index>[<expr><literal type="number">1</literal></expr>]</index></name> <operator>&lt;</operator> <literal type="number">987654321</literal></expr>)</condition><block type="pseudo"><block_content> <expr_stmt><expr><name>res</name> <operator>=</operator> <name><name>changesTo1</name><index>[<expr><literal type="number">1</literal></expr>]</index></name></expr>;</expr_stmt></block_content></block></if></if_stmt>
+    </block_content>}</block></if> <else>else <block>{<block_content>
+      <if_stmt><if>if <condition>(<expr><name><name>changesTo0</name><index>[<expr><literal type="number">1</literal></expr>]</index></name> <operator>&lt;</operator> <literal type="number">987654321</literal></expr>)</condition><block type="pseudo"><block_content> <expr_stmt><expr><name>res</name> <operator>=</operator> <name><name>changesTo0</name><index>[<expr><literal type="number">1</literal></expr>]</index></name></expr>;</expr_stmt></block_content></block></if></if_stmt>
+    </block_content>}</block></else></if_stmt>
+    <if_stmt><if>if <condition>(<expr><name>res</name><operator>==</operator><operator>-</operator><literal type="number">1</literal></expr>)</condition><block type="pseudo"><block_content>
+      <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr><literal type="string">"Case #%d: IMPOSSIBLE\n"</literal></expr></argument>,<argument><expr><name>t</name></expr></argument>)</argument_list></call></expr>;</expr_stmt></block_content></block></if>
+    <else>else<block type="pseudo"><block_content>
+      <expr_stmt><expr><call><name>printf</name><argument_list>(<argument><expr><literal type="string">"Case #%d: %d\n"</literal></expr></argument>,<argument><expr><name>t</name></expr></argument>,<argument><expr><name>res</name></expr></argument>)</argument_list></call></expr>;</expr_stmt></block_content></block></else></if_stmt>
+  </block_content>}</block>
+
+  <return>return <expr><literal type="number">0</literal></expr>;</return>
+</block_content>}</block></function>
+<comment type="line">// vim: fdm=marker:commentstring=\ \"\ %s:nowrap:autoread</comment></unit>

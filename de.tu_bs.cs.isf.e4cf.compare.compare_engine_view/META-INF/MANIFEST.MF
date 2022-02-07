@@ -16,6 +16,10 @@ Require-Bundle: org.eclipse.core.jobs,
  org.eclipse.e4.core.contexts,
  de.tu_bs.cs.isf.e4cf.compare;bundle-version="1.0.0",
  de.tu_bs.cs.isf.e4cf.core,
- de.tu_bs.cs.isf.e4cf.compare.data_structures_editor
+ de.tu_bs.cs.isf.e4cf.compare.data_structures_editor,
+ de.tu_bs.cs.isf.e4cf.graph.core,
+ de.tu_bs.cs.isf.e4cf.core.compare.parts.taxonomy_control_view,
+ de.tu_bs.cs.isf.e4cf.compare.taxonomy_mining
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.compare.engine
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table

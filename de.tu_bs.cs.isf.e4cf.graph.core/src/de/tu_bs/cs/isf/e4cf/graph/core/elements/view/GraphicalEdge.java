@@ -85,7 +85,7 @@ public class GraphicalEdge extends Connection {
     
     public GraphicalEdge(float weight) {
         setEndDecoration(createdArrowHead(weight));
-        setStartDecoration(createdArrowHead(weight));
+        //setStartDecoration(createdArrowHead(weight));
         
        // increase interaction line width 
         GeometryNode<?> geometry = getLineGeometry();

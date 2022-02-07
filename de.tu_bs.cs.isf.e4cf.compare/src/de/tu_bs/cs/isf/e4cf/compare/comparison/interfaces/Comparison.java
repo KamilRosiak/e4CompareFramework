@@ -115,8 +115,8 @@ public interface Comparison<Type> extends Serializable {
 	 */
 	public default void updateSimilarity() {
 		float similarity = 0f;
-		float childSimilarity = getChildSimilarity();
-		float resultSimilarity = getResultSimilarity();
+		float childSimilarity = getChildSimilarity();	// Children based similarity
+		float resultSimilarity = getResultSimilarity(); // Comparator based similarity
 
 		// no children node attributes so they are equal on their type
 		if (getChildComparisons().isEmpty() && getResultElements().isEmpty()) {

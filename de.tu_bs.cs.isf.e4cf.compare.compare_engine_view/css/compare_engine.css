@@ -1,4 +1,4 @@
-#label_1,#label_2,#label_3  {
+#label_1,#label_2,#label_3,#label_4 {
 	 -fx-background-color:linear-gradient( from 50.0% 0.0% to 50.0% 100.0%, rgb(128,142,159) 0.0, rgb(167,184,207) 30.0, rgb(205,227,255) 50.0, rgb(167,184,206) 70.0, rgb(128,142,159) 100.0);
     -fx-padding: 5 15 5 15;
     -fx-font-family: "Helvetica";
