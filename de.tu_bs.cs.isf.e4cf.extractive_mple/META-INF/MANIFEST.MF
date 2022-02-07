@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Extractive_mple
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.extractive_mple
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.extractive_mple
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
