@@ -11,31 +11,22 @@ public class FeatureModelTransformation {
 
 	public FeatureDiagramm trasformaGraphToFM(Tree tree) {
 		FeatureDiagramm diagram = factory.createFeatureDiagramm();
-
 		Feature rootFeature = factory.createFeature();
-
 		diagram.setRoot(rootFeature);
 
 		return diagram;
 	}
 
 	public Feature transformNodeRecursivly(Feature parent, Node node) {
-
 		Feature feature = factory.createFeature();
-		
-		//connect with parent
-		if(parent != null) {
+		if (parent != null) {
 			feature.setParent(parent);
 			parent.getChildren().add(feature);
 		}
 		setVariabilityClass(node, feature);
-		
-
 		return feature;
 	}
-	
-	
-	
+
 	public void setVariabilityClass(Node node, Feature feature) {
 		switch (node.getVariabilityClass()) {
 		case MANDATORY:
@@ -49,8 +40,5 @@ public class FeatureModelTransformation {
 			break;
 		}
 	}
-	
-	
-	
 
 }
