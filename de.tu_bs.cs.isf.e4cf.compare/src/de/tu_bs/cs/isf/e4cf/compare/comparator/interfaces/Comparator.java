@@ -18,6 +18,17 @@ public interface Comparator<Type> {
 	 */
 	public boolean isComparable(Type firstNode, Type secondNode);
 	
+	/*
+	 * This method returns the weight of this comparator
+	 */
+	public Float getWeight();
+	
+
+	/*
+	 * This method is used to set the weight of this comparator
+	 */
+	public void setWeight(Float weight);
+	
 	/**
 	 * This method compares two nodes of the same type and returns the similarity.
 	 */

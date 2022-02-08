@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model/src-gen"
+    editDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model.edit/src" editorDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model.editor/src"
+    modelPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model" modelName="Feature_configuration"
+    editPluginClass="featureConfiguration.provider.Feature_configurationEditPlugin"
+    editorPluginClass="featureConfiguration.presentation.Feature_configurationEditorPlugin"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" testSuiteClass="featureConfiguration.tests.Feature_configurationAllTests"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    editPluginID="/de.tu_bs.cs.isf.e4cf.featuremodel.model.edit" editorPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model.editor"
+    testsPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model.tests" usedGenPackages="constraint-metamodel.genmodel#//CrossTreeConstraints feature-metamodel.genmodel#//FeatureDiagram"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>feature_configuration.ecore</foreignModel>
+  <genPackages prefix="FeatureConfiguration" disposableProviderFactory="true" fileExtensions="fc"
+      ecorePackage="feature_configuration.ecore#/">
+    <genClasses ecoreClass="feature_configuration.ecore#//FeatureConfiguration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature_configuration.ecore#//FeatureConfiguration/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureConfiguration/featureSelection"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureConfiguration/featureDiagram"/>
+      <genOperations ecoreOperation="feature_configuration.ecore#//FeatureConfiguration/toString"/>
+    </genClasses>
+    <genClasses ecoreClass="feature_configuration.ecore#//FeatureToBooleanMap">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature_configuration.ecore#//FeatureToBooleanMap/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature_configuration.ecore#//FeatureToBooleanMap/value"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

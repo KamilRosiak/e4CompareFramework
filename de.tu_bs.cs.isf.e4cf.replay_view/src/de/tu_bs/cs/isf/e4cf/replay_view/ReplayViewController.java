@@ -18,10 +18,10 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeColumn;
 
-import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
 import FeatureDiagramModificationSet.Modification;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.replay_view.replay.ModificationReplayer;
@@ -112,7 +112,7 @@ public class ReplayViewController {
 	
 	@Optional
 	@Inject
-	public void featureModelChanged(@UIEventTopic(FDEventTable.REPLAY_FEATURE_DIAGRAM_CHANGED) FeatureDiagramm fd) {
+	public void featureModelChanged(@UIEventTopic(FDEventTable.REPLAY_FEATURE_DIAGRAM_CHANGED) FeatureDiagram fd) {
 		if (fd != null) {
 			replayer.setCurrentFeatureDiagram(fd); 
 		}

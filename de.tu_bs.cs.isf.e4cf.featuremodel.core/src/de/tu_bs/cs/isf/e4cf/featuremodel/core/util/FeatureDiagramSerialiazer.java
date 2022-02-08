@@ -19,6 +19,14 @@ public class FeatureDiagramSerialiazer {
 	public static FeatureDiagramm load(String path) {
 		return (FeatureDiagramm) EMFModelLoader.load(path, "feature-metamodel");
 	}
+	
+	public static FeatureDiagramm loadFeatureDiagram(String path) {
+		if (path.endsWith(".fm")) {
+			return load(path);
+		} else  {
+			throw new IllegalArgumentException("Selected File is not a Feature Diagram.");
+		}
+	}
 
 	/**
 	 * this method serializes a MetricContainer to a given path with a given file

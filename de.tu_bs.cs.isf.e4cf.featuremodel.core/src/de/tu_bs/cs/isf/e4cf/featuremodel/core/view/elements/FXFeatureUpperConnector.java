@@ -8,6 +8,18 @@ public class FXFeatureUpperConnector extends Circle {
 	public FXFeatureUpperConnector(Feature feature) {
 		createControl(feature);
 	}
+
+	public FXFeatureUpperConnector(boolean mandatory) {
+		setCenterX(100.0f);
+		setCenterY(100.0f);
+		setRadius(5.0f);
+		
+		if(mandatory) {
+			styleForMandatory();
+		} else {
+			styleForOptional();
+		}
+	}
 	
 	private void createControl(Feature feature) {
 		

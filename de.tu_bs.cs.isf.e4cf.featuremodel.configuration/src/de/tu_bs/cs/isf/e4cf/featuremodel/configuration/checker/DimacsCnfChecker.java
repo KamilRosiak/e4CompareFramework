@@ -24,7 +24,7 @@ import org.sat4j.specs.TimeoutException;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureDiagramIterator;
-import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.FeatureConfiguration;
+import featureConfiguration.FeatureConfiguration;
 
 public class DimacsCnfChecker implements FeatureConfigurationChecker {
 

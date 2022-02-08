@@ -3,14 +3,16 @@
 package FeatureDiagram.impl;
 
 import CrossTreeConstraints.CrossTreeConstraintsPackage;
-
 import FeatureDiagram.ArtifactReference;
+import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.FeatureDiagramPackage;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
-
+import featureConfiguration.FeatureConfigurationPackage;
+import featureConfiguration.impl.FeatureConfigurationPackageImpl;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
@@ -52,6 +54,20 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 	 * @generated
 	 */
 	private EClass artifactReferenceEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass componentFeatureEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass configurationFeatureEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -103,11 +119,17 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		// Initialize simple dependencies
 		CrossTreeConstraintsPackage.eINSTANCE.eClass();
 
+		// Obtain or create and register interdependencies
+		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(FeatureConfigurationPackage.eNS_URI);
+		FeatureConfigurationPackageImpl theFeatureConfigurationPackage = (FeatureConfigurationPackageImpl)(registeredPackage instanceof FeatureConfigurationPackageImpl ? registeredPackage : FeatureConfigurationPackage.eINSTANCE);
+
 		// Create package meta-data objects
 		theFeatureDiagramPackage.createPackageContents();
+		theFeatureConfigurationPackage.createPackageContents();
 
 		// Initialize created meta-data
 		theFeatureDiagramPackage.initializePackageContents();
+		theFeatureConfigurationPackage.initializePackageContents();
 
 		// Mark meta-data to indicate it can't be changed
 		theFeatureDiagramPackage.freeze();
@@ -155,6 +177,26 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 	@Override
 	public EReference getFeatureDiagramm_Constraints() {
 		return (EReference)featureDiagrammEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getFeatureDiagramm_Uuid() {
+		return (EAttribute)featureDiagrammEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getFeatureDiagramm_FeatureConfiguration() {
+		return (EReference)featureDiagrammEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -373,6 +415,56 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 	 * @generated
 	 */
 	@Override
+	public EClass getComponentFeature() {
+		return componentFeatureEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getComponentFeature_Featurediagramm() {
+		return (EReference)componentFeatureEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getComponentFeature_Configurationfeature() {
+		return (EReference)componentFeatureEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getConfigurationFeature() {
+		return configurationFeatureEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getConfigurationFeature_Configurationfeature() {
+		return (EReference)configurationFeatureEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public FeatureDiagramFactory getFeatureDiagramFactory() {
 		return (FeatureDiagramFactory)getEFactoryInstance();
 	}
@@ -400,6 +492,8 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		createEReference(featureDiagrammEClass, FEATURE_DIAGRAMM__ROOT);
 		createEAttribute(featureDiagrammEClass, FEATURE_DIAGRAMM__IDENTIFIER_INCREMENT);
 		createEReference(featureDiagrammEClass, FEATURE_DIAGRAMM__CONSTRAINTS);
+		createEAttribute(featureDiagrammEClass, FEATURE_DIAGRAMM__UUID);
+		createEReference(featureDiagrammEClass, FEATURE_DIAGRAMM__FEATURE_CONFIGURATION);
 
 		featureEClass = createEClass(FEATURE);
 		createEReference(featureEClass, FEATURE__CHILDREN);
@@ -424,6 +518,13 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		artifactReferenceEClass = createEClass(ARTIFACT_REFERENCE);
 		createEAttribute(artifactReferenceEClass, ARTIFACT_REFERENCE__ARTIFACT_CLEAR_NAME);
 		createEAttribute(artifactReferenceEClass, ARTIFACT_REFERENCE__REFERENCED_ARTIFACT_IDS);
+
+		componentFeatureEClass = createEClass(COMPONENT_FEATURE);
+		createEReference(componentFeatureEClass, COMPONENT_FEATURE__FEATUREDIAGRAMM);
+		createEReference(componentFeatureEClass, COMPONENT_FEATURE__CONFIGURATIONFEATURE);
+
+		configurationFeatureEClass = createEClass(CONFIGURATION_FEATURE);
+		createEReference(configurationFeatureEClass, CONFIGURATION_FEATURE__CONFIGURATIONFEATURE);
 	}
 
 	/**
@@ -451,18 +552,23 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 
 		// Obtain other dependent packages
 		CrossTreeConstraintsPackage theCrossTreeConstraintsPackage = (CrossTreeConstraintsPackage)EPackage.Registry.INSTANCE.getEPackage(CrossTreeConstraintsPackage.eNS_URI);
+		FeatureConfigurationPackage theFeatureConfigurationPackage = (FeatureConfigurationPackage)EPackage.Registry.INSTANCE.getEPackage(FeatureConfigurationPackage.eNS_URI);
 
 		// Create type parameters
 
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
+		componentFeatureEClass.getESuperTypes().add(this.getFeature());
+		configurationFeatureEClass.getESuperTypes().add(this.getFeature());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(featureDiagrammEClass, FeatureDiagramm.class, "FeatureDiagramm", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getFeatureDiagramm_Root(), this.getFeature(), null, "root", null, 0, 1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getFeatureDiagramm_IdentifierIncrement(), ecorePackage.getEInt(), "identifierIncrement", "-1", 1, 1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getFeatureDiagramm_Constraints(), theCrossTreeConstraintsPackage.getAbstractConstraint(), null, "Constraints", null, 0, -1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getFeatureDiagramm_Uuid(), ecorePackage.getEString(), "uuid", null, 1, 1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEReference(getFeatureDiagramm_FeatureConfiguration(), theFeatureConfigurationPackage.getFeatureConfiguration(), null, "featureConfiguration", null, 0, -1, FeatureDiagramm.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(featureEClass, Feature.class, "Feature", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getFeature_Children(), this.getFeature(), null, "children", null, 0, -1, Feature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -487,6 +593,13 @@ public class FeatureDiagramPackageImpl extends EPackageImpl implements FeatureDi
 		initEClass(artifactReferenceEClass, ArtifactReference.class, "ArtifactReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getArtifactReference_ArtifactClearName(), ecorePackage.getEString(), "artifactClearName", null, 1, 1, ArtifactReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getArtifactReference_ReferencedArtifactIDs(), ecorePackage.getEString(), "referencedArtifactIDs", null, 0, -1, ArtifactReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(componentFeatureEClass, ComponentFeature.class, "ComponentFeature", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getComponentFeature_Featurediagramm(), this.getFeatureDiagramm(), null, "featurediagramm", null, 1, 1, ComponentFeature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getComponentFeature_Configurationfeature(), this.getConfigurationFeature(), null, "configurationfeature", null, 0, -1, ComponentFeature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(configurationFeatureEClass, ConfigurationFeature.class, "ConfigurationFeature", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getConfigurationFeature_Configurationfeature(), theFeatureConfigurationPackage.getFeatureConfiguration(), null, "configurationfeature", null, 1, 1, ConfigurationFeature.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

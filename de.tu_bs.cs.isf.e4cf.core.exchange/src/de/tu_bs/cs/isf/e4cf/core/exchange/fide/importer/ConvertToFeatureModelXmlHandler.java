@@ -15,15 +15,15 @@ import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.xml.sax.SAXException;
 
-import FeatureDiagram.FeatureDiagramm;
 import FeatureModel.FeatureModell;
+import de.tu_bs.cs.isf.e4cf.core.exchange.fide.util.FeatureIDEConverter;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 import de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.EMFModelLoader.impl.EMFModelLoader;
-import de.tu_bs.cs.isf.e4cf.core.exchange.fide.util.FeatureIDEConverter;
 
 
 /**
@@ -44,7 +44,7 @@ public class ConvertToFeatureModelXmlHandler {
 		FeatureModell fideImpl = (FeatureModell) EMFModelLoader.load(path, "featureIDE-metamodel");
 		deleteWorkerFile(path);
 		
-		FeatureDiagramm fmdImpl = FeatureIDEConverter.convertToFamilyModel(fideImpl);
+		FeatureDiagram fmdImpl = (FeatureDiagram) FeatureIDEConverter.convertToFamilyModel(fideImpl);
 		
 		saveConvertedModel(serviceContainer, fmdImpl);
 	}
@@ -73,7 +73,7 @@ public class ConvertToFeatureModelXmlHandler {
 	 * @param serviceContainer
 	 * @param fmdImpl
 	 */
-	private void saveConvertedModel(ServiceContainer serviceContainer, FeatureDiagramm fmdImpl) {
+	private void saveConvertedModel(ServiceContainer serviceContainer, FeatureDiagram fmdImpl) {
 		FileTreeElement root = serviceContainer.workspaceFileSystem.getWorkspaceDirectory();
 		Path rootPath = FileHandlingUtility.getPath(root);
 		Path projectPath = rootPath.resolve("");

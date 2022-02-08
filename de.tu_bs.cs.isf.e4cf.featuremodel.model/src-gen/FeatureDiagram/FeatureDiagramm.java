@@ -3,7 +3,7 @@
 package FeatureDiagram;
 
 import CrossTreeConstraints.AbstractConstraint;
-
+import featureConfiguration.FeatureConfiguration;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
@@ -20,6 +20,8 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link FeatureDiagram.FeatureDiagramm#getRoot <em>Root</em>}</li>
  *   <li>{@link FeatureDiagram.FeatureDiagramm#getIdentifierIncrement <em>Identifier Increment</em>}</li>
  *   <li>{@link FeatureDiagram.FeatureDiagramm#getConstraints <em>Constraints</em>}</li>
+ *   <li>{@link FeatureDiagram.FeatureDiagramm#getUuid <em>Uuid</em>}</li>
+ *   <li>{@link FeatureDiagram.FeatureDiagramm#getFeatureConfiguration <em>Feature Configuration</em>}</li>
  * </ul>
  *
  * @see FeatureDiagram.FeatureDiagramPackage#getFeatureDiagramm()
@@ -83,5 +85,39 @@ public interface FeatureDiagramm extends EObject {
 	 * @generated
 	 */
 	EList<AbstractConstraint> getConstraints();
+
+	/**
+	 * Returns the value of the '<em><b>Uuid</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Uuid</em>' attribute.
+	 * @see #setUuid(String)
+	 * @see FeatureDiagram.FeatureDiagramPackage#getFeatureDiagramm_Uuid()
+	 * @model id="true" required="true" ordered="false"
+	 * @generated
+	 */
+	String getUuid();
+
+	/**
+	 * Sets the value of the '{@link FeatureDiagram.FeatureDiagramm#getUuid <em>Uuid</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Uuid</em>' attribute.
+	 * @see #getUuid()
+	 * @generated
+	 */
+	void setUuid(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Feature Configuration</b></em>' reference list.
+	 * The list contents are of type {@link featureConfiguration.FeatureConfiguration}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Feature Configuration</em>' reference list.
+	 * @see FeatureDiagram.FeatureDiagramPackage#getFeatureDiagramm_FeatureConfiguration()
+	 * @model
+	 * @generated
+	 */
+	EList<FeatureConfiguration> getFeatureConfiguration();
 
 } // FeatureDiagramm

@@ -60,6 +60,8 @@ public class FeatureDiagramFactoryImpl extends EFactoryImpl implements FeatureDi
 			case FeatureDiagramPackage.FEATURE: return createFeature();
 			case FeatureDiagramPackage.GRAPHICAL_FEATURE: return createGraphicalFeature();
 			case FeatureDiagramPackage.ARTIFACT_REFERENCE: return createArtifactReference();
+			case FeatureDiagramPackage.COMPONENT_FEATURE: return createComponentFeature();
+			case FeatureDiagramPackage.CONFIGURATION_FEATURE: return createConfigurationFeature();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -107,6 +109,28 @@ public class FeatureDiagramFactoryImpl extends EFactoryImpl implements FeatureDi
 	public ArtifactReference createArtifactReference() {
 		ArtifactReferenceImpl artifactReference = new ArtifactReferenceImpl();
 		return artifactReference;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public ComponentFeature createComponentFeature() {
+		ComponentFeatureImpl componentFeature = new ComponentFeatureImpl();
+		return componentFeature;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public ConfigurationFeature createConfigurationFeature() {
+		ConfigurationFeatureImpl configurationFeature = new ConfigurationFeatureImpl();
+		return configurationFeature;
 	}
 
 	/**

@@ -4,7 +4,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
-import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
@@ -56,7 +55,7 @@ public class FeatureModelEditorToolbar extends ToolBar  {
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_LOAD,e -> {
-			RCPMessageProvider.errorMessage("Load", "not implemented now.");
+			services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, "");
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_FORMAT_DIAGRAM, e-> {
@@ -73,9 +72,9 @@ public class FeatureModelEditorToolbar extends ToolBar  {
     		}	
 		});
 		
-		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_CREATE_CONFIG, e-> {
+		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SHOW_CONFIG, e-> {
 			services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
-			services.eventBroker.send(FDEventTable.EVENT_CREATE_CONFIGURATION, view.getCurrentModel());
+			services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.getCurrentModel());
 		}));
 		
 		getItems().add(loggerButton);
