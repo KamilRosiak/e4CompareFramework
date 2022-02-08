@@ -27,8 +27,15 @@ public class AbstractMetric implements Metric {
 
 	@Override
 	public void unignorType(String type) {
+		nodeIgnorList.put(type, false);
+	}
+	
+	@Override
+	public void removeIgnoreType(String type) {
 		nodeIgnorList.remove(type);
 	}
+	
+	
 
 	@Override
 	public void addComparator(String nodeType, Comparator comparator) {
@@ -36,6 +43,13 @@ public class AbstractMetric implements Metric {
 			comparators.get(nodeType).add(comparator);
 		} else {
 			comparators.put(nodeType, new ArrayList<Comparator>(FXCollections.observableArrayList(comparator)));
+		}
+	}
+	
+	@Override
+	public void removeComparator(String nodeType, Comparator comparator) {
+		if (comparators.containsKey(nodeType) && comparators.get(nodeType).contains(comparator)) {
+			comparators.get(nodeType).remove(comparator);
 		}
 	}
 

@@ -17,6 +17,7 @@ public class CompareWorkspace extends WorkspaceStructureTemplate {
 	addDirectory(CompareST.METRICS_FOLDER);
 	addDirectory(CompareST.FAMILY_MODELS);
 	addDirectory(CompareST.FEATURE_MODELS);
+	addDirectory(CompareST.FEATURE_CONFIGURATIONS);
     }
 
 }

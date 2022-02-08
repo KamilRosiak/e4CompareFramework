@@ -8,6 +8,10 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="-1"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="Constraints" upperBound="-1"
         eType="ecore:EClass constraint-metamodel.ecore#//AbstractConstraint" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="uuid" ordered="false" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="featureConfiguration" upperBound="-1"
+        eType="ecore:EClass feature_configuration.ecore#//FeatureConfiguration"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Feature">
     <eStructuralFeatures xsi:type="ecore:EReference" name="children" upperBound="-1"
@@ -25,7 +29,7 @@
         eType="#//GraphicalFeature" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" eType="#//Feature"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="identifier" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="-1"/>
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral="&quot;-1&quot;"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="hidden" lowerBound="1"
@@ -49,5 +53,15 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="referencedArtifactIDs"
         upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComponentFeature" eSuperTypes="#//Feature">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="featurediagramm" lowerBound="1"
+        eType="#//FeatureDiagramm" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="configurationfeature" upperBound="-1"
+        eType="#//ConfigurationFeature" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ConfigurationFeature" eSuperTypes="#//Feature">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="configurationfeature" lowerBound="1"
+        eType="ecore:EClass feature_configuration.ecore#//FeatureConfiguration"/>
   </eClassifiers>
 </ecore:EPackage>

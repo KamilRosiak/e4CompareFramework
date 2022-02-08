@@ -22,14 +22,16 @@ public class SelectionAreaHandler implements EventHandler<MouseEvent>{
 	private double xPosMax;
 	private double yPosMax;
 	private Pane pane;
+	private Pane root;
 	private ServiceContainer services;
     
-    public SelectionAreaHandler(Pane root, List<FXGraphicalFeature> featureList, Rectangle selectionRectangle, 
+    public SelectionAreaHandler(Pane pane, Pane root, List<FXGraphicalFeature> featureList, Rectangle selectionRectangle, 
     		PrimaryMouseButtonClickedHandler mouseClickHandler, ServiceContainer services) {
 		this.selectionRectangle = selectionRectangle;
 		this.mouseClickHandler = mouseClickHandler;
 		this.features = featureList;
-		this.pane = root;
+		this.pane = pane;
+		this.root = root;
 		this.services = services;
 		xStartPosition = 0;
 		yStartPosition = 0;
@@ -51,8 +53,8 @@ public class SelectionAreaHandler implements EventHandler<MouseEvent>{
 			xPosMax = Math.max(event.getX(), mouseClickHandler.getXPosition());
 			yPosMax = Math.max(event.getY(), mouseClickHandler.getYPosition());
 			
-			selectionRectangle.setX(xStartPosition - (pane.getTranslateX()));
-			selectionRectangle.setY(yStartPosition - (pane.getTranslateY()));
+			selectionRectangle.setX(xStartPosition);
+			selectionRectangle.setY(yStartPosition);
 			
 			selectionRectangle.setHeight(Math.abs(yPosMax - yStartPosition));
 			selectionRectangle.setWidth(Math.abs(xPosMax - xStartPosition));
@@ -89,8 +91,8 @@ public class SelectionAreaHandler implements EventHandler<MouseEvent>{
 	private void getSelectedItems() {
 		List<FXGraphicalFeature> selectedFeatures = new ArrayList<FXGraphicalFeature>();
 		for (FXGraphicalFeature feature : features) {
-			if (((feature.getXPos().get()+pane.getTranslateX()) > xStartPosition) && ((feature.getYPos().get()+pane.getTranslateY()) > yStartPosition)
-					&& ((feature.getXPos().get()+pane.getTranslateX()) < xPosMax) && ((feature.getYPos().get()+pane.getTranslateY()) < yPosMax)) {
+			if (((feature.getXPos().get()+root.getTranslateX()) > xStartPosition) && ((feature.getYPos().get()+root.getTranslateY()) > yStartPosition)
+					&& ((feature.getXPos().get()+root.getTranslateX()) < xPosMax) && ((feature.getYPos().get()+root.getTranslateY()) < yPosMax)) {
 				selectedFeatures.add(feature);
 			}
 		}

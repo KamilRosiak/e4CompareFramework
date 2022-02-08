@@ -7,7 +7,7 @@ import CrossTreeConstraints.AbstractConstraint;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramPackage;
 import FeatureDiagram.FeatureDiagramm;
-
+import featureConfiguration.FeatureConfiguration;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
@@ -35,6 +36,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link FeatureDiagram.impl.FeatureDiagrammImpl#getRoot <em>Root</em>}</li>
  *   <li>{@link FeatureDiagram.impl.FeatureDiagrammImpl#getIdentifierIncrement <em>Identifier Increment</em>}</li>
  *   <li>{@link FeatureDiagram.impl.FeatureDiagrammImpl#getConstraints <em>Constraints</em>}</li>
+ *   <li>{@link FeatureDiagram.impl.FeatureDiagrammImpl#getUuid <em>Uuid</em>}</li>
+ *   <li>{@link FeatureDiagram.impl.FeatureDiagrammImpl#getFeatureConfiguration <em>Feature Configuration</em>}</li>
  * </ul>
  *
  * @generated
@@ -79,6 +82,36 @@ public class FeatureDiagrammImpl extends MinimalEObjectImpl.Container implements
 	 * @ordered
 	 */
 	protected EList<AbstractConstraint> constraints;
+
+	/**
+	 * The default value of the '{@link #getUuid() <em>Uuid</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getUuid()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String UUID_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getUuid() <em>Uuid</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getUuid()
+	 * @generated
+	 * @ordered
+	 */
+	protected String uuid = UUID_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getFeatureConfiguration() <em>Feature Configuration</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getFeatureConfiguration()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<FeatureConfiguration> featureConfiguration;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -186,6 +219,42 @@ public class FeatureDiagrammImpl extends MinimalEObjectImpl.Container implements
 	 * @generated
 	 */
 	@Override
+	public String getUuid() {
+		return uuid;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setUuid(String newUuid) {
+		String oldUuid = uuid;
+		uuid = newUuid;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, FeatureDiagramPackage.FEATURE_DIAGRAMM__UUID, oldUuid, uuid));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EList<FeatureConfiguration> getFeatureConfiguration() {
+		if (featureConfiguration == null) {
+			featureConfiguration = new EObjectResolvingEList<FeatureConfiguration>(FeatureConfiguration.class, this, FeatureDiagramPackage.FEATURE_DIAGRAMM__FEATURE_CONFIGURATION);
+		}
+		return featureConfiguration;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case FeatureDiagramPackage.FEATURE_DIAGRAMM__ROOT:
@@ -210,6 +279,10 @@ public class FeatureDiagrammImpl extends MinimalEObjectImpl.Container implements
 				return getIdentifierIncrement();
 			case FeatureDiagramPackage.FEATURE_DIAGRAMM__CONSTRAINTS:
 				return getConstraints();
+			case FeatureDiagramPackage.FEATURE_DIAGRAMM__UUID:
+				return getUuid();
+			case FeatureDiagramPackage.FEATURE_DIAGRAMM__FEATURE_CONFIGURATION:
+				return getFeatureConfiguration();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -233,6 +306,13 @@ public class FeatureDiagrammImpl extends MinimalEObjectImpl.Container implements
 				getConstraints().clear();
 				getConstraints().addAll((Collection<? extends AbstractConstraint>)newValue);
 				return;
+			case FeatureDiagramPackage.FEATURE_DIAGRAMM__UUID:
+				setUuid((String)newValue);
+				return;
+			case FeatureDiagramPackage.FEATURE_DIAGRAMM__FEATURE_CONFIGURATION:
+				getFeatureConfiguration().clear();
+				getFeatureConfiguration().addAll((Collection<? extends FeatureConfiguration>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -254,6 +334,12 @@ public class FeatureDiagrammImpl extends MinimalEObjectImpl.Container implements
 			case FeatureDiagramPackage.FEATURE_DIAGRAMM__CONSTRAINTS:
 				getConstraints().clear();
 				return;
+			case FeatureDiagramPackage.FEATURE_DIAGRAMM__UUID:
+				setUuid(UUID_EDEFAULT);
+				return;
+			case FeatureDiagramPackage.FEATURE_DIAGRAMM__FEATURE_CONFIGURATION:
+				getFeatureConfiguration().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -272,6 +358,10 @@ public class FeatureDiagrammImpl extends MinimalEObjectImpl.Container implements
 				return identifierIncrement != IDENTIFIER_INCREMENT_EDEFAULT;
 			case FeatureDiagramPackage.FEATURE_DIAGRAMM__CONSTRAINTS:
 				return constraints != null && !constraints.isEmpty();
+			case FeatureDiagramPackage.FEATURE_DIAGRAMM__UUID:
+				return UUID_EDEFAULT == null ? uuid != null : !UUID_EDEFAULT.equals(uuid);
+			case FeatureDiagramPackage.FEATURE_DIAGRAMM__FEATURE_CONFIGURATION:
+				return featureConfiguration != null && !featureConfiguration.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -288,6 +378,8 @@ public class FeatureDiagrammImpl extends MinimalEObjectImpl.Container implements
 		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (identifierIncrement: ");
 		result.append(identifierIncrement);
+		result.append(", uuid: ");
+		result.append(uuid);
 		result.append(')');
 		return result.toString();
 	}

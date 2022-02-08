@@ -7,7 +7,7 @@ import javafx.scene.layout.Pane;
 public class DragHandler implements EventHandler<MouseEvent> {
 	private Pane root;
 	
-	private final double DRAG_SPEED = 1.5d;
+	private final double DRAG_SPEED = 1.0d;
 	
 	private double lastPressedX = 0;
 	private double lastPressedY = 0;
@@ -42,7 +42,10 @@ public class DragHandler implements EventHandler<MouseEvent> {
 			}			
 			
 			root.setTranslateX(root.getTranslateX() + translateX);
-			root.setTranslateY(root.getTranslateY() + translateY);		
+			root.setTranslateY(root.getTranslateY() + translateY);
+			
+			translateX = 0;
+			translateY = 0;
 			
 			event.consume();
 		} 		
