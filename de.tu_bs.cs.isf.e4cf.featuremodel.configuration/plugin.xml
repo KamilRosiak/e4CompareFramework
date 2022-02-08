@@ -1,36 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
 
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated feature_configuration -->
-      <package
-            uri="www.feature.configuration.de"
-            class="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.FeatureConfigurationPackage"
-            genModel="model/feature_configuration.genmodel"/>
-   </extension>
-
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated feature_configuration -->
-      <package
-            uri="www.example.com/featureDiagram"
-            class="FeatureDiagram.FeatureDiagramPackage"
-            genModel="model/feature_configuration.genmodel"/>
-   </extension>
-
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated feature_configuration -->
-      <package
-            uri="www.example.com/CrossTreeConstraints"
-            class="CrossTreeConstraints.CrossTreeConstraintsPackage"
-            genModel="model/feature_configuration.genmodel"/>
-   </extension>
-   <extension
-         id="id1"
+<extension
+         id="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.fragment"
          point="org.eclipse.e4.workbench.model">
       <fragment
-            apply="always"
-            uri="configuration.e4xmi">
+            uri="configuration.e4xmi"
+            apply="always">
       </fragment>
    </extension>
+<extension
+      point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+   <project_explorer_file_attr
+         file_extension="fc"
+         project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.featuremodel.configuration.contribution.project_explorer.FCFileExtension">
+   </project_explorer_file_attr>
+</extension>
+
 
 </plugin>

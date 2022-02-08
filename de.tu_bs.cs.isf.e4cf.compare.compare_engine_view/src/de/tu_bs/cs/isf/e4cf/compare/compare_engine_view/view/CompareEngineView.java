@@ -92,8 +92,6 @@ public class CompareEngineView implements Initializable {
 		}
 	}
 
-
-
 	/**
 	 * Add a list of artifacts to the list
 	 */

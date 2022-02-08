@@ -6,13 +6,17 @@ import java.util.List;
 import org.eclipse.swt.widgets.Display;
 
 import FeatureDiagram.ArtifactReference;
+import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
+import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
+import featureConfiguration.FeatureConfiguration;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -21,10 +25,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.util.Pair;
 
 
 public class FXGraphicalFeature extends VBox  {
@@ -45,6 +51,20 @@ public class FXGraphicalFeature extends VBox  {
 		this.childFeatures = new ArrayList<FXGraphicalFeature>();
 		createFeature();
 	}
+
+//	public void addConfigLabel(String name) {
+//		Label configLabel = new Label(name);
+//		configLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+//			if(event.getButton().equals(MouseButton.PRIMARY)) {
+//				if(event.getClickCount() == 2) {
+//					services.eventBroker.send(FDEventTable.SELECT_CONFIGURATION_EVENT, this);
+//					event.consume();
+//				}
+//			}
+//		});
+//		configLabel.getStyleClass().add("componentFeature");
+//		getChildren().add(configLabel);
+//	}
 
 	private void createFeature() {
 		setSpacing(0);
@@ -97,7 +117,7 @@ public class FXGraphicalFeature extends VBox  {
 	  * Creating the context menu for the FMEditor.
 	  */
 	 private void createContextMenu() {
-		 FXGraphicalFeatureContextMenu fmeContextMenu = new FXGraphicalFeatureContextMenu(services.eventBroker, this);
+		 FXGraphicalFeatureContextMenu fmeContextMenu = new FXGraphicalFeatureContextMenu(services, this);
 		 VBox box = this;
 		 setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
 	            @Override
@@ -163,7 +183,7 @@ public class FXGraphicalFeature extends VBox  {
 		if(feature.isOr()) {
 			setGroupVariability_OR();
 		} else if (feature.isAlternative()) {
-			setGroupVariability_ALTERNATIVE();;
+			setGroupVariability_ALTERNATIVE();
 		} else {
 			setGroupVariability_AND();	// FIXME validate
 		}
@@ -179,19 +199,30 @@ public class FXGraphicalFeature extends VBox  {
 		featureNameLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if(event.getButton().equals(MouseButton.PRIMARY)) {
 				if(event.getClickCount() == 2) {
-					services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_RENAME, feature);
-					FMESimpleTextInputDialog dialog = new FMESimpleTextInputDialog(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE,feature.getName());
-					String newName = dialog.show(Double.valueOf(Display.getCurrent().getCursorLocation().x), Double.valueOf(Display.getCurrent().getCursorLocation().y));
-					if(!newName.equals(feature.getName())) {
-						feature.setName(newName);
-						featureNameLabel.setText(newName);
+					if (getFeature() instanceof ComponentFeature) { // open feature diagram tab for component features
+						services.eventBroker.send(FDEventTable.OPEN_FEATURE_DIAGRAM, (ComponentFeature) getFeature());
+					} else if (getFeature() instanceof ConfigurationFeature) {
+						FeatureDiagramm diagram = ((ComponentFeature) parentFxFeature.getFeature()).getFeaturediagramm();
+		            	FeatureConfiguration config = ((ConfigurationFeature) feature).getConfigurationfeature();
+		            	services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
+						services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, new Pair<>(diagram, config));
+					} else { // show the rename dialog for normal features
+						showRenameFeatureDialog();
 						event.consume();
-						services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 					}
 				}
 			}
 		});
 		getChildren().add(featureNameLabel);
+	}
+
+	public void showRenameFeatureDialog() {
+		services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_RENAME, feature);
+		FMESimpleTextInputDialog dialog = new FMESimpleTextInputDialog(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE, feature.getName());
+		String newName = dialog.show(Double.valueOf(Display.getCurrent().getCursorLocation().x), Double.valueOf(Display.getCurrent().getCursorLocation().y));
+		if(!newName.equals(feature.getName())) {			
+			services.eventBroker.send(FDEventTable.SET_FEATURE_NAME, new Pair<FXGraphicalFeature, String>(this, newName));
+		}
 	}
 	
 	/**
@@ -229,6 +260,10 @@ public class FXGraphicalFeature extends VBox  {
 	public Feature getFeature() {
 		return feature;
 	}
+	
+	public FeatureModelEditorView getView() {
+		return view;
+	}
 
 	public void setFeature(Feature feature) {
 		this.feature = feature;
@@ -246,6 +281,7 @@ public class FXGraphicalFeature extends VBox  {
 		addChildFeature(fxFeature);
 		translateChildren();
 	}
+	
 	
 	/**
 	 * replacing children.
@@ -266,8 +302,10 @@ public class FXGraphicalFeature extends VBox  {
 		}
 	}
 	
-	public void rename(String name) {
-		this.featureNameLabel.setText(name);
+	public void setName(String name) {
+		feature.setName(name);
+		featureNameLabel.setText(name);
+		services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 	}
 	
 	public void setMandatory() {

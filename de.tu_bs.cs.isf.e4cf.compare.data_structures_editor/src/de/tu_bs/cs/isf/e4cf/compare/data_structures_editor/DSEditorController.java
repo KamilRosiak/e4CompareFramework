@@ -41,6 +41,8 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
@@ -627,6 +629,12 @@ public class DSEditorController {
 			ti.setExpanded(true);
 			treeView.getSelectionModel().select(ti);
 		}
+	}
+	
+	@FXML
+	public void createFeatureModel() {
+		services.eventBroker.send(FDEventTable.CREATE_FEATUREMODEL_FROM_TREEVIEW, currentTree);
+		services.partService.showPart(FDStringTable.BUNDLE_NAME);
 	}
 
 	/**

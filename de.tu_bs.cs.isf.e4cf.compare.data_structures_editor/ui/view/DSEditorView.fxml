@@ -33,6 +33,7 @@
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#expandAllItems" text="Expand All" />
             <MenuItem mnemonicParsing="false" onAction="#collapseAllItems" text="Collapse All" />
+            <MenuItem mnemonicParsing="false" onAction="#createFeatureModel" text="Create Featuremodel" />
           </items>
         </Menu>
       </menus>

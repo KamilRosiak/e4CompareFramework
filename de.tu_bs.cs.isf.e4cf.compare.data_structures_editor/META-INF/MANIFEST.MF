@@ -12,12 +12,15 @@ Require-Bundle: org.eclipse.e4.ui.di,
  de.tu_bs.cs.isf.e4cf.compare.data_structures,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.services,
+ de.tu_bs.cs.isf.e4cf.featuremodel.core,
+ org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.ui.workbench,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.parts.project_explorer,
  de.tu_bs.cs.isf.e4cf.refactoring.data_structures,
  com.google.guava,
  de.tu_bs.cs.isf.e4cf.compare
+
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.data.structures.editor.singleton.true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces,

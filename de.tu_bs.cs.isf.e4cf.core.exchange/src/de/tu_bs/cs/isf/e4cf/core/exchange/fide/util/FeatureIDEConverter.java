@@ -11,10 +11,10 @@ import CrossTreeConstraints.AbstractConstraint;
 import CrossTreeConstraints.Formula;
 import CrossTreeConstraints.impl.CrossTreeConstraintsFactoryImpl;
 import FeatureDiagram.Feature;
-import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
 import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import FeatureModel.FeatureModell;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactory;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
@@ -36,9 +36,9 @@ public class FeatureIDEConverter {
 	 * @param fideModel
 	 * @return
 	 */
-	public static FeatureDiagramm convertToFamilyModel(FeatureModell fideModel) {
+	public static FeatureDiagram convertToFamilyModel(FeatureModell fideModel) {
 		idCounter = 0;
-		FeatureDiagramm familyModel = FeatureDiagramFactoryImpl.eINSTANCE.createFeatureDiagramm();
+		FeatureDiagram familyModel = new FeatureDiagram();
 		Feature root = convertModelType(fideModel);
 		familyModel.setRoot(root);
 		//familyModel.set(convertConstraints(fideModel.getConstraints());
@@ -50,8 +50,8 @@ public class FeatureIDEConverter {
 	 * @param familyModel
 	 * @return familyModel (formatted)
 	 */
-	private static FeatureDiagramm formatModel(FeatureDiagramm familyModel) {
-		FeatureDiagramm familyModelTemp = familyModel;
+	private static FeatureDiagram formatModel(FeatureDiagram familyModel) {
+		FeatureDiagram familyModelTemp = familyModel;
 		PlacementAlgorithm formatter = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
 		formatter.format(familyModelTemp);
 		return familyModelTemp;

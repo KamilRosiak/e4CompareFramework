@@ -1,28 +1,41 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 
+import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
+import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
+import featureConfiguration.FeatureConfiguration;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.util.Pair;
 
 public class FXGraphicalFeatureContextMenu extends ContextMenu {
-	private IEventBroker eventBroker;
+	private ServiceContainer services;
 	private FXGraphicalFeature fxGraFeature;
 	
-	public FXGraphicalFeatureContextMenu(IEventBroker eventBroker, FXGraphicalFeature fxGraFeature) {
-		createControl();
-		this.eventBroker = eventBroker;
+	public FXGraphicalFeatureContextMenu(ServiceContainer services, FXGraphicalFeature fxGraFeature) {
+		if (fxGraFeature.getFeature() instanceof ComponentFeature) {
+			createComponentControl();
+		} else if (fxGraFeature.getFeature() instanceof ConfigurationFeature) {
+			createConfigurationControl();
+		} else {
+			createControl();
+		}
+		
+		this.services = services;
 		this.fxGraFeature = fxGraFeature;
 	}
-	
+ 	
 	public void createControl() {
 		this.getItems().add(addFeatureBelowMenuItem());
 		this.getItems().add(addFeatureAboveMenuItem());
+		this.getItems().add(createComponentFeature());
 		this.getItems().add(removeFeatureMenuItem());
 		this.getItems().add(removeFeatureTrunkMenuItem());
 		this.getItems().add(splitFeature());
@@ -42,12 +55,116 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(setDescription());
 	}
 
+	private void createComponentControl() {
+		this.getItems().add(loadComponentFeatureDiagram());
+		this.getItems().add(showFeatureConfigurations());
+		this.getItems().add(selectConfigurations());
+		this.getItems().add(removeFeatureMenuItem());		
+
+		this.getItems().add(new SeparatorMenuItem());
+		this.getItems().add(renameFeatureMenuItem());
+		this.getItems().add(setDescription());
+	}
+	
+	private void createConfigurationControl() {
+//		this.getItems().add(showComponentFeatureConfiguration());
+		this.getItems().add(renameFeatureMenuItem());	
+		this.getItems().add(new SeparatorMenuItem());
+		this.getItems().add(removeFeatureMenuItem());		
+	}
+	
+	private MenuItem selectConfigurations() {
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_SET_CONFIGURATION);
+		item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	hide();
+            	services.eventBroker.send(FDEventTable.SELECT_CONFIGURATION_EVENT, fxGraFeature);
+				event.consume();
+            }
+        });
+		return item;
+	}
+
+	private MenuItem showFeatureConfigurations() {
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_SHOW_CONFIGURATIONS);
+		item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	hide();
+            	FeatureDiagramm diagram = ((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm();
+            	services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
+				services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, diagram);
+            	event.consume();
+            }
+        });
+		return item;
+	}
+	
+	private MenuItem showComponentFeatureConfiguration() {
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_SHOW_COMPONENT_CONFIGURATION);
+		item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	hide();
+            	FeatureDiagramm diagram = ((ComponentFeature) fxGraFeature.getParentFxFeature().getFeature()).getFeaturediagramm();
+            	FeatureConfiguration config = ((ConfigurationFeature) fxGraFeature.getFeature()).getConfigurationfeature();
+            	services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
+				services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, new Pair<>(diagram, config));
+            	event.consume();
+            }
+        });
+		return item;
+	}
+	
+	private MenuItem renameFeatureMenuItem() {
+		MenuItem item = new MenuItem(FDStringTable.FD_DIALOG_MENU_RENAME_FEATURE);
+		item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	hide();				
+            	fxGraFeature.showRenameFeatureDialog();
+            	event.consume();
+            }
+        });
+
+		return item;
+	}
+	
+	private MenuItem createComponentFeature() {
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_CREATE_COMPONENTFEATURE);
+		item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            	Pair<String, FXGraphicalFeature> pair = new Pair<String, FXGraphicalFeature>(FDStringTable.COMPONENTFEATURE, fxGraFeature);
+            	services.eventBroker.send(FDEventTable.ADD_COMPONENTFEATURE, pair);	
+            	event.consume();
+            }
+        });
+
+		return item;
+	}
+	
+	private MenuItem loadComponentFeatureDiagram() {
+		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_LOAD_COMPONENTFEATUREDIAGRAM);
+		item.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+            public void handle(ActionEvent event) {
+				hide();
+				services.eventBroker.send(FDEventTable.LOAD_COMPONENTFEATUREDIAGRAM_EVENT, fxGraFeature);	
+            	event.consume();
+            }
+		});
+		return item;
+	}
+
 	private MenuItem addFeatureBelowMenuItem() {
 		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_ADD_FEATURE_BELOW);
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.ADD_FEATURE_BELOW, fxGraFeature);	
+            	Pair<String, FXGraphicalFeature> pair = new Pair<String, FXGraphicalFeature>(FDStringTable.FEATURE, fxGraFeature);
+            	services.eventBroker.send(FDEventTable.ADD_FEATURE_BELOW, pair);	
             	event.consume();
             }
         });
@@ -60,7 +177,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.ADD_FEATURE_ABOVE, fxGraFeature);	
+            	services.eventBroker.send(FDEventTable.ADD_FEATURE_ABOVE, fxGraFeature);	
             	event.consume();
             }
         });
@@ -74,8 +191,8 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_ABSTRACTION, fxGraFeature);
-            	eventBroker.send(FDEventTable.SET_FEATURE_ABSTRACT, fxGraFeature);	
+            	services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_ABSTRACTION, fxGraFeature);
+            	services.eventBroker.send(FDEventTable.SET_FEATURE_ABSTRACT, fxGraFeature);	
             	event.consume();
             }
         });
@@ -89,7 +206,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.CHANGE_SUBFEATURES_VISIBILITY, fxGraFeature);
+            	services.eventBroker.send(FDEventTable.CHANGE_SUBFEATURES_VISIBILITY, fxGraFeature);
             	event.consume();
             }
         });
@@ -102,7 +219,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-        		eventBroker.send(FDEventTable.REMOVE_FEATURE, fxGraFeature);	
+            	services.eventBroker.send(FDEventTable.REMOVE_FEATURE, fxGraFeature);	
         		event.consume();
             }
         });
@@ -114,7 +231,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-        		eventBroker.send(FDEventTable.REMOVE_FEATURE_TRUNK, fxGraFeature);	
+            	services.eventBroker.send(FDEventTable.REMOVE_FEATURE_TRUNK, fxGraFeature);	
         		event.consume();
             }
         });	
@@ -126,7 +243,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.SET_FEATURE_MANDATORY, fxGraFeature);
+            	services.eventBroker.send(FDEventTable.SET_FEATURE_MANDATORY, fxGraFeature);
         		event.consume();
             }
         });
@@ -138,7 +255,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.SET_FEATURE_OPTIONAL, fxGraFeature);
+            	services.eventBroker.send(FDEventTable.SET_FEATURE_OPTIONAL, fxGraFeature);
         		event.consume();
             }
         });
@@ -191,7 +308,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.GROUP_SELECTED_FEATURES_IN_FEATURE, fxGraFeature);	
+            	services.eventBroker.send(FDEventTable.GROUP_SELECTED_FEATURES_IN_FEATURE, fxGraFeature);	
             	event.consume();
             }
         });
@@ -203,7 +320,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.MOVE_SELECTED_FEATURES_UNDER_FEATURE, fxGraFeature);	
+            	services.eventBroker.send(FDEventTable.MOVE_SELECTED_FEATURES_UNDER_FEATURE, fxGraFeature);	
             	event.consume();
             }
         });
@@ -215,7 +332,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.SPLIT_FEATURE, fxGraFeature);	
+            	services.eventBroker.send(FDEventTable.SPLIT_FEATURE, fxGraFeature);	
             	event.consume();
             }
         });
@@ -227,7 +344,8 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	eventBroker.send(FDEventTable.SET_DESCRIPTION, fxGraFeature);	
+				hide();
+				services.eventBroker.send(FDEventTable.SET_DESCRIPTION, fxGraFeature);	
             	event.consume();
             }
         });

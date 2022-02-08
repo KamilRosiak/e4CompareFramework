@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model/src-gen"
-    editorDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model/src"
-    modelPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model" modelName="Feature-metamodel"
-    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
-    complianceLevel="8.0" copyrightFields="false" editPluginID="/de.tu_bs.cs.isf.e4cf.featuremodel.model.edit"
-    editorPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model" usedGenPackages="constraint-metamodel.genmodel#//CrossTreeConstraints"
+    editorDirectory="/de.tu_bs.cs.isf.e4cf.featuremodel.model/src" modelPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model"
+    modelName="Feature-metamodel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
+    editPluginID="/de.tu_bs.cs.isf.e4cf.featuremodel.model.edit" editorPluginID="de.tu_bs.cs.isf.e4cf.featuremodel.model"
+    usedGenPackages="constraint-metamodel.genmodel#//CrossTreeConstraints feature_configuration.genmodel#//featureConfiguration"
     operationReflection="true" importOrganizing="true">
   <foreignModel>feature-metamodel.ecore</foreignModel>
   <genPackages prefix="FeatureDiagram" disposableProviderFactory="true" ecorePackage="feature-metamodel.ecore#/">
     <genClasses ecoreClass="feature-metamodel.ecore#//FeatureDiagramm">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/root"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/root"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//FeatureDiagramm/identifierIncrement"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/Constraints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/Constraints"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//FeatureDiagramm/uuid"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//FeatureDiagramm/featureConfiguration"/>
     </genClasses>
     <genClasses ecoreClass="feature-metamodel.ecore#//Feature">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//Feature/children"/>
@@ -21,8 +23,8 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//Feature/mandatory"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//Feature/alternative"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//Feature/or"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//Feature/graphicalfeature"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//Feature/parent"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//Feature/graphicalfeature"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//Feature/parent"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//Feature/identifier"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//Feature/abstract"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//Feature/hidden"/>
@@ -37,6 +39,13 @@
     <genClasses ecoreClass="feature-metamodel.ecore#//ArtifactReference">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//ArtifactReference/artifactClearName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute feature-metamodel.ecore#//ArtifactReference/referencedArtifactIDs"/>
+    </genClasses>
+    <genClasses ecoreClass="feature-metamodel.ecore#//ComponentFeature">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//ComponentFeature/featurediagramm"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//ComponentFeature/configurationfeature"/>
+    </genClasses>
+    <genClasses ecoreClass="feature-metamodel.ecore#//ConfigurationFeature">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference feature-metamodel.ecore#//ConfigurationFeature/configurationfeature"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>
