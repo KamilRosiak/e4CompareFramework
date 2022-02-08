@@ -4,7 +4,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
-import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import FeatureDiagram.impl.FeatureDiagrammImpl;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureInitializer;
