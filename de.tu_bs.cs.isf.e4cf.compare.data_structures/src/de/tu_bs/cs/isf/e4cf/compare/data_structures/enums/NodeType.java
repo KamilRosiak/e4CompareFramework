@@ -38,6 +38,8 @@ public enum NodeType {
 	 * Addition of source code artifacts to a compilation unit
 	 */
 	INCLUDE,
+	/** Used to group expressions in count controlled for statements. Sometimes necessary to differentiate between init, update and body*/
+	INITIALIZATION,
 	INTERFACE,
 	/** 
 	 * Used to express a conjunction of some sets, e.g. for expressing inheritance of multiple 
@@ -97,14 +99,22 @@ public enum NodeType {
 	 */
 	UPDATE,
 	VARIABLE_DECLARATION, // INTERESTING
+	VARIABLE_DECLARATOR,
+	CONFIGURATION,
+	COMPONENT
 	;
 	
 	public static NodeType fromString(String name) {
 	    try {
 	    	return valueOf(name);
 	    } catch (IllegalArgumentException ex) {
-	    	System.err.println("Tried to create unkown Standardized Node Type: " + name);
+	    	if(VERBOSE) {
+	    		System.err.println("Tried to create unkown Standardized Node Type: " + name);
+	    	}
+	    	
 	    	return UNDEFINED;
 	    }
 	}
+	
+	public static boolean VERBOSE;
 }

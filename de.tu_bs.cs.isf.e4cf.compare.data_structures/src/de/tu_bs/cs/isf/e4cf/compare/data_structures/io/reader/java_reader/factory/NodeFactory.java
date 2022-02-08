@@ -42,7 +42,7 @@ public class NodeFactory {
 
 		for (int i = 0; i < argSize; i++) {
 			Expression argumentExpr = n.getArgument(i);
-			Node argNode = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name() + i, args);
+			Node argNode = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name(), args);
 			argumentExpr.accept(visitor, argNode);
 		}
 		n.getArguments().clear();
@@ -50,7 +50,7 @@ public class NodeFactory {
 	}
 
 	public Node createCompilationUnitNode(CompilationUnit compilationUnit, Node parent, JavaVisitor visitor) {
-		Node cu = new NodeImpl(NodeType.COMPILATION_UNIT, compilationUnit.getClass().getSimpleName(), parent);
+		Node cu = new NodeImpl(NodeType.COMPILATION_UNIT, JavaNodeTypes.CompilationUnit.name(), parent);
 		
 		// Attach imports if available
 		if(!compilationUnit.getImports().isEmpty()) {
@@ -116,7 +116,7 @@ public class NodeFactory {
 	 * @return
 	 */
 	public Node createMethodDeclNode(MethodDeclaration n, Node arg, JavaVisitor visitor) {
-		Node p = new NodeImpl(NodeType.METHOD_DECLARATION, n.getClass().getSimpleName(), arg);
+		Node p = new NodeImpl(NodeType.METHOD_DECLARATION, JavaNodeTypes.MethodDeclaration.name(), arg);
 
 		// Add Throws as attributes
 		for (int i = n.getThrownExceptions().size(); i > 0; i--) {
@@ -130,10 +130,11 @@ public class NodeFactory {
 		int argList = n.getParameters().size();
 		for (int i = 0; i < argList; i++) {
 			Parameter concreteParameter = n.getParameter(0);
-			Node argNode = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name() + i, args);
+			Node argNode = new NodeImpl(NodeType.ARGUMENT, JavaNodeTypes.Argument.name(), args);
 			argNode.addAttribute(JavaAttributesTypes.Type.name(), new StringValueImpl(concreteParameter.getTypeAsString()));
 			concreteParameter.getName().accept(visitor, argNode);
 			concreteParameter.getModifiers().forEach(modif -> modif.accept(visitor, argNode));
+			concreteParameter.getAnnotations().forEach(anno -> anno.accept(visitor, argNode));
 			concreteParameter.removeForced();
 		}
 		// Add the returing type as attribute

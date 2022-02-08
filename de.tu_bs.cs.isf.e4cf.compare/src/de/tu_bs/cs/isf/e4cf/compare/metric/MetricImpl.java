@@ -19,7 +19,7 @@ public class MetricImpl extends AbstractMetric {
 	/**
 	 * This method adds a array of node comparators to this metric.
 	 */
-	private void addComparators(Comparator[] comparators) {
+	protected void addComparators(Comparator[] comparators) {
 		for (Comparator comparator : comparators) {
 			addComparator(comparator.getSupportedNodeType(), comparator);
 		}

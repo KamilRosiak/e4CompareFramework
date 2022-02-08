@@ -3,32 +3,32 @@ package de.tu_bs.cs.isf.e4cf.refactoring.util;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetNode;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetTree;
 
 public class ComponentTreeBuilder {
 
 	
-	public void buildComponentTree(Iterable<Component> components, Tree componentTree) {
+	public void buildComponentTree(Iterable<MultiSetTree> components, Tree componentTree) {
 		
-		for (Component component : components) {
+		for (MultiSetTree component : components) {
 			TreeItem componentTreeItem = new TreeItem(componentTree, 0);
-			componentTreeItem.setText(component.getNodeType());
+			componentTreeItem.setText("Component");
 			componentTreeItem.setData(component);
 
-			for (Node child : component.getChildren()) {
+			for (MultiSetNode child : component.getRoots()) {
 				buildTreeRecursively(child, component, new TreeItem(componentTreeItem, 0));
 			}
 
 		}
 	}
 	
-	private void buildTreeRecursively(Node node, Component component, TreeItem currentItem) {
+	private void buildTreeRecursively(MultiSetNode node, MultiSetTree component, TreeItem currentItem) {
 
-		currentItem.setText(node.getNodeType());
-		currentItem.setData(node);
+		currentItem.setText(node.getNode().getNodeType());
+		currentItem.setData(node.getNode());
 
-		for (Node child : node.getChildren()) {
+		for (MultiSetNode child : node.getChildren()) {
 			buildTreeRecursively(child, component, new TreeItem(currentItem, 0));
 		}
 

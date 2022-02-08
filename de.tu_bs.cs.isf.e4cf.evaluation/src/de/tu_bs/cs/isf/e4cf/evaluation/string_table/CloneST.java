@@ -34,12 +34,15 @@ public class CloneST {
 	public static final String REPLACE_IDENT = TAX + "ReplaceIdentifier";
 	public static final String LITERAL_CHANGE = TAX + "LiteralChange";
 	public static final String TYPE_CHANGE = TAX + "TypeChange";
-	// TODO Type III
+	// Type III
 	public static final String TAX_ADD = TAX + "AddSubtree";
 	public static final String TAX_MOVE = TAX + "MoveSubtree";
 	public static final String TAX_DELETE = TAX + "DeleteSubtree";
+	public static final String TAX_ADD_REPO = TAX + "AddFromRepository";
 	
 	// Variant Functions
 	public static final String LOG_SEPARATOR = "==========================================================";
 	public static final String VARIANT = "NewVariant";
+	public static final String SYNTAX_CORRECT_FLAG = "Metadata_SyntaxCorrect:";
+	public static final String CROSSOVER = "Crossover";
 }

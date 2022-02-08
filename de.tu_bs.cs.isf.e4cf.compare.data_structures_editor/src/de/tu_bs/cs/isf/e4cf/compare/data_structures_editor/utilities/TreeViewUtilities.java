@@ -39,13 +39,7 @@ public final class TreeViewUtilities {
 		}
 	}
 
-	public static void decorateTreeViewWithSelectedConfigurations(TreeItem<Node> parent, NodeDecorator decorator) {
-
-		for (TreeItem<Node> child : parent.getChildren()) {
-			decorator.decorateNode(child);
-			decorateTreeViewWithSelectedConfigurations(child, decorator);
-		}
-	}
+	
 
 	/**
 	 * Creates TreeItem from a node, assigns an icon
@@ -82,6 +76,9 @@ public final class TreeViewUtilities {
 	public static List<TreeItem<Node>> searchTreeItem(TreeItem<Node> item, String name,
 			List<TreeItem<Node>> searchList) {
 		if (item.getValue().toString().toLowerCase().contains(name)) {
+			searchList.add(item);
+		}
+		if (item.getValue().getUUID().toString().toLowerCase().equals(name.toLowerCase())) {
 			searchList.add(item);
 		}
 

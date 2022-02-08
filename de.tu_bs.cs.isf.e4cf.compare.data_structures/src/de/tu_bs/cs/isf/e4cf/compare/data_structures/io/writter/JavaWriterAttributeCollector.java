@@ -5,14 +5,12 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.SuperExpr;
+import com.github.javaparser.ast.expr.TypeExpr;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
-import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.ast.type.UnionType;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
@@ -32,16 +30,11 @@ public class JavaWriterAttributeCollector {
 	private NodeList<AnnotationExpr> _annotation = new NodeList<AnnotationExpr>();
 	private boolean _asteriks = false;
 	private NodeList<ClassOrInterfaceType> _bound = new NodeList<ClassOrInterfaceType>();
-	private Expression _check = null;
-	private int _children = 0;
 	private String _comment = new String();
-	private Expression _comparison = null;
 	private NodeList<Expression> _condition = new NodeList<Expression>();
 	private boolean _default = false;
-	private Expression _else = null;
 	private Expression _expression = null;
 	private String _identifier = new String();
-	private NodeList<Expression> _initilization = new NodeList<Expression>();
 	private NodeList<ClassOrInterfaceType> _interface = new NodeList<ClassOrInterfaceType>();
 	private boolean _isEnclosingParameters = false;
 	private boolean _isEnum = false;
@@ -49,7 +42,6 @@ public class JavaWriterAttributeCollector {
 	private boolean _isThis = true;
 	private Expression _iterator = null;
 	private String _key = new String();
-	private Expression _message = null;
 	private NodeList<Modifier> _modifier = new NodeList<Modifier>();
 	private String _name = new String();
 	private String _operator = new String();
@@ -61,12 +53,11 @@ public class JavaWriterAttributeCollector {
 	private Statement _statement = null;
 	private boolean _static = false;
 	private String _superclass = new String();
-	private Expression _superexpr = null;
 	private Expression _target = null;
 	private Expression _then = null;
 	private NodeList<ReferenceType> _throws = new NodeList<ReferenceType>();
 	private Type _type = null;
-	private TypeParameter _typeargument = null;
+	private NodeList<Type> _typearguments = new NodeList<Type>();
 	private NodeList<Type> _typeParameterBound = new NodeList<Type>();
 	private NodeList<ReferenceType> _unionType = new NodeList<ReferenceType>();
 	private NodeList<Expression> _update = new NodeList<Expression>();
@@ -83,9 +74,23 @@ public class JavaWriterAttributeCollector {
 		for (Attribute attribute : n.getAttributes()) {
 			final String key = attribute.getAttributeKey();
 			final StringValueImpl singleVal = (StringValueImpl) attribute.getAttributeValues().iterator().next();
-
-			if (key.equals(JavaAttributesTypes.Annotation.name())) {
-				for (Value value : attribute.getAttributeValues()) {
+			
+			/* 
+			 * Modifiers need to be taken care of beforehand, as they are not all listed individually in enum.
+			 * E.g. "STATIC_modifier" should be taken care of in place of general modifiers
+			 */
+			if (key.contains(JavaAttributesTypes.Modifer.name())) {
+				collectModifier(attribute);
+				continue;
+			}
+			
+			switch (JavaAttributesTypes.valueOf(key)) {
+			case AccessModifier:
+				collectModifier(attribute);
+				break;
+				
+			case Annotation:
+				for (Value<?> value : attribute.getAttributeValues()) {
 					// Annotations start with an at-symbol
 					if(value instanceof StringValueImpl) {
 						StringValueImpl stringVal = (StringValueImpl)value;
@@ -94,153 +99,173 @@ public class JavaWriterAttributeCollector {
 						}
 						_annotation.add(StaticJavaParser.parseAnnotation(stringVal.getValue()));
 					}
-
 				}
-			} else if (key.equals(JavaAttributesTypes.Asterisks.name())) {
+				break;
+				
+			case Asterisks:
 				_asteriks = Boolean.valueOf(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Bound.name())) {
-				/*
-				 * Attribute Bound contains the number of bound children
-				 * 
-				 * attribute.getAttributeValues() .forEach(val ->
-				 * _bound.add(StaticJavaParser.parseClassOrInterfaceType(val)));
-				 */
-			} else if (key.equals(JavaAttributesTypes.Check.name())) {
-				_check = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Children.name())) {
-				_children = Integer.parseInt(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Comment.name())) {
+				break;
+				
+			case Bound:
+				break;
+				
+			case Comment:
 				_comment = singleVal.getValue();
-			} else if (key.equals(JavaAttributesTypes.Comparison.name())) {
-				_comparison = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Condition.name())) {
+				break;
+				
+			case Condition:
 				attribute.getAttributeValues().forEach(val -> _condition.add(StaticJavaParser.parseExpression((String) val.getValue())));
-			} else if (key.equals(JavaAttributesTypes.Default.name())) {
+				break;
+				
+			case Default:
 				_default = Boolean.valueOf(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Else.name())) {
-				_else = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Expression.name())) {
+				break;
+				
+			case Expression:
 				_expression = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Identifier.name())) {
+				break;
+				
+			case Identifier:
 				_identifier = singleVal.getValue();
-			} else if (key.equals(JavaAttributesTypes.Initialization.name())) {
-				Expression expr;
-				for (Value val : attribute.getAttributeValues()) {
-					if(val instanceof StringValueImpl) {
-						StringValueImpl stringVal = (StringValueImpl)val;
-						if (stringVal.getValue().startsWith("{") && stringVal.getValue().endsWith("}")) {
-							expr = StaticJavaParser.parseExpression("new " + getType().asString() + " " + val);
-						} else {
-							try {
-								expr = StaticJavaParser.parseExpression(stringVal.getValue());
-							} catch (ParseProblemException ppe) {
-								expr = StaticJavaParser.parseVariableDeclarationExpr(stringVal.getValue());
-							}
-						}
-						_initilization.add(expr);
-					}
-
-				}
-			} else if (key.equals(JavaAttributesTypes.Interface.name())) {
-				attribute.getAttributeValues()
-						.forEach(val -> _interface.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue())));
-			} else if (key.equals(JavaAttributesTypes.isEnclosingParameters.name())) {
-				_isEnclosingParameters = Boolean.valueOf(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.IsEnum.name())) {
+				break;
+				
+			case Interface:
+				attribute.getAttributeValues().forEach(val -> 
+					_interface.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue())));
+				break;
+				
+			case IsEnum:
 				_isEnum = Boolean.valueOf(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.IsInterface.name())) {
+				break;
+				
+			case IsInterface:
 				_isinterface = Boolean.valueOf(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.IsThis.name())) {
+				break;
+				
+			case IsThis:
 				_isThis = Boolean.valueOf(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Iterator.name())) {
+				break;
+				
+			case Iterator:
 				_iterator = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Key.name())) {
+				break;
+				
+			case Key:
 				_key = singleVal.getValue();
-			} else if (key.equals(JavaAttributesTypes.Message.name())) {
-				_message = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.contains(JavaAttributesTypes.Modifer.name()) || key.equals(JavaAttributesTypes.AccessModifier.name())) {
-				attribute.getAttributeValues()
-						.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf((String) val.getValue()))));
-			} else if (key.equals(JavaAttributesTypes.Name.name())) {
+				break;
+				
+			case Name:
 				_name = singleVal.getValue();
-			} else if (key.equals(JavaAttributesTypes.Operator.name())) {
+				break;
+				
+			case NonAccessModifier:
+				break;
+				
+			case Operator:
 				_operator = singleVal.getValue();
-			} else if (key.equals(JavaAttributesTypes.Package.name())) {
+				break;
+				
+			case Package:
 				_package = singleVal.getValue();
-			} else if (key.equals(JavaAttributesTypes.Resource.name())) {
-				attribute.getAttributeValues()
-						.forEach(val -> _resource.add(StaticJavaParser.parseVariableDeclarationExpr((String) val.getValue())));
-			} else if (key.equals(JavaAttributesTypes.ReturnType.name())) {
+				break;
+				
+			case Resource:
+				attribute.getAttributeValues().forEach(val ->
+					_resource.add(StaticJavaParser.parseVariableDeclarationExpr((String) val.getValue())));
+				break;
+				
+			case ReturnType:
 				_returnType = StaticJavaParser.parseType(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Scope.name())) {
-				if (singleVal.equals("super")) {
-					/*
-					 * When the scope is "super" the JavaParser can't parse the expression (v3.18.0)
-					 * so the superexpr is created manually.
-					 */
-					_scope = new SuperExpr();
-				} else {
+				break;
+				
+			case Scope:
+				try {
+					// Try parsing as type to preserve Generics/Typing
+					_scope = new TypeExpr(StaticJavaParser.parseType(singleVal.getValue()));
+				} catch (ParseProblemException ppe) {
+					// Fallback to any expression, if type expr did not match
 					_scope = StaticJavaParser.parseExpression(singleVal.getValue());
 				}
-			} else if (key.equals(JavaAttributesTypes.Selector.name())) {
+				break;
+				
+			case Selector:
 				_selector = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Statement.name())) {
+				break;
+				
+			case Statement:
 				_statement = StaticJavaParser.parseStatement(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Static.name())) {
+				break;
+				
+			case Static:
 				_static = Boolean.valueOf(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Superclass.name())) {
+				break;
+				
+			case Superclass:
 				_superclass = singleVal.getValue();
-			} else if (key.equals(JavaAttributesTypes.SuperExpr.name())) {
-				_superexpr = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Target.name())) {
+				break;
+				
+			case Target:
 				_target = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Then.name())) {
-				_then = StaticJavaParser.parseExpression(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.Throws.name())) {
-				attribute.getAttributeValues()
-						.forEach(val -> _throws.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue())));
-			} else if (key.equals(JavaAttributesTypes.Type.name())) {
+				break;
+				
+			case Throws:
+				attribute.getAttributeValues().forEach(val -> 
+					_throws.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue())));
+				break;
+				
+			case Type:
 				if (!singleVal.getValue().contains("|")) {
-					_type = StaticJavaParser.parseType(singleVal.getValue());
+					if (!singleVal.getValue().equals("null")) {
+						_type = StaticJavaParser.parseType(singleVal.getValue());
+					}
 				} else {
 					for (String type : singleVal.getValue().split("\\|")) {
 						_unionType.add(StaticJavaParser.parseClassOrInterfaceType(type));
 					}
 				}
-			} else if (key.equals(JavaAttributesTypes.TypeArgument.name())) {
-				_typeargument = StaticJavaParser.parseTypeParameter(singleVal.getValue());
-			} else if (key.equals(JavaAttributesTypes.TypeParameterBound.name())) {
-				attribute.getAttributeValues().forEach(val -> {
-					if (val.equals("?")) {
-						// Question mark type seems unparseable, so this is done manually
-						_typeParameterBound.add(new ClassOrInterfaceType("?"));
-					} else {
-						_typeParameterBound.add(StaticJavaParser.parseClassOrInterfaceType((String) val.getValue()));
-					}
-				});
-			} else if (key.equals(JavaAttributesTypes.Update.name())) {
-				attribute.getAttributeValues().forEach(val -> _update.add(StaticJavaParser.parseExpression((String) val.getValue())));
-			} else if (key.equals(JavaAttributesTypes.Value.name())) {
-				/*
-				 * The value can be an array initializer expr, e.g. "{0, 1, 2}", which cannot be parsed. This
-				 * needs some manual work.
-				 */
-				if (singleVal.getValue().startsWith("{") && singleVal.getValue().endsWith("}")) {
-					NodeList<Expression> values = new NodeList<Expression>();
-					for (String v : singleVal.getValue().substring(1,singleVal.getValue().length()-1).split(",")) {
-						values.add(StaticJavaParser.parseExpression(v));
-					}
-					_value = new ArrayInitializerExpr(values);
+				break;
+				
+			case TypeArgument:
+				// Might be multiple <A[],B...>
+				attribute.getAttributeValues().forEach(v -> {
+					Type t = StaticJavaParser.parseType((String) v.getValue());
+					_typearguments.add(t);
+					});
+				break;
+				
+			case Value:
+				if (singleVal.getValue().contains("?")) {
+					// Don't parse it, instead: just append the extendedType here
+					// IMO this shouldn't even be here but I can't find it in Reader
+					String ext = singleVal.getValue().replaceFirst("\\? extends ", "");
+					_typearguments.add(StaticJavaParser.parseType(ext));
 				} else {
 					_value = StaticJavaParser.parseExpression(singleVal.getValue());
 				}
-			} else {
+				break;
+				
+			case isEnclosingParameters:
+				_isEnclosingParameters = Boolean.valueOf(singleVal.getValue());
+				break;
+				
+			default:
 				System.out.println(key);
 				throw new UnsupportedOperationException(key + " has not been implemented.");
 			}
+			
 		}
 	}
 
+	private void collectModifier(Attribute attribute) {
+		attribute.getAttributeValues()
+			.forEach(val -> _modifier.add(new Modifier(Modifier.Keyword.valueOf((String) val.getValue()))));
+	}
+	
+	
+	// ================================================================================================================
+	// Getter Section
+	// ================================================================================================================
+	
 	public NodeList<AnnotationExpr> getAnnotation() {
 		return _annotation;
 	}
@@ -253,20 +278,8 @@ public class JavaWriterAttributeCollector {
 		return _bound;
 	}
 
-	public Expression getCheck() {
-		return _check;
-	}
-
-	public int getChildren() {
-		return _children;
-	}
-
 	public String getComment() {
 		return _comment;
-	}
-
-	public Expression getComparison() {
-		return _comparison;
 	}
 
 	public NodeList<Expression> getCondition() {
@@ -277,20 +290,12 @@ public class JavaWriterAttributeCollector {
 		return _default;
 	}
 
-	public Expression getElse() {
-		return _else;
-	}
-
 	public Expression getExpression() {
 		return _expression;
 	}
 
 	public String getIdentifier() {
 		return _identifier;
-	}
-
-	public NodeList<Expression> getInitilization() {
-		return _initilization;
 	}
 
 	public NodeList<ClassOrInterfaceType> getInterface() {
@@ -315,10 +320,6 @@ public class JavaWriterAttributeCollector {
 
 	public String getKey() {
 		return _key;
-	}
-
-	public Expression getMessage() {
-		return _message;
 	}
 
 	public NodeList<Modifier> getModifier() {
@@ -365,10 +366,6 @@ public class JavaWriterAttributeCollector {
 		return _superclass;
 	}
 
-	public Expression getSuperExpr() {
-		return _superexpr;
-	}
-
 	public Expression getTarget() {
 		return _target;
 	}
@@ -389,8 +386,8 @@ public class JavaWriterAttributeCollector {
 		return t;
 	}
 
-	public TypeParameter getTypeArgument() {
-		return _typeargument;
+	public NodeList<Type> getTypeArguments() {
+		return _typearguments;
 	}
 
 	public NodeList<Type> getTypeParameterBound() {
@@ -408,4 +405,5 @@ public class JavaWriterAttributeCollector {
 	public boolean isEnum() {
 		return _isEnum;
 	}
+
 }

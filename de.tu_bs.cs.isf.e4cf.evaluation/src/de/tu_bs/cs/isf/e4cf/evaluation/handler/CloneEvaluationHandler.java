@@ -1,11 +1,15 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.handler;
 
+import java.util.Optional;
+
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorDialog;
+import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions;
 import de.tu_bs.cs.isf.e4cf.evaluation.evaluator.CloneEvaluator;
 
 /**
@@ -17,10 +21,14 @@ public class CloneEvaluationHandler {
 	 * @param services
 	 */
 	@Execute
-	public void execute(IEclipseContext context, CloneEvaluator evaluator) {
+	public void execute(IEclipseContext context, ServiceContainer services, CloneEvaluator evaluator) {
 		System.out.println("Hello Evaluator");
 
-		evaluator.evaluate();
+		EvaluatorDialog dialog = new EvaluatorDialog(context, services.imageService);
+		Optional<EvaluatorOptions> result = dialog.open();
+		result.ifPresent(options -> {
+			evaluator.evaluate(options);
+		});
 
 		System.out.println("Goodbye");
 	}
@@ -33,23 +41,24 @@ public class CloneEvaluationHandler {
 			FileTreeElement directoryElement = services.rcpSelectionService.getCurrentSelectionFromExplorer();
 			directoryElement.getChildren();
 
-			boolean foundModTree = false;
+			boolean foundVariantTree = false;
 			boolean foundTree = false;
 			boolean foundLog = false;
 			
 			for (FileTreeElement child : directoryElement.getChildren()) {
 				String name = child.getFileName();
 				
-				if (name.endsWith(".mod.tree")) {
-					foundModTree = true;
-				} else if (name.endsWith(".tree")) {
+				// We need at least a log file and an original and one variant tree
+				if (name.endsWith("0~1.tree")) {
+					foundVariantTree = true;
+				} else if (name.endsWith("0~0.tree")) {
 					foundTree = true;
 				} else if (name.endsWith(".log")) {
 					foundLog = true;
 				}
 			}
 			
-			return foundLog && foundModTree && foundTree;
+			return foundLog && foundVariantTree && foundTree;
 			
 		} else {
 			return false;

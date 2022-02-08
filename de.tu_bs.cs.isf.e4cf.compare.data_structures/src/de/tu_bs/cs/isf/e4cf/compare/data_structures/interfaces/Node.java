@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 import java.util.List;
 import java.util.UUID;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 
@@ -189,25 +190,12 @@ public interface Node {
 	 */
 	public int getPosition();
 
+	public void addChildAtPosition(Node child, int position);
+
 	/**
 	 * This method sets the position of this node.
 	 */
 	public void setPosition(int position);
-
-	/**
-	 * This method updates the position of this node.
-	 */
-	public void updatePosition(int position);
-
-	/**
-	 * This method sorts the children by position.
-	 */
-	public void sortChildrenByPosition();
-
-	/**
-	 * This method removes a given child.
-	 */
-	public void removeChild(Node child, int position);
 
 	/**
 	 * Sets the standardized node type of this node
@@ -223,10 +211,49 @@ public interface Node {
 	 * Changes how the node displays itself when calling .toString()
 	 */
 	public void setRepresentation(String representation);
-	
+
 	/**
 	 * Sorting all child elements using start and endline
 	 */
 	public void sortChildNodes();
+
+	/**
+	 * Traverse the Node composite in a breadth first manner. Not safe for cycles
+	 * 
+	 * @return The iterator used for traversal
+	 */
+	public Iterable<Node> breadthFirstSearch();
+
+	/**
+	 * Traverse the Node composite in a depth first manner. Not safe for cycles
+	 * 
+	 * @return The iterator used for traversal
+	 */
+	public Iterable<Node> depthFirstSearch();
+
+	public void addNodeAfterwards(Node node);
+
+	/**
+	 * This method returns the number of optional elements within this comparison.
+	 */
+	public int numberOfOptionals();
+
+	/**
+	 * This method returns the number of alternative elements within this
+	 * comparison.
+	 */
+	public int numberOfAlternatives();
+
+	/**
+	 * This method returns the number of mandatory elements within this comparison.
+	 */
+	public int numberOfMandatories();
+
+	/**
+	 * Returns the configuration of a single variant
+	 * 
+	 * @return
+	 */
+	public Configuration createConfiguration();
 
 }

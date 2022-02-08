@@ -13,38 +13,39 @@ public abstract class AbstractComparsion<Type> implements Comparison<Type> {
 	private float similarity;
 	private List<Comparison<Type>> childComparisons;
 	private List<ResultElement<Type>> results;
-	
+
 	public AbstractComparsion(Type leftArtifact, Type rightArtifact) {
 		setLeftArtifact(leftArtifact);
 		setRightArtifact(rightArtifact);
 		this.childComparisons = new ArrayList<Comparison<Type>>();
 		this.results = new ArrayList<ResultElement<Type>>();
 	}
-	
+
 	@Override
 	public Type getLeftArtifact() {
 		return this.leftArtifact;
 	}
-	
+
 	@Override
 	public Type getRightArtifact() {
 		return this.rightArtifact;
 	}
-	
+
 	@Override
 	public void setRightArtifact(Type artifact) {
 		this.rightArtifact = artifact;
 	}
-	
+
 	@Override
 	public void setLeftArtifact(Type artifact) {
 		this.leftArtifact = artifact;
 	}
+
 	@Override
 	public float getSimilarity() {
 		return this.similarity;
 	}
-	
+
 	@Override
 	public void setSimilarity(float similarity) {
 		this.similarity = similarity;
@@ -54,17 +55,17 @@ public abstract class AbstractComparsion<Type> implements Comparison<Type> {
 	public List<Comparison<Type>> getChildComparisons() {
 		return this.childComparisons;
 	}
-	
+
 	@Override
 	public void addChildComparison(Comparison<Type> comparison) {
 		this.childComparisons.add(comparison);
 	}
-	
+
 	@Override
 	public void addResultElement(ResultElement<Type> result) {
 		this.results.add(result);
 	}
-	
+
 	@Override
 	public List<ResultElement<Type>> getResultElements() {
 		return this.results;

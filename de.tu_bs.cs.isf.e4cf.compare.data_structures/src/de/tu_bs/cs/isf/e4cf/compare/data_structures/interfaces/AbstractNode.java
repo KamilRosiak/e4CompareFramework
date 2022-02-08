@@ -2,18 +2,14 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.UUID;
 
-import com.google.common.collect.Lists;
-
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeIterator;
 
 public abstract class AbstractNode implements Node {
 	@SuppressWarnings("unused")
@@ -181,116 +177,12 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
-	public void addChild(Node node, int position) {
-
-		for (Node child : this.children) {
-			if (child.getPosition() >= position) {
-				child.setPosition(child.getPosition() + 1);
-			}
+	public void addChild(Node child, int position) {
+		if (position > getChildren().size()) {
+			position = getChildren().size();
 		}
-
-		node.setPosition(position);
-		this.children.add(node);
-		sortChildrenByPosition();
-
-	}
-
-	@Override
-	public void updatePosition(int position) {
-
-		parent.sortChildrenByPosition();
-		int index = parent.getChildren().indexOf(this);
-
-		if (position >= parent.getChildren().size()) {
-			position = parent.getChildren().size() - 1;
-		}
-
-		int difference = this.getPosition() - position;
-
-		if (difference > 0) {
-
-			while (difference != 0) {
-				Node child = parent.getChildren().get(index - 1);
-
-				if (child instanceof Component) {
-
-					Component component = (Component) child;
-
-					Map<Integer, Configuration> mapping = component.getNodeComponentRelation().get(parent);
-
-					for (Entry<Integer, Configuration> entry : mapping.entrySet()) {
-						if (entry.getKey() == index - 1) {
-							mapping.remove(entry.getKey());
-							mapping.put(this.getPosition(), entry.getValue());
-							this.setPosition(entry.getKey());
-							break;
-						}
-					}
-
-				} else {
-					int childPosition = child.getPosition();
-					child.setPosition(this.getPosition());
-					this.setPosition(childPosition);
-
-				}
-				difference -= 1;
-
-			}
-
-		} else if (difference < 0) {
-
-			while (difference != 0) {
-
-				Node child = parent.getChildren().get(index + 1);
-				if (child instanceof Component) {
-
-					Component component = (Component) child;
-
-					Map<Integer, Configuration> mapping = component.getNodeComponentRelation().get(parent);
-
-					for (Entry<Integer, Configuration> entry : mapping.entrySet()) {
-						if (entry.getKey() == index + 1) {
-							mapping.remove(entry.getKey());
-							mapping.put(this.getPosition(), entry.getValue());
-							this.setPosition(entry.getKey());
-							break;
-						}
-					}
-
-				} else {
-
-					int childPosition = child.getPosition();
-					child.setPosition(this.getPosition());
-					this.setPosition(childPosition);
-
-				}
-
-				difference += 1;
-			}
-		}
-	}
-
-	@Override
-	public void sortChildrenByPosition() {
-		Map<Integer, Node> treeMap = new TreeMap<Integer, Node>();
-		for (Node child : this.getChildren()) {
-			if (child instanceof Component) {
-
-				Component component = (Component) child;
-
-				Map<Integer, Configuration> mapping = component.getNodeComponentRelation().get(this);
-
-				for (Entry<Integer, Configuration> entry : mapping.entrySet()) {
-					treeMap.put(entry.getKey(), component);
-				}
-
-			} else {
-				treeMap.put(child.getPosition(), child);
-			}
-
-		}
-		this.setChildren(Lists.newArrayList(treeMap.values()));
-
+		getChildren().add(position, child);
+		child.setParent(this);
 	}
 
 	@Override
@@ -363,35 +255,29 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
+	public Iterable<Node> breadthFirstSearch() {
+		return () -> new NodeIterator(this, true);
+	}
+
+	@Override
+	public Iterable<Node> depthFirstSearch() {
+		return () -> new NodeIterator(this, false);
+	}
+
+	@Override
 	public int getPosition() {
-
-		Attribute attribute = getAttributeForKey("Position");
-		Value value = attribute.getAttributeValues().get(0);
-		return Integer.parseInt((String) value.getValue());
-
+		return parent.getChildren().indexOf(this);
 	}
 
 	@Override
 	public void setPosition(int position) {
+		parent.getChildren().remove(this);
 
-		Attribute attribute = getAttributeForKey("Position");
-		if (attribute == null) {
-			attribute = new AttributeImpl("" + position);
-		}
-		attribute.getAttributeValues().clear();
-		attribute.addAttributeValue(new StringValueImpl("" + position));
-	}
-
-	@Override
-	public void removeChild(Node child, int position) {
-		for (Node childNode : this.children) {
-			if (childNode.getPosition() >= position) {
-				childNode.setPosition(childNode.getPosition() - 1);
-			}
+		if (position > parent.getChildren().size()) {
+			position = parent.getChildren().size();
 		}
 
-		this.children.remove(child);
-		sortChildrenByPosition();
+		parent.getChildren().add(position, this);
 	}
 
 	@Override
@@ -412,5 +298,61 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public int getEndLine() {
 		return this.endLine;
+	}
+
+	@Override
+	public void addChildAtPosition(Node child, int position) {
+		if (position > getChildren().size()) {
+			position = getChildren().size();
+		}
+		getChildren().add(position, child);
+		child.setParent(this);
+	}
+
+	@Override
+	public void addNodeAfterwards(Node node) {
+		int position = getPosition();
+		if (position == parent.getChildren().size() - 1) {
+			this.parent.getChildren().add(node);
+		} else {
+			this.parent.getChildren().add(position + 1, node);
+		}
+	}
+	
+	@Override
+	public int numberOfOptionals() {
+		return countVariabilityClassNodes(this, 0, VariabilityClass.OPTIONAL);
+	}
+
+	/**
+	 * Iterates over all comparisons recursively and counts optional elements.
+	 */
+	private int countVariabilityClassNodes(Node node, int number, VariabilityClass varClass) {
+		//if the node is an optional count number up
+		int nodeNumber = 0;
+		if (node.getVariabilityClass().equals(varClass)) {
+			nodeNumber++;
+		}
+		//process child nodes
+		for (Node childNode : node.getChildren()) {
+			nodeNumber =  nodeNumber + countVariabilityClassNodes(childNode, 0, varClass);
+		}
+		return nodeNumber;
+	}
+
+	@Override
+	public int numberOfAlternatives() {
+		return countVariabilityClassNodes(this, 0, VariabilityClass.ALTERNATIVE);
+	}
+
+	@Override
+	public int numberOfMandatories() {
+		return countVariabilityClassNodes(this, 0, VariabilityClass.MANDATORY);
+	}
+	
+
+	@Override
+	public Configuration createConfiguration() {
+		return null;
 	}
 }

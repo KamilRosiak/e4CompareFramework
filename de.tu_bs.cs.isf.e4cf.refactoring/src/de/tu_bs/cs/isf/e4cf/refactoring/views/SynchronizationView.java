@@ -1,7 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -11,14 +13,14 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import com.google.common.collect.Lists;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.SynchronizationScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetTree;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ReferenceTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.SynchronizationTreeBuilder;
-
 
 public class SynchronizationView extends View {
 
@@ -30,15 +32,14 @@ public class SynchronizationView extends View {
 	private Label scopeLabel;
 	private Label componentLabel;
 	private Label taskLabel;
-	
 
-	private Component selectedComponent;
+	private MultiSetTree selectedComponent;
 
-	public Component getSelectedComponent() {
+	public MultiSetTree getSelectedComponent() {
 		return selectedComponent;
 	}
 
-	public void setSelectedComponent(Component selectedComponent) {
+	public void setSelectedComponent(MultiSetTree selectedComponent) {
 		this.selectedComponent = selectedComponent;
 	}
 
@@ -58,8 +59,7 @@ public class SynchronizationView extends View {
 		this.synchronizationTree = synchronizationTree;
 	}
 
-	private Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations;
-	private Map<Component, List<ActionScope>> componentToActions;
+	private Map<ActionScope, List<ActionScope>> actionsToSynchronizations;
 
 	private ComponentTreeBuilder componentTreeBuilder;
 	private ActionTreeBuilder actionTreeBuilder;
@@ -73,11 +73,12 @@ public class SynchronizationView extends View {
 
 	}
 
-	public void showView(Map<ActionScope, List<SynchronizationScope>> actionsToSynchronizations,
-			Map<Component, List<ActionScope>> componentToActions) {
+	private CloneModel cloneModel;
 
+	public void showView(Map<ActionScope, List<ActionScope>> actionsToSynchronizations, CloneModel cloneModel) {
+
+		this.cloneModel = cloneModel;
 		this.actionsToSynchronizations = actionsToSynchronizations;
-		this.componentToActions = componentToActions;
 		createActionTree(Lists.newArrayList(actionsToSynchronizations.keySet()));
 		createComponentTree();
 
@@ -101,9 +102,13 @@ public class SynchronizationView extends View {
 		for (TreeItem item : componentTree.getItems()) {
 			item.dispose();
 		}
+		
+		List<MultiSetTree> components = new ArrayList<MultiSetTree>();
+		for (Entry<ReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
+			components.addAll(entry.getValue());
+		}
 
-		componentTreeBuilder.buildComponentTree(componentToActions.keySet(), componentTree);
-
+		componentTreeBuilder.buildComponentTree(components, componentTree);
 	}
 
 	public void createActionTree(List<ActionScope> actionScopes) {
@@ -124,7 +129,7 @@ public class SynchronizationView extends View {
 
 	}
 
-	public void createSynchronizationTree(List<SynchronizationScope> synchronizationScopes) {
+	public void createSynchronizationTree(List<ActionScope> synchronizationScopes) {
 
 		for (TreeItem item : synchronizationTree.getItems()) {
 			item.dispose();
@@ -151,14 +156,14 @@ public class SynchronizationView extends View {
 
 	@Override
 	public void setWidgets() {
-		
+
 		taskLabel = new Label(shell, 0);
 		taskLabel.setText("Choose synchronizations to be applied:");
 
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 3;
 		taskLabel.setLayoutData(gridData);
-		
+
 		actionLabel = new Label(shell, 0);
 		actionLabel.setText("Actions");
 

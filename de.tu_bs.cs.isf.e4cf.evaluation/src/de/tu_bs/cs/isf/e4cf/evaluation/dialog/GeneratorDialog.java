@@ -21,7 +21,7 @@ public class GeneratorDialog {
 	public GeneratorDialog(IEclipseContext context, RCPImageService imageService) {
 
 		dialog = new Dialog<GeneratorOptions>();
-		dialog.setTitle("Generate Clones");
+		dialog.setTitle("Generate Variant Options");
 
 		final DialogPane pane = dialog.getDialogPane();
 		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);

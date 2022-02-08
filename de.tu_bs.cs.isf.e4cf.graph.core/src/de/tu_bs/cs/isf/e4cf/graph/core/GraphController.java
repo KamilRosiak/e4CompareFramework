@@ -74,11 +74,13 @@ public class GraphController {
 	 * Creates the example mind map and sets it as content to the viewer.
 	 */
 	private void populateViewerContents() {
-		SimpleGraphExampleFactory fac = new SimpleGraphExampleFactory();
+		IViewer viewer = getContentViewer();
 
-		SimpleGraph graph = fac.createComplexExample();
-
-		loadGraph(graph);
+		if (viewer.getContents().isEmpty()) {
+			SimpleGraphExampleFactory fac = new SimpleGraphExampleFactory();
+			SimpleGraph graph = fac.createComplexExample();
+			loadGraph(graph);
+		}
 	}
 
 	private SimpleGraphPart getGraphPart() {

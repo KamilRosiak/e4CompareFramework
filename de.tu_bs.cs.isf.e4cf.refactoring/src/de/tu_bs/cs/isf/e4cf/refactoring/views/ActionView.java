@@ -2,7 +2,7 @@ package de.tu_bs.cs.isf.e4cf.refactoring.views;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -10,9 +10,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Component;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.refactoring.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ActionScope;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetTree;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ReferenceTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ActionTreeBuilder;
 import de.tu_bs.cs.isf.e4cf.refactoring.util.ComponentTreeBuilder;
 
@@ -25,9 +27,7 @@ public class ActionView extends View {
 	private Label componentLabel;
 	private Label taskLabel;
 
-	private Component selectedComponent;
-
-	private Map<Component, List<ActionScope>> componentToActions;
+	private MultiSetTree selectedComponent;
 
 	public Tree getActionTree() {
 		return actionTree;
@@ -45,11 +45,11 @@ public class ActionView extends View {
 		this.componentTree = componentTree;
 	}
 
-	public Component getSelectedComponent() {
+	public MultiSetTree getSelectedComponent() {
 		return selectedComponent;
 	}
 
-	public void setSelectedComponent(Component selectedComponent) {
+	public void setSelectedComponent(MultiSetTree selectedComponent) {
 		this.selectedComponent = selectedComponent;
 	}
 
@@ -64,17 +64,12 @@ public class ActionView extends View {
 
 	}
 
-	public void showView(Map<Component, List<ActionScope>> componentToActions) {
+	private CloneModel cloneModel;
 
-		this.componentToActions = componentToActions;
-
+	public void showView(CloneModel cloneModel, List<ActionScope> actionScopes) {
+		this.cloneModel = cloneModel;
 		createComponentTree();
-
-		List<ActionScope> allActionScopes = new ArrayList<ActionScope>();
-		for (List<ActionScope> actionScopeList : componentToActions.values()) {
-			allActionScopes.addAll(actionScopeList);
-		}
-		createActionTree(allActionScopes);
+		createActionTree(actionScopes);
 
 		showView();
 	}
@@ -85,7 +80,13 @@ public class ActionView extends View {
 			item.dispose();
 		}
 
-		componentTreeBuilder.buildComponentTree(componentToActions.keySet(), componentTree);
+		List<MultiSetTree> components = new ArrayList<MultiSetTree>();
+
+		for (Entry<ReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
+			components.addAll(entry.getValue());
+		}
+
+		componentTreeBuilder.buildComponentTree(components, componentTree);
 	}
 
 	public void createActionTree(List<ActionScope> actionScopes) {
@@ -100,8 +101,7 @@ public class ActionView extends View {
 			actionTree.select(actionTree.getItem(0));
 
 			for (TreeItem treeItem : componentTree.getItems()) {
-				markNodeRecursively(treeItem,
-						((ActionScope) actionTree.getItem(0).getData()).getAction().getAffectedNode());
+				markNodeRecursively(treeItem, ((ActionScope) actionTree.getItem(0).getData()).getAction().getX());
 			}
 
 		}
