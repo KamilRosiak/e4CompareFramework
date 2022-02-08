@@ -7,11 +7,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.control.cell.*?> 
 
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #c1d5ef" stylesheets="@../../css/compare_engine.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.view.CompareEngineView">
    <top>
@@ -80,7 +80,7 @@
                               <Insets left="5.0" right="5.0" />
                            </VBox.margin>
                         </Label>
-                        <Button onAction="#selectMetric" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Select Metric">
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#selectMetric" text="Select Metric">
                            <VBox.margin>
                               <Insets left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
@@ -96,21 +96,31 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </HBox.margin>
                   </Button>
-                  <Button onAction="#compareArtifacts" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Compare" HBox.hgrow="ALWAYS">
+                  <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#compareArtifacts" text="Compare" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets bottom="5.0" right="5.0" top="5.0" />
                      </HBox.margin>
                   </Button>
                </children>
             </HBox>
+            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <children>
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                     <children>
+                        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+                  <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #c1d5ef" />
+               </children>
+            </VBox>
          </children>
       </VBox>
    </bottom>
    <center>
       <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="artifactTable"  maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+            <TableView fx:id="artifactTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY" /></columnResizePolicy>
               <columns>
                 <TableColumn fx:id="nameColumn" maxWidth="6000" minWidth="-1.0" prefWidth="-1.0" text="Name">
                         <cellValueFactory>

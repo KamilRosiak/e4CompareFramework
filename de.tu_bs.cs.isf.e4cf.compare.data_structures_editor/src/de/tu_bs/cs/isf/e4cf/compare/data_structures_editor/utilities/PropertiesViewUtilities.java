@@ -45,15 +45,14 @@ public class PropertiesViewUtilities {
 		value.setCellValueFactory(new PropertyValueFactory<>("attributeValues"));
 		value.setCellValueFactory(e -> {
 			String valueString = "";
-			for(Value singleValue : e.getValue().getAttributeValues()) {
-				if(singleValue instanceof StringValueImpl) {
-					valueString+= singleValue.getValue()+" ";
-				}
-				
+			for (Value singleValue : e.getValue().getAttributeValues()) {
+
+				valueString += singleValue.getValue() + " ";
+
 			}
 			return new SimpleStringProperty(valueString);
 		});
-		
+
 		tableView.setItems(data);
 		tableView.getColumns().addAll(property, value);
 		tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

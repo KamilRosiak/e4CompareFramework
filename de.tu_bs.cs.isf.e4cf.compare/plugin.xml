@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="Matcher" name="Matcher" schema="schema/Matcher.exsd"/>
+   <extension-point id="Comparator" name="Comparator" schema="schema/Comparator.exsd"/>
    <extension
          point="de.tu_bs.cs.isf.e4cf.core.PreferencesPage">
       <pref_page_attr
@@ -19,5 +20,11 @@
       <workspace_structure_attr
             workspace_structure_attr="de.tu_bs.cs.isf.e4cf.compare.extensions.workspace.CompareWorkspace">
       </workspace_structure_attr>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.compare.Comparator">
+      <comparator
+            comparator="de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator">
+      </comparator>
    </extension>
 </plugin>

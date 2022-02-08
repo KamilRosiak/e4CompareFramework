@@ -16,34 +16,34 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
  */
 
 public class AddAttributeAction extends AbstractTreeAction {
-    private Attribute addedAttr;
+	private Attribute addedAttr;
 
-    public AddAttributeAction(Node treeItem) {
-	this.setNode(treeItem);
-    }
+	public AddAttributeAction(Node treeItem) {
+		this.setNode(treeItem);
+	}
 
-    @Override
-    public void undo() {
-	getNode().getAttributes().remove(getAddedAttr());
-    }
+	@Override
+	public void undo() {
+		getNode().getAttributes().remove(getAddedAttr());
+	}
 
-    public void setList(List<Attribute> list) {
-	setList(list);
-    }
+	public void setList(List<Attribute> list) {
+		setList(list);
+	}
 
-    @Override
-    public void execute() {
-	String attrName = RCPMessageProvider.inputDialog("Attribute Name", "Enter Attribute Name");
-	String attrValue = RCPMessageProvider.inputDialog("Attribute Value", "Enter Attribute Value");
-	addedAttr = new AttributeImpl(attrName,new StringValueImpl(attrValue));
-	getNode().getAttributes().add(addedAttr);
-    }
+	@Override
+	public void execute() {
+		String attrName = RCPMessageProvider.inputDialog("Attribute Name", "Enter Attribute Name");
+		String attrValue = RCPMessageProvider.inputDialog("Attribute Value", "Enter Attribute Value");
+		addedAttr = new AttributeImpl(attrName, new StringValueImpl(attrValue));
+		getNode().getAttributes().add(addedAttr);
+	}
 
-    public Attribute getAddedAttr() {
-        return addedAttr;
-    }
+	public Attribute getAddedAttr() {
+		return addedAttr;
+	}
 
-    public void setAddedAttr(Attribute addedAttr) {
-        this.addedAttr = addedAttr;
-    }
+	public void setAddedAttr(Attribute addedAttr) {
+		this.addedAttr = addedAttr;
+	}
 }

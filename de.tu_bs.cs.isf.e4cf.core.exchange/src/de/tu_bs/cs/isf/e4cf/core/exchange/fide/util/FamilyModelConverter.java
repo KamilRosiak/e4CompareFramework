@@ -4,10 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import FeatureDiagram.Feature;
-import FeatureDiagram.FeatureDiagramm;
 import FeatureModel.FeatureModelFactory;
 import FeatureModel.FeatureModell;
 import FeatureModel.impl.FeatureModelFactoryImpl;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 
 
 /**
@@ -24,7 +24,7 @@ public class FamilyModelConverter {
 	 * @param familyModel
 	 * @return
 	 */
-	public static FeatureModell convertToFeatureIDE(FeatureDiagramm familyModel) {
+	public static FeatureModell convertToFeatureIDE(FeatureDiagram familyModel) {
 		uniqueNames = new HashSet<>();
 		
 		FeatureModell featureIDEModel = FeatureModelFactory.eINSTANCE.createFeatureModell();

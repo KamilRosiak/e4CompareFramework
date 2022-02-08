@@ -1,12 +1,17 @@
 
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.handler;
 
+import java.util.List;
+
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 /**
@@ -38,12 +43,14 @@ public class OpenInTreeViewHandler {
 	 * @return
 	 */
 	@Evaluate
-	public boolean isFileReaderAvailable(ServiceContainer services, ReaderManager manager) {
-		Tree tree = manager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
-		if (tree == null) {
+	public boolean isFileReaderAvailable(ServiceContainer services, ReaderManager manager, IEclipseContext context) {
+		List<FileTreeElement> selections = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
+		if (selections.size() != 1)
 			return false;
-		} else {
+		if (selections.get(0).isDirectory())
 			return true;
-		}
+		if (null == ArtifactIOUtil.getReaderForType(selections.get(0), context))
+			return false;
+		return true;
 	}
 }

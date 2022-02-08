@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewpoint:DAnalysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:viewpoint="http://www.eclipse.org/sirius/1.1.0" uid="_8lXZQM9eEeuom_Q-natYXw" version="14.3.1.202003261200">
+  <semanticResources>featureDiagramModificationSet.ecore</semanticResources>
+  <semanticResources>feature-metamodel.ecore</semanticResources>
+  <semanticResources>constraint-metamodel.ecore</semanticResources>
+  <semanticResources>feature_configuration.ecore</semanticResources>
+  <semanticResources>featureDiagramModificationSet.genmodel</semanticResources>
+  <semanticResources>feature-metamodel.genmodel</semanticResources>
+  <semanticResources>constraint-metamodel.genmodel</semanticResources>
+</viewpoint:DAnalysis>

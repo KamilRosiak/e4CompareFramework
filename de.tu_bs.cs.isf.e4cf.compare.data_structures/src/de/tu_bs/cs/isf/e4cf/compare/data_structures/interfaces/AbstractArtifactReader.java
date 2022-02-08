@@ -15,7 +15,4 @@ public abstract class AbstractArtifactReader implements ArtifactReader {
 	public void setSupportedFiles(String[] supportedFiles) {
 		this.supportedFiles = supportedFiles;
 	}
-
-
-	
 }

@@ -8,7 +8,6 @@ import CrossTreeConstraints.CrossTreeConstraintsPackage;
 import CrossTreeConstraints.Formula;
 import CrossTreeConstraints.Literal;
 import CrossTreeConstraints.Operator;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;

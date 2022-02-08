@@ -21,6 +21,6 @@ public class ComparatorViewController {
     @PostConstruct
     public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
 	view = FXMLUtil.<ComparatorView>loadFXML(parent, context, ComparatorST.BUNDLE_NAME, COMPARATOR_VIEW_FXML);
-	view.setCss(COMPARATOR_VIEW_CSS_LOCATION);
+//	view.setCss(COMPARATOR_VIEW_CSS_LOCATION);
     }
 }

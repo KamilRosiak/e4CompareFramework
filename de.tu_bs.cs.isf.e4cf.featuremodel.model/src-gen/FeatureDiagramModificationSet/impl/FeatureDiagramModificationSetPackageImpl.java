@@ -12,7 +12,7 @@ import FeatureDiagramModificationSet.FeatureDiagramModificationSetFactory;
 import FeatureDiagramModificationSet.FeatureDiagramModificationSetPackage;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
 import FeatureDiagramModificationSet.Modification;
-
+import featureConfiguration.FeatureConfigurationPackage;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
@@ -106,6 +106,7 @@ public class FeatureDiagramModificationSetPackageImpl extends EPackageImpl imple
 		// Initialize simple dependencies
 		FeatureDiagramPackage.eINSTANCE.eClass();
 		CrossTreeConstraintsPackage.eINSTANCE.eClass();
+		FeatureConfigurationPackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		theFeatureDiagramModificationSetPackage.createPackageContents();

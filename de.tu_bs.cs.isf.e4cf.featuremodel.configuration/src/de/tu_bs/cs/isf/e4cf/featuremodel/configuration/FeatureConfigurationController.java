@@ -2,8 +2,10 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.configuration;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -18,6 +20,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.swt.widgets.Composite;
 
 import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.emf.EMFResourceSetManager;
@@ -32,7 +36,9 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.FeatureConfiguration
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.view.LoadFeatureConfigurationResourceDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfiguration.FeatureConfiguration;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
+import featureConfiguration.FeatureConfiguration;
+import javafx.util.Pair;
 
 public class FeatureConfigurationController {
 		
@@ -65,10 +71,23 @@ public class FeatureConfigurationController {
 	
 	@Optional
 	@Inject
-	public void createConfiguration(@UIEventTopic(FeatureModelConfigurationEvents.EVENT_CREATE_CONFIGURATION) FeatureDiagramm fd) {
+	public void showConfigurationView(@UIEventTopic(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW) FeatureDiagramm fd) {
+		removeNull(fd.getFeatureConfiguration());
+		view.setFeatureDiagram(fd);
+	}
+	
+	@Optional
+	@Inject
+	public void showConfigurationComponentView(@UIEventTopic(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW) Pair<FeatureDiagramm, FeatureConfiguration> config) {
+		showConfigurationView(config.getKey());
+		view.setFeatureConfiguration(config.getValue());
+	}
+	
+	public void createConfiguration() {
 		// construct feature configuration 
-		featureConfiguration = featureConfigurationBuilder.createFeatureConfiguration(fd);
-		view.refreshView(featureConfiguration);
+		services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
+		featureConfiguration = featureConfigurationBuilder.createFeatureConfiguration(view.getFeatureDiagram());
+		view.setFeatureConfiguration(featureConfiguration);
 	}
 	
 	@PreDestroy
@@ -85,15 +104,15 @@ public class FeatureConfigurationController {
 	@Optional
 	@Inject
 	public void saveConfiguration(@UIEventTopic(FeatureModelConfigurationEvents.EVENT_SAVE_CONFIGURATION) String path) {
-		if (featureConfiguration == null || featureConfiguration.getFeatureDiagram() == null) {
+		if (featureConfiguration == null) {
 			return;
 		}
 				
 		// Only continue save process if feature diagram is already contained in a resource
-		FeatureDiagramm fd = featureConfiguration.getFeatureDiagram();
+		FeatureDiagramm fd = view.getFeatureDiagram();
 		if (fd.eResource() == null) {
 			boolean saveFd = !RCPMessageProvider.questionMessage("Save Feature Configuration", 
-					"The feature model is not contained in a resource. Do you want to save it first.");
+					"The feature model is not contained in a resource. Please save it first.");
 			if (!saveFd) {
 				return;
 			}
@@ -103,9 +122,11 @@ public class FeatureConfigurationController {
 		
 		// add feature configuration to resource manager
 		try {
-			URI fcUri = URI.createFileURI(path);
-			Resource resource = resourceManager.addResource(fcUri);
-			resource.getContents().add(featureConfiguration);				
+			for (FeatureConfiguration config : view.getFeatureDiagram().getFeatureConfiguration()) {
+				URI fcUri = URI.createFileURI(getFcFilePath(config));
+				Resource resource = resourceManager.addResource(fcUri);
+				resource.getContents().add(config);				
+			}
 		} catch (IllegalArgumentException e) {
 			RCPMessageProvider.errorMessage(PART_DIALOG_TITLE, "The provided path("+path+") is not a valid file system path");
 			return;
@@ -122,6 +143,10 @@ public class FeatureConfigurationController {
 		resourceManager.removeAllResources();
 	}
 	
+	private String getFcFilePath(FeatureConfiguration fc) {
+		return RCPContentProvider.getCurrentWorkspacePath() + CompareST.FEATURE_CONFIGURATIONS + "/" + fc.getName() + "." + FeatureModelConfigurationStrings.FC_FILE_EXTENSION;
+	}
+	
 	
 	@Persist
 	public void save() {
@@ -134,14 +159,20 @@ public class FeatureConfigurationController {
 		LoadFeatureConfigurationResourceDialog loadDialog = new LoadFeatureConfigurationResourceDialog("Load Feature Configuration", 
 				1024, 30);
 		
-		loadDialog.open();
+		//loadDialog.open();
+		//String resourcePath = loadDialog.getResourcePath();
 		
-		String resourcePath = loadDialog.getResourcePath();
-		if (resourcePath == null) {
-			return;
+		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Configuration", CompareST.FEATURE_CONFIGURATIONS);
+		
+		//System.out.println(resourcePath);
+		//System.out.println(filepath);
+		
+		if (!filepath.equals("")) {
+			loadConfiguration(filepath);
 		}
-		
-		loadConfiguration(resourcePath);
+		//if (resourcePath != null) {
+		//	loadConfiguration(resourcePath);
+		//}
 	}
 	
 	@Optional
@@ -176,6 +207,7 @@ public class FeatureConfigurationController {
 		}
 		
 		// create the view
+		view.setFeatureDiagram(fc.getFeatureDiagram());
 		view.refreshView(fc);
 		
 		// set internals
@@ -188,18 +220,19 @@ public class FeatureConfigurationController {
 		try {
 			FeatureConfigurationChecker configChecker = new DimacsCnfChecker();
 			configChecker.initialize(featureConfiguration);
+			String name = featureConfiguration.getName().equals("") ? "The current configuration" : featureConfiguration.getName();
 			
 			OperationState op = configChecker.check();
 			switch (op) {
 				case SUCCESS: {
 					boolean validConfig = configChecker.getResult();
 					if (validConfig) {
-						RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, "The current configuration is valid.");						
+						RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, name + " is valid.");						
 					} else {
 						if (op.hasInfo()) {
 							RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, op.getInfo());
 						} else {
-							RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, "The current configuration is invalid.");
+							RCPMessageProvider.informationMessage(PART_DIALOG_TITLE, name + " is invalid.");
 						}
 					} 
 				} break;
@@ -235,6 +268,35 @@ public class FeatureConfigurationController {
 
 	public FeatureConfigurationView getView() {
 		return view;
+	}
+
+	public FeatureDiagramm loadFeatureModel() {
+		FeatureDiagramm featureDiagram;
+		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", CompareST.FEATURE_MODELS);
+		if (filepath.equals("")) { 
+			return null; 
+		}
+		try {	
+			featureDiagram = FeatureDiagramSerialiazer.loadFeatureDiagram(filepath);
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+		removeNull(featureDiagram.getFeatureConfiguration());
+		return featureDiagram;
+		
+	}
+	
+	private void removeNull(List<FeatureConfiguration> list) {
+		List<FeatureConfiguration> nulls = new ArrayList<>();
+		for (FeatureConfiguration config : list) {
+			if (config.getFeatureDiagram() == null || config.getFeatureSelection() == null || config.getName() == null) {
+				nulls.add(config);
+			}
+		}
+		for (FeatureConfiguration config : nulls) {
+			list.remove(config);
+		}
 	}
 
 	

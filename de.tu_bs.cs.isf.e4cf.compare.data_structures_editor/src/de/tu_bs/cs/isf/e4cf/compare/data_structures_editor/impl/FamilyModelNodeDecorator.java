@@ -26,6 +26,10 @@ public class FamilyModelNodeDecorator implements NodeDecorator{
 			node.setGraphic(new ImageView(FileTable.FV_OPTIONAL_16));
 			break;
 		}
+		// Special Case for Root Node
+		if (node.getValue().isRoot())
+			node.setGraphic(new ImageView(FileTable.rootImage));
+		node.getValue().setRepresentation(node.getValue().getNodeType());
 		return node;
 	}
 
@@ -36,7 +40,7 @@ public class FamilyModelNodeDecorator implements NodeDecorator{
 	
 	@Override
 	public String toString() {
-		return "FamilyModelDecorator";
+		return "Family Model";
 	}
 
 }

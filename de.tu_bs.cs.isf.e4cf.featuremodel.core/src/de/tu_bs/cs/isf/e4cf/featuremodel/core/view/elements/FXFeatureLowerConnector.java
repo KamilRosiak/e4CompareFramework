@@ -22,10 +22,12 @@ public class FXFeatureLowerConnector extends Arc {
 		//bind width value for repaint
 		fxFeature.widthProperty().addListener(e-> {
 			radius = fxFeature.getWidth()/2;
-			if(fxFeature.getFeature().isOr()) {
-				drawOr();
-			} else if(fxFeature.getFeature().isAlternative()) {
-				drawAlternative();
+			if (fxFeature.getFeature() != null) {
+				if(fxFeature.getFeature().isOr()) {
+					drawOr();
+				} else if(fxFeature.getFeature().isAlternative()) {
+					drawAlternative();
+				}
 			}
 			
 		});

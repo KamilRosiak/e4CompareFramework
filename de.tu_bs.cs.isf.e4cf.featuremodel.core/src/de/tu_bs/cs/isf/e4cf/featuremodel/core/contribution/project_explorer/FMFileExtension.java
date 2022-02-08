@@ -21,7 +21,7 @@ public class FMFileExtension implements IProjectExplorerExtension {
 	public void execute(ServiceContainer container) {
 		container.partService.showPart(FDStringTable.BUNDLE_NAME);
 		FileTreeElement target = container.rcpSelectionService.getCurrentSelectionFromExplorer();
-		container.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, target);
+		container.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, target.getAbsolutePath());
 	}
 
 }

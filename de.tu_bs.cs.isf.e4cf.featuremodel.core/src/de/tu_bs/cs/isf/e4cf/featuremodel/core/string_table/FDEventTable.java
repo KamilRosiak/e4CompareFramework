@@ -11,6 +11,12 @@ public class FDEventTable {
 	/**
 	 * VIEW EVENTS
 	 */
+	public static final String SELECT_CONFIGURATION_EVENT = "SELECT_CONFIGURATION_EVENT";
+	public static final String ROOT_FEATURE_MANDATORY_EVENT = "ROOT_FEATURE_MANDATORY_EVENT";
+	public static final String ROOT_FEATURE_OPTIONAL_EVENT = "ROOT_FEATURE_OPTIONAL_EVENT";
+	public static final String OPEN_FEATURE_DIAGRAM = "OPEN_FEATUREDIAGRAM_EVENT";
+	public static final String ADD_NEW_TAB = "ADD_NEW_TAB";
+	public static final String ADD_COMPONENTFEATURE = "ADD_COMPONENTFEATURE_EVENT";
 	public static final String RENAMED_FEATURE_EVENT = "RENAMED_FEATURE_EVENT";
 	public static final String ADD_FEATURE_EVENT = "ADD_FEATURE_EVENT";
 	public static final String ADD_FEATURE_BELOW = "ADD_FEATURE_BELOW_EVENT";
@@ -28,6 +34,7 @@ public class FDEventTable {
 	public static final String SPLIT_FEATURE = "SPLIT_FEATURE";
 	public static final String SET_REFERNECED_ARTIFACT_ID_MAP = "SET_REFERNECED_ARTIFACT_ID_MAP";
 	public static final String SET_DESCRIPTION = "SET_DESCRIPTION";
+	public static final String LOAD_COMPONENTFEATUREDIAGRAM_EVENT ="LOAD_COMPONENTFEATUREDIAGRAM_EVENT";
 	
 	/**
 	 * Constraint Events
@@ -53,6 +60,8 @@ public class FDEventTable {
 	/**
 	 * LOGGER EVENTS
 	 */
+	public static final String LOGGER_ADD_COMPONENTFEATURE_BELOW = "LOGGER_ADD_COMPONENTFEATURE_BELOW";
+	public static final String LOGGER_ADD_COMPONENTFEATURE_ABOVE = "LOGGER_ADD_COMPONENTFEATURE_ABOVE";
 	public static final String LOGGER_ADD_FEATURE = "LOGGER_ADD_FEATURE";
 	public static final String LOGGER_ADD_FEATURE_BELOW = "LOGGER_ADD_FEATURE_BELOW";
 	public static final String LOGGER_ADD_FEATURE_ABOVE = "LOGGER_ADD_FEATURE_ABOVE";
@@ -89,7 +98,13 @@ public class FDEventTable {
 	/**
 	 * Feature Configuration View 
 	 */
-	public static final String EVENT_CREATE_CONFIGURATION = "_createConfiguration";
-	public static final String EVENT_FEATURE_CONFIGURATION_ELEMENT_SELECTED = "_featureConfigurationElementSelected";
+	public static final String EVENT_SHOW_CONFIGURATION_VIEW = "_showConfigurationView";
+	public static final String EVENT_FEATURE_CONFIGURATION_ELEMENT_SELECTED = "_featureConfigurationElementSelec;ted";
+	public static final String EVENT_RENAME_CONFIGURATIONFEATURE = "RENAME_CONFIGURATIONFEATURE";
+	
+	/**
+	 * Data Structure Editor View
+	 */
+	public static final String CREATE_FEATUREMODEL_FROM_TREEVIEW = "CREATE_FEATUREMODEL_FROM_TREEVIEW";
 
 }

@@ -6,20 +6,25 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import FeatureDiagram.ArtifactReference;
+import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
 import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.DragHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.KeyTranslateHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.PrimaryMouseButtonClickedHandler;
@@ -30,6 +35,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureInitializer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLogger;
@@ -44,20 +50,23 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactor
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FeatureModelEditorToolbar;
-import javafx.embed.swt.FXCanvas;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
+import featureConfiguration.FeatureConfiguration;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Pair;
+
 /**
- * This class represents the view of the MVC implementation it represents the FeatureDiagram graphical.
+ * This class represents the view of the MVC implementation it represents the
+ * FeatureDiagram graphical.
+ * 
  * @author {Kamil Rosiak, Alexander Schlie}
  *
  */
@@ -66,101 +75,127 @@ public class FeatureModelEditorView {
 	public double mouseX = 0;
 	public double mouseY = 0;
 	private ServiceContainer services;
-	private Pane root;
-	private ResetHandler resetHandler;
+	private Pane rootPane;
+	private ResetHandler resetHandler;	
 	private DragHandler dragHandler;
 	private SelectionAreaHandler selectionHandler;
 	private PrimaryMouseButtonClickedHandler primaryMouseClickedHandler;
-	private ZoomHandler zoomHander;
-	private Scene scene;
+	private ZoomHandler zoomHandler;
+
+	private Pane arrangementPane;
+
 	private Rectangle selectionRectangle;
 	private FeatureDiagramm currentModel;
 	private FXGraphicalFeature currentFeature;
 	private List<FXGraphicalFeature> selectedFeatures;
 
-	
-	
 	private List<FXGraphicalFeature> featureList;
-	private Map<FXGraphicalFeature,Line> featureLineMap;
-	
+	private List<FXGraphicalFeature> componentFeatureList;
+	private Map<FXGraphicalFeature, Line> featureLineMap;
+
 	private AnimationMap labelBorderAnimationMap;
-	
-	public FeatureModelEditorView(FXCanvas canvas, ServiceContainer services) {
+
+	public FeatureModelEditorView(Tab tab, ServiceContainer services) {
 		this.services = services;
-		canvas.setScene(createScene());	
+		this.componentFeatureList = new ArrayList<FXGraphicalFeature>();
+		tab.setContent(createScene());
 	}
 	
+	public FXGraphicalFeature getFXGraphicalFeature(Feature feature) {
+		for (FXGraphicalFeature fxGraFeature : featureList) {
+			if (fxGraFeature.getFeature().equals(feature)) {
+				return fxGraFeature;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * This method creates the selection rectangle.
 	 */
-	private void createSelectionRectangle() {
+	private void createSelectionRectangle(Pane parent) {
 		this.selectionRectangle = new Rectangle(20, 20, Color.TRANSPARENT);
-        root.getChildren().add(selectionRectangle);
-        selectionRectangle.setDisable(true);
-        selectionRectangle.getStrokeDashArray().addAll(10d, 5d, 10d);
+		parent.getChildren().add(selectionRectangle);
+		selectionRectangle.setDisable(true);
+		selectionRectangle.getStrokeDashArray().addAll(10d, 5d, 10d);
 	}
-	
+
 	/**
 	 * This method initiates the data structure of the FeatureDiagram Editor
 	 */
 	private void initDataStructure() {
 		this.featureList = new ArrayList<FXGraphicalFeature>();
-		this.featureLineMap = new HashMap<FXGraphicalFeature,Line>();
+		this.featureLineMap = new HashMap<FXGraphicalFeature, Line>();
 		this.labelBorderAnimationMap = new AnimationMap();
-        this.selectedFeatures = new ArrayList<FXGraphicalFeature>();
+		this.selectedFeatures = new ArrayList<FXGraphicalFeature>();
 	}
-	
+
 	/**
 	 * This method creates the Scene and adds all Pane and Listener to it.
 	 */
-	private Scene createScene() {
+	private Pane createScene() {
 		initDataStructure();
-        root = new Pane();
+		rootPane = new Pane();
+		rootPane.setStyle("-fx-background-color: white;");
+		
+		BorderPane arrangementPane = new BorderPane();
 
-		StackPane gesturePane = new StackPane(root);
+		Pane gesturePane = new Pane(rootPane);
 		gesturePane.setStyle("-fx-background-color: white;");
-        root.setStyle("-fx-background-color: white;"); 
-        
-        //Creating and adding the mouse handler that allows zooming in and out with the mouse wheel.
-        zoomHander = new ZoomHandler(root);
-        gesturePane.addEventHandler(ScrollEvent.ANY, zoomHander);
 
-        scene = new Scene(gesturePane);
-        
-        //creating the selection rectangle
-        createSelectionRectangle();
-        
-        //set theme from preferences 
-        setTheme(PreferencesUtil.getValueWithDefault(FDStringTable.BUNDLE_NAME, FDStringTable.FME_THEME_KEY, DefaultTheme.DEFAULT_THEME).getStringValue());
-        scene.addEventHandler(KeyEvent.ANY, new KeyTranslateHandler(root, 10d));
-        
-        
-        primaryMouseClickedHandler = new PrimaryMouseButtonClickedHandler(services);
-        scene.addEventHandler(MouseEvent.MOUSE_PRESSED, primaryMouseClickedHandler);
-        
-        selectionHandler = new SelectionAreaHandler(root, featureList, selectionRectangle, primaryMouseClickedHandler, services);
-        scene.addEventHandler(MouseEvent.MOUSE_DRAGGED, selectionHandler);
+		arrangementPane.setCenter(gesturePane);
+		arrangementPane.setTop(new FeatureModelEditorToolbar(services, this));
+		this.arrangementPane = arrangementPane;
 
-        dragHandler = new DragHandler(root);
-        scene.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragHandler);
+		// Creating and adding the mouse handler that allows zooming in and out with the
+		// mouse wheel.
+		zoomHandler = new ZoomHandler(rootPane);
+		gesturePane.addEventHandler(ScrollEvent.ANY, zoomHandler);
 
-        resetHandler = new ResetHandler(dragHandler, selectionHandler);
-        scene.addEventFilter(MouseEvent.MOUSE_RELEASED, resetHandler);
-        dragHandler.resetLastPosition();
+		// creating the selection rectangle
+		createSelectionRectangle(gesturePane);
 
-        gesturePane.setAlignment(Pos.TOP_CENTER);
-        gesturePane.getChildren().add(new FeatureModelEditorToolbar(services, this));
-        
-        //creating an empty feature diagram
+		// set theme from preferences
+		setTheme(PreferencesUtil
+				.getValueWithDefault(FDStringTable.BUNDLE_NAME, FDStringTable.FME_THEME_KEY, DefaultTheme.DEFAULT_THEME)
+				.getStringValue());
+		arrangementPane.addEventHandler(KeyEvent.ANY, new KeyTranslateHandler(rootPane, 10d));
+
+		primaryMouseClickedHandler = new PrimaryMouseButtonClickedHandler(services);
+		gesturePane.addEventHandler(MouseEvent.MOUSE_PRESSED, primaryMouseClickedHandler);
+
+		selectionHandler = new SelectionAreaHandler(gesturePane, rootPane, featureList, selectionRectangle,
+				primaryMouseClickedHandler, services);
+		gesturePane.addEventHandler(MouseEvent.MOUSE_DRAGGED, selectionHandler);
+
+		dragHandler = new DragHandler(rootPane);
+		gesturePane.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragHandler);
+
+		resetHandler = new ResetHandler(dragHandler, selectionHandler);
+		gesturePane.addEventFilter(MouseEvent.MOUSE_RELEASED, resetHandler);
+		dragHandler.resetLastPosition();
+
+		// translate root pane to keep root feature node centered, as long the pane
+		// hasn't been moved before
+		arrangementPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+			rootPane.setTranslateX(rootPane.getTranslateX() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
+		});
+		arrangementPane.heightProperty().addListener((obs, oldVal, newVal) -> {
+			rootPane.setTranslateY(rootPane.getTranslateY() + (newVal.doubleValue() - oldVal.doubleValue()) / 2);
+		});
+
+		// creating an empty feature diagram
 		createNewFeatureDiagram();
 		
-        return scene;
+		rootPane.setTranslateX(-30);
+		rootPane.setTranslateY(-30);
+		return this.arrangementPane;
 	}
-	
+
 	public void setTheme(String cssLocation) {
-		scene.getStylesheets().setAll(cssLocation);
+		arrangementPane.getStylesheets().setAll(cssLocation);
 	}
-	
+
 	/**
 	 * This method replaces all elements of the current loaded feature diagram
 	 */
@@ -169,46 +204,65 @@ public class FeatureModelEditorView {
 		placement.format(currentModel);
 		// Reset the translate offset so that large feature diagrams do not
 		// disappear after formatting
-		root.setTranslateX(0d);
-		root.setTranslateY(0d);
+		rootPane.setTranslateX(0d);
+		rootPane.setTranslateY(0d);
 		loadFeatureDiagram(currentModel, askToSave);
 	}
-		
+
 	/**
 	 * This method creates a new FeatureDiagram and adds the root to FeatureDiagram.
 	 */
 	public void createNewFeatureDiagram() {
 		clearAll();
-		currentModel = FeatureDiagramFactoryImpl.eINSTANCE.createFeatureDiagramm();
-		Feature root = createFeature("Root", true);
-		root.getGraphicalfeature().setX(this.root.getWidth()/2);
-		root.getGraphicalfeature().setY(this.root.getMaxWidth()/2);
-		currentModel.setRoot(root);
-		addFeature(root ,this.getRootPane().getWidth()/2,50d);
+		currentModel = new FeatureDiagram();
+		initFeatureDiagram(currentModel);
+		addFeature(currentModel.getRoot(), this.getRootPane().getWidth() / 2, this.getRootPane().getHeight() / 2);
 	}
-	
+
+	private FeatureDiagramm initFeatureDiagram(FeatureDiagramm diagram) {		
+		Feature root = createNewFeature(
+				FeatureInitializer.createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true), 
+				this.rootPane.getWidth() / 2, 
+				this.rootPane.getHeight() / 2);
+		diagram.setRoot(root);
+		return diagram;
+	}
+
 	/**
 	 * This method loads a FeatureDiagram.
 	 */
 	public void loadFeatureDiagram(FeatureDiagramm model, boolean isSave) {
-		//Ask for saving before deleting
-		if(isSave) {
+		// Ask for saving before deleting
+		if (isSave) {
 			askToSave();
 		}
 		clearAll();
-		
+
 		currentModel = model;
 		FXGraphicalFeature fxRoot = addFeature(model.getRoot());
 		postProcessFeatureVisibility(fxRoot);
-		//add all Feature to front so that no overlapping exists.
-		for(FXGraphicalFeature fxFeature : featureList) {
+		double xShift = this.getRootPane().getWidth() / 2 - model.getRoot().getGraphicalfeature().getX();
+		double yShift = this.getRootPane().getHeight() / 2 - model.getRoot().getGraphicalfeature().getY();
+		// add all Feature to front so that no overlapping exists.
+		for (FXGraphicalFeature fxFeature : featureList) {
+			fxFeature.getFeature().getGraphicalfeature().setX(fxFeature.getFeature().getGraphicalfeature().getX() + xShift);
+			fxFeature.getFeature().getGraphicalfeature().setY(fxFeature.getFeature().getGraphicalfeature().getY() + yShift);
+//			fxFeature.setTranslateX(fxFeature.getFeature().getGraphicalfeature().getX());
+//			fxFeature.setTranslateY(fxFeature.getFeature().getGraphicalfeature().getY());
 			fxFeature.toFront();
+			if (fxFeature.getFeature() instanceof ComponentFeature) {
+				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
+				componentFeatureList.add(fxFeature);
+			} else if (fxFeature.getFeature() instanceof ConfigurationFeature) {
+				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
+			}
 		}
-		
-		root.setTranslateX(0d);
-		root.setTranslateY(0d);
+		System.out.println("x: " + rootPane.getTranslateX() + " y: " + rootPane.getTranslateY() + "\n");
+		rootPane.setTranslateX(xShift);
+		rootPane.setTranslateY(yShift);
+		System.out.println("x: " + rootPane.getTranslateX() + " y: " + rootPane.getTranslateY() + "\n");
 	}
-	
+
 	private void postProcessFeatureVisibility(FXGraphicalFeature fxRoot) {
 		for (FXGraphicalFeature fxChild : fxRoot.getChildFeatures()) {
 			if (fxChild.getFeature().isHidden()) {
@@ -221,31 +275,33 @@ public class FeatureModelEditorView {
 
 	public void postProcessRecursivelyHideSubfeatures(FXGraphicalFeature graphicalFeature) {
 		for (FXGraphicalFeature fxChild : graphicalFeature.getChildFeatures()) {
-			changeFeatureVisibility(fxChild, true);			
-			postProcessRecursivelyHideSubfeatures(fxChild);				
-		}			
+			changeFeatureVisibility(fxChild, true);
+			postProcessRecursivelyHideSubfeatures(fxChild);
+		}
 	}
-	
+
 	/**
-	 * This method creates a dialog and checks if the user would like to save the current diagram.
+	 * This method creates a dialog and checks if the user would like to save the
+	 * current diagram.
 	 */
 	public void askToSave() {
-		boolean isCurrentModel = RCPMessageProvider.questionMessage("FeatureDiagramEditor", "Would you like to save the current Feature Model");
-		if(isCurrentModel) {
+		boolean isCurrentModel = RCPMessageProvider.questionMessage("FeatureDiagramEditor",
+				"Would you like to save the current Feature Model");
+		if (isCurrentModel) {
 			saveFeatureDiagram();
 		}
 	}
-	
+
 	/**
 	 * This method clears the FeatureDiagramEditor
 	 */
 	public void clearAll() {
-		root.getChildren().clear();
-		root.getChildren().add(selectionRectangle);
+		rootPane.getChildren().clear();
+		// root.getChildren().add(selectionRectangle);
 		featureLineMap.clear();
 		featureList.clear();
 	}
-	
+
 	/**
 	 * This method saves the current featureModel to into workspace.
 	 */
@@ -253,321 +309,376 @@ public class FeatureModelEditorView {
 		FileTreeElement root = services.workspaceFileSystem.getWorkspaceDirectory();
 		Path rootPath = FileHandlingUtility.getPath(root);
 		Path projectPath = rootPath.resolve("");
-		FeatureDiagramSerialiazer.save(currentModel, projectPath.resolve(E4CStringTable.FEATURE_MODEL_DIRECTORY).toUri() + currentModel.getRoot().getName()+FDStringTable.FD_FILE_ENDING);
+		Path uriPath = projectPath.resolve(E4CStringTable.FEATURE_MODEL_DIRECTORY);
+		String fileName = currentModel.getRoot().getName() + FDStringTable.FD_FILE_ENDING;
+		String absolutePath = uriPath.toUri() + "/" + fileName;
+
+		
+		try {
+			if (services.workspaceFileSystem.search(uriPath.toAbsolutePath() + "\\" + fileName) != null) {
+				boolean result = RCPMessageProvider.questionMessage("Feature Model Editor", "File with same name already exists. Do you want to override it?");
+				if (!result) {
+					return;
+				}
+			}
+		} catch (NoSuchElementException e) {}
+		FeatureDiagramSerialiazer.save(currentModel, absolutePath);
+	}
+
+	/**
+	 * This method sets the current mouse position (relative to the scene).
+	 */
+	public void setMousePosition(double x, double y) {
+		this.mouseX = x;
+		this.mouseY = y;
+	}
+
+	/**
+	 * This method adds a feature to the position of this graphicalFeature with his
+	 * children.
+	 */
+	public FXGraphicalFeature addFeature(Feature feature) {
+		// log feature added
+		services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE, feature);
+		if (feature.getGraphicalfeature() != null) {
+			feature.getGraphicalfeature().setX(feature.getGraphicalfeature().getX());
+			feature.getGraphicalfeature().setY(feature.getGraphicalfeature().getY());
+		}
+		FXGraphicalFeature fxGraFeature = new FXGraphicalFeature(this, feature, services);
+		
+		//TODO: debug statements
+		System.out.println("w: " + feature.getGraphicalfeature().getWidth());
+		System.out.println("h: " + feature.getGraphicalfeature().getHeight());
+		System.out.println();
+
+		if (feature.isAbstract()) {
+			fxGraFeature.getFeatureNameLabel().getStyleClass().add("abstractFeature");
+		}
+
+		rootPane.getChildren().add(fxGraFeature);
+		featureList.add(fxGraFeature);
+
+		for (Feature childFeature : feature.getChildren()) {
+			FXGraphicalFeature fxChild = addFeature(childFeature);
+			fxGraFeature.addChildFeature(fxChild);
+			fxChild.setParentFxFeature(fxGraFeature);
+			createLineToChildren(fxGraFeature, fxChild);
+		}
+		
+		
+
+		if (fxGraFeature.getFeature().isAlternative()) {
+			fxGraFeature.setGroupVariability_ALTERNATIVE();
+		} else if (fxGraFeature.getFeature().isOr()) {
+			fxGraFeature.setGroupVariability_OR();
+		}
+
+		return fxGraFeature;
 	}
 	
-	 /**
-	  * This method sets the current mouse position (relative to the scene).
-	  */
-	 public void setMousePosition(double x, double y) {
-		 this.mouseX = x;
-		 this.mouseY = y;
-	 }
 
-	 /**
-	  * This method adds a feature to the position of this graphicalFeature with his children.
-	  */
-	 public FXGraphicalFeature addFeature(Feature feature) {
-		 // log feature added
-	 	services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE, feature);
-	 	
-	 	if(feature.getGraphicalfeature() != null) {
-		 	feature.getGraphicalfeature().setX(feature.getGraphicalfeature().getX());
-		 	feature.getGraphicalfeature().setY(feature.getGraphicalfeature().getY());
-	 	}
-	 	FXGraphicalFeature fxGraFeature = new FXGraphicalFeature(this,feature, services);
-	 	
-	 	if (feature.isAbstract()) {
-	 		fxGraFeature.getFeatureNameLabel().getStyleClass().add("abstractFeature");
-	 	}
-	 	
-		root.getChildren().add(fxGraFeature); 
-	    featureList.add(fxGraFeature);
-	    
-	    for(Feature childFeature : feature.getChildren()) {
-	    	FXGraphicalFeature fxChild = addFeature(childFeature);
-	    	fxGraFeature.addChildFeature(fxChild);
-	    	fxChild.setParentFxFeature(fxGraFeature);
-	    	createLineToChildren(fxGraFeature, fxChild);
-	    	
-	    }	
-	    
-	    if (fxGraFeature.getFeature().isAlternative()) {
-	    	fxGraFeature.setGroupVariability_ALTERNATIVE();
-	    } else if (fxGraFeature.getFeature().isOr()) {
-	    	fxGraFeature.setGroupVariability_OR();
-	    }
-	    
-		return fxGraFeature;
-	 }
-	 /**
-	  * This method adds a feature to FeatureModelEditor to given coordinates.
-	  */
-	 public FXGraphicalFeature addFeature(Feature feature, double xPos, double yPos) {
-		 	feature.getGraphicalfeature().setX(xPos);
-		 	feature.getGraphicalfeature().setY(yPos);
-		 	return addFeature(feature);
-	 } 
-	 
-	 /**
-	  * This method adds a feature to the model editor at the current mouse position .
-	  */
-	 public FXGraphicalFeature addFeatureToMousePosition(Feature feature) {
-		 	feature.getGraphicalfeature().setX(mouseX);
-		 	feature.getGraphicalfeature().setY(mouseY);
-			return addFeature(feature);
-	 } 
-	 
-	 /**
-	  * This method adds a child to given parent and returns the new FXFeature.
-	  */
-	 public FXGraphicalFeature addFeatureBelow(FXGraphicalFeature parent) {
-		 services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE_BELOW, parent);
-		 //create new feature and add under the parent 
-		 double xPos = parent.getFeature().getGraphicalfeature().getX();
-		 double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight()*2;
-		 Feature newFeature = createFeatureWithPosition("NewFeature_"+currentModel.getIdentifierIncrement(), false, xPos, yPos);
-		 //add the new feature to model and set the parent feature
-		 parent.getFeature().getChildren().add(newFeature);
-		 newFeature.setParent(parent.getFeature());
-		 
-		 //create graphical feature and set parent
-		 FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);
-		 newGraFeature.setParentFxFeature(parent);
-		 parent.addChildFeatureFormated(newGraFeature);
-		 
-		 //add graphical feature to scene
-		 root.getChildren().addAll(newGraFeature);
-		 
-		 //add feature to featureList
-		 featureList.add(newGraFeature);
-		 
-		 //connect new feature with parent
-		 createLineToChildren(parent, newGraFeature);
+	/**
+	 * This method adds a feature to FeatureModelEditor to given coordinates.
+	 */
+	public FXGraphicalFeature addFeature(Feature feature, double xPos, double yPos) {
+		feature.getGraphicalfeature().setX(xPos);
+		feature.getGraphicalfeature().setY(yPos);
+		return addFeature(feature);
+	}
 
-		 // set the current feature, necessary for feature split
-		 setCurrentFeature(newGraFeature);
-		 
-		 return newGraFeature;
-	 }
-	 
-	 /**
-	  * This method adds a parent to given child and returns the new FXFeature.
-	  */
-	 public FXGraphicalFeature addFeatureAbove(FXGraphicalFeature fxFeature) {
-		 services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE_ABOVE, fxFeature);
-		 
-		 Feature feature = fxFeature.getFeature();
+	/**
+	 * This method adds a feature to the model editor at the current mouse position
+	 * .
+	 */
+	public FXGraphicalFeature addFeatureToMousePosition(Feature feature) {
+		feature.getGraphicalfeature().setX(mouseX);
+		feature.getGraphicalfeature().setY(mouseY);
+		return addFeature(feature);
+	}
+
+	public FXGraphicalFeature addFeatureBelow(Pair<String, FXGraphicalFeature> pair) {
+		String type = pair.getKey();
+		FXGraphicalFeature parent = pair.getValue();
+		double xPos = parent.getFeature().getGraphicalfeature().getX();
+		double yPos = parent.getFeature().getGraphicalfeature().getY() + parent.getHeight() * 2;
+		FXGraphicalFeature newFeature;
+		switch (type) {
+			case FDStringTable.FEATURE:
+				newFeature = createFeatureFX(parent, false, xPos, yPos);
+				break;
+			case FDStringTable.COMPONENTFEATURE:
+				newFeature = createComponentFeatureFX(parent, true, xPos, yPos);
+				break;
+			case FDStringTable.CONFIGURATIONFEATURE:
+				newFeature = createConfigurationFeatureFX(parent, false, xPos, yPos);
+				break;
+			default:
+				throw new IllegalArgumentException("Wrong type");
+		}
 		
-		 // If adding a feature above the current root feature
-		 if (feature.getParent() == null) {
-			 return  addFeatureAboveRoot(fxFeature);
-		 }
-		 // else:
-		 
-		 Feature parentFeature = feature.getParent();
-		 FXGraphicalFeature fxParentFeature = fxFeature.getParentFxFeature();
-		 
-		 
-		 //position under the chosen parent
-		 double xPosChild = feature.getGraphicalfeature().getX();
-		 double yPosChild = feature.getGraphicalfeature().getY() + fxFeature.getHeight()*2;
+		return newFeature;
+	}
 
-		 double xPosParent = parentFeature.getGraphicalfeature().getX();
-		 double yPosParent = parentFeature.getGraphicalfeature().getY() + parentFeature.getGraphicalfeature().getHeight()*2;
-		 
-		 // Set the position of the new feature to be in the middle of both the x- and the y-axis
-		 // of the former parent and the current child
-		 double xPosNewFeature = (Math.max(xPosChild, xPosParent) - Math.min(xPosChild, xPosParent)) / 2 + Math.min(xPosChild, xPosParent);
-		 double yPosNewFeature = (Math.max(yPosChild, yPosParent) - Math.min(yPosChild, yPosParent)) / 2 + Math.min(yPosChild, yPosParent);
-		 
-		 
-		 //create new feature and add above the child
-		 Feature newFeature = createFeatureWithPosition("NewFeature", false, xPosNewFeature, yPosNewFeature);
+	public FXGraphicalFeature addConfigurationBelow(Pair<FeatureConfiguration, FXGraphicalFeature> pair) {
 
-		 // Reset the parent-child relations
-		 
-		 parentFeature.getChildren().remove(feature);
-		 feature.setParent(newFeature);
-		 newFeature.getChildren().add(feature);
-		 newFeature.setParent(parentFeature);		
-		 parentFeature.getChildren().add(newFeature);
-		 
-		 //create graphical feature and set parent
-		 FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);
-		 
-		 // Reset the parent-child relations for the graphical FXfeatures
-		 fxParentFeature.getChildFeatures().remove(fxFeature);
-		 fxFeature.setParentFxFeature(newGraFeature);
-		 newGraFeature.getChildFeatures().add(fxFeature);
-		 newGraFeature.setParentFxFeature(fxParentFeature);
-		 fxParentFeature.getChildFeatures().add(newGraFeature);
-		 newGraFeature.minHeight(27.0);
-		 
-		 newGraFeature.addChildFeatureFormated(fxFeature);
-		 fxParentFeature.addChildFeatureFormated(newGraFeature);			
-		 
-		 
-		 //add graphical feature to scene
-		 root.getChildren().addAll(newGraFeature);
-		 
-		 //add feature to featureList
-		 featureList.add(newGraFeature);
-		 
-		 // remove old lines
-		 removeLine(fxFeature);
-		 
-		 //connect new feature with parent
-		 createLineToChildren(fxParentFeature, newGraFeature);			
-		 createLineToChildren(newGraFeature, fxFeature);
-
-		 setCurrentFeature(newGraFeature);
+		FXGraphicalFeature fx = addFeatureBelow(new Pair<String, FXGraphicalFeature>(FDStringTable.CONFIGURATIONFEATURE, pair.getValue()));
+		ConfigurationFeature configFeature = (ConfigurationFeature) fx.getFeature();
+		configFeature.setConfigurationfeature(pair.getKey());
+		fx.setName(pair.getKey().getName());
+		
+		return fx;
+	}
 	
-		 return newGraFeature;
-	 }
-	 
-	 /**
-	  * Adds a new feature above the current root feature, and thus, replaces the root with a new feature
-	  * @param fxfeature The current root feature
-	  * @return The new root feature, holding the former root feature "fxfeature" as a child
-	  */
-	 private FXGraphicalFeature addFeatureAboveRoot(FXGraphicalFeature fxfeature) {
-		 Feature formerRoot = fxfeature.getFeature();
-		 double xPos = formerRoot.getGraphicalfeature().getX();
-		 double yPos = formerRoot.getGraphicalfeature().getY()-30;
-		 
-		 //create new feature and add above the child
-		 Feature newRoot = createFeature("NewFeature", true);
-		 newRoot.getGraphicalfeature().setX(xPos);
-		 newRoot.getGraphicalfeature().setY(yPos);
-		 
-		 // set parent-child relations
-		 formerRoot.setParent(newRoot);
-		 newRoot.getChildren().add(formerRoot);
-		 
-		 //create graphical feature and set parent
-		 FXGraphicalFeature newGraRoot = new FXGraphicalFeature(this, newRoot, services);
-		 fxfeature.setParentFxFeature(newGraRoot);
-		 newGraRoot.getChildFeatures().add(fxfeature);
-		 
-		 newGraRoot.addChildFeatureFormated(fxfeature);
-		 
-		 //add graphical feature to scene
-		 root.getChildren().addAll(newGraRoot);
-		 
-		 //add feature to featureList
-		 featureList.add(newGraRoot);
-		 
-		 //connect new feature with parent
-		 createLineToChildren(newGraRoot, fxfeature);	
-		 
-		 // finally, reset the root of the feature diagram
-		 currentModel.setRoot(newRoot);
-		 
-		 // Notify the logger
-		 services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE, newGraRoot);
-		 
-		 setCurrentFeature(newGraRoot);
-		 
+	public FXGraphicalFeature createGraphicalFeatureBelow(FXGraphicalFeature parent, Feature newFeature) {
+		// add the new feature to model and set the parent feature
+		parent.getFeature().getChildren().add(newFeature);
+		newFeature.setParent(parent.getFeature());
+		
+		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);
+		// create graphical feature and set parent
+		newGraFeature.setParentFxFeature(parent);
+		parent.addChildFeatureFormated(newGraFeature);
+
+		// add graphical feature to scene
+		rootPane.getChildren().addAll(newGraFeature);
+
+		// add feature to featureList
+		featureList.add(newGraFeature);
+
+		// connect new feature with parent
+		createLineToChildren(parent, newGraFeature);
+
+		// set the current feature, necessary for feature split
+		setCurrentFeature(newGraFeature);
+		return newGraFeature;
+	}
+	
+	/**
+	 * This method adds a parent to given child and returns the new FXFeature.
+	 */
+	public FXGraphicalFeature addFeatureAbove(FXGraphicalFeature fxFeature) {
+		services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE_ABOVE, fxFeature);
+
+		Feature feature = fxFeature.getFeature();
+
+		// If adding a feature above the current root feature
+		if (feature.getParent() == null) {
+			return addFeatureAboveRoot(fxFeature);
+		}
+		// else:
+
+		Feature parentFeature = feature.getParent();
+		FXGraphicalFeature fxParentFeature = fxFeature.getParentFxFeature();
+
+		// position under the chosen parent
+		double xPosChild = feature.getGraphicalfeature().getX();
+		double yPosChild = feature.getGraphicalfeature().getY() + fxFeature.getHeight() * 2;
+
+		double xPosParent = parentFeature.getGraphicalfeature().getX();
+		double yPosParent = parentFeature.getGraphicalfeature().getY()
+				+ parentFeature.getGraphicalfeature().getHeight() * 2;
+
+		// Set the position of the new feature to be in the middle of both the x- and
+		// the y-axis
+		// of the former parent and the current child
+		double xPosNewFeature = (Math.max(xPosChild, xPosParent) - Math.min(xPosChild, xPosParent)) / 2
+				+ Math.min(xPosChild, xPosParent);
+		double yPosNewFeature = (Math.max(yPosChild, yPosParent) - Math.min(yPosChild, yPosParent)) / 2
+				+ Math.min(yPosChild, yPosParent);
+
+		// create new feature and add above the child
+		
+		Feature newFeature = createNewFeature(FeatureInitializer.createFeature("NewFeature_" + currentModel.getIdentifierIncrement(), false), xPosNewFeature, yPosNewFeature);
+
+		// Reset the parent-child relations
+
+		parentFeature.getChildren().remove(feature);
+		feature.setParent(newFeature);
+		newFeature.getChildren().add(feature);
+		newFeature.setParent(parentFeature);
+		parentFeature.getChildren().add(newFeature);
+
+		// create graphical feature and set parent
+		FXGraphicalFeature newGraFeature = new FXGraphicalFeature(this, newFeature, services);
+
+		// Reset the parent-child relations for the graphical FXfeatures
+		fxParentFeature.getChildFeatures().remove(fxFeature);
+		fxFeature.setParentFxFeature(newGraFeature);
+		newGraFeature.getChildFeatures().add(fxFeature);
+		newGraFeature.setParentFxFeature(fxParentFeature);
+		fxParentFeature.getChildFeatures().add(newGraFeature);
+		newGraFeature.minHeight(27.0);
+
+		newGraFeature.addChildFeatureFormated(fxFeature);
+		fxParentFeature.addChildFeatureFormated(newGraFeature);
+
+		// add graphical feature to scene
+		rootPane.getChildren().addAll(newGraFeature);
+
+		// add feature to featureList
+		featureList.add(newGraFeature);
+
+		// remove old lines
+		removeLine(fxFeature);
+
+		// connect new feature with parent
+		createLineToChildren(fxParentFeature, newGraFeature);
+		createLineToChildren(newGraFeature, fxFeature);
+
+		setCurrentFeature(newGraFeature);
+
+		return newGraFeature;
+	}
+
+	/**
+	 * Adds a new feature above the current root feature, and thus, replaces the
+	 * root with a new feature
+	 * 
+	 * @param fxfeature The current root feature
+	 * @return The new root feature, holding the former root feature "fxfeature" as
+	 *         a child
+	 */
+	private FXGraphicalFeature addFeatureAboveRoot(FXGraphicalFeature fxfeature) {
+		Feature formerRoot = fxfeature.getFeature();
+		double xPos = formerRoot.getGraphicalfeature().getX();
+		double yPos = formerRoot.getGraphicalfeature().getY() - 30;
+
+		// create new feature and add above the child
+		Feature newRoot = createNewFeature(FeatureInitializer.createFeature("NewFeature_" + currentModel.getIdentifierIncrement(), true), xPos, yPos);
+		
+		// set parent-child relations
+		formerRoot.setParent(newRoot);
+		newRoot.getChildren().add(formerRoot);
+
+		// create graphical feature and set parent
+		FXGraphicalFeature newGraRoot = new FXGraphicalFeature(this, newRoot, services);
+		fxfeature.setParentFxFeature(newGraRoot);
+		newGraRoot.getChildFeatures().add(fxfeature);
+
+		newGraRoot.addChildFeatureFormated(fxfeature);
+
+		// add graphical feature to scene
+		rootPane.getChildren().addAll(newGraRoot);
+
+		// add feature to featureList
+		featureList.add(newGraRoot);
+
+		// connect new feature with parent
+		createLineToChildren(newGraRoot, fxfeature);
+
+		// finally, reset the root of the feature diagram
+		currentModel.setRoot(newRoot);
+
+		// Notify the logger
+		services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE, newGraRoot);
+
+		setCurrentFeature(newGraRoot);
+
 		return newGraRoot;
 	}
 
 	/**
-	  * Creating the connections between child and parent and binding property's.
-	  */
-	 private void createLineToChildren(FXGraphicalFeature parent, FXGraphicalFeature child) {
-		 final Line line = new Line();
-		 
-		 //initial bind 
-		 line.startXProperty().bind(parent.getXPos().add(parent.getWidth()/2));
-		 line.startYProperty().bind(parent.getYPos().add(parent.getHeight() - parent.getLowerConnector().getRadiusY()));
-		 
-		 line.endYProperty().bind(child.translateYProperty());
-		 line.endXProperty().bind(child.translateXProperty().add(child.widthProperty().doubleValue()/2));
-		 
-		 //after update size
-		 parent.widthProperty().addListener(e -> {
-			 line.startXProperty().unbind();
-			 line.startXProperty().bind(parent.getXPos().add(parent.getWidth()/2));
-		 });
-		 
-		 parent.heightProperty().addListener(e -> {
-			 line.startYProperty().unbind();
-			 line.startYProperty().bind(parent.getYPos().add(parent.getHeight() - parent.getLowerConnector().getRadiusY()));
-		 });
-		 
-		 //if height changes bind with new height.
-		 child.heightProperty().addListener(e-> {
-			 line.endYProperty().unbind();
-			 line.endYProperty().bind(child.translateYProperty());
-		 });
-		 
-		 //if size changes bind with new width.
-		 child.widthProperty().addListener(e -> {
-			 line.endXProperty().unbind();
-			 line.endXProperty().bind(child.translateXProperty().add(child.widthProperty().doubleValue()/2));
-		 });
-	
-		 featureLineMap.put(child, line);
-		 root.getChildren().add(line);	 
-	 }
-	 
-	 /**
-	  * Removes a connection between a child feature and its' parent.
-	  */
-	 private void removeLine(FXGraphicalFeature child) {
-		 
-		 try {
-			 Line line = featureLineMap.get(child);
-			 line.startXProperty().unbind();
-			 line.startYProperty().unbind();
-			 line.endXProperty().unbind();
-			 line.endYProperty().unbind();
-			 root.getChildren().remove(line);
-			 featureLineMap.remove(child);
-			 
-		 } catch (Exception e) {
-			 System.out.println("Error code 'x8y-11f': I was unable to remove line in Feature Model for feature: "+child.getFeature().getName());
-		 } 
-	 }
-	 
-	 
-	 /**
-	  * This method creates a new feature. With default name
-	  */
-	 public Feature createFeature(String featureName, boolean isRoot) {
-     	Feature feature = FeatureDiagramFactoryImpl.eINSTANCE.createFeature();
-     	feature.setName(featureName);
-     	feature.setMandatory(isRoot ? true : false);
-     	feature.setAlternative(false);
-     	feature.setOr(false);
-     	feature.setAbstract(false);
-     	currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
-     	feature.setIdentifier(currentModel.getIdentifierIncrement());
-     	GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();
-     	feature.setGraphicalfeature(graphicalFeature);
-     	
-     	ArtifactReference artifactReference = FeatureDiagramFactoryImpl.eINSTANCE.createArtifactReference();
-     	artifactReference.setArtifactClearName(feature.getName());
-     	feature.getArtifactReferences().add(artifactReference);
-     	
-     	return feature;
-	 }
-	 
-	 /**
-	  * Creates a feature with given name and sets the x and y position
-	  */
-	 public Feature createFeatureWithPosition(String featureName, boolean isRoot, double x, double y) {
-		 Feature feature = createFeature(featureName, isRoot);
-		 feature.getGraphicalfeature().setX(x);
-		 feature.getGraphicalfeature().setX(y);
-		 return feature;
-	 }
-	 
-	public Pane getRootPane() {
-		return root;
+	 * Creating the connections between child and parent and binding property's.
+	 */
+	private void createLineToChildren(FXGraphicalFeature parent, FXGraphicalFeature child) {
+		final Line line = new Line();
+
+		// initial bind
+		line.startXProperty().bind(parent.getXPos().add(parent.getWidth() / 2));
+		line.startYProperty().bind(parent.getYPos().add(parent.getHeight() - parent.getLowerConnector().getRadiusY()));
+
+		line.endYProperty().bind(child.translateYProperty());
+		line.endXProperty().bind(child.translateXProperty().add(child.widthProperty().doubleValue() / 2));
+
+		// after update size
+		parent.widthProperty().addListener(e -> {
+			line.startXProperty().unbind();
+			line.startXProperty().bind(parent.getXPos().add(parent.getWidth() / 2));
+		});
+
+		parent.heightProperty().addListener(e -> {
+			line.startYProperty().unbind();
+			line.startYProperty()
+					.bind(parent.getYPos().add(parent.getHeight() - parent.getLowerConnector().getRadiusY()));
+		});
+
+		// if height changes bind with new height.
+		child.heightProperty().addListener(e -> {
+			line.endYProperty().unbind();
+			line.endYProperty().bind(child.translateYProperty());
+		});
+
+		// if size changes bind with new width.
+		child.widthProperty().addListener(e -> {
+			line.endXProperty().unbind();
+			line.endXProperty().bind(child.translateXProperty().add(child.widthProperty().doubleValue() / 2));
+		});
+
+		featureLineMap.put(child, line);
+		rootPane.getChildren().add(line);
+	}
+
+	/**
+	 * Removes a connection between a child feature and its' parent.
+	 */
+	private void removeLine(FXGraphicalFeature child) {
+
+		try {
+			Line line = featureLineMap.get(child);
+			line.startXProperty().unbind();
+			line.startYProperty().unbind();
+			line.endXProperty().unbind();
+			line.endYProperty().unbind();
+			rootPane.getChildren().remove(line);
+			featureLineMap.remove(child);
+
+		} catch (Exception e) {
+			System.out.println("Error code 'x8y-11f': I was unable to remove line in Feature Model for feature: "
+					+ child.getFeature().getName());
+		}
 	}
 	
+	public Feature createNewFeature(Feature feature, double x, double y) {
+		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
+		feature.setIdentifier(currentModel.getIdentifierIncrement());
+		
+
+		/**
+		 * Set Feature to x and y position 
+		 */
+		feature.getGraphicalfeature().setX(x);
+		feature.getGraphicalfeature().setY(y);
+		
+		return feature;
+	}
+
+	public FXGraphicalFeature createFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
+		Feature feature = FeatureInitializer.createFeature("NewFeature_" + currentModel.getIdentifierIncrement(), isRoot);
+		createNewFeature(feature, x, y);
+		return createGraphicalFeatureBelow(parent, feature);
+	}
+
+	public FXGraphicalFeature createComponentFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
+		ComponentFeature feature = FeatureInitializer.createComponentFeature("NewComponentFeature_" + currentModel.getIdentifierIncrement());
+		createNewFeature(feature, x, y);
+		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
+		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
+		componentFeatureList.add(newGraFeature);
+		return newGraFeature;
+		
+	}
+	public FXGraphicalFeature createConfigurationFeatureFX(FXGraphicalFeature parent, boolean isRoot, double x, double y) {
+		ConfigurationFeature feature = FeatureInitializer.createConfigurationFeature("NewConfigurationFeature_" + currentModel.getIdentifierIncrement());
+		createNewFeature(feature, x, y);
+		FXGraphicalFeature newGraFeature = createGraphicalFeatureBelow(parent, feature);
+		newGraFeature.getFeatureNameLabel().getStyleClass().addAll("componentFeature");
+		return newGraFeature;
+	}
+
+	public Pane getRootPane() {
+		return rootPane;
+	}
+
 	/**
 	 * returns a list that contains all FXGraphicalFeature.
 	 */
@@ -575,64 +686,85 @@ public class FeatureModelEditorView {
 		return featureList;
 	}
 	
+	public List<FXGraphicalFeature> getComponentFeatureList() {
+		return componentFeatureList;
+	}
+	
+	public FeatureDiagramm getFeatureDiagram() {
+		return currentModel;
+	}
+
 	/**
 	 * This method adds a FXGraphicalFeature to list.
+	 * 
 	 * @param graphicalFeature
 	 */
 	public void addFXGraphicalFeatureToList(FXGraphicalFeature graphicalFeature) {
 		this.featureList.add(graphicalFeature);
 	}
-	
+
 	/**
 	 * Remove feature from diagram.
 	 */
-	public void removeFeature(FXGraphicalFeature graphicalFeature, boolean showDialog, boolean triggeredByTrunkDelete, boolean sendLoggerEvents) {
-		
-		if (currentModel.getRoot().equals(graphicalFeature.getFeature())){
+	public void removeFeature(FXGraphicalFeature graphicalFeature, boolean showDialog, boolean triggeredByTrunkDelete,
+			boolean sendLoggerEvents) {
+
+		if (currentModel.getRoot().equals(graphicalFeature.getFeature())) {
 			new FMESimpleNoticeDialog("Error", "Root feature can not be deleted");
 			return;
 		}
-		
+
 		boolean decision = false;
 		if (showDialog) {
-			decision = new FMESimpleDecsionDialog("Remove Feature", "Are you sure").show();		
-		} 
+			decision = new FMESimpleDecsionDialog("Remove Feature", "Are you sure").show();
+		}
 		if (decision || !showDialog) {
-			this.root.getChildren().remove(featureLineMap.get(graphicalFeature));
-			this.root.getChildren().remove(graphicalFeature);
+			this.rootPane.getChildren().remove(featureLineMap.get(graphicalFeature));
+			this.rootPane.getChildren().remove(graphicalFeature);
 			removeLine(graphicalFeature);
 			this.featureList.remove(graphicalFeature);
-			
-			if (sendLoggerEvents) {
-				services.eventBroker.send(FDEventTable.LOGGER_REMOVE_FEATURE, graphicalFeature);				
+			if (graphicalFeature.getFeature() instanceof ComponentFeature) {
+				this.componentFeatureList.remove(graphicalFeature);			
+				List<FXGraphicalFeature> temp = new ArrayList<FXGraphicalFeature>(graphicalFeature.getChildFeatures());
+				for(FXGraphicalFeature child: temp) {
+					removeFeature(child, false, false, false);
+				};
+			} else if (graphicalFeature.getFeature() instanceof ConfigurationFeature) {
+				((ComponentFeature) graphicalFeature.getParentFxFeature().getFeature()).getConfigurationfeature().remove((ConfigurationFeature) graphicalFeature.getFeature());
 			}
-			
+				
+
+			if (sendLoggerEvents) {
+				services.eventBroker.send(FDEventTable.LOGGER_REMOVE_FEATURE, graphicalFeature);
+			}
+
 			if (graphicalFeature.getParentFxFeature() != null) {
 				Feature parent = graphicalFeature.getParentFxFeature().getFeature();
 				parent.getChildren().remove(graphicalFeature.getFeature());
 				graphicalFeature.getParentFxFeature().getChildFeatures().remove(graphicalFeature);
-				
+
 				// remove from selected features if contained
 				selectedFeatures.remove(graphicalFeature);
-				
+
 				// only reset line if we do not delete the entire trunk anyways
 				if (!triggeredByTrunkDelete && !graphicalFeature.getChildFeatures().isEmpty()) {
 					for (FXGraphicalFeature fxChild : graphicalFeature.getChildFeatures()) {
 						reconnectFeatures(graphicalFeature, fxChild);
-					}				
+					}
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * todo comment
+	 * 
 	 * @param parent
 	 * @param child
 	 */
 	private void reconnectFeatures(FXGraphicalFeature parent, FXGraphicalFeature child) {
 		services.eventBroker.send(FDEventTable.LOGGER_REMOVED_LINE_TO_PARENT_FEATURE, parent);
-		child.setParentFxFeature(parent.getParentFxFeature());	
+		child.setParentFxFeature(parent.getParentFxFeature());
 		parent.getParentFxFeature().getChildFeatures().add(child);
 		child.getFeature().setParent(parent.getParentFxFeature().getFeature());
 		parent.getParentFxFeature().getFeature().getChildren().add(child.getFeature());
@@ -640,7 +772,7 @@ public class FeatureModelEditorView {
 		createLineToChildren(child.getParentFxFeature(), child);
 		services.eventBroker.send(FDEventTable.LOGGER_RESET_LINE_TO_PARENT_FEATURE, child);
 	}
-	
+
 	/*
 	 * Sets a feature to be Abstract or Concrete, depending on its current state
 	 */
@@ -654,12 +786,13 @@ public class FeatureModelEditorView {
 			graphicalFeature.getFeatureNameLabel().getStyleClass().add("abstractFeature");
 		}
 	}
-	
+
 	/**
 	 * TODO comment
 	 */
 	public void changeSubfeaturesVisibility(FXGraphicalFeature graphicalFeature) {
-		services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_SUBFEATURES_VISIBILITY, graphicalFeature);
+		services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_SUBFEATURES_VISIBILITY,
+				graphicalFeature);
 		if (graphicalFeature.getFeature().isHidden()) {
 			graphicalFeature.getFeature().setHidden(false);
 			for (FXGraphicalFeature fxChild : graphicalFeature.getChildFeatures()) {
@@ -671,7 +804,7 @@ public class FeatureModelEditorView {
 				recursivelyHideSubfeatures(fxChild);
 			}
 		}
-		
+
 	}
 
 	/**
@@ -681,35 +814,34 @@ public class FeatureModelEditorView {
 		if (!graphicalFeature.getFeature().isHidden()) {
 			for (FXGraphicalFeature fxChild : graphicalFeature.getChildFeatures()) {
 				recursivelyShowSubfeatures(fxChild);
-			}	
-		}		
+			}
+		}
 		changeFeatureVisibility(graphicalFeature, false);
 	}
-	
-	
+
 	/**
 	 * RECURSIVELY HIDES SUBFEATURES
 	 */
 	public void recursivelyHideSubfeatures(FXGraphicalFeature graphicalFeature) {
 		if (!graphicalFeature.getFeature().isHidden()) {
 			for (FXGraphicalFeature fxChild : graphicalFeature.getChildFeatures()) {
-				recursivelyHideSubfeatures(fxChild);				
-			}			
+				recursivelyHideSubfeatures(fxChild);
+			}
 		}
 		if (graphicalFeature.isVisible()) {
-			changeFeatureVisibility(graphicalFeature, true);						
+			changeFeatureVisibility(graphicalFeature, true);
 		}
 	}
-	
+
 	/**
 	 * HIDES or SHOWS A FEATURE AND HENCE, SETS IT INVISIBLE
 	 */
 	public void changeFeatureVisibility(FXGraphicalFeature graphicalFeature, boolean hideThisFeautre) {
 		graphicalFeature.setVisible(!hideThisFeautre);
-		featureLineMap.get(graphicalFeature).setVisible(!hideThisFeautre);		
-    	services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_VISIBILITY, graphicalFeature);
+		featureLineMap.get(graphicalFeature).setVisible(!hideThisFeautre);
+		services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_VISIBILITY, graphicalFeature);
 	}
-	
+
 	/**
 	 * HIDES A FEATURE AND HENCE, SETS IT VISIBLE
 	 */
@@ -719,58 +851,62 @@ public class FeatureModelEditorView {
 		graphicalFeature.setVisible(true);
 		featureLineMap.get(graphicalFeature).setVisible(true);
 	}
-	
+
 	/**
 	 * Prints hidden status of subtree in breadth-first fashion
 	 * 
 	 * @param feature
 	 */
 	public void printHiddenStatusOfSubtree(Feature feature) {
-		System.out.println("Is feature "+feature.getName()+"hidden? "+feature.isHidden());
+		System.out.println("Is feature " + feature.getName() + "hidden? " + feature.isHidden());
 		for (Feature childFeature : feature.getChildren()) {
 			printHiddenStatusOfSubtree(childFeature);
 		}
 	}
-	
+
 	/**
 	 * Remove feature and its children below it from diagram.
 	 */
 	public void removeFeatureTrunk(FXGraphicalFeature graphicalFeature) {
-    	boolean decision = new FMESimpleDecsionDialog("Remove Feature Trunk", "This will remove the entire subtree of the selected feature! Do you want to proceed?").show();
-    	if(decision) {
-    		removeFeatureTrunkRecursively(graphicalFeature.getChildFeatures(), true);    			
-    	}
+		boolean decision = new FMESimpleDecsionDialog("Remove Feature Trunk",
+				"This will remove the entire subtree of the selected feature! Do you want to proceed?").show();
+		if (decision) {
+			removeFeatureTrunkRecursively(graphicalFeature.getChildFeatures(), true);
+		}
 	}
-	
+
 	/**
 	 * TODO comment
+	 * 
 	 * @param graphicalFeatures
 	 */
-	private void removeFeatureTrunkRecursively (List<FXGraphicalFeature> graphicalFeatures, boolean sendLoggerEvents) {
-		
+	private void removeFeatureTrunkRecursively(List<FXGraphicalFeature> graphicalFeatures, boolean sendLoggerEvents) {
+
 		while (!graphicalFeatures.isEmpty()) {
 			FXGraphicalFeature fxChild = graphicalFeatures.get(0);
-			if(!fxChild.getChildFeatures().isEmpty()) {
-				removeFeatureTrunkRecursively(fxChild.getChildFeatures(), sendLoggerEvents);					
+			if (!fxChild.getChildFeatures().isEmpty()) {
+				removeFeatureTrunkRecursively(fxChild.getChildFeatures(), sendLoggerEvents);
 			} else {
 				removeFeature(fxChild, false, true, sendLoggerEvents);
 			}
 		}
 	}
-	
+
 	/**
-	 * Recursively transfers all artifacts of an origin feature and its children to one target feature. 
+	 * Recursively transfers all artifacts of an origin feature and its children to
+	 * one target feature.
+	 * 
 	 * @param origin The feature from which all artifacts are copied
 	 * @param target The feature to which all artifacts of the origin are copied to
 	 */
 	private void recusivelyTransferArtifacts(Feature origin, Feature target) {
 		for (Feature childOrigin : origin.getChildren()) {
 			recusivelyTransferArtifacts(childOrigin, target);
-		} 
+		}
 		// transfer the artifacts from the origin to the target
 		target.getArtifactReferences().addAll(origin.getArtifactReferences());
 	}
-	
+
 	public FeatureDiagramm getCurrentModel() {
 		return currentModel;
 	}
@@ -778,10 +914,10 @@ public class FeatureModelEditorView {
 	public void setCurrentModel(FeatureDiagramm currentModel) {
 		this.currentModel = currentModel;
 	}
-	
+
 	public void logDiagramChanges(boolean startLogging) {
 		DiagramLogger logger;
-		if (startLogging) {	
+		if (startLogging) {
 			logger = DiagramLoggerFactory.getDiagramLogger(DiagramLoggerConsts.DIAGRAM_LOGGER_SIMPLE);
 			logger.startLogging(currentModel, featureList);
 		} else {
@@ -793,9 +929,11 @@ public class FeatureModelEditorView {
 			}
 		}
 	}
-	
+
 	/**
-	 * Triggers the replay of recorded feature modifications on the current feature diagram
+	 * Triggers the replay of recorded feature modifications on the current feature
+	 * diagram
+	 * 
 	 * @param modificationSet A set of previously recorded modifications
 	 */
 	public void replayModificationSet(FeatureModelModificationSet modificationSet) {
@@ -805,44 +943,49 @@ public class FeatureModelEditorView {
 
 	public void setFeatureOptional(FXGraphicalFeature feature) {
 		feature.setOptional();
+		if (feature.getFeature() == currentModel.getRoot()) {
+			services.eventBroker.send(FDEventTable.ROOT_FEATURE_OPTIONAL_EVENT, currentModel.getUuid());
+		}
 	}
 
 	public void setFeatureMandatory(FXGraphicalFeature feature) {
 		feature.setMandatory();
+		if (feature.getFeature() == currentModel.getRoot()) {
+			services.eventBroker.send(FDEventTable.ROOT_FEATURE_MANDATORY_EVENT, currentModel.getUuid());
+		}
 	}
-	
+
 	public void setFeatureAlternativeGroup(FXGraphicalFeature feature) {
 		feature.setGroupVariability_ALTERNATIVE();
 	}
-	
+
 	public void setFeatureOrGroup(FXGraphicalFeature feature) {
 		feature.setGroupVariability_OR();
 	}
-	
+
 	public void setFeatureAndGroup(FXGraphicalFeature feature) {
 		feature.setGroupVariability_AND();
 	}
 
 	public void renameCurrentFeature(String name) {
-		currentFeature.getFeature().setName(name);
-		currentFeature.rename(name);
+		currentFeature.setName(name);
 		if (!currentFeature.getFeature().getArtifactReferences().isEmpty()) {
-			currentFeature.getFeature().getArtifactReferences().get(0).setArtifactClearName(name);			
+			currentFeature.getFeature().getArtifactReferences().get(0).setArtifactClearName(name);
 		}
 	}
 
 	public void setCurrentFeature(FXGraphicalFeature feature) {
 		currentFeature = feature;
 	}
-	
+
 	public FXGraphicalFeature getCurrentFeature() {
 		return currentFeature;
 	}
-		
+
 	public void setSelectedFeature(FXGraphicalFeature feature) {
 		// check for removed nodes
 		labelBorderAnimationMap.refresh();
-		
+
 		Label label = feature.getFeatureNameLabel();
 		if (selectedFeatures.contains(feature)) {
 			selectedFeatures.remove(feature);
@@ -863,7 +1006,7 @@ public class FeatureModelEditorView {
 		}
 		selectedFeatures = new ArrayList<FXGraphicalFeature>();
 		services.eventBroker.send(FDEventTable.LOGGER_RESET_SELECTED_FEATURES, "");
-		
+
 		// reset border animation map state
 		labelBorderAnimationMap.stopAllAnimations();
 		labelBorderAnimationMap.refresh();
@@ -871,46 +1014,48 @@ public class FeatureModelEditorView {
 
 	public void fuseSelectedFeatures(FXGraphicalFeature feature) {
 		services.eventBroker.send(FDEventTable.LOGGER_GROUP_SELECTED_FEATURES_IN_FEATURE, feature);
-		if (FeatureModelEvaluator.isFeatureFusingPossible(selectedFeatures, feature)){
-			List<FXGraphicalFeature> subFXRootFeatures = FeatureModelEvaluator.getRootNodesFromSelection(selectedFeatures);	
+		if (FeatureModelEvaluator.isFeatureFusingPossible(selectedFeatures, feature)) {
+			List<FXGraphicalFeature> subFXRootFeatures = FeatureModelEvaluator
+					.getRootNodesFromSelection(selectedFeatures);
 			if (FeatureModelEvaluator.assessIntermediateFeatures(subFXRootFeatures)) {
 				if (FeatureModelEvaluator.assessParentChildRelation(subFXRootFeatures, feature)) {
 					for (FXGraphicalFeature subFXRoot : subFXRootFeatures) {
 						// transfer the artefacts first
 						recusivelyTransferArtifacts(subFXRoot.getFeature(), feature.getFeature());
-						
+
 						// then remove the old features
 						removeFeatureTrunkRecursively(subFXRoot.getChildFeatures(), false);
 						removeFeature(subFXRoot, false, false, false);
 					}
 				}
 			}
-		} 
+		}
 	}
 
 	public void moveSelectedFeaturesUnderFeature(FXGraphicalFeature selectedParentFXFeature) {
 		services.eventBroker.send(FDEventTable.LOGGER_MOVE_SELECTED_FEATURES_UNDER_FEATURE, selectedParentFXFeature);
 		if (FeatureModelEvaluator.isFeatureMovePossible(selectedFeatures, selectedParentFXFeature)) {
-			List<FXGraphicalFeature> subFXRootFeatures = FeatureModelEvaluator.getRootNodesFromSelection(selectedFeatures);	
+			List<FXGraphicalFeature> subFXRootFeatures = FeatureModelEvaluator
+					.getRootNodesFromSelection(selectedFeatures);
 			if (FeatureModelEvaluator.assessIntermediateFeatures(subFXRootFeatures)) {
 				if (FeatureModelEvaluator.assessParentChildRelation(subFXRootFeatures, selectedParentFXFeature)) {
 					Feature selectedParentFeature = selectedParentFXFeature.getFeature();
 					for (FXGraphicalFeature subFXroot : subFXRootFeatures) {
 						Feature subRoot = subFXroot.getFeature();
-						
+
 						subRoot.getParent().getChildren().remove(subRoot);
 						subRoot.setParent(selectedParentFeature);
 						selectedParentFeature.getChildren().add(subRoot);
-						
+
 						subFXroot.getParentFxFeature().getChildFeatures().remove(subFXroot);
 						subFXroot.setParentFxFeature(selectedParentFXFeature);
 						selectedParentFXFeature.getChildFeatures().add(subFXroot);
-						
+
 						// remove old line from subFeature to former parent
 						removeLine(subFXroot);
-						
-						//connect new feature with parent
-						createLineToChildren(subFXroot.getParentFxFeature(), subFXroot);						
+
+						// connect new feature with parent
+						createLineToChildren(subFXroot.getParentFxFeature(), subFXroot);
 					}
 				}
 			}
@@ -918,33 +1063,38 @@ public class FeatureModelEditorView {
 	}
 
 	/**
-	 * Splits a feature an for each additional reference of the feature, creates a new feature. 
-	 * Hence, a feature holding three references is split and produces two additional features, one
-	 * for each reference excluding the reference held by the splitted feature itself.
-	 * @param feature A feature holding at least one reference and which is to be split
+	 * Splits a feature an for each additional reference of the feature, creates a
+	 * new feature. Hence, a feature holding three references is split and produces
+	 * two additional features, one for each reference excluding the reference held
+	 * by the splitted feature itself.
+	 * 
+	 * @param feature A feature holding at least one reference and which is to be
+	 *                split
 	 */
 	public void splitFeature(FXGraphicalFeature feature) {
 		if (FeatureModelEvaluator.isFeatureSplitPossible(feature)) {
 			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_SPLIT, feature);
-			
+
 			// only split if a feature contains at least two referenced artifacts
-			// only transfer references, which are not the "original" reference of that artifact
-			
+			// only transfer references, which are not the "original" reference of that
+			// artifact
+
 			Iterator<ArtifactReference> iterator = feature.getFeature().getArtifactReferences().iterator();
-			
+
 			int i = 0;
-			while(iterator.hasNext()) {
+			while (iterator.hasNext()) {
 				ArtifactReference artifactReference = iterator.next();
 				if (i > 0) {
 					services.eventBroker.send(FDEventTable.ADD_FEATURE_BELOW, feature.getParentFxFeature());
 					ArtifactReference currentArtRef = currentFeature.getFeature().getArtifactReferences().get(0);
 					currentArtRef.getReferencedArtifactIDs().addAll(artifactReference.getReferencedArtifactIDs());
 					renameCurrentFeature(artifactReference.getArtifactClearName());
-					
+
 					iterator.remove();
 				}
 				i++;
 			}
-		} 
+		}
 	}
+
 }

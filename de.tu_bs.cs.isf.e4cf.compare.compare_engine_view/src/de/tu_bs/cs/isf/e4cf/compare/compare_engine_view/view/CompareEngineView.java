@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.view;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -14,7 +15,6 @@ import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFiles;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
@@ -39,6 +39,8 @@ public class CompareEngineView implements Initializable {
 	public static final int NAME_COLUMN_WIDTH_PERCENT = 60;
 	public static final int TYPE_COLUMN_WIDTH_PERCENT = 40;
 
+	public List<FileTreeElement> artifactFileTrees = new ArrayList<FileTreeElement>();
+
 	@FXML
 	private TableColumn<Tree, String> nameColumn;
 	@FXML
@@ -61,14 +63,9 @@ public class CompareEngineView implements Initializable {
 
 	}
 
-	private void initMetricControll() {
-
-	}
-
 	// TODO: impl
 	private Metric getSelectedMetric() {
 		return new MetricImpl("test");
-
 	}
 
 	@FXML
@@ -85,14 +82,14 @@ public class CompareEngineView implements Initializable {
 			if (artifacts.size() > 1) {
 				Tree mergedTree = engine.compare(artifacts);
 				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
-				//JavaWriter writer = new JavaWriter();
-				//writer.writeArtifact(mergedTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-					//	+ "/" + mergedTree.getTreeName());	
+				// JavaWriter writer = new JavaWriter();
+				// writer.writeArtifact(mergedTree,
+				// services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+				// + "/" + mergedTree.getTreeName());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -103,6 +100,7 @@ public class CompareEngineView implements Initializable {
 		List<FileTreeElement> parsedFiles = JavaFXBuilder
 				.createFileChooser(RCPContentProvider.getCurrentWorkspacePath(), "Select More Artifacts").stream()
 				.map(file -> new File(file.getAbsolutePath())).collect(Collectors.toList());
+		collectParsedFilePaths(parsedFiles);
 		artifactTable.getItems().addAll(ArtifactIOUtil.parseArtifacts(parsedFiles));
 	}
 
@@ -112,6 +110,7 @@ public class CompareEngineView implements Initializable {
 	@FXML
 	public void removeArtifacts() {
 		artifactTable.getItems().removeAll(artifactTable.getSelectionModel().getSelectedItem());
+		removeFromArtifactFileDetailList();
 	}
 
 	/**
@@ -136,6 +135,21 @@ public class CompareEngineView implements Initializable {
 	}
 
 	/**
+	 * Subscribes to compare artifacts publisher messages from project explorer and
+	 * adds file path all selected artifacts to artifact file path List for further
+	 * processing
+	 * 
+	 * @param parsedFiles
+	 */
+	@Optional
+	@Inject
+	public void collectArtifactsFileDetails(
+			@UIEventTopic(CompareST.LOAD_ARTIFACTS_PATH_EVENT) List<FileTreeElement> parsedFiles) {
+		artifactFileTrees.clear(); // remove all items from previous selection
+		collectParsedFilePaths(parsedFiles); // add newly parsed files
+	}
+
+	/**
 	 * Shows artifacts in in the artifact table
 	 * 
 	 * @param artifacts
@@ -146,5 +160,30 @@ public class CompareEngineView implements Initializable {
 		services.partService.showPart(CompareST.BUNDLE_NAME);
 		artifactTable.getItems().clear();
 		artifactTable.getItems().addAll(artifacts);
+	}
+
+	/**
+	 * Add a all selected artifacts to List
+	 */
+	public void collectParsedFilePaths(List<FileTreeElement> parsedFiles) {
+		for (FileTreeElement parsedFile : parsedFiles) {
+			artifactFileTrees.add(parsedFile);
+		}
+	}
+
+	/**
+	 * Removes item selected for removal in artifact Table from artifact file tree
+	 * list
+	 */
+	public void removeFromArtifactFileDetailList() {
+		Tree selectedArtifact = artifactTable.getSelectionModel().getSelectedItem();
+		List<FileTreeElement> artifactsToRemove = new ArrayList<FileTreeElement>();
+		for (FileTreeElement anArtifactDetail : artifactFileTrees) {
+			if (anArtifactDetail.getFileName().equals(selectedArtifact.getTreeName())) {
+				// anArtifactDetail.getAbsolutePath()
+				artifactsToRemove.add(anArtifactDetail);
+			}
+		}
+		artifactFileTrees.removeAll(artifactsToRemove);
 	}
 }

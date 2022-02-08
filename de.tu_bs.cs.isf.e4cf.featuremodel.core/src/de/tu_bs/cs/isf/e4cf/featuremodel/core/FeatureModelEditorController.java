@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core;
  
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -14,20 +15,33 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import FeatureDiagram.ComponentFeature;
+import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
-import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener.FeatureModelViewError;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.TreeParser;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import featureConfiguration.FeatureConfiguration;
 import javafx.embed.swt.FXCanvas;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.stage.Screen;
+import javafx.util.Pair;
 
 /**
  * This class represents the controller of a MVC implementation. It handles events from FDEventTable.
@@ -37,19 +51,117 @@ import javafx.embed.swt.FXCanvas;
 @Singleton
 @Creatable
 public class FeatureModelEditorController {
-	private FeatureModelEditorView view;
+	private TabPane tabPane;
 	private ServiceContainer services;
 	
 	private List<ErrorListener> errorListeners;
 	
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, EMenuService menuService) {
-		
 		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
+		tabPane = new TabPane();
+		canvas.setScene(new Scene(tabPane));
+
+
 		menuService.registerContextMenu(canvas, "de.tu_bs.cs.isf.e4cf.featuremodel.core.featureModelMenü");
 		this.services = services;
-		this.view = new FeatureModelEditorView(canvas, services);
 		this.errorListeners = new ArrayList<>();
+
+		createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
+	}
+
+	private FeatureModelEditorView getCurrentView() {
+		Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
+		if (currentTab == null) {
+			return (FeatureModelEditorView) createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME).getUserData();
+		}
+		FeatureModelEditorView view = (FeatureModelEditorView) currentTab.getUserData();
+		return view;
+	}
+	
+	private Tab getCurrentTab() {
+		return tabPane.getSelectionModel().getSelectedItem();
+	}
+
+	private Tab createNewTab(String title) {
+		Tab tab = newTab(title);
+		FeatureModelEditorView view = new FeatureModelEditorView(tab, services);
+		tab.setUserData(view);
+		tabPane.getTabs().add(tab);
+		return tab;
+	}
+
+	private Tab newTab(String title) {
+		Tab tab = new Tab(title);
+		tab.setOnCloseRequest(event -> {
+			((FeatureModelEditorView) tab.getUserData()).askToSave();		
+			// don't allow the tabPane to be empty
+			if (tabPane.getTabs().size() == 1) {
+				createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
+			}
+		});
+		return tab;
+	}
+	
+	@Optional
+	@Inject
+	public void openFeatureDiagram(@UIEventTopic(FDEventTable.OPEN_FEATURE_DIAGRAM) ComponentFeature feature) {
+		FeatureDiagramm diagram = feature.getFeaturediagramm();
+		Tab openedTab = getOpenedTabOrNull(diagram);
+		
+		if (openedTab != null) {
+			selectTab(openedTab);
+		} else {
+			services.eventBroker.send(FDEventTable.ADD_NEW_TAB, feature);
+		}
+		
+	}
+	
+	private Tab getOpenedTabOrNull(FeatureDiagramm diagram) {
+		for (Tab tab : tabPane.getTabs()) {
+			FeatureDiagramm tabDiagram = ((FeatureModelEditorView) tab.getUserData()).getCurrentModel();
+			if (diagram.getUuid().equals(tabDiagram.getUuid())) {
+				return tab;
+			}
+		}
+		return null;
+	}
+	
+	private void selectTab(Tab tab) {
+		tabPane.getSelectionModel().select(tab);
+	}
+
+	@Optional
+	@Inject
+	public void addNewTab(@UIEventTopic(FDEventTable.ADD_NEW_TAB) ComponentFeature feature) {
+		FXGraphicalFeature fxGraFeature = getCurrentView().getFXGraphicalFeature(feature);
+		Tab newTab = createNewTab(feature.getName());
+		selectTab(newTab);
+		getCurrentView().loadFeatureDiagram(feature.getFeaturediagramm(), false);
+		getCurrentTab().setText(getCurrentFeatureDiagram().getRoot().getName());
+	}
+	
+	@Optional
+	@Inject
+	public void loadComponentFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_COMPONENTFEATUREDIAGRAM_EVENT) FXGraphicalFeature fxGraFeature) {
+		String filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", CompareST.FEATURE_MODELS);
+		try {
+			FeatureDiagramm featureDiagram = FeatureDiagramSerialiazer.loadFeatureDiagram(filepath);
+			((ComponentFeature) fxGraFeature.getFeature()).setFeaturediagramm(featureDiagram);
+			((ComponentFeature) fxGraFeature.getFeature()).getChildren().clear();
+			List<FXGraphicalFeature> temp = new ArrayList<FXGraphicalFeature>(fxGraFeature.getChildFeatures());
+			for(FXGraphicalFeature child: temp) {
+				getCurrentView().removeFeature(child, false, false, false);
+			};
+			fxGraFeature.setName(featureDiagram.getRoot().getName());
+			System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded!");
+			// showConstraintView();
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		
+		
 	}
 	
 	/**
@@ -57,7 +169,35 @@ public class FeatureModelEditorController {
 	 * @return
 	 */
 	public FeatureDiagramm getCurrentFeatureDiagram() {
-		return view.getCurrentModel();
+		return getCurrentView().getCurrentModel();
+	}
+	
+	@Optional
+	@Inject
+	public void componentFeatureVariabilityChangeMandatory(@UIEventTopic(FDEventTable.ROOT_FEATURE_MANDATORY_EVENT) String uuid) {
+		tabPane.getTabs().forEach(tab -> {
+			List<FXGraphicalFeature> componentList = ((FeatureModelEditorView) tab.getUserData()).getComponentFeatureList();
+			for (FXGraphicalFeature graFeature : componentList) {
+				ComponentFeature component = (ComponentFeature) graFeature.getFeature();
+				if (component.getFeaturediagramm().getUuid().equals(uuid)) {
+					graFeature.setMandatory();
+				}
+			}
+		});
+	}
+	
+	@Optional
+	@Inject
+	public void componentFeatureVariabilityChangeOptional(@UIEventTopic(FDEventTable.ROOT_FEATURE_OPTIONAL_EVENT) String uuid) {
+		tabPane.getTabs().forEach(tab -> {
+			List<FXGraphicalFeature> componentList = ((FeatureModelEditorView) tab.getUserData()).getComponentFeatureList();
+			for (FXGraphicalFeature graFeature : componentList) {
+				ComponentFeature component = (ComponentFeature) graFeature.getFeature();
+				if (component.getFeaturediagramm().getUuid().equals(uuid)) {
+					graFeature.setOptional();
+				}
+			}
+		});
 	}
 	
 	@Optional
@@ -75,10 +215,22 @@ public class FeatureModelEditorController {
 	}
 	
 	@Optional
+	@Inject
+	public void addCompoundFeatureBelow(@UIEventTopic(FDEventTable.ADD_COMPONENTFEATURE) Pair<String, FXGraphicalFeature> pair) {
+		try {
+			getCurrentView().addFeatureBelow(pair);
+//			getCurrentView().addComponentFeatureBelow(parentFeature);
+		} catch (Exception e) {
+			FeatureModelViewError error = new FeatureModelViewError(pair.getValue(), FDEventTable.ADD_COMPONENTFEATURE, e.getMessage());
+			errorListeners.forEach(listener -> listener.onError(error));
+		}
+	}
+	
+	@Optional
 	@Inject 
 	public void addFeature(@UIEventTopic(FDEventTable.ADD_FEATURE_EVENT) Feature feature) {
 		try {
-			view.addFeatureToMousePosition(feature);
+			getCurrentView().addFeatureToMousePosition(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.ADD_FEATURE_EVENT, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -87,11 +239,11 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void addFeatureBelow(@UIEventTopic(FDEventTable.ADD_FEATURE_BELOW) FXGraphicalFeature parentFeature) {
+	public void addFeatureBelow(@UIEventTopic(FDEventTable.ADD_FEATURE_BELOW) Pair<String, FXGraphicalFeature> pair) {
 		try {
-			view.addFeatureBelow(parentFeature);
+			getCurrentView().addFeatureBelow(pair);
 		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(parentFeature, FDEventTable.ADD_FEATURE_BELOW, e.getMessage());
+			FeatureModelViewError error = new FeatureModelViewError(pair.getValue(), FDEventTable.ADD_FEATURE_BELOW, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
@@ -100,7 +252,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void addFeatureAbove(@UIEventTopic(FDEventTable.ADD_FEATURE_ABOVE) FXGraphicalFeature feature) {
 		try {
-			view.addFeatureAbove(feature);
+			getCurrentView().addFeatureAbove(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.ADD_FEATURE_ABOVE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -111,7 +263,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void removeFeature(@UIEventTopic(FDEventTable.REMOVE_FEATURE) FXGraphicalFeature feature) {
 		try {
-			view.removeFeature(feature, true, false, true);
+			getCurrentView().removeFeature(feature, true, false, true);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.REMOVE_FEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -122,7 +274,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void removeFeatureTrunk(@UIEventTopic(FDEventTable.REMOVE_FEATURE_TRUNK) FXGraphicalFeature feature) {
 		try {
-			view.removeFeatureTrunk(feature);
+			getCurrentView().removeFeatureTrunk(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.REMOVE_FEATURE_TRUNK, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -133,7 +285,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void removeFeatureByLogger(@UIEventTopic(FDEventTable.REMOVE_FEATURE_BY_LOGGER) FXGraphicalFeature feature) {
 		try {
-			view.removeFeature(feature, false, false, false);
+			getCurrentView().removeFeature(feature, false, false, false);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.REMOVE_FEATURE_BY_LOGGER, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -144,7 +296,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setFeatureAndGroup(@UIEventTopic(FDEventTable.SET_FEATURE_AND_GROUP_BY_LOGGER) FXGraphicalFeature feature) {
 		try {
-			view.setFeatureAndGroup(feature);
+			getCurrentView().setFeatureAndGroup(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_AND_GROUP_BY_LOGGER, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -155,7 +307,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setFeatureAlternativeGroup(@UIEventTopic(FDEventTable.SET_FEATURE_ALTERNATIVE_GROUP_BY_LOGGER) FXGraphicalFeature feature) {
 		try {
-			view.setFeatureAlternativeGroup(feature);
+			getCurrentView().setFeatureAlternativeGroup(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_ALTERNATIVE_GROUP_BY_LOGGER, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -166,7 +318,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setFeatureOrGroup(@UIEventTopic(FDEventTable.SET_FEATURE_OR_GROUP_BY_LOGGER) FXGraphicalFeature feature) {
 		try {	
-			view.setFeatureOrGroup(feature);
+			getCurrentView().setFeatureOrGroup(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_OR_GROUP_BY_LOGGER, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -177,7 +329,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setCurrentFeature(@UIEventTopic(FDEventTable.SET_CURRENT_FEATURE) FXGraphicalFeature feature) {
 		try {
-			view.setCurrentFeature(feature);						
+			getCurrentView().setCurrentFeature(feature);						
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_CURRENT_FEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -186,11 +338,67 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void setFeatureName(@UIEventTopic(FDEventTable.SET_FEATURE_NAME) String name) {
+	public void setFeatureName(@UIEventTopic(FDEventTable.SET_FEATURE_NAME) Pair<FXGraphicalFeature, String> data) {
 		try {
-			view.renameCurrentFeature(name);
+			data.getKey().setName(data.getValue());
+			if (data.getKey().getFeature() == getCurrentView().getFeatureDiagram().getRoot()) {
+				getCurrentTab().setText(data.getValue());
+			}
 		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(view.getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
+			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
+			errorListeners.forEach(listener -> listener.onError(error));
+		}
+	}
+	
+	@Optional
+	@Inject 
+	public void setConfigurationFeatureName(@UIEventTopic(FDEventTable.EVENT_RENAME_CONFIGURATIONFEATURE) Pair<String, String> name) {
+		try {
+			String oldName = name.getKey();
+			getCurrentView().getComponentFeatureList().forEach(componentFeature -> {
+				componentFeature.getChildFeatures().forEach(configurationFeature -> {
+					if (configurationFeature.getFeatureNameLabel().getText().equals(oldName)) {
+						configurationFeature.setName(name.getValue());
+						return;
+					}
+				});
+			});
+		} catch (Exception e) {
+			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.EVENT_RENAME_CONFIGURATIONFEATURE, e.getMessage());
+			errorListeners.forEach(listener -> listener.onError(error));
+		}
+	}
+	
+	@Optional
+	@Inject 
+	public void setConfiguration(@UIEventTopic(FDEventTable.SELECT_CONFIGURATION_EVENT) FXGraphicalFeature fxGraFeature) {
+		try {
+			FeatureDiagramm fd = ((ComponentFeature) fxGraFeature.getFeature()).getFeaturediagramm();
+        	FMESetConfigurationDialog dialog = new FMESetConfigurationDialog("Select Configuration", ((ComponentFeature) fxGraFeature.getFeature()));
+        	Rectangle2D primaryScreenBounds = Screen.getPrimary().getBounds();
+			Double x = primaryScreenBounds.getWidth() * .5 - dialog.getDialog().getWidth() * .5;
+			Double y = primaryScreenBounds.getHeight() * .5 - dialog.getDialog().getHeight() * .5;
+        	List<FeatureConfiguration> selectedConfig = dialog.show(x, y);
+        	
+			if (selectedConfig != null) {
+				selectedConfig.forEach(config -> {
+					boolean contained = !fxGraFeature.getChildFeatures().stream()
+							.map(FXGraphicalFeature::getFeature)
+							.map(ConfigurationFeature.class::cast)
+							.map(ConfigurationFeature::getConfigurationfeature)
+							.collect(Collectors.toList())
+							.contains(config);
+					if (contained) {
+						getCurrentView().addConfigurationBelow(new Pair<FeatureConfiguration, FXGraphicalFeature>(config, fxGraFeature));
+					} else {
+						System.out.println("ComponentFeature already contains " +  config.getName());
+					}
+				});
+			} 
+        	
+        	
+		} catch (Exception e) {
+			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
@@ -199,7 +407,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setFeatureAbstract(@UIEventTopic(FDEventTable.SET_FEATURE_ABSTRACT) FXGraphicalFeature feature) {
 		try {
-			view.setFeatureAbstract(feature);
+			getCurrentView().setFeatureAbstract(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_ABSTRACT, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -210,7 +418,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setFeatureOptional(@UIEventTopic(FDEventTable.SET_FEATURE_OPTIONAL) FXGraphicalFeature feature) {
 		try {
-			view.setFeatureOptional(feature);
+			getCurrentView().setFeatureOptional(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_OPTIONAL, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -221,29 +429,30 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setFeatureMandatory(@UIEventTopic(FDEventTable.SET_FEATURE_MANDATORY) FXGraphicalFeature feature) {
 		try {
-			view.setFeatureMandatory(feature);
+			getCurrentView().setFeatureMandatory(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_MANDATORY, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
+	
 	@Optional
 	@Inject 
 	public void changeSubfeaturesVisibility(@UIEventTopic(FDEventTable.CHANGE_SUBFEATURES_VISIBILITY) FXGraphicalFeature feature) {
 		try {
-			view.changeSubfeaturesVisibility(feature);
+			getCurrentView().changeSubfeaturesVisibility(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.CHANGE_SUBFEATURES_VISIBILITY, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
-	
+	 
 	@Optional
 	@Inject 
 	public void saveFeatureDiagram(@UIEventTopic(FDEventTable.SAVE_FEATURE_DIAGRAM) String path) {
 		try {
-			view.saveFeatureDiagram();
+			getCurrentView().saveFeatureDiagram();
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.SAVE_FEATURE_DIAGRAM, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -252,27 +461,35 @@ public class FeatureModelEditorController {
 	
 	@Optional
 	@Inject 
-	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) FileTreeElement file) {
-		try {
-			FeatureDiagramm featureDiagram = FeatureDiagramSerialiazer.load(file.getAbsolutePath());
-			view.loadFeatureDiagram(featureDiagram, true);
-		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+	public void loadFeatureDiagramFromFile(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE) String filepath) {
+		FeatureDiagramm featureDiagram;
+		if (filepath.equals("")) {
+			filepath = RCPMessageProvider.getFilePathDialog("Load Feature Diagram", CompareST.FEATURE_MODELS);
+			if (filepath.equals("")) { return; }
 		}
-		showConstraintView();
+		try {	
+			featureDiagram = FeatureDiagramSerialiazer.loadFeatureDiagram(filepath);
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+			return;
+		}
+		loadFeatureDiagram(featureDiagram);
 	}
 	
 	@Optional
 	@Inject 
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagramm featureDiagram) {
-		try {
-			view.loadFeatureDiagram(featureDiagram, false);
-		} catch (Exception e) {
-			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.LOAD_FEATURE_DIAGRAM, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+		Tab tab = getOpenedTabOrNull(featureDiagram);
+		if (tab == null) {
+			tab = createNewTab(featureDiagram.getRoot().getName());
+			selectTab(tab);
+			getCurrentView().loadFeatureDiagram(featureDiagram, false);
+		} else {
+			selectTab(tab);
 		}
-		showConstraintView();
+		
+		System.out.println("Feature Diagram " + featureDiagram.getRoot().getName() + " successfully loaded.");
+		//showConstraintView();
 	}
 	
 	private void showConstraintView() {
@@ -284,7 +501,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void formatFeatureDiagram(@UIEventTopic(FDEventTable.FORMAT_DIAGRAM_EVENT) String text) {
 		try {
-			view.formatDiagram(false);			
+			getCurrentView().formatDiagram(false);			
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.FORMAT_DIAGRAM_EVENT, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -295,7 +512,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void startLoggerForFeatureDiagram(@UIEventTopic(FDEventTable.START_LOGGER_DIAGRAM_EVENT) boolean startOrStop) {
 		try {
-			view.logDiagramChanges(startOrStop);
+			getCurrentView().logDiagramChanges(startOrStop);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.START_LOGGER_DIAGRAM_EVENT, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -306,7 +523,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void replayModificationSetOnFeatureDiagram(@UIEventTopic(FDEventTable.REPLAY_FD_MODIFICATION_SET) FeatureModelModificationSet modificationSet) {
 		try {
-			view.replayModificationSet(modificationSet);
+			getCurrentView().replayModificationSet(modificationSet);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.REPLAY_FD_MODIFICATION_SET, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -317,9 +534,9 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void createNewDiagram(@UIEventTopic(FDEventTable.NEW_FEATURE_DIAGRAM) String text) {
 		try {
-			view.askToSave();
-			view.clearAll();
-			view.createNewFeatureDiagram();
+			getCurrentView().askToSave();
+			getCurrentView().clearAll();
+			getCurrentView().createNewFeatureDiagram();
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.NEW_FEATURE_DIAGRAM, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -330,7 +547,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setTheme(@UIEventTopic(FDEventTable.SET_FDE_THEME) String cssLocation) {
 		try {
-			view.setTheme(cssLocation);
+			getCurrentView().setTheme(cssLocation);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.SET_FDE_THEME, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -341,7 +558,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setSelectedFeature(@UIEventTopic(FDEventTable.SET_SELECTED_FEATURE) FXGraphicalFeature feature) {
 		try {
-			view.setSelectedFeature(feature);
+			getCurrentView().setSelectedFeature(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_SELECTED_FEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -352,9 +569,9 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void setSelectedFeature(@UIEventTopic(FDEventTable.SET_SELECTED_FEATURE) Feature feature) {
 		try {
-			for (FXGraphicalFeature fxGraphicalFeature : view.getFeatureList()) {
+			for (FXGraphicalFeature fxGraphicalFeature : getCurrentView().getFeatureList()) {
 				if (fxGraphicalFeature.getFeature() == feature) {
-					view.setSelectedFeature(fxGraphicalFeature);					
+					getCurrentView().setSelectedFeature(fxGraphicalFeature);					
 				}
 			}
 		} catch (Exception e) {
@@ -367,7 +584,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void resetSelectedFeatures(@UIEventTopic(FDEventTable.RESET_SELECTED_FEATURES) String origin) {
 		try {
-			view.resetSelectedFeatures();
+			getCurrentView().resetSelectedFeatures();
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.RESET_SELECTED_FEATURES, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -378,8 +595,8 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void groupSelectedFeatures(@UIEventTopic(FDEventTable.GROUP_SELECTED_FEATURES_IN_FEATURE) FXGraphicalFeature feature) {
 		try {
-			view.fuseSelectedFeatures(feature);
-			view.resetSelectedFeatures();		
+			getCurrentView().fuseSelectedFeatures(feature);
+			getCurrentView().resetSelectedFeatures();		
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.GROUP_SELECTED_FEATURES_IN_FEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -390,8 +607,8 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void moveSelectedFeaturesUnderFeature(@UIEventTopic(FDEventTable.MOVE_SELECTED_FEATURES_UNDER_FEATURE) FXGraphicalFeature feature) {
 		try {
-			view.moveSelectedFeaturesUnderFeature(feature);
-			view.resetSelectedFeatures();
+			getCurrentView().moveSelectedFeaturesUnderFeature(feature);
+			getCurrentView().resetSelectedFeatures();
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.MOVE_SELECTED_FEATURES_UNDER_FEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -402,7 +619,7 @@ public class FeatureModelEditorController {
 	@Inject 
 	public void splitFeature(@UIEventTopic(FDEventTable.SPLIT_FEATURE) FXGraphicalFeature feature) {
 		try {
-			view.splitFeature(feature);
+			getCurrentView().splitFeature(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SPLIT_FEATURE, e.getMessage());
 			errorListeners.forEach(listener -> listener.onError(error));
@@ -428,7 +645,15 @@ public class FeatureModelEditorController {
 	@Optional
 	@Inject 
 	public void sendAllFeature(@UIEventTopic(FDEventTable.SEND_ALL_FEATURE) String receiver) {
-		services.eventBroker.send(FDEventTable.RECEIVE_ALL_FEATURE, view.getCurrentModel());
+		services.eventBroker.send(FDEventTable.RECEIVE_ALL_FEATURE, getCurrentView().getCurrentModel());
+	}
+	
+	@Optional
+	@Inject 
+	public void createFeatureModelFromTreeView(@UIEventTopic(FDEventTable.CREATE_FEATUREMODEL_FROM_TREEVIEW) Tree tree) {
+		FeatureDiagramm parsedModel = TreeParser.parse(tree);
+		loadFeatureDiagram(parsedModel);
+		services.eventBroker.send(FDEventTable.FORMAT_DIAGRAM_EVENT, "");
 	}
 
 }

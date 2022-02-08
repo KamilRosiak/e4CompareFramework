@@ -1,17 +1,29 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
+
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import com.google.common.io.Files;
+
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.CommandStack;
@@ -23,9 +35,17 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.manager.actions.NodeA
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
+import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
+import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -38,8 +58,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 /**
  * This class represents the controller implementation of the data structure
@@ -50,10 +68,21 @@ import javafx.scene.text.Text;
  *
  */
 public class DSEditorController {
+
+	private CloneModel cloneModel;
+	
+	@Inject
+	private ClusterEngine clusterEngine;
+	
+	@Inject
+	private GsonExportService exportService;
+
 	@Inject
 	private ServiceContainer services;
 
-	@Inject DecorationManager decoManager;
+	@Inject
+	DecorationManager decoManager;	
+
 	@FXML
 	private MenuItem properties;
 
@@ -71,7 +100,7 @@ public class DSEditorController {
 
 	@FXML
 	private ContextMenu contextMenu;
-	
+
 	@FXML
 	private ComboBox<NodeDecorator> decoratorCombo;
 
@@ -99,24 +128,46 @@ public class DSEditorController {
 	@Optional
 	@Inject
 	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Tree tree) {
-		setCurrentTree(tree);
-		setContextMenü();
-
+		cloneModel = null;
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(DSEditorST.TREE_VIEW_ID);
 		closeFile();
 		createTreeRoot(tree);
-		//load decorator and select the first
-		decoratorCombo = new ComboBox<NodeDecorator>(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
+		setCurrentTree(tree);
+		// load decorator and select the first
+		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		decoratorCombo.getSelectionModel().select(0);
-		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), decoratorCombo.getSelectionModel().getSelectedItem());
+
+		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), getSelectedDecorator());
+
 		addListener();
 	}
 
-	private NodeDecorator getSelectedDecorator() {
-		return decoratorCombo.getSelectionModel().getSelectedItem();
+	/**
+	 * Method to initialize the treeView from a given Tree and a clone model.
+	 * 
+	 * @param tree
+	 */
+	@Optional
+	@Inject
+	public void showTree(@UIEventTopic(DSEditorST.INITIALIZE_TREE_EVENT) Map<String, Object> event) {
+		Tree tree = (Tree) event.get(DSEditorST.TREE);
+		showTree(tree);
+		this.cloneModel = (CloneModel) event.get(DSEditorST.CLONE_MODEL);
 	}
 	
+	private void refreshCloneModel() {
+		CloneModel savedModel = cloneModel;		
+		showTree(savedModel.getTree());		
+		this.cloneModel = savedModel;
+	}
+	
+
+	private NodeDecorator getSelectedDecorator() {
+
+		return decoratorCombo.getSelectionModel().getSelectedItem();
+	}
+
 	private void createTreeRoot(Tree tree) {
 		treeView.setRoot(new TreeItem<Node>(tree.getRoot()));
 		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
@@ -124,7 +175,7 @@ public class DSEditorController {
 		treeView.setShowRoot(true);
 	}
 
-	private void setContextMenü() {
+	private void setContextMenu() {
 		treeView.setContextMenu(contextMenu);
 		treeView.setOnMouseEntered(event -> contextMenu.hide());
 	}
@@ -136,7 +187,8 @@ public class DSEditorController {
 	 * @param attributeValue
 	 */
 	private void addAttribute(String attributeName, String attributeValue) {
-		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName, new StringValueImpl(attributeValue));
+		treeView.getSelectionModel().getSelectedItem().getValue().addAttribute(attributeName,
+				new StringValueImpl(attributeValue));
 		treeView.refresh();
 	}
 
@@ -193,9 +245,26 @@ public class DSEditorController {
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
 				services.partService.showPart(DSEditorST.PROPERTIES_VIEW_ID);
-				services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
-						treeView.getSelectionModel().getSelectedItem().getValue());
+				if (cloneModel != null) {
+					Map<String, Object> event = new HashMap<String, Object>();
+					event.put(DSEditorST.NODE, treeView.getSelectionModel().getSelectedItem().getValue());
+					event.put(DSEditorST.CLONE_MODEL, cloneModel);
+
+					services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT, event);
+				} else {
+					services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
+							treeView.getSelectionModel().getSelectedItem().getValue());
+				}
+
 			}
+		});
+
+		decoratorCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue == null)
+				return;
+			decoManager.setCurrentDecorater(newValue);
+			TreeViewUtilities.decorateTree(treeView.getRoot(), decoManager.getCurrentDecorater());
+			services.eventBroker.send(DSEditorST.REFRESH_TREEVIEW_EVENT, true);
 		});
 	}
 
@@ -204,7 +273,22 @@ public class DSEditorController {
 	 */
 	@FXML
 	void addNodeAttribute() {
-		commandStack.execute(new AddAttributeAction(getCurrentSelection().getValue()));
+
+		if (cloneModel != null) {
+			String attrName = RCPMessageProvider.inputDialog("Attribute Name", "Enter Attribute Name");
+			String attrValue = RCPMessageProvider.inputDialog("Attribute Value", "Enter Attribute Value");
+			Attribute addedAttr = new AttributeImpl(attrName, new StringValueImpl(attrValue));		
+			
+			cloneModel.addAttribute(getCurrentSelection().getValue(), addedAttr);
+			clusterEngine.analyzeCloneModel(cloneModel);
+			refreshCloneModel();
+
+		} else {
+			AddAttributeAction action = new AddAttributeAction(getCurrentSelection().getValue());
+			commandStack.execute(action);
+
+		}
+
 		treeView.refresh();
 	}
 
@@ -213,8 +297,80 @@ public class DSEditorController {
 	 */
 	@FXML
 	void addChildNode() {
-		commandStack.execute(new AddChildNodeAction(treeView, treeView.getSelectionModel().getSelectedItem(), getSelectedDecorator()));
+
+		Node selectedNode = treeView.getSelectionModel().getSelectedItem().getValue();
+
+		if (cloneModel != null) {
+			Node newNode = new NodeImpl(RCPMessageProvider.inputDialog("Create New Child", "Node Type"));
+						
+			cloneModel.addChild(selectedNode, newNode, 0);
+			clusterEngine.analyzeCloneModel(cloneModel);
+			refreshCloneModel();
+			
+		} else {
+			TreeItem<Node> selectedItem = treeView.getSelectionModel().getSelectedItem();
+			AddChildNodeAction action = new AddChildNodeAction(treeView, selectedItem, getSelectedDecorator());
+			commandStack.execute(action);
+
+		}
+
 		treeView.refresh();
+	}
+
+	@FXML
+	public void restoreTrees() {
+
+		if (cloneModel != null) {
+			try {
+				
+				List<Tree> trees = cloneModel.restoreIntegratedTrees();
+
+				Directory directory = services.workspaceFileSystem.getWorkspaceDirectory();
+				boolean createNewDirectory = true;
+
+				File baseDirectory = null;
+				for (FileTreeElement subElement : directory.getChildren()) {
+
+					if (subElement.getFileName().equals("Restored trees")) {
+						createNewDirectory = false;
+						baseDirectory = new File(subElement.getAbsolutePath());
+						break;
+					}
+				}
+
+				if (createNewDirectory) {
+					baseDirectory = new File(directory.getAbsolutePath() + "/Restored trees");
+					baseDirectory.mkdir();
+
+				}
+
+				int count = 0;
+				for (File subElement : baseDirectory.listFiles()) {
+					if (subElement.getName().equals("Result_" + count)) {
+						count++;
+					}
+
+				}
+
+				File resultDirectory = new File(baseDirectory.getAbsolutePath() + "/" + "Result_" + count);
+				resultDirectory.mkdir();
+
+				for (Tree tree : trees) {
+
+					String json = exportService.exportTree((TreeImpl) tree);
+
+					File concreteElement = new File(resultDirectory.getAbsolutePath() + "/" + tree.getTreeName() + ".tree");
+					concreteElement.createNewFile();										
+					
+					Files.write(json.getBytes(), new File(concreteElement.getAbsolutePath()));
+
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	/**
@@ -236,10 +392,11 @@ public class DSEditorController {
 		try {
 			for (TreeItem<Node> ti : copyList) {
 				TreeItem<Node> tempNode = TreeViewUtilities.createTreeItem(ti.getValue(), getSelectedDecorator());
-				// Idee: Index verwalten über expand/collapse All
+				// Idee: Index verwalten Ã¼ber expand/collapse All
 				treeView.getSelectionModel().getSelectedItem().getChildren().add(tempNode);
 				for (TreeItem<Node> child : ti.getChildren()) {
-					tempNode.getChildren().add(TreeViewUtilities.createTreeItem(child.getValue(),getSelectedDecorator()));
+					tempNode.getChildren()
+							.add(TreeViewUtilities.createTreeItem(child.getValue(), getSelectedDecorator()));
 				}
 			}
 		} catch (NullPointerException e) {
@@ -315,9 +472,20 @@ public class DSEditorController {
 	 * Method to delete a Node
 	 */
 	private void deleteNode() {
-		TreeItem<Node> ti = treeView.getSelectionModel().getSelectedItem();
-		commandStack.execute(new DeleteNodeAction("deleteNode", ti, ti.getParent()));
-		ti.getParent().getChildren().remove(ti);
+
+		TreeItem<Node> selectedItem = treeView.getSelectionModel().getSelectedItem();
+		Node nodeToDelete = selectedItem.getValue();
+
+		if (cloneModel != null) {				
+			
+			cloneModel.delete(nodeToDelete);
+			clusterEngine.analyzeCloneModel(cloneModel);
+			refreshCloneModel();
+			
+		} else {
+			commandStack.execute(new DeleteNodeAction("deleteNode", selectedItem, selectedItem.getParent()));
+
+		}
 
 		unselectAllNodes();
 		treeView.refresh();
@@ -339,8 +507,17 @@ public class DSEditorController {
 	 */
 	@FXML
 	void saveFile() {
-		ArtifactIOUtil.writeArtifactToFile(currentTree,
-				RCPContentProvider.getCurrentWorkspacePath() + "/" + getTreeName());
+		String fileName = RCPMessageProvider.inputDialog("Filename", "Enter a File Name");
+		try {
+
+			String path = RCPContentProvider.getCurrentWorkspacePath() + CompareST.FAMILY_MODELS + "/" + fileName
+					+ ".tree";
+			String gson = exportService.exportTree((TreeImpl) currentTree);
+			FileStreamUtil.writeTextToFile(path, gson);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -453,6 +630,12 @@ public class DSEditorController {
 			treeView.getSelectionModel().select(ti);
 		}
 	}
+	
+	@FXML
+	public void createFeatureModel() {
+		services.eventBroker.send(FDEventTable.CREATE_FEATUREMODEL_FROM_TREEVIEW, currentTree);
+		services.partService.showPart(FDStringTable.BUNDLE_NAME);
+	}
 
 	/**
 	 * Event for refreshing the treeView
@@ -498,6 +681,7 @@ public class DSEditorController {
 	@Inject
 	private void addAttribute(@UIEventTopic(DSEditorST.ADD_ATTRIBUTE_EVENT) NodeAttributePair pair) {
 		pair.getOwner().getAttributes().add(pair.getAttribute());
+
 		treeView.refresh();
 	}
 
@@ -512,4 +696,5 @@ public class DSEditorController {
 		services.eventBroker.send(DSEditorST.RECEIVE_SELECTED_NODE_EVENT,
 				treeView.getSelectionModel().getSelectedItem().getValue());
 	}
+
 }

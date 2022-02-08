@@ -34,7 +34,7 @@ public class FDStringTable {
 	public static final String FD_BAR_MENU_START_LOGGER = "Start Logger";
 	public static final String FD_BAR_MENU_STOP_LOGGER = "Stop Logger";
 	public static final String FD_BAR_MENU_CONSTRAINTS = "Add Constraints";
-	public static final String FD_BAR_MENU_CREATE_CONFIG = "Create Configuration";
+	public static final String FD_BAR_MENU_SHOW_CONFIG = "Show Configurations";
 	
 	/**
 	 * Extension Points
@@ -42,7 +42,13 @@ public class FDStringTable {
 	public static final String FME_THEME_EXTENSION = "de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorTheme";
 	public static final String FME_THEME_ATTR = "theme_attr";
 	
-
+	/**
+	 * Feature Types
+	 */
+	public static final String FEATURE = "Feature";
+	public static final String COMPONENTFEATURE = "ComponentFeature";
+	public static final String CONFIGURATIONFEATURE = "ConfigurationFeature";
+	
 	/**
 	 * Graphical Feature context menu constants.
 	 */
@@ -61,6 +67,13 @@ public class FDStringTable {
 	public static final String FX_FEATURE_CM_GROUP_SELECTED_FEATURES ="Fuse Selected Features";
 	public static final String FX_FEATURE_CM_MOVE_SELECTED_FEATURES_HERE ="Move Selected Features";
 	public static final String FX_FEATURE_CM_SET_DESCRIPTION ="Set Description";
+	public static final String FX_FEATURE_CM_CREATE_COMPONENTFEATURE = "Create ComponentFeature";
+	public static final String FX_FEATURE_CM_SHOW_CONFIGURATIONS = "Show Configurations";
+	public static final String FX_FEATURE_CM_SHOW_COMPONENT_CONFIGURATION = "Show Configuration";
+	public static final String FX_FEATURE_CM_SET_CONFIGURATION = "Set Configuration";
+	public static final String FX_FEATURE_CM_LOAD_COMPONENTFEATUREDIAGRAM = "Load Feature Diagram";
+	
+	
 	
 	/**
 	 * FILE ENDINGS
@@ -72,4 +85,8 @@ public class FDStringTable {
 	 * Feature Configuration View
 	 */
 	public static final String FD_FEATURE_CONFIG_PART_NAME = "de.tu_bs.cs.isf.e4cf.featuremodel.configuration.part.featuremodelconfiguration";
+	
+	public static final String FD_DEFAULT_FEATURE_DIAGRAM_NAME = "Feature Model";
+
+	
 }	

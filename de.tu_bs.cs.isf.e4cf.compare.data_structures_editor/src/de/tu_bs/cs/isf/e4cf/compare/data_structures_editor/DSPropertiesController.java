@@ -1,7 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -22,6 +24,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorS
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.PropertiesViewUtilities;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableView;
@@ -35,6 +39,9 @@ public class DSPropertiesController {
 
 	@Inject
 	private ServiceContainer services;
+	
+	@Inject
+	private ClusterEngine clusterEngine;
 
 	@FXML
 	private ContextMenu contextMenu;
@@ -43,6 +50,7 @@ public class DSPropertiesController {
 	private TableView<Attribute> propertiesTable;
 
 	private Node selectedNode;
+	private CloneModel cloneModel;
 
 	private CommandStack propertiesManager = new CommandStack();
 
@@ -82,11 +90,21 @@ public class DSPropertiesController {
 		String oldName = "";
 		if (s != null) {
 			AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
-			oldName = getSelectedItem().getAttributeKey();
-			attr.setAttributeKey(s);
-			propertiesManager.execute(
-					new RenamePropertyAction("renameProperty", oldName, (AbstractAttribute) getSelectedItem()));
-			refreshGUI();
+			if (cloneModel != null) {
+								
+				cloneModel.editAttributeKey(selectedNode, attr, s);
+				clusterEngine.analyzeCloneModel(cloneModel);
+			
+				
+			} else {
+
+				oldName = getSelectedItem().getAttributeKey();
+				attr.setAttributeKey(s);
+				propertiesManager.execute(
+						new RenamePropertyAction("renameProperty", oldName, (AbstractAttribute) getSelectedItem()));
+				refreshGUI();
+			}
+
 		}
 	}
 
@@ -100,11 +118,23 @@ public class DSPropertiesController {
 		List<Value> newAttributeValues;
 
 		if (newValue != null) {
-			getSelectedItem().getAttributeValues().clear();
-			getSelectedItem().getAttributeValues().add(new StringValueImpl(newValue));
-			newAttributeValues = getSelectedItem().getAttributeValues();
-			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
-			refreshGUI();
+
+			Value editedValue = new StringValueImpl(newValue);
+			Attribute selectedAttribute = getSelectedItem();
+
+			if (cloneModel != null) {
+				cloneModel.editAttributeValue(selectedNode, selectedAttribute, editedValue);
+				clusterEngine.analyzeCloneModel(cloneModel);				
+				
+			} else {
+				getSelectedItem().getAttributeValues().clear();
+				getSelectedItem().getAttributeValues().add(editedValue);
+				newAttributeValues = getSelectedItem().getAttributeValues();
+				propertiesManager
+						.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
+
+				refreshGUI();
+			}
 		}
 	}
 
@@ -114,12 +144,20 @@ public class DSPropertiesController {
 	@FXML
 	public void removeNodeAttribute() {
 		if (TreeViewUtilities.confirmationAlert("Are you sure you want to do this?") == true) {
+
 			Attribute deletedAttribute = getSelectedItem();
-			services.eventBroker.send(DSEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
+
 			services.eventBroker.send(DSEditorST.ASK_FOR_SELECTED_ITEM_EVENT, true);
 			NodeAttributePair pair = new NodeAttributePair(selectedNode, deletedAttribute);
-			propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
-			refreshGUI();
+			if (cloneModel != null) {
+				cloneModel.deleteAttribute(pair.getOwner(),  pair.getAttribute());
+				clusterEngine.analyzeCloneModel(cloneModel);
+			} else {
+				services.eventBroker.send(DSEditorST.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
+				propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
+				refreshGUI();
+			}
+
 		}
 
 	}
@@ -133,10 +171,21 @@ public class DSPropertiesController {
 		List<Value> newAttributeValues;
 		String s = PropertiesViewUtilities.getInput("Please enter another Value");
 		if (s != null) {
-			getSelectedItem().getAttributeValues().add(new StringValueImpl(s));
-			newAttributeValues = getSelectedItem().getAttributeValues();
-			propertiesManager.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
-			refreshGUI();
+			Value newValue = new StringValueImpl(s);
+			Attribute selectedAttribute = getSelectedItem();
+
+			if (cloneModel != null) {
+				cloneModel.addAttributeValue(selectedNode, selectedAttribute, newValue);
+				clusterEngine.analyzeCloneModel(cloneModel);
+				
+			} else {
+				selectedAttribute.getAttributeValues().add(newValue);
+				newAttributeValues = selectedAttribute.getAttributeValues();
+				propertiesManager
+						.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
+				refreshGUI();
+			}
+
 		}
 	}
 
@@ -179,8 +228,24 @@ public class DSPropertiesController {
 	@Inject
 	public void showProperties(@UIEventTopic(DSEditorST.NODE_PROPERTIES_EVENT) Node node) {
 		propertiesTable.getColumns().clear();
+		this.selectedNode = node;
+		this.cloneModel = null;
 		propertiesTable = PropertiesViewUtilities.getAttributeTable(node, propertiesTable);
 		propertiesTable.setOnMouseEntered(e -> contextMenu.hide());
+
+	}
+
+	/**
+	 * 
+	 * @param node to be shown in the properties table
+	 */
+	@Optional
+	@Inject
+	public void showProperties(@UIEventTopic(DSEditorST.NODE_PROPERTIES_EVENT) Map<String, Object> event) {
+		Node node = (Node) event.get(DSEditorST.NODE);
+		showProperties(node);
+		this.cloneModel = (CloneModel) event.get(DSEditorST.CLONE_MODEL);
+
 	}
 
 }

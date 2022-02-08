@@ -44,7 +44,7 @@ public final class RCPMessageProvider {
 		if(result != null) {
 			return result;
 		}
-			return "";
+		return "";
 	}
 	
 	public static List<String> getFilePathsDialog(String title, String directory) {
