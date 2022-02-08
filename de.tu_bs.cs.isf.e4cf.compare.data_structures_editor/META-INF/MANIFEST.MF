@@ -3,21 +3,18 @@ Bundle-ManifestVersion: 2
 Bundle-Name: data_structures_editor
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.compare.data_structures_editor;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.eclipse.e4.ui.di,
+Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.swt,
- javax.annotation,
- javax.inject,
+ org.eclipse.e4.ui.di,
  org.eclipse.e4.core.di.annotations,
- org.eclipse.e4.core.contexts,
- de.tu_bs.cs.isf.e4cf.compare.data_structures,
- org.eclipse.e4.ui.model.workbench,
- org.eclipse.e4.core.services,
- org.eclipse.e4.ui.workbench,
+ org.eclipse.e4.core.services;bundle-version="2.2.100",
+ javax.inject,
  de.tu_bs.cs.isf.e4cf.core,
- de.tu_bs.cs.isf.e4cf.parts.project_explorer,
  de.tu_bs.cs.isf.e4cf.refactoring.data_structures,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures,
+ de.tu_bs.cs.isf.e4cf.compare,
  com.google.guava,
- de.tu_bs.cs.isf.e4cf.compare
+ de.tu_bs.cs.isf.e4cf.parts.project_explorer
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.data.structures.editor.singleton.true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces,

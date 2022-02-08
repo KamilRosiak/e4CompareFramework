@@ -1,35 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="NodeDecorator" name="NodeDecorator" schema="schema/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.exsd"/>
-   <extension
-         id="id1"
-         point="org.eclipse.e4.workbench.model">
-      <fragment
-            apply="always"
-            uri="fragment.e4xmi">
-      </fragment>
-   </extension>
-   <extension
-         point="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeDecorator">
-      <node_decorator
-            decorator_attr="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.FamilyModelNodeDecorator"
-            node_decorator="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.FamilyModelNodeDecorator">
-      </node_decorator>
-      <node_decorator
-            decorator_attr="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.TextDecorator"
-            node_decorator="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.TextDecorator">
-      </node_decorator>
-      <node_decorator
-            node_decorator="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.DetailedFamilyModelNodeDecorator">
-      </node_decorator>
-   </extension>
-   <extension
-         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
-      <project_explorer_file_attr
-            file_extension="tree"
-            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.contribution.TreeProjectExplorerExtension">
-      </project_explorer_file_attr>
-   </extension>
 
 
 </plugin>
