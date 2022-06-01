@@ -1,7 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Extractive_mple
-Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.extractive_mple
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.extractive_mple;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.extractive_mple
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: de.tu_bs.cs.isf.e4cf.compare.data_structures,
+ org.eclipse.emf.emfstore.common

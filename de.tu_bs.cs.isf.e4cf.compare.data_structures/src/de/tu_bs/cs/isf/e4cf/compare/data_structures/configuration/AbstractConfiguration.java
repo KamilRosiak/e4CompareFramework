@@ -11,6 +11,7 @@ public abstract class AbstractConfiguration implements Configuration {
 	private static final long serialVersionUID = 1L;
 	private String configName;
 	private List<UUID> configuration;
+	private UUID root;
 
 	public AbstractConfiguration(String name) {
 		setName(name);
@@ -22,11 +23,6 @@ public abstract class AbstractConfiguration implements Configuration {
 		return this.configName;
 	}
 
-	@Override
-	public List<UUID> getConfiguration() {
-		return this.configuration;
-	}
-
 	public void setName(String configName) {
 		this.configName = configName;
 	}
@@ -35,4 +31,30 @@ public abstract class AbstractConfiguration implements Configuration {
 		this.configuration = configuration;
 	}
 
+	@Override
+	public List<UUID> getUUIDs() {
+		return configuration;
+	}
+
+	@Override
+	public void addUUID(UUID uuid) {
+		configuration.add(uuid);
+	}
+
+	@Override
+	public void addUUIDs( List<UUID> uuids) {
+		configuration.addAll(uuids);
+	}
+
+	@Override
+	public void removeUUID(UUID uuid) {
+		configuration.remove(uuid);
+	}
+
+	@Override
+	public void removeUUIDs(List<UUID> uuids) {
+		uuids.forEach(uuid -> {
+			removeUUID(uuid);
+		});
+	}
 }

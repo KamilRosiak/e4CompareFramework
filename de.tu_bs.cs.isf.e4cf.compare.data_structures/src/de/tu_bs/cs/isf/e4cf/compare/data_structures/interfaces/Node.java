@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,7 +14,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  * @author Kamil Rosiak
  *
  */
-public interface Node {
+public interface Node extends Serializable {
+	static final long serialVersionUID = 5776489857546412690L;
 	/**
 	 * Returns the start line of the respective artifact in its original artifact
 	 * type.

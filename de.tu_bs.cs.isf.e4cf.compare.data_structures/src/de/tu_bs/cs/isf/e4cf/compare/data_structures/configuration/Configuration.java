@@ -6,14 +6,30 @@ import java.util.UUID;
 
 public interface Configuration extends Serializable {
 	public String getName();
-	
-	public List<UUID> getConfiguration();
-	
-	public default void addUUID(UUID uuid) {
-		getConfiguration().add(uuid);
-	}
-	
-	public default void removeUUID(UUID uuid) {
-		getConfiguration().remove(uuid);
-	}
+
+	/**
+	 * Returns a list with all contained uuids
+	 * 
+	 */
+	public List<UUID> getUUIDs();
+
+	/**
+	 * Add a UUID to the configuration
+	 */
+	public void addUUID(UUID uuid);
+
+	/**
+	 * Add a List of UUIDs to the configuration
+	 */
+	public void addUUIDs(List<UUID> uuids);
+
+	/**
+	 * Remove a UUID from the configuration
+	 */
+	public void removeUUID(UUID uuid);
+
+	/**
+	 * Remove a List of UUIDs from the configuration
+	 */
+	public void removeUUIDs(List<UUID> uuids);
 }
