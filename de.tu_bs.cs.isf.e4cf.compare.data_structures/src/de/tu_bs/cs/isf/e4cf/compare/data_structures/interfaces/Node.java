@@ -16,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  */
 public interface Node extends Serializable {
 	static final long serialVersionUID = 5776489857546412690L;
+
 	/**
 	 * Returns the start line of the respective artifact in its original artifact
 	 * type.
@@ -155,15 +156,11 @@ public interface Node extends Serializable {
 	 * This method returns all node types that are contained in this node. The node
 	 * type of this node is included as well as the children node types and
 	 * children's children node types.
-	 * 
-	 * @return
 	 */
 	public List<String> getAllNodeTypes();
 
 	/**
 	 * This method returns the UUID of this node
-	 * 
-	 * @return
 	 */
 	public UUID getUUID();
 
@@ -221,15 +218,11 @@ public interface Node extends Serializable {
 
 	/**
 	 * Traverse the Node composite in a breadth first manner. Not safe for cycles
-	 * 
-	 * @return The iterator used for traversal
 	 */
 	public Iterable<Node> breadthFirstSearch();
 
 	/**
 	 * Traverse the Node composite in a depth first manner. Not safe for cycles
-	 * 
-	 * @return The iterator used for traversal
 	 */
 	public Iterable<Node> depthFirstSearch();
 
@@ -253,8 +246,6 @@ public interface Node extends Serializable {
 
 	/**
 	 * Returns the configuration of a single variant
-	 * 
-	 * @return
 	 */
 	public Configuration createConfiguration();
 

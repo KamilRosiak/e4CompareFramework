@@ -18,6 +18,19 @@ public abstract class AbstractConfiguration implements Configuration {
 		setConfiguration(new ArrayList<UUID>());
 	}
 
+	/**
+	 * Returns the UUID of the root
+	 * 
+	 */
+	@Override
+	public UUID getRootUUID() {
+		return root;
+	}
+	@Override
+	public void setRootUUID(UUID rootUUID) {
+		this.root = rootUUID;
+	}
+
 	@Override
 	public String getName() {
 		return this.configName;
@@ -42,7 +55,7 @@ public abstract class AbstractConfiguration implements Configuration {
 	}
 
 	@Override
-	public void addUUIDs( List<UUID> uuids) {
+	public void addUUIDs(List<UUID> uuids) {
 		configuration.addAll(uuids);
 	}
 

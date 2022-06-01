@@ -8,6 +8,18 @@ public interface Configuration extends Serializable {
 	public String getName();
 
 	/**
+	 * Set the root uuid
+	 * 
+	 */
+	public void setRootUUID(UUID rootUUID);
+
+	/**
+	 * Returns the UUID of the root
+	 * 
+	 */
+	public UUID getRootUUID();
+
+	/**
 	 * Returns a list with all contained uuids
 	 * 
 	 */
@@ -32,4 +44,5 @@ public interface Configuration extends Serializable {
 	 * Remove a List of UUIDs from the configuration
 	 */
 	public void removeUUIDs(List<UUID> uuids);
+
 }
