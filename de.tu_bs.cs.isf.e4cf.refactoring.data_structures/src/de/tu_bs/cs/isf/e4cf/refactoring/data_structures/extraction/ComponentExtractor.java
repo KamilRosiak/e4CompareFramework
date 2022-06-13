@@ -23,15 +23,13 @@ import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ReferenceTree;
 @Singleton
 @Creatable
 public class ComponentExtractor {
-	
+
 	public CloneModel extractComponents(Map<Granularity, List<Set<Node>>> layerToClusters, Tree tree) {
-
 		List<MultiSetTree> components = new ArrayList<MultiSetTree>();
-
 		Map<String, List<Set<MultiSetNode>>> allClusters = new HashMap<String, List<Set<MultiSetNode>>>();
 
 		for (Entry<Granularity, List<Set<Node>>> entry : layerToClusters.entrySet()) {
-			
+
 			List<MultiSetTree> multiSetTreeList = extractComponents(entry.getValue(), entry.getKey());
 			List<Set<MultiSetNode>> list = new ArrayList<Set<MultiSetNode>>();
 			for (MultiSetTree multiSetTree : multiSetTreeList) {
@@ -52,7 +50,6 @@ public class ComponentExtractor {
 	}
 
 	private List<MultiSetTree> extractComponents(List<Set<Node>> clusters, Granularity granularity) {
-
 		List<MultiSetTree> components = new ArrayList<MultiSetTree>();
 		for (Set<Node> cluster : clusters) {
 			components.add(MultiSetTree.create(cluster, granularity));

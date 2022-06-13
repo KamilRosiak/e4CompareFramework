@@ -1,0 +1,5 @@
+package de.tu_bs.cs.isf.e4cf.extractive_mple.structure.consts;
+
+public class MPLEConsts {
+
+}

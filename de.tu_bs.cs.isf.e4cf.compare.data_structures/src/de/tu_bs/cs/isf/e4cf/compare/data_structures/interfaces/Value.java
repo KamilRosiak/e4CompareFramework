@@ -1,11 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * This interface represents a single value of a attribute
  */
-public interface Value<Type> {
+public interface Value<Type> extends Serializable {
 	/**
 	 * returns the uuid of this value.
 	 */

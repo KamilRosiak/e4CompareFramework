@@ -26,6 +26,7 @@ public class FamilyModelNodeDecorator implements NodeDecorator{
 			node.setGraphic(new ImageView(FileTable.FV_OPTIONAL_16));
 			break;
 		}
+		System.out.println(node.getValue().getVariabilityClass());
 		// Special Case for Root Node
 		if (node.getValue().isRoot())
 			node.setGraphic(new ImageView(FileTable.rootImage));
