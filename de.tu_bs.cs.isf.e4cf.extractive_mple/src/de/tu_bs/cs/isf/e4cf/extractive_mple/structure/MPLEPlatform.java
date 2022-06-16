@@ -30,7 +30,7 @@ public class MPLEPlatform implements Serializable {
 	public Node model;
 
 	public void insertVariant(Node variant) {
-
+		
 	}
 
 	public Node getVariant(Configuration config) {
