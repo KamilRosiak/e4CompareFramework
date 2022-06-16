@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_LYecQOsXEeykk90SI3gGNA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_L6zGMOsXEeykk90SI3gGNA" featurename="children" parentElementId="de.tu_bs.cs.isf.e4cf.parts.project_explorer.context_menu">
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_RtuuIOsXEeykk90SI3gGNA" elementId="de.tu_bs.cs.isf.e4cf.extractive_mple.createMPL" label="Generate MPL" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.extractive_mple/icons/mple_16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple/de.tu_bs.cs.isf.e4cf.extractive_mple.structure.handler.CreateMPLEHandler"/>
+  </fragments>
+</fragment:ModelFragments>

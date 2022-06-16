@@ -25,6 +25,10 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
  *
  */
 public class CompareEngineHierarchical implements ICompareEngine<Node> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6138789970118101633L;
 	private StringComparator defaultComparator = new StringComparator();
 	private Metric metric;
 	private Matcher matcher;

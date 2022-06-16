@@ -50,7 +50,6 @@ public class ClusterEngine {
 	}
 
 	private static ProcessUtil process;
-	
 
 	public static void startProcess() {
 		if (process == null) {
@@ -67,7 +66,6 @@ public class ClusterEngine {
 		Map<Granularity, List<Set<Node>>> layerToClusters = new HashMap<Granularity, List<Set<Node>>>();
 
 		for (Entry<Granularity, List<Node>> entry : nodes.entrySet()) {
-
 			layerToClusters.put(entry.getKey(),
 					detectClusters(entry.getValue(), buildDistanceString(entry.getValue())));
 		}
@@ -78,13 +76,12 @@ public class ClusterEngine {
 	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString) {
 
 		try {
+			List<Set<Node>> clusters = new ArrayList<Set<Node>>();
 
-			List<Set<Node>> clusters = new ArrayList<Set<Node>>();			
-			
-			if(nodes.size() == 0) {
+			if (nodes.size() == 0) {
 				return clusters;
 			}
-			
+
 			if (nodes.size() == 1) {
 				Set<Node> nodeSet = new HashSet<Node>();
 				nodeSet.add(nodes.get(0));
@@ -132,9 +129,7 @@ public class ClusterEngine {
 	}
 
 	private List<Set<MultiSetTree>> detectComponentClusters(List<MultiSetTree> nodes, String distanceString) {
-
 		try {
-
 			List<Set<MultiSetTree>> clusters = new ArrayList<Set<MultiSetTree>>();
 			if (nodes.size() == 1) {
 				Set<MultiSetTree> nodeSet = new HashSet<MultiSetTree>();
@@ -142,9 +137,7 @@ public class ClusterEngine {
 				clusters.add(nodeSet);
 				return clusters;
 			}
-
 			String[] results = getClusterResults(distanceString);
-
 			Iterator<MultiSetTree> iterator = nodes.iterator();
 			Map<Integer, Set<MultiSetTree>> map = new HashMap<Integer, Set<MultiSetTree>>();
 
@@ -170,27 +163,19 @@ public class ClusterEngine {
 	}
 
 	public void analyzeCloneModel(CloneModel cloneModel) {
-
 		for (Entry<ReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
-
 			ReferenceTree completeTree = entry.getKey();
-
 			Map<String, List<MultiSetTree>> granularityMapping = cloneModel.getGranularitiesToComponents(completeTree);
-
+			
 			for (Entry<String, List<MultiSetTree>> innerEntry : granularityMapping.entrySet()) {
-
 				List<MultiSetTree> newMultiSetTrees = new ArrayList<MultiSetTree>();
-
 				for (MultiSetTree multiSetTree : innerEntry.getValue()) {
 					analyzeIntraSimilarity(newMultiSetTrees, multiSetTree, completeTree);
 				}
-
 				List<MultiSetTree> allMultiSetTrees = new ArrayList<MultiSetTree>();
 				allMultiSetTrees.addAll(innerEntry.getValue());
 				allMultiSetTrees.addAll(newMultiSetTrees);
-
 				analyzeInterSimilarity(cloneModel, completeTree, allMultiSetTrees);
-
 			}
 
 		}
@@ -206,11 +191,9 @@ public class ClusterEngine {
 			MultiSetTree baseComponent = (MultiSetTree) cluster.iterator().next();
 			for (MultiSetTree node : cluster) {
 				if (baseComponent != node) {
-					cloneModel.mergeTrees(completeTree, baseComponent, node);				
+					cloneModel.mergeTrees(completeTree, baseComponent, node);
 				}
-
 			}
-
 		}
 	}
 
@@ -232,7 +215,7 @@ public class ClusterEngine {
 				if (!baseSet.contains(node)) {
 					MultiSetNode multiSetNode = mapping.get(node);
 					MultiSetTree newTree = multiSetTree.removeRootAndCreateNewTree(multiSetNode);
-					newMultiSetTrees.add(newTree);					
+					newMultiSetTrees.add(newTree);
 
 				}
 
@@ -240,14 +223,10 @@ public class ClusterEngine {
 		}
 	}
 
-	
-
 	private String buildDistanceComponentString(List<MultiSetTree> components) {
-
 		float[][] matrix = new float[components.size()][components.size()];
 		for (int i = 0; i < components.size(); i++) {
 			for (int j = i; j < components.size(); j++) {
-
 				MultiSetTree component1 = components.get(i);
 				MultiSetTree component2 = components.get(j);
 
@@ -258,9 +237,7 @@ public class ClusterEngine {
 					matrix[i][j] = distance;
 					matrix[j][i] = distance;
 				}
-
 			}
-
 		}
 		return getDistanceString(matrix, components.size());
 	}
@@ -274,13 +251,11 @@ public class ClusterEngine {
 				if (j != size - 1) {
 					distanceString += ",";
 				}
-
 			}
 			distanceString += "]";
 			if (i != size - 1) {
 				distanceString += ",";
 			}
-
 		}
 		distanceString += ")";
 
@@ -291,7 +266,6 @@ public class ClusterEngine {
 		float[][] matrix = new float[nodes.size()][nodes.size()];
 		for (int i = 0; i < nodes.size(); i++) {
 			for (int j = i; j < nodes.size(); j++) {
-
 				Node node1 = nodes.get(i);
 				Node node2 = nodes.get(j);
 

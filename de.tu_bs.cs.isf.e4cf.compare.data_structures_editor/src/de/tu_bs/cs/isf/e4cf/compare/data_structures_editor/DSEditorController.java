@@ -164,7 +164,6 @@ public class DSEditorController {
 	
 
 	private NodeDecorator getSelectedDecorator() {
-
 		return decoratorCombo.getSelectionModel().getSelectedItem();
 	}
 
