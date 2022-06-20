@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.extractive_mple.structure.extension;
+package de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.workspace;
 
 import java.io.File;
 import java.util.List;

@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
@@ -157,7 +158,7 @@ public interface Node extends Serializable {
 	 * type of this node is included as well as the children node types and
 	 * children's children node types.
 	 */
-	public List<String> getAllNodeTypes();
+	public Set<String> getAllNodeTypes();
 
 	/**
 	 * This method returns the UUID of this node

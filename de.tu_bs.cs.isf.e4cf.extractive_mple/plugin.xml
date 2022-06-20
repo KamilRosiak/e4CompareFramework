@@ -13,7 +13,7 @@
          point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
       <project_explorer_file_attr
             file_extension="mpl"
-            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.structure.extension.MPLExtension">
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.workspace.MPLExtension">
       </project_explorer_file_attr>
    </extension>
 

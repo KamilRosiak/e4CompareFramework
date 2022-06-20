@@ -1,6 +1,5 @@
-package de.tu_bs.cs.isf.e4cf.extractive_mple.structure.handler;
+package de.tu_bs.cs.isf.e4cf.extractive_mple.handler;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +22,12 @@ public class CreateMPLEHandler {
 		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 1) {
 			MPLEPlatform platform = new MPLEPlatform();
 			List<Node> variants = new ArrayList<Node>();
-			variants.add(
-					readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer()).getRoot());
+			for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
+				variants.add(readerManager.readFile(treeElement).getRoot());
+			}
 			platform.insertVariants(variants);
-			MPLEPlatformUtil.storePlatform(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()+"//test.mpl", platform);
+			MPLEPlatformUtil.storePlatform(
+					services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//test.mpl", platform);
 		}
 	}
 
