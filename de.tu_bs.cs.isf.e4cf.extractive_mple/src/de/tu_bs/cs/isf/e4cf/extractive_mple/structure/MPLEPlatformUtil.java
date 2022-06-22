@@ -12,7 +12,7 @@ public class MPLEPlatformUtil {
 	/**
 	 * Store multi product line platform to file
 	 */
-	public static void storePlatform(String fileName, MPLEPlatform platform) {
+	public static void storePlatform(String fileName, MPLPlatform platform) {
 		try {
 			FileOutputStream file = new FileOutputStream(fileName);
 			ObjectOutputStream out = new ObjectOutputStream(file);
@@ -27,7 +27,7 @@ public class MPLEPlatformUtil {
 	/**
 	 * Store multi product line platform to file
 	 */
-	public static MPLEPlatform loadPlatform(File file) {
+	public static MPLPlatform loadPlatform(File file) {
 		FileInputStream in;
 		try {
 			in = new FileInputStream(file);
@@ -35,8 +35,8 @@ public class MPLEPlatformUtil {
 			Object obj = oin.readObject();
 			oin.close();
 			in.close();
-			if (obj instanceof MPLEPlatform) {
-				return (MPLEPlatform) obj;
+			if (obj instanceof MPLPlatform) {
+				return (MPLPlatform) obj;
 			}
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();

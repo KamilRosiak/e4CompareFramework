@@ -16,7 +16,6 @@ import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFile
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -81,7 +80,7 @@ public class CompareEngineView implements Initializable {
 
 			if (artifacts.size() > 1) {
 				Tree mergedTree = engine.compare(artifacts);
-				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
+				//services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
 				// JavaWriter writer = new JavaWriter();
 				// writer.writeArtifact(mergedTree,
 				// services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()

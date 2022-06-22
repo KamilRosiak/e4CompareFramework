@@ -12,7 +12,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatform;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 
 public class CreateMPLEHandler {
@@ -20,7 +20,7 @@ public class CreateMPLEHandler {
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager) {
 		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 1) {
-			MPLEPlatform platform = new MPLEPlatform();
+			MPLPlatform platform = new MPLPlatform();
 			List<Node> variants = new ArrayList<Node>();
 			for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
 				variants.add(readerManager.readFile(treeElement).getRoot());

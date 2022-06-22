@@ -10,6 +10,7 @@ import org.apache.commons.lang.SerializationUtils;
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -24,7 +25,7 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences.PlatformPrefe
  * @author Kamil Rosiak
  *
  */
-public class MPLEPlatform implements Serializable {
+public class MPLPlatform implements Serializable {
 	/**
 	 * 
 	 */
@@ -34,11 +35,19 @@ public class MPLEPlatform implements Serializable {
 	public Node model;
 	public Matcher matcher = new SortingMatcher();
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
+	int configCount = 0;
 
 	public void insertVariants(List<Node> variants) {
 		variants.forEach(variant -> {
 			insertVariant(variant);
 		});
+	}
+
+	public Configuration getNextConfig(Node node) {
+		configCount++;
+		String configName = "configuration " + configCount;
+		Configuration config = NodeConfigurationUtil.generateConfiguration(node, configName);
+		return config;
 	}
 
 	/**
@@ -47,6 +56,7 @@ public class MPLEPlatform implements Serializable {
 	public void insertVariant(Node variant) {
 		if (model == null) {
 			initializePlatform(variant);
+			configurations.add(getNextConfig(variant));
 			return;
 		}
 
@@ -59,7 +69,7 @@ public class MPLEPlatform implements Serializable {
 			comparison.updateSimilarity();
 			model = comparison.mergeArtifacts();
 			// after merging all artifacts uuids are propagated to the right variant
-			configurations.add(NodeConfigurationUtil.generateConfiguration(comparison.getRightArtifact()));
+			configurations.add(getNextConfig(comparison.getRightArtifact()));
 		} else {
 			System.out.println("root node has other type");
 		}

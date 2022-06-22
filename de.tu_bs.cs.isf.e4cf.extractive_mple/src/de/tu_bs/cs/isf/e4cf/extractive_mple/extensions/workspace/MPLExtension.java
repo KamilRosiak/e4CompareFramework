@@ -5,14 +5,13 @@ import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;
-import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatform;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewFiles;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
@@ -39,11 +38,11 @@ public class MPLExtension implements IProjectExplorerExtension {
 				return;
 			}
 			
-			MPLEPlatform platform = MPLEPlatformUtil.loadPlatform(new File(selectedFileElement.getAbsolutePath()));
+			MPLPlatform platform = MPLEPlatformUtil.loadPlatform(new File(selectedFileElement.getAbsolutePath()));
 			
 			// send load event
-			container.partService.showPart(DSEditorST.TREE_VIEW_ID);
-			container.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, new TreeImpl("Test", platform.model));
+			container.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
+			container.eventBroker.send(MPLEEditorConsts.SHOW_MPL, platform);
 		} else {
 			RCPMessageProvider.errorMessage("MPLE", "Could not load multi product line");
 			// TODO: NOT POSSIBLE -> but for other handlers

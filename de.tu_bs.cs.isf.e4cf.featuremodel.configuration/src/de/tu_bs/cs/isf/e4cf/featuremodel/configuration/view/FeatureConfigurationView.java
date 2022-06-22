@@ -9,11 +9,11 @@ import org.eclipse.swt.widgets.Composite;
 
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.FXToolbar;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.FeatureConfigurationController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.configuration.stringtable.FeatureModelConfigurationStrings;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;

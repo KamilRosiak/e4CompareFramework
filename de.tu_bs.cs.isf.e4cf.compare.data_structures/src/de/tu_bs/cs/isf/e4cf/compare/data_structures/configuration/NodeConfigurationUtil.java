@@ -46,5 +46,11 @@ public class NodeConfigurationUtil {
 		}
 	}
 
+	public static Configuration generateConfiguration(Node node, String name) {
+		Configuration config = new ConfigurationImpl(name);
+		addUUIDsToConfiguration(config, node);
+		return config;
+	}
+
 
 }

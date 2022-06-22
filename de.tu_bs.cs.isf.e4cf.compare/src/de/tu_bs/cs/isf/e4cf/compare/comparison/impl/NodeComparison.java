@@ -123,6 +123,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
 			// mandatory is a default value if the artifacts was optional in a previous
 			// iteration it should stay as optional
+			getRightArtifact().setUUID(getLeftArtifact().getUUID());//Set the UUID of the  left artifact because it is the base
 			return getLeftArtifact();
 		} else {
 			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
@@ -140,6 +141,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 								rightValue.setUUID(leftAttr.getAttributeValue(rightValue).getUUID());
 							}
 						}
+						rightAttr.setUuid(leftAttr.getUuid());
 						containedAttrs.add(rightAttr);
 					}
 				}

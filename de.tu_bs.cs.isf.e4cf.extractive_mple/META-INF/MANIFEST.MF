@@ -10,11 +10,11 @@ Require-Bundle: de.tu_bs.cs.isf.e4cf.compare.data_structures,
  org.eclipse.swt,
  de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.core,
- de.tu_bs.cs.isf.e4cf.compare.data_structures_editor,
  org.eclipse.e4.ui.model.workbench;bundle-version="2.1.600.v20191106-1503",
  org.eclipse.emf.emfstore.common,
  de.tu_bs.cs.isf.e4cf.parts.project_explorer,
  de.tu_bs.cs.isf.e4cf.family_model_view.prototype
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.extractive_mple
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.structure
+Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.consts,
+ de.tu_bs.cs.isf.e4cf.extractive_mple.structure
