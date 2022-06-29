@@ -24,11 +24,16 @@ public class MPLEditorAdapter {
 
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {
-		FXCanvas canvans = new FXCanvas(parent, SWT.None);
-		FXMLLoader<MPLEditorController> loader = new FXMLLoader<MPLEditorController>(context,
-				MPLEEditorConsts.BUNDLE_NAME, MPLEEditorConsts.TREE_VIEW_FXML);
+		try {
+			FXCanvas canvans = new FXCanvas(parent, SWT.None);
+			FXMLLoader<MPLEditorController> loader = new FXMLLoader<MPLEditorController>(context,
+					MPLEEditorConsts.BUNDLE_NAME, MPLEEditorConsts.TREE_VIEW_FXML);
 
-		Scene scene = new Scene(loader.getNode());
-		canvans.setScene(scene);
+			Scene scene = new Scene(loader.getNode());
+			canvans.setScene(scene);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 }

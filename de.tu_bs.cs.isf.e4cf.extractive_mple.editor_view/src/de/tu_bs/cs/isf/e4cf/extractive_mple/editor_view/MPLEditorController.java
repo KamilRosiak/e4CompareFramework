@@ -24,6 +24,7 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.beans.InvalidationListener;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -36,12 +37,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.util.Callback;
 
 /**
  * This class represents the controller implementation of the data structure
@@ -86,40 +90,15 @@ public class MPLEditorController implements Initializable {
 	private MPLPlatform currentPlatform;
 	private Set<String> UUIDs = new HashSet<String>();
 	private Tree currentTree;
+	private TreeItem<Node> currentSelection;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 		amountCol.setCellValueFactory(e -> {
-			return new ObservableValue<String>() {
-				@Override
-				public void removeListener(InvalidationListener arg0) {
-					// TODO Auto-generated method stub
-				}
-
-				@Override
-				public void addListener(InvalidationListener arg0) {
-					// TODO Auto-generated method stub
-				}
-
-				@Override
-				public void removeListener(ChangeListener<? super String> listener) {
-					// TODO Auto-generated method stub
-				}
-
-				@Override
-				public String getValue() {
-					return String.valueOf(e.getValue().getUUIDs().size());
-				}
-
-				@Override
-				public void addListener(ChangeListener<? super String> listener) {
-					// TODO Auto-generated method stub
-				}
-			};
+			return new SimpleStringProperty(String.valueOf(e.getValue().getUUIDs().size()));
 		});
 	}
-
 
 	private NodeDecorator getSelectedDecorator() {
 		return decoratorCombo.getSelectionModel().getSelectedItem();
@@ -130,6 +109,30 @@ public class MPLEditorController implements Initializable {
 		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
 		treeView.getRoot().setExpanded(true);
 		treeView.setShowRoot(true);
+		treeView.getSelectionModel().selectedItemProperty().addListener(e -> {
+			currentSelection = treeView.getSelectionModel().getSelectedItem();
+			configTable.refresh();
+		});
+
+		configTable.setRowFactory(new Callback<TableView<Configuration>, TableRow<Configuration>>() {
+
+			@Override
+			public TableRow<Configuration> call(TableView<Configuration> param) {
+				return new TableRow<Configuration>() {
+					@Override
+					protected void updateItem(Configuration paramT, boolean paramBoolean) {
+						super.updateItem(paramT, paramBoolean);
+						if (paramT != null && currentSelection != null) {
+							if (paramT.getUUIDs().contains(currentSelection.getValue().getUUID())) {
+								setStyle("-fx-background-color:LIGHTGREEN;");
+							} else {
+								setStyle(null);
+							}
+						}
+					}
+				};
+			}
+		});
 	}
 
 	/**
@@ -170,7 +173,6 @@ public class MPLEditorController implements Initializable {
 	@Optional
 	@Inject
 	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
-
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 		Tree tree = new TreeImpl(platform.name, platform.model);
