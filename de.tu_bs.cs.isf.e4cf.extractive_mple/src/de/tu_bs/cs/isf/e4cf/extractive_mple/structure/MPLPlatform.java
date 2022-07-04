@@ -101,11 +101,17 @@ public class MPLPlatform implements Serializable {
 			Node mergeTarget = clusterSet.iterator().next();
 			clusterSet.remove(mergeTarget);
 			int configCount = 1;
+			System.out.println("cluster:" + cluster);
+			Configuration config1 = NodeConfigurationUtil.generateConfiguration(mergeTarget, "config+" + configCount);
+			System.out.println("config " + configCount + " " + config1.getUUIDs().size());
 			for (Node clusterNode : clusterSet) {
 				NodeComparison nodeComparison = compareEngine.compare(mergeTarget, clusterNode);
 				nodeComparison.updateSimilarity();
 				nodeComparison.mergeArtifacts();
-				Configuration config = NodeConfigurationUtil.generateConfiguration(clusterNode, "config+" + configCount);
+				Configuration config = NodeConfigurationUtil.generateConfiguration(clusterNode,
+						"config+" + configCount);
+				System.out.println("config " + configCount + " " + config.getUUIDs().size());
+				configCount++;
 			}
 			cluster++;
 		}
