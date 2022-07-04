@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.apache.commons.lang.SerializationUtils;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
+import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
@@ -18,6 +20,7 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences.PlatformPreferences;
+import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 
 /**
  * This class represents the Platform for the multi-product-line engineering
@@ -78,35 +81,35 @@ public class MPLPlatform implements Serializable {
 	private void refactorComponents(Node node) {
 		// get candidate nodes for the refactoring step
 		List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
-		System.out.println(candidatNodes.size());
 		// TODO: connect with the Ui
 
-		List<NodeComparison> comparisons = new ArrayList<NodeComparison>();
+		ClusterEngine clusterEngine = new ClusterEngine();
+		ClusterEngine.startProcess();
+		List<Set<Node>> nodeCluster = clusterEngine.detectClusters(candidatNodes,
+				clusterEngine.buildDistanceString(candidatNodes));
 
-		// compare the upper triangle and create a similarity matrix
-		for (int i = 0; i < candidatNodes.size(); i++) {
-			for (int j = i; j < candidatNodes.size(); j++) {
-				NodeComparison comparison = compareEngine.compare(candidatNodes.get(i), candidatNodes.get(j));
-				comparison.updateSimilarity();
-				matcher.calculateMatching(comparison);
-				comparison.updateSimilarity();
-				comparisons.add(comparison);
+		Iterator<Set<Node>> iterator = nodeCluster.iterator();
+		while (iterator.hasNext()) {
+			Set<Node> set = iterator.next();
+			if (set.size() <= 1) {
+				iterator.remove();
 			}
 		}
-		// collect similar artifacts
-		Iterator<NodeComparison> compariosnIterator = comparisons.iterator();
-		while (compariosnIterator.hasNext()) {
-			NodeComparison nodeComparison = (NodeComparison) compariosnIterator.next();
-			if (nodeComparison.getSimilarity() < PlatformPreferences.COMPONENT_THRESHOLD
-					&& !nodeComparison.getLeftArtifact().equals(nodeComparison.getRightArtifact())) {
-				compariosnIterator.remove();
+
+		int cluster = 1;
+		for (Set<Node> clusterSet : nodeCluster) {
+			Node mergeTarget = clusterSet.iterator().next();
+			clusterSet.remove(mergeTarget);
+			int configCount = 1;
+			for (Node clusterNode : clusterSet) {
+				NodeComparison nodeComparison = compareEngine.compare(mergeTarget, clusterNode);
+				nodeComparison.updateSimilarity();
+				nodeComparison.mergeArtifacts();
+				Configuration config = NodeConfigurationUtil.generateConfiguration(clusterNode, "config+" + configCount);
 			}
+			cluster++;
 		}
-		comparisons.forEach(comparison -> {
-			System.out.println(getAttributeValueFromNode(comparison.getLeftArtifact(), "Name") + " "
-					+ getAttributeValueFromNode(comparison.getRightArtifact(), "Name") + " sim:"
-					+ comparison.getSimilarity());
-		});
+
 	}
 
 	private String getAttributeValueFromNode(Node n, String key) {

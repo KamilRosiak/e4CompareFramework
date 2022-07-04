@@ -73,7 +73,7 @@ public class ClusterEngine {
 		return layerToClusters;
 	}
 
-	private List<Set<Node>> detectClusters(List<Node> nodes, String distanceString) {
+	public List<Set<Node>> detectClusters(List<Node> nodes, String distanceString) {
 
 		try {
 			List<Set<Node>> clusters = new ArrayList<Set<Node>>();
@@ -166,7 +166,7 @@ public class ClusterEngine {
 		for (Entry<ReferenceTree, List<MultiSetTree>> entry : cloneModel.getComponents().entrySet()) {
 			ReferenceTree completeTree = entry.getKey();
 			Map<String, List<MultiSetTree>> granularityMapping = cloneModel.getGranularitiesToComponents(completeTree);
-			
+
 			for (Entry<String, List<MultiSetTree>> innerEntry : granularityMapping.entrySet()) {
 				List<MultiSetTree> newMultiSetTrees = new ArrayList<MultiSetTree>();
 				for (MultiSetTree multiSetTree : innerEntry.getValue()) {
@@ -262,7 +262,7 @@ public class ClusterEngine {
 		return distanceString;
 	}
 
-	private String buildDistanceString(List<Node> nodes) {
+	public String buildDistanceString(List<Node> nodes) {
 		float[][] matrix = new float[nodes.size()][nodes.size()];
 		for (int i = 0; i < nodes.size(); i++) {
 			for (int j = i; j < nodes.size(); j++) {
