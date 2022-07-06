@@ -152,7 +152,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// put all other attributes from right to left because it wasn't contained
 			// before
 			getRightArtifact().getAttributes().addAll(allAttrs);
-
+			getRightArtifact().setUUID(getLeftArtifact().getUUID());
 			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {

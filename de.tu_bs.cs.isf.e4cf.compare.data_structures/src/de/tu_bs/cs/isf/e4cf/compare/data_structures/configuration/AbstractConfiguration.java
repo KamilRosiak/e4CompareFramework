@@ -1,7 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class AbstractConfiguration implements Configuration {
@@ -10,12 +11,12 @@ public abstract class AbstractConfiguration implements Configuration {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String configName;
-	private List<UUID> configuration;
+	private Set<UUID> configuration;
 	private UUID root;
 
 	public AbstractConfiguration(String name) {
 		setName(name);
-		setConfiguration(new ArrayList<UUID>());
+		setConfiguration(new HashSet<UUID>());
 	}
 
 	/**
@@ -40,12 +41,12 @@ public abstract class AbstractConfiguration implements Configuration {
 		this.configName = configName;
 	}
 
-	public void setConfiguration(List<UUID> configuration) {
+	public void setConfiguration(Set<UUID> configuration) {
 		this.configuration = configuration;
 	}
 
 	@Override
-	public List<UUID> getUUIDs() {
+	public Set<UUID> getUUIDs() {
 		return configuration;
 	}
 

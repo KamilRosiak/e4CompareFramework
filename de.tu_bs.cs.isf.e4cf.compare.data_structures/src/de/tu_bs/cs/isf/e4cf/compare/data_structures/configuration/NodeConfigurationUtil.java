@@ -21,6 +21,7 @@ public class NodeConfigurationUtil {
 	 */
 	public static void addUUIDsToConfiguration(Configuration config, Node node) {
 		config.setRootUUID(node.getUUID());
+		config.addUUID(node.getUUID());
 		node.getAttributes().forEach(attribute -> {
 			config.addUUID(attribute.getUuid());
 			attribute.getAttributeValues().forEach(value -> {
@@ -31,7 +32,7 @@ public class NodeConfigurationUtil {
 			addUUIDsToConfiguration(config, childNode);
 		});
 	}
-	
+
 	/**
 	 * Returns a node with the given UUID if available else null
 	 */
@@ -51,6 +52,5 @@ public class NodeConfigurationUtil {
 		addUUIDsToConfiguration(config, node);
 		return config;
 	}
-
 
 }

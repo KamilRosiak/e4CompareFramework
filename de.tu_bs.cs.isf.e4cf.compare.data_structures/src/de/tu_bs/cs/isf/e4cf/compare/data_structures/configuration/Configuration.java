@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface Configuration extends Serializable {
@@ -23,7 +24,7 @@ public interface Configuration extends Serializable {
 	 * Returns a list with all contained uuids
 	 * 
 	 */
-	public List<UUID> getUUIDs();
+	public Set<UUID> getUUIDs();
 
 	/**
 	 * Add a UUID to the configuration
