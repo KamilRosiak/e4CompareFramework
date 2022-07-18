@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Extractive_mple_platform_view
+Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.e4.core.contexts,
+ org.eclipse.swt,
+ javax.inject,
+ org.eclipse.e4.ui.model.workbench;bundle-version="2.1.600.v20191106-1503",
+ de.tu_bs.cs.isf.e4cf.compare.data_structures,
+ org.eclipse.e4.core.di.annotations,
+ org.eclipse.e4.ui.di,
+ de.tu_bs.cs.isf.e4cf.extractive_mple,
+ org.eclipse.e4.core.services,
+ de.tu_bs.cs.isf.e4cf.core
+Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
