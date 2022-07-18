@@ -58,6 +58,16 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
+	public List<Configuration> getConfigurations() {
+		return configurations;
+	}
+
+	@Override
+	public void addConfiguration(Configuration config) {
+		configurations.add(config);
+	}
+
+	@Override
 	public List<Attribute> getAttributes() {
 		return attributes;
 	}
@@ -166,14 +176,7 @@ public abstract class AbstractNode implements Node {
 		// sort child artifacts if not empty
 		if (!getChildren().isEmpty()) {
 			getChildren().sort((a, b) -> {
-				if (a.getStartLine() < b.getStartLine()) {
-					return -1;
-				}
-
-				if (a.getStartLine() > b.getStartLine()) {
-					return 1;
-				}
-				return 0;
+				return Integer.compare(a.getStartLine(), b.getStartLine());
 			});
 		}
 	}
@@ -355,5 +358,15 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public Configuration createConfiguration() {
 		return null;
+	}
+
+	@Override
+	public boolean isComponent() {
+		return isComponent;
+	}
+
+	@Override
+	public void setComponent(boolean isComponent) {
+		this.isComponent = isComponent;
 	}
 }

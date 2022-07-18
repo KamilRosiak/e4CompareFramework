@@ -1,8 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
@@ -66,7 +68,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		NodeComparison comparison = new NodeComparison(first, second);
 		// if nodes are of the same type
 		if (first.getNodeType().equals(second.getNodeType())) {
-						
+
 			List<Comparator> comparators = metric.getComparatorForNodeType(first.getNodeType());
 			// check if the metric contains attribute for the comparison of this node type
 			if (!comparators.isEmpty()) {
@@ -78,6 +80,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 				comparison.addResultElement(c);
 
 			}
+
 			// if no children available the recursion ends here
 			if (first.getChildren().isEmpty() && second.getChildren().isEmpty()) {
 				return comparison;
@@ -89,7 +92,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 					second.getChildren().stream()
 							.forEach(e -> comparison.addChildComparison(new NodeComparison(null, e, 0f)));
 				} else {
-
 					// compare children recursively
 					first.getChildren().stream().forEach(e -> {
 						second.getChildren().stream().forEach(f -> {
@@ -97,6 +99,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 							if (innerComp != null) {
 								comparison.addChildComparison(innerComp);
 							}
+
 						});
 					});
 				}

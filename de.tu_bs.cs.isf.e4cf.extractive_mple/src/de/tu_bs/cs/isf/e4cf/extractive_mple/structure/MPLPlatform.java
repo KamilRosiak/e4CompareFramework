@@ -50,6 +50,7 @@ public class MPLPlatform implements Serializable {
 		configCount++;
 		String configName = "configuration " + configCount;
 		Configuration config = NodeConfigurationUtil.generateConfiguration(node, configName);
+		
 		return config;
 	}
 
@@ -88,6 +89,8 @@ public class MPLPlatform implements Serializable {
 		List<Set<Node>> nodeCluster = clusterEngine.detectClusters(candidatNodes,
 				clusterEngine.buildDistanceString(candidatNodes));
 
+		// remove all sets with a size smaller as 1 because we cant merge them at this
+		// point
 		Iterator<Set<Node>> iterator = nodeCluster.iterator();
 		while (iterator.hasNext()) {
 			Set<Node> set = iterator.next();
@@ -105,12 +108,23 @@ public class MPLPlatform implements Serializable {
 			Configuration config1 = NodeConfigurationUtil.generateConfiguration(mergeTarget, "config+" + configCount);
 			System.out.println("config " + configCount + " " + config1.getUUIDs().size());
 			for (Node clusterNode : clusterSet) {
+				configCount++;
+				mergeTarget.setComponent(true);
+				clusterNode.setComponent(true);
+
 				NodeComparison nodeComparison = compareEngine.compare(mergeTarget, clusterNode);
 				nodeComparison.updateSimilarity();
 				nodeComparison.mergeArtifacts();
+
+				
+				clusterNode.getParent().getChildren().add(mergeTarget);
+				clusterNode.getParent().getChildren().remove(clusterNode);
+				
 				Configuration config = NodeConfigurationUtil.generateConfiguration(clusterNode,
 						"config+" + configCount);
+
 				System.out.println("config " + configCount + " " + config.getUUIDs().size());
+
 				configCount++;
 			}
 			cluster++;
@@ -131,6 +145,7 @@ public class MPLPlatform implements Serializable {
 	 * Sets the first variant as root variant which serves as a starting point
 	 */
 	private void initializePlatform(Node variant) {
+		refactorComponents(variant);
 		model = variant;
 		List<Configuration> configList = new ArrayList<Configuration>();
 		configList.add(NodeConfigurationUtil.generateConfiguration(variant));

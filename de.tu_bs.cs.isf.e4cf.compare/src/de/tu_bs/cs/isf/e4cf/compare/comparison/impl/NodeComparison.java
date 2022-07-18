@@ -3,7 +3,6 @@ package de.tu_bs.cs.isf.e4cf.compare.comparison.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -96,7 +95,11 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	public void setNodeOptionalWithChildren(Node node) {
 		node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
 		node.getChildren().forEach(childNode -> {
-			setNodeOptionalWithChildren(childNode);
+			if (!childNode.isComponent()) {
+				setNodeOptionalWithChildren(childNode);
+			} else {
+				childNode.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
+			}
 		});
 	}
 
@@ -123,7 +126,13 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
 			// mandatory is a default value if the artifacts was optional in a previous
 			// iteration it should stay as optional
-			getRightArtifact().setUUID(getLeftArtifact().getUUID());//Set the UUID of the  left artifact because it is the base
+			getRightArtifact().setUUID(getLeftArtifact().getUUID());// Set the UUID of the left artifact because it is
+																	// the base
+
+			if (getRightArtifact().isComponent()) {
+				getLeftArtifact().setComponent(true);
+			}
+
 			return getLeftArtifact();
 		} else {
 			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
@@ -133,7 +142,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				for (Attribute rightAttr : getRightArtifact().getAttributes()) {
 					// same attr type
 					if (leftAttr.keyEquals(rightAttr)) {
-						
+
 						for (Value rightValue : rightAttr.getAttributeValues()) {
 							if (!leftAttr.containsValue(rightValue)) {
 								leftAttr.addAttributeValue(rightValue);
@@ -146,7 +155,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 					}
 				}
 			}
-			//remove all contained attrs from all others 
+			// remove all contained attrs from all others
 			Set<Attribute> allAttrs = new HashSet<Attribute>(getRightArtifact().getAttributes());
 			allAttrs.removeAll(containedAttrs);
 			// put all other attributes from right to left because it wasn't contained
@@ -165,6 +174,9 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			getLeftArtifact().setEndLine(Math.min(getLeftArtifact().getEndLine(), getRightArtifact().getEndLine()));
 
 			getLeftArtifact().sortChildNodes();
+			if (getRightArtifact().isComponent()) {
+				getLeftArtifact().setComponent(true);
+			}
 			return getLeftArtifact();
 		}
 	}

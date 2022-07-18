@@ -25,9 +25,9 @@
             <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Loaded MPL:" VBox.vgrow="ALWAYS" />
              <TreeTableView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <columns>
-                  <TreeTableColumn fx:id="nameCol" prefWidth="75.0" text="Name" />
-                  <TreeTableColumn prefWidth="75.0" text="Component" />
-                  <TreeTableColumn fx:id="configCol" prefWidth="75.0" text="Configuration" />
+                  <TreeTableColumn fx:id="nameCol" prefWidth="250.0" text="Name" />
+                  <TreeTableColumn fx:id="componentCol" prefWidth="150.0" text="Component" />
+                  <TreeTableColumn fx:id="configCol" prefWidth="250.0" text="Configuration" />
                </columns></TreeTableView>
          </children>
       </VBox>

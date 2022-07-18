@@ -78,7 +78,7 @@ public class MPLEditorController implements Initializable {
 	private TreeTableView<Node> treeView;
 
 	@FXML
-	private TreeTableColumn<Node, String> nameCol, configCol;
+	private TreeTableColumn<Node, String> nameCol, configCol, componentCol;
 	@FXML
 	private TableView<Configuration> configTable;
 	@FXML
@@ -107,6 +107,14 @@ public class MPLEditorController implements Initializable {
 		});
 		nameCol.setCellValueFactory(e -> {
 			return new SimpleStringProperty(e.getValue().getValue().getNodeType());
+		});
+
+		componentCol.setCellValueFactory(e -> {
+			String name = "";
+			if (e.getValue().getValue().isComponent()) {
+				name = "component " + e.getValue().getValue().getUUID();
+			}
+			return new SimpleStringProperty(name);
 		});
 
 		configCol.setCellValueFactory(e -> {
@@ -142,9 +150,6 @@ public class MPLEditorController implements Initializable {
 			treeView.refresh();
 		});
 
-		treeView.getSelectionModel().selectedItemProperty().addListener(e -> {
-			System.out.println("selected:" + treeView.getSelectionModel().getSelectedItem().getValue().getUUID());
-		});
 
 		treeView.setRowFactory(new Callback<TreeTableView<Node>, TreeTableRow<Node>>() {
 
@@ -154,14 +159,6 @@ public class MPLEditorController implements Initializable {
 					@Override
 					protected void updateItem(Node node, boolean paramBoolean) {
 						super.updateItem(node, paramBoolean);
-						if (node != null && currentConfiguration != null) {
-							currentConfiguration.getUUIDs().forEach(e -> {
-								if (e.equals(node.getUUID())) {
-									System.out.println(true);
-								}
-							});
-
-						}
 						if (node != null && currentConfiguration != null
 								&& currentConfiguration.getUUIDs().contains(node.getUUID())) {
 							setStyle("-fx-background-color:LIGHTGREEN;");

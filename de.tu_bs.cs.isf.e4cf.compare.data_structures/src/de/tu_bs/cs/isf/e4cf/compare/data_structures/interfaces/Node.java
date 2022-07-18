@@ -18,6 +18,10 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 public interface Node extends Serializable {
 	static final long serialVersionUID = 5776489857546412690L;
 
+	public void addConfiguration(Configuration config);
+	
+	public List<Configuration> getConfigurations();
+
 	/**
 	 * Returns the start line of the respective artifact in its original artifact
 	 * type.
@@ -95,6 +99,10 @@ public interface Node extends Serializable {
 	 * @return
 	 */
 	public boolean isLeaf();
+
+	public void setComponent(boolean isComponent);
+
+	public boolean isComponent();
 
 	/**
 	 * Returns the parent Node of this Node if available else this node is the root

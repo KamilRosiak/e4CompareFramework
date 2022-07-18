@@ -29,7 +29,12 @@ public class NodeConfigurationUtil {
 			});
 		});
 		node.getChildren().forEach(childNode -> {
-			addUUIDsToConfiguration(config, childNode);
+			if(!node.isComponent()) {
+				addUUIDsToConfiguration(config, childNode);
+			} else {
+				//TODO:Component
+			}
+
 		});
 	}
 
