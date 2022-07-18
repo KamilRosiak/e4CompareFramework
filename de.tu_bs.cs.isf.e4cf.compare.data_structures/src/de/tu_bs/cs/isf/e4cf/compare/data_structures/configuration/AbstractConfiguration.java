@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,10 +14,19 @@ public abstract class AbstractConfiguration implements Configuration {
 	private String configName;
 	private Set<UUID> configuration;
 	private UUID root;
+	private List<ComponentConfiguration> componentConfigurations = new ArrayList<ComponentConfiguration>();
 
 	public AbstractConfiguration(String name) {
 		setName(name);
 		setConfiguration(new HashSet<UUID>());
+	}
+
+	public List<ComponentConfiguration> getComponentConfigurations() {
+		return componentConfigurations;
+	}
+
+	public void addComponentConfiguraiton(ComponentConfiguration configuration) {
+		componentConfigurations.add(configuration);
 	}
 
 	/**
@@ -27,6 +37,7 @@ public abstract class AbstractConfiguration implements Configuration {
 	public UUID getRootUUID() {
 		return root;
 	}
+
 	@Override
 	public void setRootUUID(UUID rootUUID) {
 		this.root = rootUUID;

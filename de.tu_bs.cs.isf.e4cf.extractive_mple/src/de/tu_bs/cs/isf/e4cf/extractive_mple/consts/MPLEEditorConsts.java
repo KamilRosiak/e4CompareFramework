@@ -12,6 +12,7 @@ public class MPLEEditorConsts {
 	public static final String TREE_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view";
 	public static final String PROPERTIES_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view";
 	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view";
+	public static final String PLATFORM_VIEW = "de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view";
 
 	public static final String TREE_VIEW_FXML = "ui/DSEditorView.fxml";
 	public static final String PROPERTIES_VIEW_FXML = "ui/DSPropertiesView.fxml";
@@ -40,6 +41,7 @@ public class MPLEEditorConsts {
 	public static final String ATTRIBUTE = "ATTRIBUTE";
 	public static final String NODE = "NODE";
 	public static final String SHOW_MPL = "SHOW_MPL";
+	public static final String SHOW_UUID = "SHOW_UUID";
 	
 	
 }

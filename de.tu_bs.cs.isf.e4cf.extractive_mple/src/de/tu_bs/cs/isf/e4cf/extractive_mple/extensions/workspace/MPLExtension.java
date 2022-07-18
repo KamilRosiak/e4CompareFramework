@@ -41,6 +41,7 @@ public class MPLExtension implements IProjectExplorerExtension {
 			MPLPlatform platform = MPLEPlatformUtil.loadPlatform(new File(selectedFileElement.getAbsolutePath()));
 			
 			// send load event
+			container.partService.showPart(MPLEEditorConsts.PLATFORM_VIEW);
 			container.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 			container.eventBroker.send(MPLEEditorConsts.SHOW_MPL, platform);
 		} else {

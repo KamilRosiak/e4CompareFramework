@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -79,10 +80,6 @@ public class MPLEditorController implements Initializable {
 
 	@FXML
 	private TreeTableColumn<Node, String> nameCol, configCol, componentCol;
-	@FXML
-	private TableView<Configuration> configTable;
-	@FXML
-	private TableColumn<Configuration, String> configNameCol, amountCol;
 
 	@FXML
 	private TextField searchTextField;
@@ -94,17 +91,13 @@ public class MPLEditorController implements Initializable {
 	private ComboBox<NodeDecorator> decoratorCombo;
 
 	private MPLPlatform currentPlatform;
-	private Set<String> UUIDs = new HashSet<String>();
 	private Tree currentTree;
-	private TreeItem<Node> currentSelection;
 	private Configuration currentConfiguration;
+	private UUID currentSelectedNode;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		configNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-		amountCol.setCellValueFactory(e -> {
-			return new SimpleStringProperty(String.valueOf(e.getValue().getUUIDs().size()));
-		});
+
 		nameCol.setCellValueFactory(e -> {
 			return new SimpleStringProperty(e.getValue().getValue().getNodeType());
 		});
@@ -113,6 +106,8 @@ public class MPLEditorController implements Initializable {
 			String name = "";
 			if (e.getValue().getValue().isComponent()) {
 				name = "component " + e.getValue().getValue().getUUID();
+			} else {
+				name = "UUID: " + e.getValue().getValue().getUUID();
 			}
 			return new SimpleStringProperty(name);
 		});
@@ -140,19 +135,8 @@ public class MPLEditorController implements Initializable {
 		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
 		treeView.getRoot().setExpanded(true);
 		treeView.setShowRoot(true);
-		treeView.getSelectionModel().selectedItemProperty().addListener(e -> {
-			currentSelection = treeView.getSelectionModel().getSelectedItem();
-			configTable.refresh();
-		});
-
-		configTable.getSelectionModel().selectedItemProperty().addListener(e -> {
-			currentConfiguration = configTable.getSelectionModel().getSelectedItem();
-			treeView.refresh();
-		});
-
 
 		treeView.setRowFactory(new Callback<TreeTableView<Node>, TreeTableRow<Node>>() {
-
 			@Override
 			public TreeTableRow<Node> call(TreeTableView<Node> param) {
 				return new TreeTableRow<Node>() {
@@ -161,6 +145,8 @@ public class MPLEditorController implements Initializable {
 						super.updateItem(node, paramBoolean);
 						if (node != null && currentConfiguration != null
 								&& currentConfiguration.getUUIDs().contains(node.getUUID())) {
+							setStyle("-fx-background-color:LIGHTGREEN;");
+						} else if (node != null && node.getUUID().equals(currentSelectedNode)) {
 							setStyle("-fx-background-color:LIGHTGREEN;");
 						} else {
 							setStyle(null);
@@ -220,10 +206,20 @@ public class MPLEditorController implements Initializable {
 		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		decoratorCombo.getSelectionModel().select(0);
 
-		configTable.getItems().clear();
-		configTable.getItems().addAll(platform.configurations);
 		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), getSelectedDecorator());
 		addListener();
+	}
+
+	/**
+	 * Method to initialize the treeView from a given Tree
+	 * 
+	 * @param platform
+	 */
+	@Optional
+	@Inject
+	public void selectNode(@UIEventTopic(MPLEEditorConsts.SHOW_UUID) UUID uuid) {
+		currentSelectedNode = uuid;
+		treeView.refresh();
 	}
 
 	public MPLPlatform getCurrentPlatform() {

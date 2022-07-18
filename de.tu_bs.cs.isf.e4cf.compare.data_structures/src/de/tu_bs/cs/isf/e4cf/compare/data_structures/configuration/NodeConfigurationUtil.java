@@ -9,33 +9,25 @@ public class NodeConfigurationUtil {
 	/**
 	 * Generates the configuration of the given node
 	 */
-	public static Configuration generateConfiguration(Node node) {
-		Configuration config = new ConfigurationImpl("");
-		addUUIDsToConfiguration(config, node);
+	public static Configuration generateConfiguration(Node node, String name) {
+		Configuration config = new ConfigurationImpl(name);
+		if (!node.isComponent()) {
+			config.addUUID(node.getUUID());
+			node.getChildren().forEach(e -> {
+				addUUIDsRecurivly(node, config);
+			});
+		}
 		return config;
 	}
 
-	/**
-	 * Iterates recursively over all children and adds all UUIDs to the
-	 * configuration
-	 */
-	public static void addUUIDsToConfiguration(Configuration config, Node node) {
-		config.setRootUUID(node.getUUID());
-		config.addUUID(node.getUUID());
-		node.getAttributes().forEach(attribute -> {
-			config.addUUID(attribute.getUuid());
-			attribute.getAttributeValues().forEach(value -> {
-				config.addUUID(value.getUUID());
+	private static void addUUIDsRecurivly(Node node, Configuration config) {
+		if (!node.isComponent()) {
+			config.addUUID(node.getUUID());
+			node.getChildren().forEach(e -> {
+				addUUIDsRecurivly(e, config);
 			});
-		});
-		node.getChildren().forEach(childNode -> {
-			if(!node.isComponent()) {
-				addUUIDsToConfiguration(config, childNode);
-			} else {
-				//TODO:Component
-			}
+		}
 
-		});
 	}
 
 	/**
@@ -52,10 +44,41 @@ public class NodeConfigurationUtil {
 		}
 	}
 
-	public static Configuration generateConfiguration(Node node, String name) {
-		Configuration config = new ConfigurationImpl(name);
-		addUUIDsToConfiguration(config, node);
-		return config;
+	public static ComponentConfiguration createComponentConfiguration(Node componentNode, UUID uuid) {
+		ComponentConfiguration componentConfig = new ComponentConfiguration();
+		componentConfig.parentUUID = uuid;
+		componentConfig.componentUUID = componentNode.getUUID();
+		Configuration config = new ConfigurationImpl("componentConfig");
+		componentNode.getChildren().forEach(childNode -> {
+			addUUIDsRecursivly(childNode, config);
+		});
+		componentConfig.configuration = config;
+		return componentConfig;
+	}
+
+	/**
+	 * Add UUIDs of nodes, attributes and attribute values recursively to the
+	 * configuration
+	 * 
+	 * @param childNode
+	 * @param config
+	 */
+	public static void addUUIDsRecursivly(Node childNode, Configuration config) {
+		if (!childNode.isComponent()) {
+			config.addUUID(childNode.getUUID());
+			childNode.getAttributes().forEach(attr -> {
+				config.addUUID(attr.getUuid());
+				attr.getAttributeValues().forEach(attrValue -> {
+					config.addUUID(attrValue.getUUID());
+				});
+			});
+
+			childNode.getChildren().forEach(e -> {
+				addUUIDsRecursivly(e, config);
+			});
+		} else {
+			System.out.println("child is component");
+		}
 	}
 
 }

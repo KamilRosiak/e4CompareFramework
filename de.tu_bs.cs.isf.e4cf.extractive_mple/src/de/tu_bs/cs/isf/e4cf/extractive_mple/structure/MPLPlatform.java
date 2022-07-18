@@ -11,8 +11,9 @@ import org.apache.commons.lang.SerializationUtils;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
-import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -38,7 +39,10 @@ public class MPLPlatform implements Serializable {
 	public Node model;
 	public Matcher matcher = new SortingMatcher();
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
+	public Configuration currrentConfiguration;
+
 	int configCount = 0;
+	int componentCount = 0;
 
 	public void insertVariants(List<Node> variants) {
 		variants.forEach(variant -> {
@@ -48,9 +52,8 @@ public class MPLPlatform implements Serializable {
 
 	public Configuration getNextConfig(Node node) {
 		configCount++;
-		String configName = "configuration " + configCount;
-		Configuration config = NodeConfigurationUtil.generateConfiguration(node, configName);
-		
+		ConfigurationImpl config = (ConfigurationImpl) NodeConfigurationUtil.generateConfiguration(node,
+				"Variant Config " + configCount);
 		return config;
 	}
 
@@ -60,37 +63,40 @@ public class MPLPlatform implements Serializable {
 	public void insertVariant(Node variant) {
 		if (model == null) {
 			initializePlatform(variant);
-			configurations.add(getNextConfig(variant));
 			return;
 		}
 
 		if (variant.getNodeType().equals(model.getNodeType())) {
 			// refactor components
-			refactorComponents(variant);
+			List<ComponentConfiguration> componentConfigurations = refactorComponents(variant);
 			NodeComparison comparison = compareEngine.compare(model, variant);
 			comparison.updateSimilarity();
 			matcher.calculateMatching(comparison);
 			comparison.updateSimilarity();
 			model = comparison.mergeArtifacts();
 			// after merging all artifacts uuids are propagated to the right variant
-			configurations.add(getNextConfig(comparison.getRightArtifact()));
+			Configuration variantConfig = getNextConfig(comparison.getRightArtifact());
+			variantConfig.getComponentConfigurations().addAll(componentConfigurations);
+			configurations.add(variantConfig);
+
 		} else {
 			System.out.println("root node has other type");
 		}
 	}
 
-	private void refactorComponents(Node node) {
-		// get candidate nodes for the refactoring step
+	private List<ComponentConfiguration> refactorComponents(Node node) {
+		List<ComponentConfiguration> componentConfigs = new ArrayList<ComponentConfiguration>();
+		// Get all nodes of the selected type
 		List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
-		// TODO: connect with the Ui
 
+		// Initialize the cluster engine and run the process output ist a list of sets
+		// of nodes. every set represents a clone cluster that have to be merged.
 		ClusterEngine clusterEngine = new ClusterEngine();
 		ClusterEngine.startProcess();
 		List<Set<Node>> nodeCluster = clusterEngine.detectClusters(candidatNodes,
 				clusterEngine.buildDistanceString(candidatNodes));
 
-		// remove all sets with a size smaller as 1 because we cant merge them at this
-		// point
+		// filter all sets which only contain one element
 		Iterator<Set<Node>> iterator = nodeCluster.iterator();
 		while (iterator.hasNext()) {
 			Set<Node> set = iterator.next();
@@ -99,16 +105,15 @@ public class MPLPlatform implements Serializable {
 			}
 		}
 
-		int cluster = 1;
 		for (Set<Node> clusterSet : nodeCluster) {
 			Node mergeTarget = clusterSet.iterator().next();
 			clusterSet.remove(mergeTarget);
-			int configCount = 1;
-			System.out.println("cluster:" + cluster);
-			Configuration config1 = NodeConfigurationUtil.generateConfiguration(mergeTarget, "config+" + configCount);
-			System.out.println("config " + configCount + " " + config1.getUUIDs().size());
+
+			// create configuration of the merge target component node.
+			componentConfigs.add(
+					NodeConfigurationUtil.createComponentConfiguration(mergeTarget, mergeTarget.getParent().getUUID()));
+
 			for (Node clusterNode : clusterSet) {
-				configCount++;
 				mergeTarget.setComponent(true);
 				clusterNode.setComponent(true);
 
@@ -116,19 +121,14 @@ public class MPLPlatform implements Serializable {
 				nodeComparison.updateSimilarity();
 				nodeComparison.mergeArtifacts();
 
-				
 				clusterNode.getParent().getChildren().add(mergeTarget);
 				clusterNode.getParent().getChildren().remove(clusterNode);
-				
-				Configuration config = NodeConfigurationUtil.generateConfiguration(clusterNode,
-						"config+" + configCount);
-
-				System.out.println("config " + configCount + " " + config.getUUIDs().size());
-
-				configCount++;
+				componentConfigs.add(NodeConfigurationUtil.createComponentConfiguration(mergeTarget,
+						mergeTarget.getParent().getUUID()));
 			}
-			cluster++;
+
 		}
+		return componentConfigs;
 
 	}
 
@@ -145,10 +145,12 @@ public class MPLPlatform implements Serializable {
 	 * Sets the first variant as root variant which serves as a starting point
 	 */
 	private void initializePlatform(Node variant) {
-		refactorComponents(variant);
+		List<ComponentConfiguration> componentConfigs = refactorComponents(variant);
 		model = variant;
-		List<Configuration> configList = new ArrayList<Configuration>();
-		configList.add(NodeConfigurationUtil.generateConfiguration(variant));
+		configurations = new ArrayList<Configuration>();
+		ConfigurationImpl config = (ConfigurationImpl) getNextConfig(variant);
+		config.getComponentConfigurations().addAll(componentConfigs);
+		configurations.add(config);
 	}
 
 	public void insertComponent(Node component) {
