@@ -17,6 +17,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.manager.DecorationManager;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable.FileTable;
@@ -203,10 +204,10 @@ public class MPLEditorController implements Initializable {
 		decorateTreeRoot(tree);
 		setCurrentTree(tree);
 		// load decorator and select the first
-		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
-		decoratorCombo.getSelectionModel().select(0);
+		//decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
+		//decoratorCombo.getSelectionModel().select(0);
 
-		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), getSelectedDecorator());
+		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), new FamilyModelNodeDecorator());
 		addListener();
 	}
 

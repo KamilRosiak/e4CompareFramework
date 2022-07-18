@@ -1,17 +1,22 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
 import javax.inject.Inject;
-
+import org.apache.commons.lang.SerializationUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
@@ -42,10 +47,10 @@ public class MPLEPlatformController implements Initializable {
 	TableColumn<ConfigurationImpl, Number> amountCol;
 
 	@FXML
-	TableView<UUID> uuidTable;
+	TableView<UUID> uuidTable, componentUUIDTable;
 
 	@FXML
-	TableColumn<UUID, String> configUUIDCol;
+	TableColumn<UUID, String> configUUIDCol, componentUUIDCol;
 
 	@FXML
 	TableView<ComponentConfiguration> componentConfigs;
@@ -65,6 +70,10 @@ public class MPLEPlatformController implements Initializable {
 			return sip;
 		});
 
+		componentUUIDCol.setCellValueFactory(e -> {
+			return new SimpleStringProperty(e.getValue().toString());
+		});
+
 		configUUIDCol.setCellValueFactory(e -> {
 			return new SimpleStringProperty(e.getValue().toString());
 		});
@@ -77,21 +86,94 @@ public class MPLEPlatformController implements Initializable {
 			return new SimpleStringProperty(e.getValue().parentUUID.toString());
 		});
 
+		configTable.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+				NodeImpl node = (NodeImpl) SerializationUtils.clone(currentPlatform.model);
+				Configuration selectedConfig = configTable.getSelectionModel().getSelectedItem();
+				node = configureVariant(selectedConfig, node);
+
+			}
+		});
+
 		configTable.getSelectionModel().selectedItemProperty().addListener(e -> {
 			uuidTable.getItems().clear();
-			uuidTable.getItems().addAll(configTable.getSelectionModel().getSelectedItem().getUUIDs());
+			if (configTable.getSelectionModel().getSelectedItem() != null) {
+				uuidTable.getItems().addAll(configTable.getSelectionModel().getSelectedItem().getUUIDs());
+			}
 			uuidTable.refresh();
 
-			componentConfigs.getItems().clear();
-			componentConfigs.getItems()
-					.addAll(configTable.getSelectionModel().getSelectedItem().getComponentConfigurations());
+			if (configTable.getSelectionModel().getSelectedItem() != null) {
+				componentConfigs.getItems().clear();
+				componentConfigs.getItems()
+						.addAll(configTable.getSelectionModel().getSelectedItem().getComponentConfigurations());
+			}
 			componentConfigs.refresh();
 
+		});
+
+		componentConfigs.getSelectionModel().selectedItemProperty().addListener(e -> {
+			componentUUIDTable.getItems().clear();
+			if (componentConfigs.getSelectionModel().getSelectedItem() != null) {
+				componentUUIDTable.getItems()
+						.addAll(componentConfigs.getSelectionModel().getSelectedItem().configuration.getUUIDs());
+
+			}
+			componentUUIDTable.refresh();
+		});
+
+		componentUUIDTable.getSelectionModel().selectedItemProperty().addListener(e -> {
+			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID,
+					componentUUIDTable.getSelectionModel().getSelectedItem());
 		});
 
 		uuidTable.getSelectionModel().selectedItemProperty().addListener(e -> {
 			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID, uuidTable.getSelectionModel().getSelectedItem());
 		});
+
+	}
+
+	private NodeImpl configureVariant(Configuration selectedConfig, NodeImpl node) {
+		Iterator<Node> nodeIterator = node.getChildren().iterator();
+
+		while (nodeIterator.hasNext()) {
+			Node node2 = (Node) nodeIterator.next();
+			if (!node2.isComponent()) {
+				if (selectedConfig.getUUIDs().contains(node2.getUUID())) {
+					// If UUID is in configuration
+					Iterator<Attribute> attrIterator = node2.getAttributes().iterator();
+					while (attrIterator.hasNext()) {
+						Attribute attribute = (Attribute) attrIterator.next();
+						if (selectedConfig.getUUIDs().contains(attribute.getUuid())) {
+							Iterator<Value> values = attribute.getAttributeValues().iterator();
+							while (values.hasNext()) {
+								Value value = (Value) values.next();
+								if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
+									values.remove();
+								}
+							}
+
+						} else {
+							attrIterator.remove();
+						}
+					}
+
+				} else {
+					// If UUID is not in configuration remove node
+					nodeIterator.remove();
+				}
+
+			} else {
+				UUID componentID = node2.getUUID();
+				
+				
+				
+				
+				
+			}
+
+		}
+
+		return null;
 	}
 
 	@FXML

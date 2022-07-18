@@ -20,7 +20,7 @@ public class NodeImpl extends AbstractNode {
 	public NodeImpl() {
 		super();
 	}
-
+	
 	/**
 	 * This constructor initializes a node without a parent , e.g, the root node.
 	 * 

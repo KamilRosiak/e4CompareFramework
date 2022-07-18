@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.MPLEPlatformController">
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.MPLEPlatformController">
    <center>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
@@ -59,9 +59,9 @@
                   <VBox prefHeight="200.0" prefWidth="754.0">
                      <children>
                         <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Component Artifacts" VBox.vgrow="ALWAYS" />
-                        <TableView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="componentUUIDTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                           <columns>
-                            <TableColumn prefWidth="709.0" text="UUID" />
+                            <TableColumn fx:id="componentUUIDCol" prefWidth="709.0" text="UUID" />
                           </columns>
                         </TableView>
                      </children>

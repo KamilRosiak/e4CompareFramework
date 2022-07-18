@@ -82,4 +82,16 @@ public abstract class AbstractConfiguration implements Configuration {
 			removeUUID(uuid);
 		});
 	}
+
+	@Override
+	public List<ComponentConfiguration> getConfigurationsForComponent(UUID uuid) {
+		List<ComponentConfiguration> componentConfigs = new ArrayList<ComponentConfiguration>();
+		getComponentConfigurations().forEach(componentConfig -> {
+			if (componentConfig.componentUUID.equals(uuid)) {
+				componentConfigs.add(componentConfig);
+			}
+		});
+		return componentConfigs;
+
+	}
 }

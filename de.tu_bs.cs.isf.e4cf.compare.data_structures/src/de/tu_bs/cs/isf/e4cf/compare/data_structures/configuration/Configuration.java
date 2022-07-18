@@ -7,7 +7,9 @@ import java.util.UUID;
 
 public interface Configuration extends Serializable {
 	public String getName();
-
+	
+	
+	
 	/**
 	 * Set the root uuid
 	 * 
@@ -50,6 +52,6 @@ public interface Configuration extends Serializable {
 	
 	public void addComponentConfiguraiton(ComponentConfiguration configuration);
 	
-	
+	public List<ComponentConfiguration> getConfigurationsForComponent(UUID uuid);
 
 }

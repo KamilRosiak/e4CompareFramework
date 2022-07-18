@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.interfaces.NodeDecorator;
@@ -31,11 +30,6 @@ public class FamilyModelNodeDecorator implements NodeDecorator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-
-		// Special Case for Root Node
-		//if (node.getValue().isRoot())
-		//	node.setGraphic(new ImageView(FileTable.rootImage));
 
 		node.getValue().setRepresentation(node.getValue().getNodeType());
 		return node;
