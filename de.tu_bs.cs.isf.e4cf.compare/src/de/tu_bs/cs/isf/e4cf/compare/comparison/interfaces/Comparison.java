@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 
@@ -21,7 +22,7 @@ public interface Comparison<Type> extends Serializable {
 	/**
 	 * Merges both nodes
 	 */
-	public Type mergeArtifacts();
+	public Type mergeArtifacts(MergeContext context);
 
 	/**
 	 * Returns the left artifact of this comparison.

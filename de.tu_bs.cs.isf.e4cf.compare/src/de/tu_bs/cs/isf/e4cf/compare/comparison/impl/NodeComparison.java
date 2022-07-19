@@ -9,6 +9,7 @@ import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
@@ -85,8 +86,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	}
 
 	@Override
-	public Node mergeArtifacts() {
-		return mergeArtifacts(true);
+	public Node mergeArtifacts(MergeContext context) {
+		return mergeArtifacts(true, context);
 	}
 
 	/**
@@ -103,7 +104,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		});
 	}
 
-	public Node mergeArtifacts(boolean omitOptionalChildren) {
+	public Node mergeArtifacts(boolean omitOptionalChildren, MergeContext context) {
 		// if one of both artifact is null its means that we have an optional and can
 		// keep the implementation below this artifacts.
 		if (getLeftArtifact() == null || getRightArtifact() == null) {
@@ -116,7 +117,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
 				node.getChildren().clear();
 				for (Comparison<Node> childComparision : getChildComparisons()) {
-					node.addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren));
+					node.addChildWithParent(
+							((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren, context));
 				}
 			}
 			return node;
@@ -126,8 +128,26 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
 			// mandatory is a default value if the artifacts was optional in a previous
 			// iteration it should stay as optional
+			context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
 			getRightArtifact().setUUID(getLeftArtifact().getUUID());// Set the UUID of the left artifact because it is
-																	// the base
+
+			// propagate artifact uuids
+			getRightArtifact().getAttributes().forEach(rightAttr -> {
+				getLeftArtifact().getAttributes().forEach(leftAttr -> {
+					if (rightAttr.getAttributeKey().equals(leftAttr.getAttributeKey())) {
+						context.changedUUIDs.put(rightAttr.getUuid(), leftAttr.getUuid());
+						rightAttr.setUuid(leftAttr.getUuid());
+						rightAttr.getAttributeValues().forEach(rightValue -> {
+							leftAttr.getAttributeValues().forEach(leftValue -> {
+								if (rightValue.equals(leftValue.getValue())) {
+									context.changedUUIDs.put(rightValue.getUUID(), leftValue.getUUID());
+									rightValue.setUUID(leftValue.getUUID());
+								}
+							});
+						});
+					}
+				});
+			});
 
 			if (getRightArtifact().isComponent()) {
 				getLeftArtifact().setComponent(true);
@@ -147,9 +167,12 @@ public class NodeComparison extends AbstractComparsion<Node> {
 							if (!leftAttr.containsValue(rightValue)) {
 								leftAttr.addAttributeValue(rightValue);
 							} else {
+								context.changedUUIDs.put(rightValue.getUUID(),
+										leftAttr.getAttributeValue(rightValue).getUUID());
 								rightValue.setUUID(leftAttr.getAttributeValue(rightValue).getUUID());
 							}
 						}
+						context.changedUUIDs.put(rightAttr.getUuid(), leftAttr.getUuid());
 						rightAttr.setUuid(leftAttr.getUuid());
 						containedAttrs.add(rightAttr);
 					}
@@ -161,12 +184,13 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// put all other attributes from right to left because it wasn't contained
 			// before
 			getRightArtifact().getAttributes().addAll(allAttrs);
+			context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
 			getRightArtifact().setUUID(getLeftArtifact().getUUID());
 			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getLeftArtifact()
-						.addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren));
+				getLeftArtifact().addChildWithParent(
+						((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren, context));
 			}
 			// add artifacts min line number
 			getLeftArtifact()

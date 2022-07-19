@@ -11,6 +11,7 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -49,7 +50,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root
 				.findOptionalMatchings();
 
-		Node rootNode = root.mergeArtifacts();
+		Node rootNode = root.mergeArtifacts(new MergeContext());
 
 		return rootNode;
 	}

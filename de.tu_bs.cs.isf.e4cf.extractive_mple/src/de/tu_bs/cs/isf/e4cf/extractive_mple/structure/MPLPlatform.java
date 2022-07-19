@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -15,6 +16,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfi
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
@@ -73,9 +75,32 @@ public class MPLPlatform implements Serializable {
 			comparison.updateSimilarity();
 			matcher.calculateMatching(comparison);
 			comparison.updateSimilarity();
-			model = comparison.mergeArtifacts();
+			MergeContext mergeContext = new MergeContext();
+			model = comparison.mergeArtifacts(mergeContext);
+
 			// after merging all artifacts uuids are propagated to the right variant
 			Configuration variantConfig = getNextConfig(comparison.getRightArtifact());
+			//Propagated changed uuid to component configuraitons
+			componentConfigurations.forEach(componentConfig -> {
+				if (mergeContext.changedUUIDs.containsKey(componentConfig.componentUUID)) {
+					componentConfig.componentUUID = mergeContext.changedUUIDs.get(componentConfig.componentUUID);
+				}
+				if (mergeContext.changedUUIDs.containsKey(componentConfig.parentUUID)) {
+					componentConfig.parentUUID = mergeContext.changedUUIDs.get(componentConfig.parentUUID);
+				}
+
+				List<UUID> removeList = new ArrayList<UUID>();
+				List<UUID> addList = new ArrayList<UUID>();
+				componentConfig.configuration.getUUIDs().forEach(e -> {
+					if (mergeContext.changedUUIDs.containsKey(e)) {
+						removeList.add(e);
+						addList.add(mergeContext.changedUUIDs.get(e));
+					}
+				});
+				componentConfig.configuration.getUUIDs().removeAll(removeList);
+				componentConfig.configuration.getUUIDs().addAll(addList);
+			});
+
 			variantConfig.getComponentConfigurations().addAll(componentConfigurations);
 			configurations.add(variantConfig);
 
@@ -119,12 +144,14 @@ public class MPLPlatform implements Serializable {
 
 				NodeComparison nodeComparison = compareEngine.compare(mergeTarget, clusterNode);
 				nodeComparison.updateSimilarity();
-				nodeComparison.mergeArtifacts();
+				MergeContext context = new MergeContext();
+				nodeComparison.mergeArtifacts(context);
 
 				clusterNode.getParent().getChildren().add(mergeTarget);
 				clusterNode.getParent().getChildren().remove(clusterNode);
-				componentConfigs.add(NodeConfigurationUtil.createComponentConfiguration(mergeTarget,
-						mergeTarget.getParent().getUUID()));
+
+				componentConfigs.add(NodeConfigurationUtil.createComponentConfiguration(clusterNode,
+						clusterNode.getParent().getUUID()));
 			}
 
 		}

@@ -12,10 +12,7 @@ public class NodeConfigurationUtil {
 	public static Configuration generateConfiguration(Node node, String name) {
 		Configuration config = new ConfigurationImpl(name);
 		if (!node.isComponent()) {
-			config.addUUID(node.getUUID());
-			node.getChildren().forEach(e -> {
-				addUUIDsRecurivly(node, config);
-			});
+			addUUIDsRecurivly(node, config);
 		}
 		return config;
 	}
@@ -23,11 +20,16 @@ public class NodeConfigurationUtil {
 	private static void addUUIDsRecurivly(Node node, Configuration config) {
 		if (!node.isComponent()) {
 			config.addUUID(node.getUUID());
+			node.getAttributes().forEach(attr -> {
+				config.addUUID(attr.getUuid());
+				attr.getAttributeValues().forEach(value -> {
+					config.addUUID(value.getUUID());
+				});
+			});
 			node.getChildren().forEach(e -> {
 				addUUIDsRecurivly(e, config);
 			});
 		}
-
 	}
 
 	/**
