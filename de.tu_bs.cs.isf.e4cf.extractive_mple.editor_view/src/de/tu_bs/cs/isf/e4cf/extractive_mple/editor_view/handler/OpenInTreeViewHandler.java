@@ -32,7 +32,7 @@ public class OpenInTreeViewHandler {
 		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 		if (tree != null) {
 			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
-			services.eventBroker.send(MPLEEditorConsts.INITIALIZE_TREE_EVENT, tree);
+			services.eventBroker.send(MPLEEditorConsts.SHOW_TREE, tree);
 		}
 	}
 

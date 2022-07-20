@@ -130,14 +130,20 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// iteration it should stay as optional
 			context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
 			getRightArtifact().setUUID(getLeftArtifact().getUUID());// Set the UUID of the left artifact because it is
-
+			List<Attribute> otherAttrs = new ArrayList<Attribute>();
 			// propagate artifact uuids
+			otherAttrs.addAll(getLeftArtifact().getAttributes());
 			getRightArtifact().getAttributes().forEach(rightAttr -> {
 				getLeftArtifact().getAttributes().forEach(leftAttr -> {
 					if (rightAttr.getAttributeKey().equals(leftAttr.getAttributeKey())) {
+						otherAttrs.remove(leftAttr);
 						context.changedUUIDs.put(rightAttr.getUuid(), leftAttr.getUuid());
 						rightAttr.setUuid(leftAttr.getUuid());
+						// propagate value ids
 						rightAttr.getAttributeValues().forEach(rightValue -> {
+							if (!leftAttr.containsValue(rightValue)) {
+								leftAttr.addAttributeValue(rightValue);
+							}
 							leftAttr.getAttributeValues().forEach(leftValue -> {
 								if (rightValue.equals(leftValue.getValue())) {
 									context.changedUUIDs.put(rightValue.getUUID(), leftValue.getUUID());
@@ -148,6 +154,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 					}
 				});
 			});
+			getRightArtifact().getAttributes().addAll(otherAttrs);
 
 			if (getRightArtifact().isComponent()) {
 				getLeftArtifact().setComponent(true);
@@ -180,9 +187,12 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			}
 			// remove all contained attrs from all others
 			Set<Attribute> allAttrs = new HashSet<Attribute>(getRightArtifact().getAttributes());
+			allAttrs.addAll(getLeftArtifact().getAttributes());
 			allAttrs.removeAll(containedAttrs);
 			// put all other attributes from right to left because it wasn't contained
 			// before
+			getLeftArtifact().getAttributes().clear();
+			getLeftArtifact().getAttributes().addAll(allAttrs);
 			getRightArtifact().getAttributes().addAll(allAttrs);
 			context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
 			getRightArtifact().setUUID(getLeftArtifact().getUUID());

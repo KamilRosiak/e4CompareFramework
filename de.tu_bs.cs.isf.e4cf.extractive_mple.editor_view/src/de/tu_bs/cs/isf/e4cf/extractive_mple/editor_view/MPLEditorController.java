@@ -1,9 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view;
 
 import java.net.URL;
-import java.util.HashSet;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -15,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator;
@@ -25,11 +24,7 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities.TreeViewUtilit
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -38,18 +33,12 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 /**
@@ -128,7 +117,7 @@ public class MPLEditorController implements Initializable {
 	}
 
 	private NodeDecorator getSelectedDecorator() {
-		return decoratorCombo.getSelectionModel().getSelectedItem();
+		return new FamilyModelNodeDecorator();
 	}
 
 	private void decorateTreeRoot(Tree tree) {
@@ -204,11 +193,27 @@ public class MPLEditorController implements Initializable {
 		decorateTreeRoot(tree);
 		setCurrentTree(tree);
 		// load decorator and select the first
-		//decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
-		//decoratorCombo.getSelectionModel().select(0);
-
+		// decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
+		// decoratorCombo.getSelectionModel().select(0);
 		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), new FamilyModelNodeDecorator());
 		addListener();
+	}
+
+	/**
+	 * Method to initialize the treeView from a given Tree
+	 * 
+	 * @param platform
+	 */
+	@Optional
+	@Inject
+	public void showTree(@UIEventTopic(MPLEEditorConsts.SHOW_TREE) Tree tree) {
+		try {
+			MPLPlatform platform = new MPLPlatform();
+			platform.model = tree.getRoot();
+			showMPL(platform);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

@@ -15,6 +15,10 @@
             file_extension="mpl"
             project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.workspace.MPLExtension">
       </project_explorer_file_attr>
+      <project_explorer_file_attr
+            file_extension="java"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.workspace.TreeExtension">
+      </project_explorer_file_attr>
    </extension>
 
 </plugin>

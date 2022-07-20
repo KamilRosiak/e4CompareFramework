@@ -1,22 +1,25 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view;
 
 import java.net.URL;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import org.apache.commons.lang.SerializationUtils;
+
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
@@ -88,10 +91,15 @@ public class MPLEPlatformController implements Initializable {
 
 		configTable.setOnMouseClicked(e -> {
 			if (e.getClickCount() == 2) {
-				NodeImpl node = (NodeImpl) SerializationUtils.clone(currentPlatform.model);
-				Configuration selectedConfig = configTable.getSelectionModel().getSelectedItem();
-				node = configureVariant(selectedConfig, node);
+				try {
+					Node node = (Node) PipedDeepCopy.copy(currentPlatform.model);
+					Configuration selectedConfig = configTable.getSelectionModel().getSelectedItem();
+					node = configureVariant(selectedConfig, node);
 
+					services.eventBroker.send(MPLEEditorConsts.SHOW_TREE, new TreeImpl(selectedConfig.getName(), node));
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
 			}
 		});
 
@@ -132,48 +140,87 @@ public class MPLEPlatformController implements Initializable {
 
 	}
 
-	private NodeImpl configureVariant(Configuration selectedConfig, NodeImpl node) {
-		Iterator<Node> nodeIterator = node.getChildren().iterator();
+	/**
+	 * Recovers the variant for the given configuration
+	 */
+	private Node configureVariant(Configuration selectedConfig, Node node) {
+		if (selectedConfig.getUUIDs().contains(node.getUUID())) {
 
-		while (nodeIterator.hasNext()) {
-			Node node2 = (Node) nodeIterator.next();
-			if (!node2.isComponent()) {
-				if (selectedConfig.getUUIDs().contains(node2.getUUID())) {
-					// If UUID is in configuration
-					Iterator<Attribute> attrIterator = node2.getAttributes().iterator();
-					while (attrIterator.hasNext()) {
-						Attribute attribute = (Attribute) attrIterator.next();
-						if (selectedConfig.getUUIDs().contains(attribute.getUuid())) {
-							Iterator<Value> values = attribute.getAttributeValues().iterator();
-							while (values.hasNext()) {
-								Value value = (Value) values.next();
-								if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
-									values.remove();
-								}
-							}
-
-						} else {
-							attrIterator.remove();
+			node.setVariabilityClass(VariabilityClass.MANDATORY);
+			List<Attribute> attributeToRemove = new ArrayList<Attribute>();
+			// Configure Attributes
+			node.getAttributes().forEach(attribute -> {
+				if (selectedConfig.getUUIDs().contains(attribute.getUuid())) {
+					List<Value> valuestoRemove = new ArrayList<Value>();
+					// Configure Values
+					attribute.getAttributeValues().forEach(value -> {
+						if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
+							valuestoRemove.add(value);
 						}
-					}
+					});
+					attribute.getAttributeValues().removeAll(valuestoRemove);
 
 				} else {
-					// If UUID is not in configuration remove node
-					nodeIterator.remove();
+					attributeToRemove.add(attribute);
 				}
+			});
+			node.getAttributes().removeAll(attributeToRemove);
+		}
+		node.getChildren().removeAll(configureVariantRecursivly(selectedConfig, node));
 
+		return node;
+	}
+
+	private List<Node> configureVariantRecursivly(Configuration selectedConfig, Node node) {
+		List<Node> nodesToRemove = new ArrayList<Node>();
+		List<Node> componentsToAdd = new ArrayList<Node>();
+
+		node.getChildren().forEach(childNode -> {
+			if (!childNode.isComponent()) {
+				if (selectedConfig.getUUIDs().contains(childNode.getUUID())) {
+					childNode.setVariabilityClass(VariabilityClass.MANDATORY);
+					List<Attribute> attributeToRemove = new ArrayList<Attribute>();
+					// Configure Attributes
+					childNode.getAttributes().forEach(attribute -> {
+						if (selectedConfig.getUUIDs().contains(attribute.getUuid())) {
+							List<Value> valuestoRemove = new ArrayList<Value>();
+							// Configure Values
+							attribute.getAttributeValues().forEach(value -> {
+								if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
+									valuestoRemove.add(value);
+								}
+							});
+							attribute.getAttributeValues().removeAll(valuestoRemove);
+
+						} else {
+							attributeToRemove.add(attribute);
+						}
+					});
+					childNode.getAttributes().removeAll(attributeToRemove);
+
+					childNode.getChildren().removeAll(configureVariantRecursivly(selectedConfig, childNode));
+				} else {
+					nodesToRemove.add(childNode);
+				}
 			} else {
-				UUID componentID = node2.getUUID();
-				
-				
-				
-				
-				
+				// get all available configurations for this component
+				List<ComponentConfiguration> componentConfigs = selectedConfig
+						.getConfigurationsForComponent(childNode.getUUID());
+				componentConfigs.forEach(config -> {
+					// only configure components with node as parent
+					if (config.parentUUID.equals(node.getUUID())) {
+						Node configuredComponent = configureVariant(config.configuration,
+								(Node) PipedDeepCopy.copy(childNode));
+						configuredComponent.setParent(node);
+						componentsToAdd.add(configuredComponent);
+					}
+				});
+				nodesToRemove.add(childNode);
 			}
 
-		}
-
-		return null;
+		});
+		node.getChildren().addAll(componentsToAdd);
+		return nodesToRemove;
 	}
 
 	@FXML

@@ -80,7 +80,7 @@ public class MPLPlatform implements Serializable {
 
 			// after merging all artifacts uuids are propagated to the right variant
 			Configuration variantConfig = getNextConfig(comparison.getRightArtifact());
-			//Propagated changed uuid to component configuraitons
+			// Propagated changed uuid to component configuraitons
 			componentConfigurations.forEach(componentConfig -> {
 				if (mergeContext.changedUUIDs.containsKey(componentConfig.componentUUID)) {
 					componentConfig.componentUUID = mergeContext.changedUUIDs.get(componentConfig.componentUUID);
@@ -131,6 +131,7 @@ public class MPLPlatform implements Serializable {
 		}
 
 		for (Set<Node> clusterSet : nodeCluster) {
+
 			Node mergeTarget = clusterSet.iterator().next();
 			clusterSet.remove(mergeTarget);
 
@@ -157,15 +158,6 @@ public class MPLPlatform implements Serializable {
 		}
 		return componentConfigs;
 
-	}
-
-	private String getAttributeValueFromNode(Node n, String key) {
-		try {
-			return " " + n.getAttributeForKey(key).getAttributeValues().stream().map(v -> v.getValue().toString() + " ")
-					.reduce("", String::concat);
-		} catch (NoSuchElementException e) {
-			return "";
-		}
 	}
 
 	/**
