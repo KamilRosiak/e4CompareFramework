@@ -5,7 +5,6 @@ package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager
 import java.io.File
 import java.lang.reflect.Method
 import java.util.Random
@@ -18,6 +17,7 @@ import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator.Variant
+import de.tu_bs.cs.isf.e4cf.core.io.reader.ReaderManager
 
 @Creatable
 @Singleton

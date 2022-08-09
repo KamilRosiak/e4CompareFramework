@@ -1,26 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="ArtifactReader" name="ArtifactReader" schema="schema/ArtifactReader.exsd"/>
-   <extension-point id="ArtifactWriter" name="ArtifactWriter" schema="schema/ArtifactWriter.exsd"/>
-   <extension
-         point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactReader">
-      <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaReader">
-      </artifactReader>
-      <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml_reader.UMLReader">
-      </artifactReader>
-      <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.tree_reader.TreeReader">
-      </artifactReader>     
-   </extension>
-   <extension
-         point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactWriter">
-      <artifactWriter
-            artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TextWritter">
-      </artifactWriter>
-	  <artifactWriter
-            artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter2">
-      </artifactWriter>
-   </extension>
 </plugin>

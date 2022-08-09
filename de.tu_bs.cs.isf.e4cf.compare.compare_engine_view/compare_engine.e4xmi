@@ -4,6 +4,6 @@
     <elements xsi:type="basic:Part" xmi:id="_P0o0IP8iEeqgW9osinEUwQ" elementId="de.tu_bs.cs.isf.e4cf.compare.compare_engine_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.compare.compare_engine_view/de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.CompareEngineController" label="CompareEngine" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.compare_engine_view/icons/compare_engine_24.png"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Uq_QUP8oEeqgW9osinEUwQ" featurename="children" parentElementId="de.tu_bs.cs.isf.e4cf.parts.project_explorer.context_menu">
-    <elements xsi:type="menu:DirectMenuItem" xmi:id="_ea_KwP8oEeqgW9osinEUwQ" elementId="de.tu_bs.cs.isf.e4cf.compare.compare_engine.directmenuitem.compareselectedfiles" label="Compare Selected Files" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.compare_engine_view/icons/compare_engine_16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.compare.data_structures/de.tu_bs.cs.isf.e4cf.compare.data_structures.handler.FileToTreeHandler"/>
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_ea_KwP8oEeqgW9osinEUwQ" elementId="de.tu_bs.cs.isf.e4cf.compare.compare_engine.directmenuitem.compareselectedfiles" label="Compare Selected Files" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.compare.compare_engine_view/icons/compare_engine_16.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.core.io/de.tu_bs.cs.isf.e4cf.core.io.handler.FileToTreeHandler"/>
   </fragments>
 </fragment:ModelFragments>

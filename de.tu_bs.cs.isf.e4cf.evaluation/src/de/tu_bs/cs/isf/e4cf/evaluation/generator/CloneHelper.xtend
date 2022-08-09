@@ -6,8 +6,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonImportService
 import java.util.List
 import java.util.NoSuchElementException
 import java.util.Random
@@ -17,6 +15,8 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
+import de.tu_bs.cs.isf.e4cf.core.io.gson.GsonExportService
+import de.tu_bs.cs.isf.e4cf.core.io.gson.GsonImportService
 
 @Creatable
 @Singleton
