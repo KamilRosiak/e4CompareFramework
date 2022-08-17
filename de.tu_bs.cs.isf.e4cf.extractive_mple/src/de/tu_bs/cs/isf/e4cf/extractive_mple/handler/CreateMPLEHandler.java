@@ -19,7 +19,7 @@ public class CreateMPLEHandler {
 
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager) {
-		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 1) {
+		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
 			MPLPlatform platform = new MPLPlatform();
 			List<Node> variants = new ArrayList<Node>();
 			for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {

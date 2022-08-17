@@ -78,7 +78,8 @@ public class MPLPlatform implements Serializable {
 			MergeContext mergeContext = new MergeContext();
 			model = comparison.mergeArtifacts(mergeContext);
 
-			// after merging all artifacts uuids are propagated to the right variant
+			// after merging all artifacts uuids are propagated to the right variants and we
+			// can generate the configuration
 			Configuration variantConfig = getNextConfig(comparison.getRightArtifact());
 			// Propagated changed uuid to component configuraitons
 			componentConfigurations.forEach(componentConfig -> {
@@ -97,6 +98,7 @@ public class MPLPlatform implements Serializable {
 						addList.add(mergeContext.changedUUIDs.get(e));
 					}
 				});
+
 				componentConfig.configuration.getUUIDs().removeAll(removeList);
 				componentConfig.configuration.getUUIDs().addAll(addList);
 			});
@@ -136,8 +138,9 @@ public class MPLPlatform implements Serializable {
 			clusterSet.remove(mergeTarget);
 
 			// create configuration of the merge target component node.
-			componentConfigs.add(
-					NodeConfigurationUtil.createComponentConfiguration(mergeTarget, mergeTarget.getParent().getUUID()));
+			ComponentConfiguration firstConfig = NodeConfigurationUtil.createComponentConfiguration(mergeTarget,
+					mergeTarget.getParent().getUUID());
+			componentConfigs.add(firstConfig);
 
 			for (Node clusterNode : clusterSet) {
 				mergeTarget.setComponent(true);
@@ -148,9 +151,11 @@ public class MPLPlatform implements Serializable {
 				MergeContext context = new MergeContext();
 				nodeComparison.mergeArtifacts(context);
 
-				clusterNode.getParent().getChildren().add(mergeTarget);
 				clusterNode.getParent().getChildren().remove(clusterNode);
-
+				
+				if (!clusterNode.getParent().getChildren().contains(mergeTarget))
+					clusterNode.getParent().getChildren().add(mergeTarget);
+				
 				componentConfigs.add(NodeConfigurationUtil.createComponentConfiguration(clusterNode,
 						clusterNode.getParent().getUUID()));
 			}

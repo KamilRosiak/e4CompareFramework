@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
@@ -18,7 +20,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
@@ -62,6 +66,8 @@ public class MPLEPlatformController implements Initializable {
 	TableColumn<ComponentConfiguration, String> componentIDCol, paarentCol;
 
 	MPLPlatform currentPlatform;
+	@Inject
+	IEclipseContext context;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -166,12 +172,12 @@ public class MPLEPlatformController implements Initializable {
 			});
 			node.getAttributes().removeAll(attributeToRemove);
 		}
-		node.getChildren().removeAll(configureVariantRecursivly(selectedConfig, node));
+		configureVariantRecursivly(selectedConfig, node);
 
 		return node;
 	}
 
-	private List<Node> configureVariantRecursivly(Configuration selectedConfig, Node node) {
+	private void configureVariantRecursivly(Configuration selectedConfig, Node node) {
 		List<Node> nodesToRemove = new ArrayList<Node>();
 		List<Node> componentsToAdd = new ArrayList<Node>();
 
@@ -198,7 +204,7 @@ public class MPLEPlatformController implements Initializable {
 					});
 					childNode.getAttributes().removeAll(attributeToRemove);
 
-					childNode.getChildren().removeAll(configureVariantRecursivly(selectedConfig, childNode));
+					configureVariantRecursivly(selectedConfig, childNode);
 				} else {
 					nodesToRemove.add(childNode);
 				}
@@ -219,8 +225,19 @@ public class MPLEPlatformController implements Initializable {
 			}
 
 		});
+		node.getChildren().removeAll(nodesToRemove);
 		node.getChildren().addAll(componentsToAdd);
-		return nodesToRemove;
+	}
+
+	@FXML
+	private void storeVariant() {
+		Node node = (Node) PipedDeepCopy.copy(currentPlatform.model);
+		Configuration selectedConfig = configTable.getSelectionModel().getSelectedItem();
+		node = configureVariant(selectedConfig, node);
+		Tree variantTree = new TreeImpl(selectedConfig.getName(), node);
+		TreeWritter writter = new TreeWritter();
+		ContextInjectionFactory.inject(writter, context);
+		writter.writeArtifact(variantTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()+"\\"+selectedConfig.getName());
 	}
 
 	@FXML

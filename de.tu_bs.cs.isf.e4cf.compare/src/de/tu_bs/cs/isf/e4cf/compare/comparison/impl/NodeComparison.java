@@ -9,6 +9,7 @@ import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -109,6 +110,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		// keep the implementation below this artifacts.
 		if (getLeftArtifact() == null || getRightArtifact() == null) {
 			Node node = getLeftArtifact() == null ? getRightArtifact() : getLeftArtifact();
+			node.setVariabilityClass(VariabilityClass.OPTIONAL);
 			if (omitOptionalChildren) {
 				// Set all nodes to optional
 				setNodeOptionalWithChildren(node);
@@ -130,32 +132,47 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// iteration it should stay as optional
 			context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
 			getRightArtifact().setUUID(getLeftArtifact().getUUID());// Set the UUID of the left artifact because it is
+			// collect attributes that are not contained
 			List<Attribute> otherAttrs = new ArrayList<Attribute>();
-			// propagate artifact uuids
 			otherAttrs.addAll(getLeftArtifact().getAttributes());
+
+			// propagate artifact UUIDS
 			getRightArtifact().getAttributes().forEach(rightAttr -> {
 				getLeftArtifact().getAttributes().forEach(leftAttr -> {
+
 					if (rightAttr.getAttributeKey().equals(leftAttr.getAttributeKey())) {
+						// remove artifact from others because it is in both nodes contained
 						otherAttrs.remove(leftAttr);
+						// propagate attr UUID from the model to the merged node
 						context.changedUUIDs.put(rightAttr.getUuid(), leftAttr.getUuid());
 						rightAttr.setUuid(leftAttr.getUuid());
+
 						// propagate value ids
 						rightAttr.getAttributeValues().forEach(rightValue -> {
-							if (!leftAttr.containsValue(rightValue)) {
-								leftAttr.addAttributeValue(rightValue);
-							}
 							leftAttr.getAttributeValues().forEach(leftValue -> {
-								if (rightValue.equals(leftValue.getValue())) {
+								if (rightValue.equals(leftValue)) {
 									context.changedUUIDs.put(rightValue.getUUID(), leftValue.getUUID());
 									rightValue.setUUID(leftValue.getUUID());
 								}
 							});
+							if (!leftAttr.containsValue(rightValue)) {
+								leftAttr.addAttributeValue(rightValue);
+							}
 						});
 					}
 				});
 			});
 			getRightArtifact().getAttributes().addAll(otherAttrs);
-
+			
+			// Process the Children as they were compared
+			getRightArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
+			getRightArtifact().getChildren().clear();
+			for (Comparison<Node> childComparision : getChildComparisons()) {
+				getRightArtifact().addChildWithParent(
+						((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren, context));
+			}
+			
+			
 			if (getRightArtifact().isComponent()) {
 				getLeftArtifact().setComponent(true);
 			}
@@ -163,24 +180,30 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			return getLeftArtifact();
 		} else {
 			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
-			// first merge attributes
+
 			Set<Attribute> containedAttrs = new HashSet<Attribute>();
+			// first merge attributes
 			for (Attribute leftAttr : getLeftArtifact().getAttributes()) {
 				for (Attribute rightAttr : getRightArtifact().getAttributes()) {
 					// same attr type
 					if (leftAttr.keyEquals(rightAttr)) {
 
-						for (Value rightValue : rightAttr.getAttributeValues()) {
+						// propagate value ids
+						rightAttr.getAttributeValues().forEach(rightValue -> {
+							leftAttr.getAttributeValues().forEach(leftValue -> {
+								if (rightValue.equals(leftValue)) {
+									context.changedUUIDs.put(rightValue.getUUID(), leftValue.getUUID());
+									rightValue.setUUID(leftValue.getUUID());
+								}
+							});
 							if (!leftAttr.containsValue(rightValue)) {
 								leftAttr.addAttributeValue(rightValue);
-							} else {
-								context.changedUUIDs.put(rightValue.getUUID(),
-										leftAttr.getAttributeValue(rightValue).getUUID());
-								rightValue.setUUID(leftAttr.getAttributeValue(rightValue).getUUID());
 							}
-						}
+						});
+
 						context.changedUUIDs.put(rightAttr.getUuid(), leftAttr.getUuid());
 						rightAttr.setUuid(leftAttr.getUuid());
+
 						containedAttrs.add(rightAttr);
 					}
 				}
@@ -193,9 +216,10 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// before
 			getLeftArtifact().getAttributes().clear();
 			getLeftArtifact().getAttributes().addAll(allAttrs);
-			getRightArtifact().getAttributes().addAll(allAttrs);
+
 			context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
 			getRightArtifact().setUUID(getLeftArtifact().getUUID());
+
 			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {
@@ -210,6 +234,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			getLeftArtifact().sortChildNodes();
 			if (getRightArtifact().isComponent()) {
 				getLeftArtifact().setComponent(true);
+				context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
+				getRightArtifact().setUUID(getLeftArtifact().getUUID());
 			}
 			return getLeftArtifact();
 		}

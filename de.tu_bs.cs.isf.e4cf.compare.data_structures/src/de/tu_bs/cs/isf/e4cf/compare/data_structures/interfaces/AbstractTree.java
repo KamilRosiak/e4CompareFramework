@@ -11,6 +11,7 @@ public abstract class AbstractTree implements Tree {
 	private String treeName;
 	private String fileExtension = "NONE";
 	private List<Configuration> configurations;
+	
 
 	@Override
 	public int getSize() {

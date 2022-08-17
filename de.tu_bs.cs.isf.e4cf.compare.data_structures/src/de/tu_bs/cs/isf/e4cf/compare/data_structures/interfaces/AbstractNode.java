@@ -122,6 +122,7 @@ public abstract class AbstractNode implements Node {
 		List<Node> childrenList = new ArrayList<Node>();
 		if (getStandardizedNodeType().toString().equals(nodeType)) {
 			childrenList.add(this);
+			return childrenList;
 		}
 
 		for (Node child : getChildren()) {

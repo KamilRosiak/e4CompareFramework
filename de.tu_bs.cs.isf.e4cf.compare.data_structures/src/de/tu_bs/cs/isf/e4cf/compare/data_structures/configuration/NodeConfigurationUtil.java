@@ -51,9 +51,7 @@ public class NodeConfigurationUtil {
 		componentConfig.parentUUID = uuid;
 		componentConfig.componentUUID = componentNode.getUUID();
 		Configuration config = new ConfigurationImpl("componentConfig");
-
 		addUUIDsRecursivly(componentNode, config);
-
 		componentConfig.configuration = config;
 		return componentConfig;
 	}
@@ -66,19 +64,20 @@ public class NodeConfigurationUtil {
 	 * @param config
 	 */
 	public static void addUUIDsRecursivly(Node node, Configuration config) {
-		//TODO: For recursively refactoring differentiate between component and node
-		config.addUUID(node.getUUID());
+		// TODO: For recursively refactoring differentiate between component and node
 
+		config.addUUID(node.getUUID());
 		node.getAttributes().forEach(attr -> {
 			config.addUUID(attr.getUuid());
 			attr.getAttributeValues().forEach(attrValue -> {
 				config.addUUID(attrValue.getUUID());
 			});
-		});
 
+		});
 		node.getChildren().forEach(e -> {
 			addUUIDsRecursivly(e, config);
 		});
+
 	}
 
 }
