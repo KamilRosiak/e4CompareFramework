@@ -440,7 +440,8 @@ class CloneEvaluator {
 			// Create Node Tree from Comparisons
 			val Node variantCompRoot = new NodeImpl(NodeType.FILE, "Comparison")
 			tree.root = variantCompRoot
-			variantCompRoot.addChildWithParent(eval.comp.mergeArtifacts(false))
+			//TODO: war drin 
+			//variantCompRoot.addChildWithParent(eval.comp.mergeArtifacts(false))
 			
 			// Attach Attributes
 			variantCompRoot.addAttribute("Name", new StringValueImpl(eval.name))

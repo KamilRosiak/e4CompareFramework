@@ -105,7 +105,7 @@ public class MPLPlatform implements Serializable {
 
 			variantConfig.getComponentConfigurations().addAll(componentConfigurations);
 			configurations.add(variantConfig);
-
+			model.sortChildNodes();
 		} else {
 			System.out.println("root node has other type");
 		}

@@ -32,6 +32,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -71,6 +72,7 @@ public class MPLEPlatformController implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		configTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		configNameCol.setCellValueFactory(e -> {
 			return new SimpleStringProperty(e.getValue().getName());
 		});
@@ -231,13 +233,16 @@ public class MPLEPlatformController implements Initializable {
 
 	@FXML
 	private void storeVariant() {
-		Node node = (Node) PipedDeepCopy.copy(currentPlatform.model);
-		Configuration selectedConfig = configTable.getSelectionModel().getSelectedItem();
-		node = configureVariant(selectedConfig, node);
-		Tree variantTree = new TreeImpl(selectedConfig.getName(), node);
-		TreeWritter writter = new TreeWritter();
-		ContextInjectionFactory.inject(writter, context);
-		writter.writeArtifact(variantTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()+"\\"+selectedConfig.getName());
+		configTable.getSelectionModel().getSelectedItems().forEach(config -> {
+			Node node = (Node) PipedDeepCopy.copy(currentPlatform.model);
+			Configuration selectedConfig = config;
+			node = configureVariant(selectedConfig, node);
+			Tree variantTree = new TreeImpl(selectedConfig.getName(), node);
+			TreeWritter writter = new TreeWritter();
+			ContextInjectionFactory.inject(writter, context);
+			writter.writeArtifact(variantTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()+"\\"+selectedConfig.getName());
+		});
+
 	}
 
 	@FXML

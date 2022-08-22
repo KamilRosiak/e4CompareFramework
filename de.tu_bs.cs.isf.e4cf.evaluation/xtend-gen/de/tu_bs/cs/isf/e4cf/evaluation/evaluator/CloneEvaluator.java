@@ -6,6 +6,8 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -580,8 +582,25 @@ public class CloneEvaluator {
    * Return a tree containing all relevant information about variants and similarities
    */
   public void buildEvaluationTrees(final List<CloneEvaluator.Evaluation> evaluations) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nType mismatch: cannot convert from boolean to MergeContext");
+    for (final CloneEvaluator.Evaluation eval : evaluations) {
+      {
+        final TreeImpl tree = new TreeImpl("Evaluation Results");
+        tree.setFileExtension("EVAL");
+        eval.tree = tree;
+        final Node variantCompRoot = new NodeImpl(NodeType.FILE, "Comparison");
+        tree.setRoot(variantCompRoot);
+        StringValueImpl _stringValueImpl = new StringValueImpl(eval.name);
+        variantCompRoot.addAttribute("Name", _stringValueImpl);
+        StringValueImpl _stringValueImpl_1 = new StringValueImpl(("" + Float.valueOf(eval.precision)));
+        variantCompRoot.addAttribute("Precision", _stringValueImpl_1);
+        StringValueImpl _stringValueImpl_2 = new StringValueImpl(("" + Float.valueOf(eval.recall)));
+        variantCompRoot.addAttribute("Recall", _stringValueImpl_2);
+        this.addConfusionAttributes(variantCompRoot, "TP", eval.truePositives);
+        this.addConfusionAttributes(variantCompRoot, "FP", eval.falsePositives);
+        this.addConfusionAttributes(variantCompRoot, "TN", eval.trueNegatives);
+        this.addConfusionAttributes(variantCompRoot, "FN", eval.falseNegatives);
+      }
+    }
   }
   
   /**
