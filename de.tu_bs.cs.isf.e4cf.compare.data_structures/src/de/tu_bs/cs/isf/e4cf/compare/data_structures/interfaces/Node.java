@@ -257,5 +257,7 @@ public interface Node extends Serializable {
 	 * Returns the configuration of a single variant
 	 */
 	public Configuration createConfiguration();
+	
+	public int getAmountOfNodes(int startAmount);
 
 }

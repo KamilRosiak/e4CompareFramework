@@ -88,9 +88,8 @@ public class SortingMatcher extends AbstractMatcher {
 	@Override
 	public <K> void sortBySimilarityDesc(List<Comparison<K>> comparisons) {
 		comparisons.sort((first, second) -> {
-			//Multiply with -1 to sort descending 
+			// Multiply with -1 to sort descending
 			return -1 * Float.compare(first.getSimilarity(), second.getSimilarity());
 		});
 	}
-
 }

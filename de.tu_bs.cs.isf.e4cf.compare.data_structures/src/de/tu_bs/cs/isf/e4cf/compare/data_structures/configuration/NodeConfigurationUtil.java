@@ -26,8 +26,8 @@ public class NodeConfigurationUtil {
 					config.addUUID(value.getUUID());
 				});
 			});
-			node.getChildren().forEach(e -> {
-				addUUIDsRecurivly(e, config);
+			node.getChildren().forEach(childNode -> {
+				addUUIDsRecurivly(childNode, config);
 			});
 		}
 	}
@@ -46,9 +46,9 @@ public class NodeConfigurationUtil {
 		}
 	}
 
-	public static ComponentConfiguration createComponentConfiguration(Node componentNode, UUID uuid) {
+	public static ComponentConfiguration createComponentConfiguration(Node componentNode, UUID partentUUID) {
 		ComponentConfiguration componentConfig = new ComponentConfiguration();
-		componentConfig.parentUUID = uuid;
+		componentConfig.parentUUID = partentUUID;
 		componentConfig.componentUUID = componentNode.getUUID();
 		Configuration config = new ConfigurationImpl("componentConfig");
 		addUUIDsRecursivly(componentNode, config);

@@ -17,4 +17,30 @@ public class ComponentConfiguration implements Serializable {
 	public UUID parentUUID;
 	public UUID componentUUID;
 	public Configuration configuration;
+	public UUID getParentUUID() {
+		return parentUUID;
+	}
+	public void setParentUUID(UUID parentUUID) {
+		this.parentUUID = parentUUID;
+	}
+	public UUID getComponentUUID() {
+		return componentUUID;
+	}
+
+	public void setComponentUUID(UUID componentUUID) {
+		this.componentUUID = componentUUID;
+	}
+	public Configuration getConfiguration() {
+		return configuration;
+	}
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+	
+	
+	
 }

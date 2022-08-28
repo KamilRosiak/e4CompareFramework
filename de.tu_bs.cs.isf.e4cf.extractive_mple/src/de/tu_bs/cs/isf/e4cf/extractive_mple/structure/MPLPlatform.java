@@ -17,6 +17,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
@@ -72,15 +73,9 @@ public class MPLPlatform implements Serializable {
 			// refactor components
 			List<ComponentConfiguration> componentConfigurations = refactorComponents(variant);
 			NodeComparison comparison = compareEngine.compare(model, variant);
-			comparison.updateSimilarity();
-			matcher.calculateMatching(comparison);
-			comparison.updateSimilarity();
 			MergeContext mergeContext = new MergeContext();
-			model = comparison.mergeArtifacts(mergeContext);
+			model = comparison.mergeArtifacts(mergeContext, configurations, componentConfigurations);
 
-			// after merging all artifacts uuids are propagated to the right variants and we
-			// can generate the configuration
-			Configuration variantConfig = getNextConfig(comparison.getRightArtifact());
 			// Propagated changed uuid to component configuraitons
 			componentConfigurations.forEach(componentConfig -> {
 				if (mergeContext.changedUUIDs.containsKey(componentConfig.componentUUID)) {
@@ -103,6 +98,9 @@ public class MPLPlatform implements Serializable {
 				componentConfig.configuration.getUUIDs().addAll(addList);
 			});
 
+			// after merging all artifacts uuids are propagated to the right variants and we
+			// can generate the configuration
+			Configuration variantConfig = getNextConfig(comparison.getRightArtifact());
 			variantConfig.getComponentConfigurations().addAll(componentConfigurations);
 			configurations.add(variantConfig);
 			model.sortChildNodes();
@@ -114,8 +112,14 @@ public class MPLPlatform implements Serializable {
 	private List<ComponentConfiguration> refactorComponents(Node node) {
 		List<ComponentConfiguration> componentConfigs = new ArrayList<ComponentConfiguration>();
 		// Get all nodes of the selected type
-		List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
 
+		List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
+		Iterator<Node> candiateIterator = candidatNodes.iterator();
+		/**
+		 * while (candiateIterator.hasNext()) { Node node2 = (Node)
+		 * candiateIterator.next(); if (node2.getAmountOfNodes(0) < 5) {
+		 * candiateIterator.remove(); } }
+		 **/
 		// Initialize the cluster engine and run the process output ist a list of sets
 		// of nodes. every set represents a clone cluster that have to be merged.
 		ClusterEngine clusterEngine = new ClusterEngine();
@@ -149,13 +153,12 @@ public class MPLPlatform implements Serializable {
 				NodeComparison nodeComparison = compareEngine.compare(mergeTarget, clusterNode);
 				nodeComparison.updateSimilarity();
 				MergeContext context = new MergeContext();
-				nodeComparison.mergeArtifacts(context);
+				nodeComparison.mergeArtifacts(context, configurations, new ArrayList<ComponentConfiguration>());
 
 				clusterNode.getParent().getChildren().remove(clusterNode);
-				
+
 				if (!clusterNode.getParent().getChildren().contains(mergeTarget))
 					clusterNode.getParent().getChildren().add(mergeTarget);
-				
 				componentConfigs.add(NodeConfigurationUtil.createComponentConfiguration(clusterNode,
 						clusterNode.getParent().getUUID()));
 			}

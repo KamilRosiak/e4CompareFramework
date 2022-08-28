@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
@@ -22,7 +24,8 @@ public interface Comparison<Type> extends Serializable {
 	/**
 	 * Merges both nodes
 	 */
-	public Type mergeArtifacts(MergeContext context);
+	public Type mergeArtifacts(MergeContext context, List<Configuration> existingConfigs,
+			List<ComponentConfiguration> componentConfigurations);
 
 	/**
 	 * Returns the left artifact of this comparison.
@@ -89,7 +92,7 @@ public interface Comparison<Type> extends Serializable {
 		// if one of both artifacts is null the similarity is 0 because its an optional
 		return (getLeftArtifact() == null || getRightArtifact() == null) ? 0f : resultSimilarity;
 	}
-	
+
 	/**
 	 * This method calls updateSimilarity recursively on all child elements to
 	 * update them first and then returns the average similarity value of all child
@@ -116,7 +119,7 @@ public interface Comparison<Type> extends Serializable {
 	 */
 	public default void updateSimilarity() {
 		float similarity = 0f;
-		float childSimilarity = getChildSimilarity();	// Children based similarity
+		float childSimilarity = getChildSimilarity(); // Children based similarity
 		float resultSimilarity = getResultSimilarity(); // Comparator based similarity
 
 		// no children node attributes so they are equal on their type

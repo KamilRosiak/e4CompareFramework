@@ -6,10 +6,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface Configuration extends Serializable {
+	
 	public String getName();
-	
-	
-	
 	/**
 	 * Set the root uuid
 	 * 

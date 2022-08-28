@@ -254,7 +254,6 @@ public class DSEditorController {
 					services.eventBroker.send(DSEditorST.NODE_PROPERTIES_EVENT,
 							treeView.getSelectionModel().getSelectedItem().getValue());
 				}
-
 			}
 		});
 

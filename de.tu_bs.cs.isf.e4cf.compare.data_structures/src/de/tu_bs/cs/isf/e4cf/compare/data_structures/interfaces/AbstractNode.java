@@ -167,8 +167,15 @@ public abstract class AbstractNode implements Node {
 		return children;
 	}
 
+	// TODO: Test not adding duplicated ids
 	@Override
 	public void addChild(Node child) {
+		for (Node childNode : getChildren()) {
+			if (childNode.getUUID().equals(child.getUUID())) {
+				System.out.println("existis:" + child.getUUID());
+				return;
+			}
+		}
 		this.children.add(child);
 	}
 
@@ -194,13 +201,12 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public void addChildWithParent(Node child) {
 		child.setParent(this);
-		this.children.add(child);
+		addChild(child);
 	}
 
 	@Override
 	public void addChildWithParent(Node child, int position) {
 		child.setParent(this);
-
 		addChild(child, position);
 	}
 
@@ -369,5 +375,19 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public void setComponent(boolean isComponent) {
 		this.isComponent = isComponent;
+	}
+
+	@Override
+	public int getAmountOfNodes(int startAmount) {
+		try {
+			startAmount++;
+			for (Node childNode : getChildren()) {
+				startAmount = startAmount + childNode.getAmountOfNodes(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return startAmount;
 	}
 }

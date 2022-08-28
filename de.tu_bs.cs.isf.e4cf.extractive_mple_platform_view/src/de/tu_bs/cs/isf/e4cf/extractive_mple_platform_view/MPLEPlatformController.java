@@ -153,7 +153,6 @@ public class MPLEPlatformController implements Initializable {
 	 */
 	private Node configureVariant(Configuration selectedConfig, Node node) {
 		if (selectedConfig.getUUIDs().contains(node.getUUID())) {
-
 			node.setVariabilityClass(VariabilityClass.MANDATORY);
 			List<Attribute> attributeToRemove = new ArrayList<Attribute>();
 			// Configure Attributes

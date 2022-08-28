@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,8 @@ import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -50,7 +53,8 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root
 				.findOptionalMatchings();
 
-		Node rootNode = root.mergeArtifacts(new MergeContext());
+		Node rootNode = root.mergeArtifacts(new MergeContext(), new ArrayList<Configuration>(),
+				new ArrayList<ComponentConfiguration>());
 
 		return rootNode;
 	}
@@ -89,15 +93,16 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 				// if one of both has no children the other elements are optional
 				if (first.getChildren().isEmpty() || second.getChildren().isEmpty()) {
 					first.getChildren().stream()
-							.forEach(e -> comparison.addChildComparison(new NodeComparison(e, null, 0f)));
+							.forEach(e -> comparison.addChildComparison(new NodeComparison(e, null, 0f, comparison)));
 					second.getChildren().stream()
-							.forEach(e -> comparison.addChildComparison(new NodeComparison(null, e, 0f)));
+							.forEach(e -> comparison.addChildComparison(new NodeComparison(null, e, 0f, comparison)));
 				} else {
 					// compare children recursively
 					first.getChildren().stream().forEach(e -> {
 						second.getChildren().stream().forEach(f -> {
 							NodeComparison innerComp = compare(e, f);
 							if (innerComp != null) {
+								innerComp.setParentComparison(comparison);
 								comparison.addChildComparison(innerComp);
 							}
 

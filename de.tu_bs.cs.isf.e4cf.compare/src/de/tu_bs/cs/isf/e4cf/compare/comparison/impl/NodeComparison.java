@@ -9,6 +9,9 @@ import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
@@ -24,6 +27,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
  */
 public class NodeComparison extends AbstractComparsion<Node> {
 	private static final long serialVersionUID = 7260025397506680712L;
+	private NodeComparison parentComparison;
 
 	public NodeComparison(Node leftArtifact, Node rightArtifact) {
 		super(leftArtifact, rightArtifact);
@@ -32,6 +36,16 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	public NodeComparison(Node leftArtifact, Node rightArtifact, float similarity) {
 		this(leftArtifact, rightArtifact);
 		setSimilarity(similarity);
+	}
+
+	public NodeComparison(Node leftArtifact, Node rightArtifact, float similarity, NodeComparison parent) {
+		this(leftArtifact, rightArtifact, similarity);
+		setParentComparison(parent);
+	}
+
+	public void setParentComparison(NodeComparison parent) {
+		this.parentComparison = parent;
+
 	}
 
 	public NodeComparison(Node leftArtifact, Node rightArtifact, NodeComparison parent) {
@@ -87,8 +101,9 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	}
 
 	@Override
-	public Node mergeArtifacts(MergeContext context) {
-		return mergeArtifacts(true, context);
+	public Node mergeArtifacts(MergeContext context, List<Configuration> configs,
+			List<ComponentConfiguration> components) {
+		return mergeArtifacts(true, context, configs, components);
 	}
 
 	/**
@@ -105,12 +120,14 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		});
 	}
 
-	public Node mergeArtifacts(boolean omitOptionalChildren, MergeContext context) {
+	public Node mergeArtifacts(boolean omitOptionalChildren, MergeContext context, List<Configuration> existingConfigs,
+			List<ComponentConfiguration> componentConfigurations) {
 		// if one of both artifact is null its means that we have an optional and can
 		// keep the implementation below this artifacts.
 		if (getLeftArtifact() == null || getRightArtifact() == null) {
 			Node node = getLeftArtifact() == null ? getRightArtifact() : getLeftArtifact();
 			node.setVariabilityClass(VariabilityClass.OPTIONAL);
+
 			if (omitOptionalChildren) {
 				// Set all nodes to optional
 				setNodeOptionalWithChildren(node);
@@ -119,8 +136,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
 				node.getChildren().clear();
 				for (Comparison<Node> childComparision : getChildComparisons()) {
-					node.addChildWithParent(
-							((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren, context));
+					node.addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren,
+							context, existingConfigs, componentConfigurations));
 				}
 			}
 			return node;
@@ -163,16 +180,41 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				});
 			});
 			getRightArtifact().getAttributes().addAll(otherAttrs);
-			
+
 			// Process the Children as they were compared
 			getRightArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
 			getRightArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getRightArtifact().addChildWithParent(
-						((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren, context));
+				getRightArtifact().addChildWithParent(((NodeComparison) childComparision)
+						.mergeArtifacts(omitOptionalChildren, context, existingConfigs, componentConfigurations));
 			}
-			
-			
+
+			// Components have to be managed speratly
+			/**
+			 * if (getLeftArtifact().isComponent() && !getRightArtifact().isComponent()) {
+			 * System.out.println("Mandatory Component left:" +
+			 * getLeftArtifact().getUUID());
+			 * System.out.println(getPartenComparison().getLeftArtifact().getUUID());
+			 * getRightArtifact().setComponent(true); ComponentConfiguration componentConfig
+			 * = NodeConfigurationUtil .createComponentConfiguration(getRightArtifact(),
+			 * getLeftArtifact().getUUID()); componentConfigurations.add(componentConfig);
+			 * 
+			 * } else if (!getLeftArtifact().isComponent() &&
+			 * getRightArtifact().isComponent()) { System.out.println("Mandatory Component
+			 * right:" + getLeftArtifact().getUUID());
+			 * System.out.println(getPartenComparison().getLeftArtifact().getUUID());
+			 * getLeftArtifact().setComponent(true); ComponentConfiguration componentConfig
+			 * = NodeConfigurationUtil .createComponentConfiguration(getLeftArtifact(),
+			 * getLeftArtifact().getUUID()); existingConfigs.forEach(config -> { if
+			 * (config.getUUIDs().containsAll(componentConfig.configuration.getUUIDs())) {
+			 * config.getComponentConfigurations().add(componentConfig);
+			 * System.out.println("before:" + config.getUUIDs().size());
+			 * config.getUUIDs().removeAll(componentConfig.configuration.getUUIDs());
+			 * config.getUUIDs().remove(componentConfig.getComponentUUID());
+			 * System.out.println("after:" + config.getUUIDs().size()); } });
+			 * 
+			 * }
+			 **/
 			if (getRightArtifact().isComponent()) {
 				getLeftArtifact().setComponent(true);
 			}
@@ -223,8 +265,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getLeftArtifact().addChildWithParent(
-						((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren, context));
+				getLeftArtifact().addChildWithParent(((NodeComparison) childComparision)
+						.mergeArtifacts(omitOptionalChildren, context, existingConfigs, componentConfigurations));
 			}
 			// add artifacts min line number
 			getLeftArtifact()
@@ -232,13 +274,54 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			getLeftArtifact().setEndLine(Math.min(getLeftArtifact().getEndLine(), getRightArtifact().getEndLine()));
 
 			getLeftArtifact().sortChildNodes();
-			if (getRightArtifact().isComponent()) {
-				getLeftArtifact().setComponent(true);
-				context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
-				getRightArtifact().setUUID(getLeftArtifact().getUUID());
+
+			// Components have to be managed speratly
+			if (getLeftArtifact().isComponent() && !getRightArtifact().isComponent()) {
+				System.out.println("Alternativ Component left:" + getLeftArtifact().getUUID());
+
+				Node parentNode = getParentComparison().getLeftArtifact() != null
+						? getParentComparison().getLeftArtifact()
+						: getParentComparison().getRightArtifact();
+				System.out.println("Parent: " + parentNode.getUUID());
+
+				ComponentConfiguration componentConfig = NodeConfigurationUtil
+						.createComponentConfiguration(getRightArtifact(), parentNode.getUUID());
+
+				componentConfigurations.add(componentConfig);
+
+				getRightArtifact().setComponent(true);
+			} else if (!getLeftArtifact().isComponent() && getRightArtifact().isComponent()) {
+				System.out.println("Alternativ Component right:" + getLeftArtifact().getUUID());
+
+				Node parentNode = getParentComparison().getLeftArtifact() != null
+						? getParentComparison().getLeftArtifact()
+						: getParentComparison().getRightArtifact();
+				System.out.println("Parent: " + parentNode.getUUID());
+				/**
+				 * context.changedUUIDs.put(getRightArtifact().getUUID(),
+				 * getLeftArtifact().getUUID());
+				 * getRightArtifact().setUUID(getLeftArtifact().getUUID());
+				 * 
+				 * ComponentConfiguration componentConfig = NodeConfigurationUtil
+				 * .createComponentConfiguration(getLeftArtifact(), parentComparison.getUUID());
+				 * existingConfigs.forEach(config -> { if
+				 * (config.getUUIDs().containsAll(componentConfig.configuration.getUUIDs())) {
+				 * config.getComponentConfigurations().add(componentConfig);
+				 * System.out.println("before:" + config.getUUIDs().size());
+				 * config.getUUIDs().removeAll(componentConfig.configuration.getUUIDs());
+				 * config.getUUIDs().remove(componentConfig.getComponentUUID());
+				 * System.out.println("after:" + config.getUUIDs().size()); } });
+				 **/
+				// getLeftArtifact().setComponent(true);
 			}
+
 			return getLeftArtifact();
 		}
+	}
+
+	private AbstractComparsion<Node> getPartenComparison() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -246,6 +329,10 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		return (getLeftArtifact() != null && getRightArtifact() != null)
 				? getLeftArtifact().getNodeType().equals(getRightArtifact().getNodeType())
 				: false;
+	}
+
+	public NodeComparison getParentComparison() {
+		return parentComparison;
 	}
 
 }
