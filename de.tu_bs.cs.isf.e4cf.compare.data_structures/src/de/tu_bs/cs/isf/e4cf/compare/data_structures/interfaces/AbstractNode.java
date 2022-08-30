@@ -170,12 +170,6 @@ public abstract class AbstractNode implements Node {
 	// TODO: Test not adding duplicated ids
 	@Override
 	public void addChild(Node child) {
-		for (Node childNode : getChildren()) {
-			if (childNode.getUUID().equals(child.getUUID())) {
-				System.out.println("existis:" + child.getUUID());
-				return;
-			}
-		}
 		this.children.add(child);
 	}
 
@@ -200,8 +194,10 @@ public abstract class AbstractNode implements Node {
 
 	@Override
 	public void addChildWithParent(Node child) {
-		child.setParent(this);
-		addChild(child);
+		if (child != null) {
+			child.setParent(this);
+			addChild(child);
+		}
 	}
 
 	@Override

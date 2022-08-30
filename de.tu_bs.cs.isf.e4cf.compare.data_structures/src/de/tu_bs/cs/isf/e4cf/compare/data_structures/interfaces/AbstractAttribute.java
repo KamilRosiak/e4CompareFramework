@@ -73,7 +73,7 @@ public abstract class AbstractAttribute implements Attribute {
 		return null;
 	}
 
-	public UUID getUuid() {
+	public UUID getUUID() {
 		return uuid;
 	}
 

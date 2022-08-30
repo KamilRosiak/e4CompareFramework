@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
@@ -127,6 +128,20 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		if (getLeftArtifact() == null || getRightArtifact() == null) {
 			Node node = getLeftArtifact() == null ? getRightArtifact() : getLeftArtifact();
 			node.setVariabilityClass(VariabilityClass.OPTIONAL);
+			if (getParentComparison() != null) {
+				Node parentNode = getParentComparison().getLeftArtifact() != null
+						? getParentComparison().getLeftArtifact()
+						: getParentComparison().getRightArtifact();
+				// Check if parent node contains component
+				if (node.isComponent()) {
+					for (Node childNode : parentNode.getChildren()) {
+						if (childNode.getUUID().equals(node.getUUID())) {
+							System.out.println("removed optional:" + node.getUUID());
+							return null;
+						}
+					}
+				}
+			}
 
 			if (omitOptionalChildren) {
 				// Set all nodes to optional
@@ -161,8 +176,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 						// remove artifact from others because it is in both nodes contained
 						otherAttrs.remove(leftAttr);
 						// propagate attr UUID from the model to the merged node
-						context.changedUUIDs.put(rightAttr.getUuid(), leftAttr.getUuid());
-						rightAttr.setUuid(leftAttr.getUuid());
+						context.changedUUIDs.put(rightAttr.getUUID(), leftAttr.getUUID());
+						rightAttr.setUuid(leftAttr.getUUID());
 
 						// propagate value ids
 						rightAttr.getAttributeValues().forEach(rightValue -> {
@@ -190,31 +205,36 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			}
 
 			// Components have to be managed speratly
-			/**
-			 * if (getLeftArtifact().isComponent() && !getRightArtifact().isComponent()) {
-			 * System.out.println("Mandatory Component left:" +
-			 * getLeftArtifact().getUUID());
-			 * System.out.println(getPartenComparison().getLeftArtifact().getUUID());
-			 * getRightArtifact().setComponent(true); ComponentConfiguration componentConfig
-			 * = NodeConfigurationUtil .createComponentConfiguration(getRightArtifact(),
-			 * getLeftArtifact().getUUID()); componentConfigurations.add(componentConfig);
-			 * 
-			 * } else if (!getLeftArtifact().isComponent() &&
-			 * getRightArtifact().isComponent()) { System.out.println("Mandatory Component
-			 * right:" + getLeftArtifact().getUUID());
-			 * System.out.println(getPartenComparison().getLeftArtifact().getUUID());
-			 * getLeftArtifact().setComponent(true); ComponentConfiguration componentConfig
-			 * = NodeConfigurationUtil .createComponentConfiguration(getLeftArtifact(),
-			 * getLeftArtifact().getUUID()); existingConfigs.forEach(config -> { if
-			 * (config.getUUIDs().containsAll(componentConfig.configuration.getUUIDs())) {
-			 * config.getComponentConfigurations().add(componentConfig);
-			 * System.out.println("before:" + config.getUUIDs().size());
-			 * config.getUUIDs().removeAll(componentConfig.configuration.getUUIDs());
-			 * config.getUUIDs().remove(componentConfig.getComponentUUID());
-			 * System.out.println("after:" + config.getUUIDs().size()); } });
-			 * 
-			 * }
-			 **/
+
+			if (getLeftArtifact().isComponent() && !getRightArtifact().isComponent()) {
+				System.out.println("Mandatory Component left:" + getLeftArtifact().getUUID());
+
+				System.out.println(getParentComparison().getLeftArtifact().getUUID());
+
+				getRightArtifact().setComponent(true);
+				ComponentConfiguration componentConfig = NodeConfigurationUtil
+						.createComponentConfiguration(getRightArtifact(), getLeftArtifact().getUUID());
+				componentConfigurations.add(componentConfig);
+
+			} else if (!getLeftArtifact().isComponent() && getRightArtifact().isComponent()) {
+				System.out.println("Mandatory Component  right:" + getLeftArtifact().getUUID());
+				System.out.println(getParentComparison().getLeftArtifact().getUUID());
+
+				getLeftArtifact().setComponent(true);
+				ComponentConfiguration componentConfig = NodeConfigurationUtil
+						.createComponentConfiguration(getLeftArtifact(), getLeftArtifact().getUUID());
+				existingConfigs.forEach(config -> {
+					if (config.getUUIDs().containsAll(componentConfig.configuration.getUUIDs())) {
+						config.getComponentConfigurations().add(componentConfig);
+						System.out.println("before:" + config.getUUIDs().size());
+						config.getUUIDs().removeAll(componentConfig.configuration.getUUIDs());
+						config.getUUIDs().remove(componentConfig.getComponentUUID());
+						System.out.println("after:" + config.getUUIDs().size());
+					}
+				});
+
+			}
+
 			if (getRightArtifact().isComponent()) {
 				getLeftArtifact().setComponent(true);
 			}
@@ -222,6 +242,23 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			return getLeftArtifact();
 		} else {
 			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
+			ComponentConfiguration componentConfig = null;
+			// left side no clone configurations
+			if (!getLeftArtifact().isComponent() && getRightArtifact().isComponent()) {
+				Node parentNode = getParentComparison().getLeftArtifact() != null
+						? getParentComparison().getLeftArtifact()
+						: getParentComparison().getRightArtifact();
+				componentConfig = NodeConfigurationUtil.createComponentConfiguration(getLeftArtifact(),
+						parentNode.getUUID());
+			}
+
+			if (getLeftArtifact().isComponent() && !getRightArtifact().isComponent()) {
+				Node parentNode = getParentComparison().getLeftArtifact() != null
+						? getParentComparison().getLeftArtifact()
+						: getParentComparison().getRightArtifact();
+				componentConfig = NodeConfigurationUtil.createComponentConfiguration(getRightArtifact(),
+						parentNode.getUUID());
+			}
 
 			Set<Attribute> containedAttrs = new HashSet<Attribute>();
 			// first merge attributes
@@ -231,25 +268,36 @@ public class NodeComparison extends AbstractComparsion<Node> {
 					if (leftAttr.keyEquals(rightAttr)) {
 
 						// propagate value ids
-						rightAttr.getAttributeValues().forEach(rightValue -> {
-							leftAttr.getAttributeValues().forEach(leftValue -> {
+						for (Value rightValue : rightAttr.getAttributeValues()) {
+							for (Value leftValue : leftAttr.getAttributeValues()) {
 								if (rightValue.equals(leftValue)) {
 									context.changedUUIDs.put(rightValue.getUUID(), leftValue.getUUID());
+									if (componentConfig != null && componentConfig.getConfiguration().getUUIDs()
+											.contains(rightValue.getUUID())) {
+										componentConfig.getConfiguration().getUUIDs().remove(rightValue.getUUID());
+										componentConfig.getConfiguration().getUUIDs().add(leftValue.getUUID());
+									}
 									rightValue.setUUID(leftValue.getUUID());
 								}
-							});
+							}
+
 							if (!leftAttr.containsValue(rightValue)) {
 								leftAttr.addAttributeValue(rightValue);
 							}
-						});
+						}
 
-						context.changedUUIDs.put(rightAttr.getUuid(), leftAttr.getUuid());
-						rightAttr.setUuid(leftAttr.getUuid());
-
+						context.changedUUIDs.put(rightAttr.getUUID(), leftAttr.getUUID());
+						if (componentConfig != null
+								&& componentConfig.getConfiguration().getUUIDs().contains(rightAttr.getUUID())) {
+							componentConfig.getConfiguration().getUUIDs().remove(rightAttr.getUUID());
+							componentConfig.getConfiguration().getUUIDs().add(leftAttr.getUUID());
+						}
+						rightAttr.setUuid(leftAttr.getUUID());
 						containedAttrs.add(rightAttr);
 					}
 				}
 			}
+
 			// remove all contained attrs from all others
 			Set<Attribute> allAttrs = new HashSet<Attribute>(getRightArtifact().getAttributes());
 			allAttrs.addAll(getLeftArtifact().getAttributes());
@@ -277,51 +325,38 @@ public class NodeComparison extends AbstractComparsion<Node> {
 
 			// Components have to be managed speratly
 			if (getLeftArtifact().isComponent() && !getRightArtifact().isComponent()) {
-				System.out.println("Alternativ Component left:" + getLeftArtifact().getUUID());
-
 				Node parentNode = getParentComparison().getLeftArtifact() != null
 						? getParentComparison().getLeftArtifact()
 						: getParentComparison().getRightArtifact();
-				System.out.println("Parent: " + parentNode.getUUID());
-
-				ComponentConfiguration componentConfig = NodeConfigurationUtil
-						.createComponentConfiguration(getRightArtifact(), parentNode.getUUID());
+				System.out.println("Alternativ Component left:" + getLeftArtifact().getUUID() + " Parent: "
+						+ parentNode.getUUID());
 
 				componentConfigurations.add(componentConfig);
-
-				getRightArtifact().setComponent(true);
+				// getRightArtifact().setComponent(true);
 			} else if (!getLeftArtifact().isComponent() && getRightArtifact().isComponent()) {
-				System.out.println("Alternativ Component right:" + getLeftArtifact().getUUID());
-
 				Node parentNode = getParentComparison().getLeftArtifact() != null
 						? getParentComparison().getLeftArtifact()
 						: getParentComparison().getRightArtifact();
-				System.out.println("Parent: " + parentNode.getUUID());
-				/**
-				 * context.changedUUIDs.put(getRightArtifact().getUUID(),
-				 * getLeftArtifact().getUUID());
-				 * getRightArtifact().setUUID(getLeftArtifact().getUUID());
-				 * 
-				 * ComponentConfiguration componentConfig = NodeConfigurationUtil
-				 * .createComponentConfiguration(getLeftArtifact(), parentComparison.getUUID());
-				 * existingConfigs.forEach(config -> { if
-				 * (config.getUUIDs().containsAll(componentConfig.configuration.getUUIDs())) {
-				 * config.getComponentConfigurations().add(componentConfig);
-				 * System.out.println("before:" + config.getUUIDs().size());
-				 * config.getUUIDs().removeAll(componentConfig.configuration.getUUIDs());
-				 * config.getUUIDs().remove(componentConfig.getComponentUUID());
-				 * System.out.println("after:" + config.getUUIDs().size()); } });
-				 **/
-				// getLeftArtifact().setComponent(true);
+				System.out.println("Alternativ Component right:" + getLeftArtifact().getUUID() + " Parent: "
+						+ parentNode.getUUID());
+
+				for (Configuration config : existingConfigs) {
+					if (config.getUUIDs().contains(componentConfig.componentUUID)) {
+						config.getComponentConfigurations().add(componentConfig);
+						config.getUUIDs().removeAll(componentConfig.configuration.getUUIDs());
+						// config.getUUIDs().remove(componentConfig.getComponentUUID());
+						System.out.println("Contains parent:" + componentConfig.getParentUUID() + " component: "
+								+ componentConfig.getComponentUUID());
+					} else {
+						System.out.println("Contains parent not:" + componentConfig.getParentUUID() + " component: "
+								+ componentConfig.getComponentUUID());
+					}
+				}
+				getLeftArtifact().setComponent(true);
 			}
 
 			return getLeftArtifact();
 		}
-	}
-
-	private AbstractComparsion<Node> getPartenComparison() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

@@ -116,10 +116,13 @@ public class MPLPlatform implements Serializable {
 		List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
 		Iterator<Node> candiateIterator = candidatNodes.iterator();
 		/**
-		 * while (candiateIterator.hasNext()) { Node node2 = (Node)
-		 * candiateIterator.next(); if (node2.getAmountOfNodes(0) < 5) {
-		 * candiateIterator.remove(); } }
-		 **/
+		while (candiateIterator.hasNext()) {
+			Node node2 = (Node) candiateIterator.next();
+			if (node2.getAmountOfNodes(0) < 10) {
+				candiateIterator.remove();
+			}
+		}
+	**/
 		// Initialize the cluster engine and run the process output ist a list of sets
 		// of nodes. every set represents a clone cluster that have to be merged.
 		ClusterEngine clusterEngine = new ClusterEngine();
@@ -191,7 +194,7 @@ public class MPLPlatform implements Serializable {
 		Iterator<Attribute> iterator = variant.getAttributes().iterator();
 
 		iterator.forEachRemaining(attribute -> {
-			if (!config.getUUIDs().contains(attribute.getUuid())) {
+			if (!config.getUUIDs().contains(attribute.getUUID())) {
 				iterator.remove();
 			}
 		});

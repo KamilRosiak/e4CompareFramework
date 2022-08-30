@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public interface Attribute extends Serializable {
 
-	public UUID getUuid();
+	public UUID getUUID();
 
 	public void setUuid(UUID uuid);
 

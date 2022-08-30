@@ -161,13 +161,6 @@ public class MPLEditorController implements Initializable {
 				services.eventBroker.send(MPLEEditorConsts.NODE_PROPERTIES_EVENT,
 						treeView.getSelectionModel().getSelectedItem().getValue());
 			}
-			
-			try {
-				System.out.println(treeView.getSelectionModel().getSelectedItem().getValue().getAmountOfNodes(0));
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-
 		});
 
 		decoratorCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

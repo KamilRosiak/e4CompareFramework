@@ -157,7 +157,7 @@ public class MPLEPlatformController implements Initializable {
 			List<Attribute> attributeToRemove = new ArrayList<Attribute>();
 			// Configure Attributes
 			node.getAttributes().forEach(attribute -> {
-				if (selectedConfig.getUUIDs().contains(attribute.getUuid())) {
+				if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
 					List<Value> valuestoRemove = new ArrayList<Value>();
 					// Configure Values
 					attribute.getAttributeValues().forEach(value -> {
@@ -189,7 +189,7 @@ public class MPLEPlatformController implements Initializable {
 					List<Attribute> attributeToRemove = new ArrayList<Attribute>();
 					// Configure Attributes
 					childNode.getAttributes().forEach(attribute -> {
-						if (selectedConfig.getUUIDs().contains(attribute.getUuid())) {
+						if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
 							List<Value> valuestoRemove = new ArrayList<Value>();
 							// Configure Values
 							attribute.getAttributeValues().forEach(value -> {

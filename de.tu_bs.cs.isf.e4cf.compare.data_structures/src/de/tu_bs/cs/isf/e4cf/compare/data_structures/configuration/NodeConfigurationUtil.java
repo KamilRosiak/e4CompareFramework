@@ -21,7 +21,7 @@ public class NodeConfigurationUtil {
 		if (!node.isComponent()) {
 			config.addUUID(node.getUUID());
 			node.getAttributes().forEach(attr -> {
-				config.addUUID(attr.getUuid());
+				config.addUUID(attr.getUUID());
 				attr.getAttributeValues().forEach(value -> {
 					config.addUUID(value.getUUID());
 				});
@@ -68,7 +68,7 @@ public class NodeConfigurationUtil {
 
 		config.addUUID(node.getUUID());
 		node.getAttributes().forEach(attr -> {
-			config.addUUID(attr.getUuid());
+			config.addUUID(attr.getUUID());
 			attr.getAttributeValues().forEach(attrValue -> {
 				config.addUUID(attrValue.getUUID());
 			});
