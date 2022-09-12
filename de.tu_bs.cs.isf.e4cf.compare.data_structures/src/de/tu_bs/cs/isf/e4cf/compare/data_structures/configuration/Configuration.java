@@ -46,10 +46,10 @@ public interface Configuration extends Serializable {
 	 */
 	public void removeUUIDs(List<UUID> uuids);
 	
-	public List<ComponentConfiguration> getComponentConfigurations();
+	public List<CloneConfiguration> getComponentConfigurations();
 	
-	public void addComponentConfiguraiton(ComponentConfiguration configuration);
+	public void addComponentConfiguraiton(CloneConfiguration configuration);
 	
-	public List<ComponentConfiguration> getConfigurationsForComponent(UUID uuid);
+	public List<CloneConfiguration> getConfigurationsForComponent(UUID uuid);
 
 }

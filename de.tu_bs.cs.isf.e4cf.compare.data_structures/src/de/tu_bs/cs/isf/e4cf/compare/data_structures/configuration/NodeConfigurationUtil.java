@@ -11,14 +11,14 @@ public class NodeConfigurationUtil {
 	 */
 	public static Configuration generateConfiguration(Node node, String name) {
 		Configuration config = new ConfigurationImpl(name);
-		if (!node.isComponent()) {
+		if (!node.isClone()) {
 			addUUIDsRecurivly(node, config);
 		}
 		return config;
 	}
 
 	private static void addUUIDsRecurivly(Node node, Configuration config) {
-		if (!node.isComponent()) {
+		if (!node.isClone()) {
 			config.addUUID(node.getUUID());
 			node.getAttributes().forEach(attr -> {
 				config.addUUID(attr.getUUID());
@@ -46,8 +46,8 @@ public class NodeConfigurationUtil {
 		}
 	}
 
-	public static ComponentConfiguration createComponentConfiguration(Node componentNode, UUID partentUUID) {
-		ComponentConfiguration componentConfig = new ComponentConfiguration();
+	public static CloneConfiguration createComponentConfiguration(Node componentNode, UUID partentUUID) {
+		CloneConfiguration componentConfig = new CloneConfiguration();
 		componentConfig.parentUUID = partentUUID;
 		componentConfig.componentUUID = componentNode.getUUID();
 		Configuration config = new ConfigurationImpl("componentConfig");

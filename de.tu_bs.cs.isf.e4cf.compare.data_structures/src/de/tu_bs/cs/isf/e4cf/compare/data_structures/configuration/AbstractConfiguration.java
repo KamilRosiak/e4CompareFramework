@@ -14,18 +14,18 @@ public abstract class AbstractConfiguration implements Configuration {
 	private String configName;
 	private Set<UUID> configuration;
 	private UUID root;
-	private List<ComponentConfiguration> componentConfigurations = new ArrayList<ComponentConfiguration>();
+	private List<CloneConfiguration> componentConfigurations = new ArrayList<CloneConfiguration>();
 
 	public AbstractConfiguration(String name) {
 		setName(name);
 		setConfiguration(new HashSet<UUID>());
 	}
 
-	public List<ComponentConfiguration> getComponentConfigurations() {
+	public List<CloneConfiguration> getComponentConfigurations() {
 		return componentConfigurations;
 	}
 
-	public void addComponentConfiguraiton(ComponentConfiguration configuration) {
+	public void addComponentConfiguraiton(CloneConfiguration configuration) {
 		componentConfigurations.add(configuration);
 	}
 
@@ -84,8 +84,8 @@ public abstract class AbstractConfiguration implements Configuration {
 	}
 
 	@Override
-	public List<ComponentConfiguration> getConfigurationsForComponent(UUID uuid) {
-		List<ComponentConfiguration> componentConfigs = new ArrayList<ComponentConfiguration>();
+	public List<CloneConfiguration> getConfigurationsForComponent(UUID uuid) {
+		List<CloneConfiguration> componentConfigs = new ArrayList<CloneConfiguration>();
 		getComponentConfigurations().forEach(componentConfig -> {
 			if (componentConfig.componentUUID.equals(uuid)) {
 				componentConfigs.add(componentConfig);

@@ -39,7 +39,7 @@ public class DSPropertiesController {
 
 	@Inject
 	private ServiceContainer services;
-	
+
 	@Inject
 	private ClusterEngine clusterEngine;
 
@@ -57,7 +57,7 @@ public class DSPropertiesController {
 	/**
 	 * refreshes views
 	 */
-	private void refreshGUI() {
+	private void refreshUI() {
 		services.eventBroker.send(MPLEEditorConsts.REFRESH_TREEVIEW_EVENT, true);
 		services.eventBroker.send(MPLEEditorConsts.REOPEN_ITEM_EVENT, true);
 	}
@@ -91,18 +91,17 @@ public class DSPropertiesController {
 		if (s != null) {
 			AbstractAttribute attr = (AbstractAttribute) getSelectedItem();
 			if (cloneModel != null) {
-								
+
 				cloneModel.editAttributeKey(selectedNode, attr, s);
 				clusterEngine.analyzeCloneModel(cloneModel);
-			
-				
+
 			} else {
 
 				oldName = getSelectedItem().getAttributeKey();
 				attr.setAttributeKey(s);
 				propertiesManager.execute(
 						new RenamePropertyAction("renameProperty", oldName, (AbstractAttribute) getSelectedItem()));
-				refreshGUI();
+				refreshUI();
 			}
 
 		}
@@ -124,8 +123,8 @@ public class DSPropertiesController {
 
 			if (cloneModel != null) {
 				cloneModel.editAttributeValue(selectedNode, selectedAttribute, editedValue);
-				clusterEngine.analyzeCloneModel(cloneModel);				
-				
+				clusterEngine.analyzeCloneModel(cloneModel);
+
 			} else {
 				getSelectedItem().getAttributeValues().clear();
 				getSelectedItem().getAttributeValues().add(editedValue);
@@ -133,7 +132,7 @@ public class DSPropertiesController {
 				propertiesManager
 						.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
 
-				refreshGUI();
+				refreshUI();
 			}
 		}
 	}
@@ -150,16 +149,14 @@ public class DSPropertiesController {
 			services.eventBroker.send(MPLEEditorConsts.ASK_FOR_SELECTED_ITEM_EVENT, true);
 			NodeAttributePair pair = new NodeAttributePair(selectedNode, deletedAttribute);
 			if (cloneModel != null) {
-				cloneModel.deleteAttribute(pair.getOwner(),  pair.getAttribute());
+				cloneModel.deleteAttribute(pair.getOwner(), pair.getAttribute());
 				clusterEngine.analyzeCloneModel(cloneModel);
 			} else {
 				services.eventBroker.send(MPLEEditorConsts.DELETE_ATTRIBUTE_EVENT, getSelectedItem());
 				propertiesManager.execute(new DeleteAttributeAction("removeAction", pair, services));
-				refreshGUI();
+				refreshUI();
 			}
-
 		}
-
 	}
 
 	/**
@@ -177,13 +174,13 @@ public class DSPropertiesController {
 			if (cloneModel != null) {
 				cloneModel.addAttributeValue(selectedNode, selectedAttribute, newValue);
 				clusterEngine.analyzeCloneModel(cloneModel);
-				
+
 			} else {
 				selectedAttribute.getAttributeValues().add(newValue);
 				newAttributeValues = selectedAttribute.getAttributeValues();
 				propertiesManager
 						.execute(new ModifyValuesAction("Modify Values", oldAttributeValues, newAttributeValues));
-				refreshGUI();
+				refreshUI();
 			}
 
 		}
@@ -195,7 +192,7 @@ public class DSPropertiesController {
 	@FXML
 	void undoProperties() {
 		propertiesManager.undo();
-		refreshGUI();
+		refreshUI();
 	}
 
 	/**

@@ -9,14 +9,14 @@ import java.util.UUID;
  * @author kamil
  *
  */
-public class ComponentConfiguration implements Serializable {
+public class CloneConfiguration implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2136232608235710763L;
 	public UUID parentUUID;
 	public UUID componentUUID;
-	public Configuration configuration;
+	public Configuration configuration = new ConfigurationImpl("clone config");
 	public UUID getParentUUID() {
 		return parentUUID;
 	}

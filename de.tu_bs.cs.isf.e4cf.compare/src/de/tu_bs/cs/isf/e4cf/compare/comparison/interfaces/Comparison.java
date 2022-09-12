@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.ResultElement;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
@@ -24,8 +24,8 @@ public interface Comparison<Type> extends Serializable {
 	/**
 	 * Merges both nodes
 	 */
-	public Type mergeArtifacts(MergeContext context, List<Configuration> existingConfigs,
-			List<ComponentConfiguration> componentConfigurations);
+	public Type mergeArtifacts(List<Configuration> existingConfigs, MergeContext context,
+			List<CloneConfiguration> componentConfigurations);
 
 	/**
 	 * Returns the left artifact of this comparison.

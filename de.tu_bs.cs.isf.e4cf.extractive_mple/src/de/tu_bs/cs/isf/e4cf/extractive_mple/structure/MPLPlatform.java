@@ -12,7 +12,7 @@ import org.apache.commons.lang.SerializationUtils;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
@@ -68,61 +68,45 @@ public class MPLPlatform implements Serializable {
 			initializePlatform(variant);
 			return;
 		}
-
 		if (variant.getNodeType().equals(model.getNodeType())) {
-			// refactor components
-			List<ComponentConfiguration> componentConfigurations = refactorComponents(variant);
+			/**
+			 * Intra clone refactoring detection clone artifacts within the variant and the
+			 * creation of clone configurations
+			 */
+			List<CloneConfiguration> componentConfigurations = refactorComponents(variant);
+			/**
+			 * Intre clone refactoring detection clone artifacts within the variant and the
+			 * creation of clone configurations
+			 */
+			// compare variants with the platform clone model
 			NodeComparison comparison = compareEngine.compare(model, variant);
-			MergeContext mergeContext = new MergeContext();
-			model = comparison.mergeArtifacts(mergeContext, configurations, componentConfigurations);
-
-			// Propagated changed uuid to component configuraitons
-			componentConfigurations.forEach(componentConfig -> {
-				if (mergeContext.changedUUIDs.containsKey(componentConfig.componentUUID)) {
-					componentConfig.componentUUID = mergeContext.changedUUIDs.get(componentConfig.componentUUID);
-				}
-				if (mergeContext.changedUUIDs.containsKey(componentConfig.parentUUID)) {
-					componentConfig.parentUUID = mergeContext.changedUUIDs.get(componentConfig.parentUUID);
-				}
-
-				List<UUID> removeList = new ArrayList<UUID>();
-				List<UUID> addList = new ArrayList<UUID>();
-				componentConfig.configuration.getUUIDs().forEach(e -> {
-					if (mergeContext.changedUUIDs.containsKey(e)) {
-						removeList.add(e);
-						addList.add(mergeContext.changedUUIDs.get(e));
-					}
-				});
-
-				componentConfig.configuration.getUUIDs().removeAll(removeList);
-				componentConfig.configuration.getUUIDs().addAll(addList);
-			});
-
-			// after merging all artifacts uuids are propagated to the right variants and we
-			// can generate the configuration
+			// merge the new variant into the clone model
+			model = comparison.mergeArtifacts(configurations, new MergeContext(), componentConfigurations);
+			// generate the variant configuration for the merged variant
 			Configuration variantConfig = getNextConfig(comparison.getRightArtifact());
 			variantConfig.getComponentConfigurations().addAll(componentConfigurations);
 			configurations.add(variantConfig);
 			model.sortChildNodes();
+			
 		} else {
 			System.out.println("root node has other type");
 		}
 	}
 
-	private List<ComponentConfiguration> refactorComponents(Node node) {
-		List<ComponentConfiguration> componentConfigs = new ArrayList<ComponentConfiguration>();
+	private List<CloneConfiguration> refactorComponents(Node node) {
+		List<CloneConfiguration> componentConfigs = new ArrayList<CloneConfiguration>();
 		// Get all nodes of the selected type
 
 		List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
 		Iterator<Node> candiateIterator = candidatNodes.iterator();
-		/**
+
+		// Only take artifacts with at least 10 nodes into account (Clone size)
 		while (candiateIterator.hasNext()) {
 			Node node2 = (Node) candiateIterator.next();
 			if (node2.getAmountOfNodes(0) < 10) {
 				candiateIterator.remove();
 			}
 		}
-	**/
 		// Initialize the cluster engine and run the process output ist a list of sets
 		// of nodes. every set represents a clone cluster that have to be merged.
 		ClusterEngine clusterEngine = new ClusterEngine();
@@ -140,32 +124,30 @@ public class MPLPlatform implements Serializable {
 		}
 
 		for (Set<Node> clusterSet : nodeCluster) {
-
 			Node mergeTarget = clusterSet.iterator().next();
 			clusterSet.remove(mergeTarget);
-
 			// create configuration of the merge target component node.
-			ComponentConfiguration firstConfig = NodeConfigurationUtil.createComponentConfiguration(mergeTarget,
+			CloneConfiguration firstConfig = NodeConfigurationUtil.createComponentConfiguration(mergeTarget,
 					mergeTarget.getParent().getUUID());
 			componentConfigs.add(firstConfig);
 
 			for (Node clusterNode : clusterSet) {
-				mergeTarget.setComponent(true);
-				clusterNode.setComponent(true);
+				mergeTarget.setCloned(true);
+				clusterNode.setCloned(true);
 
 				NodeComparison nodeComparison = compareEngine.compare(mergeTarget, clusterNode);
 				nodeComparison.updateSimilarity();
-				MergeContext context = new MergeContext();
-				nodeComparison.mergeArtifacts(context, configurations, new ArrayList<ComponentConfiguration>());
+
+				nodeComparison.mergeArtifacts(configurations, new MergeContext(), new ArrayList<CloneConfiguration>());
 
 				clusterNode.getParent().getChildren().remove(clusterNode);
 
 				if (!clusterNode.getParent().getChildren().contains(mergeTarget))
 					clusterNode.getParent().getChildren().add(mergeTarget);
+
 				componentConfigs.add(NodeConfigurationUtil.createComponentConfiguration(clusterNode,
 						clusterNode.getParent().getUUID()));
 			}
-
 		}
 		return componentConfigs;
 
@@ -175,7 +157,7 @@ public class MPLPlatform implements Serializable {
 	 * Sets the first variant as root variant which serves as a starting point
 	 */
 	private void initializePlatform(Node variant) {
-		List<ComponentConfiguration> componentConfigs = refactorComponents(variant);
+		List<CloneConfiguration> componentConfigs = refactorComponents(variant);
 		model = variant;
 		configurations = new ArrayList<Configuration>();
 		ConfigurationImpl config = (ConfigurationImpl) getNextConfig(variant);

@@ -13,7 +13,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
@@ -61,10 +61,10 @@ public class MPLEPlatformController implements Initializable {
 	TableColumn<UUID, String> configUUIDCol, componentUUIDCol;
 
 	@FXML
-	TableView<ComponentConfiguration> componentConfigs;
+	TableView<CloneConfiguration> componentConfigs;
 
 	@FXML
-	TableColumn<ComponentConfiguration, String> componentIDCol, paarentCol;
+	TableColumn<CloneConfiguration, String> componentIDCol, paarentCol;
 
 	MPLPlatform currentPlatform;
 	@Inject
@@ -183,7 +183,7 @@ public class MPLEPlatformController implements Initializable {
 		List<Node> componentsToAdd = new ArrayList<Node>();
 
 		node.getChildren().forEach(childNode -> {
-			if (!childNode.isComponent()) {
+			if (!childNode.isClone()) {
 				if (selectedConfig.getUUIDs().contains(childNode.getUUID())) {
 					childNode.setVariabilityClass(VariabilityClass.MANDATORY);
 					List<Attribute> attributeToRemove = new ArrayList<Attribute>();
@@ -211,7 +211,7 @@ public class MPLEPlatformController implements Initializable {
 				}
 			} else {
 				// get all available configurations for this component
-				List<ComponentConfiguration> componentConfigs = selectedConfig
+				List<CloneConfiguration> componentConfigs = selectedConfig
 						.getConfigurationsForComponent(childNode.getUUID());
 				componentConfigs.forEach(config -> {
 					// only configure components with node as parent

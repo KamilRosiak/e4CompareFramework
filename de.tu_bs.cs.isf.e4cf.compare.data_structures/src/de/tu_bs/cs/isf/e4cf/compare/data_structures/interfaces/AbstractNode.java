@@ -167,7 +167,6 @@ public abstract class AbstractNode implements Node {
 		return children;
 	}
 
-	// TODO: Test not adding duplicated ids
 	@Override
 	public void addChild(Node child) {
 		this.children.add(child);
@@ -364,12 +363,12 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
-	public boolean isComponent() {
+	public boolean isClone() {
 		return isComponent;
 	}
 
 	@Override
-	public void setComponent(boolean isComponent) {
+	public void setCloned(boolean isComponent) {
 		this.isComponent = isComponent;
 	}
 

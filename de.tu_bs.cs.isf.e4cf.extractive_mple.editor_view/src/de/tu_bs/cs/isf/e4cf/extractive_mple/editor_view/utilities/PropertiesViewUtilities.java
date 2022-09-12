@@ -46,9 +46,7 @@ public class PropertiesViewUtilities {
 		value.setCellValueFactory(e -> {
 			String valueString = "";
 			for (Value singleValue : e.getValue().getAttributeValues()) {
-
-				valueString += singleValue.getValue() + " ";
-
+				valueString += singleValue.getValue() +" ("+ singleValue.getUUID()+ ") \n";
 			}
 			return new SimpleStringProperty(valueString);
 		});

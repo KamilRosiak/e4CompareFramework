@@ -100,9 +100,9 @@ public interface Node extends Serializable {
 	 */
 	public boolean isLeaf();
 
-	public void setComponent(boolean isComponent);
+	public void setCloned(boolean isComponent);
 
-	public boolean isComponent();
+	public boolean isClone();
 
 	/**
 	 * Returns the parent Node of this Node if available else this node is the root

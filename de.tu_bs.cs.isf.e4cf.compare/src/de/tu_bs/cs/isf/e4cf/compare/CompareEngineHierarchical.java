@@ -1,18 +1,16 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.interfaces.Comparator;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ComponentConfiguration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
@@ -53,8 +51,8 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root
 				.findOptionalMatchings();
 
-		Node rootNode = root.mergeArtifacts(new MergeContext(), new ArrayList<Configuration>(),
-				new ArrayList<ComponentConfiguration>());
+		Node rootNode = root.mergeArtifacts(new ArrayList<Configuration>(), new MergeContext(),
+				new ArrayList<CloneConfiguration>());
 
 		return rootNode;
 	}
@@ -92,20 +90,21 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			} else {
 				// if one of both has no children the other elements are optional
 				if (first.getChildren().isEmpty() || second.getChildren().isEmpty()) {
-					first.getChildren().stream()
-							.forEach(e -> comparison.addChildComparison(new NodeComparison(e, null, 0f, comparison)));
-					second.getChildren().stream()
-							.forEach(e -> comparison.addChildComparison(new NodeComparison(null, e, 0f, comparison)));
+					first.getChildren().stream().forEach(e -> {
+						comparison.addChildComparison(new NodeComparison(e, null, 0f, comparison));
+					});
+					second.getChildren().stream().forEach(e -> {
+						comparison.addChildComparison(new NodeComparison(null, e, 0f, comparison));
+					});
 				} else {
 					// compare children recursively
 					first.getChildren().stream().forEach(e -> {
 						second.getChildren().stream().forEach(f -> {
-							NodeComparison innerComp = compare(e, f);
+							NodeComparison innerComp = compareNode(e, f);
 							if (innerComp != null) {
 								innerComp.setParentComparison(comparison);
 								comparison.addChildComparison(innerComp);
 							}
-
 						});
 					});
 				}
