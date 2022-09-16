@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -17,9 +15,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -47,47 +45,49 @@ public class MPLPlatform implements Serializable {
 	int configCount = 0;
 	int componentCount = 0;
 
-	public void insertVariants(List<Node> variants) {
+	public void insertVariants(List<Tree> variants) {
 		variants.forEach(variant -> {
+			System.out.println("CurrentVariant:" + variant.getTreeName());
 			insertVariant(variant);
 		});
 	}
 
-	public Configuration getNextConfig(Node node) {
-		configCount++;
-		ConfigurationImpl config = (ConfigurationImpl) NodeConfigurationUtil.generateConfiguration(node,
-				"Variant Config " + configCount);
+	public Configuration getNextConfig(Tree node) {
+		ConfigurationImpl config = (ConfigurationImpl) NodeConfigurationUtil.generateConfiguration(node.getRoot(),
+				"Variant Config " + node.getTreeName());
 		return config;
 	}
 
 	/**
 	 * Inserting a variant into the platform
 	 */
-	public void insertVariant(Node variant) {
+	public void insertVariant(Tree variant) {
 		if (model == null) {
 			initializePlatform(variant);
 			return;
 		}
-		if (variant.getNodeType().equals(model.getNodeType())) {
+		if (variant.getRoot().getNodeType().equals(model.getNodeType())) {
 			/**
 			 * Intra clone refactoring detection clone artifacts within the variant and the
 			 * creation of clone configurations
 			 */
-			List<CloneConfiguration> componentConfigurations = refactorComponents(variant);
+			List<CloneConfiguration> componentConfigurations = refactorComponents(variant.getRoot());
+			List<CloneConfiguration> fixedCloneConfigs = new ArrayList<CloneConfiguration>();
 			/**
 			 * Intre clone refactoring detection clone artifacts within the variant and the
 			 * creation of clone configurations
 			 */
 			// compare variants with the platform clone model
-			NodeComparison comparison = compareEngine.compare(model, variant);
+			NodeComparison comparison = compareEngine.compare(model, variant.getRoot());
 			// merge the new variant into the clone model
-			model = comparison.mergeArtifacts(configurations, new MergeContext(), componentConfigurations);
+			model = comparison.mergeArtifacts(configurations, new MergeContext(), componentConfigurations,
+					fixedCloneConfigs);
 			// generate the variant configuration for the merged variant
-			Configuration variantConfig = getNextConfig(comparison.getRightArtifact());
+			Configuration variantConfig = getNextConfig(variant);
 			variantConfig.getComponentConfigurations().addAll(componentConfigurations);
+			variantConfig.getComponentConfigurations().addAll(fixedCloneConfigs);
 			configurations.add(variantConfig);
-			model.sortChildNodes();
-			
+			// model.sortChildNodes();
 		} else {
 			System.out.println("root node has other type");
 		}
@@ -103,10 +103,11 @@ public class MPLPlatform implements Serializable {
 		// Only take artifacts with at least 10 nodes into account (Clone size)
 		while (candiateIterator.hasNext()) {
 			Node node2 = (Node) candiateIterator.next();
-			if (node2.getAmountOfNodes(0) < 10) {
+			if (node2.getAmountOfNodes(0) < 15) {
 				candiateIterator.remove();
 			}
 		}
+
 		// Initialize the cluster engine and run the process output ist a list of sets
 		// of nodes. every set represents a clone cluster that have to be merged.
 		ClusterEngine clusterEngine = new ClusterEngine();
@@ -136,9 +137,8 @@ public class MPLPlatform implements Serializable {
 				clusterNode.setCloned(true);
 
 				NodeComparison nodeComparison = compareEngine.compare(mergeTarget, clusterNode);
-				nodeComparison.updateSimilarity();
-
-				nodeComparison.mergeArtifacts(configurations, new MergeContext(), new ArrayList<CloneConfiguration>());
+				nodeComparison.mergeArtifacts(configurations, new MergeContext(), new ArrayList<CloneConfiguration>(),
+						new ArrayList<CloneConfiguration>());
 
 				clusterNode.getParent().getChildren().remove(clusterNode);
 
@@ -156,11 +156,11 @@ public class MPLPlatform implements Serializable {
 	/**
 	 * Sets the first variant as root variant which serves as a starting point
 	 */
-	private void initializePlatform(Node variant) {
-		List<CloneConfiguration> componentConfigs = refactorComponents(variant);
-		model = variant;
+	private void initializePlatform(Tree tree) {
+		List<CloneConfiguration> componentConfigs = refactorComponents(tree.getRoot());
+		model = tree.getRoot();
 		configurations = new ArrayList<Configuration>();
-		ConfigurationImpl config = (ConfigurationImpl) getNextConfig(variant);
+		ConfigurationImpl config = (ConfigurationImpl) getNextConfig(tree);
 		config.getComponentConfigurations().addAll(componentConfigs);
 		configurations.add(config);
 	}

@@ -52,7 +52,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 				.findOptionalMatchings();
 
 		Node rootNode = root.mergeArtifacts(new ArrayList<Configuration>(), new MergeContext(),
-				new ArrayList<CloneConfiguration>());
+				new ArrayList<CloneConfiguration>(), new ArrayList<CloneConfiguration>());
 
 		return rootNode;
 	}

@@ -102,8 +102,9 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	}
 
 	@Override
-	public Node mergeArtifacts(List<Configuration> configs, MergeContext context, List<CloneConfiguration> components) {
-		return mergeArtifacts(true, context, configs, components);
+	public Node mergeArtifacts(List<Configuration> configs, MergeContext context, List<CloneConfiguration> components,
+			List<CloneConfiguration> fixedConfigs) {
+		return mergeArtifacts(true, context, configs, components, fixedConfigs);
 	}
 
 	/**
@@ -124,7 +125,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	 * This method merges the contained nodes into a 150% model.
 	 */
 	public Node mergeArtifacts(boolean omitOptionalChildren, MergeContext context, List<Configuration> existingConfigs,
-			List<CloneConfiguration> componentConfigurations) {
+			List<CloneConfiguration> componentConfigurations, List<CloneConfiguration> fixedConfigs) {
 		// if one of both artifact is null its means that we have an optional and can
 		// keep the implementation below this artifacts.
 
@@ -157,7 +158,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				node.getChildren().clear();
 				for (Comparison<Node> childComparision : getChildComparisons()) {
 					node.addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren,
-							context, existingConfigs, componentConfigurations));
+							context, existingConfigs, componentConfigurations, fixedConfigs));
 				}
 			}
 			return node;
@@ -209,8 +210,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
 			getLeftArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getLeftArtifact().addChildWithParent(((NodeComparison) childComparision)
-						.mergeArtifacts(omitOptionalChildren, context, existingConfigs, componentConfigurations));
+				getLeftArtifact().addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(
+						omitOptionalChildren, context, existingConfigs, componentConfigurations, fixedConfigs));
 				leftArtifacts.remove(childComparision.getLeftArtifact());
 				rightArtifacts.remove(childComparision.getRightArtifact());
 			}
@@ -315,8 +316,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();
 			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getLeftArtifact().addChildWithParent(((NodeComparison) childComparision)
-						.mergeArtifacts(omitOptionalChildren, context, existingConfigs, componentConfigurations));
+				getLeftArtifact().addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(
+						omitOptionalChildren, context, existingConfigs, componentConfigurations, fixedConfigs));
 				leftArtifacts.remove(childComparision.getLeftArtifact());
 				rightArtifacts.remove(childComparision.getRightArtifact());
 			}
@@ -338,7 +339,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 						+ getLeftArtifact().getUUID() + " NoComponent Right:" + getRightArtifact().getUUID()
 						+ " Parent: " + parentNode.getUUID());
 				// we need a clone configuration for the right side
-				componentConfigurations.add(createCloneConfiguration(getRightArtifact()));
+				//componentConfigurations.add(createCloneConfiguration(getRightArtifact()));
+				fixedConfigs.add(createCloneConfiguration(getRightArtifact()));
 				getRightArtifact().setCloned(true);
 
 			} else if (!getLeftArtifact().isClone() && getRightArtifact().isClone()) {
@@ -347,13 +349,13 @@ public class NodeComparison extends AbstractComparsion<Node> {
 						: getParentComparison().getRightArtifact();
 				System.out.println("Alternativ Component right:" + getLeftArtifact().getUUID() + " Parent: "
 						+ parentNode.getUUID());
-
+				
+				
 				for (Configuration config : existingConfigs) {
 					if (config.getUUIDs().contains(componentConfig.componentUUID)) {
 						Set<UUID> variantConfigIDs = new HashSet<UUID>(config.getUUIDs());
 						Set<UUID> cloneConfigIDs = new HashSet<UUID>(componentConfig.getConfiguration().getUUIDs());
 						cloneConfigIDs.retainAll(variantConfigIDs);
-
 						CloneConfiguration cloneConfig = new CloneConfiguration();
 						cloneConfig.setComponentUUID(componentConfig.getComponentUUID());
 						cloneConfig.setParentUUID(componentConfig.getParentUUID());
@@ -363,12 +365,20 @@ public class NodeComparison extends AbstractComparsion<Node> {
 						config.getUUIDs().removeAll(cloneConfig.configuration.getUUIDs());
 						config.getUUIDs().remove(cloneConfig.getComponentUUID());
 					}
-				}
-				getLeftArtifact().setCloned(true);
-			}
 
-			if (rightArtifacts.size() > 0) {
-				System.out.println(rightArtifacts.size());
+				}
+				//at this point the configuration is closed and all replace action are not applied anymore
+				List<CloneConfiguration> configsToRemove = new ArrayList<CloneConfiguration>();
+				for (CloneConfiguration cloneConf : componentConfigurations) {
+					if (cloneConf.getParentUUID().equals(componentConfig.getParentUUID())
+							&& cloneConf.getComponentUUID().equals(componentConfig.getComponentUUID())) {
+						fixedConfigs.add(cloneConf);
+						configsToRemove.add(cloneConf);
+					}
+				}
+				componentConfigurations.removeAll(configsToRemove);
+
+				getLeftArtifact().setCloned(true);
 			}
 
 			if (leftArtifacts.size() > 0) {
@@ -411,8 +421,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	 * replaces it with UUID.
 	 */
 	public void replaceUUIDs(List<CloneConfiguration> cloneConfigurations, UUID replace, UUID with) {
-		for (CloneConfiguration componentConfiguration : cloneConfigurations) {
-			replaceUUID(componentConfiguration, replace, with);
+		for (CloneConfiguration cloneConfig : cloneConfigurations) {
+			replaceUUID(cloneConfig, replace, with);
 		}
 	}
 
@@ -430,6 +440,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			cloneConfiguration.getConfiguration().getUUIDs().remove(replace);
 			cloneConfiguration.getConfiguration().getUUIDs().add(with);
 		}
+
 	}
 
 	@Override

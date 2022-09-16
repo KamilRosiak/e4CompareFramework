@@ -34,7 +34,7 @@ public class ReaderManager {
 		} else {
 			tree.setFileExtension(fte.getExtension());
 		}
-
+		
 		return tree;
 	}
 

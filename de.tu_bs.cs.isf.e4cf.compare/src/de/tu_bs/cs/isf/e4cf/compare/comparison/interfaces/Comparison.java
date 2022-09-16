@@ -25,7 +25,7 @@ public interface Comparison<Type> extends Serializable {
 	 * Merges both nodes
 	 */
 	public Type mergeArtifacts(List<Configuration> existingConfigs, MergeContext context,
-			List<CloneConfiguration> componentConfigurations);
+			List<CloneConfiguration> componentConfigurations, List<CloneConfiguration> fixedConfigs);
 
 	/**
 	 * Returns the left artifact of this comparison.

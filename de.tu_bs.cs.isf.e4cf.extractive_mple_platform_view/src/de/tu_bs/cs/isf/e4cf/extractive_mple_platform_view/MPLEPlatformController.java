@@ -2,8 +2,13 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -239,8 +244,34 @@ public class MPLEPlatformController implements Initializable {
 			Tree variantTree = new TreeImpl(selectedConfig.getName(), node);
 			TreeWritter writter = new TreeWritter();
 			ContextInjectionFactory.inject(writter, context);
-			writter.writeArtifact(variantTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()+"\\"+selectedConfig.getName());
+			writter.writeArtifact(variantTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+					+ "\\" + selectedConfig.getName());
 		});
+
+	}
+
+	@FXML
+	private void printDetails() {
+		if (currentPlatform != null && currentPlatform.model != null) {
+			System.out.println("Platform number of nodes: " + currentPlatform.model.getAmountOfNodes(0));
+			Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
+			currentPlatform.configurations.forEach(config -> {
+				config.getComponentConfigurations().forEach(cloneConfig -> {
+					if (!cloneClasses.containsKey(cloneConfig.componentUUID)) {
+						cloneClasses.put(cloneConfig.componentUUID, 1);
+					} else {
+						cloneClasses.put(cloneConfig.componentUUID, cloneClasses.get(cloneConfig.componentUUID) + 1);
+					}
+				});
+			});
+
+			
+			System.out.println("Total Clone Classes: " + cloneClasses.size());
+			System.out.println("Clone Configurations");
+			cloneClasses.entrySet().forEach(e -> {
+				System.out.println("CloneClassId: " + e.getKey() + " number of configs: " + e.getValue());
+			});
+		}
 
 	}
 

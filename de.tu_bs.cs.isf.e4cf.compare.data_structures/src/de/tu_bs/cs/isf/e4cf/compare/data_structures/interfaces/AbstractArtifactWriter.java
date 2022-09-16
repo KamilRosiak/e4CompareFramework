@@ -33,4 +33,11 @@ public abstract class AbstractArtifactWriter implements ArtifactWriter {
 		writeArtifact(tree, RCPMessageProvider.getFilePathDialog(DIALOG_MSG, ""));
 	}
 	
+	/**
+	 * Opens a dialog to choose a location for the storage of the given tree.
+	 * @param tree
+	 */
+	public void witeArtifact(Tree tree, String location) {
+		writeArtifact(tree, location);
+	}
 }
