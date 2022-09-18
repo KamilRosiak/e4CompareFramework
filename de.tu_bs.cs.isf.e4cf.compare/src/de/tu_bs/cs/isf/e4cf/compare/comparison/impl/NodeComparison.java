@@ -339,7 +339,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 						+ getLeftArtifact().getUUID() + " NoComponent Right:" + getRightArtifact().getUUID()
 						+ " Parent: " + parentNode.getUUID());
 				// we need a clone configuration for the right side
-				//componentConfigurations.add(createCloneConfiguration(getRightArtifact()));
+				// componentConfigurations.add(createCloneConfiguration(getRightArtifact()));
 				fixedConfigs.add(createCloneConfiguration(getRightArtifact()));
 				getRightArtifact().setCloned(true);
 
@@ -349,8 +349,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 						: getParentComparison().getRightArtifact();
 				System.out.println("Alternativ Component right:" + getLeftArtifact().getUUID() + " Parent: "
 						+ parentNode.getUUID());
-				
-				
+
 				for (Configuration config : existingConfigs) {
 					if (config.getUUIDs().contains(componentConfig.componentUUID)) {
 						Set<UUID> variantConfigIDs = new HashSet<UUID>(config.getUUIDs());
@@ -367,16 +366,6 @@ public class NodeComparison extends AbstractComparsion<Node> {
 					}
 
 				}
-				//at this point the configuration is closed and all replace action are not applied anymore
-				List<CloneConfiguration> configsToRemove = new ArrayList<CloneConfiguration>();
-				for (CloneConfiguration cloneConf : componentConfigurations) {
-					if (cloneConf.getParentUUID().equals(componentConfig.getParentUUID())
-							&& cloneConf.getComponentUUID().equals(componentConfig.getComponentUUID())) {
-						fixedConfigs.add(cloneConf);
-						configsToRemove.add(cloneConf);
-					}
-				}
-				componentConfigurations.removeAll(configsToRemove);
 
 				getLeftArtifact().setCloned(true);
 			}
@@ -387,6 +376,20 @@ public class NodeComparison extends AbstractComparsion<Node> {
 						getLeftArtifact().getChildren().add(e);
 					}
 				});
+			}
+
+			// at this point the configuration is closed and all replace action are not
+			// applied anymore
+			if (componentConfig != null) {
+				List<CloneConfiguration> configsToRemove = new ArrayList<CloneConfiguration>();
+				for (CloneConfiguration cloneConf : componentConfigurations) {
+					if (cloneConf.getParentUUID().equals(componentConfig.getParentUUID())
+							&& cloneConf.getComponentUUID().equals(componentConfig.getComponentUUID())) {
+						fixedConfigs.add(cloneConf);
+						configsToRemove.add(cloneConf);
+					}
+				}
+				componentConfigurations.removeAll(configsToRemove);
 			}
 
 			return getLeftArtifact();
