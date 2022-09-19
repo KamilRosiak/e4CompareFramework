@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.handler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class CreateMPLEHandler {
 				variants.sort((a, b) -> {
 					return -Integer.compare(a.getRoot().getAmountOfNodes(0), b.getRoot().getAmountOfNodes(0));
 				});
+
 				// Collections.shuffle(variants);
 
 				platform.insertVariants(variants);

@@ -364,7 +364,6 @@ public class NodeComparison extends AbstractComparsion<Node> {
 						config.getUUIDs().removeAll(cloneConfig.configuration.getUUIDs());
 						config.getUUIDs().remove(cloneConfig.getComponentUUID());
 					}
-
 				}
 
 				getLeftArtifact().setCloned(true);
@@ -378,7 +377,8 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				});
 			}
 
-			// at this point the configuration is closed and all replace action are not
+			// At this point all nodes are merged and we can remove the clone configuartion
+			// from the change list
 			// applied anymore
 			if (componentConfig != null) {
 				List<CloneConfiguration> configsToRemove = new ArrayList<CloneConfiguration>();

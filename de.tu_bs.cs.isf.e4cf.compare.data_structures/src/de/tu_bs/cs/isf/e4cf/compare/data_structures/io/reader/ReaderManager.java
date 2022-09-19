@@ -25,7 +25,8 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 @Singleton
 @Creatable
 public class ReaderManager {
-	@Inject IEclipseContext context;
+	@Inject
+	IEclipseContext context;
 
 	public Tree readFile(FileTreeElement fte) {
 		Tree tree = new TreeImpl(fte.getFileName(), readFileRecursivly(null, fte));
@@ -34,7 +35,7 @@ public class ReaderManager {
 		} else {
 			tree.setFileExtension(fte.getExtension());
 		}
-		
+
 		return tree;
 	}
 
@@ -42,12 +43,17 @@ public class ReaderManager {
 		if (fte.isDirectory()) {
 			Node nextNode = new NodeImpl(NodeType.DIRECTORY);
 			nextNode.addAttribute("DIRECTORY_NAME", new StringValueImpl(fte.getFileName()));
-			
-			fte.getChildren().stream().forEach(childFte -> nextNode.addChildWithParent(readFileRecursivly(nextNode, childFte)));
+			try {
+				fte.getChildren().stream()
+						.forEach(childFte -> nextNode.addChildWithParent(readFileRecursivly(nextNode, childFte)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			return nextNode;
 		} else {
-			ArtifactReader reader = ArtifactIOUtil.getReaderForType(fte,context);
-			
+			ArtifactReader reader = ArtifactIOUtil.getReaderForType(fte, context);
+
 			if (reader != null) {
 				return reader.readArtifact(fte).getRoot();
 			} else {

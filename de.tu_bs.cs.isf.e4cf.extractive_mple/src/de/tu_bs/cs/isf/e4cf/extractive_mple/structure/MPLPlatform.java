@@ -100,10 +100,10 @@ public class MPLPlatform implements Serializable {
 		List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
 		Iterator<Node> candiateIterator = candidatNodes.iterator();
 
-		// Only take artifacts with at least 10 nodes into account (Clone size)
+		// Only take artifacts with at least 20 nodes into account (Clone size)
 		while (candiateIterator.hasNext()) {
 			Node node2 = (Node) candiateIterator.next();
-			if (node2.getAmountOfNodes(0) < 15) {
+			if (node2.getAmountOfNodes(0) < 20) {
 				candiateIterator.remove();
 			}
 		}
