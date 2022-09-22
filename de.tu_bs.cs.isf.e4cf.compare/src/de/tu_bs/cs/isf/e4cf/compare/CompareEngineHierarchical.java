@@ -51,8 +51,8 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root
 				.findOptionalMatchings();
 
-		Node rootNode = root.mergeArtifacts(new ArrayList<Configuration>(), new MergeContext(),
-				new ArrayList<CloneConfiguration>(), new ArrayList<CloneConfiguration>());
+		Node rootNode = root.mergeArtifacts(new ArrayList<Configuration>(), new ArrayList<CloneConfiguration>(),
+				new ArrayList<CloneConfiguration>());
 
 		return rootNode;
 	}

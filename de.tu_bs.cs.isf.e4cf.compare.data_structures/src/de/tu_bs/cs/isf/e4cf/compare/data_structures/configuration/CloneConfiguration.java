@@ -17,6 +17,8 @@ public class CloneConfiguration implements Serializable {
 	public UUID parentUUID;
 	public UUID componentUUID;
 	public Configuration configuration = new ConfigurationImpl("clone config");
+	public boolean isMerged = false;
+	
 	public UUID getParentUUID() {
 		return parentUUID;
 	}

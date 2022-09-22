@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple.handler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,15 +37,23 @@ public class CreateMPLEHandler {
 				for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
 					variants.add(readerManager.readFile(treeElement));
 				}
-				variants.sort((a, b) -> {
-					return -Integer.compare(a.getRoot().getAmountOfNodes(0), b.getRoot().getAmountOfNodes(0));
-				});
+				List<Tree> originalPositions = new ArrayList<Tree>(variants);
+				// variants.sort((a, b) -> {
+				// return -Integer.compare(a.getRoot().getAmountOfNodes(0),
+				// b.getRoot().getAmountOfNodes(0));
+				// });
 
 				// Collections.shuffle(variants);
 
+				String permuationString = "";
+				for (Tree tree : variants) {
+					permuationString = permuationString + String.valueOf(originalPositions.indexOf(tree) + 1) + "_";
+				}
+				permuationString = permuationString.substring(0, permuationString.length() - 1);
+
 				platform.insertVariants(variants);
 				MPLEPlatformUtil.storePlatform(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-						+ "//" + variants.get(0).getTreeName() + "_" + i + ".mpl", platform);
+						+ "//" + permuationString + ".mpl", platform);
 				System.out.println("_______________________run______________");
 				printPlatform(platform);
 			}
@@ -62,9 +71,10 @@ public class CreateMPLEHandler {
 
 	private void printPlatform(MPLPlatform platform) {
 		System.out.println("Platform number of nodes: " + platform.model.getAmountOfNodes(0));
+		System.out.println("Platform number of UUIDS: " + platform.model.getAllUUIDS(new HashSet<UUID>()).size());
 		Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
 		platform.configurations.forEach(config -> {
-			config.getComponentConfigurations().forEach(cloneConfig -> {
+			config.getCloneConfigurations().forEach(cloneConfig -> {
 				if (!cloneClasses.containsKey(cloneConfig.componentUUID)) {
 					cloneClasses.put(cloneConfig.componentUUID, 1);
 				} else {

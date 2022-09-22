@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di.annotations,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.core.compare,
- org.apache.commons.io;bundle-version="2.6.0"
+ org.apache.commons.io;bundle-version="2.6.0",
+ de.tu_bs.cs.isf.e4cf.EMFModelLoader
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.enums,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.impl,
@@ -28,4 +29,10 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.util
 Bundle-ClassPath: .,
  lib/javaparser-core-3.18.0.jar,
- lib/gson-2.8.6.jar
+ lib/gson-2.8.6.jar,
+ lib/UML/uml-5.0.0-v20140602-0749.jar,
+ lib/UML/common-2.0.0-v20140602-0749.jar,
+ lib/UML/ecore-2.3.0-v200706262000.jar,
+ lib/UML/ecore2xml-2.3.0-v200706262000.jar,
+ lib/UML/types-2.0.0-v20140602-0749.jar,
+ lib/UML/xmi-2.3.0-v200706262000.jar

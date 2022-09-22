@@ -46,9 +46,9 @@ public class NodeConfigurationUtil {
 		}
 	}
 
-	public static CloneConfiguration createComponentConfiguration(Node componentNode, UUID partentUUID) {
+	public static CloneConfiguration createCloneConfiguration(Node componentNode, UUID parentUUID) {
 		CloneConfiguration componentConfig = new CloneConfiguration();
-		componentConfig.parentUUID = partentUUID;
+		componentConfig.parentUUID = parentUUID;
 		componentConfig.componentUUID = componentNode.getUUID();
 		Configuration config = new ConfigurationImpl("componentConfig");
 		addUUIDsRecursivly(componentNode, config);

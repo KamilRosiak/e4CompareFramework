@@ -126,7 +126,7 @@ public class MPLEPlatformController implements Initializable {
 			if (configTable.getSelectionModel().getSelectedItem() != null) {
 				componentConfigs.getItems().clear();
 				componentConfigs.getItems()
-						.addAll(configTable.getSelectionModel().getSelectedItem().getComponentConfigurations());
+						.addAll(configTable.getSelectionModel().getSelectedItem().getCloneConfigurations());
 			}
 			componentConfigs.refresh();
 
@@ -254,9 +254,11 @@ public class MPLEPlatformController implements Initializable {
 	private void printDetails() {
 		if (currentPlatform != null && currentPlatform.model != null) {
 			System.out.println("Platform number of nodes: " + currentPlatform.model.getAmountOfNodes(0));
+			System.out.println(
+					"Platform number of UUIDS: " + currentPlatform.model.getAllUUIDS(new HashSet<UUID>()).size());
 			Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
 			currentPlatform.configurations.forEach(config -> {
-				config.getComponentConfigurations().forEach(cloneConfig -> {
+				config.getCloneConfigurations().forEach(cloneConfig -> {
 					if (!cloneClasses.containsKey(cloneConfig.componentUUID)) {
 						cloneClasses.put(cloneConfig.componentUUID, 1);
 					} else {
@@ -265,7 +267,6 @@ public class MPLEPlatformController implements Initializable {
 				});
 			});
 
-			
 			System.out.println("Total Clone Classes: " + cloneClasses.size());
 			System.out.println("Clone Configurations");
 			cloneClasses.entrySet().forEach(e -> {

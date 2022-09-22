@@ -200,7 +200,7 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
-	public void addChildWithParent(Node child, int position) {
+	public void addChildWithPositionAndParent(Node child, int position) {
 		child.setParent(this);
 		addChild(child, position);
 	}

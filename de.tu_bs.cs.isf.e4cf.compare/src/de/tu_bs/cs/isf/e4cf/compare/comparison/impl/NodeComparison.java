@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.comparison.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,9 +103,10 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	}
 
 	@Override
-	public Node mergeArtifacts(List<Configuration> configs, MergeContext context, List<CloneConfiguration> components,
+	public Node mergeArtifacts(List<Configuration> configs, List<CloneConfiguration> components,
 			List<CloneConfiguration> fixedConfigs) {
-		return mergeArtifacts(true, context, configs, components, fixedConfigs);
+		// return mergeArtifacts(true, configs, components, fixedConfigs);
+		return mergeArtifacts(configs, components);
 	}
 
 	/**
@@ -117,21 +119,22 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				setNodeOptionalWithChildren(childNode);
 			} else {
 				childNode.setVariabilityClass(ComparisonUtil.getClassForSimilarity(0f));
+				setNodeOptionalWithChildren(childNode);
 			}
 		});
 	}
 
 	/**
-	 * This method merges the contained nodes into a 150% model.
+	 * this function merges two node with its children
 	 */
-	public Node mergeArtifacts(boolean omitOptionalChildren, MergeContext context, List<Configuration> existingConfigs,
-			List<CloneConfiguration> componentConfigurations, List<CloneConfiguration> fixedConfigs) {
-		// if one of both artifact is null its means that we have an optional and can
-		// keep the implementation below this artifacts.
-
+	public Node mergeArtifacts(List<Configuration> variantConfigurations,
+			List<CloneConfiguration> cloneConfigurations) {
+		/** Optional Case: Artifact is only in one variant **/
 		if (getLeftArtifact() == null || getRightArtifact() == null) {
 			Node node = getLeftArtifact() == null ? getRightArtifact() : getLeftArtifact();
+
 			node.setVariabilityClass(VariabilityClass.OPTIONAL);
+			// check if this node already exits and remove it if needed
 
 			if (getParentComparison() != null) {
 				Node parentNode = getParentComparison().getLeftArtifact() != null
@@ -141,281 +144,178 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				if (node.isClone()) {
 					for (Node childNode : parentNode.getChildren()) {
 						if (childNode.getUUID().equals(node.getUUID())) {
-							// mergeNodes(childNode, node);
 							System.out.println("optional remove: " + node.getUUID());
 							return null;
 						}
 					}
 				}
 			}
+			setNodeOptionalWithChildren(node);
 
-			if (omitOptionalChildren) {
-				// Set all nodes to optional
-				setNodeOptionalWithChildren(node);
-			} else {
-				// Process the Children as they were compared
-				node.setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
-				node.getChildren().clear();
-				for (Comparison<Node> childComparision : getChildComparisons()) {
-					node.addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(omitOptionalChildren,
-							context, existingConfigs, componentConfigurations, fixedConfigs));
-				}
-			}
 			return node;
-		}
-
-		// all artifacts which are equals
-
-		if (getSimilarity() == ComparisonUtil.MANDATORY_VALUE) {
-
-			// propagate UUIDS
-			context.changedUUIDs.put(getRightArtifact().getUUID(), getLeftArtifact().getUUID());
-			replaceUUIDs(componentConfigurations, getRightArtifact().getUUID(), getLeftArtifact().getUUID());
-			getRightArtifact().setUUID(getLeftArtifact().getUUID());
-
-			// collect attributes that are not contained
-			List<Attribute> otherAttrs = new ArrayList<Attribute>();
-			otherAttrs.addAll(getLeftArtifact().getAttributes());
-
-			// propagate artifact UUIDS
-			getRightArtifact().getAttributes().forEach(rightAttr -> {
-				getLeftArtifact().getAttributes().forEach(leftAttr -> {
-					if (rightAttr.getAttributeKey().equals(leftAttr.getAttributeKey())) {
-						// remove artifact from others because it is in both nodes contained
-						otherAttrs.remove(leftAttr);
-						// propagate attr UUID from the model to the merged node
-						replaceUUIDs(componentConfigurations, rightAttr.getUUID(), leftAttr.getUUID());
-						rightAttr.setUuid(leftAttr.getUUID());
-						// propagate value ids
-						rightAttr.getAttributeValues().forEach(rightValue -> {
-							leftAttr.getAttributeValues().forEach(leftValue -> {
-								if (rightValue.equals(leftValue)) {
-									context.changedUUIDs.put(rightValue.getUUID(), getLeftArtifact().getUUID());
-									replaceUUIDs(componentConfigurations, rightValue.getUUID(), leftValue.getUUID());
-									rightValue.setUUID(leftValue.getUUID());
-								}
-							});
-							if (!leftAttr.containsValue(rightValue)) {
-								leftAttr.addAttributeValue(rightValue);
-							}
-						});
-					}
-				});
-			});
-			getRightArtifact().getAttributes().addAll(otherAttrs);
-
-			List<Node> leftArtifacts = new ArrayList<Node>(getLeftArtifact().getChildren());
-			List<Node> rightArtifacts = new ArrayList<Node>(getRightArtifact().getChildren());
-			// Process the Children as they were compared
-			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
-			getLeftArtifact().getChildren().clear();
-			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getLeftArtifact().addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(
-						omitOptionalChildren, context, existingConfigs, componentConfigurations, fixedConfigs));
-				leftArtifacts.remove(childComparision.getLeftArtifact());
-				rightArtifacts.remove(childComparision.getRightArtifact());
-			}
-			// Components have to be managed speratly
-			if (getLeftArtifact().isClone() && !getRightArtifact().isClone()) {
-				System.out.println("Mandatory Component left:" + getLeftArtifact().getUUID());
-
-				System.out.println(getParentComparison().getLeftArtifact().getUUID());
-
-				getRightArtifact().setCloned(true);
-				CloneConfiguration componentConfig = NodeConfigurationUtil
-						.createComponentConfiguration(getRightArtifact(), getLeftArtifact().getUUID());
-				componentConfigurations.add(componentConfig);
-
-			} else if (!getLeftArtifact().isClone() && getRightArtifact().isClone()) {
-				System.out.println("Mandatory Component  right:" + getLeftArtifact().getUUID());
-				System.out.println(getParentComparison().getLeftArtifact().getUUID());
-
-				getLeftArtifact().setCloned(true);
-				CloneConfiguration componentConfig = NodeConfigurationUtil
-						.createComponentConfiguration(getLeftArtifact(), getLeftArtifact().getUUID());
-				existingConfigs.forEach(config -> {
-					if (config.getUUIDs().containsAll(componentConfig.configuration.getUUIDs())) {
-						config.getComponentConfigurations().add(componentConfig);
-						System.out.println("before:" + config.getUUIDs().size());
-						config.getUUIDs().removeAll(componentConfig.configuration.getUUIDs());
-						config.getUUIDs().remove(componentConfig.getComponentUUID());
-						System.out.println("after:" + config.getUUIDs().size());
-					}
-				});
-			}
-			if (leftArtifacts.size() > 0) {
-				leftArtifacts.forEach(e -> {
-					if (!getLeftArtifact().getChildren().contains(e)) {
-						getLeftArtifact().getChildren().add(e);
-					}
-				});
-			}
-			return getLeftArtifact();
+			/*********************************************************/
 		} else {
-			getLeftArtifact().setVariabilityClass(ComparisonUtil.getClassForSimilarity(getSimilarity()));
-			CloneConfiguration componentConfig = null;
+			/** Similar Nodes Case: Artifact are similar **/
+
+			if (getSimilarity() == 1.0) {
+				getLeftArtifact().setVariabilityClass(VariabilityClass.MANDATORY);
+			} else {
+				getLeftArtifact().setVariabilityClass(VariabilityClass.ALTERNATIVE);
+			}
+
 			// left side no clone configurations we have to derive the configuration before
 			// we merge artifacts in it
+			CloneConfiguration cloneConfiguration = null;
 			if (!getLeftArtifact().isClone() && getRightArtifact().isClone()) {
-				componentConfig = createCloneConfiguration(getLeftArtifact());
+				cloneConfiguration = createCloneConfiguration(getLeftArtifact());
 			}
 
-			Set<Attribute> containedAttrs = new HashSet<Attribute>();
-			// first merge attributes
-			for (Attribute leftAttr : getLeftArtifact().getAttributes()) {
-				for (Attribute rightAttr : getRightArtifact().getAttributes()) {
-					// same attr type
-					if (leftAttr.keyEquals(rightAttr)) {
+			/** Propagate UUIDS **/
+			propagateUUIDs(cloneConfigurations);
 
-						// propagate value ids
-						for (Value rightValue : rightAttr.getAttributeValues()) {
-							for (Value leftValue : leftAttr.getAttributeValues()) {
-								if (rightValue.equals(leftValue)) {
-									UUID leftID = leftValue.getUUID();
-									UUID rightID = rightValue.getUUID();
-
-									replaceUUIDs(componentConfigurations, rightID, leftID);
-									if (componentConfig != null) {
-										replaceUUID(componentConfig, rightID, leftID);
-									}
-									rightValue.setUUID(leftID);
-								}
-							}
-							if (!leftAttr.containsValue(rightValue)) {
-								leftAttr.addAttributeValue(rightValue);
-							}
-						}
-						UUID leftID = leftAttr.getUUID();
-						UUID rightID = rightAttr.getUUID();
-
-						replaceUUIDs(componentConfigurations, rightID, leftID);
-
-						if (componentConfig != null) {
-							replaceUUID(componentConfig, rightID, leftID);
-						}
-						rightAttr.setUuid(leftID);
-						containedAttrs.add(rightAttr);
-					}
-				}
-			}
-
-			// remove all contained attrs from all others
-			Set<Attribute> notContainedRightAttrs = new HashSet<Attribute>(getRightArtifact().getAttributes());
-			notContainedRightAttrs.removeAll(containedAttrs);
-			getLeftArtifact().getAttributes().addAll(notContainedRightAttrs);
-
-			UUID leftID = getLeftArtifact().getUUID();
-			UUID rightID = getRightArtifact().getUUID();
-			replaceUUIDs(componentConfigurations, rightID, leftID);
-			if (componentConfig != null) {
-				replaceUUID(componentConfig, rightID, leftID);
-			}
-
+			/** Process Child Nodes **/
 			List<Node> leftArtifacts = new ArrayList<Node>(getLeftArtifact().getChildren());
-			List<Node> rightArtifacts = new ArrayList<Node>(getRightArtifact().getChildren());
-			// process child comparisons recursively
 			getLeftArtifact().getChildren().clear();
-			for (Comparison<Node> childComparision : getChildComparisons()) {
-				getLeftArtifact().addChildWithParent(((NodeComparison) childComparision).mergeArtifacts(
-						omitOptionalChildren, context, existingConfigs, componentConfigurations, fixedConfigs));
-				leftArtifacts.remove(childComparision.getLeftArtifact());
-				rightArtifacts.remove(childComparision.getRightArtifact());
+			for (Comparison<Node> childComparison : getChildComparisons()) {
+				NodeComparison nodeComparison = (NodeComparison) childComparison;
+				getLeftArtifact()
+						.addChildWithParent(nodeComparison.mergeArtifacts(variantConfigurations, cloneConfigurations));
+				leftArtifacts.remove(nodeComparison.getLeftArtifact());
 			}
 
-			getRightArtifact().setUUID(getLeftArtifact().getUUID());
-			// add artifacts min line number
-			getLeftArtifact()
-					.setStartLine(Math.min(getLeftArtifact().getStartLine(), getRightArtifact().getStartLine()));
-			getLeftArtifact().setEndLine(Math.min(getLeftArtifact().getEndLine(), getRightArtifact().getEndLine()));
+			if (leftArtifacts.size() > 0) {
+				Iterator<Node> nodeIterator = leftArtifacts.iterator();
+				while (nodeIterator.hasNext()) {
+					Node node = (Node) nodeIterator.next();
+					getLeftArtifact().getChildren().forEach(childNode -> {
+						if (childNode.getUUID().equals(node.getUUID())) {
+							nodeIterator.remove();
+						}
+					});
+				}
+				leftArtifacts.forEach(leftArtifact -> {
+					getLeftArtifact().addChildWithParent(leftArtifact);
+				});
+			}
+			/***********************/
+			// At this point all common child nodes have the same identifier
 
-			getLeftArtifact().sortChildNodes();
+			// add uncompared elements from a merge before
 
-			// Components have to be managed speratly
+			/** Cases for the merge of clones **/
 			if (getLeftArtifact().isClone() && !getRightArtifact().isClone()) {
-				Node parentNode = getParentComparison().getLeftArtifact() != null
-						? getParentComparison().getLeftArtifact()
-						: getParentComparison().getRightArtifact();
-				System.out.println("Sim:" + getSimilarity() + " Alternativ Component left: "
-						+ getLeftArtifact().getUUID() + " NoComponent Right:" + getRightArtifact().getUUID()
-						+ " Parent: " + parentNode.getUUID());
-				// we need a clone configuration for the right side
-				// componentConfigurations.add(createCloneConfiguration(getRightArtifact()));
-				fixedConfigs.add(createCloneConfiguration(getRightArtifact()));
-				getRightArtifact().setCloned(true);
+				/** Left node is a clone right node is not a clone **/
+				if (parentComparison != null)
+					// System.out.println("Clone left:" + getLeftArtifact().getUUID() + " parent:"
+					// + getParentComparison().getLeftArtifact().getUUID());
+
+					cloneConfiguration = createCloneConfiguration(getRightArtifact());
+				cloneConfiguration.isMerged = true;
+				cloneConfigurations.add(cloneConfiguration);
 
 			} else if (!getLeftArtifact().isClone() && getRightArtifact().isClone()) {
-				Node parentNode = getParentComparison().getLeftArtifact() != null
-						? getParentComparison().getLeftArtifact()
-						: getParentComparison().getRightArtifact();
-				System.out.println("Alternativ Component right:" + getLeftArtifact().getUUID() + " Parent: "
-						+ parentNode.getUUID());
+				/** Left node is not a clone right node is a clone **/
+				// System.out.println("Clone right:" + getLeftArtifact().getUUID() + " parent:"
+				// + getParentComparison().getLeftArtifact().getUUID());
+				// iterate over all variant configurations and check if the UUIDs from the clone
+				// config are contained
+				if (getChildComparisons() != null) {
+					lockConfigurations(cloneConfiguration.componentUUID,
+							getParentComparison().getLeftArtifact().getUUID(), cloneConfigurations);
+				}
 
-				for (Configuration config : existingConfigs) {
-					if (config.getUUIDs().contains(componentConfig.componentUUID)) {
+				for (Configuration config : variantConfigurations) {
+					if (config.getUUIDs().contains(cloneConfiguration.componentUUID)) {
+						// Only use those UUIDs that are in the configuration at this evolution step
 						Set<UUID> variantConfigIDs = new HashSet<UUID>(config.getUUIDs());
-						Set<UUID> cloneConfigIDs = new HashSet<UUID>(componentConfig.getConfiguration().getUUIDs());
+						Set<UUID> cloneConfigIDs = new HashSet<UUID>(cloneConfiguration.getConfiguration().getUUIDs());
 						cloneConfigIDs.retainAll(variantConfigIDs);
+						// copy configuration
 						CloneConfiguration cloneConfig = new CloneConfiguration();
-						cloneConfig.setComponentUUID(componentConfig.getComponentUUID());
-						cloneConfig.setParentUUID(componentConfig.getParentUUID());
+						cloneConfig.setComponentUUID(cloneConfiguration.getComponentUUID());
+						cloneConfig.setParentUUID(cloneConfiguration.getParentUUID());
 						cloneConfig.getConfiguration().getUUIDs().addAll(cloneConfigIDs);
+						cloneConfig.isMerged = true;
 
-						config.getComponentConfigurations().add(cloneConfig);
+						config.getCloneConfigurations().add(cloneConfig);
 						config.getUUIDs().removeAll(cloneConfig.configuration.getUUIDs());
 						config.getUUIDs().remove(cloneConfig.getComponentUUID());
 					}
 				}
-
 				getLeftArtifact().setCloned(true);
-			}
-
-			if (leftArtifacts.size() > 0) {
-				leftArtifacts.forEach(e -> {
-					if (!getLeftArtifact().getChildren().contains(e)) {
-						getLeftArtifact().getChildren().add(e);
-					}
-				});
-			}
-
-			// At this point all nodes are merged and we can remove the clone configuartion
-			// from the change list
-			// applied anymore
-			if (componentConfig != null) {
-				List<CloneConfiguration> configsToRemove = new ArrayList<CloneConfiguration>();
-				for (CloneConfiguration cloneConf : componentConfigurations) {
-					if (cloneConf.getParentUUID().equals(componentConfig.getParentUUID())
-							&& cloneConf.getComponentUUID().equals(componentConfig.getComponentUUID())) {
-						fixedConfigs.add(cloneConf);
-						configsToRemove.add(cloneConf);
-					}
+			} else if (getLeftArtifact().isClone() && getRightArtifact().isClone()) {
+				/** Noth nodes are clones **/
+				// System.out.println("Both clones:" + getLeftArtifact().getUUID());
+				if (getParentComparison() != null) {
+					lockConfigurations(getLeftArtifact().getUUID(), getParentComparison().getLeftArtifact().getUUID(),
+							cloneConfigurations);
 				}
-				componentConfigurations.removeAll(configsToRemove);
 			}
 
 			return getLeftArtifact();
 		}
-
 	}
 
-	private void mergeNodes(Node childNode, Node node) {
-		List<Node> notContainedNodes = new ArrayList<Node>(node.getChildren());
-		childNode.getChildren().forEach(child -> {
-			node.getChildren().forEach(nodeChild -> {
-				if (child.getUUID().equals(nodeChild.getUUID())) {
-					notContainedNodes.remove(nodeChild);
-					mergeNodes(child, nodeChild);
+	/**
+	 * This method merges two nodes by propagating all UUIDs from the left node to
+	 * the right node and adding all remaining elements from the right artifact to
+	 * the left one
+	 * 
+	 * @param cloneConfigurations
+	 */
+	private void propagateUUIDs(List<CloneConfiguration> cloneConfigurations) {
+		// Propagate UUIDs
+		replaceUUIDs(cloneConfigurations, getRightArtifact().getUUID(), getLeftArtifact().getUUID());
+		getRightArtifact().setUUID(getLeftArtifact().getUUID());
+		//
+		List<Attribute> rightAttributes = new ArrayList<Attribute>(getRightArtifact().getAttributes());
+		for (Attribute leftAttribute : getLeftArtifact().getAttributes()) {
+			for (Attribute rightAttribute : getRightArtifact().getAttributes()) {
+				if (leftAttribute.getAttributeKey().equals(rightAttribute.getAttributeKey())) {
+					List<Value> rightValues = new ArrayList<Value>(rightAttribute.getAttributeValues());
+					rightAttributes.remove(rightAttribute);
+					// replace UUID
+					replaceUUIDs(cloneConfigurations, rightAttribute.getUUID(), leftAttribute.getUUID());
+					rightAttribute.setUuid(leftAttribute.getUUID());
+					//
+					for (Value leftValue : leftAttribute.getAttributeValues()) {
+						for (Value rightValue : rightAttribute.getAttributeValues()) {
+							if (leftValue.getValue().equals(rightValue.getValue())) {
+								rightValues.remove(rightValue);
+								// replace UUID
+								replaceUUIDs(cloneConfigurations, rightValue.getUUID(), leftValue.getUUID());
+								rightValue.setUUID(leftValue.getUUID());
+								//
+							}
+						}
+					}
+					leftAttribute.addAttributeValues(rightValues);
 				}
-			});
-		});
-		childNode.getChildren().addAll(notContainedNodes);
-
+			}
+		}
+		// Add attributes to the left artifact that were not contained
+		getLeftArtifact().getAttributes().addAll(rightAttributes);
 	}
 
+	/**
+	 * Locks a configuration for the UUID propagation process
+	 */
+	private void lockConfigurations(UUID clone, UUID parent, List<CloneConfiguration> configs) {
+		configs.forEach(cloneConfig -> {
+			if (cloneConfig.getComponentUUID().equals(clone) && cloneConfig.getParentUUID().equals(parent)) {
+				cloneConfig.isMerged = true;
+			}
+		});
+	}
+
+	/**
+	 * This method creates a clone configuration for the given clone node.
+	 */
 	private CloneConfiguration createCloneConfiguration(Node clonedNode) {
 		CloneConfiguration componentConfig;
 		Node parentNode = getParentComparison().getLeftArtifact() != null ? getParentComparison().getLeftArtifact()
 				: getParentComparison().getRightArtifact();
-		componentConfig = NodeConfigurationUtil.createComponentConfiguration(clonedNode, parentNode.getUUID());
+		componentConfig = NodeConfigurationUtil.createCloneConfiguration(clonedNode, parentNode.getUUID());
 		return componentConfig;
 	}
 
@@ -429,21 +329,25 @@ public class NodeComparison extends AbstractComparsion<Node> {
 		}
 	}
 
+	/**
+	 * Replaces all UUIDS in the given configuration
+	 */
 	public void replaceUUID(CloneConfiguration cloneConfiguration, UUID replace, UUID with) {
-		// check if clone configuration changed
-		if (cloneConfiguration.componentUUID.equals(replace)) {
-			cloneConfiguration.setComponentUUID(with);
-		}
-		// check if clone configuration changed
-		if (cloneConfiguration.parentUUID.equals(replace)) {
-			cloneConfiguration.setParentUUID(with);
-		}
+		if (!cloneConfiguration.isMerged) {
+			// check if clone configuration changed
+			if (cloneConfiguration.componentUUID.equals(replace)) {
+				cloneConfiguration.setComponentUUID(with);
+			}
+			// check if clone configuration changed
+			if (cloneConfiguration.parentUUID.equals(replace)) {
+				cloneConfiguration.setParentUUID(with);
+			}
 
-		if (cloneConfiguration.getConfiguration().getUUIDs().contains(replace)) {
-			cloneConfiguration.getConfiguration().getUUIDs().remove(replace);
-			cloneConfiguration.getConfiguration().getUUIDs().add(with);
+			if (cloneConfiguration.getConfiguration().getUUIDs().contains(replace)) {
+				cloneConfiguration.getConfiguration().getUUIDs().remove(replace);
+				cloneConfiguration.getConfiguration().getUUIDs().add(with);
+			}
 		}
-
 	}
 
 	@Override

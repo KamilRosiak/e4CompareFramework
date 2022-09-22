@@ -19,7 +19,7 @@ public interface Node extends Serializable {
 	static final long serialVersionUID = 5776489857546412690L;
 
 	public void addConfiguration(Configuration config);
-	
+
 	public List<Configuration> getConfigurations();
 
 	/**
@@ -133,7 +133,7 @@ public interface Node extends Serializable {
 	 * This method adds a child node to the current node at a given position and
 	 * sets the parent.
 	 */
-	public void addChildWithParent(Node node, int position);
+	public void addChildWithPositionAndParent(Node node, int position);
 
 	/**
 	 * This method adds a child node to the current node and sets the parent.
@@ -257,7 +257,9 @@ public interface Node extends Serializable {
 	 * Returns the configuration of a single variant
 	 */
 	public Configuration createConfiguration();
-	
+
 	public int getAmountOfNodes(int startAmount);
+
+	public Set<UUID> getAllUUIDS(Set<UUID> uuids);
 
 }
