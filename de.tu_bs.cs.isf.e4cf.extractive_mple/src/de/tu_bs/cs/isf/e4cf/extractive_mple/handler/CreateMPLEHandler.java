@@ -28,7 +28,7 @@ public class CreateMPLEHandler {
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, IEclipseContext context) {
 		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
-			int numberPermutations = 1;
+			int numberPermutations = 100;
 
 			for (int i = 0; i < numberPermutations; i++) {
 				MPLPlatform platform = new MPLPlatform();
@@ -43,7 +43,7 @@ public class CreateMPLEHandler {
 				// b.getRoot().getAmountOfNodes(0));
 				// });
 
-				// Collections.shuffle(variants);
+				Collections.shuffle(variants);
 
 				String permuationString = "";
 				for (Tree tree : variants) {

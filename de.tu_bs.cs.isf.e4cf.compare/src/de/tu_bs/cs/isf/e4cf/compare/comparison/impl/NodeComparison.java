@@ -155,7 +155,7 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			return node;
 			/*********************************************************/
 		} else {
-			/** Similar Nodes Case: Artifact are similar **/
+			/******* Similar Nodes Case: Artifact are similar *******/
 
 			if (getSimilarity() == 1.0) {
 				getLeftArtifact().setVariabilityClass(VariabilityClass.MANDATORY);
@@ -206,19 +206,19 @@ public class NodeComparison extends AbstractComparsion<Node> {
 			if (getLeftArtifact().isClone() && !getRightArtifact().isClone()) {
 				/** Left node is a clone right node is not a clone **/
 				if (parentComparison != null)
-					// System.out.println("Clone left:" + getLeftArtifact().getUUID() + " parent:"
-					// + getParentComparison().getLeftArtifact().getUUID());
+					System.out.println("Clone left:" + getLeftArtifact().getUUID() + " parent:"
+							+ getParentComparison().getLeftArtifact().getUUID());
 
-					cloneConfiguration = createCloneConfiguration(getRightArtifact());
+				cloneConfiguration = createCloneConfiguration(getRightArtifact());
 				cloneConfiguration.isMerged = true;
 				cloneConfigurations.add(cloneConfiguration);
 
 			} else if (!getLeftArtifact().isClone() && getRightArtifact().isClone()) {
 				/** Left node is not a clone right node is a clone **/
-				// System.out.println("Clone right:" + getLeftArtifact().getUUID() + " parent:"
-				// + getParentComparison().getLeftArtifact().getUUID());
-				// iterate over all variant configurations and check if the UUIDs from the clone
-				// config are contained
+				System.out.println("Clone right:" + getLeftArtifact().getUUID() + " parent:"
+						+ getParentComparison().getLeftArtifact().getUUID());
+				//iterate over all variant configurations and check if the UUIDs from the clone
+				//config are contained
 				if (getChildComparisons() != null) {
 					lockConfigurations(cloneConfiguration.componentUUID,
 							getParentComparison().getLeftArtifact().getUUID(), cloneConfigurations);
@@ -226,11 +226,11 @@ public class NodeComparison extends AbstractComparsion<Node> {
 
 				for (Configuration config : variantConfigurations) {
 					if (config.getUUIDs().contains(cloneConfiguration.componentUUID)) {
-						// Only use those UUIDs that are in the configuration at this evolution step
+						//Only use those UUIDs that are in the configuration at this evolution step
 						Set<UUID> variantConfigIDs = new HashSet<UUID>(config.getUUIDs());
 						Set<UUID> cloneConfigIDs = new HashSet<UUID>(cloneConfiguration.getConfiguration().getUUIDs());
 						cloneConfigIDs.retainAll(variantConfigIDs);
-						// copy configuration
+						//copy configuration
 						CloneConfiguration cloneConfig = new CloneConfiguration();
 						cloneConfig.setComponentUUID(cloneConfiguration.getComponentUUID());
 						cloneConfig.setParentUUID(cloneConfiguration.getParentUUID());
@@ -244,14 +244,13 @@ public class NodeComparison extends AbstractComparsion<Node> {
 				}
 				getLeftArtifact().setCloned(true);
 			} else if (getLeftArtifact().isClone() && getRightArtifact().isClone()) {
-				/** Noth nodes are clones **/
+				/** Both nodes are clones **/
 				// System.out.println("Both clones:" + getLeftArtifact().getUUID());
 				if (getParentComparison() != null) {
 					lockConfigurations(getLeftArtifact().getUUID(), getParentComparison().getLeftArtifact().getUUID(),
 							cloneConfigurations);
 				}
 			}
-
 			return getLeftArtifact();
 		}
 	}
