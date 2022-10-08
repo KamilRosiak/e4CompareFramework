@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.io.FileUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -25,6 +24,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AttributeParserCpp;
 
 public class SrcMLReader extends AbstractArtifactReader {
 
@@ -149,10 +149,11 @@ public class SrcMLReader extends AbstractArtifactReader {
 				InputSource inputSource = new InputSource(new InputStreamReader(inputStream, "UTF-8"));
 				xmlReader.parse(inputSource);
 
-				//TODO rename Nodes so they can be compared
-				saxHandler.getRootNode().setNodeType("C++");
+				//rename NodeTypes so Tree can be compared to java source files
+				AttributeParserCpp attributeParser = new AttributeParserCpp(saxHandler.getRootNode());
+				attributeParser.parseAllAttributes();
+				
 				rootNode = saxHandler.getRootNode();
-
 				rootNode.addAttribute(new AttributeImpl(AttributeDictionary.FILE_NAME_ATTRIBUTE_KEY,
 						new StringValueImpl(element.getFileName())));
 
