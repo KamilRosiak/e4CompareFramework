@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.core.io.interfaces.ArtifactReader;
 
 /**
  * This class manages all artifact reader and creates a tree if file can be
- * readed.
+ * read.
  * 
  * @author Kamil Rosiak
  *

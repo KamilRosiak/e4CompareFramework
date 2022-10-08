@@ -149,6 +149,8 @@ public class SrcMLReader extends AbstractArtifactReader {
 				InputSource inputSource = new InputSource(new InputStreamReader(inputStream, "UTF-8"));
 				xmlReader.parse(inputSource);
 
+				//TODO rename Nodes so they can be compared
+				saxHandler.getRootNode().setNodeType("C++");
 				rootNode = saxHandler.getRootNode();
 
 				rootNode.addAttribute(new AttributeImpl(AttributeDictionary.FILE_NAME_ATTRIBUTE_KEY,
