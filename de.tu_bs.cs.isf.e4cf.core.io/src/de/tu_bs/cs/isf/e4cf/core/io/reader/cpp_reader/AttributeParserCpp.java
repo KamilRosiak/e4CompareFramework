@@ -26,9 +26,9 @@ public final class AttributeParserCpp {
 	private void recursiveRename(Node node) {
 
 		//TODO implement a good way for renaming NodeTypes to their equivalent
-		if (node.getNodeType().equals("function_decl")) {
-			node.setNodeType("MethodDeclaration");
-		}
+		RenamerCpp renamer = RenamerCpp.getInstance();
+		renamer.renameNode(node);
+		
 		if (node.getNumberOfChildren() > 0)
 		{
 			List<Node> children = new ArrayList<Node>(node.getChildren());
