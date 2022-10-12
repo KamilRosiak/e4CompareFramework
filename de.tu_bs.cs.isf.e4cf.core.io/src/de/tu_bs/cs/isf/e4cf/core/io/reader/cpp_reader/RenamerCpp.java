@@ -41,6 +41,22 @@ public final class RenamerCpp {
 		map.put("return", "ReturnStmt");
 		map.put("break", "Break");
 		map.put("continue", "Continue");
+		map.put("empty_stmt", "EmptyStmt");
+		map.put("label", "LabeledStmt");
+		map.put("switch", "SwitchStmt");
+		map.put("then", "Then");
+		map.put("function_decl", "MethodDeclaration");
+		map.put("lambda", "LambdaExpr");
+		map.put("decl_stmt", "FieldDeclaration");
+		map.put("class_decl", "LocalClassDeclarationStmt");
+		map.put("constructor_decl", "ConstructorDeclaration");
+		map.put("enum_decl", "EnumDeclaration");
+		map.put("enum", "EnumDeclaration");
+		map.put("catch", "CatchClause");
+		map.put("try", "TryStmt");
+		map.put("throw", "ThrowStmt");
+		map.put("comment", "LineComment");
+		map.put("if_stmt", "IfStmt");
 	}
 	
 	public void renameNode(Node node)

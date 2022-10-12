@@ -24,8 +24,6 @@ public final class AttributeParserCpp {
 	}
 	
 	private void recursiveRename(Node node) {
-
-		//TODO implement a good way for renaming NodeTypes to their equivalent
 		RenamerCpp renamer = RenamerCpp.getInstance();
 		renamer.renameNode(node);
 		
