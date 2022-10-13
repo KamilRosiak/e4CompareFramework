@@ -57,6 +57,12 @@ public final class RenamerCpp {
 		map.put("throw", "ThrowStmt");
 		map.put("comment", "LineComment");
 		map.put("if_stmt", "IfStmt");
+		map.put("argument_list", "Argument");
+		map.put("block_content", "Body");
+		map.put("init", "Initialization");
+		map.put("condition", "Condition");
+		map.put("incr", "Update");	
+		
 	}
 	
 	public void renameNode(Node node)
