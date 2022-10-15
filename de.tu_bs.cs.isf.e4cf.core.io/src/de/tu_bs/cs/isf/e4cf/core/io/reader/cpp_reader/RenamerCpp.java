@@ -7,24 +7,21 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 public final class RenamerCpp {
 	private static RenamerCpp instance = null;
-	private Map<String,String> map;
-	
-	private RenamerCpp()
-	{
+	private Map<String, String> map;
+
+	private RenamerCpp() {
 		map = new HashMap<>();
 		fillMap();
 	}
-	
-	public static RenamerCpp getInstance()
-	{
+
+	public static RenamerCpp getInstance() {
 		if (instance == null) {
 			instance = new RenamerCpp();
 		}
 		return instance;
 	}
-	
-	private void fillMap()
-	{
+
+	private void fillMap() {
 		map.put("function", "MethodDeclaration");
 		map.put("parameter_list", "Argument");
 		map.put("parameter", "Argument");
@@ -61,12 +58,11 @@ public final class RenamerCpp {
 		map.put("block_content", "Body");
 		map.put("init", "Initialization");
 		map.put("condition", "Condition");
-		map.put("incr", "Update");	
-		
+		map.put("incr", "Update");
+
 	}
-	
-	public void renameNode(Node node)
-	{
+
+	public void renameNode(Node node) {
 		if (!map.containsKey(node.getNodeType())) {
 			return;
 		}

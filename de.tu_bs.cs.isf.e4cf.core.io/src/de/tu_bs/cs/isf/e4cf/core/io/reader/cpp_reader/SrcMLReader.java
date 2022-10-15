@@ -148,10 +148,6 @@ public class SrcMLReader extends AbstractArtifactReader {
 
 				InputSource inputSource = new InputSource(new InputStreamReader(inputStream, "UTF-8"));
 				xmlReader.parse(inputSource);
-
-				//rename NodeTypes so Tree can be compared to java source files
-				AttributeParserCpp attributeParser = new AttributeParserCpp(saxHandler.getRootNode());
-				attributeParser.parseAllAttributes();
 				
 				rootNode = saxHandler.getRootNode();
 				rootNode.addAttribute(new AttributeImpl(AttributeDictionary.FILE_NAME_ATTRIBUTE_KEY,

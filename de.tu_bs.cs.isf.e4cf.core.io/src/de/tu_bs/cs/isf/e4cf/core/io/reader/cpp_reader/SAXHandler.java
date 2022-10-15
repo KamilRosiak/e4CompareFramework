@@ -31,9 +31,12 @@ public class SAXHandler extends AbstractSAXHandler {
 		Node elementNode = null;
 		if (nodeStack.size() > 0) {
 			elementNode = new NodeImpl(key, nodeStack.peek());
+			RenamerCpp renamer = RenamerCpp.getInstance();
+			renamer.renameNode(elementNode);
 		} else {
 			elementNode = new NodeImpl(key, null);
 			rootNode = elementNode;
+			rootNode.setNodeType("C++");
 		}
 		nodeStack.push(elementNode);
 
