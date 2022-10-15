@@ -5,15 +5,27 @@ import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
+/**
+ * This class is made for renaming NodeTypes for the parsed Tree of c++ source code.
+ * The NodeTypes are renamed so they are more similar to the NodeTypes of Java source code
+ * and can be easier compared to Java source code
+ * 
+ * @author david bumm
+ *
+ */
 public final class RenamerCpp {
 	private static RenamerCpp instance = null;
-	private Map<String, String> map;
+	private final Map<String, String> map;
 
 	private RenamerCpp() {
 		map = new HashMap<>();
 		fillMap();
 	}
 
+	/**
+	 * Singleton Constructor, so the hashmap only has to be build once.
+	 * @return RenamerCpp as a Singleton
+	 */
 	public static RenamerCpp getInstance() {
 		if (instance == null) {
 			instance = new RenamerCpp();
@@ -62,6 +74,12 @@ public final class RenamerCpp {
 
 	}
 
+	/**
+	 * renames the NodeType of a Node to their equivalent of a Java NodeType.
+	 * If the NodeType has no equivalent (e.g "using namespace") the NodeType won't be renamed
+	 * 
+	 * @param node is the Node that might be renamed
+	 */
 	public void renameNode(Node node) {
 		if (!map.containsKey(node.getNodeType())) {
 			return;
