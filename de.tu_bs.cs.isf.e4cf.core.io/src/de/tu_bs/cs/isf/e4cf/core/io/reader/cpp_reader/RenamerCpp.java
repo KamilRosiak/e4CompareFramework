@@ -71,6 +71,7 @@ public final class RenamerCpp {
 		map.put("init", "Initialization");
 		map.put("condition", "Condition");
 		map.put("incr", "Update");
+		map.put("name", "Name");
 
 	}
 

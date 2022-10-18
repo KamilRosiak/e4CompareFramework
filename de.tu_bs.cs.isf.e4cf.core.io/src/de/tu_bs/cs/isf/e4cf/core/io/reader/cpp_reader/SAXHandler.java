@@ -31,6 +31,7 @@ public class SAXHandler extends AbstractSAXHandler {
 	@Override
 	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
 		String key = localName;
+		
 
 		Node elementNode = null;
 		if (nodeStack.size() > 0) {
@@ -42,6 +43,7 @@ public class SAXHandler extends AbstractSAXHandler {
 			rootNode = elementNode;
 			rootNode.setNodeType("C++");
 		}
+
 		nodeStack.push(elementNode);
 
 	}
@@ -52,31 +54,27 @@ public class SAXHandler extends AbstractSAXHandler {
 		for (int i = 0; i < length; i++) {
 			value += ch[start + i];
 		}
-		//TODO add value to Node
+		String nodeType = nodeStack.peek().getNodeType().trim();
+		if (value.trim().equals(nodeType)) {
+			return; // redundant value
+		}
 		if (isLegalString(value)) {
 			AttributeImpl attribute = new AttributeImpl("Name");
 			attribute.addAttributeValue(new StringValueImpl(value));
-			nodeStack.peek().addAttribute(attribute);
+			if (nodeStack.peek().getNodeType().equals("Name")) {
+				nodeStack.peek().getParent().addAttribute(attribute);
+			} else {
+				nodeStack.peek().addAttribute(attribute);
+			}
+
 		}
 	}
-	
+
 	private boolean isLegalString(String string) {
-		return (!string.contains("\t")) &&
-				(!string.equals(" ")) && 
-				(!string.equals("#")) &&
-				(!string.equals("<")) &&
-				(!string.equals(">")) &&
-				(!string.equals(".")) &&
-				(!string.equals(",")) &&
-				(!string.equals(", ")) &&
-				(!string.equals(":")) &&
-				(!string.equals(";")) &&
-				(!string.equals("{")) &&
-				(!string.equals("}")) &&
-				(!string.equals("(")) &&
-				(!string.equals(")")) &&
-				(!string.equals("\n")) &&
-				(!string.equals("\n\n"));
+		return (!string.contains("\t")) && (!string.equals(" ")) && (!string.equals("#")) && (!string.equals("<"))
+				&& (!string.equals(">")) && (!string.equals(".")) && (!string.equals(",")) && (!string.equals(", "))
+				&& (!string.equals(":")) && (!string.equals(";")) && (!string.equals("{")) && (!string.equals("}"))
+				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("\n")) && (!string.equals("\n\n"));
 	}
 
 	@Override
