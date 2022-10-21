@@ -24,7 +24,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
-import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AttributeParserCpp;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AdjustTree;
 
 public class SrcMLReader extends AbstractArtifactReader {
 
@@ -149,9 +149,11 @@ public class SrcMLReader extends AbstractArtifactReader {
 				InputSource inputSource = new InputSource(new InputStreamReader(inputStream, "UTF-8"));
 				xmlReader.parse(inputSource);
 				
-				rootNode = saxHandler.getRootNode();
-				rootNode.addAttribute(new AttributeImpl(AttributeDictionary.FILE_NAME_ATTRIBUTE_KEY,
-						new StringValueImpl(element.getFileName())));
+				
+				AdjustTree adjuster = new AdjustTree(saxHandler.getRootNode());
+				rootNode = adjuster.adjustAllNodes(); //Adjust Tree Nodes and return new Root
+				String fileName = element.getFileName().split(".cpp")[0];
+				rootNode.getChildren().get(0).addAttribute(new AttributeImpl("Name", new StringValueImpl(fileName)));
 
 			}
 

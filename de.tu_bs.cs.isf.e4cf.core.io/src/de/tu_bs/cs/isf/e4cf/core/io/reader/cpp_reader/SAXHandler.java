@@ -31,7 +31,6 @@ public class SAXHandler extends AbstractSAXHandler {
 	@Override
 	public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
 		String key = localName;
-		
 
 		Node elementNode = null;
 		if (nodeStack.size() > 0) {
@@ -41,7 +40,7 @@ public class SAXHandler extends AbstractSAXHandler {
 		} else {
 			elementNode = new NodeImpl(key, null);
 			rootNode = elementNode;
-			rootNode.setNodeType("C++");
+			rootNode.setNodeType("CompilationUnit");
 		}
 
 		nodeStack.push(elementNode);
@@ -54,27 +53,36 @@ public class SAXHandler extends AbstractSAXHandler {
 		for (int i = 0; i < length; i++) {
 			value += ch[start + i];
 		}
-		String nodeType = nodeStack.peek().getNodeType().trim();
+		Node node = nodeStack.peek();
+		String nodeType = node.getNodeType().trim();
 		if (value.trim().equals(nodeType)) {
 			return; // redundant value
 		}
-		if (isLegalString(value)) {
+		if (isLegalString(value.trim())) {
 			AttributeImpl attribute = new AttributeImpl("Name");
 			attribute.addAttributeValue(new StringValueImpl(value));
-			if (nodeStack.peek().getNodeType().equals("Name")) {
-				nodeStack.peek().getParent().addAttribute(attribute);
+			if (nodeType.equals("Name") && node.getParent().getNodeType().equals("type")) {
+				if (node.getParent().getParent().getNodeType().equals("MethodDeclaration")) {
+					attribute.setAttributeKey("ReturnType");
+				} else {
+					attribute.setAttributeKey("Type");
+				}
+				node.getParent().getParent().addAttribute(attribute);
+			} else if (nodeType.equals("Name")){
+				node.getParent().addAttribute(attribute);
 			} else {
-				nodeStack.peek().addAttribute(attribute);
+				node.addAttribute(attribute);
 			}
 
 		}
 	}
 
 	private boolean isLegalString(String string) {
-		return (!string.contains("\t")) && (!string.equals(" ")) && (!string.equals("#")) && (!string.equals("<"))
+		return (!string.contains("\t")) && (!string.equals("")) && (!string.equals("#")) && (!string.equals("<"))
 				&& (!string.equals(">")) && (!string.equals(".")) && (!string.equals(",")) && (!string.equals(", "))
 				&& (!string.equals(":")) && (!string.equals(";")) && (!string.equals("{")) && (!string.equals("}"))
-				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("\n")) && (!string.equals("\n\n"));
+				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("\n"))
+				&& (!string.equals("\n\n") && (!string.equals("enum")));
 	}
 
 	@Override
