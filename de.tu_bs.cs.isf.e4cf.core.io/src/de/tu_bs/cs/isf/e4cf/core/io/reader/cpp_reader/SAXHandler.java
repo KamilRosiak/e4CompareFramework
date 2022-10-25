@@ -58,7 +58,7 @@ public class SAXHandler extends AbstractSAXHandler {
 		if (value.trim().equals(nodeType)) {
 			return; // redundant value
 		}
-		if (isLegalString(value.trim())) {
+		if (nodeType.equals("operator") || isLegalString(value.trim())) {
 			AttributeImpl attribute = new AttributeImpl("Name");
 			attribute.addAttributeValue(new StringValueImpl(value));
 			if (nodeType.equals("Name") && node.getParent().getNodeType().equals("type")) {

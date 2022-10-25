@@ -3,6 +3,8 @@ package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
@@ -41,7 +43,6 @@ public final class RenamerCpp {
 		map.put("include", "Import");
 		map.put("decl", "FieldDeclaration");
 		map.put("constructor", "ConstructorDeclaration");
-		map.put("expr_stmt", "UnaryExpr");
 		map.put("if", "IfStmt");
 		map.put("else", "Else");
 		map.put("for", "ForStmt");
@@ -72,7 +73,19 @@ public final class RenamerCpp {
 		map.put("condition", "Condition");
 		map.put("incr", "Update");
 		map.put("name", "Name");
+		
+		addLiterals();
 
+	}
+	
+	private void addLiterals() {
+		map.put("int", "IntegerLiteralExpr");
+		map.put("double", "DoubleLiteralExpr");
+		map.put("bool", "BooleanLiteralExpr");
+		map.put("char", "CharLiteralExpr");
+		map.put("long", "LongLiteralExpr");
+		map.put("string", "StringLiteralExpr");
+		map.put("null", "NullLiteralExpr");
 	}
 
 	/**
@@ -83,9 +96,32 @@ public final class RenamerCpp {
 	 */
 	public void renameNode(Node node) {
 		if (!map.containsKey(node.getNodeType())) {
+			if (node.getNodeType().equals("literal")) {
+				renameLiteral(node);
+			}
 			return;
 		}
 		String newName = map.get(node.getNodeType());
 		node.setNodeType(newName);
+	}
+	
+	private void renameLiteral(Node node) {
+		Node parent = node;
+		while (!parent.getNodeType().equals("FieldDeclaration")) {
+			if (parent.getNodeType().equals("Condition")) {
+				String newName = map.get("bool");
+				node.setNodeType(newName);
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("boolean")));
+			}
+			
+			parent = parent.getParent();
+			if (parent == null) {
+				return;
+			}
+		}
+		String value = parent.getAttributeForKey("Type").getAttributeValues().get(0).getValue().toString();
+		String newName = map.get(value);
+		node.setNodeType(newName);
+		node.addAttribute(new AttributeImpl("Type", new StringValueImpl(value)));
 	}
 }

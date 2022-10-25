@@ -34,23 +34,27 @@ public final class AdjustTree {
 		if (node == null) {
 			return;
 		}
+		
+		adjust(node);
+
+		if (node.getNumberOfChildren() > 0) {
+			List<Node> children = new ArrayList<Node>(node.getChildren());
+			for (Node child : children) {
+				recursiveAdjust(child);
+			}
+		}
+	}
+	
+	private void adjust(Node node) {
 		Node parent = node.getParent();
 		String nodeType = node.getNodeType();
 
 		if (nodeType.equals("Name") || nodeType.equals("type")) {
-			int index = parent.getChildren().indexOf(node);
-			parent.getChildren().remove(index);
-			return;
+			removeNode(node);
 		}
-		if (nodeType.equals("Body") && (parent.getNodeType().equals("EnumDeclaration")
-				|| (parent.getNodeType().equals("Body")))) {
-			List<Node> children = new ArrayList<Node>(node.getChildren());
-			for (Node child : children) {
-				parent.addChild(child);
-				child.setParent(parent);
-			}
-			int index = parent.getChildren().indexOf(node);
-			parent.getChildren().remove(index);
+		if (nodeType.equals("control") || nodeType.equals("Body")
+				&& (parent.getNodeType().equals("EnumDeclaration") || (parent.getNodeType().equals("Body")))) {
+			removeNodeInbetween(node);
 		}
 		if (nodeType.equals("FieldDeclaration") // enum edge case
 				&& parent.getNodeType().equals("EnumDeclaration")) {
@@ -61,16 +65,30 @@ public final class AdjustTree {
 			for (Attribute attribute : attrList) {
 				parent.addAttribute(attribute);
 			}
-			int index = parent.getChildren().indexOf(node);
-			parent.getChildren().remove(index);
+			removeNode(node);
 		}
+//		if (nodeType.equals("Initalization")) {
+//			String value = node.getAttributeForKey("Name").getAttributeValues().get(0).getValue().toString();
+//			if (value != null && value.equals("=")) {
+//				removeNodeInbetween(node.getChildren().get(0));
+//				removeNodeInbetween(node);
+//			}
+//		}
+	}
 
-		if (node.getNumberOfChildren() > 0) {
-			List<Node> children = new ArrayList<Node>(node.getChildren());
-			for (Node child : children) {
-				recursiveAdjust(child);
-			}
+	private void removeNode(Node node) {
+		int index = node.getParent().getChildren().indexOf(node);
+		node.getParent().getChildren().remove(index);
+	}
+
+	private void removeNodeInbetween(Node node) {
+		List<Node> children = new ArrayList<Node>(node.getChildren());
+		for (Node child : children) {
+			node.getParent().addChild(child);
+			child.setParent(node.getParent());
 		}
+		int index = node.getParent().getChildren().indexOf(node);
+		node.getParent().getChildren().remove(index);
 	}
 
 }
