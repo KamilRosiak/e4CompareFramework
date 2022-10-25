@@ -34,7 +34,7 @@ public final class AdjustTree {
 		if (node == null) {
 			return;
 		}
-		
+
 		adjust(node);
 
 		if (node.getNumberOfChildren() > 0) {
@@ -44,7 +44,7 @@ public final class AdjustTree {
 			}
 		}
 	}
-	
+
 	private void adjust(Node node) {
 		Node parent = node.getParent();
 		String nodeType = node.getNodeType();
@@ -67,13 +67,28 @@ public final class AdjustTree {
 			}
 			removeNode(node);
 		}
-//		if (nodeType.equals("Initalization")) {
-//			String value = node.getAttributeForKey("Name").getAttributeValues().get(0).getValue().toString();
-//			if (value != null && value.equals("=")) {
-//				removeNodeInbetween(node.getChildren().get(0));
-//				removeNodeInbetween(node);
-//			}
-//		}
+		// VatiableDeclaration for literals
+		if (nodeType.equals("Initialization") && !node.getAttributes().isEmpty()) {
+			Attribute attr = node.getAttributeForKey("Name");
+			if (attr == null) {
+				return;
+			}
+			String value = attr.getAttributeValues().get(0).getValue().toString();
+			if (value != null && value.equals("=")) {
+				parent.getParent().setNodeType("VariableDeclarationExpr");
+				parent.setNodeType("VariableDeclarator");
+
+				Node literal = node.getChildren().get(0).getChildren().get(0);
+				List<Attribute> attributes = literal.getAttributes();
+				for (Attribute att : attributes) {
+					if (att.getAttributeKey().equals("Name")) {
+						att.setAttributeKey("Value");
+					}
+				}
+				removeNodeInbetween(node.getChildren().get(0));
+				removeNodeInbetween(node);
+			}
+		}
 	}
 
 	private void removeNode(Node node) {

@@ -53,23 +53,30 @@ public class SAXHandler extends AbstractSAXHandler {
 		for (int i = 0; i < length; i++) {
 			value += ch[start + i];
 		}
+		value = value.trim();
 		Node node = nodeStack.peek();
-		String nodeType = node.getNodeType().trim();
-		if (value.trim().equals(nodeType)) {
+		String nodeType = node.getNodeType();
+		Node parent = node.getParent();
+		
+		if (value.equals(nodeType)) {
 			return; // redundant value
 		}
-		if (nodeType.equals("operator") || isLegalString(value.trim())) {
+		//TODO fix renaming to 'String'
+//		if (value.equals("string")) {
+//			value = "String";
+//		}
+		if (nodeType.equals("operator") || isLegalString(value)) {
 			AttributeImpl attribute = new AttributeImpl("Name");
 			attribute.addAttributeValue(new StringValueImpl(value));
-			if (nodeType.equals("Name") && node.getParent().getNodeType().equals("type")) {
-				if (node.getParent().getParent().getNodeType().equals("MethodDeclaration")) {
+			if (nodeType.equals("Name") && parent.getNodeType().equals("type")) {
+				if (parent.getParent().getNodeType().equals("MethodDeclaration")) {
 					attribute.setAttributeKey("ReturnType");
 				} else {
 					attribute.setAttributeKey("Type");
 				}
-				node.getParent().getParent().addAttribute(attribute);
+				parent.getParent().addAttribute(attribute);
 			} else if (nodeType.equals("Name")){
-				node.getParent().addAttribute(attribute);
+				parent.addAttribute(attribute);
 			} else {
 				node.addAttribute(attribute);
 			}
