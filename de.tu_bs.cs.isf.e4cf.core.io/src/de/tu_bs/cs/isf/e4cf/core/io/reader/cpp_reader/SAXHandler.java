@@ -61,11 +61,10 @@ public class SAXHandler extends AbstractSAXHandler {
 		if (value.equals(nodeType)) {
 			return; // redundant value
 		}
-		//TODO fix renaming to 'String'
 		if (value.equals("string")) {
 			value = "String";
 		}
-		if (nodeType.equals("operator") || isLegalString(value)) {
+		if (nodeType.equals("operator") || (isLegalString(value) && isntRedundant(value))) {
 			AttributeImpl attribute = new AttributeImpl("Name");
 			attribute.addAttributeValue(new StringValueImpl(value));
 			if (nodeType.equals("Name") && parent.getNodeType().equals("type")) {
@@ -82,6 +81,13 @@ public class SAXHandler extends AbstractSAXHandler {
 			}
 
 		}
+	}
+	
+	private boolean isntRedundant(String string) {
+		return (!string.equals("enum") && (!string.equals("for") && (!string.equals("while")
+				&& (!string.equals("if") && (!string.equals("switch")) && (!string.equals("else if")
+						&& (!string.equals("if")))))));
+										
 	}
 
 	private boolean isLegalString(String string) {

@@ -67,7 +67,7 @@ public final class AdjustTree {
 			}
 			removeNode(node);
 		}
-		// VatiableDeclaration for literals
+		// VariableDeclaration for literals
 		if (nodeType.equals("Initialization") && !node.getAttributes().isEmpty()) {
 			Attribute attr = node.getAttributeForKey("Name");
 			if (attr == null) {
@@ -89,6 +89,49 @@ public final class AdjustTree {
 				removeNodeInbetween(node);
 			}
 		}
+		//for-loops
+		if (nodeType.equals("expr") && parent.getNodeType().equals("Update")) {
+			node.setNodeType("UnaryExpr");
+			List<Node> children = node.getChildren();
+			Node child = null;
+			int i = 0;
+			for (int j = 0; j < children.size(); j++) {
+				i = j;
+				if (children.get(j).getNodeType().equals("operator")) {
+					child = children.get(j);
+				}
+			}
+			if (child == null) {
+				return;
+			}
+			child.setNodeType("NameExpr");
+			node.addAttribute(child.getAttributes().get(0));
+			child.getAttributes().remove(0);
+			child.addAttribute(node.getAttributes().get(0));
+			node.getAttributes().remove(0);
+			changeOperator(i, node);
+		}
+	}
+	
+	private void changeOperator(int i, Node node) {
+		String operator = node.getAttributes().get(0).getAttributeValues().get(0).getValue().toString();
+		String value = "";
+		if (i == 1) {
+			if (operator.equals("++")) {
+				value = "POSTFIX_INCREMENT";
+			} else if (operator.equals("--")) {
+				value = "POSTFIX_DECREMENT";
+			}
+		} else if (i == 0) {
+			//TODO this case is never reached
+			if (operator.equals("++")) {
+				value = "PREFIX_INCREMENT";
+			} else if (operator.equals("--")) {
+				value = "PREFIX_DECREMENT";
+			}
+		}
+		node.getAttributes().get(0).getAttributeValues().set(0, new StringValueImpl(value));
+		node.getAttributes().get(0).setAttributeKey("Operator");
 	}
 
 	private void removeNode(Node node) {
