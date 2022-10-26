@@ -62,9 +62,9 @@ public class SAXHandler extends AbstractSAXHandler {
 			return; // redundant value
 		}
 		//TODO fix renaming to 'String'
-//		if (value.equals("string")) {
-//			value = "String";
-//		}
+		if (value.equals("string")) {
+			value = "String";
+		}
 		if (nodeType.equals("operator") || isLegalString(value)) {
 			AttributeImpl attribute = new AttributeImpl("Name");
 			attribute.addAttributeValue(new StringValueImpl(value));

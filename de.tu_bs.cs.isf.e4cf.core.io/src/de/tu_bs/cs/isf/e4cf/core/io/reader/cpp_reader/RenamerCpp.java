@@ -84,7 +84,7 @@ public final class RenamerCpp {
 		map.put("bool", "BooleanLiteralExpr");
 		map.put("char", "CharLiteralExpr");
 		map.put("long", "LongLiteralExpr");
-		map.put("string", "StringLiteralExpr");
+		map.put("String", "StringLiteralExpr");
 		map.put("null", "NullLiteralExpr");
 	}
 
