@@ -76,6 +76,10 @@ public class SAXHandler extends AbstractSAXHandler {
 				parent.getParent().addAttribute(attribute);
 			} else if (nodeType.equals("Name")){
 				parent.addAttribute(attribute);
+			} else if (nodeType.equals("operator") && !node.getAttributes().isEmpty()) {
+				String op = node.getAttributeForKey("Name").getAttributeValues().get(0).getValue().toString() + value;
+				node.getAttributes().remove(0);
+				node.addAttribute(new AttributeImpl("Name", new StringValueImpl(op)));
 			} else {
 				node.addAttribute(attribute);
 			}

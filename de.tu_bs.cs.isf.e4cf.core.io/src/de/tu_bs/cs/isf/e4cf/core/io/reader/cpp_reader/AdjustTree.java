@@ -148,7 +148,11 @@ public final class AdjustTree {
 		case "<":
 			return "LESS";
 		case ">":
-			return "BIGGER";
+			return "GREATER";
+		case ">=":
+			return "GREATER_EQUALS";
+		case "<=":
+			return "LESS_EQUALS";
 		default:
 			return "";
 		}
