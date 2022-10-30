@@ -107,13 +107,7 @@ public final class RenamerCpp {
 	
 	private void renameLiteral(Node node) {
 		Node parent = node;
-		while (!parent.getNodeType().equals("FieldDeclaration")) {
-			if (parent.getNodeType().equals("Condition")) {
-				String newName = map.get("bool");
-				node.setNodeType(newName);
-				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("boolean")));
-			}
-			
+		while (!parent.getNodeType().equals("FieldDeclaration")) {	
 			parent = parent.getParent();
 			if (parent == null) {
 				return;

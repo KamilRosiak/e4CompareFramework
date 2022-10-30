@@ -50,7 +50,7 @@ public final class AdjustTree {
 		String nodeType = node.getNodeType();
 
 		if (nodeType.equals("Name") || nodeType.equals("type")) {
-			removeNode(node);
+			removeNodeFromParent(node);
 		}
 		if (nodeType.equals("control") || nodeType.equals("Body")
 				&& (parent.getNodeType().equals("EnumDeclaration") || (parent.getNodeType().equals("Body")))) {
@@ -65,10 +65,20 @@ public final class AdjustTree {
 			for (Attribute attribute : attrList) {
 				parent.addAttribute(attribute);
 			}
-			removeNode(node);
+			removeNodeFromParent(node);
 		}
 		// VariableDeclaration for literals
 		if (nodeType.equals("Initialization") && !node.getAttributes().isEmpty()) {
+			//for loop edge case
+			if (parent.getParent().getNodeType().equals("Initialization")) {
+				Node newNode = new NodeImpl();
+				newNode.setParent(parent.getParent());
+				newNode.addChild(parent);
+				removeNodeFromParent(parent);
+				parent.getParent().addChild(newNode);
+				parent.setParent(newNode);
+
+			}
 			Attribute attr = node.getAttributeForKey("Name");
 			if (attr == null) {
 				return;
@@ -111,6 +121,37 @@ public final class AdjustTree {
 			node.getAttributes().remove(0);
 			changeOperator(i, node);
 		}
+		if (nodeType.equals("expr") && parent.getNodeType().equals("Condition")) {
+			node.setNodeType("BinaryExpr");
+			List<Node> children = node.getChildren();
+			Node child = null;
+			for (int i = 0; i < children.size(); i++) {
+				if (children.get(i).getNodeType().equals("operator")) {
+					child = children.get(i);
+				}
+			}
+			if (child == null) {
+				return;
+			}
+			child.setNodeType("NameExpr");
+			List<Attribute> attrList = new ArrayList<>();
+			attrList.add(node.getAttributes().get(0));
+			node.setAttributes(new ArrayList<>());
+			String operator = getOperatorString(child.getAttributes().get(0).getAttributeValues().get(0).getValue().toString());
+			node.addAttribute(new AttributeImpl("Operator", new StringValueImpl(operator)));
+			child.setAttributes(attrList);
+		}
+	}
+	
+	private String getOperatorString(String operator) {
+		switch (operator) {
+		case "<":
+			return "LESS";
+		case ">":
+			return "BIGGER";
+		default:
+			return "";
+		}
 	}
 	
 	private void changeOperator(int i, Node node) {
@@ -134,7 +175,7 @@ public final class AdjustTree {
 		node.getAttributes().get(0).setAttributeKey("Operator");
 	}
 
-	private void removeNode(Node node) {
+	private void removeNodeFromParent(Node node) {
 		int index = node.getParent().getChildren().indexOf(node);
 		node.getParent().getChildren().remove(index);
 	}
