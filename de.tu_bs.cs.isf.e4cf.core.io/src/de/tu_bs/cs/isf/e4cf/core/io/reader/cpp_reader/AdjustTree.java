@@ -106,9 +106,10 @@ public final class AdjustTree {
 			Node child = null;
 			int i = 0;
 			for (int j = 0; j < children.size(); j++) {
-				i = j;
 				if (children.get(j).getNodeType().equals("operator")) {
 					child = children.get(j);
+					i = j;
+					break;
 				}
 			}
 			if (child == null) {
