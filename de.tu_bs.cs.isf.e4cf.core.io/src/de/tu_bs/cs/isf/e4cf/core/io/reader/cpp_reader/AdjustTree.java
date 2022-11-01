@@ -49,9 +49,7 @@ public final class AdjustTree {
 		Node parent = node.getParent();
 		String nodeType = node.getNodeType();
 
-		if (nodeType.equals("Name") || nodeType.equals("type")) {
-			removeNodeFromParent(node);
-		}
+		
 		if (nodeType.equals("control") || nodeType.equals("Body")
 				&& (parent.getNodeType().equals("EnumDeclaration") || (parent.getNodeType().equals("Body")))) {
 			removeNodeInbetween(node);
@@ -142,6 +140,62 @@ public final class AdjustTree {
 			node.addAttribute(new AttributeImpl("Operator", new StringValueImpl(operator)));
 			child.setAttributes(attrList);
 		}
+		if (nodeType.equals("LineComment")) {
+			String value = getFirstValue(node);
+			//remove "//" and potential space at the beginning of the Comment
+			String[] arr = value.split("//");
+			for (int i = 0; i < arr.length; i++) { 
+				value = arr[i];
+			}
+			parent.addAttribute(new AttributeImpl("Comment", new StringValueImpl(value)));
+			removeNodeFromParent(node);
+		}
+		if (nodeType.equals("expr") && parent.getNodeType().equals("expr_stmt")) {
+			List<Node> children = node.getChildren();
+			if (children.size() > 2) {
+				return;
+			}
+			for (int i = 0; i < children.size(); i++) {
+				Node child = children.get(i);
+				if (child.getNodeType().equals("operator")) {
+					changeOperator(i, child);
+					child.setNodeType("UnaryExpr");
+					node.setNodeType("NameExpr");
+					removeNodeFromParent(child);
+					child.addChild(node);
+					node.setParent(child);
+					child.setParent(parent.getParent());
+					parent.getParent().addChild(child);
+					
+					removeNodeFromParent(parent);
+				}
+			}
+		}
+		if (nodeType.equals("literal")) {
+			String value = getFirstValue(node);
+			if (value.matches("\\d*")) {
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("int")));
+				node.setNodeType("IntegerLiteralExpr");
+			} else if (value.equals("true") || value.equals("false")) {
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("boolean")));
+				node.setNodeType("BooleanLiteralExpr");
+			} else if (value.matches("\\d*\\.\\d*")) {
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("double")));
+				node.setNodeType("DoubleLiteralExpr");
+			} else {
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("String")));
+				node.setNodeType("StringLiteralExpr");
+			}
+			node.getAttributes().get(0).setAttributeKey("Value");
+		}
+		
+		if (nodeType.equals("Name") || nodeType.equals("type")) {
+			removeNodeFromParent(node);
+		}
+	}
+	
+	private String getFirstValue(Node node) {
+		return node.getAttributes().get(0).getAttributeValues().get(0).getValue().toString();
 	}
 	
 	private String getOperatorString(String operator) {
