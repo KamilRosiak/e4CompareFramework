@@ -197,7 +197,62 @@ public final class AdjustTree {
 		if (nodeType.equals("ReturnStmt")) {
 			node.setAttributes(new ArrayList<Attribute>());
 		}
+		
 		//if statement
+		if (nodeType.equals("if_stmt")) {
+			List<Node> children = node.getChildren();
+			for (int i = 0; i < children.size(); i++) {
+				Node child = children.get(i);
+				
+				if (child.getNodeType().equals("IfStmt")) {
+					Node thenNode = new NodeImpl("Then");
+					thenNode.setParent(child);
+					child.addChild(thenNode);
+					
+					Node bodyNode = getChild(child, "Body");
+					if (bodyNode == null) {
+						return;
+					}
+					thenNode.addChild(bodyNode);
+					removeNodeFromParent(bodyNode);
+					bodyNode.setParent(thenNode);
+					
+					if ((i + 1) == children.size()) {
+						return;
+					}
+					Node nextChild = children.get(i + 1);
+					if (nextChild.getNodeType().equals("Else")) {
+						nextChild.setAttributes(new ArrayList<Attribute>());
+					//	removeNodeFromParent(nextChild);
+						nextChild.setParent(child);
+						child.addChild(nextChild);
+					} else {
+						Node elseNode = new NodeImpl("Else");
+					//	removeNodeFromParent(nextChild);
+						elseNode.setParent(child);
+						child.addChild(elseNode);
+						nextChild.setParent(elseNode);
+						elseNode.addChild(nextChild);
+					}
+					
+				}
+			}
+			Node ifStmt = node.getChildren().get(0);
+			ifStmt.setParent(parent);
+			parent.addChild(ifStmt, removeNodeFromParent(node));
+		}
+		
+		
+	}
+	
+	private Node getChild(Node parent, String name) {
+		List<Node> children = parent.getChildren();
+		for (int j = 0; j < children.size(); j++) {
+			if (children.get(j).getNodeType().equals(name)) {
+				return children.get(j);
+			}
+		}
+		return null;
 	}
 	
 	private String getFirstValue(Node node) {
@@ -240,9 +295,10 @@ public final class AdjustTree {
 		node.getAttributes().get(0).setAttributeKey("Operator");
 	}
 
-	private void removeNodeFromParent(Node node) {
+	private int removeNodeFromParent(Node node) {
 		int index = node.getParent().getChildren().indexOf(node);
 		node.getParent().getChildren().remove(index);
+		return index;
 	}
 
 	private void removeNodeInbetween(Node node) {
