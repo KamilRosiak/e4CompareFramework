@@ -130,6 +130,7 @@ public final class AdjustTree {
 				}
 			}
 			if (child == null) {
+				removeNodeInbetween(node); //no expression e.g while(true)
 				return;
 			}
 			child.setNodeType("NameExpr");
@@ -192,6 +193,11 @@ public final class AdjustTree {
 		if (nodeType.equals("Name") || nodeType.equals("type")) {
 			removeNodeFromParent(node);
 		}
+		
+		if (nodeType.equals("ReturnStmt")) {
+			node.setAttributes(new ArrayList<Attribute>());
+		}
+		//if statement
 	}
 	
 	private String getFirstValue(Node node) {

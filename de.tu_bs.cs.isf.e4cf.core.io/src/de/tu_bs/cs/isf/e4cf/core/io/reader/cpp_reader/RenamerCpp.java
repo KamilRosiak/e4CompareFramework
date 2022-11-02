@@ -66,7 +66,6 @@ public final class RenamerCpp {
 		map.put("try", "TryStmt");
 		map.put("throw", "ThrowStmt");
 		map.put("comment", "LineComment");
-		map.put("if_stmt", "IfStmt");
 		map.put("argument_list", "Argument");
 		map.put("block_content", "Body");
 		map.put("init", "Initialization");
