@@ -72,6 +72,8 @@ public final class RenamerCpp {
 		map.put("condition", "Condition");
 		map.put("incr", "Update");
 		map.put("name", "Name");
+		map.put("case", "SwitchEntry");
+		map.put("default", "SwitchEntry");
 		
 		addLiterals();
 

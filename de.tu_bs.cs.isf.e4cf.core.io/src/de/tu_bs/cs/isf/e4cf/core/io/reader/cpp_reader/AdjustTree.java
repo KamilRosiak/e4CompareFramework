@@ -135,6 +135,9 @@ public final class AdjustTree {
 			}
 			child.setNodeType("NameExpr");
 			List<Attribute> attrList = new ArrayList<>();
+			if (node.getAttributes().isEmpty()) {
+				return; //edge case
+			}
 			attrList.add(node.getAttributes().get(0));
 			node.setAttributes(new ArrayList<>());
 			String operator = getOperatorString(child.getAttributes().get(0).getAttributeValues().get(0).getValue().toString());
@@ -223,12 +226,10 @@ public final class AdjustTree {
 					Node nextChild = children.get(i + 1);
 					if (nextChild.getNodeType().equals("Else")) {
 						nextChild.setAttributes(new ArrayList<Attribute>());
-					//	removeNodeFromParent(nextChild);
 						nextChild.setParent(child);
 						child.addChild(nextChild);
 					} else {
 						Node elseNode = new NodeImpl("Else");
-					//	removeNodeFromParent(nextChild);
 						elseNode.setParent(child);
 						child.addChild(elseNode);
 						nextChild.setParent(elseNode);
@@ -242,6 +243,48 @@ public final class AdjustTree {
 			parent.addChild(ifStmt, removeNodeFromParent(node));
 		}
 		
+		//Switch case
+		if ((nodeType.equals("Body") )  && parent.getNodeType().equals("SwitchStmt")) {
+			removeNodeInbetween(node);
+			//rearrange Nodes in the Body
+			List<Node> children = node.getChildren().get(0).getChildren();
+			Node switchEntry = null;
+			for (int i = 0; i < children.size(); i++) {
+				Node child = children.get(i);
+				if (child.getNodeType().equals("SwitchEntry")) {
+					switchEntry = child;
+				} else if (switchEntry == null){
+					continue;
+				} else {
+					switchEntry.addChild(child);
+					removeNodeFromParent(child);
+					child.setParent(switchEntry);
+					i--; //decrement i because we remove a child
+				}
+			}
+			
+		}
+		if (nodeType.equals("Condition") && parent.getNodeType().equals("SwitchStmt")) {
+			Node exprNode = getChild(node, "expr");
+			String selector = getFirstValue(exprNode);
+			parent.addAttribute(new AttributeImpl("Selector", new StringValueImpl(selector)));
+			removeNodeFromParent(node);
+		}
+		if (nodeType.equals("SwitchEntry")) {
+			if (node.getChildren().isEmpty()) {
+				//default:
+				node.addAttribute(new AttributeImpl("Default", new StringValueImpl("true")));
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
+				return;
+			}
+			Node exprNode = node.getChildren().get(0);
+			Node stringNode = exprNode.getChildren().get(0);
+			String condition = getFirstValue(stringNode);
+			node.addAttribute(new AttributeImpl("Condtion", new StringValueImpl(condition)));
+			node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
+			removeNodeFromParent(exprNode);
+		}
+
 		
 	}
 	

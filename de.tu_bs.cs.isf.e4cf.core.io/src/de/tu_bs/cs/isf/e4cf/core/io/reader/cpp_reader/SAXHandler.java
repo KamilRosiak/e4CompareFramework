@@ -90,8 +90,8 @@ public class SAXHandler extends AbstractSAXHandler {
 	private boolean isntRedundant(String string) {
 		return (!string.equals("enum") && (!string.equals("for") && (!string.equals("while")
 				&& (!string.equals("if") && (!string.equals("switch")) && (!string.equals("else if")
-						&& (!string.equals("if")))))));
-										
+				&& (!string.equals("case") && (!string.equals("break;") && (!string.equals("return;"))
+				&& (!string.equals("default:")))))))));
 	}
 
 	private boolean isLegalString(String string) {
@@ -99,7 +99,7 @@ public class SAXHandler extends AbstractSAXHandler {
 				&& (!string.equals(">")) && (!string.equals(".")) && (!string.equals(",")) && (!string.equals(", "))
 				&& (!string.equals(":")) && (!string.equals(";")) && (!string.equals("{")) && (!string.equals("}"))
 				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("\n"))
-				&& (!string.equals("\n\n") && (!string.equals("enum")));
+				&& (!string.equals("\n\n"));
 	}
 
 	@Override
