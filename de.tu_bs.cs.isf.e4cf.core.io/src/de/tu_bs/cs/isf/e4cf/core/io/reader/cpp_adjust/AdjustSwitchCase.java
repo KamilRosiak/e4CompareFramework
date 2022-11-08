@@ -11,7 +11,7 @@ public class AdjustSwitchCase extends TreeAdjuster {
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
 		if ((nodeType.equals("Body")) && parent.getNodeType().equals("SwitchStmt")) {
-			removeNodeInbetween(node);
+			node.cutWithoutChildren();
 			// rearrange Nodes in the Body
 			List<Node> children = node.getChildren().get(0).getChildren();
 			Node switchEntry = null;

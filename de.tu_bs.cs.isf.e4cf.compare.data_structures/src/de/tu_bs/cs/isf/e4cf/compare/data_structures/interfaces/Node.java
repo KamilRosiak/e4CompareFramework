@@ -11,6 +11,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  * This interfaces defines all methods that are needed to realize a node.
  * 
  * @author Kamil Rosiak
+ * @author David Bumm
  *
  */
 public interface Node {
@@ -262,5 +263,12 @@ public interface Node {
 	 * @return the index of the previous position in the parent
 	 */
 	public int cut();
+	
+	/**
+	 * removes the node from the parent. All the children will be added to the parent
+	 * 
+	 * @return the index of the previous position in the parent
+	 */
+	public int cutWithoutChildren();
 
 }

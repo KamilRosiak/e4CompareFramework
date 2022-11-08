@@ -44,7 +44,7 @@ public class AdjustForLoop extends TreeAdjuster {
 				}
 			}
 			if (child == null) {
-				removeNodeInbetween(node); // no expression e.g while(true)
+				node.cutWithoutChildren(); // no expression e.g while(true)
 				return;
 			}
 			child.setNodeType("NameExpr");

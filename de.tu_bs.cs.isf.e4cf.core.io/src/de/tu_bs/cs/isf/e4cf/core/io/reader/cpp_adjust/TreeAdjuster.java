@@ -73,14 +73,4 @@ public abstract class TreeAdjuster {
 		node.getAttributes().get(0).getAttributeValues().set(0, new StringValueImpl(value));
 		node.getAttributes().get(0).setAttributeKey("Operator");
 	}
-
-	protected void removeNodeInbetween(Node node) {
-		List<Node> children = new ArrayList<Node>(node.getChildren());
-		for (Node child : children) {
-			node.getParent().addChild(child);
-			child.setParent(node.getParent());
-		}
-		int index = node.getParent().getChildren().indexOf(node);
-		node.getParent().getChildren().remove(index);
-	}
 }

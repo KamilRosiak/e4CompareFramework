@@ -40,8 +40,8 @@ public class AdjustLiterals extends TreeAdjuster {
 						att.setAttributeKey("Value");
 					}
 				}
-				removeNodeInbetween(node.getChildren().get(0));
-				removeNodeInbetween(node);
+				node.getChildren().get(0).cutWithoutChildren();
+				node.cutWithoutChildren();
 			}
 		}
 

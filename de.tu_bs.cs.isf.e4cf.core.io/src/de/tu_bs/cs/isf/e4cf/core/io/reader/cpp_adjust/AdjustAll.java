@@ -34,7 +34,7 @@ public final class AdjustAll extends TreeAdjuster {
 	protected void adjust(Node node, Node parent, String nodeType) {
 		if (nodeType.equals("control") || nodeType.equals("Body")
 				&& (parent.getNodeType().equals("EnumDeclaration") || (parent.getNodeType().equals("Body")))) {
-			removeNodeInbetween(node);
+			node.cutWithoutChildren();
 		}
 		if (nodeType.equals("FieldDeclaration") // enum edge case
 				&& parent.getNodeType().equals("EnumDeclaration")) {

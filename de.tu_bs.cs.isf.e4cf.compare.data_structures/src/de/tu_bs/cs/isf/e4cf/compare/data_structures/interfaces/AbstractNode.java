@@ -358,9 +358,23 @@ public abstract class AbstractNode implements Node {
 	
 	@Override
 	public int cut() {
+		if (this.isRoot()) {
+			return -1;
+		}
 		int index = getParent().getChildren().indexOf(this);
 		getParent().getChildren().remove(index);
 		return index;
+	}
+	
+	@Override
+	public int cutWithoutChildren() {
+		if (this.isRoot()) {
+			return -1;
+		}
+		for (Node child : children) {
+			getParent().addChildWithParent(child); 
+		}
+		return this.cut();
 	}
 	
 }
