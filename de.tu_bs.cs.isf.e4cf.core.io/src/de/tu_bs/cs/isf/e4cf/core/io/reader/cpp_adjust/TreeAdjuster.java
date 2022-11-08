@@ -35,10 +35,6 @@ public abstract class TreeAdjuster {
 		return null;
 	}
 
-	protected String getFirstValue(Node node) {
-		return node.getAttributes().get(0).getAttributeValues().get(0).getValue().toString();
-	}
-
 	protected String getOperatorString(String operator) {
 		switch (operator) {
 		case "<":

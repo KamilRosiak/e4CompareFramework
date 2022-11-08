@@ -376,5 +376,12 @@ public abstract class AbstractNode implements Node {
 		}
 		return this.cut();
 	}
+	@Override
+	public String getValueAt(int index) {
+		if (attributes.size() < (index + 1)) {
+			return null;
+		}	
+		return attributes.get(index).getAttributeValues().get(0).getValue().toString();
+	}
 	
 }

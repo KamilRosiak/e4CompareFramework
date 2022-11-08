@@ -270,5 +270,13 @@ public interface Node {
 	 * @return the index of the previous position in the parent
 	 */
 	public int cutWithoutChildren();
+	
+	/**
+	 * returns the String from the first Value to the corresponding Attribute.
+	 * The index selects the specific Attribute. The first Attribute has index. 
+	 * @param index
+	 * @return the Value as String
+	 */
+	public String getValueAt(int index);
 
 }

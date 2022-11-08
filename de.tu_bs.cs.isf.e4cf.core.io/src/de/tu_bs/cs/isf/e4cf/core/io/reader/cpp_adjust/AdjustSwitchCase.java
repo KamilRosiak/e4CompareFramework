@@ -32,7 +32,7 @@ public class AdjustSwitchCase extends TreeAdjuster {
 		}
 		if (nodeType.equals("Condition") && parent.getNodeType().equals("SwitchStmt")) {
 			Node exprNode = getChild(node, "expr");
-			String selector = getFirstValue(exprNode);
+			String selector = exprNode.getValueAt(0);
 			parent.addAttribute(new AttributeImpl("Selector", new StringValueImpl(selector)));
 			node.cut();
 		}
@@ -47,7 +47,7 @@ public class AdjustSwitchCase extends TreeAdjuster {
 				setDefaultCase(node);
 				return;
 			}
-			String condition = getFirstValue(stringNode);
+			String condition = stringNode.getValueAt(0);
 			node.addAttribute(new AttributeImpl("Condtion", new StringValueImpl(condition)));
 			node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
 			exprNode.cut();

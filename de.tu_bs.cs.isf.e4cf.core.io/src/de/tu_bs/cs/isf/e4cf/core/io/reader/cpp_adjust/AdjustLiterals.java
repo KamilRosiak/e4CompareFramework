@@ -46,7 +46,7 @@ public class AdjustLiterals extends TreeAdjuster {
 		}
 
 		if (nodeType.equals("literal")) {
-			String value = getFirstValue(node);
+			String value = node.getValueAt(0);
 			if (value.matches("\\d*")) {
 				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("int")));
 				node.setNodeType("IntegerLiteralExpr");
