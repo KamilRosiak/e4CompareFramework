@@ -255,5 +255,12 @@ public interface Node {
 	 * @return
 	 */
 	public Configuration createConfiguration();
+	
+	/**
+	 * removes the node (and all its children) from the parent
+	 * 
+	 * @return the index of the previous position in the parent
+	 */
+	public int cut();
 
 }

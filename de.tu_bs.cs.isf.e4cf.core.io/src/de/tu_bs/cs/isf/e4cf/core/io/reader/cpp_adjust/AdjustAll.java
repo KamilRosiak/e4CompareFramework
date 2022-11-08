@@ -21,7 +21,8 @@ public final class AdjustAll extends TreeAdjuster {
 		if (rootNode == null) {
 			return null;
 		}
-		Node node = new NodeImpl("JAVA");
+		
+		Node node = new NodeImpl("JAVA"); //TODO change this to C++
 		node.addChild(rootNode);
 		rootNode.setParent(node);
 		rootNode.addAttribute(new AttributeImpl("IsInterface", new StringValueImpl("false")));
@@ -44,7 +45,7 @@ public final class AdjustAll extends TreeAdjuster {
 			for (Attribute attribute : attrList) {
 				parent.addAttribute(attribute);
 			}
-			removeNodeFromParent(node);
+			node.cut();
 		}
 
 		AdjustLiterals literalAdjuster = new AdjustLiterals();
@@ -54,7 +55,7 @@ public final class AdjustAll extends TreeAdjuster {
 		forAdjuster.adjust(node, parent, nodeType);
 
 		if (nodeType.equals("Name") || nodeType.equals("type")) {
-			removeNodeFromParent(node);
+			node.cut();
 		}
 
 		AdjustIfCase ifAdjuster = new AdjustIfCase();

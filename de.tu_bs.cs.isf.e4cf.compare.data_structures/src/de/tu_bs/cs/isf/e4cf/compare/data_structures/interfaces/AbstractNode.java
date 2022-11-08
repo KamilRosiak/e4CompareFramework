@@ -355,4 +355,12 @@ public abstract class AbstractNode implements Node {
 	public Configuration createConfiguration() {
 		return null;
 	}
+	
+	@Override
+	public int cut() {
+		int index = getParent().getChildren().indexOf(this);
+		getParent().getChildren().remove(index);
+		return index;
+	}
+	
 }

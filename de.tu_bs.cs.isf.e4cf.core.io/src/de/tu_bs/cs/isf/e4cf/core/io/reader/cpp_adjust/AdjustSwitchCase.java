@@ -23,7 +23,7 @@ public class AdjustSwitchCase extends TreeAdjuster {
 					continue;
 				} else {
 					switchEntry.addChild(child);
-					removeNodeFromParent(child);
+					child.cut();
 					child.setParent(switchEntry);
 					i--; // decrement i because we remove a child
 				}
@@ -34,7 +34,7 @@ public class AdjustSwitchCase extends TreeAdjuster {
 			Node exprNode = getChild(node, "expr");
 			String selector = getFirstValue(exprNode);
 			parent.addAttribute(new AttributeImpl("Selector", new StringValueImpl(selector)));
-			removeNodeFromParent(node);
+			node.cut();
 		}
 		if (nodeType.equals("SwitchEntry")) {
 			if (node.getChildren().isEmpty()) {
@@ -50,7 +50,7 @@ public class AdjustSwitchCase extends TreeAdjuster {
 			String condition = getFirstValue(stringNode);
 			node.addAttribute(new AttributeImpl("Condtion", new StringValueImpl(condition)));
 			node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
-			removeNodeFromParent(exprNode);
+			exprNode.cut();
 		}
 
 	}

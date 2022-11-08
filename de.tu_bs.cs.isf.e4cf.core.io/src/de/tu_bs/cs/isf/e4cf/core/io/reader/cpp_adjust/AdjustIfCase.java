@@ -26,7 +26,7 @@ public class AdjustIfCase extends TreeAdjuster {
 						return;
 					}
 					thenNode.addChild(bodyNode);
-					removeNodeFromParent(bodyNode);
+					bodyNode.cut();
 					bodyNode.setParent(thenNode);
 
 					if ((i + 1) == children.size()) {
@@ -49,7 +49,7 @@ public class AdjustIfCase extends TreeAdjuster {
 			}
 			Node ifStmt = node.getChildren().get(0);
 			ifStmt.setParent(parent);
-			parent.addChild(ifStmt, removeNodeFromParent(node));
+			parent.addChild(ifStmt, node.cut());
 		}
 
 	}

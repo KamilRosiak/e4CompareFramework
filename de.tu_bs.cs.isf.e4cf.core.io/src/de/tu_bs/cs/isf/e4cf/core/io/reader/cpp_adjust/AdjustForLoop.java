@@ -67,7 +67,7 @@ public class AdjustForLoop extends TreeAdjuster {
 				value = arr[i];
 			}
 			parent.addAttribute(new AttributeImpl("Comment", new StringValueImpl(value)));
-			removeNodeFromParent(node);
+			node.cut();
 		}
 		if (nodeType.equals("expr") && parent.getNodeType().equals("expr_stmt")) {
 			List<Node> children = node.getChildren();
@@ -80,13 +80,13 @@ public class AdjustForLoop extends TreeAdjuster {
 					changeOperator(i, child);
 					child.setNodeType("UnaryExpr");
 					node.setNodeType("NameExpr");
-					removeNodeFromParent(child);
+					child.cut();
 					child.addChild(node);
 					node.setParent(child);
 					child.setParent(parent.getParent());
 					parent.getParent().addChild(child);
 
-					removeNodeFromParent(parent);
+					parent.cut();
 				}
 			}
 		}

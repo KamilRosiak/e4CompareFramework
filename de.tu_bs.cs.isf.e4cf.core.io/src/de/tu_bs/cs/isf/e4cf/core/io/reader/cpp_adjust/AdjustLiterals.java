@@ -19,7 +19,7 @@ public class AdjustLiterals extends TreeAdjuster {
 				Node newNode = new NodeImpl();
 				newNode.setParent(parent.getParent());
 				newNode.addChild(parent);
-				removeNodeFromParent(parent);
+				parent.cut();
 				parent.getParent().addChild(newNode);
 				parent.setParent(newNode);
 
