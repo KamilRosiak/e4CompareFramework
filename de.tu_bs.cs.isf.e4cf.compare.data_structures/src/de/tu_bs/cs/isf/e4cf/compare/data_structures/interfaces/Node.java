@@ -278,5 +278,14 @@ public interface Node {
 	 * @return the Value as String
 	 */
 	public String getValueAt(int index);
+	
+	/**
+	 * This method sets the parent of this Node.
+	 * Also it removes this node from the old parent and adds it to the new parent.
+	 * This way no inconsistencies can occur when moving a node to a diffrent parent.
+	 * 
+	 * @param parent is the new parent
+	 */
+	public void updateParent(Node parent);
 
 }

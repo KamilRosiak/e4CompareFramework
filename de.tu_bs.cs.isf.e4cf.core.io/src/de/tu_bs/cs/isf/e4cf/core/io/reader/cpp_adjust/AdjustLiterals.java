@@ -26,11 +26,8 @@ public class AdjustLiterals extends TreeAdjuster {
 			// for loop edge case
 			if (parent.getParent().getNodeType().equals("Initialization")) {
 				Node newNode = new NodeImpl();
-				newNode.setParent(parent.getParent());
-				newNode.addChild(parent);
-				parent.cut();
-				parent.getParent().addChild(newNode);
-				parent.setParent(newNode);
+				newNode.updateParent(parent.getParent());
+				parent.updateParent(newNode);
 
 			}
 			Attribute attr = node.getAttributeForKey("Name");

@@ -9,9 +9,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
  * 
- * This class is a sub class of TreeAdjuster.
- * It adjust everything that has to do with If-Else-Cases.
- * It is initially called by AdjustAll.
+ * This class is a sub class of TreeAdjuster. It adjust everything that has to
+ * do with If-Else-Cases. It is initially called by AdjustAll.
  * 
  * @author David Bumm
  *
@@ -24,19 +23,14 @@ public class AdjustIfCase extends TreeAdjuster {
 			List<Node> children = node.getChildren();
 			for (int i = 0; i < children.size(); i++) {
 				Node child = children.get(i);
-
 				if (child.getNodeType().equals("IfStmt")) {
 					Node thenNode = new NodeImpl("Then");
-					thenNode.setParent(child);
-					child.addChild(thenNode);
-
+					child.addChildWithParent(thenNode);
 					Node bodyNode = getChild(child, "Body");
 					if (bodyNode == null) {
 						return;
 					}
-					thenNode.addChild(bodyNode);
-					bodyNode.cut();
-					bodyNode.setParent(thenNode);
+					bodyNode.updateParent(thenNode);
 
 					if ((i + 1) == children.size()) {
 						return;
@@ -44,16 +38,12 @@ public class AdjustIfCase extends TreeAdjuster {
 					Node nextChild = children.get(i + 1);
 					if (nextChild.getNodeType().equals("Else")) {
 						nextChild.setAttributes(new ArrayList<Attribute>());
-						nextChild.setParent(child);
-						child.addChild(nextChild);
+						child.addChildWithParent(nextChild);
 					} else {
 						Node elseNode = new NodeImpl("Else");
-						elseNode.setParent(child);
-						child.addChild(elseNode);
-						nextChild.setParent(elseNode);
-						elseNode.addChild(nextChild);
+						child.addChildWithParent(elseNode);
+						elseNode.addChildWithParent(nextChild);
 					}
-
 				}
 			}
 			Node ifStmt = node.getChildren().get(0);

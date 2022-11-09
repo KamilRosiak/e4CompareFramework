@@ -31,9 +31,7 @@ public class AdjustSwitchCase extends TreeAdjuster {
 				} else if (switchEntry == null) {
 					continue;
 				} else {
-					switchEntry.addChild(child);
-					child.cut();
-					child.setParent(switchEntry);
+					child.updateParent(switchEntry);
 					i--; // decrement i because we remove a child
 				}
 			}

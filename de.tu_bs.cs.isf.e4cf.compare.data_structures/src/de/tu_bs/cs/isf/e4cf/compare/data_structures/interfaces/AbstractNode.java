@@ -384,4 +384,10 @@ public abstract class AbstractNode implements Node {
 		return attributes.get(index).getAttributeValues().get(0).getValue().toString();
 	}
 	
+	@Override
+	public void updateParent(Node parent) {
+		this.cut();
+		parent.addChildWithParent(this);
+	}
+	
 }

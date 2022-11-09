@@ -89,12 +89,8 @@ public class AdjustForLoop extends TreeAdjuster {
 					changeOperator(i, child);
 					child.setNodeType("UnaryExpr");
 					node.setNodeType("NameExpr");
-					child.cut();
-					child.addChild(node);
-					node.setParent(child);
-					child.setParent(parent.getParent());
-					parent.getParent().addChild(child);
-
+					child.updateParent(parent.getParent());
+					child.addChildWithParent(node);
 					parent.cut();
 				}
 			}
