@@ -10,6 +10,15 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * This class is the entry point for adjusting a tree.
+ * It adjusts the root node and calls all existing TreeAdjuster to make the tree as similar as possible to
+ * a tree generated from Java source code.
+ * 
+ * @author David Bumm
+ *
+ */
 public final class AdjustAll extends TreeAdjuster {
 	private Node rootNode;
 
@@ -30,10 +39,11 @@ public final class AdjustAll extends TreeAdjuster {
 		recursiveAdjust(rootNode);
 		return node;
 	}
-
+	
+	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals("control") || nodeType.equals("Body")
-				&& (parent.getNodeType().equals("EnumDeclaration") || (parent.getNodeType().equals("Body")))) {
+		if (nodeType.equals("control") || nodeType.equals("Body") && (parent.getNodeType().equals("EnumDeclaration")
+				|| (parent.getNodeType().equals("Body")))) {
 			node.cutWithoutChildren();
 		}
 		if (nodeType.equals("FieldDeclaration") // enum edge case

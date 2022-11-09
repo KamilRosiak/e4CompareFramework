@@ -8,6 +8,15 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
+/**
+ * 
+ * This class is a sub class of TreeAdjuster.
+ * It adjust everything that has to do with 'literal' Nodes (e.g variable declaration).
+ * It is initially called by AdjustAll.
+ * 
+ * @author David Bumm
+ *
+ */
 public class AdjustLiterals extends TreeAdjuster {
 
 	@Override
