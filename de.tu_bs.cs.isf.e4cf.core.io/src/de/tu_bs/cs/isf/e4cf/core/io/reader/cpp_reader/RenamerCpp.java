@@ -5,6 +5,7 @@ import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
@@ -87,6 +88,7 @@ public final class RenamerCpp {
 		map.put("long", "LongLiteralExpr");
 		map.put("String", "StringLiteralExpr");
 		map.put("null", "NullLiteralExpr");
+		map.put("float", "FloatLiteralExpr");
 	}
 
 	/**
@@ -114,9 +116,18 @@ public final class RenamerCpp {
 				return;
 			}
 		}
-		String value = parent.getAttributeForKey("Type").getAttributeValues().get(0).getValue().toString();
-		String newName = map.get(value);
-		node.setNodeType(newName);
-		node.addAttribute(new AttributeImpl("Type", new StringValueImpl(value)));
+		String value = null;
+		for (Attribute attribute: parent.getAttributes()) {
+			if (attribute.getAttributeKey().equals("Type")) {
+				value = attribute.getAttributeValues().get(0).getValue().toString();
+				if (map.containsKey(value)) {
+					String newName = map.get(value);
+					node.setNodeType(newName);
+				}
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl(value)));
+				return;
+			}
+		}
+		
 	}
 }

@@ -1,9 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
@@ -48,13 +50,20 @@ public class AdjustSwitchCase extends TreeAdjuster {
 				setDefaultCase(node);
 				return;
 			}
-			Node exprNode = node.getChildren().get(0);
-			Node stringNode = exprNode.getChildren().get(0);
-			if (!exprNode.getNodeType().equals("expr") || !stringNode.getNodeType().equals("literal")  ) {
+			if  (isLastChild(node)) {
 				setDefaultCase(node);
 				return;
 			}
-			String condition = stringNode.getValueAt(0);
+			Node exprNode = node.getChildren().get(0);
+			Node conditiongNode = exprNode.getChildren().get(0);
+			if (conditiongNode.getNodeType().equals("Name")) {
+				String condition = node.getValueAt(0);
+				node.setAttributes(new ArrayList<Attribute>());
+				node.addAttribute(new AttributeImpl("Condtion", new StringValueImpl(condition)));
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
+				conditiongNode.cut();
+			}
+			String condition = conditiongNode.getValueAt(0);
 			node.addAttribute(new AttributeImpl("Condtion", new StringValueImpl(condition)));
 			node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
 			exprNode.cut();
@@ -65,6 +74,11 @@ public class AdjustSwitchCase extends TreeAdjuster {
 	private void setDefaultCase(Node node) {
 		node.addAttribute(new AttributeImpl("Default", new StringValueImpl("true")));
 		node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
+	}
+	
+	private boolean isLastChild(Node node) {
+		List<Node> children = node.getParent().getChildren();
+		return children.get(children.size() -1) == node;
 	}
 
 }

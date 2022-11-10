@@ -62,6 +62,9 @@ public class AdjustLiterals extends TreeAdjuster {
 			} else if (value.matches("\\d*\\.\\d*")) {
 				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("double")));
 				node.setNodeType("DoubleLiteralExpr");
+			} else if (value.matches("\\d*\\.\\d*f")) {
+				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("float")));
+				node.setNodeType("FloatLiteralExpr");
 			} else {
 				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("String")));
 				node.setNodeType("StringLiteralExpr");
