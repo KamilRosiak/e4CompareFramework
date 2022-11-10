@@ -94,9 +94,9 @@ public class MPLEditorController implements Initializable {
 		componentCol.setCellValueFactory(e -> {
 			String name = "";
 			if (e.getValue().getValue().isClone()) {
-				name = "component " + e.getValue().getValue().getUUID();
+				name = "Clone Node : " + e.getValue().getValue().getUUID();
 			} else {
-				name = "UUID: " + e.getValue().getValue().getUUID();
+				name = "UUID : " + e.getValue().getValue().getUUID();
 			}
 			return new SimpleStringProperty(name);
 		});

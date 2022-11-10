@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,24 +32,50 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 
-public class CreateMPLEHandler {
+public class CreateMPLEEvalHandler {
 
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, IEclipseContext context) {
 		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
+		
+			int numberPermutations = 20;
 
-			MPLPlatform platform = new MPLPlatform();
-			List<Tree> variants = new ArrayList<Tree>();
-			// read all variants
-			for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
-				variants.add(readerManager.readFile(treeElement));
+			try {
+				CSVWriter csvWritter = creatCSVWriter(
+						new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+								+ "\\clone_platform_results.csv"));
+				csvWritter.writeNext(new String[] { "permutations", "#UUIDs", "#classes", "#clone_configs",
+						"Runtime ss", "Memory Consuption" });
+
+				for (int i = 0; i < numberPermutations; i++) {
+					MPLPlatform platform = new MPLPlatform();
+					List<Tree> variants = new ArrayList<Tree>();
+					// read all variants
+					for (FileTreeElement treeElement : services.rcpSelectionService
+							.getCurrentSelectionsFromExplorer()) {
+						variants.add(readerManager.readFile(treeElement));
+					}
+					Collections.shuffle(variants);
+
+					long startTime = System.currentTimeMillis();
+					platform.insertVariants(variants);
+					long endTime = System.currentTimeMillis();
+					long time = endTime - startTime;
+
+					MPLEPlatformUtil
+							.storePlatform(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+									+ "clone_model_" + i + ".mpl", platform);
+					long memoryConsumption = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+					SimpleDateFormat formater = new SimpleDateFormat("ss,SSS");
+					csvWritter.writeNext(new String[] { "clone_model_" + i, formater.format(time),
+							String.valueOf(memoryConsumption) });
+				}
+				csvWritter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
-			platform.insertVariants(variants);
-
-			MPLEPlatformUtil.storePlatform(
-					services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + "clone_model.mpl",
-					platform);
+			// Compare resulting trees
 		}
 	}
 

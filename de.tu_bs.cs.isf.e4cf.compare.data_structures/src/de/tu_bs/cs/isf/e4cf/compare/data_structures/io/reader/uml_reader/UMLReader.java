@@ -45,11 +45,9 @@ public class UMLReader extends AbstractArtifactReader {
 	}
 
 	public Node processModelElements(NamedElement element, Node parent) {
-
 		if (element instanceof ClassImpl) {
 			ClassImpl classImpl = (ClassImpl) element;
 			System.out.println("class:" + classImpl.getLabel());
-
 			classImpl.allOwnedElements().forEach(innerElement -> {
 				if (innerElement instanceof PropertyImpl) {
 					PropertyImpl property = (PropertyImpl) innerElement;

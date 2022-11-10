@@ -40,34 +40,38 @@
                         </VBox>
                         <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                            <children>
-                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="UUIDs" VBox.vgrow="ALWAYS" />
-                                    <TableView fx:id="uuidTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-                                      <columns>
-                                        <TableColumn fx:id="configUUIDCol" minWidth="50.0" prefWidth="250.0" text="UUID" />
-                                      </columns>
-                                    </TableView>
-                                 </children>
-                              </VBox>
-                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="ComponentConfigs" VBox.vgrow="ALWAYS" />
-                                    <TableView fx:id="componentConfigs" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-                                       <columns>
-                                          <TableColumn fx:id="componentIDCol" minWidth="50.0" prefWidth="243.0" text="ComponentID" />
-                                          <TableColumn fx:id="paarentCol" minWidth="50.0" prefWidth="257.0" text="ParentID" />
-                                       </columns>
-                                    </TableView>
-                                 </children>
-                              </VBox>
+                              <SplitPane dividerPositions="0.5">
+                                 <items>
+                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                       <children>
+                                          <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Variant Artifacts" VBox.vgrow="ALWAYS" />
+                                          <TableView fx:id="uuidTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                                            <columns>
+                                              <TableColumn fx:id="configUUIDCol" minWidth="50.0" prefWidth="250.0" text="UUID" />
+                                            </columns>
+                                          </TableView>
+                                       </children>
+                                    </VBox>
+                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                       <children>
+                                          <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Clone Configurations" VBox.vgrow="ALWAYS" />
+                                          <TableView fx:id="componentConfigs" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                                             <columns>
+                                                <TableColumn fx:id="componentIDCol" minWidth="50.0" prefWidth="243.0" text="ComponentID" />
+                                                <TableColumn fx:id="paarentCol" minWidth="50.0" prefWidth="257.0" text="ParentID" />
+                                             </columns>
+                                          </TableView>
+                                       </children>
+                                    </VBox>
+                                 </items>
+                              </SplitPane>
                            </children>
                         </HBox>
                      </children>
                   </VBox>
                   <VBox prefHeight="200.0" prefWidth="754.0">
                      <children>
-                        <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Component Artifacts" VBox.vgrow="ALWAYS" />
+                        <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Clone Configuration Artifacts" VBox.vgrow="ALWAYS" />
                         <TableView fx:id="componentUUIDTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                           <columns>
                             <TableColumn fx:id="componentUUIDCol" prefWidth="709.0" text="UUID" />

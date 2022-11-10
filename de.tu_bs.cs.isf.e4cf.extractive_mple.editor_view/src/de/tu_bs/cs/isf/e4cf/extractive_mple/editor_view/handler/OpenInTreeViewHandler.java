@@ -1,7 +1,9 @@
 
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.handler;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
@@ -33,6 +35,7 @@ public class OpenInTreeViewHandler {
 		if (tree != null) {
 			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 			services.eventBroker.send(MPLEEditorConsts.SHOW_TREE, tree);
+			System.out.println(tree.getRoot().getAllUUIDS(new HashSet<UUID>()).size());
 		}
 	}
 

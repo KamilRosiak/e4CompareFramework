@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.MPLEditorController">
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.MPLEditorController">
    <bottom>
       <HBox BorderPane.alignment="CENTER">
          <children>
@@ -24,7 +24,7 @@
              <TreeTableView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <columns>
                   <TreeTableColumn fx:id="nameCol" prefWidth="250.0" text="Name" />
-                  <TreeTableColumn fx:id="componentCol" prefWidth="150.0" text="Component" />
+                  <TreeTableColumn fx:id="componentCol" prefWidth="150.0" text="UUID" />
                   <TreeTableColumn fx:id="configCol" prefWidth="250.0" text="Configuration" />
                </columns></TreeTableView>
          </children>

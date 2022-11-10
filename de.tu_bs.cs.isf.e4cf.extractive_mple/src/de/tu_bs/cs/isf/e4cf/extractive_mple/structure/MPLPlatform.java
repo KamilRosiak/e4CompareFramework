@@ -47,7 +47,6 @@ public class MPLPlatform implements Serializable {
 
 	public void insertVariants(List<Tree> variants) {
 		variants.forEach(variant -> {
-			System.out.println("CurrentVariant:" + variant.getTreeName());
 			insertVariant(variant);
 			resetConfigurations();
 		});
@@ -81,7 +80,7 @@ public class MPLPlatform implements Serializable {
 			 * creation of clone configurations
 			 */
 			List<CloneConfiguration> cloneConfigurations = refactorComponents(variant.getRoot());
-			System.out.println("cloneConfigs:"+ cloneConfigurations.size());
+			//System.out.println("cloneConfigs:"+ cloneConfigurations.size());
 			List<CloneConfiguration> fixedCloneConfigs = new ArrayList<CloneConfiguration>();
 			/**
 			 * Intre clone refactoring detection clone artifacts within the variant and the
@@ -159,7 +158,6 @@ public class MPLPlatform implements Serializable {
 			}
 		}
 		return componentConfigs;
-
 	}
 
 	/**
