@@ -71,6 +71,10 @@ public class AdjustForLoop extends TreeAdjuster {
 		if (nodeType.equals("LineComment")) {
 			String value = node.getValueAt(0);
 			// remove "//" and potential space at the beginning of the Comment
+			if (value == null) {
+				node.cut();
+				return;
+			}
 			String[] arr = value.split("//");
 			for (int i = 0; i < arr.length; i++) {
 				value = arr[i];
