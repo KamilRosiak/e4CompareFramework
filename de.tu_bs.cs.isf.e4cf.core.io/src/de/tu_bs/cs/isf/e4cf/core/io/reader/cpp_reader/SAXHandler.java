@@ -57,7 +57,7 @@ public class SAXHandler extends AbstractSAXHandler {
 		Node node = nodeStack.peek();
 		String nodeType = node.getNodeType();
 		Node parent = node.getParent();
-		
+
 		if (value.equals(nodeType)) {
 			return; // redundant value
 		}
@@ -67,39 +67,58 @@ public class SAXHandler extends AbstractSAXHandler {
 		if (nodeType.equals("operator") || (isLegalString(value) && isntRedundant(value))) {
 			AttributeImpl attribute = new AttributeImpl("Name");
 			attribute.addAttributeValue(new StringValueImpl(value));
-			if (nodeType.equals("Name") && parent.getNodeType().equals("type")) {
+			if (containsTypeInfo(node)) {
 				if (parent.getParent().getNodeType().equals("MethodDeclaration")) {
 					attribute.setAttributeKey("ReturnType");
 				} else {
 					attribute.setAttributeKey("Type");
 				}
-				parent.getParent().addAttribute(attribute);
-			} else if (nodeType.equals("Name")){
-				parent.addAttribute(attribute);
-			} else if (nodeType.equals("operator") && !node.getAttributes().isEmpty()) {
-				String op = node.getAttributeForKey("Name").getAttributeValues().get(0).getValue().toString() + value;
-				node.getAttributes().remove(0);
-				node.addAttribute(new AttributeImpl("Name", new StringValueImpl(op)));
+				overWriteAttribute(parent.getParent(), attribute);
+			} else if (nodeType.equals("Name")) {
+				overWriteAttribute(parent, attribute);
 			} else {
-				node.addAttribute(attribute);
+				overWriteAttribute(node, attribute);
 			}
 
 		}
 	}
-	
+
+	private void overWriteAttribute(Node node, Attribute attribute) {
+		String key = attribute.getAttributeKey();
+		String newValue = attribute.getAttributeValues().get(0).getValue().toString();
+		Attribute oldAttribute = null;
+		for (Attribute a : node.getAttributes()) {
+			if (a.getAttributeKey().equals(key)) {
+				oldAttribute = a;
+			}
+		}
+		if (oldAttribute != null) {
+			String oldValue = oldAttribute.getAttributeValues().get(0).getValue().toString();
+			node.getAttributes().remove(oldAttribute);
+			node.addAttribute(new AttributeImpl(key, new StringValueImpl(oldValue + newValue)));
+		} else {
+			node.addAttribute(attribute);
+		}
+	}
+
+	private boolean containsTypeInfo(Node node) {
+		String nodeType = node.getNodeType();
+		return node.getParent().getNodeType().equals("type")
+				&& (nodeType.equals("modifier") || nodeType.equals("Name"));
+	}
+
 	private boolean isntRedundant(String string) {
-		return (!string.equals("enum") && (!string.equals("for") && (!string.equals("while")
-				&& (!string.equals("if") && (!string.equals("switch")) && (!string.equals("else if")
-				&& (!string.equals("case") && (!string.equals("break;") && (!string.equals("return;"))
-				&& (!string.equals("default:")))))))));
+		return (!string.equals("enum") && (!string.equals("for")
+				&& (!string.equals("while") && (!string.equals("if") && (!string.equals("switch"))
+						&& (!string.equals("else if") && (!string.equals("case") && (!string.equals("break;")
+								&& (!string.equals("return;")) && (!string.equals("default:")))))))));
 	}
 
 	private boolean isLegalString(String string) {
 		return (!string.contains("\t")) && (!string.equals("")) && (!string.equals("#")) && (!string.equals("<"))
 				&& (!string.equals(">")) && (!string.equals(".")) && (!string.equals(",")) && (!string.equals(", "))
 				&& (!string.equals(":")) && (!string.equals(";")) && (!string.equals("{")) && (!string.equals("}"))
-				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("\n"))
-				&& (!string.equals("\n\n"));
+				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("\n")) && (!string.equals("\n\n"));
 	}
 
 	@Override
