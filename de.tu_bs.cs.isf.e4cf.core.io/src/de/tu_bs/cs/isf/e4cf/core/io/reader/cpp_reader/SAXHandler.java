@@ -103,8 +103,11 @@ public class SAXHandler extends AbstractSAXHandler {
 
 	private boolean containsTypeInfo(Node node) {
 		String nodeType = node.getNodeType();
-		return node.getParent().getNodeType().equals("type")
-				&& (nodeType.equals("modifier") || nodeType.equals("Name"));
+		if (node == rootNode) {
+			return false;
+		}
+		String parentType = node.getParent().getNodeType();
+		return parentType.equals("type") && (nodeType.equals("modifier") || nodeType.equals("Name"));
 	}
 
 	private boolean isntRedundant(String string) {
