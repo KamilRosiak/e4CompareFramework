@@ -36,6 +36,8 @@ public final class AdjustAll extends TreeAdjuster {
 		rootNode.addAttribute(new AttributeImpl("IsInterface", new StringValueImpl("false")));
 		rootNode.addAttribute(new AttributeImpl("AccessModifier", new StringValueImpl("PUBLIC")));
 		recursiveAdjust(rootNode);
+		
+
 		return node;
 	}
 	
@@ -57,21 +59,26 @@ public final class AdjustAll extends TreeAdjuster {
 			node.cut();
 		}
 
-		AdjustLiterals literalAdjuster = new AdjustLiterals();
+		TreeAdjuster literalAdjuster = new AdjustLiterals();
 		literalAdjuster.adjust(node, parent, nodeType);
 
-		AdjustForLoop forAdjuster = new AdjustForLoop();
+		TreeAdjuster forAdjuster = new AdjustForLoop();
 		forAdjuster.adjust(node, parent, nodeType);
 
 		if (nodeType.equals("Name") || nodeType.equals("type")) {
-			node.cut();
+			node.cutWithoutChildren();
 		}
 
-		AdjustIfCase ifAdjuster = new AdjustIfCase();
+		TreeAdjuster ifAdjuster = new AdjustIfCase();
 		ifAdjuster.adjust(node, parent, nodeType);
 
-		AdjustSwitchCase switchAdjuster = new AdjustSwitchCase();
+		TreeAdjuster switchAdjuster = new AdjustSwitchCase();
 		switchAdjuster.adjust(node, parent, nodeType);
+		
+		TreeAdjuster arrayAdjuster = new AdjustArray();
+		arrayAdjuster.adjust(node, parent, nodeType);
+		
+
 
 	}
 

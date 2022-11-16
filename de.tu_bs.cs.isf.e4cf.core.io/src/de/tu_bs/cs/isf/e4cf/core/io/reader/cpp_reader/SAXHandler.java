@@ -94,10 +94,13 @@ public class SAXHandler extends AbstractSAXHandler {
 		}
 		if (oldAttribute != null) {
 			String oldValue = oldAttribute.getAttributeValues().get(0).getValue().toString();
-			node.getAttributes().remove(oldAttribute);
-			node.addAttribute(new AttributeImpl(key, new StringValueImpl(oldValue + newValue)));
+			oldAttribute.getAttributeValues().get(0).setValue(oldValue + newValue);
 		} else {
-			node.addAttribute(attribute);
+			if (node.getNodeType().equals("Name") && node.getParent() != null) {
+				node.getParent().addAttribute(attribute);
+			} else {
+				node.addAttribute(attribute);
+			}
 		}
 	}
 
