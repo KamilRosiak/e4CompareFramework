@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader;
+package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public final class RenamerCpp {
 	}
 
 	/**
-	 * Singleton Constructor, so the hashmap only has to be build once.
+	 * Singleton Constructor, so the hash map only has to be build once.
 	 * @return RenamerCpp as a Singleton
 	 */
 	public static RenamerCpp getInstance() {

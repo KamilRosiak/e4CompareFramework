@@ -13,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.RenamerCpp;
 
 public class SAXHandler extends AbstractSAXHandler {
 
@@ -124,7 +125,7 @@ public class SAXHandler extends AbstractSAXHandler {
 		return (!string.contains("\t")) && (!string.equals("")) && (!string.equals("#")) && (!string.equals("<"))
 				&& (!string.equals(">")) && (!string.equals(".")) && (!string.equals(",")) && (!string.equals(", "))
 				&& (!string.equals(":")) && (!string.equals(";")) && (!string.equals("{")) && (!string.equals("}"))
-				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("\n")) && (!string.equals("\n\n"));
+				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("()")) && (!string.equals("\n")) && (!string.equals("\n\n"));
 	}
 
 	@Override

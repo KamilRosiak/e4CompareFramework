@@ -37,6 +37,8 @@ public final class AdjustAll extends TreeAdjuster {
 		rootNode.addAttribute(new AttributeImpl("AccessModifier", new StringValueImpl("PUBLIC")));
 		recursiveAdjust(rootNode);
 		
+		TreeAdjuster methodAdjuster = new AdjustMethodCall();
+		methodAdjuster.recursiveAdjust(rootNode);
 
 		return node;
 	}
@@ -84,8 +86,6 @@ public final class AdjustAll extends TreeAdjuster {
 		
 		TreeAdjuster arrayAdjuster = new AdjustArray();
 		arrayAdjuster.adjust(node, parent, nodeType);
-		
-
 
 	}
 
