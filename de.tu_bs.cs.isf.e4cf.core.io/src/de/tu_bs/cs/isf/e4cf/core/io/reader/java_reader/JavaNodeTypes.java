@@ -156,6 +156,7 @@ public enum JavaNodeTypes {
 	ExplicitConstructorInvocationStmt,
 	FieldAccessExpr,
 	FieldDeclaration,
+	FloatLiteralExpr, //TODO this node type is never used. Double is used instead which is not correct.
 	ForEachStmt,
 	ForStmt,
 	IfStmt,

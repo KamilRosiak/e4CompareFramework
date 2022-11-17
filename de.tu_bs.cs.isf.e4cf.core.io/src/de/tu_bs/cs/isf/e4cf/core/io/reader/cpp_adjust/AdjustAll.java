@@ -68,6 +68,13 @@ public final class AdjustAll extends TreeAdjuster {
 		if (nodeType.equals("Name") || nodeType.equals("type")) {
 			node.cutWithoutChildren();
 		}
+		
+		if (nodeType.equals("ReturnStmt") && node.getChildren().size() > 0) {
+			node.setAttributes(new ArrayList<Attribute>());
+			if (node.getChildren().get(0).getNodeType().equals("expr")) {
+				node.getChildren().get(0).cutWithoutChildren();
+			}
+		}
 
 		TreeAdjuster ifAdjuster = new AdjustIfCase();
 		ifAdjuster.adjust(node, parent, nodeType);
