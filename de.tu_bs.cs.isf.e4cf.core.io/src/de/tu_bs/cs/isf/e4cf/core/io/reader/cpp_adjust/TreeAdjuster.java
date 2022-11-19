@@ -83,8 +83,16 @@ public abstract class TreeAdjuster {
 			return "GREATER_EQUALS";
 		case "<=":
 			return "LESS_EQUALS";
+		case "/":
+			return "DIVIDE";
+		case "+":
+			return "PLUS";
+		case "-":
+			return "MINUS";
+		case "*":
+			return "MULTIPLY";
 		default:
-			return "";
+			return operator;
 		}
 	}
 

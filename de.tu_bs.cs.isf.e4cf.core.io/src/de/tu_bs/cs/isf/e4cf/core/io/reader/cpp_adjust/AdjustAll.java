@@ -34,7 +34,7 @@ public final class AdjustAll extends TreeAdjuster {
 		Node node = new NodeImpl("JAVA"); //TODO change this to C++
 		node.addChildWithParent(rootNode);
 		rootNode.addAttribute(new AttributeImpl("IsInterface", new StringValueImpl("false")));
-		rootNode.addAttribute(new AttributeImpl("AccessModifier", new StringValueImpl("PUBLIC")));
+		//TODO implement this correctly: rootNode.addAttribute(new AttributeImpl("AccessModifier", new StringValueImpl("PUBLIC")));
 		recursiveAdjust(rootNode);
 		
 		TreeAdjuster methodAdjuster = new AdjustMethodCall();
@@ -86,6 +86,10 @@ public final class AdjustAll extends TreeAdjuster {
 		
 		TreeAdjuster arrayAdjuster = new AdjustArray();
 		arrayAdjuster.adjust(node, parent, nodeType);
+		
+		TreeAdjuster opAdjuster = new AdjustOperator();
+		opAdjuster.adjust(node, parent, nodeType);
+		
 
 	}
 
