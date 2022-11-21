@@ -39,6 +39,9 @@ public final class AdjustAll extends TreeAdjuster {
 		
 		TreeAdjuster methodAdjuster = new AdjustMethodCall();
 		methodAdjuster.recursiveAdjust(rootNode);
+		
+		TreeAdjuster conAdjuster = new AdjustConditon();
+		conAdjuster.recursiveAdjust(rootNode);
 
 		return node;
 	}
@@ -68,6 +71,10 @@ public final class AdjustAll extends TreeAdjuster {
 		forAdjuster.adjust(node, parent, nodeType);
 
 		if (nodeType.equals("Name") || nodeType.equals("type")) {
+			for (Attribute a : node.getAttributes()) {
+				parent.addAttribute(a);
+			}
+			
 			node.cutWithoutChildren();
 		}
 		
@@ -90,8 +97,7 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster opAdjuster = new AdjustOperator();
 		opAdjuster.adjust(node, parent, nodeType);
 		
-		TreeAdjuster conAdjuster = new AdjustConditon();
-		conAdjuster.adjust(node, parent, nodeType);
+
 		
 		TreeAdjuster commentAdjuster = new AdjustComment();
 		commentAdjuster.adjust(node, parent, nodeType);
