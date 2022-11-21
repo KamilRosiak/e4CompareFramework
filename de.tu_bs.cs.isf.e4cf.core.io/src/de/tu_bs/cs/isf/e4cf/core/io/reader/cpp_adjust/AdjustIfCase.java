@@ -28,12 +28,12 @@ public class AdjustIfCase extends TreeAdjuster {
 					child.addChildWithParent(thenNode);
 					Node bodyNode = getChild(child, "Body");
 					if (bodyNode == null) {
-						return;
+						break;
 					}
 					bodyNode.updateParent(thenNode);
 
 					if ((i + 1) == children.size()) {
-						return;
+						break;
 					}
 					Node nextChild = children.get(i + 1);
 					if (nextChild.getNodeType().equals("Else")) {
