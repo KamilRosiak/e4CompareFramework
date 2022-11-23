@@ -151,7 +151,7 @@ public class SrcMLReader extends AbstractArtifactReader {
 				
 				
 				AdjustAll adjuster = new AdjustAll(saxHandler.getRootNode());
-				rootNode = adjuster.adjustAllNodes(); //Adjust Tree Nodes and return new Root
+				rootNode =  adjuster.adjustAllNodes(); //Adjust Tree Nodes and return new Root
 				String fileName = element.getFileName().split(".cpp")[0];
 				rootNode.getChildren().get(0).addAttribute(new AttributeImpl("Name", new StringValueImpl(fileName)));
 
