@@ -9,16 +9,17 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
-public class AdjustArray extends TreeAdjuster{
+public class AdjustArray extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
 		if (nodeType.equals("index") && parent.getParent().getParent().getNodeType().equals("Initialization")) {
 			if (!parent.getAttributes().isEmpty()) {
 				String name = parent.getValueAt(0);
-				String value = node.getChildren().get(0).getChildren().get(0).getAttributeForKey("Name").getAttributeValues().get(0).getValue().toString();
+				String value = node.getChildren().get(0).getChildren().get(0).getAttributeForKey("Name")
+						.getAttributeValues().get(0).getValue().toString();
 
-				//create correct nodes
+				// create correct nodes
 				Node realParent = parent.getParent().getParent().getParent();
 				Node arrExpr = new NodeImpl("ArrayAccessExpr", realParent);
 				Node nameExpr = new NodeImpl("NameExpr", arrExpr);
@@ -28,8 +29,38 @@ public class AdjustArray extends TreeAdjuster{
 				realParent.setNodeType("VariableDeclarator");
 				realParent.getParent().setNodeType("VariableDeclarationExpr");
 			}
-			
+
 		} else if (nodeType.equals("index")) {
+			// Array access
+			if (!node.getChildren().isEmpty() && !node.getChildren().get(0).getAttributes().isEmpty()
+					&& !parent.getAttributes().isEmpty()) {
+				String value = node.getChildren().get(0).getValueAt(0);
+				String arr = parent.getValueAt(0);
+				
+				Node realParent = parent.getParent().getParent().getParent();
+				Node removable = realParent.getChildren().get(0);
+				if (!parent.getParent().getAttributes().isEmpty() && removable.getNodeType().equals("expr_stmt")) {
+					Node assignment = new NodeImpl("Assignment", realParent);
+					String target = parent.getParent().getValueAt(0);
+					assignment.addAttribute(new AttributeImpl("Target", new StringValueImpl(target)));
+					assignment.addAttribute(new AttributeImpl("Operator", new StringValueImpl("ASSIGN")));
+					removable.cut();
+					Node access = new NodeImpl("ArrayAccessExpr", assignment);
+					access.addAttribute(new AttributeImpl("Value", new StringValueImpl(value)));
+					Node nameExpr = new NodeImpl("NameExpr", access);
+					nameExpr.addAttribute(new AttributeImpl("Name", new StringValueImpl(arr)));
+				} else {
+				Node access = new NodeImpl("ArrayAccessExpr", parent.getParent());
+				access.addAttribute(new AttributeImpl("Value", new StringValueImpl(value)));
+				Node nameExpr = new NodeImpl("NameExpr", access);
+				nameExpr.addAttribute(new AttributeImpl("Name", new StringValueImpl(arr)));
+				parent.cut();
+				//check for Array assignment
+				}
+
+			}
+
+			// change Value
 			Attribute oldAttribute = null;
 			for (Attribute a : parent.getParent().getAttributes()) {
 				if (a.getAttributeKey().equals("Type")) {
@@ -42,20 +73,19 @@ public class AdjustArray extends TreeAdjuster{
 			}
 			node.cut();
 		}
-		
+
 		if (nodeType.equals("Body") && parent.getParent().getParent().getNodeType().equals("FieldDeclaration")) {
 			node.setNodeType("ArrayInitializerExpr");
 			int length = node.getChildren().size();
 			for (int i = 0; i < length; i++) {
 				Node n = node.getChildren().get(0);
-				if (n.getChildren().size() != 0) {
+				if (!n.getChildren().isEmpty()) {
 					n.getChildren().get(0).getAttributeForKey("Name").setAttributeKey("Value");
 				}
-				
 				n.cutWithoutChildren();
 			}
 		}
-		
+
 	}
 
 }
