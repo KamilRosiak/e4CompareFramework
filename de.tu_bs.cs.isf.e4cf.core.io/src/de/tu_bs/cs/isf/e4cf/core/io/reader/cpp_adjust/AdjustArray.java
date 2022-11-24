@@ -43,12 +43,16 @@ public class AdjustArray extends TreeAdjuster{
 			node.cut();
 		}
 		
-		//TODO rename "Name: 0,1,2.." into "Value: 0,1,2.." 
 		if (nodeType.equals("Body") && parent.getParent().getParent().getNodeType().equals("FieldDeclaration")) {
 			node.setNodeType("ArrayInitializerExpr");
 			int length = node.getChildren().size();
 			for (int i = 0; i < length; i++) {
-				node.getChildren().get(0).cutWithoutChildren();
+				Node n = node.getChildren().get(0);
+				if (n.getChildren().size() != 0) {
+					n.getChildren().get(0).getAttributeForKey("Name").setAttributeKey("Value");
+				}
+				
+				n.cutWithoutChildren();
 			}
 		}
 		
