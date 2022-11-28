@@ -13,12 +13,15 @@ public class AdjustArray extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals("index") && parent.getParent().getParent().getNodeType().equals("Initialization")) {
+		if (nodeType.equals("index") && parent.getParent().getParent().getNodeType().equals("Initialization") && !node.getChildren().isEmpty()) {
 			if (!parent.getAttributes().isEmpty()) {
 				String name = parent.getValueAt(0);
-				String value = node.getChildren().get(0).getChildren().get(0).getAttributeForKey("Name")
-						.getAttributeValues().get(0).getValue().toString();
-
+				Node exprNode = node.getChildren().get(0);
+				String value = "";
+				for (Node child: exprNode.getChildren()) {
+					value += child.getAttributeForKey("Name").getAttributeValues().get(0).getValue().toString() + " ";
+				}
+				value = value.trim();
 				// create correct nodes
 				Node realParent = parent.getParent().getParent().getParent();
 				Node arrExpr = new NodeImpl("ArrayAccessExpr", realParent);

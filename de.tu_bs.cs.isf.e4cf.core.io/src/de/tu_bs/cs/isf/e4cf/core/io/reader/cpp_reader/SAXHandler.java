@@ -76,11 +76,20 @@ public class SAXHandler extends AbstractSAXHandler {
 				}
 				overWriteAttribute(parent.getParent(), attribute);
 			} else if (nodeType.equals("Name")) {
-				parent.addAttribute(attribute);
+				node.addAttribute(attribute);
+				addNameAttribute(node,attribute);
 			} else {
 				overWriteAttribute(node, attribute);
 			}
 
+		}
+	}
+	
+	private void addNameAttribute(Node node, Attribute attribute) {
+		Node next = node;
+		while (next != null && next.getParent() != null && next.getNodeType().equals("Name")) {
+			next.getParent().addAttribute(attribute);
+			next = next.getParent();
 		}
 	}
 

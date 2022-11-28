@@ -2,6 +2,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -88,7 +89,11 @@ public abstract class AbstractNode implements Node {
 
 	@Override
 	public Attribute getAttributeForKey(String key) {
+		try {
 		return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 
 	@Override

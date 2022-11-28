@@ -63,11 +63,8 @@ public final class AdjustAll extends TreeAdjuster {
 			node.setNodeType("EnumConstantDeclaration");
 		}
 		if (nodeType.equals("FieldDeclaration") && parent.getNodeType().equals("Argument")) {
-			List<Attribute> attrList = new ArrayList<Attribute>(node.getAttributes());
-			for (Attribute attribute : attrList) {
-				parent.addAttribute(attribute);
-			}
-			node.cut();
+			node.setNodeType("Argument");
+			parent.cutWithoutChildren();
 		}
 
 		TreeAdjuster literalAdjuster = new AdjustLiterals();
@@ -77,10 +74,6 @@ public final class AdjustAll extends TreeAdjuster {
 		forAdjuster.adjust(node, parent, nodeType);
 
 		if (nodeType.equals("Name") || nodeType.equals("type")) {
-			for (Attribute a : node.getAttributes()) {
-				parent.addAttribute(a);
-			}
-			
 			node.cutWithoutChildren();
 		}
 		
