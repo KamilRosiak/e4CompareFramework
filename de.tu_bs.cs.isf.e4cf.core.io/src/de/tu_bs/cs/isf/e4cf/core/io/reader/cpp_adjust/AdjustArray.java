@@ -37,6 +37,16 @@ public class AdjustArray extends TreeAdjuster {
 			// Array access
 			if (!node.getChildren().isEmpty() && !node.getChildren().get(0).getAttributes().isEmpty()
 					&& !parent.getAttributes().isEmpty()) {
+				if (parent.getParent().getNodeType().equals("expr")) { //remove element for condition edge case
+					for (Attribute a: parent.getParent().getAttributes()) {
+						if (a.getAttributeValues().get(0).getValue().toString().equals(parent.getValueAt(0))) {
+							parent.getParent().getAttributes().remove(a);
+							break;
+						}
+					}
+				}
+				
+				
 				String value = node.getChildren().get(0).getValueAt(0);
 				String arr = parent.getValueAt(0);
 				
@@ -58,7 +68,6 @@ public class AdjustArray extends TreeAdjuster {
 				Node nameExpr = new NodeImpl("NameExpr", access);
 				nameExpr.addAttribute(new AttributeImpl("Name", new StringValueImpl(arr)));
 				parent.cut();
-				//check for Array assignment
 				}
 
 			}
@@ -77,6 +86,7 @@ public class AdjustArray extends TreeAdjuster {
 			node.cut();
 		}
 
+		//cutting unneccessary expr nodes
 		if (nodeType.equals("Body") && parent.getParent().getParent().getNodeType().equals("FieldDeclaration")) {
 			node.setNodeType("ArrayInitializerExpr");
 			int length = node.getChildren().size();
