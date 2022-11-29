@@ -16,6 +16,12 @@ public class AdjustArray extends TreeAdjuster {
 		if (nodeType.equals("index") && parent.getParent().getParent().getNodeType().equals("Initialization")
 				&& !node.getChildren().isEmpty()) {
 			if (!parent.getAttributes().isEmpty()) {
+				try {
+					parent.getParent().getParent().cut();
+				} catch (ArrayIndexOutOfBoundsException e) {
+					return; // node already has been cut
+				}
+				
 				String name = parent.getValueAt(0);
 				Node exprNode = node.getChildren().get(0);
 				String value = "";
@@ -26,7 +32,7 @@ public class AdjustArray extends TreeAdjuster {
 				Node realParent = parent.getParent().getParent().getParent();
 				addArrayAccessExpr(value, name, node, realParent);
 				
-				//parent.getParent().getParent().cut();
+				
 				realParent.setNodeType("VariableDeclarator");
 				realParent.getParent().setNodeType("VariableDeclarationExpr");
 			}
