@@ -2,24 +2,19 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml_reader;
 
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
-import org.eclipse.uml2.uml.PackageableElement;
 import org.eclipse.uml2.uml.UMLPackage;
 import org.eclipse.uml2.uml.internal.impl.AssociationImpl;
 import org.eclipse.uml2.uml.internal.impl.ClassImpl;
 import org.eclipse.uml2.uml.internal.impl.EnumerationImpl;
 import org.eclipse.uml2.uml.internal.impl.PackageImpl;
 import org.eclipse.uml2.uml.internal.impl.PropertyImpl;
-import org.eclipse.uml2.uml.internal.impl.UMLPackageImpl;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ModelUtil;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
-import de.tu_bs.cs.isf.e4cf.core.util.emf.EMFUtil;
 import de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.EMFModelLoader.impl.EMFModelLoader;
 
 public class UMLReader extends AbstractArtifactReader {
@@ -30,11 +25,13 @@ public class UMLReader extends AbstractArtifactReader {
 	}
 
 	@Override
-	public Tree readArtifact(FileTreeElement element) {
-		UMLPackage umlPackag = UMLPackage.eINSTANCE;
-		Model model = (Model) EMFModelLoader.load(element.getAbsolutePath(), "uml");
-		model.getPackagedElements().forEach(packaagleElement -> {
-			packaagleElement.getModel().getMembers().forEach(member -> {
+	public Tree readArtifact(FileTreeElement fileTreeElement) {
+		@SuppressWarnings("unused") // if the variable is removed the method throws an exception and does not work
+		UMLPackage instance = UMLPackage.eINSTANCE;
+		Model umlModel = (Model) EMFModelLoader.load(fileTreeElement.getAbsolutePath(), "uml");
+		umlModel.getPackagedElements().forEach(packagedElement -> {
+			System.out.println("\nmodel:" + packagedElement.getName());
+			packagedElement.getModel().getMembers().forEach(member -> {
 				Node root = new NodeImpl("UML");
 				processModelElements(member, root);
 			});
@@ -44,41 +41,43 @@ public class UMLReader extends AbstractArtifactReader {
 		return new TreeImpl("UML Tree");
 	}
 
-	public Node processModelElements(NamedElement element, Node parent) {
+	private Node processModelElements(NamedElement element, Node parent) {
 		if (element instanceof ClassImpl) {
 			ClassImpl classImpl = (ClassImpl) element;
-			System.out.println("class:" + classImpl.getLabel());
+			System.out.println("class:" + classImpl.getName());
 			classImpl.allOwnedElements().forEach(innerElement -> {
 				if (innerElement instanceof PropertyImpl) {
 					PropertyImpl property = (PropertyImpl) innerElement;
-					System.out.println("    property: " + property.getLabel() + " type:" + property.getType().getLabel() +" visibility: " + property.getVisibility().getLiteral());
+					System.out.println("    property: " + property.getName() + " type:" + property.getType().getName() +" visibility: " + property.getVisibility().getLiteral());
 
 				}
 
 			});
 		} else if (element instanceof PackageImpl) {
 			PackageImpl classImpl = (PackageImpl) element;
-			System.out.println("package:" + classImpl.getLabel());
+			System.out.println("package:" + classImpl.getName());
 			classImpl.allOwnedElements().forEach(innerElement -> {
 				System.out.println("   " + innerElement);
 			});
 		} else if (element instanceof EnumerationImpl) {
 			EnumerationImpl classImpl = (EnumerationImpl) element;
-			System.out.println("enumaration:" + classImpl.getLabel());
+			System.out.println("enumaration:" + classImpl.getName());
 			classImpl.allOwnedElements().forEach(innerElement -> {
 				System.out.println("   " + innerElement);
 			});
 		} else if (element instanceof AssociationImpl) {
 			AssociationImpl classImpl = (AssociationImpl) element;
-			System.out.println("association:" + classImpl.getLabel());
+			System.out.println("association:" + classImpl.getName());
 			classImpl.allOwnedElements().forEach(innerElement -> {
 				System.out.println("   " + innerElement);
 			});
+		} else {
+			System.out.println("Element of unchecked type");
 		}
 		return parent;
 	}
 
-	public static Node createNodeForNamedElement(NamedElement element) {
+	private static Node createNodeForNamedElement(NamedElement element) {
 		Node node = null;
 		if (element instanceof ClassImpl) {
 			node = new NodeImpl(NodeType.CLASS);
