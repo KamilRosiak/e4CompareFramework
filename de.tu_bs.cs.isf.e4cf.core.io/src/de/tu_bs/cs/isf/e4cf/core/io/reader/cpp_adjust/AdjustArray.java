@@ -13,22 +13,20 @@ public class AdjustArray extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals("index") && parent.getParent().getParent().getNodeType().equals("Initialization") && !node.getChildren().isEmpty()) {
+		if (nodeType.equals("index") && parent.getParent().getParent().getNodeType().equals("Initialization")
+				&& !node.getChildren().isEmpty()) {
 			if (!parent.getAttributes().isEmpty()) {
 				String name = parent.getValueAt(0);
 				Node exprNode = node.getChildren().get(0);
 				String value = "";
-				for (Node child: exprNode.getChildren()) {
+				for (Node child : exprNode.getChildren()) {
 					value += child.getAttributeForKey("Name").getAttributeValues().get(0).getValue().toString() + " ";
 				}
 				value = value.trim();
-				// create correct nodes
 				Node realParent = parent.getParent().getParent().getParent();
-				Node arrExpr = new NodeImpl("ArrayAccessExpr", realParent);
-				Node nameExpr = new NodeImpl("NameExpr", arrExpr);
-				arrExpr.addAttribute(new AttributeImpl("Value", new StringValueImpl(value)));
-				nameExpr.addAttribute(new AttributeImpl("Name", new StringValueImpl(name)));
-				parent.getParent().getParent().cut();
+				addArrayAccessExpr(value, name, node, realParent);
+				
+				//parent.getParent().getParent().cut();
 				realParent.setNodeType("VariableDeclarator");
 				realParent.getParent().setNodeType("VariableDeclarationExpr");
 			}
@@ -37,19 +35,18 @@ public class AdjustArray extends TreeAdjuster {
 			// Array access
 			if (!node.getChildren().isEmpty() && !node.getChildren().get(0).getAttributes().isEmpty()
 					&& !parent.getAttributes().isEmpty()) {
-				if (parent.getParent().getNodeType().equals("expr")) { //remove element for condition edge case
-					for (Attribute a: parent.getParent().getAttributes()) {
+				if (parent.getParent().getNodeType().equals("expr")) { // remove element for condition edge case
+					for (Attribute a : parent.getParent().getAttributes()) {
 						if (a.getAttributeValues().get(0).getValue().toString().equals(parent.getValueAt(0))) {
 							parent.getParent().getAttributes().remove(a);
 							break;
 						}
 					}
 				}
-				
-				
+
 				String value = node.getChildren().get(0).getValueAt(0);
-				String arr = parent.getValueAt(0);
-				
+				String name = parent.getValueAt(0);
+
 				Node realParent = parent.getParent().getParent().getParent();
 				Node removable = realParent.getChildren().get(0);
 				if (!parent.getParent().getAttributes().isEmpty() && removable.getNodeType().equals("expr_stmt")) {
@@ -58,16 +55,11 @@ public class AdjustArray extends TreeAdjuster {
 					assignment.addAttribute(new AttributeImpl("Target", new StringValueImpl(target)));
 					assignment.addAttribute(new AttributeImpl("Operator", new StringValueImpl("ASSIGN")));
 					removable.cut();
-					Node access = new NodeImpl("ArrayAccessExpr", assignment);
-					access.addAttribute(new AttributeImpl("Value", new StringValueImpl(value)));
-					Node nameExpr = new NodeImpl("NameExpr", access);
-					nameExpr.addAttribute(new AttributeImpl("Name", new StringValueImpl(arr)));
+					addArrayAccessExpr(value, name, node, assignment);
+					
 				} else {
-				Node access = new NodeImpl("ArrayAccessExpr", parent.getParent());
-				access.addAttribute(new AttributeImpl("Value", new StringValueImpl(value)));
-				Node nameExpr = new NodeImpl("NameExpr", access);
-				nameExpr.addAttribute(new AttributeImpl("Name", new StringValueImpl(arr)));
-				parent.cut();
+					addArrayAccessExpr(value, name, node, parent.getParent());
+					node.getParent().cut();
 				}
 
 			}
@@ -86,7 +78,7 @@ public class AdjustArray extends TreeAdjuster {
 			node.cut();
 		}
 
-		//cutting unneccessary expr nodes
+		// cutting unnecessary expr nodes
 		if (nodeType.equals("Body") && parent.getParent().getParent().getNodeType().equals("FieldDeclaration")) {
 			node.setNodeType("ArrayInitializerExpr");
 			int length = node.getChildren().size();
@@ -99,6 +91,27 @@ public class AdjustArray extends TreeAdjuster {
 			}
 		}
 
+	}
+	
+	private void addArrayAccessExpr(String value, String name, Node node, Node accessParent) {
+		Node access = new NodeImpl("ArrayAccessExpr", accessParent);
+		access.addAttribute(new AttributeImpl("Value", new StringValueImpl(value)));
+		Node lastAccess = access;
+
+		for (Node index : node.getParent().getChildren()) {
+			// for each index node we need to add an "ArrayAccessExpr". this is the case for
+			// an access like a[i][j]
+			
+			if (index.getNodeType().equals("index") && node != index) {
+				value = index.getChildren().get(0).getValueAt(0);
+				Node newAccess = new NodeImpl("ArrayAccessExpr", lastAccess);
+				newAccess.addAttribute(new AttributeImpl("Value", new StringValueImpl(value)));
+				lastAccess = newAccess;
+			}
+		}
+		
+		Node nameExpr = new NodeImpl("NameExpr", lastAccess);
+		nameExpr.addAttribute(new AttributeImpl("Name", new StringValueImpl(name)));
 	}
 
 }
