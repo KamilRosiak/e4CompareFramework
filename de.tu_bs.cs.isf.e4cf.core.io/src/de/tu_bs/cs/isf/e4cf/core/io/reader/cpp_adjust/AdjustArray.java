@@ -44,7 +44,7 @@ public class AdjustArray extends TreeAdjuster {
 					Node assignment = new NodeImpl(Const.ASSIGNMENT, realParent);
 					String target = parent.getParent().getValueAt(0);
 					assignment.addAttribute(new AttributeImpl(Const.TARGET, new StringValueImpl(target)));
-					assignment.addAttribute(new AttributeImpl(Const.OPERATOR, new StringValueImpl(Const.ASSIGN)));
+					assignment.addAttribute(new AttributeImpl(Const.OPERATOR_BIG, new StringValueImpl(Const.ASSIGN)));
 					removable.cut();
 					addArrayAccessExpr(node, assignment);
 					

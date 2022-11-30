@@ -34,10 +34,13 @@ public class Const {
 	public static final String ASSIGNMENT = "Assignment";
 	public static final String ASSIGN = "ASSIGN";
 	public static final String TARGET = "Target";
-	public static final String OPERATOR = "Operator";
+	public static final String OPERATOR_BIG = "Operator";
+	public static final String OPERATOR = "operator";
 	public static final String NAME_EXPR = "NameExpr";
 	public static final String ARR_ACCESS_EXPR = "ArrayAccessExpr";
 	public static final String ARR_INIT_EXPR = "ArrayInitializerExpr";
+	public static final String CONDITION = "Condition";
+	public static final String BINARY_EXPR = "BinaryExpr";
 	
 	//illegal Strings
 	public static final String T = "\t";
