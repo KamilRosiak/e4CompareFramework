@@ -4,6 +4,7 @@ public class Const {
 	public static final String CPP = "JAVA"; //TODO change this to cpp
 	public static final String IS_INTERFACE = "IsInterface";
 	public static final String FALSE = "false";
+	public static final String VALUE = "Value";
 
 	
 	public static final String C_UNIT = "CompilationUnit";
@@ -13,6 +14,8 @@ public class Const {
 	public static final String TYPE_BIG = "Type";
 	public static final String TYPE = "type";
 	public static final String EXPR = "expr";
+	public static final String EXPR_STMT = "expr_stmt";
+	public static final String INDEX = "index";
 	
 	
 	
@@ -24,7 +27,16 @@ public class Const {
 	public static final String ARGUMENT = "Argument";
 	public static final String RETURN_STMT = "ReturnStmt";
 	public static final String ENUM_CONST_DECL= "EnumConstantDeclaration";
-	
+	public static final String INIT = "Initialization";
+	public static final String VARIABLE_DECL = "VariableDeclarator";
+	public static final String VARIABLE_DECL_EXPR = "VariableDeclarationExpr";
+	public static final String ASSIGNMENT = "Assignment";
+	public static final String ASSIGN = "ASSIGN";
+	public static final String TARGET = "Target";
+	public static final String OPERATOR = "Operator";
+	public static final String NAME_EXPR = "NameExpr";
+	public static final String ARR_ACCESS_EXPR = "ArrayAccessExpr";
+	public static final String ARR_INIT_EXPR = "ArrayInitializerExpr";
 	
 	//illegal Strings
 	public static final String T = "\t";
@@ -41,6 +53,7 @@ public class Const {
 	public static final String BRACKET_CURVED_R = "}";
 	public static final String BRACKET_L = "(";
 	public static final String BRACKET_R = ")";
+	public static final String BRACKET_SQUARED = "[]";
 	public static final String LINE_BREAK = "\n";
 
 
