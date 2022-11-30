@@ -3,11 +3,11 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml_reader;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.UMLPackage;
-import org.eclipse.uml2.uml.internal.impl.AssociationImpl;
-import org.eclipse.uml2.uml.internal.impl.ClassImpl;
-import org.eclipse.uml2.uml.internal.impl.EnumerationImpl;
-import org.eclipse.uml2.uml.internal.impl.PackageImpl;
-import org.eclipse.uml2.uml.internal.impl.PropertyImpl;
+import org.eclipse.uml2.uml.Class;
+import org.eclipse.uml2.uml.Property;
+import org.eclipse.uml2.uml.Association;
+import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.Package;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
@@ -20,6 +20,11 @@ import de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.EMFModelLoader.impl.EMFModelL
 public class UMLReader extends AbstractArtifactReader {
 	public final static String[] SUPPORTED_FILE_ENDINGS = { "uml" };
 
+
+	/**
+	 * See the <a href="https://download.eclipse.org/modeling/mdt/uml2/javadoc/4.1.0/org/eclipse/uml2/uml/package-summary.html">
+	 * Javadoc</a> for the eclipse UML Reader
+	 */
 	public UMLReader() {
 		super(SUPPORTED_FILE_ENDINGS);
 	}
@@ -32,7 +37,7 @@ public class UMLReader extends AbstractArtifactReader {
 		umlModel.getPackagedElements().forEach(packagedElement -> {
 			System.out.println("\nmodel:" + packagedElement.getName());
 			packagedElement.getModel().getMembers().forEach(member -> {
-				Node root = new NodeImpl("UML");
+				Node root = new NodeImpl(packagedElement.getName());
 				processModelElements(member, root);
 			});
 		});
@@ -42,33 +47,33 @@ public class UMLReader extends AbstractArtifactReader {
 	}
 
 	private Node processModelElements(NamedElement element, Node parent) {
-		if (element instanceof ClassImpl) {
-			ClassImpl classImpl = (ClassImpl) element;
-			System.out.println("class:" + classImpl.getName());
-			classImpl.allOwnedElements().forEach(innerElement -> {
-				if (innerElement instanceof PropertyImpl) {
-					PropertyImpl property = (PropertyImpl) innerElement;
+		if (element instanceof Class) {
+			Class classElement = (Class) element;
+			System.out.println("class:" + classElement.getName());
+			classElement.allOwnedElements().forEach(innerElement -> {
+				if (innerElement instanceof Property) {
+					Property property = (Property) innerElement;
 					System.out.println("    property: " + property.getName() + " type:" + property.getType().getName() +" visibility: " + property.getVisibility().getLiteral());
 
 				}
 
 			});
-		} else if (element instanceof PackageImpl) {
-			PackageImpl classImpl = (PackageImpl) element;
-			System.out.println("package:" + classImpl.getName());
-			classImpl.allOwnedElements().forEach(innerElement -> {
+		} else if (element instanceof Package) {
+			Package packageElement = (Package) element;
+			System.out.println("package:" + packageElement.getName());
+			packageElement.allOwnedElements().forEach(innerElement -> {
 				System.out.println("   " + innerElement);
 			});
-		} else if (element instanceof EnumerationImpl) {
-			EnumerationImpl classImpl = (EnumerationImpl) element;
-			System.out.println("enumaration:" + classImpl.getName());
-			classImpl.allOwnedElements().forEach(innerElement -> {
+		} else if (element instanceof Enumeration) {
+			Enumeration enumElement = (Enumeration) element;
+			System.out.println("enumaration:" + enumElement.getName());
+			enumElement.allOwnedElements().forEach(innerElement -> {
 				System.out.println("   " + innerElement);
 			});
-		} else if (element instanceof AssociationImpl) {
-			AssociationImpl classImpl = (AssociationImpl) element;
-			System.out.println("association:" + classImpl.getName());
-			classImpl.allOwnedElements().forEach(innerElement -> {
+		} else if (element instanceof Association) {
+			Association associationElement = (Association) element;
+			System.out.println("association:" + associationElement.getName());
+			associationElement.allOwnedElements().forEach(innerElement -> {
 				System.out.println("   " + innerElement);
 			});
 		} else {
@@ -79,15 +84,15 @@ public class UMLReader extends AbstractArtifactReader {
 
 	private static Node createNodeForNamedElement(NamedElement element) {
 		Node node = null;
-		if (element instanceof ClassImpl) {
+		if (element instanceof Class) {
 			node = new NodeImpl(NodeType.CLASS);
 			
 			node = new NodeImpl(NodeType.PROPERTY);
-		} else if (element instanceof PackageImpl) {
+		} else if (element instanceof Package) {
 			node = new NodeImpl(NodeType.PACKAGE);
-		} else if (element instanceof EnumerationImpl) {
+		} else if (element instanceof Enumeration) {
 			node = new NodeImpl(NodeType.ENUM);
-		} else if (element instanceof AssociationImpl) {
+		} else if (element instanceof Association) {
 			node = new NodeImpl(NodeType.ASSOCIATION);
 		}
 
