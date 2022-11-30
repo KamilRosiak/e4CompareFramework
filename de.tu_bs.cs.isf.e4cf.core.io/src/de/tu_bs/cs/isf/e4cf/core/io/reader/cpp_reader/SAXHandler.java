@@ -13,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.Const;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.RenamerCpp;
 
 public class SAXHandler extends AbstractSAXHandler {
@@ -41,7 +42,7 @@ public class SAXHandler extends AbstractSAXHandler {
 		} else {
 			elementNode = new NodeImpl(key, null);
 			rootNode = elementNode;
-			rootNode.setNodeType("CompilationUnit");
+			rootNode.setNodeType(Const.C_UNIT);
 		}
 
 		nodeStack.push(elementNode);
@@ -66,28 +67,28 @@ public class SAXHandler extends AbstractSAXHandler {
 			value = "String";
 		}
 		if (nodeType.equals("operator") || (isLegalString(value) && isntRedundant(value))) {
-			AttributeImpl attribute = new AttributeImpl("Name");
+			AttributeImpl attribute = new AttributeImpl(Const.NAME);
 			attribute.addAttributeValue(new StringValueImpl(value));
 			if (containsTypeInfo(node)) {
-				if (parent.getParent().getNodeType().equals("MethodDeclaration")) {
-					attribute.setAttributeKey("ReturnType");
+				if (parent.getParent().getNodeType().equals(Const.M_DECL)) {
+					attribute.setAttributeKey(Const.R_TYPE);
 				} else {
-					attribute.setAttributeKey("Type");
+					attribute.setAttributeKey(Const.TYPE);
 				}
 				overWriteAttribute(parent.getParent(), attribute);
-			} else if (nodeType.equals("Name")) {
+			} else if (nodeType.equals(Const.NAME)) {
 				node.addAttribute(attribute);
-				addNameAttribute(node,attribute);
+				addNameAttribute(node, attribute);
 			} else {
 				overWriteAttribute(node, attribute);
 			}
 
 		}
 	}
-	
+
 	private void addNameAttribute(Node node, Attribute attribute) {
 		Node next = node;
-		while (next != null && next.getParent() != null && next.getNodeType().equals("Name")) {
+		while (next != null && next.getParent() != null && next.getNodeType().equals(Const.NAME)) {
 			next.getParent().addAttribute(attribute);
 			next = next.getParent();
 		}
@@ -106,7 +107,7 @@ public class SAXHandler extends AbstractSAXHandler {
 			String oldValue = oldAttribute.getAttributeValues().get(0).getValue().toString();
 			oldAttribute.getAttributeValues().get(0).setValue(oldValue + newValue);
 		} else {
-			if (node.getNodeType().equals("Name") && node.getParent() != null) {
+			if (node.getNodeType().equals(Const.NAME) && node.getParent() != null) {
 				node.getParent().addAttribute(attribute);
 			} else {
 				node.addAttribute(attribute);
@@ -120,21 +121,25 @@ public class SAXHandler extends AbstractSAXHandler {
 			return false;
 		}
 		String parentType = node.getParent().getNodeType();
-		return parentType.equals("type") && (nodeType.equals("modifier") || nodeType.equals("Name"));
+		return parentType.equals("type") && (nodeType.equals("modifier") || nodeType.equals(Const.NAME));
 	}
 
 	private boolean isntRedundant(String string) {
-		return (!string.equals("enum") && (!string.equals("for")
-				&& (!string.equals("while") && (!string.equals("if") && (!string.equals("switch"))
-						&& (!string.equals("else if") && (!string.equals("case") && (!string.equals("break;")
-								&& (!string.equals("return;")) && (!string.equals("default:")))))))));
+		return (!string.equals(Const.ENUM) && (!string.equals(Const.FOR)
+				&& (!string.equals(Const.WHILE) && (!string.equals(Const.IF) && (!string.equals(Const.SWITCH))
+				&& (!string.equals(Const.ELSE_IF) && (!string.equals(Const.CASE) && (!string.equals(Const.BREAK + Const.SEMICOLON)
+				&& (!string.equals(Const.RETURN + Const.SEMICOLON))&& (!string.equals(Const.DEFAULT + Const.COLON)))))))));
 	}
 
 	private boolean isLegalString(String string) {
-		return (!string.contains("\t")) && (!string.equals("")) && (!string.equals("#")) && (!string.equals("<"))
-				&& (!string.equals(">")) && (!string.equals(".")) && (!string.equals(",")) && (!string.equals(", "))
-				&& (!string.equals(":")) && (!string.equals(";")) && (!string.equals("{")) && (!string.equals("}"))
-				&& (!string.equals("(")) && (!string.equals(")")) && (!string.equals("()")) && (!string.equals("\n")) && (!string.equals("\n\n"));
+		return (!string.contains(Const.T)) && (!string.equals(Const.EMPTY)) && (!string.equals(Const.HASHTAG))
+				&& (!string.equals(Const.LESS_OP)) && (!string.equals(Const.BIGGER_OP)) && (!string.equals(Const.DOT))
+				&& (!string.equals(Const.COMMA)) && (!string.equals(Const.COMMA + Const.SPACE))
+				&& (!string.equals(Const.COLON)) && (!string.equals(Const.SEMICOLON))
+				&& (!string.equals(Const.BRACKET_CURVED_L)) && (!string.equals(Const.BRACKET_CURVED_R))
+				&& (!string.equals(Const.BRACKET_L)) && (!string.equals(Const.BRACKET_R))
+				&& (!string.equals(Const.BRACKET_L + Const.BRACKET_R)) && (!string.equals(Const.LINE_BREAK))
+				&& (!string.equals(Const.LINE_BREAK + Const.LINE_BREAK));
 	}
 
 	@Override
