@@ -1,9 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
+
 public class Const {
 	public static final String CPP = "JAVA"; //TODO change this to cpp
 	public static final String IS_INTERFACE = "IsInterface";
-	public static final String FALSE = "false";
+
 	public static final String VALUE = "Value";
 
 	
@@ -65,6 +68,8 @@ public class Const {
 	public static final String BRACKET_R = ")";
 	public static final String BRACKET_SQUARED = "[]";
 	public static final String LINE_BREAK = "\n";
+	public static final String EQ = "=";
+	
 
 
 	//redundant Strings
@@ -78,7 +83,25 @@ public class Const {
 	public static final String BREAK = "break";
 	public static final String RETURN = "return";
 	public static final String DEFAULT = "default";
-
+	
+	
+	//data types
+	public static final String LITERAL = "literal";
+	public static final String INT = "int";
+	public static final String BOOL = "boolean";
+	public static final String DOUBLE = "double";
+	public static final String FLOAT = "float";
+	public static final String STRING = "String";
+	public static final String INT_LIT = "IntegerLiteralExpr";
+	public static final String BOOL_LIT = "BooleanLiteralExpr";
+	public static final String DOUBLE_LIT = "DoubleLiteralExpr";
+	public static final String FLOAT_LIT = "FloatLiteralExpr";
+	public static final String STRING_LIT = "StringLiteralExpr";
+	public static final String REGEX_INT = "\\d*";
+	public static final String REGEX_DOUBLE = "\\d*\\.\\d*";
+	public static final String REGEX_FLOAT = "\\d*\\.\\d*f";
+	public static final String FALSE = "false";
+	public static final String TRUE = "true";
 
 	
 }

@@ -22,28 +22,28 @@ public class AdjustLiterals extends TreeAdjuster {
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
 
-		if (nodeType.equals("Initialization") && !node.getAttributes().isEmpty()) {
+		if (nodeType.equals(Const.INIT) && !node.getAttributes().isEmpty()) {
 			// for loop edge case
-			if (parent.getParent().getNodeType().equals("Initialization")) {
+			if (parent.getParent().getNodeType().equals(Const.INIT)) {
 				Node newNode = new NodeImpl();
 				newNode.updateParent(parent.getParent());
 				parent.updateParent(newNode);
 
 			}
-			Attribute attr = node.getAttributeForKey("Name");
+			Attribute attr = node.getAttributeForKey(Const.NAME);
 			if (attr == null) {
 				return;
 			}
 			String value = attr.getAttributeValues().get(0).getValue().toString();
-			if (value != null && value.equals("=")) {
-				parent.getParent().setNodeType("VariableDeclarationExpr");
-				parent.setNodeType("VariableDeclarator");
+			if (value != null && value.equals(Const.EQ)) {
+				parent.getParent().setNodeType(Const.VARIABLE_DECL_EXPR);
+				parent.setNodeType(Const.VARIABLE_DECL);
 
 				Node literal = node.getChildren().get(0).getChildren().get(0);
 				List<Attribute> attributes = literal.getAttributes();
 				for (Attribute att : attributes) {
-					if (att.getAttributeKey().equals("Name")) {
-						att.setAttributeKey("Value");
+					if (att.getAttributeKey().equals(Const.NAME)) {
+						att.setAttributeKey(Const.VALUE);
 					}
 				}
 				node.getChildren().get(0).cutWithoutChildren();
@@ -51,28 +51,28 @@ public class AdjustLiterals extends TreeAdjuster {
 			}
 		}
 
-		if (nodeType.equals("literal")) {
+		if (nodeType.equals(Const.LITERAL)) {
 			String value = node.getValueAt(0);
 			if (value == null) {
 				return;
 			}
-			if (value.matches("\\d*")) {
-				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("int")));
-				node.setNodeType("IntegerLiteralExpr");
-			} else if (value.equals("true") || value.equals("false")) {
-				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("boolean")));
-				node.setNodeType("BooleanLiteralExpr");
-			} else if (value.matches("\\d*\\.\\d*")) {
-				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("double")));
-				node.setNodeType("DoubleLiteralExpr");
-			} else if (value.matches("\\d*\\.\\d*f")) {
-				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("float")));
-				node.setNodeType("FloatLiteralExpr");
+			if (value.matches(Const.REGEX_INT)) {
+				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.INT)));
+				node.setNodeType(Const.INT_LIT);
+			} else if (value.equals(Const.TRUE) || value.equals(Const.FALSE)) {
+				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.BOOL)));
+				node.setNodeType(Const.BOOL_LIT);
+			} else if (value.matches(Const.REGEX_DOUBLE)) {
+				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.DOUBLE)));
+				node.setNodeType(Const.DOUBLE_LIT);
+			} else if (value.matches(Const.REGEX_FLOAT)) {
+				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.FLOAT)));
+				node.setNodeType(Const.FLOAT_LIT);
 			} else {
-				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("String")));
-				node.setNodeType("StringLiteralExpr");
+				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.STRING)));
+				node.setNodeType(Const.STRING_LIT);
 			}
-			node.getAttributes().get(0).setAttributeKey("Value");
+			node.getAttributes().get(0).setAttributeKey(Const.VALUE);
 		}
 
 	}
