@@ -16,8 +16,9 @@ public class Const {
 	public static final String EXPR = "expr";
 	public static final String EXPR_STMT = "expr_stmt";
 	public static final String INDEX = "index";
-	
-	
+	public static final String LINE_COMMENT = "LineComment";
+	public static final String COMMENT = "Comment";
+	public static final String SLASH_TWICE = "//";
 	
 	//Node Types
 	public static final String BODY = "Body";
