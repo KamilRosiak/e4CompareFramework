@@ -43,6 +43,10 @@ public class Const {
 	public static final String BINARY_EXPR = "BinaryExpr";
 	public static final String UNARY_EXPR = "UnaryExpr";
 	public static final String UPDATE = "Update";
+	public static final String ELSE = "Else";
+	public static final String THEN = "Then";
+	public static final String IF_STMT_BIG = "IfStmt";
+	public static final String IF_STMT_SMALL = "if_stmt";
 	
 	//illegal Strings
 	public static final String T = "\t";
