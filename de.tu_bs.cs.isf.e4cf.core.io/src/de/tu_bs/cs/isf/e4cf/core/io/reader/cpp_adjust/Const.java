@@ -41,6 +41,8 @@ public class Const {
 	public static final String ARR_INIT_EXPR = "ArrayInitializerExpr";
 	public static final String CONDITION = "Condition";
 	public static final String BINARY_EXPR = "BinaryExpr";
+	public static final String UNARY_EXPR = "UnaryExpr";
+	public static final String UPDATE = "Update";
 	
 	//illegal Strings
 	public static final String T = "\t";

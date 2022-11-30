@@ -16,13 +16,13 @@ public class AdjustForLoop extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals("expr") && parent.getNodeType().equals("Update")) {
-			node.setNodeType("UnaryExpr");
+		if (nodeType.equals(Const.EXPR) && parent.getNodeType().equals(Const.UPDATE)) {
+			node.setNodeType(Const.UNARY_EXPR);
 			List<Node> children = node.getChildren();
 			Node child = null;
 			int i = 0;
 			for (int j = 0; j < children.size(); j++) {
-				if (children.get(j).getNodeType().equals("operator")) {
+				if (children.get(j).getNodeType().equals(Const.OPERATOR)) {
 					child = children.get(j);
 					i = j;
 					break;
@@ -31,24 +31,24 @@ public class AdjustForLoop extends TreeAdjuster {
 			if (child == null) {
 				return;
 			}
-			child.setNodeType("NameExpr");
+			child.setNodeType(Const.NAME_EXPR);
 			node.addAttribute(child.getAttributes().get(0));
 			child.getAttributes().remove(0);
 			child.addAttribute(node.getAttributes().get(0));
 			node.getAttributes().remove(0);
 			changeOperator(i, node);
 		}
-		if (nodeType.equals("expr") && parent.getNodeType().equals("expr_stmt")) {
+		if (nodeType.equals(Const.EXPR) && parent.getNodeType().equals(Const.EXPR_STMT)) {
 			List<Node> children = node.getChildren();
 			if (children.size() > 2) {
 				return;
 			}
 			for (int i = 0; i < children.size(); i++) {
 				Node child = children.get(i);
-				if (child.getNodeType().equals("operator")) {
+				if (child.getNodeType().equals(Const.OPERATOR)) {
 					changeOperator(i, child);
-					child.setNodeType("UnaryExpr");
-					node.setNodeType("NameExpr");
+					child.setNodeType(Const.UNARY_EXPR);
+					node.setNodeType(Const.NAME_EXPR);
 					child.updateParent(parent.getParent());
 					child.addChildWithParent(node);
 					parent.cut();
