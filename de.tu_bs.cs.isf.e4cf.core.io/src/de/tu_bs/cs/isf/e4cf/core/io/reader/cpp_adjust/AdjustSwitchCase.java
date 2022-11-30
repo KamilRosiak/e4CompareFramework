@@ -38,7 +38,7 @@ public class AdjustSwitchCase extends TreeAdjuster {
 				}
 			}
 		}
-		if (nodeType.equals(Const.CONDITION) && parent.getNodeType().equals(Const.SWITCH_STMT)) {
+		if (nodeType.equals(Const.CONDITION_BIG) && parent.getNodeType().equals(Const.SWITCH_STMT)) {
 			Node exprNode = getChild(node, Const.EXPR);
 			String selector = exprNode.getValueAt(0);
 			parent.addAttribute(new AttributeImpl(Const.SELECTOR, new StringValueImpl(selector)));
@@ -55,15 +55,15 @@ public class AdjustSwitchCase extends TreeAdjuster {
 			}
 			Node exprNode = node.getChildren().get(0);
 			Node conditiongNode = exprNode.getChildren().get(0);
-			if (conditiongNode.getNodeType().equals(Const.NAME)) {
+			if (conditiongNode.getNodeType().equals(Const.NAME_BIG)) {
 				String condition = node.getValueAt(0);
 				node.setAttributes(new ArrayList<Attribute>());
-				node.addAttribute(new AttributeImpl(Const.CONDITION, new StringValueImpl(condition)));
+				node.addAttribute(new AttributeImpl(Const.CONDITION_BIG, new StringValueImpl(condition)));
 				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.STMT_GRP)));
 				conditiongNode.cut();
 			}
 			String condition = conditiongNode.getValueAt(0);
-			node.addAttribute(new AttributeImpl(Const.CONDITION, new StringValueImpl(condition)));
+			node.addAttribute(new AttributeImpl(Const.CONDITION_BIG, new StringValueImpl(condition)));
 			node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.STMT_GRP)));
 			exprNode.cut();
 		}

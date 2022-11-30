@@ -52,12 +52,12 @@ public final class AdjustAll extends TreeAdjuster {
 	
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals(Const.CONTROL) || nodeType.equals(Const.BODY) && (parent.getNodeType().equals(Const.ENUM_DECL)
+		if (nodeType.equals(Const.CONTROL) || nodeType.equals(Const.BODY) && (parent.getNodeType().equals(Const.ENUM_DECLARATION)
 				|| (parent.getNodeType().equals(Const.BODY)))) {
 			node.cutWithoutChildren();
 		}
 		if (nodeType.equals(Const.FIELD_DECL) // enum edge case
-				&& parent.getNodeType().equals(Const.ENUM_DECL)) {
+				&& parent.getNodeType().equals(Const.ENUM_DECLARATION)) {
 			node.setNodeType(Const.ENUM_CONST_DECL);
 		}
 		if (nodeType.equals(Const.FIELD_DECL) && parent.getNodeType().equals(Const.ARGUMENT_BIG)) {
@@ -71,7 +71,7 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster forAdjuster = new AdjustForLoop();
 		forAdjuster.adjust(node, parent, nodeType);
 
-		if (nodeType.equals(Const.NAME) || nodeType.equals(Const.TYPE_SMALL)) {
+		if (nodeType.equals(Const.NAME_BIG) || nodeType.equals(Const.TYPE_SMALL)) {
 			node.cutWithoutChildren();
 		}
 		

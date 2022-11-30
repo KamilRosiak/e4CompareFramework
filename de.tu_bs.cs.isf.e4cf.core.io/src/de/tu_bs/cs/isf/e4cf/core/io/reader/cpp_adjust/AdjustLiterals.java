@@ -22,15 +22,15 @@ public class AdjustLiterals extends TreeAdjuster {
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
 
-		if (nodeType.equals(Const.INIT) && !node.getAttributes().isEmpty()) {
+		if (nodeType.equals(Const.INITIALIZATION) && !node.getAttributes().isEmpty()) {
 			// for loop edge case
-			if (parent.getParent().getNodeType().equals(Const.INIT)) {
+			if (parent.getParent().getNodeType().equals(Const.INITIALIZATION)) {
 				Node newNode = new NodeImpl();
 				newNode.updateParent(parent.getParent());
 				parent.updateParent(newNode);
 
 			}
-			Attribute attr = node.getAttributeForKey(Const.NAME);
+			Attribute attr = node.getAttributeForKey(Const.NAME_BIG);
 			if (attr == null) {
 				return;
 			}
@@ -42,7 +42,7 @@ public class AdjustLiterals extends TreeAdjuster {
 				Node literal = node.getChildren().get(0).getChildren().get(0);
 				List<Attribute> attributes = literal.getAttributes();
 				for (Attribute att : attributes) {
-					if (att.getAttributeKey().equals(Const.NAME)) {
+					if (att.getAttributeKey().equals(Const.NAME_BIG)) {
 						att.setAttributeKey(Const.VALUE);
 					}
 				}
@@ -60,8 +60,8 @@ public class AdjustLiterals extends TreeAdjuster {
 				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.INT)));
 				node.setNodeType(Const.INT_LIT);
 			} else if (value.equals(Const.TRUE) || value.equals(Const.FALSE)) {
-				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.BOOL)));
-				node.setNodeType(Const.BOOL_LIT);
+				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.BOOLEAN)));
+				node.setNodeType(Const.BOOLEAN_LIT);
 			} else if (value.matches(Const.REGEX_DOUBLE)) {
 				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.DOUBLE)));
 				node.setNodeType(Const.DOUBLE_LIT);

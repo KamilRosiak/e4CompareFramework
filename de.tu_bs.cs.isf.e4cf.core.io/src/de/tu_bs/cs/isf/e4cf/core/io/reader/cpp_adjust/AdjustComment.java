@@ -19,7 +19,7 @@ public class AdjustComment extends TreeAdjuster {
 			for (int i = 0; i < arr.length; i++) {
 				value = arr[i];
 			}
-			parent.addAttribute(new AttributeImpl(Const.COMMENT, new StringValueImpl(value)));
+			parent.addAttribute(new AttributeImpl(Const.COMMENT_BIG, new StringValueImpl(value)));
 			node.cut();
 		}
 	}

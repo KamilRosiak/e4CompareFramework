@@ -67,7 +67,7 @@ public class SAXHandler extends AbstractSAXHandler {
 			value = "String";
 		}
 		if (nodeType.equals("operator") || (isLegalString(value) && isntRedundant(value))) {
-			AttributeImpl attribute = new AttributeImpl(Const.NAME);
+			AttributeImpl attribute = new AttributeImpl(Const.NAME_BIG);
 			attribute.addAttributeValue(new StringValueImpl(value));
 			if (containsTypeInfo(node)) {
 				if (parent.getParent().getNodeType().equals(Const.M_DECL)) {
@@ -76,7 +76,7 @@ public class SAXHandler extends AbstractSAXHandler {
 					attribute.setAttributeKey(Const.TYPE_BIG);
 				}
 				overWriteAttribute(parent.getParent(), attribute);
-			} else if (nodeType.equals(Const.NAME)) {
+			} else if (nodeType.equals(Const.NAME_BIG)) {
 				node.addAttribute(attribute);
 				addNameAttribute(node, attribute);
 			} else {
@@ -88,7 +88,7 @@ public class SAXHandler extends AbstractSAXHandler {
 
 	private void addNameAttribute(Node node, Attribute attribute) {
 		Node next = node;
-		while (next != null && next.getParent() != null && next.getNodeType().equals(Const.NAME)) {
+		while (next != null && next.getParent() != null && next.getNodeType().equals(Const.NAME_BIG)) {
 			next.getParent().addAttribute(attribute);
 			next = next.getParent();
 		}
@@ -107,7 +107,7 @@ public class SAXHandler extends AbstractSAXHandler {
 			String oldValue = oldAttribute.getAttributeValues().get(0).getValue().toString();
 			oldAttribute.getAttributeValues().get(0).setValue(oldValue + newValue);
 		} else {
-			if (node.getNodeType().equals(Const.NAME) && node.getParent() != null) {
+			if (node.getNodeType().equals(Const.NAME_BIG) && node.getParent() != null) {
 				node.getParent().addAttribute(attribute);
 			} else {
 				node.addAttribute(attribute);
@@ -121,13 +121,13 @@ public class SAXHandler extends AbstractSAXHandler {
 			return false;
 		}
 		String parentType = node.getParent().getNodeType();
-		return parentType.equals("type") && (nodeType.equals("modifier") || nodeType.equals(Const.NAME));
+		return parentType.equals("type") && (nodeType.equals("modifier") || nodeType.equals(Const.NAME_BIG));
 	}
 
 	private boolean isntRedundant(String string) {
 		return (!string.equals(Const.ENUM) && (!string.equals(Const.FOR)
 				&& (!string.equals(Const.WHILE) && (!string.equals(Const.IF) && (!string.equals(Const.SWITCH))
-				&& (!string.equals(Const.ELSE_IF) && (!string.equals(Const.CASE) && (!string.equals(Const.BREAK + Const.SEMICOLON)
+				&& (!string.equals(Const.ELSE_IF) && (!string.equals(Const.CASE) && (!string.equals(Const.BREAK_SMALL + Const.SEMICOLON)
 				&& (!string.equals(Const.RETURN + Const.SEMICOLON))&& (!string.equals(Const.DEFAULT_SMALL + Const.COLON)))))))));
 	}
 

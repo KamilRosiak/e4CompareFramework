@@ -13,7 +13,7 @@ public class AdjustConditon extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals(Const.EXPR) && parent.getNodeType().equals(Const.CONDITION)) {
+		if (nodeType.equals(Const.EXPR) && parent.getNodeType().equals(Const.CONDITION_BIG)) {
 			node.setNodeType(Const.BINARY_EXPR);
 			List<Node> children = node.getChildren();
 			Node child = null;

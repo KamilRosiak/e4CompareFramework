@@ -13,7 +13,7 @@ public class AdjustArray extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals(Const.INDEX) && parent.getParent().getParent().getNodeType().equals(Const.INIT)
+		if (nodeType.equals(Const.INDEX) && parent.getParent().getParent().getNodeType().equals(Const.INITIALIZATION)
 				&& !node.getChildren().isEmpty()) {
 			if (!parent.getAttributes().isEmpty()) {
 				try {
@@ -75,7 +75,7 @@ public class AdjustArray extends TreeAdjuster {
 			for (int i = 0; i < length; i++) {
 				Node n = node.getChildren().get(0);
 				if (!n.getChildren().isEmpty()) {
-					n.getChildren().get(0).getAttributeForKey(Const.NAME).setAttributeKey(Const.VALUE);
+					n.getChildren().get(0).getAttributeForKey(Const.NAME_BIG).setAttributeKey(Const.VALUE);
 				}
 				n.cutWithoutChildren();
 			}
@@ -87,7 +87,7 @@ public class AdjustArray extends TreeAdjuster {
 		Node exprNode = node.getChildren().get(0);
 		String value = Const.EMPTY;
 		for (Node child : exprNode.getChildren()) {
-			value += child.getAttributeForKey(Const.NAME).getAttributeValues().get(0).getValue().toString() + Const.SPACE;
+			value += child.getAttributeForKey(Const.NAME_BIG).getAttributeValues().get(0).getValue().toString() + Const.SPACE;
 		}
 		value = value.trim();
 		String name = node.getParent().getValueAt(0);
@@ -109,7 +109,7 @@ public class AdjustArray extends TreeAdjuster {
 		}
 		
 		Node nameExpr = new NodeImpl(Const.NAME_EXPR, lastAccess);
-		nameExpr.addAttribute(new AttributeImpl(Const.NAME, new StringValueImpl(name)));
+		nameExpr.addAttribute(new AttributeImpl(Const.NAME_BIG, new StringValueImpl(name)));
 	}
 	
 	private boolean allInitialized(Node node) {

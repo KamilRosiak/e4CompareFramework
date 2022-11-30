@@ -24,7 +24,7 @@ public class AdjustIfCase extends TreeAdjuster {
 			for (int i = 0; i < children.size(); i++) {
 				Node child = children.get(i);
 				if (child.getNodeType().equals(Const.IF_STMT_BIG)) {
-					Node thenNode = new NodeImpl(Const.THEN);
+					Node thenNode = new NodeImpl(Const.THEN_BIG);
 					child.addChildWithParent(thenNode);
 					Node bodyNode = getChild(child, Const.BODY);
 					if (bodyNode == null) {
@@ -36,11 +36,11 @@ public class AdjustIfCase extends TreeAdjuster {
 						break;
 					}
 					Node nextChild = children.get(i + 1);
-					if (nextChild.getNodeType().equals(Const.ELSE)) {
+					if (nextChild.getNodeType().equals(Const.ELSE_BIG)) {
 						nextChild.setAttributes(new ArrayList<Attribute>());
 						child.addChildWithParent(nextChild);
 					} else {
-						Node elseNode = new NodeImpl(Const.ELSE);
+						Node elseNode = new NodeImpl(Const.ELSE_BIG);
 						child.addChildWithParent(elseNode);
 						elseNode.addChildWithParent(nextChild);
 					}
