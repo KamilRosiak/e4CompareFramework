@@ -106,7 +106,7 @@ public abstract class TreeAdjuster {
 	 */
 	protected void changeOperator(int index, Node node) {
 		String operator = node.getAttributes().get(0).getAttributeValues().get(0).getValue().toString();
-		String value = "";
+		String value = Const.EMPTY;
 		if (index == 1) {
 			if (operator.equals("++")) {
 				value = "POSTFIX_INCREMENT";
@@ -121,6 +121,6 @@ public abstract class TreeAdjuster {
 			}
 		}
 		node.getAttributes().get(0).getAttributeValues().set(0, new StringValueImpl(value));
-		node.getAttributes().get(0).setAttributeKey("Operator");
+		node.getAttributes().get(0).setAttributeKey(Const.OPERATOR_BIG);
 	}
 }

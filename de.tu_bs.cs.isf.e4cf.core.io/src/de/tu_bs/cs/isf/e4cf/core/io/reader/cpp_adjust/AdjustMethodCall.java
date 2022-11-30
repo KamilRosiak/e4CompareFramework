@@ -22,7 +22,7 @@ public class AdjustMethodCall extends TreeAdjuster {
 		}
 		
 		if  (nodeType.equals(Const.ARGUMENT_SMALL)) {
-			node.setNodeType(Const.ARGUMENT);
+			node.setNodeType(Const.ARGUMENT_BIG);
 			if (node.getChildren().size() == 0) {
 				return;
 			}

@@ -21,14 +21,14 @@ public class AdjustSwitchCase extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if ((nodeType.equals("Body")) && parent.getNodeType().equals("SwitchStmt")) {
+		if ((nodeType.equals(Const.BODY)) && parent.getNodeType().equals(Const.SWITCH_STMT)) {
 			node.cutWithoutChildren();
 			// rearrange Nodes in the Body
 			List<Node> children = node.getChildren().get(0).getChildren();
 			Node switchEntry = null;
 			for (int i = 0; i < children.size(); i++) {
 				Node child = children.get(i);
-				if (child.getNodeType().equals("SwitchEntry")) {
+				if (child.getNodeType().equals(Const.SWITCH_ENTRY)) {
 					switchEntry = child;
 				} else if (switchEntry == null) {
 					continue;
@@ -37,15 +37,14 @@ public class AdjustSwitchCase extends TreeAdjuster {
 					i--; // decrement i because we remove a child
 				}
 			}
-
 		}
-		if (nodeType.equals("Condition") && parent.getNodeType().equals("SwitchStmt")) {
-			Node exprNode = getChild(node, "expr");
+		if (nodeType.equals(Const.CONDITION) && parent.getNodeType().equals(Const.SWITCH_STMT)) {
+			Node exprNode = getChild(node, Const.EXPR);
 			String selector = exprNode.getValueAt(0);
-			parent.addAttribute(new AttributeImpl("Selector", new StringValueImpl(selector)));
+			parent.addAttribute(new AttributeImpl(Const.SELECTOR, new StringValueImpl(selector)));
 			node.cut();
 		}
-		if (nodeType.equals("SwitchEntry")) {
+		if (nodeType.equals(Const.SWITCH_ENTRY)) {
 			if (node.getChildren().isEmpty()) {
 				setDefaultCase(node);
 				return;
@@ -56,24 +55,24 @@ public class AdjustSwitchCase extends TreeAdjuster {
 			}
 			Node exprNode = node.getChildren().get(0);
 			Node conditiongNode = exprNode.getChildren().get(0);
-			if (conditiongNode.getNodeType().equals("Name")) {
+			if (conditiongNode.getNodeType().equals(Const.NAME)) {
 				String condition = node.getValueAt(0);
 				node.setAttributes(new ArrayList<Attribute>());
-				node.addAttribute(new AttributeImpl("Condtion", new StringValueImpl(condition)));
-				node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
+				node.addAttribute(new AttributeImpl(Const.CONDITION, new StringValueImpl(condition)));
+				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.STMT_GRP)));
 				conditiongNode.cut();
 			}
 			String condition = conditiongNode.getValueAt(0);
-			node.addAttribute(new AttributeImpl("Condtion", new StringValueImpl(condition)));
-			node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
+			node.addAttribute(new AttributeImpl(Const.CONDITION, new StringValueImpl(condition)));
+			node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.STMT_GRP)));
 			exprNode.cut();
 		}
 
 	}
 	
 	private void setDefaultCase(Node node) {
-		node.addAttribute(new AttributeImpl("Default", new StringValueImpl("true")));
-		node.addAttribute(new AttributeImpl("Type", new StringValueImpl("STATEMENT_GROUP")));
+		node.addAttribute(new AttributeImpl(Const.DEFAULT_BIG, new StringValueImpl(Const.TRUE)));
+		node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.STMT_GRP)));
 	}
 	
 	private boolean isLastChild(Node node) {

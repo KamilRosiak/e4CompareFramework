@@ -11,15 +11,14 @@ public class AdjustOperator extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals("operator") && !node.getAttributes().isEmpty()) {
+		if (nodeType.equals(Const.OPERATOR_SMALL) && !node.getAttributes().isEmpty()) {
 			String value = node.getValueAt(0);
 			if (value.length() == 1) {
 				String operator = this.getOperatorString(value);
 				node.setAttributes(new ArrayList<Attribute>());
-				node.addAttribute(new AttributeImpl("Operator", new StringValueImpl(operator)));
-				node.setNodeType("BinaryExpr");
+				node.addAttribute(new AttributeImpl(Const.OPERATOR_BIG, new StringValueImpl(operator)));
+				node.setNodeType(Const.BINARY_EXPR);
 			}
 		}
 	}
-
 }

@@ -128,7 +128,7 @@ public class SAXHandler extends AbstractSAXHandler {
 		return (!string.equals(Const.ENUM) && (!string.equals(Const.FOR)
 				&& (!string.equals(Const.WHILE) && (!string.equals(Const.IF) && (!string.equals(Const.SWITCH))
 				&& (!string.equals(Const.ELSE_IF) && (!string.equals(Const.CASE) && (!string.equals(Const.BREAK + Const.SEMICOLON)
-				&& (!string.equals(Const.RETURN + Const.SEMICOLON))&& (!string.equals(Const.DEFAULT + Const.COLON)))))))));
+				&& (!string.equals(Const.RETURN + Const.SEMICOLON))&& (!string.equals(Const.DEFAULT_SMALL + Const.COLON)))))))));
 	}
 
 	private boolean isLegalString(String string) {

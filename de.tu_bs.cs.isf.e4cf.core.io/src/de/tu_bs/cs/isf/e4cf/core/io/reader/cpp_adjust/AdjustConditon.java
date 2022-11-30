@@ -19,7 +19,7 @@ public class AdjustConditon extends TreeAdjuster {
 			Node child = null;
 			for (int i = 0; i < children.size(); i++) {
 				if (children.get(i).getNodeType().equals(Const.BINARY_EXPR)
-						|| children.get(i).getNodeType().equals(Const.OPERATOR)) {
+						|| children.get(i).getNodeType().equals(Const.OPERATOR_SMALL)) {
 					child = children.get(i);
 				}
 			}

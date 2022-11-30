@@ -60,8 +60,8 @@ public final class AdjustAll extends TreeAdjuster {
 				&& parent.getNodeType().equals(Const.ENUM_DECL)) {
 			node.setNodeType(Const.ENUM_CONST_DECL);
 		}
-		if (nodeType.equals(Const.FIELD_DECL) && parent.getNodeType().equals(Const.ARGUMENT)) {
-			node.setNodeType(Const.ARGUMENT);
+		if (nodeType.equals(Const.FIELD_DECL) && parent.getNodeType().equals(Const.ARGUMENT_BIG)) {
+			node.setNodeType(Const.ARGUMENT_BIG);
 			parent.cutWithoutChildren();
 		}
 
@@ -71,7 +71,7 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster forAdjuster = new AdjustForLoop();
 		forAdjuster.adjust(node, parent, nodeType);
 
-		if (nodeType.equals(Const.NAME) || nodeType.equals(Const.TYPE)) {
+		if (nodeType.equals(Const.NAME) || nodeType.equals(Const.TYPE_SMALL)) {
 			node.cutWithoutChildren();
 		}
 		

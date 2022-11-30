@@ -22,7 +22,7 @@ public class AdjustForLoop extends TreeAdjuster {
 			Node child = null;
 			int i = 0;
 			for (int j = 0; j < children.size(); j++) {
-				if (children.get(j).getNodeType().equals(Const.OPERATOR)) {
+				if (children.get(j).getNodeType().equals(Const.OPERATOR_SMALL)) {
 					child = children.get(j);
 					i = j;
 					break;
@@ -45,7 +45,7 @@ public class AdjustForLoop extends TreeAdjuster {
 			}
 			for (int i = 0; i < children.size(); i++) {
 				Node child = children.get(i);
-				if (child.getNodeType().equals(Const.OPERATOR)) {
+				if (child.getNodeType().equals(Const.OPERATOR_SMALL)) {
 					changeOperator(i, child);
 					child.setNodeType(Const.UNARY_EXPR);
 					node.setNodeType(Const.NAME_EXPR);

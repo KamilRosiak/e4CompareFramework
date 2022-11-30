@@ -15,7 +15,7 @@ public class Const {
 	public static final String M_DECL = "MethodDeclaration";
 	public static final String R_TYPE = "ReturnType";
 	public static final String TYPE_BIG = "Type";
-	public static final String TYPE = "type";
+	public static final String TYPE_SMALL = "type";
 	public static final String EXPR = "expr";
 	public static final String EXPR_STMT = "expr_stmt";
 	public static final String INDEX = "index";
@@ -28,7 +28,7 @@ public class Const {
 	public static final String CONTROL = "control";
 	public static final String ENUM_DECL = "EnumDeclaration";
 	public static final String FIELD_DECL = "FieldDeclaration";
-	public static final String ARGUMENT = "Argument";
+	public static final String ARGUMENT_BIG = "Argument";
 	public static final String ARGUMENT_SMALL = "argument";
 	public static final String RETURN_STMT = "ReturnStmt";
 	public static final String ENUM_CONST_DECL= "EnumConstantDeclaration";
@@ -39,7 +39,7 @@ public class Const {
 	public static final String ASSIGN = "ASSIGN";
 	public static final String TARGET = "Target";
 	public static final String OPERATOR_BIG = "Operator";
-	public static final String OPERATOR = "operator";
+	public static final String OPERATOR_SMALL = "operator";
 	public static final String NAME_EXPR = "NameExpr";
 	public static final String ARR_ACCESS_EXPR = "ArrayAccessExpr";
 	public static final String ARR_INIT_EXPR = "ArrayInitializerExpr";
@@ -52,6 +52,10 @@ public class Const {
 	public static final String IF_STMT_BIG = "IfStmt";
 	public static final String IF_STMT_SMALL = "if_stmt";
 	public static final String METHOD_CALL = "MethodCallExpr";
+	public static final String SWITCH_STMT = "SwitchStmt";
+	public static final String SWITCH_ENTRY = "SwitchEntry";
+	public static final String SELECTOR = "Selector";
+	public static final String STMT_GRP = "STATEMENT_GROUP";
 	
 	//illegal Strings
 	public static final String T = "\t";
@@ -84,8 +88,8 @@ public class Const {
 	public static final String CASE = "case";
 	public static final String BREAK = "break";
 	public static final String RETURN = "return";
-	public static final String DEFAULT = "default";
-	
+	public static final String DEFAULT_SMALL = "default";
+	public static final String DEFAULT_BIG = "Default";
 	
 	//data types
 	public static final String LITERAL = "literal";
