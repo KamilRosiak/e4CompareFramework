@@ -1,11 +1,29 @@
 package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
 public class Const {
+	public static final String CPP = "JAVA"; //TODO change this to cpp
+	public static final String IS_INTERFACE = "IsInterface";
+	public static final String FALSE = "false";
+
+	
 	public static final String C_UNIT = "CompilationUnit";
 	public static final String NAME = "Name";
 	public static final String M_DECL = "MethodDeclaration";
 	public static final String R_TYPE = "ReturnType";
-	public static final String TYPE = "Type";
+	public static final String TYPE_BIG = "Type";
+	public static final String TYPE = "type";
+	public static final String EXPR = "expr";
+	
+	
+	
+	//Node Types
+	public static final String BODY = "Body";
+	public static final String CONTROL = "control";
+	public static final String ENUM_DECL = "EnumDeclaration";
+	public static final String FIELD_DECL = "FieldDeclaration";
+	public static final String ARGUMENT = "Argument";
+	public static final String RETURN_STMT = "ReturnStmt";
+	public static final String ENUM_CONST_DECL= "EnumConstantDeclaration";
 	
 	
 	//illegal Strings

@@ -73,7 +73,7 @@ public class SAXHandler extends AbstractSAXHandler {
 				if (parent.getParent().getNodeType().equals(Const.M_DECL)) {
 					attribute.setAttributeKey(Const.R_TYPE);
 				} else {
-					attribute.setAttributeKey(Const.TYPE);
+					attribute.setAttributeKey(Const.TYPE_BIG);
 				}
 				overWriteAttribute(parent.getParent(), attribute);
 			} else if (nodeType.equals(Const.NAME)) {

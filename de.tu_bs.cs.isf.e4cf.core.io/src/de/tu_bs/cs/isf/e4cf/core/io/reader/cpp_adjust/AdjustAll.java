@@ -31,9 +31,9 @@ public final class AdjustAll extends TreeAdjuster {
 			return null;
 		}
 		
-		Node node = new NodeImpl("JAVA"); //TODO change this to C++
+		Node node = new NodeImpl(Const.CPP);
 		node.addChildWithParent(rootNode);
-		rootNode.addAttribute(new AttributeImpl("IsInterface", new StringValueImpl("false")));
+		rootNode.addAttribute(new AttributeImpl(Const.IS_INTERFACE, new StringValueImpl(Const.FALSE)));
 		//TODO implement this correctly: rootNode.addAttribute(new AttributeImpl("AccessModifier", new StringValueImpl("PUBLIC")));
 		
 		TreeAdjuster arrAdjuster = new AdjustArray();
@@ -46,24 +46,22 @@ public final class AdjustAll extends TreeAdjuster {
 		
 		TreeAdjuster conAdjuster = new AdjustConditon();
 		conAdjuster.recursiveAdjust(rootNode);
-		
-
 
 		return node;
 	}
 	
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals("control") || nodeType.equals("Body") && (parent.getNodeType().equals("EnumDeclaration")
-				|| (parent.getNodeType().equals("Body")))) {
+		if (nodeType.equals(Const.CONTROL) || nodeType.equals(Const.BODY) && (parent.getNodeType().equals(Const.ENUM_DECL)
+				|| (parent.getNodeType().equals(Const.BODY)))) {
 			node.cutWithoutChildren();
 		}
-		if (nodeType.equals("FieldDeclaration") // enum edge case
-				&& parent.getNodeType().equals("EnumDeclaration")) {
-			node.setNodeType("EnumConstantDeclaration");
+		if (nodeType.equals(Const.FIELD_DECL) // enum edge case
+				&& parent.getNodeType().equals(Const.ENUM_DECL)) {
+			node.setNodeType(Const.ENUM_CONST_DECL);
 		}
-		if (nodeType.equals("FieldDeclaration") && parent.getNodeType().equals("Argument")) {
-			node.setNodeType("Argument");
+		if (nodeType.equals(Const.FIELD_DECL) && parent.getNodeType().equals(Const.ARGUMENT)) {
+			node.setNodeType(Const.ARGUMENT);
 			parent.cutWithoutChildren();
 		}
 
@@ -73,13 +71,13 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster forAdjuster = new AdjustForLoop();
 		forAdjuster.adjust(node, parent, nodeType);
 
-		if (nodeType.equals("Name") || nodeType.equals("type")) {
+		if (nodeType.equals(Const.NAME) || nodeType.equals(Const.TYPE)) {
 			node.cutWithoutChildren();
 		}
 		
-		if (nodeType.equals("ReturnStmt") && node.getChildren().size() > 0) {
+		if (nodeType.equals(Const.RETURN_STMT) && node.getChildren().size() > 0) {
 			node.setAttributes(new ArrayList<Attribute>());
-			if (node.getChildren().get(0).getNodeType().equals("expr")) {
+			if (node.getChildren().get(0).getNodeType().equals(Const.EXPR)) {
 				node.getChildren().get(0).cutWithoutChildren();
 			}
 		}
