@@ -6,8 +6,8 @@ public class AdjustMethodCall extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
-		if (nodeType.equals("expr_stmt")) {
-			node.setNodeType("MethodCallExpr");
+		if (nodeType.equals(Const.EXPR_STMT)) {
+			node.setNodeType(Const.METHOD_CALL);
 			if (node.getChildren().size() > 0) {
 				Node exprNode = node.getChildren().get(0);
 				if (exprNode.getChildren().size() > 0) {
@@ -21,8 +21,8 @@ public class AdjustMethodCall extends TreeAdjuster {
 			}
 		}
 		
-		if  (nodeType.equals("argument")) {
-			node.setNodeType("Argument");
+		if  (nodeType.equals(Const.ARGUMENT_SMALL)) {
+			node.setNodeType(Const.ARGUMENT);
 			if (node.getChildren().size() == 0) {
 				return;
 			}

@@ -29,6 +29,7 @@ public class Const {
 	public static final String ENUM_DECL = "EnumDeclaration";
 	public static final String FIELD_DECL = "FieldDeclaration";
 	public static final String ARGUMENT = "Argument";
+	public static final String ARGUMENT_SMALL = "argument";
 	public static final String RETURN_STMT = "ReturnStmt";
 	public static final String ENUM_CONST_DECL= "EnumConstantDeclaration";
 	public static final String INIT = "Initialization";
@@ -50,6 +51,7 @@ public class Const {
 	public static final String THEN = "Then";
 	public static final String IF_STMT_BIG = "IfStmt";
 	public static final String IF_STMT_SMALL = "if_stmt";
+	public static final String METHOD_CALL = "MethodCallExpr";
 	
 	//illegal Strings
 	public static final String T = "\t";
