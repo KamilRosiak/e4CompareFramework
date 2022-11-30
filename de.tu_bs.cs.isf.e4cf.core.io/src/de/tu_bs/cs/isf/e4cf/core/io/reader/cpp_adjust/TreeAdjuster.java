@@ -75,22 +75,22 @@ public abstract class TreeAdjuster {
 	 */
 	protected String getOperatorString(String operator) {
 		switch (operator) {
-		case "<":
-			return "LESS";
-		case ">":
-			return "GREATER";
-		case ">=":
-			return "GREATER_EQUALS";
-		case "<=":
-			return "LESS_EQUALS";
-		case "/":
-			return "DIVIDE";
-		case "+":
-			return "PLUS";
-		case "-":
-			return "MINUS";
-		case "*":
-			return "MULTIPLY";
+		case Const.LESS_OP:
+			return Const.LESS;
+		case Const.GREATER_OP:
+			return Const.GREATER;
+		case Const.GREATER_EQUALS_OP:
+			return Const.GREATER_EQUALS;
+		case Const.LESS_EQUALS_OP:
+			return Const.LESS_EQUALS;
+		case Const.DIVIDE_OP:
+			return Const.DIVIDE;
+		case Const.PLUS_OP:
+			return Const.PLUS;
+		case Const.MINUS_OP:
+			return Const.MINUS;
+		case Const.MULTIPLY_OP:
+			return Const.MULTIPLY;
 		default:
 			return operator;
 		}
@@ -108,16 +108,16 @@ public abstract class TreeAdjuster {
 		String operator = node.getAttributes().get(0).getAttributeValues().get(0).getValue().toString();
 		String value = Const.EMPTY;
 		if (index == 1) {
-			if (operator.equals("++")) {
-				value = "POSTFIX_INCREMENT";
-			} else if (operator.equals("--")) {
-				value = "POSTFIX_DECREMENT";
+			if (operator.equals(Const.PLUS_PLUS)) {
+				value = Const.POSTFIX_INCREMENT;
+			} else if (operator.equals(Const.MINUS_MINUS)) {
+				value = Const.POSTFIX_DECREMENT;
 			}
 		} else if (index == 0) {
-			if (operator.equals("++")) {
-				value = "PREFIX_INCREMENT";
-			} else if (operator.equals("--")) {
-				value = "PREFIX_DECREMENT";
+			if (operator.equals(Const.PLUS_PLUS)) {
+				value = Const.PREFIX_INCREMENT;
+			} else if (operator.equals(Const.MINUS_MINUS)) {
+				value = Const.PREFIX_DECREMENT;
 			}
 		}
 		node.getAttributes().get(0).getAttributeValues().set(0, new StringValueImpl(value));

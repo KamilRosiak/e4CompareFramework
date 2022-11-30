@@ -133,7 +133,7 @@ public class SAXHandler extends AbstractSAXHandler {
 
 	private boolean isLegalString(String string) {
 		return (!string.contains(Const.T)) && (!string.equals(Const.EMPTY)) && (!string.equals(Const.HASHTAG))
-				&& (!string.equals(Const.LESS_OP)) && (!string.equals(Const.BIGGER_OP)) && (!string.equals(Const.DOT))
+				&& (!string.equals(Const.LESS_OP)) && (!string.equals(Const.GREATER_OP)) && (!string.equals(Const.DOT))
 				&& (!string.equals(Const.COMMA)) && (!string.equals(Const.COMMA + Const.SPACE))
 				&& (!string.equals(Const.COLON)) && (!string.equals(Const.SEMICOLON))
 				&& (!string.equals(Const.BRACKET_CURVED_L)) && (!string.equals(Const.BRACKET_CURVED_R))

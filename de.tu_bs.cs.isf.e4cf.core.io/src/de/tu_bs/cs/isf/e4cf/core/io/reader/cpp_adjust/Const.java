@@ -62,7 +62,7 @@ public class Const {
 	public static final String EMPTY = "";
 	public static final String HASHTAG = "#";
 	public static final String LESS_OP = "<";
-	public static final String BIGGER_OP = ">";
+	public static final String GREATER_OP = ">";
 	public static final String DOT = ".";
 	public static final String COMMA = ",";
 	public static final String SPACE = " ";
@@ -76,6 +76,29 @@ public class Const {
 	public static final String LINE_BREAK = "\n";
 	public static final String EQ = "=";
 	
+	
+	//operators
+	public static final String LESS = "LESS";
+	public static final String GREATER = "GREATER";
+	public static final String GREATER_EQUALS ="GREATER_EQUALS";
+	public static final String LESS_EQUALS = "LESS_EQUALS";
+	public static final String DIVIDE = "DIVIDE";
+	public static final String PLUS = "PLUS";
+	public static final String MINUS = "MINUS";
+	public static final String MULTIPLY = "MULTIPLY";
+	public static final String GREATER_EQUALS_OP = ">=";
+	public static final String LESS_EQUALS_OP = "<=";
+	public static final String DIVIDE_OP = "/";
+	public static final String PLUS_OP = "+";
+	public static final String MINUS_OP = "-";
+	public static final String MULTIPLY_OP = "*";
+	public static final String PLUS_PLUS = "++";
+	public static final String MINUS_MINUS = "--";
+	public static final String POSTFIX_INCREMENT = "POSTFIX_INCREMENT";
+	public static final String POSTFIX_DECREMENT = "POSTFIX_DECREMENT";
+	public static final String PREFIX_INCREMENT = "PREFIX_INCREMENT";
+	public static final String PREFIX_DECREMENT = "PREFIX_DECREMENT";
+
 
 
 	//redundant Strings
