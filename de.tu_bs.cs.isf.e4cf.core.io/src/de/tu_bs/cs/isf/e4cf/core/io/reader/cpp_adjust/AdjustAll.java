@@ -35,12 +35,13 @@ public final class AdjustAll extends TreeAdjuster {
 		node.addChildWithParent(rootNode);
 		rootNode.addAttribute(new AttributeImpl(Const.IS_INTERFACE, new StringValueImpl(Const.FALSE)));
 		//TODO implement this correctly: rootNode.addAttribute(new AttributeImpl("AccessModifier", new StringValueImpl("PUBLIC")));
+				
+		TreeAdjuster arrAdjuster = new AdjustArray();
+		arrAdjuster.recursiveAdjust(rootNode);
+		
 		
 		TreeAdjuster assignAdjuster = new AdjustAssignment();
 		assignAdjuster.recursiveAdjust(rootNode);
-		
-		TreeAdjuster arrAdjuster = new AdjustArray();
-		arrAdjuster.recursiveAdjust(rootNode);
 		
 		recursiveAdjust(rootNode);
 		
@@ -49,7 +50,7 @@ public final class AdjustAll extends TreeAdjuster {
 		
 		TreeAdjuster conAdjuster = new AdjustConditon();
 		conAdjuster.recursiveAdjust(rootNode);
-
+		
 		return node;
 	}
 	

@@ -16,13 +16,14 @@ public class AdjustArray extends TreeAdjuster {
 		if (nodeType.equals(Const.INDEX) && parent.getParent().getParent().getNodeType().equals(Const.INITIALIZATION)
 				&& !node.getChildren().isEmpty()) {
 			if (!parent.getAttributes().isEmpty()) {
+				int i = -1;
 				try {
-					parent.getParent().getParent().cut();
+					i = parent.getParent().getParent().cut();
 				} catch (ArrayIndexOutOfBoundsException e) {
 					return; // node already has been cut
 				}
 				Node realParent = parent.getParent().getParent().getParent();
-				addArrayAccessExpr(node, realParent);
+				addArrayAccessExpr(node, realParent, i);
 				realParent.setNodeType(Const.VARIABLE_DECL);
 				realParent.getParent().setNodeType(Const.VARIABLE_DECL_EXPR);
 			}
@@ -45,12 +46,9 @@ public class AdjustArray extends TreeAdjuster {
 					String target = parent.getParent().getValueAt(0);
 					assignment.addAttribute(new AttributeImpl(Const.TARGET, new StringValueImpl(target)));
 					assignment.addAttribute(new AttributeImpl(Const.OPERATOR_BIG, new StringValueImpl(Const.ASSIGN)));
-					removable.cut();
-					addArrayAccessExpr(node, assignment);
-					
+					addArrayAccessExpr(node, assignment, removable.cut());
 				} else {
-					addArrayAccessExpr(node, parent.getParent());
-					node.getParent().cut();
+					addArrayAccessExpr(node, parent.getParent(), node.getParent().cut());
 				}
 			}
 
@@ -83,7 +81,7 @@ public class AdjustArray extends TreeAdjuster {
 
 	}
 	
-	private void addArrayAccessExpr(Node node, Node accessParent) {
+	private void addArrayAccessExpr(Node node, Node accessParent, int position) {
 		Node exprNode = node.getChildren().get(0);
 		String value = Const.EMPTY;
 		for (Node child : exprNode.getChildren()) {
@@ -92,7 +90,9 @@ public class AdjustArray extends TreeAdjuster {
 		value = value.trim();
 		String name = node.getParent().getValueAt(0);
 		
-		Node access = new NodeImpl(Const.ARR_ACCESS_EXPR, accessParent);
+		Node access = new NodeImpl(Const.ARR_ACCESS_EXPR);
+		access.setParent(accessParent);
+		accessParent.addChild(access, position);
 		access.addAttribute(new AttributeImpl(Const.VALUE, new StringValueImpl(value)));
 		Node lastAccess = access;
 
