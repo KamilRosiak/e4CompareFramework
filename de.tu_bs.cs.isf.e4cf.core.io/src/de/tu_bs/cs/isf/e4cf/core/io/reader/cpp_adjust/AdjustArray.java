@@ -39,7 +39,7 @@ public class AdjustArray extends TreeAdjuster {
 						}
 					}
 				}
-				Node realParent = parent.getParent().getParent().getParent();
+				/*Node realParent = parent.getParent();
 				Node removable = realParent.getChildren().get(0);
 				if (!parent.getParent().getAttributes().isEmpty() && removable.getNodeType().equals(Const.EXPR_STMT)) {
 					Node assignment = new NodeImpl(Const.ASSIGNMENT, realParent);
@@ -48,7 +48,12 @@ public class AdjustArray extends TreeAdjuster {
 					assignment.addAttribute(new AttributeImpl(Const.OPERATOR_BIG, new StringValueImpl(Const.ASSIGN)));
 					addArrayAccessExpr(node, assignment, removable.cut());
 				} else {
-					addArrayAccessExpr(node, parent.getParent(), node.getParent().cut());
+					addArrayAccessExpr(node, parent.getParent(), parent.cut());
+				}*/
+				try {
+					addArrayAccessExpr(node, parent.getParent(), parent.cut());
+				} catch (ArrayIndexOutOfBoundsException e) {
+					return; // node already has been cut
 				}
 			}
 
