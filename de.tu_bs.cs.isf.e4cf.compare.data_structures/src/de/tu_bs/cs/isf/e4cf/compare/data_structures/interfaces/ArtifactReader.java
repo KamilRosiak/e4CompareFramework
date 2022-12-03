@@ -7,8 +7,19 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
  * @author Kamil Rosiak
  */
 public interface ArtifactReader {
-    	public Tree readArtifact(FileTreeElement element);
-    	public String[] getSupportedFiles();
+	
+	/**
+	 * This method reads the given artifact into the {@link Tree} data structure.
+	 * @param element An artifact to read
+	 * @return Parsed artifact as a Tree instance
+	 */
+	public Tree readArtifact(FileTreeElement element);
+	
+	/**
+	 * This method returns all file endings that are supported
+	 * @return String array of file endings e.g ".txt", ".xml", ".java", ...
+	 */
+    public String[] getSupportedFiles();
 
 	/**
 	 * This method checks if the current fileEnding is supported
