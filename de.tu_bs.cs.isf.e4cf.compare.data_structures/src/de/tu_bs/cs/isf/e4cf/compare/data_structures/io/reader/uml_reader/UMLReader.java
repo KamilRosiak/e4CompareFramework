@@ -43,7 +43,7 @@ public class UMLReader extends AbstractArtifactReader {
 		});
 
 		// System.out.println(model);
-		return new TreeImpl("UML Tree");
+		return new TreeImpl(umlModel.getName());
 	}
 
 	private Node processModelElements(NamedElement element, Node parent) {
@@ -53,8 +53,10 @@ public class UMLReader extends AbstractArtifactReader {
 			classElement.allOwnedElements().forEach(innerElement -> {
 				if (innerElement instanceof Property) {
 					Property property = (Property) innerElement;
-					System.out.println("    property: " + property.getName() + " type:" + property.getType().getName() +" visibility: " + property.getVisibility().getLiteral());
-
+					System.out.println(
+							"    property: " + property.getName() + 
+							" type:" + property.getType().getName() +
+							" visibility: " + property.getVisibility().getLiteral());
 				}
 
 			});
