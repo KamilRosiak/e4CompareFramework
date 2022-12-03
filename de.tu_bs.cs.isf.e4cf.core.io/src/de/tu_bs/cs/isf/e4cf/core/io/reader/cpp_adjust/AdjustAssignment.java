@@ -48,10 +48,10 @@ public class AdjustAssignment extends TreeAdjuster {
 					assignment.addAttribute(new AttributeImpl(Const.TARGET, new StringValueImpl(combineToString(targetList))));
 					assignment.addAttribute(new AttributeImpl(Const.OPERATOR_BIG, new StringValueImpl(Const.ASSIGN)));
 					
-					if (valueList.size() == 1) {
+					if (valueList.size() == 1 && !valueList.get(0).getNodeType().equals(Const.NAME_BIG)) {
 						valueList.get(0).updateParent(assignment);
 					} else {
-						Node valueNode = new NodeImpl("Value", assignment);
+						Node valueNode = new NodeImpl(Const.NAME_EXPR, assignment);
 						valueNode.addAttribute(new AttributeImpl(Const.VALUE, new StringValueImpl(combineToString(valueList))));
 					}
 				}

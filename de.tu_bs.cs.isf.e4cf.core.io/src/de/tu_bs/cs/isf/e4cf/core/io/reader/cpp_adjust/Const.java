@@ -25,6 +25,7 @@ public class Const {
 	public static final String COMMENT_SMALL = "comment";
 	public static final String SLASH_TWICE = "//";
 	
+	
 	//Node Types
 	public static final String BODY = "Body";
 	public static final String CONTROL = "control";
@@ -105,6 +106,7 @@ public class Const {
 	public static final String POSTFIX_DECREMENT = "POSTFIX_DECREMENT";
 	public static final String PREFIX_INCREMENT = "PREFIX_INCREMENT";
 	public static final String PREFIX_DECREMENT = "PREFIX_DECREMENT";
+	public static final String MODIFIER = "modifier";
 
 
 

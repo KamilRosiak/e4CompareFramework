@@ -78,6 +78,9 @@ public final class AdjustAll extends TreeAdjuster {
 		if (nodeType.equals(Const.NAME_BIG) || nodeType.equals(Const.TYPE_SMALL)) {
 			node.cutWithoutChildren();
 		}
+		if (nodeType.equals(Const.MODIFIER) && node.getAttributes().isEmpty()) {
+			node.cutWithoutChildren();
+		}
 		
 		if (nodeType.equals(Const.RETURN_STMT) && node.getChildren().size() > 0) {
 			node.setAttributes(new ArrayList<Attribute>());
