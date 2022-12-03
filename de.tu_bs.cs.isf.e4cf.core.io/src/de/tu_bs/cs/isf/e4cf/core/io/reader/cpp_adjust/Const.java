@@ -180,9 +180,4 @@ public class Const {
 	public static final String PARAM = "parameter";
 	public static final String PARAM_LIST = "parameter_list";
 	public static final String FUNCTION = "function";
-	public static final String
-	public static final String
-	public static final String
-	
-	
 }

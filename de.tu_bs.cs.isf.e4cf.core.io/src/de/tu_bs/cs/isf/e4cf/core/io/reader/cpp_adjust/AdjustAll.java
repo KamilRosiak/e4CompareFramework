@@ -36,6 +36,9 @@ public final class AdjustAll extends TreeAdjuster {
 		rootNode.addAttribute(new AttributeImpl(Const.IS_INTERFACE, new StringValueImpl(Const.FALSE)));
 		//TODO implement this correctly: rootNode.addAttribute(new AttributeImpl("AccessModifier", new StringValueImpl("PUBLIC")));
 		
+		TreeAdjuster assignAdjuster = new AdjustAssignment();
+		assignAdjuster.recursiveAdjust(rootNode);
+		
 		TreeAdjuster arrAdjuster = new AdjustArray();
 		arrAdjuster.recursiveAdjust(rootNode);
 		
