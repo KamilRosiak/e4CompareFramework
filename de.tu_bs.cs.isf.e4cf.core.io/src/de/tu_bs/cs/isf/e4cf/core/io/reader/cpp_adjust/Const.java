@@ -64,6 +64,8 @@ public class Const {
 	public static final String SWITCH_ENTRY = "SwitchEntry";
 	public static final String SELECTOR = "Selector";
 	public static final String STMT_GRP = "STATEMENT_GROUP";
+	public static final String CALL = "call";
+	
 	
 	//illegal Strings
 	public static final String T = "\t";

@@ -73,6 +73,7 @@ public final class RenamerCpp {
 		map.put(Const.NAME_SMALL, Const.NAME_BIG);
 		map.put(Const.CASE, Const.SWITCH_ENTRY);
 		map.put(Const.DEFAULT_SMALL, Const.SWITCH_ENTRY);
+		map.put(Const.CALL, Const.METHOD_CALL);
 		
 		addLiterals();
 

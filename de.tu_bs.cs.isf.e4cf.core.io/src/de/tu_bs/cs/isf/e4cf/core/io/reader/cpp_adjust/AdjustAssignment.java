@@ -69,6 +69,18 @@ public class AdjustAssignment extends TreeAdjuster {
 					String text = node.getChildren().get(0).getValueAt(0);
 					text += "[" + node.getValueAt(0) + "]";
 					value += text;
+				} else if (node.getNodeType().equals(Const.METHOD_CALL)) {
+					String name = node.getValueAt(0);
+					String attributes = Const.EMPTY;
+					List<Node> attrNodes = node.getChildren().get(1).getChildren();
+					for (int i = 0; i < attrNodes.size(); i++) {
+						Node attr = attrNodes.get(i).getChildren().get(0);
+						attributes += attr.getValueAt(0);
+						if (i + 1 != attrNodes.size()) {
+							attributes += " ,";
+						}
+					}
+					value += name + "(" + attributes + ")";
 				} else {
 					value += node.getValueAt(0);
 				}
