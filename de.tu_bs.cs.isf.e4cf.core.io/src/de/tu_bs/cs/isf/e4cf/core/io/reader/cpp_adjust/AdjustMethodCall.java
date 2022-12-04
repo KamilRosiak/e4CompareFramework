@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 public class AdjustMethodCall extends TreeAdjuster {
@@ -16,6 +17,10 @@ public class AdjustMethodCall extends TreeAdjuster {
 						node.addAttribute(callNode.getAttributes().get(0));
 						callNode.cutWithoutChildren();
 					}
+				}
+				if (!exprNode.getAttributes().isEmpty()) {
+					Node nameExpr = new NodeImpl(Const.NAME_EXPR, node);
+					nameExpr.addAttribute(exprNode.getAttributes().get(0));
 				}
 				exprNode.cutWithoutChildren();
 			}

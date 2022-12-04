@@ -1,8 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
@@ -13,6 +10,9 @@ public class AdjustArray extends TreeAdjuster {
 
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
+		if (nodeType.equals(Const.INDEX) && !parent.getNodeType().equals(Const.NAME_BIG)) {
+			return;
+		}
 		if (nodeType.equals(Const.INDEX) && parent.getParent().getParent().getNodeType().equals(Const.INITIALIZATION)
 				&& !node.getChildren().isEmpty()) {
 			if (!parent.getAttributes().isEmpty()) {
