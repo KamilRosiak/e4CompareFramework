@@ -8,6 +8,13 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
+/**
+ * This class adjust the given tree according to value assignments. E.g int value = 3;
+ * It works for array assignments just as for variables.
+ * 
+ * @author david bumm
+ *
+ */
 public class AdjustAssignment extends TreeAdjuster {
 
 	@Override
@@ -20,11 +27,13 @@ public class AdjustAssignment extends TreeAdjuster {
 				boolean beforeOP = true;
 				List<Node> targetList = new ArrayList<>();
 				List<Node> valueList = new ArrayList<>();
+				String op = Const.EMPTY;
 				
 				for (Node child : exprNode.getChildren()) {
-					if (child.getNodeType().equals(Const.OPERATOR_SMALL) && child.getValueAt(0).equals(Const.EQ)) {
+					if (child.getNodeType().equals(Const.OPERATOR_SMALL) && child.getValueAt(0).contains(Const.EQ)) {
 						found = true;
 						beforeOP = false;
+						op = child.getValueAt(0);
 					} 
 					else if (beforeOP) {
 						targetList.add(child);
@@ -37,7 +46,7 @@ public class AdjustAssignment extends TreeAdjuster {
 					assignment.setParent(node.getParent());
 					node.getParent().addChild(assignment,node.cut());
 					assignment.addAttribute(new AttributeImpl(Const.TARGET, new StringValueImpl(combineToString(targetList))));
-					assignment.addAttribute(new AttributeImpl(Const.OPERATOR_BIG, new StringValueImpl(Const.ASSIGN)));
+					assignment.addAttribute(new AttributeImpl(Const.OPERATOR_BIG, new StringValueImpl(getOperation(op))));
 					
 					if (valueList.size() == 1 && !valueList.get(0).getNodeType().equals(Const.NAME_BIG)) {
 						valueList.get(0).updateParent(assignment);
@@ -66,5 +75,22 @@ public class AdjustAssignment extends TreeAdjuster {
 			}
 		}
 		return value;
+	}
+	
+	private String getOperation(String op) {
+		switch (op) {
+		case Const.EQ:
+			return Const.ASSIGN;
+		case Const.PLUS_OP + Const.EQ:
+			return Const.PLUS;
+		case Const.DIVIDE_OP + Const.EQ:
+			return Const.DIVIDE;
+		case Const.MULTIPLY_OP + Const.EQ:
+			return Const.MULTIPLY;
+		case Const.MINUS_OP + Const.EQ:
+			return Const.MINUS;
+		default:
+			return Const.EMPTY;
+		}
 	}
 }

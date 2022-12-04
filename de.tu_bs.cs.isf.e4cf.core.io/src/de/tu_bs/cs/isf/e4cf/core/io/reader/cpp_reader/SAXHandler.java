@@ -51,7 +51,7 @@ public class SAXHandler extends AbstractSAXHandler {
 
 	@Override
 	public void characters(char ch[], int start, int length) {
-		String value = "";
+		String value = Const.EMPTY;
 		for (int i = 0; i < length; i++) {
 			value += ch[start + i];
 		}
@@ -63,10 +63,10 @@ public class SAXHandler extends AbstractSAXHandler {
 		if (value.equals(nodeType)) {
 			return; // redundant value
 		}
-		if (value.equals("string")) {
-			value = "String";
+		if (value.equals(Const.STRING.toLowerCase())) {
+			value = Const.STRING;
 		}
-		if (nodeType.equals("operator") || (isLegalString(value) && isntRedundant(value))) {
+		if (nodeType.equals(Const.OPERATOR_SMALL) || (isLegalString(value) && isntRedundant(value))) {
 			AttributeImpl attribute = new AttributeImpl(Const.NAME_BIG);
 			attribute.addAttributeValue(new StringValueImpl(value));
 			if (containsTypeInfo(node)) {
@@ -105,7 +105,7 @@ public class SAXHandler extends AbstractSAXHandler {
 		}
 		if (oldAttribute != null) {
 			String oldValue = oldAttribute.getAttributeValues().get(0).getValue().toString();
-			oldAttribute.getAttributeValues().get(0).setValue(oldValue + newValue);
+			oldAttribute.getAttributeValues().get(0).setValue(oldValue + Const.SPACE + newValue);
 		} else {
 			if (node.getNodeType().equals(Const.NAME_BIG) && node.getParent() != null) {
 				node.getParent().addAttribute(attribute);
@@ -121,7 +121,7 @@ public class SAXHandler extends AbstractSAXHandler {
 			return false;
 		}
 		String parentType = node.getParent().getNodeType();
-		return parentType.equals("type") && (nodeType.equals("modifier") || nodeType.equals(Const.NAME_BIG));
+		return parentType.equals(Const.TYPE_SMALL) && (nodeType.equals(Const.MODIFIER) || nodeType.equals(Const.NAME_BIG));
 	}
 
 	private boolean isntRedundant(String string) {
