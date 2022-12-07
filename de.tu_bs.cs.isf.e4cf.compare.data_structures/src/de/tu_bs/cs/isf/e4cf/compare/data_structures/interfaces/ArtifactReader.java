@@ -17,7 +17,7 @@ public interface ArtifactReader {
 	
 	/**
 	 * This method returns all file endings that are supported
-	 * @return String array of file endings e.g ".txt", ".xml", ".java", ...
+	 * @return String array of file endings e.g "txt", "xml", "java", ...
 	 */
     public String[] getSupportedFiles();
 

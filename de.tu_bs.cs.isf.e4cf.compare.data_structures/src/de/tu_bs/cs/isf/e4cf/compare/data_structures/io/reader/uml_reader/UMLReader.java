@@ -88,7 +88,7 @@ public class UMLReader extends AbstractArtifactReader {
 		Node node = null;
 		if (element instanceof Class) {
 			node = new NodeImpl(NodeType.CLASS);
-			
+		} else if (element instanceof Property) {
 			node = new NodeImpl(NodeType.PROPERTY);
 		} else if (element instanceof Package) {
 			node = new NodeImpl(NodeType.PACKAGE);
