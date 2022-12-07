@@ -81,7 +81,7 @@ public enum NodeType {
 	UPDATE, VARIABLE_DECLARATION, // INTERESTING
 	VARIABLE_DECLARATOR, CONFIGURATION, COMPONENT, PACKAGE, // UML types
 	ASSOCIATION, // UML types
-	PROPERTY// UML types
+	PROPERTY, OPERATION, GENERALIZATION// UML types
 	;
 
 	public static NodeType fromString(String name) {
