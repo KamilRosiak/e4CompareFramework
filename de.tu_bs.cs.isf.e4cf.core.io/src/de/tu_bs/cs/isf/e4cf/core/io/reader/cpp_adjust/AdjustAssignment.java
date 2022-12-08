@@ -9,10 +9,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
+ * This class is a sub class of TreeAdjuster.
  * This class adjust the given tree according to value assignments. E.g int value = 3;
  * It works for array assignments just as for variables.
+ * It is initially called by AdjustAll.
  * 
- * @author david bumm
+ * @author David Bumm
  *
  */
 public class AdjustAssignment extends TreeAdjuster {

@@ -1,8 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
-
+/**
+ * This class contains only constants used for the adjustment of cpp Node Types
+ * 
+ * @author David Bumm
+ *
+ */
 public class Const {
 	public static final String CPP = "JAVA"; //TODO change this to cpp
 	public static final String IS_INTERFACE = "IsInterface";

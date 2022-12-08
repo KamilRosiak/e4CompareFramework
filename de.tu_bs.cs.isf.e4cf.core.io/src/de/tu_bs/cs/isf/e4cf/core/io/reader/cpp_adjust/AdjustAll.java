@@ -5,10 +5,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 
