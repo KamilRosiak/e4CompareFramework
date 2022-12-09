@@ -37,9 +37,11 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster arrAdjuster = new AdjustArray();
 		arrAdjuster.recursiveAdjust(rootNode);
 		
-		
 		TreeAdjuster assignAdjuster = new AdjustAssignment();
 		assignAdjuster.recursiveAdjust(rootNode);
+		
+		TreeAdjuster nameAdjuster = new AdjustName();
+		nameAdjuster.recursiveAdjust(rootNode);
 		
 		recursiveAdjust(rootNode);
 		
@@ -79,9 +81,10 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster forAdjuster = new AdjustForLoop();
 		forAdjuster.adjust(node, parent, nodeType);
 
-		if (nodeType.equals(Const.NAME_BIG) || nodeType.equals(Const.TYPE_SMALL)) {
+		if (nodeType.equals(Const.TYPE_SMALL)) {
 			node.cutWithoutChildren();
 		}
+	
 		if (nodeType.equals(Const.MODIFIER) && node.getAttributes().isEmpty()) {
 			node.cutWithoutChildren();
 		}
