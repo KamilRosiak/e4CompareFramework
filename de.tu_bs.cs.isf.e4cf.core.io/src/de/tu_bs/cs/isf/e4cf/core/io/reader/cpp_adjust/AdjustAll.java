@@ -49,6 +49,12 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster conAdjuster = new AdjustConditon();
 		conAdjuster.recursiveAdjust(rootNode);
 		
+		TreeAdjuster renameAdjuster = new AdjustRename();
+		renameAdjuster.recursiveAdjust(rootNode);
+		
+		TreeAdjuster specAdjuster = new AdjustSpecifier();
+		specAdjuster.recursiveAdjust(rootNode);
+		
 		return node;
 	}
 	

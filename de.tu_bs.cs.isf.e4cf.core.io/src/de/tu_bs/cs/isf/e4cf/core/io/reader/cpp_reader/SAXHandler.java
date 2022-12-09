@@ -104,7 +104,12 @@ public class SAXHandler extends AbstractSAXHandler {
 		}
 		if (oldAttribute != null) {
 			String oldValue = oldAttribute.getAttributeValues().get(0).getValue().toString();
-			oldAttribute.getAttributeValues().get(0).setValue(oldValue + Const.SPACE + newValue);
+			if (node.getNodeType().equals(Const.OPERATOR_SMALL)) {
+				oldAttribute.getAttributeValues().get(0).setValue(oldValue + newValue);
+			} else {
+				oldAttribute.getAttributeValues().get(0).setValue(oldValue + Const.SPACE + newValue);
+			}
+			
 		} else {
 			if (node.getNodeType().equals(Const.NAME_BIG) && node.getParent() != null) {
 				node.getParent().addAttribute(attribute);
