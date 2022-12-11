@@ -34,21 +34,13 @@ public class AdjustMethodCall extends TreeAdjuster {
 			}
 		}
 		
-		if  (nodeType.equals(Const.ARGUMENT_SMALL)) {
-			node.setNodeType(Const.ARGUMENT_BIG);
-			if (node.getChildren().size() == 0) {
+		if (nodeType.equals(Const.ARGUMENT_SMALL)) {
+			if (node.getChildren().isEmpty()) {
 				return;
 			}
-			Node nodeWithValue = node.getChildren().get(0);
-			if (nodeWithValue.getChildren().size() > 0) {
-				Node old = nodeWithValue;
-				nodeWithValue = nodeWithValue.getChildren().get(0);
-				old.cut();
-			}
-			if (nodeWithValue.getAttributes().size() > 0) {
-				node.addAttribute(nodeWithValue.getAttributes().get(0));
-			}
-			nodeWithValue.cut();
+			Node exprNode = node.getChildren().get(0);
+			exprNode.cutWithoutChildren();
+			node.cutWithoutChildren();
 		}
 
 	}
