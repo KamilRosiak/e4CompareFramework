@@ -69,6 +69,7 @@ public class Const {
 	public static final String STMT_GRP = "STATEMENT_GROUP";
 	public static final String CALL = "call";
 	public static final String SPECIFIER = "Specifier";
+	public static final String TYPEDEF = "typedef";
 	
 	
 	//illegal Strings

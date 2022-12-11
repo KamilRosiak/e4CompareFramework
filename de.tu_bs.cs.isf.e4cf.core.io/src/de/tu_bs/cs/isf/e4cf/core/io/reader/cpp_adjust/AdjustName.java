@@ -7,13 +7,37 @@ public class AdjustName extends TreeAdjuster {
 	@Override
 	protected void adjust(Node node, Node parent, String nodeType) {
 		if (nodeType.equals(Const.NAME_BIG)) {
-			if (parent.getNodeType().equals(Const.EXPR)) {
+			if (keep(node)) {
 				node.setNodeType(Const.NAME_EXPR);
 			} else {
 				node.cutWithoutChildren();
 			}
 		}
+		
+		if (nodeType.equals(Const.TYPE_SMALL)) {
+			node.cutWithoutChildren();
+		}
+	
+		if (nodeType.equals(Const.MODIFIER) && node.getAttributes().isEmpty()) {
+			node.cutWithoutChildren();
+		}
 
+	}
+	
+	private boolean keep(Node node) {
+		String parentType = node.getParent().getNodeType();
+		boolean hasOperator = false;
+		for (Node sibling: node.getParent().getChildren()) {
+			if (sibling.getNodeType().equals(Const.OPERATOR_SMALL)) {
+				hasOperator = true;
+			}
+		}
+		if (!node.getAttributes().isEmpty() && !node.getParent().getAttributes().isEmpty()
+				&& node.getValueAt(0).equals(node.getParent().getValueAt(0))) {
+			return false;
+		}
+		
+		return /*hasOperator ||*/ parentType.equals(Const.EXPR);
 	}
 
 }

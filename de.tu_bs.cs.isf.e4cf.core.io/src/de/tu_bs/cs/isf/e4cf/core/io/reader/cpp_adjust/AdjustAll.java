@@ -40,6 +40,12 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster assignAdjuster = new AdjustAssignment();
 		assignAdjuster.recursiveAdjust(rootNode);
 		
+		TreeAdjuster opAdjuster = new AdjustOperator();
+		opAdjuster.recursiveAdjust(rootNode);
+		
+		TreeAdjuster literalAdjuster = new AdjustLiterals();
+		literalAdjuster.recursiveAdjust(rootNode);
+		
 		TreeAdjuster nameAdjuster = new AdjustName();
 		nameAdjuster.recursiveAdjust(rootNode);
 		
@@ -75,19 +81,11 @@ public final class AdjustAll extends TreeAdjuster {
 			parent.cutWithoutChildren();
 		}
 
-		TreeAdjuster literalAdjuster = new AdjustLiterals();
-		literalAdjuster.adjust(node, parent, nodeType);
+
 
 		TreeAdjuster forAdjuster = new AdjustForLoop();
 		forAdjuster.adjust(node, parent, nodeType);
 
-		if (nodeType.equals(Const.TYPE_SMALL)) {
-			node.cutWithoutChildren();
-		}
-	
-		if (nodeType.equals(Const.MODIFIER) && node.getAttributes().isEmpty()) {
-			node.cutWithoutChildren();
-		}
 		
 		if (nodeType.equals(Const.RETURN_STMT) && node.getChildren().size() > 0) {
 			node.setAttributes(new ArrayList<Attribute>());
@@ -102,9 +100,7 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster switchAdjuster = new AdjustSwitchCase();
 		switchAdjuster.adjust(node, parent, nodeType);
 
-		
-		TreeAdjuster opAdjuster = new AdjustOperator();
-		opAdjuster.adjust(node, parent, nodeType);
+
 		
 	
 		TreeAdjuster commentAdjuster = new AdjustComment();

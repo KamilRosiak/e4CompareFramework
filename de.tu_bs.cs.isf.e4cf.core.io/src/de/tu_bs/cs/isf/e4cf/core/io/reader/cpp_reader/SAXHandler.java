@@ -62,9 +62,6 @@ public class SAXHandler extends AbstractSAXHandler {
 		if (value.equals(nodeType)) {
 			return; // redundant value
 		}
-		if (value.equals(Const.STRING.toLowerCase())) {
-			value = Const.STRING;
-		}
 		if (nodeType.equals(Const.OPERATOR_SMALL) || (isLegalString(value) && isntRedundant(value))) {
 			AttributeImpl attribute = new AttributeImpl(Const.NAME_BIG);
 			attribute.addAttributeValue(new StringValueImpl(value));
