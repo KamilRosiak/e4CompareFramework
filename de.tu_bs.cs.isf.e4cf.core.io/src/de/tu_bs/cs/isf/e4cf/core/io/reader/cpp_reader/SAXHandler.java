@@ -67,7 +67,7 @@ public class SAXHandler extends AbstractSAXHandler {
 			attribute.addAttributeValue(new StringValueImpl(value));
 			if (containsTypeInfo(node)) {
 				if (parent.getParent().getNodeType().equals(Const.M_DECL)) {
-					attribute.setAttributeKey(Const.R_TYPE);
+					attribute.setAttributeKey(Const.RETURN_TYPE);
 				} else {
 					attribute.setAttributeKey(Const.TYPE_BIG);
 				}

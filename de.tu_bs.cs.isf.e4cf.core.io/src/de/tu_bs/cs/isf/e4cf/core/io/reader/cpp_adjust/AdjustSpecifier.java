@@ -10,7 +10,7 @@ public class AdjustSpecifier extends TreeAdjuster {
 		if (nodeType.equals(Const.SPECIFIER) && !parent.getAttributes().isEmpty()) {
 			Attribute type = null;
 			for (Attribute a: parent.getAttributes() ) {
-				if (a.getAttributeKey().equals(Const.TYPE_BIG)) {
+				if (a.getAttributeKey().equals(Const.TYPE_BIG) || a.getAttributeKey().equals(Const.RETURN_TYPE)) {
 					type = a;
 				}
 			}

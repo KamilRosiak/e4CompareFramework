@@ -17,7 +17,7 @@ public class Const {
 	public static final String NAME_BIG = "Name";
 	public static final String NAME_SMALL = "name";
 	public static final String M_DECL = "MethodDeclaration";
-	public static final String R_TYPE = "ReturnType";
+	public static final String RETURN_TYPE = "ReturnType";
 	public static final String TYPE_BIG = "Type";
 	public static final String TYPE_SMALL = "type";
 	public static final String EXPR = "expr";
