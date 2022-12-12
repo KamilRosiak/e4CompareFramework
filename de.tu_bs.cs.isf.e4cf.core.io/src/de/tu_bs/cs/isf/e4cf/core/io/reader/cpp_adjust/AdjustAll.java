@@ -32,8 +32,7 @@ public final class AdjustAll extends TreeAdjuster {
 		Node node = new NodeImpl(Const.CPP);
 		node.addChildWithParent(rootNode);
 		rootNode.addAttribute(new AttributeImpl(Const.IS_INTERFACE, new StringValueImpl(Const.FALSE)));
-		//TODO implement this correctly: rootNode.addAttribute(new AttributeImpl("AccessModifier", new StringValueImpl("PUBLIC")));
-				
+						
 		TreeAdjuster arrAdjuster = new AdjustArray();
 		arrAdjuster.recursiveAdjust(rootNode);
 		
@@ -62,6 +61,9 @@ public final class AdjustAll extends TreeAdjuster {
 		
 		TreeAdjuster specAdjuster = new AdjustSpecifier();
 		specAdjuster.recursiveAdjust(rootNode);
+		
+		TreeAdjuster superAdjuster = new AdjustSuperClass();
+		superAdjuster.recursiveAdjust(rootNode);
 		
 		return node;
 	}

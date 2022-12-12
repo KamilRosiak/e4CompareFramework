@@ -9,6 +9,8 @@ package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 public class Const {
 	public static final String CPP = "JAVA"; //TODO change this to cpp
 	public static final String IS_INTERFACE = "IsInterface";
+	public static final String ACCESS_MODIFIER = "AccessModifier";
+			
 
 	public static final String VALUE = "Value";
 
@@ -70,7 +72,9 @@ public class Const {
 	public static final String CALL = "call";
 	public static final String SPECIFIER = "Specifier";
 	public static final String TYPEDEF = "typedef";
-	
+	public static final String SUPER = "Super";
+	public static final String CLASS = "Class";
+	public static final String SUPER_CLASS = "Super Class";
 	
 	//illegal Strings
 	public static final String T = "\t";
