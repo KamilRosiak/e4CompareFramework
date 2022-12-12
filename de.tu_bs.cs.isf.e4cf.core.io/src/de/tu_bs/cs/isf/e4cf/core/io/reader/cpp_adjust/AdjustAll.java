@@ -83,6 +83,9 @@ public final class AdjustAll extends TreeAdjuster {
 			parent.cutWithoutChildren();
 		}
 
+		if ((nodeType.equals(Const.PRIVATE) || nodeType.equals(Const.PUBLIC)) && node.getAttributes().isEmpty()) {
+			node.cut();
+		}
 
 
 		TreeAdjuster forAdjuster = new AdjustForLoop();

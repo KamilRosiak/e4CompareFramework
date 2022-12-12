@@ -75,6 +75,8 @@ public class Const {
 	public static final String SUPER = "Super";
 	public static final String CLASS = "Class";
 	public static final String SUPER_CLASS = "Super Class";
+	public static final String PRIVATE = "private";
+	public static final String PUBLIC = "public";
 	
 	//illegal Strings
 	public static final String T = "\t";
