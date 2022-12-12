@@ -40,6 +40,7 @@ public class AdjustMethodCall extends TreeAdjuster {
 			}
 			Node exprNode = node.getChildren().get(0);
 			exprNode.cutWithoutChildren();
+			
 		}
 
 	}

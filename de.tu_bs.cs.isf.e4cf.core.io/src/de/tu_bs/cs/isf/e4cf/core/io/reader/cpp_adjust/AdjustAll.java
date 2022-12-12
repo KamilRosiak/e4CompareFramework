@@ -45,13 +45,13 @@ public final class AdjustAll extends TreeAdjuster {
 		TreeAdjuster literalAdjuster = new AdjustLiterals();
 		literalAdjuster.recursiveAdjust(rootNode);
 		
+		TreeAdjuster methodAdjuster = new AdjustMethodCall();
+		methodAdjuster.recursiveAdjust(rootNode);
+		
 		TreeAdjuster nameAdjuster = new AdjustName();
 		nameAdjuster.recursiveAdjust(rootNode);
 		
 		recursiveAdjust(rootNode);
-		
-		TreeAdjuster methodAdjuster = new AdjustMethodCall();
-		methodAdjuster.recursiveAdjust(rootNode);
 		
 		TreeAdjuster conAdjuster = new AdjustConditon();
 		conAdjuster.recursiveAdjust(rootNode);

@@ -26,7 +26,15 @@ public class AdjustName extends TreeAdjuster {
 	
 	private boolean keep(Node node) {
 		String parentType = node.getParent().getNodeType();
-		return parentType.equals(Const.EXPR) || parentType.equals(Const.ARGUMENT_BIG);
+		if (node.getAttributes().isEmpty()) {
+			return false;
+		}
+		for (int i = 0; i < node.getParent().getAttributes().size(); i++) {
+			if (node.getParent().getValueAt(i).equals(node.getValueAt(0))) {
+				return false;
+			}
+		}
+		return parentType.equals(Const.EXPR) || parentType.equals(Const.ARGUMENT_BIG) || parentType.equals(Const.ARGUMENT_SMALL);
 	}
 
 }
