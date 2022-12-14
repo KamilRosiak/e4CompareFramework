@@ -10,9 +10,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
  * 
- * This class is a sub class of TreeAdjuster.
- * It adjust everything that has to do with 'literal' Nodes (e.g variable declaration).
- * It is initially called by AdjustAll.
+ * This class is a sub class of TreeAdjuster. It adjust everything that has to
+ * do with 'literal' Nodes (e.g variable declaration). It is initially called by
+ * AdjustAll.
  * 
  * @author David Bumm
  *
@@ -50,12 +50,30 @@ public class AdjustLiterals extends TreeAdjuster {
 				node.cutWithoutChildren();
 			}
 		}
+		if (nodeType.equals(Const.LITERAL)) {
+
+		}
 
 		if (nodeType.equals(Const.LITERAL)) {
-			String value = node.getValueAt(0);
-			if (value == null) {
+			boolean containsType = false;
+			for (Attribute attribute : node.getAttributes()) {
+				if (attribute.getAttributeKey().equals(Const.TYPE_BIG)) {
+					containsType = true;
+					String value = attribute.getAttributeValues().get(0).getValue().toString();
+					renameLiteral(node, value);
+				}
+			}
+			if (containsType) {
+				for (Attribute attribute : node.getAttributes()) {
+					if (attribute.getAttributeKey().equals(Const.NAME_BIG)) {
+						attribute.setAttributeKey(Const.VALUE);
+					}
+				}
 				return;
 			}
+
+			// the following is only needed if the literal is only a number/String
+			String value = node.getValueAt(0);
 			if (value.matches(Const.REGEX_INT)) {
 				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.INT)));
 				node.setNodeType(Const.INT_LIT);
@@ -77,4 +95,25 @@ public class AdjustLiterals extends TreeAdjuster {
 
 	}
 
+	private void renameLiteral(Node node, String value) {
+		switch (value) {
+		case "string":
+			node.setNodeType(Const.STRING_LIT);
+			return;
+		case "int":
+			node.setNodeType(Const.INT_LIT);
+			return;
+		case "float":
+			node.setNodeType(Const.FLOAT_LIT);
+			return;
+		case "bool":
+			node.setNodeType(Const.BOOLEAN_LIT);
+			return;
+		case "double":
+			node.setNodeType(Const.DOUBLE_LIT);
+			return;
+		default:
+			return;
+		}
+	}
 }

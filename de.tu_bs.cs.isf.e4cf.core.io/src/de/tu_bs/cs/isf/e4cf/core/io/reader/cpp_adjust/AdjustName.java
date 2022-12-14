@@ -34,7 +34,8 @@ public class AdjustName extends TreeAdjuster {
 				return false;
 			}
 		}
-		return parentType.equals(Const.EXPR) || parentType.equals(Const.ARGUMENT_BIG) || parentType.equals(Const.ARGUMENT_SMALL);
+		return parentType.equals(Const.EXPR) || parentType.equals(Const.ARGUMENT_BIG) || parentType.equals(Const.ARGUMENT_SMALL)
+				|| parentType.equals(Const.VARIABLE_DECL);
 	}
 
 }
