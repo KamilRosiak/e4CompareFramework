@@ -72,6 +72,11 @@ public abstract class AbstractAttribute implements Attribute {
 		}
 		return null;
 	}
+	
+	@Override
+	public Value<?> getValue(int i) throws IndexOutOfBoundsException {
+		return getAttributeValues().get(i);
+	}
 
 	public UUID getUUID() {
 		return uuid;
