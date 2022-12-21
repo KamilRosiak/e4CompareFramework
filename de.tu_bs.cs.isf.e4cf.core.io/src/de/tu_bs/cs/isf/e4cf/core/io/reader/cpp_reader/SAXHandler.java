@@ -85,6 +85,11 @@ public class SAXHandler extends AbstractSAXHandler {
 	private void addNameAttribute(Node node, Attribute attribute) {
 		Node next = node;
 		while (next != null && next.getParent() != null && next.getNodeType().equals(Const.NAME_BIG)) {
+			for (Attribute a: next.getParent().getAttributes()) {
+				if (a.getAttributeKey().equals(Const.NAME_BIG)) {
+					return;
+				}
+			}
 			next.getParent().addAttribute(attribute);
 			next = next.getParent();
 		}
