@@ -96,6 +96,7 @@ public class Const {
 	public static final String BRACKET_SQUARED = "[]";
 	public static final String LINE_BREAK = "\n";
 	public static final String EQ = "=";
+	public static final String UNDERSCORE = "_";
 	
 	
 	//operators
