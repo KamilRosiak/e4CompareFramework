@@ -44,7 +44,8 @@ public class AdjustSwitchCase extends TreeAdjuster {
 			parent.addAttribute(new AttributeImpl(Const.SELECTOR, new StringValueImpl(selector)));
 			node.cut();
 		}
-		if (nodeType.equals(Const.SWITCH_ENTRY)) {
+		if (nodeType.equals(Const.SWITCH_ENTRY) && !node.getChildren().isEmpty()
+				&& !node.getChildren().get(0).getChildren().isEmpty()) {
 			if (node.getChildren().isEmpty()) {
 				setDefaultCase(node);
 				return;

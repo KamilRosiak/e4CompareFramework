@@ -7,11 +7,11 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
- * This class is a sub class of TreeAdjuster.
- * It adjusts everything that has to do with arrays. This class covers normal array accesses (e.g arr[i])
- * just like expressions inside array accesses (e.g arr(i * j + 5)).
- * It also can handle multidimensional arrays (like arr[i][j][k]).
- * It is initially called by AdjustAll.
+ * This class is a sub class of TreeAdjuster. It adjusts everything that has to
+ * do with arrays. This class covers normal array accesses (e.g arr[i]) just
+ * like expressions inside array accesses (e.g arr(i * j + 5)). It also can
+ * handle multidimensional arrays (like arr[i][j][k]). It is initially called by
+ * AdjustAll.
  * 
  * @author David Bumm
  *
@@ -71,29 +71,38 @@ public class AdjustArray extends TreeAdjuster {
 		}
 
 		// cutting unnecessary expr nodes
-		if (nodeType.equals(Const.BODY) && parent.getParent().getParent().getNodeType().equals(Const.FIELD_DECL )) {
+		if (nodeType.equals(Const.BODY) && parent.getParent().getParent().getNodeType().equals(Const.FIELD_DECL)) {
 			node.setNodeType(Const.ARR_INIT_EXPR);
 			int length = node.getChildren().size();
 			for (int i = 0; i < length; i++) {
 				Node n = node.getChildren().get(0);
 				if (!n.getChildren().isEmpty()) {
-					n.getChildren().get(0).getAttributeForKey(Const.NAME_BIG).setAttributeKey(Const.VALUE);
+					try {
+						n.getChildren().get(0).getAttributeForKey(Const.NAME_BIG).setAttributeKey(Const.VALUE);
+					} catch (NullPointerException e) {
+						// ignore, because there is just no attribute with key == "Name"
+					}
 				}
 				n.cutWithoutChildren();
 			}
 		}
 
 	}
-	
+
 	private void addArrayAccessExpr(Node node, Node accessParent, int position) {
 		Node exprNode = node.getChildren().get(0);
 		String value = Const.EMPTY;
 		for (Node child : exprNode.getChildren()) {
-			value += child.getAttributeForKey(Const.NAME_BIG).getAttributeValues().get(0).getValue().toString() + Const.SPACE;
+			try {
+				value += child.getAttributeForKey(Const.NAME_BIG).getAttributeValues().get(0).getValue().toString()
+						+ Const.SPACE;
+			} catch (NullPointerException e) {
+				// ignore, because there is just no attribute with key == "Name"
+			}
 		}
 		value = value.trim();
 		String name = node.getParent().getValueAt(0);
-		
+
 		Node access = new NodeImpl(Const.ARR_ACCESS_EXPR);
 		access.setParent(accessParent);
 		accessParent.addChild(access, position);
@@ -103,7 +112,7 @@ public class AdjustArray extends TreeAdjuster {
 		for (Node index : node.getParent().getChildren()) {
 			// for each index node we need to add an "ArrayAccessExpr". this is the case for
 			// an access like a[i][j]
-			
+
 			if (index.getNodeType().equals(Const.INDEX) && node != index) {
 				value = index.getChildren().get(0).getValueAt(0);
 				Node newAccess = new NodeImpl(Const.ARR_ACCESS_EXPR, lastAccess);
@@ -111,11 +120,11 @@ public class AdjustArray extends TreeAdjuster {
 				lastAccess = newAccess;
 			}
 		}
-		
+
 		Node nameExpr = new NodeImpl(Const.NAME_EXPR, lastAccess);
 		nameExpr.addAttribute(new AttributeImpl(Const.NAME_BIG, new StringValueImpl(name)));
 	}
-	
+
 	private boolean allInitialized(Node node) {
 		return !node.getChildren().isEmpty() && !node.getChildren().get(0).getAttributes().isEmpty()
 				&& !node.getParent().getAttributes().isEmpty();

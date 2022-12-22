@@ -74,6 +74,9 @@ public class AdjustLiterals extends TreeAdjuster {
 
 			// the following is only needed if the literal is only a number/String
 			String value = node.getValueAt(0);
+			if (value == null) {
+				return;
+			}
 			if (value.matches(Const.REGEX_INT)) {
 				node.addAttribute(new AttributeImpl(Const.TYPE_BIG, new StringValueImpl(Const.INT)));
 				node.setNodeType(Const.INT_LIT);

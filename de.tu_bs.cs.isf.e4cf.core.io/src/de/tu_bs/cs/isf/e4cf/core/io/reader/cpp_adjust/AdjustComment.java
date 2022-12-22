@@ -23,12 +23,17 @@ public class AdjustComment extends TreeAdjuster {
 				node.cut();
 				return;
 			}
+			try {
+				node.cut();
+			} catch (ArrayIndexOutOfBoundsException e) {
+				return; // node already has been cut
+			}
 			String[] arr = value.split(Const.SLASH_TWICE);
 			for (int i = 0; i < arr.length; i++) {
 				value = arr[i];
 			}
 			parent.addAttribute(new AttributeImpl(Const.COMMENT_BIG, new StringValueImpl(value)));
-			node.cut();
+			
 		}
 	}
 }
