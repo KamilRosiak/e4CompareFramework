@@ -4,6 +4,15 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
+
+/**
+ * This class is a sub class of TreeAdjuster.
+ * It adjust everything that has to do with super classes. 
+ * It is initially called by AdjustAll.
+ * 
+ * @author David Bumm
+ *
+ */
 public class AdjustSuperClass extends TreeAdjuster {
 
 	@Override

@@ -5,6 +5,15 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
+
+/**
+ * This class is a sub class of TreeAdjuster.
+ * It adjust everything that has to do with Specifier Node. It removes the Node and gives the parent the information.
+ * It is initially called by AdjustAll.
+ * 
+ * @author David Bumm
+ *
+ */
 public class AdjustSpecifier extends TreeAdjuster {
 
 	@Override

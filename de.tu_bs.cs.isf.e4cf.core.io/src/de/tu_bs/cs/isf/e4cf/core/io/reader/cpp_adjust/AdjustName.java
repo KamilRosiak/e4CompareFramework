@@ -2,6 +2,14 @@ package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
+/**
+ * This class is a sub class of TreeAdjuster.
+ * It adjust everything that has to do with Name nodes.
+ * It is initially called by AdjustAll.
+ * 
+ * @author David Bumm
+ *
+ */
 public class AdjustName extends TreeAdjuster {
 
 	@Override

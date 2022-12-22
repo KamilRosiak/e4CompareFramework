@@ -3,7 +3,9 @@ package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
 /**
- * This class renames the rest of the NodeTypes to their camel-case equivalent
+ * This class is a sub class of TreeAdjuster.
+ * It renames the rest of the NodeTypes to their camel-case equivalent.
+ * It is initially called by AdjustAll.
  * 
  * @author David Bumm
  *
