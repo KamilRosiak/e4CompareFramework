@@ -10,6 +10,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.io.interfaces.ArtifactReader;
 import de.tu_bs.cs.isf.e4cf.core.io.interfaces.ArtifactWriter;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.python_reader.PythonFileReader;
 import de.tu_bs.cs.isf.e4cf.core.io.string_table.DataStructureST;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 
@@ -29,7 +30,10 @@ public class ArtifactIOUtil {
 	public static List<ArtifactReader> getAllArtifactReader() {
 		List<ArtifactReader> reader = RCPContentProvider.<ArtifactReader>getInstanceFromBundle(
 				DataStructureST.ARTIFACT_READER_SYMBOLIC_NAME, DataStructureST.ARTIFACT_READER_EXTENSION);
+		
 		if (reader != null) {
+			PythonFileReader pyReader = new PythonFileReader();
+			reader.add(pyReader); //adding pythonReader, so python files can be parsed
 			return reader;
 		}
 		return new ArrayList<ArtifactReader>();
