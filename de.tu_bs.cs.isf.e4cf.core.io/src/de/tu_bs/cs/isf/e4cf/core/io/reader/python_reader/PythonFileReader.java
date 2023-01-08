@@ -7,12 +7,19 @@ import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
@@ -24,7 +31,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.io.interfaces.AbstractArtifactReader;
-import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.AdjustAll;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AbstractSAXHandler;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AttributeDictionary;
 
@@ -33,29 +39,45 @@ public class PythonFileReader extends AbstractArtifactReader {
 	public static String[] SUPPORTED_FILE_ENDINGS = { "py" };
 
 	private AbstractSAXHandler saxHandler;
+	private FileToTreeReader fileToTree;
 
 	public PythonFileReader() {
 		super(SUPPORTED_FILE_ENDINGS);
 		saxHandler = new PythonSAXHandler();
+		fileToTree = new FileToTreeReader();
 	}
-	
+
 	public Tree readArtifact(FileTreeElement element, String rootName) {
 		Node rootNode = null;
+		String path = element.getAbsolutePath();
+		path = "\"" + path.replace("\\", "/") + "\"";
 
-		if (element.isDirectory()) {
-			rootNode = createDirectory(element, rootName);
-			for (FileTreeElement childElement : element.getChildren()) {
-				createHierarchy(childElement, rootNode);
+		rootNode = new NodeImpl("Python");
+
+		Gson gson = new Gson();
+		JsonObject obj = gson.fromJson(fileToTree.getTreeFromFileMocked(path), JsonObject.class);
+
+		final JsonObject jsonObject = gson.toJsonTree(obj).getAsJsonObject();
+		Node node = null;
+		for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+			if (entry.getKey().equals("_type")) {
+				node = new NodeImpl(entry.getValue().toString(), rootNode);
+			} else if (node != null) {
+				node.addAttribute(new AttributeImpl(entry.getKey(), new StringValueImpl(entry.getValue().toString())));
 			}
-
-		} else {
-			if (isFileSupported(element.getExtension())) {
-				rootNode = readArtifactRoot(element);
-			} else {
-				rootNode = createFile(element);
-			}
-
+			System.out.println("Key = " + entry.getKey() + " Value = " + entry.getValue());
 		}
+
+		/*
+		 * TODO: if (element.isDirectory()) { rootNode = createDirectory(element,
+		 * rootName); for (FileTreeElement childElement : element.getChildren()) {
+		 * createHierarchy(childElement, rootNode); }
+		 * 
+		 * } else { if (isFileSupported(element.getExtension())) { rootNode =
+		 * readArtifactRoot(element); } else { rootNode = createFile(element); }
+		 * 
+		 * }
+		 */
 
 		return new TreeImpl(element.getFileName(), rootNode);
 
@@ -139,11 +161,9 @@ public class PythonFileReader extends AbstractArtifactReader {
 
 				InputSource inputSource = new InputSource(new InputStreamReader(inputStream, "UTF-8"));
 				xmlReader.parse(inputSource);
-				
-				
-				AdjustAll adjuster = new AdjustAll(saxHandler.getRootNode());
-				rootNode = adjuster.adjustAllNodes(); //Adjust Tree Nodes and return new Root
-				String fileName = element.getFileName().split(".cpp")[0];
+
+				rootNode = saxHandler.getRootNode();
+				String fileName = element.getFileName().split(".py")[0];
 				rootNode.getChildren().get(0).addAttribute(new AttributeImpl("Name", new StringValueImpl(fileName)));
 
 			}
@@ -158,7 +178,7 @@ public class PythonFileReader extends AbstractArtifactReader {
 	private InputStream getInputStream(Path fileArgument, String xmlResultPath) throws IOException {
 
 		InputStream inputStream = null;
-		ProcessBuilder processBuilder = new ProcessBuilder(/*srcMLExePath,*/ fileArgument.toString());
+		ProcessBuilder processBuilder = new ProcessBuilder(/* srcMLExePath, */ fileArgument.toString());
 		processBuilder.redirectErrorStream(true);
 
 		if (xmlResultPath != null && (!xmlResultPath.equals(""))) {
