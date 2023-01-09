@@ -47,14 +47,12 @@ public class PythonFileReader extends AbstractArtifactReader {
 		saxHandler = new PythonSAXHandler();
 		fileToTree = new FileToTreeReader();
 	}
-	
-	
+
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
 		String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
 		return readArtifact(element, fileName);
 	}
-
 
 	public Tree readArtifact(FileTreeElement element, String rootName) {
 		Node rootNode = null;
@@ -66,7 +64,6 @@ public class PythonFileReader extends AbstractArtifactReader {
 		Gson gson = new Gson();
 		JsonObject obj = gson.fromJson(fileToTree.getTreeFromFileMocked(path), JsonObject.class);
 
-		
 		generateNodes(obj, rootNode, gson);
 
 		/*
@@ -91,13 +88,21 @@ public class PythonFileReader extends AbstractArtifactReader {
 			if (entry.getKey().equals("_type")) {
 				node = new NodeImpl(getName(entry.getValue()), rootNode);
 
-			} else if (entry.getKey().equals("body")) {
-				Node bodyNode = new NodeImpl(Const.BODY, node);
-				JsonArray jsonArr = gson.fromJson(entry.getValue().toString(), JsonArray.class);
-				generateNodes(jsonArr, bodyNode, gson);
-
 			} else if (node != null) {
-				node.addAttribute(new AttributeImpl(entry.getKey(), new StringValueImpl(entry.getValue().toString())));
+				try {
+					JsonArray jsonArr = gson.fromJson(entry.getValue().toString(), JsonArray.class);
+					Node nextNode = new NodeImpl(entry.getKey(), node);
+					generateNodes(jsonArr, nextNode, gson);
+				} catch (Exception e) {
+					try {
+						JsonObject nextObj = gson.fromJson(entry.getValue().toString(), JsonObject.class);
+						Node nextNode = new NodeImpl(entry.getKey(), node);
+						generateNodes(nextObj, rootNode, gson);
+					} catch (Exception f) {
+						node.addAttribute(entry.getKey(), getName(entry.getValue()));
+					}
+				}
+
 			}
 		}
 	}
@@ -108,15 +113,12 @@ public class PythonFileReader extends AbstractArtifactReader {
 			generateNodes(obj, rootNode, gson);
 		}
 	}
-	
-	
+
 	private String getName(JsonElement element) {
 		if (element.toString().length() > 2) {
 			return element.toString().substring(1, element.toString().length() - 1);
 		}
 		return element.toString();
 	}
-
-
 
 }
