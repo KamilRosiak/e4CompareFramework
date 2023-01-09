@@ -287,5 +287,14 @@ public interface Node {
 	 * @param parent is the new parent
 	 */
 	public void updateParent(Node parent);
+	
+	
+	/**
+	 * This method adds value for a given key and  value.
+	 * 
+	 * @param attributeKey the name of the key
+	 * @param value the name of the value
+	 */
+	public void addAttribute(String attributeKey, String value);
 
 }
