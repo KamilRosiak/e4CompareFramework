@@ -31,6 +31,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.io.interfaces.AbstractArtifactReader;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.Const;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AbstractSAXHandler;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AttributeDictionary;
 
@@ -46,6 +47,14 @@ public class PythonFileReader extends AbstractArtifactReader {
 		saxHandler = new PythonSAXHandler();
 		fileToTree = new FileToTreeReader();
 	}
+	
+	
+	@Override
+	public Tree readArtifact(FileTreeElement element) {
+		String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
+		return readArtifact(element, fileName);
+	}
+
 
 	public Tree readArtifact(FileTreeElement element, String rootName) {
 		Node rootNode = null;
@@ -57,16 +66,8 @@ public class PythonFileReader extends AbstractArtifactReader {
 		Gson gson = new Gson();
 		JsonObject obj = gson.fromJson(fileToTree.getTreeFromFileMocked(path), JsonObject.class);
 
-		final JsonObject jsonObject = gson.toJsonTree(obj).getAsJsonObject();
-		Node node = null;
-		for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-			if (entry.getKey().equals("_type")) {
-				node = new NodeImpl(entry.getValue().toString(), rootNode);
-			} else if (node != null) {
-				node.addAttribute(new AttributeImpl(entry.getKey(), new StringValueImpl(entry.getValue().toString())));
-			}
-			System.out.println("Key = " + entry.getKey() + " Value = " + entry.getValue());
-		}
+		
+		generateNodes(obj, rootNode, gson);
 
 		/*
 		 * TODO: if (element.isDirectory()) { rootNode = createDirectory(element,
@@ -83,138 +84,39 @@ public class PythonFileReader extends AbstractArtifactReader {
 
 	}
 
-	@Override
-	public Tree readArtifact(FileTreeElement element) {
-		String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
-		return readArtifact(element, fileName);
-	}
+	private void generateNodes(JsonObject obj, Node rootNode, Gson gson) {
+		JsonObject jsonObj = gson.toJsonTree(obj).getAsJsonObject();
+		Node node = null;
+		for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+			if (entry.getKey().equals("_type")) {
+				node = new NodeImpl(getName(entry.getValue()), rootNode);
 
-	public Tree readArtifact(File file) {
-		return readArtifact(constructFileTreeElement(file));
-	}
+			} else if (entry.getKey().equals("body")) {
+				Node bodyNode = new NodeImpl(Const.BODY, node);
+				JsonArray jsonArr = gson.fromJson(entry.getValue().toString(), JsonArray.class);
+				generateNodes(jsonArr, bodyNode, gson);
 
-	public Tree readArtifact(File file, String rootName) {
-		return readArtifact(constructFileTreeElement(file), rootName);
-	}
-
-	private Node createDirectory(FileTreeElement element) {
-		return createDirectory(element, element.getFileName());
-	}
-
-	private Node createDirectory(FileTreeElement element, String directoryName) {
-		Node directory = new NodeImpl(NodeType.DIRECTORY);
-		directory.addAttribute(new AttributeImpl(AttributeDictionary.DIRECTORY_NAME_ATTRIBUTE_KEY,
-				new StringValueImpl(directoryName)));
-
-		return directory;
-	}
-
-	private Node createFile(FileTreeElement element) {
-		Node file = new NodeImpl(NodeType.FILE);
-		file.addAttribute(new AttributeImpl(AttributeDictionary.FILE_NAME_ATTRIBUTE_KEY,
-				new StringValueImpl(element.getFileName())));
-
-		file.addAttribute(new AttributeImpl(AttributeDictionary.FILE_EXTENSION_ATTRIBUTE_KEY,
-				new StringValueImpl(element.getExtension())));
-
-		return file;
-	}
-
-	private void createHierarchy(FileTreeElement element, Node currentNode) {
-
-		if (element.isDirectory()) {
-			Node directory = createDirectory(element);
-
-			currentNode.addChildWithParent(directory);
-			for (FileTreeElement childElement : element.getChildren()) {
-				createHierarchy(childElement, directory);
+			} else if (node != null) {
+				node.addAttribute(new AttributeImpl(entry.getKey(), new StringValueImpl(entry.getValue().toString())));
 			}
-		} else {
-			if (isFileSupported(element.getExtension())) {
-				Node artifactRoot = readArtifactRoot(element);
-				currentNode.addChildWithParent(artifactRoot);
-			} else {
-				Node file = createFile(element);
-				currentNode.addChildWithParent(file);
-			}
-
 		}
-
 	}
 
-	private Node readArtifactRoot(FileTreeElement element) {
-
-		Node rootNode = null;
-		try {
-
-			String xmlOutputPath = File.createTempFile("Temp_", Long.toString(System.nanoTime())).getAbsolutePath();
-			InputStream inputStream = getInputStream(Paths.get(element.getAbsolutePath()), xmlOutputPath);
-			if (inputStream != null) {
-
-				SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-				saxParserFactory.setNamespaceAware(true);
-				SAXParser saxParser = saxParserFactory.newSAXParser();
-				XMLReader xmlReader = saxParser.getXMLReader();
-				xmlReader.setContentHandler(saxHandler);
-				xmlReader.setErrorHandler(saxHandler);
-				saxHandler.setExtension(element.getExtension());
-
-				InputSource inputSource = new InputSource(new InputStreamReader(inputStream, "UTF-8"));
-				xmlReader.parse(inputSource);
-
-				rootNode = saxHandler.getRootNode();
-				String fileName = element.getFileName().split(".py")[0];
-				rootNode.getChildren().get(0).addAttribute(new AttributeImpl("Name", new StringValueImpl(fileName)));
-
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
+	private void generateNodes(JsonArray jsonArr, Node rootNode, Gson gson) {
+		for (int i = 0; i < jsonArr.size(); i++) {
+			JsonObject obj = gson.fromJson(jsonArr.get(i).toString(), JsonObject.class);
+			generateNodes(obj, rootNode, gson);
 		}
-		return rootNode;
-
+	}
+	
+	
+	private String getName(JsonElement element) {
+		if (element.toString().length() > 2) {
+			return element.toString().substring(1, element.toString().length() - 1);
+		}
+		return element.toString();
 	}
 
-	private InputStream getInputStream(Path fileArgument, String xmlResultPath) throws IOException {
 
-		InputStream inputStream = null;
-		ProcessBuilder processBuilder = new ProcessBuilder(/* srcMLExePath, */ fileArgument.toString());
-		processBuilder.redirectErrorStream(true);
-
-		if (xmlResultPath != null && (!xmlResultPath.equals(""))) {
-			File log = new File(xmlResultPath);
-			processBuilder.redirectOutput(log);
-		}
-
-		processBuilder.redirectOutput(Redirect.PIPE);
-		Process process = processBuilder.start();
-		inputStream = process.getInputStream();
-
-		return inputStream;
-	}
-
-	private FileTreeElement constructFileTreeElement(File file) {
-
-		FileTreeElement element = null;
-
-		if (file.isDirectory()) {
-
-			element = new Directory(file.getAbsolutePath());
-
-			for (File child : file.listFiles()) {
-
-				FileTreeElement childElement = constructFileTreeElement(child);
-
-				element.getChildren().add(childElement);
-				childElement.setParent(element);
-			}
-
-		} else {
-			element = new de.tu_bs.cs.isf.e4cf.core.file_structure.components.File(file.getAbsolutePath());
-		}
-
-		return element;
-
-	}
 
 }
