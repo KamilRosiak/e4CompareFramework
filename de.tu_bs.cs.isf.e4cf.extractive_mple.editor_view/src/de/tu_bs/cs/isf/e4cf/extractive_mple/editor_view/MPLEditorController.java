@@ -1,6 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view;
 
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -102,15 +105,18 @@ public class MPLEditorController implements Initializable {
 		});
 
 		configCol.setCellValueFactory(e -> {
-			String configString = "";
-			for (Configuration config : currentPlatform.configurations) {
+			StringBuilder configString = new StringBuilder();
+			for (int i = 0; i < currentPlatform.configurations.size(); i++) {
+				Configuration config = currentPlatform.configurations.get(i);
 				if (config.getUUIDs().contains(e.getValue().getValue().getUUID())) {
-					configString = configString + config.getName() + " ";
+					configString.append(i+1);
 				}
-
+				else {
+					configString.append("  ");
+				}
+				configString.append(' ');
 			}
-
-			return new SimpleStringProperty(configString);
+			return new SimpleStringProperty(configString.toString());
 		});
 
 	}
@@ -222,9 +228,55 @@ public class MPLEditorController implements Initializable {
 	 */
 	@Optional
 	@Inject
-	public void selectNode(@UIEventTopic(MPLEEditorConsts.SHOW_UUID) UUID uuid) {
+	public void selectSingleNode(@UIEventTopic(MPLEEditorConsts.SHOW_UUID) UUID uuid) {
 		currentSelectedNode = uuid;
-		treeView.refresh();
+		if (uuid == null) {
+			return;
+		}
+		
+		List<TreeItem<Node>> itemPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), uuid.toString());
+		selectTreeItem(itemPath);
+	}
+	
+	/**
+	 * Selects a clone node under a parent node in the tree view.
+	 * @param parentToChildUuid The parentUuid followed by the childUuid separated by a '#' e.g. 4564-4021#8932-4893
+	 */
+	@Optional
+	@Inject
+	public void selectCloneNodeByParent(@UIEventTopic(MPLEEditorConsts.SHOW_CLONE_UUID) String parentToChildUuid) {
+		String[] splitUuid = parentToChildUuid.split("#");
+		String parentUuid = splitUuid[0];
+		String childUuid = splitUuid[1];
+		
+		List<TreeItem<Node>> parentPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), parentUuid);
+		if(parentPath.size() > 0) {
+			TreeItem<Node> parent = parentPath.get(parentPath.size() - 1);
+			List<TreeItem<Node>> parentToChildPath = TreeViewUtilities.findFirstItemPath(parent, childUuid);
+			List<TreeItem<Node>> childPath = new LinkedList<>(parentPath);
+			childPath.add(parentToChildPath.get(parentToChildPath.size() - 1));
+			
+			selectTreeItem(childPath);
+		}
+		
+		
+	}
+	
+	/**
+	 * Selects a tree item at the end of a path of tree items in the tree view.
+	 * The tree item path has to start at the root item.
+	 * @param itemPath Sequence of tree items from the root to the item to select
+	 */
+	private void selectTreeItem(List<TreeItem<Node>> itemPath) {
+		if (itemPath.size() > 0) {
+			treeView.getSelectionModel().clearSelection();
+			TreeItem<Node> node = itemPath.get(itemPath.size() - 1);
+			for (TreeItem<Node> item : itemPath) {
+				item.setExpanded(true);
+			}
+			treeView.getSelectionModel().select(node);
+			treeView.refresh();
+		}
 	}
 
 	public MPLPlatform getCurrentPlatform() {

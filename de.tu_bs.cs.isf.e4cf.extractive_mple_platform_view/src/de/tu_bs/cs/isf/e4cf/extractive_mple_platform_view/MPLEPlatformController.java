@@ -133,11 +133,12 @@ public class MPLEPlatformController implements Initializable {
 		});
 
 		componentConfigs.getSelectionModel().selectedItemProperty().addListener(e -> {
-			componentUUIDTable.getItems().clear();
-			if (componentConfigs.getSelectionModel().getSelectedItem() != null) {
-				componentUUIDTable.getItems()
-						.addAll(componentConfigs.getSelectionModel().getSelectedItem().configuration.getUUIDs());
-
+			CloneConfiguration cloneConfig = componentConfigs.getSelectionModel().getSelectedItem();
+			if (cloneConfig != null) {
+				componentUUIDTable.getItems().clear();
+				componentUUIDTable.getItems().addAll(cloneConfig.configuration.getUUIDs());
+				String parentToChildUuid = cloneConfig.getParentUUID().toString() + "#" + cloneConfig.getComponentUUID().toString();
+				services.eventBroker.send(MPLEEditorConsts.SHOW_CLONE_UUID, parentToChildUuid);
 			}
 			componentUUIDTable.refresh();
 		});

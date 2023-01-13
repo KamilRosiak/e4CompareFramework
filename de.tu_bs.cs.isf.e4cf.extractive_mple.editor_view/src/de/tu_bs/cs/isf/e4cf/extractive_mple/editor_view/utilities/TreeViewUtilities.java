@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,6 +91,44 @@ public final class TreeViewUtilities {
 			}
 		}
 		return searchList;
+	}
+	
+	/**
+	 * Builds a chain of tree items to the first tree item with the name.
+	 * Starting from the the given item using a depth first search.
+	 * @param item The TreeItem to start the search from
+	 * @param name The name of the wanted item
+	 * @return List of TreeItem(s) to the wanted item or an empty list if the item was not found.
+	 */
+	public static List<TreeItem<Node>> findFirstItemPath(TreeItem<Node> item, String name) {
+		List<TreeItem<Node>> result = new LinkedList<>();
+		if (isEqual(item, name)) {
+			result.add(item);
+		}
+		
+		if (result.isEmpty()) {
+			for (TreeItem<Node> child : item.getChildren()) {
+				List<TreeItem<Node>> childResult = findFirstItemPath(child, name);
+				if (!childResult.isEmpty()) {
+					result.add(item);
+					result.addAll(childResult);
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	private static boolean isEqual(TreeItem<Node> item, String name) {
+		boolean isEqual = false;
+		if (item.getValue().toString().toLowerCase().contains(name)) {
+			isEqual = true;
+		}
+		else if (item.getValue().getUUID().toString().toLowerCase().equals(name.toLowerCase())) {
+			isEqual = true;
+		}
+		return isEqual;
 	}
 
 	/**
