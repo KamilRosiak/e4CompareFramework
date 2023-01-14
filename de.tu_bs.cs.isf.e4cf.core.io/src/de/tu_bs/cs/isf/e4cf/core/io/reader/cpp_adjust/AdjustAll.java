@@ -29,7 +29,7 @@ public final class AdjustAll extends TreeAdjuster {
 			return null;
 		}
 		
-		Node node = new NodeImpl(Const.CPP);
+		Node node = new NodeImpl(Const.C_PLUS_PLUS);
 		node.addChildWithParent(rootNode);
 		rootNode.addAttribute(new AttributeImpl(Const.IS_INTERFACE, new StringValueImpl(Const.FALSE)));
 						

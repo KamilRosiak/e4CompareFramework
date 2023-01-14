@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class contains only constants used for the adjustment of cpp Node Types
  * 
@@ -7,7 +10,10 @@ package de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust;
  *
  */
 public class Const {
-	public static final String CPP = "JAVA"; //TODO change this to cpp
+	public static final String C_PLUS_PLUS = "JAVA"; //TODO change this to cpp
+	public static final String PY = "py";
+	public static final String PYTHON = "Python";
+	public static final String CPP = "cpp";
 	public static final String IS_INTERFACE = "IsInterface";
 	public static final String ACCESS_MODIFIER = "AccessModifier";
 			
@@ -196,4 +202,16 @@ public class Const {
 	public static final String PARAM = "parameter";
 	public static final String PARAM_LIST = "parameter_list";
 	public static final String FUNCTION = "function";
+
+	
+	
+	//Python
+	public static final String BACKSLASH = "\\";
+	public static final String QUOTATION = "\"";
+	public static final String _TYPE = "_type";
+	
+	//Baned Python String
+	public static final List<String> BANED_ATTRIBUTES = Arrays.asList("col_offset", "end_col_offset", "end_lineno", "level", "lineno", "n", "s");
+
+			
 }

@@ -6,5 +6,6 @@
 	<classpathentry kind="src" path="src-test"/>
 	<classpathentry kind="lib" path="lib/gson-2.8.6.jar"/>
 	<classpathentry kind="lib" path="lib/javaparser-core-3.18.0.jar"/>
+	<classpathentry kind="lib" path="lib/jep-4.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
