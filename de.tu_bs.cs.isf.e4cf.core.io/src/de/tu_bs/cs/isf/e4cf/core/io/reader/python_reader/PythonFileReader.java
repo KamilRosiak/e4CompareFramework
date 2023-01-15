@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 
@@ -28,9 +29,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.io.interfaces.AbstractArtifactReader;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.AdjustRename;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.Const;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.TreeAdjuster;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AbstractSAXHandler;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AttributeDictionary;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.python_adjust.AdjustNode;
 
 public class PythonFileReader extends AbstractArtifactReader {
 
@@ -75,9 +79,23 @@ public class PythonFileReader extends AbstractArtifactReader {
 		 * 
 		 * }
 		 */
+		
+		TreeAdjuster nodeAdjuster = new AdjustNode();
+		nodeAdjuster.recursiveAdjust(rootNode);
+		
+		TreeAdjuster renameAdjuster = new AdjustRename();
+		renameAdjuster.recursiveAdjust(rootNode);
 
 		return new TreeImpl(element.getFileName(), rootNode);
 
+	}
+	
+	
+	private void generateNodes(JsonArray jsonArr, Node rootNode, Gson gson) {
+		for (int i = 0; i < jsonArr.size(); i++) {
+			JsonObject obj = gson.fromJson(jsonArr.get(i).toString(), JsonObject.class);
+			generateNodes(obj, rootNode, gson);
+		}
 	}
 
 	private void generateNodes(JsonObject obj, Node rootNode, Gson gson) {
@@ -86,20 +104,14 @@ public class PythonFileReader extends AbstractArtifactReader {
 		for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
 			if (entry.getKey().equals(Const._TYPE)) {
 				node = new NodeImpl(getName(entry.getValue()), rootNode);
-
 			} else if (node != null) {
 				try {
-					JsonArray jsonArr = gson.fromJson(entry.getValue().toString(), JsonArray.class);
-					Node nextNode = new NodeImpl(entry.getKey(), node);
-					generateNodes(jsonArr, nextNode, gson);
-				} catch (Exception e) {
+					createNodefromJsonObject(gson, node, entry.getValue().toString(), entry.getKey());
+				} catch (JsonSyntaxException e) {
 					try {
-						JsonObject nextObj = gson.fromJson(entry.getValue().toString(), JsonObject.class);
-						Node nextNode = new NodeImpl(entry.getKey(), node);
-						generateNodes(nextObj, nextNode, gson);
-					} catch (Exception f) {
+						createNodefromJsonArray(gson, node, entry.getValue().toString(), entry.getKey());
+					} catch (JsonSyntaxException b) {
 						addAttribute(node, entry.getKey(), entry.getValue());
-						//node.addAttribute(entry.getKey(), getName(entry.getValue()));
 					}
 				}
 
@@ -107,18 +119,27 @@ public class PythonFileReader extends AbstractArtifactReader {
 		}
 	}
 	
+	private void createNodefromJsonObject(Gson gson, Node node, String value, String  entry) {
+		JsonArray jsonArr = gson.fromJson(value, JsonArray.class);
+		Node nextNode = new NodeImpl(entry, node);
+		generateNodes(jsonArr, nextNode, gson);
+	}
+	
+	private void createNodefromJsonArray(Gson gson, Node node, String value, String  entry) {
+		JsonObject nextObj = gson.fromJson(value, JsonObject.class);
+		Node nextNode = new NodeImpl(entry, node);
+		generateNodes(nextObj, nextNode, gson);
+	}
+	
+	
+	
 	private void addAttribute(Node node, String entry, JsonElement value ) {
 		if (!Const.BANED_ATTRIBUTES.contains(entry)) {
 			node.addAttribute(entry, getName(value));
 		}
 	}
 
-	private void generateNodes(JsonArray jsonArr, Node rootNode, Gson gson) {
-		for (int i = 0; i < jsonArr.size(); i++) {
-			JsonObject obj = gson.fromJson(jsonArr.get(i).toString(), JsonObject.class);
-			generateNodes(obj, rootNode, gson);
-		}
-	}
+
 
 	private String getName(JsonElement element) {
 		if (element.toString().length() > 2) {
