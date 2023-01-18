@@ -1,18 +1,35 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml_reader;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.uml2.uml.Association;
 import org.eclipse.uml2.uml.Classifier;
+import org.eclipse.uml2.uml.DataType;
+import org.eclipse.uml2.uml.ElementImport;
+import org.eclipse.uml2.uml.Enumeration;
+import org.eclipse.uml2.uml.EnumerationLiteral;
+import org.eclipse.uml2.uml.Generalization;
+import org.eclipse.uml2.uml.Interface;
+import org.eclipse.uml2.uml.InterfaceRealization;
+import org.eclipse.uml2.uml.LiteralBoolean;
+import org.eclipse.uml2.uml.LiteralInteger;
+import org.eclipse.uml2.uml.LiteralString;
+import org.eclipse.uml2.uml.LiteralUnlimitedNatural;
 import org.eclipse.uml2.uml.NamedElement;
 import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 import org.eclipse.uml2.uml.TypedElement;
+import org.eclipse.uml2.uml.Package;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.BoolValueImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.IntegerValueImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.ListValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 
@@ -49,60 +66,40 @@ class AttributeUtil {
 	}
 
 	private static void setClassifierAttributes(Node node, Classifier classifier) {
-		if (classifier.isAbstract()) {
-			node.addAttribute(UMLAttr.ABSTRACT.name(), new BoolValueImpl(classifier.isAbstract()));
-		}
-		if (classifier.isFinalSpecialization()) {
-			node.addAttribute(UMLAttr.FINAL.name(), new BoolValueImpl(classifier.isFinalSpecialization()));
-		}
-		if (classifier.isLeaf()) {
-			node.addAttribute(UMLAttr.LEAF.name(), new BoolValueImpl(classifier.isLeaf()));
-		}
+		node.addAttribute(UMLAttr.ABSTRACT.name(), new BoolValueImpl(classifier.isAbstract()));
+		node.addAttribute(UMLAttr.FINAL.name(), new BoolValueImpl(classifier.isFinalSpecialization()));
+		node.addAttribute(UMLAttr.LEAF.name(), new BoolValueImpl(classifier.isLeaf()));
 	}
 
 	static void setClassAttributes(Node node, org.eclipse.uml2.uml.Class clazz) {
 		setCommonAttributes(node, clazz);
-		if (clazz.isActive()) {
-			node.addAttribute(UMLAttr.ACTIVE.name(), new BoolValueImpl(clazz.isActive()));
-		}
+		setClassifierAttributes(node, clazz);
+		node.addAttribute(UMLAttr.ACTIVE.name(), new BoolValueImpl(clazz.isActive()));
 	}
 
 	static void setAssociationAttributes(Node node, Association association) {
 		setCommonAttributes(node, association);
-		if (association.isDerived()) {
-			node.addAttribute(UMLAttr.DERIVED.name(), new BoolValueImpl(association.isDerived()));
-		}
+		setClassifierAttributes(node, association);
+		node.addAttribute(UMLAttr.DERIVED.name(), new BoolValueImpl(association.isDerived()));
 	}
 
 	static void setPropertyAttributes(Node node, Property property) {
 		setCommonAttributes(node, property);
+		node.addAttribute(UMLAttr.DERIVED.name(), new BoolValueImpl(property.isDerived()));
+		node.addAttribute(UMLAttr.DERIVED_UNION.name(), new BoolValueImpl(property.isDerivedUnion()));
+		node.addAttribute(UMLAttr.ID.name(), new BoolValueImpl(property.isID()));
+		node.addAttribute(UMLAttr.LEAF.name(), new BoolValueImpl(property.isLeaf()));
+		node.addAttribute(UMLAttr.ORDERED.name(), new BoolValueImpl(property.isOrdered()));
+		node.addAttribute(UMLAttr.READ_ONLY.name(), new BoolValueImpl(property.isReadOnly()));
+		node.addAttribute(UMLAttr.STATIC.name(), new BoolValueImpl(property.isStatic()));
+		node.addAttribute(UMLAttr.UNIQUE.name(), new BoolValueImpl(property.isUnique()));
 		
-		if (property.isDerived()) 
-			node.addAttribute(UMLAttr.DERIVED.name(), new BoolValueImpl(property.isDerived()));
-		
-		if (property.isDerivedUnion())
-			node.addAttribute(UMLAttr.DERIVED_UNION.name(), new BoolValueImpl(property.isDerivedUnion()));
-		
-		if (property.isID())
-			node.addAttribute(UMLAttr.ID.name(), new BoolValueImpl(property.isID()));
-			
-		if (property.isLeaf())
-			node.addAttribute(UMLAttr.LEAF.name(), new BoolValueImpl(property.isLeaf()));
-
-		if (property.isOrdered())
-			node.addAttribute(UMLAttr.ORDERED.name(), new BoolValueImpl(property.isOrdered()));
-
-		if (property.isReadOnly())
-			node.addAttribute(UMLAttr.READ_ONLY.name(), new BoolValueImpl(property.isReadOnly()));
-
-		if (property.isStatic())
-			node.addAttribute(UMLAttr.STATIC.name(), new BoolValueImpl(property.isStatic()));
-		
-		if (property.isUnique()) 
-			node.addAttribute(UMLAttr.UNIQUE.name(), new BoolValueImpl(property.isUnique()));
-		
+		node.addAttribute(UMLAttr.AGGREGATION.name(), new StringValueImpl(property.getAggregation().name()));
+		node.addAttribute(UMLAttr.UPPER.name(), new IntegerValueImpl(property.getUpper()));
+		node.addAttribute(UMLAttr.LOWER.name(), new IntegerValueImpl(property.getLower()));
 		if (property.getType() != null)
 			setTypeAttribute(node, property);
+		
 	}
 	
 	static void setOperationAttributes(Node node, Operation operation) {
@@ -111,28 +108,126 @@ class AttributeUtil {
 			node.addAttribute(UMLAttr.CONCURRENCY.name(),
 					new StringValueImpl(operation.getConcurrency().getLiteral()));
 		}
-		if (operation.isAbstract()) {
-			node.addAttribute(UMLAttr.ABSTRACT.name(), new BoolValueImpl(operation.isAbstract()));
-		}
-		if (operation.isLeaf()) {
-			node.addAttribute(UMLAttr.LEAF.name(), new BoolValueImpl(operation.isLeaf()));
-		}
-		if (operation.isOrdered()) {
-			node.addAttribute(UMLAttr.ORDERED.name(), new BoolValueImpl(operation.isOrdered()));
-		}
-		if (operation.isQuery()) {
-			node.addAttribute(UMLAttr.QUERY.name(), new BoolValueImpl(operation.isQuery()));
-		}
-		if (operation.isStatic()) {
-			node.addAttribute(UMLAttr.STATIC.name(), new BoolValueImpl(operation.isStatic()));
-		}
-		if (operation.isUnique()) {
-			node.addAttribute(UMLAttr.UNIQUE.name(), new BoolValueImpl(operation.isUnique()));
-		}
+		node.addAttribute(UMLAttr.ABSTRACT.name(), new BoolValueImpl(operation.isAbstract()));
+		node.addAttribute(UMLAttr.LEAF.name(), new BoolValueImpl(operation.isLeaf()));
+		node.addAttribute(UMLAttr.ORDERED.name(), new BoolValueImpl(operation.isOrdered()));
+		node.addAttribute(UMLAttr.QUERY.name(), new BoolValueImpl(operation.isQuery()));
+		node.addAttribute(UMLAttr.STATIC.name(), new BoolValueImpl(operation.isStatic()));
+		node.addAttribute(UMLAttr.UNIQUE.name(), new BoolValueImpl(operation.isUnique()));
+		
+		node.addAttribute(UMLAttr.UPPER.name(), new IntegerValueImpl(operation.getUpper()));
+		node.addAttribute(UMLAttr.LOWER.name(), new IntegerValueImpl(operation.getLower()));
+		
 		if (operation.getType() != null) {
 			setTypeAttribute(node, operation);
 		}
 	}
+	
+	static void setElementImportAttributes(Node node, ElementImport elementImport) {
+		if (elementImport.getVisibility() != null && isNotEmpty(elementImport.getVisibility().getLiteral())) {
+			node.addAttribute(UMLAttr.VISIBILITY.name(), new StringValueImpl(elementImport.getVisibility().getLiteral()));
+		}
+		if (isNotEmpty(elementImport.getAlias())) {
+			node.addAttribute(UMLAttr.ALIAS.name(), new StringValueImpl(elementImport.getAlias()));
+		}
+		if (isNotEmpty(elementImport.getImportedElement().getName())) {
+			node.addAttribute(UMLAttr.IMPORTED_ELEMENT.name(), new StringValueImpl(elementImport.getImportedElement().getName()));
+		}		
+	}
+	
+	static void setDataTypeAttributes(Node node, DataType dataType) {
+		setCommonAttributes(node, dataType);
+		setClassifierAttributes(node, dataType);
+	}
+	
+	static void setLiteralStringAttributes(Node node, LiteralString literalString) {
+		setCommonAttributes(node, literalString);
+		if (literalString.getValue() != null) {
+			node.addAttribute(UMLAttr.VALUE.name(), new StringValueImpl(literalString.getValue()));
+		}
+	}
+	
+	static void setLiteralIntegerAttributes(Node node, LiteralInteger literalInteger) {
+		setCommonAttributes(node, literalInteger);
+		node.addAttribute(UMLAttr.VALUE.name(), new IntegerValueImpl(literalInteger.getValue()));
+	}
+	
+	static void setLiteralBooleanAttributes(Node node, LiteralBoolean literalBoolean) {
+		setCommonAttributes(node, literalBoolean);
+		node.addAttribute(UMLAttr.VALUE.name(), new BoolValueImpl(literalBoolean.isValue()));
+	}
+	
+	static void setLiteralUnlimitedNaturalAttributes(Node node, LiteralUnlimitedNatural literalUnlimitedNatural) {
+		setCommonAttributes(node, literalUnlimitedNatural);
+		node.addAttribute(UMLAttr.VALUE.name(), new IntegerValueImpl(literalUnlimitedNatural.getValue()));
+		
+	}
+	
+	static void setParameterAttributes(Node node, Parameter parameter) {
+		setCommonAttributes(node, parameter);
+		if (parameter.getDirection().getLiteral() != null /*&& isNotEmpty(parameter.getDirection()).getLiteral()*/) {
+			node.addAttribute(UMLAttr.DIRECTION.name(),
+					new StringValueImpl(parameter.getDirection().getLiteral()));
+		}
+		if (parameter.getEffect().getLiteral() != null && isNotEmpty(parameter.getEffect().getLiteral())) {
+			node.addAttribute(UMLAttr.EFFECT.name(),
+					new StringValueImpl(parameter.getEffect().getLiteral()));
+		}
+		node.addAttribute(UMLAttr.EXCEPTION.name(), new BoolValueImpl(parameter.isException()));
+		node.addAttribute(UMLAttr.ORDERED.name(), new BoolValueImpl(parameter.isOrdered()));
+		node.addAttribute(UMLAttr.STREAM.name(), new BoolValueImpl(parameter.isStream()));
+		node.addAttribute(UMLAttr.UNIQUE.name(), new BoolValueImpl(parameter.isUnique()));
+		if (parameter.getType() != null) {
+			setTypeAttribute(node, parameter);
+		}
+		
+	}
+	
+	static void setInterfaceAttributes(Node node, Interface interfaze) {
+		setCommonAttributes(node, interfaze);
+		setClassifierAttributes(node, interfaze);
+	}
+	
+	static void setPackageElementAttributes(Node node, Package pac) {
+		setCommonAttributes(node, pac);
+	}
+	
+	static void setEnumerationAttributes(Node node, Enumeration enumeration) {
+		setCommonAttributes(node, enumeration);
+		setClassifierAttributes(node, enumeration);
+	}
+	
+	static void setEnumerationLiteralAttributes(Node node, EnumerationLiteral enumLiteral) {
+		setCommonAttributes(node, enumLiteral);
+	}
+	
+	public static void setGeneralizationAttributes(Node generalizationNode, Generalization generalization) {
+		if (generalization.getGeneral() != null) {
+			String general = generalization.getGeneral().toString();
+			generalizationNode.addAttribute(UMLAttr.GENERAL.name(), new StringValueImpl(general));
+		}
+		generalizationNode.addAttribute(UMLAttr.SUBSTITUTABLE.name(), new BoolValueImpl(generalization.isSubstitutable()));
+	}
+	
+	static void setInterfaceRealizationAttributes(Node node, InterfaceRealization interfaceRealization) {
+		if (interfaceRealization.getClients() != null) {
+			List<String> clientNames = interfaceRealization.getClients().stream()
+					.map(NamedElement::getName)
+					.collect(Collectors.toList());
+			node.addAttribute(UMLAttr.CLIENT.name(), new ListValueImpl<>(clientNames));
+		}
+		if (interfaceRealization.getContract() != null) {
+			String realization = interfaceRealization.getContract().toString();
+			node.addAttribute(UMLAttr.CONTRACT.name(), new StringValueImpl(realization));
+		}
+		if (interfaceRealization.getSuppliers() != null) {
+			List<String> supplierNames = interfaceRealization.getSuppliers().stream()
+					.map(NamedElement::getName)
+					.collect(Collectors.toList());
+			node.addAttribute(UMLAttr.SUPPLIER.name(), new ListValueImpl<>(supplierNames));
+		}
+	}
+	
 
 	private static boolean isNotEmpty(String string) {
 		return string != null && !string.isEmpty();
