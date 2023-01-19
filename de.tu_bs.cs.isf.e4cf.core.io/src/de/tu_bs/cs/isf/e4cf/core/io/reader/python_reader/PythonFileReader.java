@@ -47,14 +47,11 @@ public class PythonFileReader extends AbstractArtifactReader {
 		String path = element.getAbsolutePath();
 		path = Const.QUOTATION + path.replace(Const.BACKSLASH, Const.DIVIDE_OP) + Const.QUOTATION ;
 		
-		Node compUnit = new NodeImpl(Const.C_UNIT);
-		rootNode.addChild(compUnit);
-		compUnit.setParent(rootNode);
 
 		Gson gson = new Gson();
 		JsonObject obj = gson.fromJson(fileToTree.getTreeFromFileMocked(path), JsonObject.class);
 
-		generateNodes(obj, compUnit, gson);
+		generateNodes(obj, rootNode, gson);
 
 		/*
 		 * TODO: if (element.isDirectory()) { rootNode = createDirectory(element,
@@ -68,8 +65,12 @@ public class PythonFileReader extends AbstractArtifactReader {
 		 */
 		
 		//adjust the tree so it can be compared to other programming languages
-		TreeAdjuster adjustAll = new PAdjustAll();
-		adjustAll.recursiveAdjust(rootNode);
+		PAdjustAll PAdjustAll = new PAdjustAll();
+		PAdjustAll.adjustAll(rootNode);
+		
+		//get file name without extension
+		String name = element.getFileName().substring(0, element.getFileName().length() - 3);
+		rootNode.getChildren().get(0).addAttribute(Const.NAME_BIG, name);
 
 		return new TreeImpl(element.getFileName(), rootNode);
 

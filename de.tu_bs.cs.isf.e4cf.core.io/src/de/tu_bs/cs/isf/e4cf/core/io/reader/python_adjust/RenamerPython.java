@@ -39,9 +39,12 @@ public final class RenamerPython {
 	}
 
 	private void fillMap() {
+		map.put("Module", Const.C_UNIT);
 		map.put("FunctionDef", Const.M_DECL);
 		map.put("If", Const.IF_STMT_BIG);
-		
+		map.put("Return", Const.RETURN_STMT);
+		map.put("Assign", Const.ASSIGNMENT);
+
 		
 	}
 	
