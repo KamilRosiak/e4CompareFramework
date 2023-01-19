@@ -1,19 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.core.io.reader.python_reader;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.ProcessBuilder.Redirect;
-import java.nio.file.Path;
+
 import java.nio.file.Paths;
 import java.util.Map;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -27,25 +18,21 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
-import de.tu_bs.cs.isf.e4cf.core.file_structure.components.Directory;
 import de.tu_bs.cs.isf.e4cf.core.io.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.AdjustRename;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.Const;
 import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust.TreeAdjuster;
-import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AbstractSAXHandler;
-import de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader.AttributeDictionary;
-import de.tu_bs.cs.isf.e4cf.core.io.reader.python_adjust.AdjustNode;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.python_adjust.PAdjustAll;
+import de.tu_bs.cs.isf.e4cf.core.io.reader.python_adjust.PAdjustNodes;
 
 public class PythonFileReader extends AbstractArtifactReader {
 
 	public static String[] SUPPORTED_FILE_ENDINGS = { Const.PY };
 
-	private AbstractSAXHandler saxHandler;
 	private FileToTreeReader fileToTree;
 
 	public PythonFileReader() {
 		super(SUPPORTED_FILE_ENDINGS);
-		saxHandler = new PythonSAXHandler();
 		fileToTree = new FileToTreeReader();
 	}
 
@@ -80,11 +67,9 @@ public class PythonFileReader extends AbstractArtifactReader {
 		 * }
 		 */
 		
-		TreeAdjuster nodeAdjuster = new AdjustNode();
-		nodeAdjuster.recursiveAdjust(rootNode);
-		
-		TreeAdjuster renameAdjuster = new AdjustRename();
-		renameAdjuster.recursiveAdjust(rootNode);
+		//adjust the tree so it can be compared to other programming languages
+		TreeAdjuster adjustAll = new PAdjustAll();
+		adjustAll.recursiveAdjust(rootNode);
 
 		return new TreeImpl(element.getFileName(), rootNode);
 

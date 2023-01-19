@@ -20,8 +20,22 @@ Require-Bundle: de.tu_bs.cs.isf.e4cf.compare.data_structures;bundle-version="1.0
 Bundle-ClassPath: .,
  lib/javaparser-core-3.18.0.jar,
  lib/gson-2.8.6.jar,
- lib/jep-4.1.1.jar
-Export-Package: de.tu_bs.cs.isf.e4cf.core.io.gson,
- de.tu_bs.cs.isf.e4cf.core.io.interfaces,
- de.tu_bs.cs.isf.e4cf.core.io.reader,
- de.tu_bs.cs.isf.e4cf.core.io.util
+ lib/jep.jar
+Export-Package: de.tu_bs.cs.isf.e4cf.core.io.gson;uses:="de.tu_bs.cs.isf.e4cf.core.io.gson.services,de.tu_bs.cs.isf.e4cf.compare.data_structures.impl",
+ de.tu_bs.cs.isf.e4cf.core.io.interfaces;uses:="de.tu_bs.cs.isf.e4cf.core.file_structure,de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces,de.tu_bs.cs.isf.e4cf.core.util.services",
+ de.tu_bs.cs.isf.e4cf.core.io.reader;uses:="org.eclipse.e4.core.contexts,de.tu_bs.cs.isf.e4cf.core.file_structure,de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces",
+ de.tu_bs.cs.isf.e4cf.core.io.reader.python_adjust;uses:="de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_adjust,de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces",
+ de.tu_bs.cs.isf.e4cf.core.io.reader.python_reader;
+  uses:="de.tu_bs.cs.isf.e4cf.core.io.reader.cpp_reader,
+   org.xml.sax,
+   de.tu_bs.cs.isf.e4cf.core.file_structure,
+   de.tu_bs.cs.isf.e4cf.core.io.interfaces,
+   de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces",
+ de.tu_bs.cs.isf.e4cf.core.io.reader.python_reader.jep.python;uses:="de.tu_bs.cs.isf.e4cf.core.io.reader.python_reader.jep",
+ de.tu_bs.cs.isf.e4cf.core.io.util;
+  uses:="org.eclipse.e4.core.contexts,
+   de.tu_bs.cs.isf.e4cf.core.file_structure,
+   de.tu_bs.cs.isf.e4cf.core.io.interfaces,
+   de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces",
+ jep;uses:="jep.python",
+ jep.python;uses:="jep"
