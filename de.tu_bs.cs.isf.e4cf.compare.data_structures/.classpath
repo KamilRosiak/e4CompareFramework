@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/antlr-4.11.1-complete.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/opencsv-5.5.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/UML/common-2.0.0-v20140602-0749.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/UML/ecore-2.3.0-v200706262000.jar"/>

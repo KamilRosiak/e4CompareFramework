@@ -15,6 +15,9 @@
       </artifactReader>
       <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.text_reader.TextReader">
+      </artifactReader>
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.arch.ArchReader">
       </artifactReader>     
    </extension>
    <extension
