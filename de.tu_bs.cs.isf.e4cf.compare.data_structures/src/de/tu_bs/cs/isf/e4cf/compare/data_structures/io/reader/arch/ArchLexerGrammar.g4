@@ -26,7 +26,7 @@ ArchitectureNameStart	:	'architecture' ;
 fragment 
 ArchitectureNameEnd		:	'Architecture' ;
 
-MY_WS		:	'\n' ;
+ComponentName			:	'components' ;
 
 
 // ----------------- Everything INSIDE of a tag ---------------------
@@ -42,8 +42,6 @@ VALUE      :   '"' ~[<"]* '"'
             ;
 Name        :   NameStartChar NameChar* ;
 WS           :   [ \t\r\n]               -> skip ;
-
-ComponentName			:	'components' ;
 
 fragment
 HEXDIGIT    :   [a-fA-F0-9] ;

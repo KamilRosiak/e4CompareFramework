@@ -6,16 +6,14 @@ archfile    :   prolog? architecture SEA_WS* EOF ;
 
 prolog      :   XMLDeclOpen attribute* SPECIAL_CLOSE SEA_WS+ ;
 
-architecture :	OPEN Name attribute* '>' chardata? ((component | element) chardata?)*  '<' '/' Name '>' ;
+architecture :	'<' Name attribute* '>' chardata? ((component | element) chardata?)*?  '<' '/' Name '>' ;
 
-component	:	'<' ComponentName attribute* '>' content '<' '/' ComponentName '>' ;
+component	:	'<' Name attribute* '>' content '<' '/' Name '>' ;
 
 content     :   chardata?
-                ((element | reference | CDATA | PI | COMMENT) chardata?)* ;
+                ((element | component | reference | CDATA | PI | COMMENT) chardata?)* ;
 
-element     :   '<' Name attribute* '>' content '<' '/' Name '>'
-            |   '<' Name attribute* '/>'
-            ;
+element     :  '<' Name attribute* '/>' ;
 
 reference   :   EntityRef | CharRef ;
 
