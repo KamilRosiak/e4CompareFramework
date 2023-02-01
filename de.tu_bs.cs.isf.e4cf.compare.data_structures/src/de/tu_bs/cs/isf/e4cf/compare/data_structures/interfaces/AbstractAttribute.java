@@ -86,4 +86,9 @@ public abstract class AbstractAttribute implements Attribute {
 		this.uuid = uuid;
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("%s: %s", attributeKey, attributeValues.toString());
+	}
+	
 }

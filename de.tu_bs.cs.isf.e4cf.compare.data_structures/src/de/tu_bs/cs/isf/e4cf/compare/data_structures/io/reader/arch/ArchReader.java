@@ -6,9 +6,7 @@ import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
@@ -35,8 +33,7 @@ public class ArchReader extends AbstractArtifactReader {
 			ArchVisitor archVisitor = new ArchVisitor();
 			
 			Node root = archVisitor.visit(archFileTree);
-			root = new NodeImpl("Test");
-			//root.addAttribute("filename", new StringValueImpl(fileTreeElement.getFileName()));
+			root.addAttribute("filename", new StringValueImpl(fileTreeElement.getFileName()));
 			return new TreeImpl(fileTreeElement.getFileName(), root);
 		} catch (IOException e) {
 			e.printStackTrace();
