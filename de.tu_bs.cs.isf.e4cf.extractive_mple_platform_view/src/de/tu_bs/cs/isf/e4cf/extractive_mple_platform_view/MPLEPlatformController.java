@@ -2,13 +2,11 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -50,28 +48,41 @@ public class MPLEPlatformController implements Initializable {
 	@Inject
 	private ServiceContainer services;
 
+	/**
+	 * Variant Configurations
+	 */
 	@FXML
 	TableView<Configuration> configTable;
-
 	@FXML
 	TableColumn<ConfigurationImpl, String> configNameCol;
-
 	@FXML
 	TableColumn<ConfigurationImpl, Number> amountCol;
 
+	/**
+	 * Variant Artifacts
+	 */
 	@FXML
-	TableView<UUID> uuidTable, componentUUIDTable;
+	TableView<UUID> uuidTable;
+	
+	/**
+	 * Clone Configuration Artifacts
+	 */
+	@FXML
+	TableView<UUID> componentUUIDTable;
 
 	@FXML
 	TableColumn<UUID, String> configUUIDCol, componentUUIDCol;
 
+	/**
+	 * Clone Configurations
+	 */
 	@FXML
 	TableView<CloneConfiguration> componentConfigs;
-
 	@FXML
 	TableColumn<CloneConfiguration, String> componentIDCol, paarentCol;
 
 	MPLPlatform currentPlatform;
+	
 	@Inject
 	IEclipseContext context;
 
@@ -102,6 +113,7 @@ public class MPLEPlatformController implements Initializable {
 			return new SimpleStringProperty(e.getValue().parentUUID.toString());
 		});
 
+		// display single variant in MPLEditor on double-click
 		configTable.setOnMouseClicked(e -> {
 			if (e.getClickCount() == 2) {
 				try {
@@ -115,39 +127,37 @@ public class MPLEPlatformController implements Initializable {
 				}
 			}
 		});
-
+		
+		// display variant artifacts and clone configs when a variant is selected
 		configTable.getSelectionModel().selectedItemProperty().addListener(e -> {
 			uuidTable.getItems().clear();
+			componentConfigs.getItems().clear();
+			
 			if (configTable.getSelectionModel().getSelectedItem() != null) {
 				uuidTable.getItems().addAll(configTable.getSelectionModel().getSelectedItem().getUUIDs());
+				componentConfigs.getItems().addAll(configTable.getSelectionModel().getSelectedItem().getCloneConfigurations());
 			}
 			uuidTable.refresh();
-
-			if (configTable.getSelectionModel().getSelectedItem() != null) {
-				componentConfigs.getItems().clear();
-				componentConfigs.getItems()
-						.addAll(configTable.getSelectionModel().getSelectedItem().getCloneConfigurations());
-			}
 			componentConfigs.refresh();
-
 		});
-
+		
+		// highlight parent of clone config in MPLEditor on selection of a clone config
 		componentConfigs.getSelectionModel().selectedItemProperty().addListener(e -> {
+			componentUUIDTable.getItems().clear();
+			
 			CloneConfiguration cloneConfig = componentConfigs.getSelectionModel().getSelectedItem();
 			if (cloneConfig != null) {
-				componentUUIDTable.getItems().clear();
 				componentUUIDTable.getItems().addAll(cloneConfig.configuration.getUUIDs());
 				String parentToChildUuid = cloneConfig.getParentUUID().toString() + "#" + cloneConfig.getComponentUUID().toString();
 				services.eventBroker.send(MPLEEditorConsts.SHOW_CLONE_UUID, parentToChildUuid);
 			}
 			componentUUIDTable.refresh();
 		});
-
+			
+		// highlight artifact in MPLEdito when it is selected in variant artifacts or clone config artifacts table
 		componentUUIDTable.getSelectionModel().selectedItemProperty().addListener(e -> {
-			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID,
-					componentUUIDTable.getSelectionModel().getSelectedItem());
+			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID, componentUUIDTable.getSelectionModel().getSelectedItem());
 		});
-
 		uuidTable.getSelectionModel().selectedItemProperty().addListener(e -> {
 			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID, uuidTable.getSelectionModel().getSelectedItem());
 		});
