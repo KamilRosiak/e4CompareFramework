@@ -26,7 +26,6 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -99,7 +98,7 @@ public class MPLEditorController implements Initializable {
 			if (e.getValue().getValue().isClone()) {
 				name = "Clone Node : " + e.getValue().getValue().getUUID();
 			} else {
-				name = "UUID : " + e.getValue().getValue().getUUID();
+				name = e.getValue().getValue().getUUID().toString();
 			}
 			return new SimpleStringProperty(name);
 		});
@@ -118,19 +117,7 @@ public class MPLEditorController implements Initializable {
 			}
 			return new SimpleStringProperty(configString.toString());
 		});
-
-	}
-
-	private NodeDecorator getSelectedDecorator() {
-		return new FamilyModelNodeDecorator();
-	}
-
-	private void decorateTreeRoot(Tree tree) {
-		treeView.setRoot(new TreeItem<Node>(tree.getRoot()));
-		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
-		treeView.getRoot().setExpanded(true);
-		treeView.setShowRoot(true);
-
+		
 		treeView.setRowFactory(new Callback<TreeTableView<Node>, TreeTableRow<Node>>() {
 			@Override
 			public TreeTableRow<Node> call(TreeTableView<Node> param) {
@@ -144,28 +131,42 @@ public class MPLEditorController implements Initializable {
 						} else if (node != null && node.getUUID().equals(currentSelectedNode)) {
 							setStyle("-fx-background-color:LIGHTGREEN;");
 						} else {
-							setStyle(null);
+							setStyle("");
 						}
 					}
 				};
 			}
 		});
+		
+		addListeners();
+		
+	}
 
+	private NodeDecorator getSelectedDecorator() {
+		return new FamilyModelNodeDecorator();
+	}
+
+	private void decorateTreeRoot(Tree tree) {
+		treeView.setRoot(new TreeItem<Node>(tree.getRoot()));
+		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
+		treeView.getRoot().setExpanded(true);
+		treeView.setShowRoot(true);
 	}
 
 	/**
-	 * Adds a listener to the TreeView so that PropertiesTable of a highlighted node
+	 * Adds a listeners to the TreeView
 	 * is displayed
 	 * 
 	 */
-	public void addListener() {
-		treeView.getSelectionModel().selectedItemProperty().addListener(e -> {
-			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
-				services.partService.showPart(MPLEEditorConsts.PROPERTIES_VIEW_ID);
-
-				services.eventBroker.send(MPLEEditorConsts.NODE_PROPERTIES_EVENT,
-						treeView.getSelectionModel().getSelectedItem().getValue());
+	private void addListeners() {
+		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldVal, newVal) -> {
+			if (newVal != null) {
+				currentSelectedNode = newVal.getValue().getUUID();
+				treeView.refresh();
+				services.eventBroker.send(MPLEEditorConsts.NODE_PROPERTIES_EVENT, newVal.getValue());
 			}
+			//services.partService.showPart(MPLEEditorConsts.PROPERTIES_VIEW_ID);
+			
 		});
 
 		decoratorCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -201,7 +202,6 @@ public class MPLEditorController implements Initializable {
 		// decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		// decoratorCombo.getSelectionModel().select(0);
 		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), new FamilyModelNodeDecorator());
-		addListener();
 	}
 
 	/**
@@ -222,9 +222,8 @@ public class MPLEditorController implements Initializable {
 	}
 
 	/**
-	 * Method to initialize the treeView from a given Tree
-	 * 
-	 * @param platform
+	 * Finds and selects a node in the tree by its UUID
+	 * @param uuid The UUID of the desired node
 	 */
 	@Optional
 	@Inject
@@ -276,6 +275,8 @@ public class MPLEditorController implements Initializable {
 			}
 			treeView.getSelectionModel().select(node);
 			treeView.refresh();
+			int nodeIndex = treeView.getRow(node);
+			treeView.scrollTo(nodeIndex-3);
 		}
 	}
 
