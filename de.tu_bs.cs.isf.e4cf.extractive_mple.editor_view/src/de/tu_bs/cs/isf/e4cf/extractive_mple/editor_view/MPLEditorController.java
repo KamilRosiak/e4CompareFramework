@@ -108,16 +108,15 @@ public class MPLEditorController implements Initializable {
 			for (int i = 0; i < currentPlatform.configurations.size(); i++) {
 				Configuration config = currentPlatform.configurations.get(i);
 				if (config.getUUIDs().contains(e.getValue().getValue().getUUID())) {
-					configString.append(i+1);
-				}
-				else {
+					configString.append(i + 1);
+				} else {
 					configString.append("  ");
 				}
 				configString.append(' ');
 			}
 			return new SimpleStringProperty(configString.toString());
 		});
-		
+
 		treeView.setRowFactory(new Callback<TreeTableView<Node>, TreeTableRow<Node>>() {
 			@Override
 			public TreeTableRow<Node> call(TreeTableView<Node> param) {
@@ -137,13 +136,9 @@ public class MPLEditorController implements Initializable {
 				};
 			}
 		});
-		
-		addListeners();
-		
-	}
 
-	private NodeDecorator getSelectedDecorator() {
-		return new FamilyModelNodeDecorator();
+		addListeners();
+
 	}
 
 	private void decorateTreeRoot(Tree tree) {
@@ -154,8 +149,7 @@ public class MPLEditorController implements Initializable {
 	}
 
 	/**
-	 * Adds a listeners to the TreeView
-	 * is displayed
+	 * Adds a listeners to the TreeView is displayed
 	 * 
 	 */
 	private void addListeners() {
@@ -165,8 +159,6 @@ public class MPLEditorController implements Initializable {
 				treeView.refresh();
 				services.eventBroker.send(MPLEEditorConsts.NODE_PROPERTIES_EVENT, newVal.getValue());
 			}
-			//services.partService.showPart(MPLEEditorConsts.PROPERTIES_VIEW_ID);
-			
 		});
 
 		decoratorCombo.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -223,6 +215,7 @@ public class MPLEditorController implements Initializable {
 
 	/**
 	 * Finds and selects a node in the tree by its UUID
+	 * 
 	 * @param uuid The UUID of the desired node
 	 */
 	@Optional
@@ -232,14 +225,16 @@ public class MPLEditorController implements Initializable {
 		if (uuid == null) {
 			return;
 		}
-		
+
 		List<TreeItem<Node>> itemPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), uuid.toString());
 		selectTreeItem(itemPath);
 	}
-	
+
 	/**
 	 * Selects a clone node under a parent node in the tree view.
-	 * @param parentToChildUuid The parentUuid followed by the childUuid separated by a '#' e.g. 4564-4021#8932-4893
+	 * 
+	 * @param parentToChildUuid The parentUuid followed by the childUuid separated
+	 *                          by a '#' e.g. 4564-4021#8932-4893
 	 */
 	@Optional
 	@Inject
@@ -247,23 +242,22 @@ public class MPLEditorController implements Initializable {
 		String[] splitUuid = parentToChildUuid.split("#");
 		String parentUuid = splitUuid[0];
 		String childUuid = splitUuid[1];
-		
+
 		List<TreeItem<Node>> parentPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), parentUuid);
-		if(parentPath.size() > 0) {
+		if (parentPath.size() > 0) {
 			TreeItem<Node> parent = parentPath.get(parentPath.size() - 1);
 			List<TreeItem<Node>> parentToChildPath = TreeViewUtilities.findFirstItemPath(parent, childUuid);
 			List<TreeItem<Node>> childPath = new LinkedList<>(parentPath);
 			childPath.add(parentToChildPath.get(parentToChildPath.size() - 1));
-			
+
 			selectTreeItem(childPath);
 		}
-		
-		
 	}
-	
+
 	/**
-	 * Selects a tree item at the end of a path of tree items in the tree view.
-	 * The tree item path has to start at the root item.
+	 * Selects a tree item at the end of a path of tree items in the tree view. The
+	 * tree item path has to start at the root item.
+	 * 
 	 * @param itemPath Sequence of tree items from the root to the item to select
 	 */
 	private void selectTreeItem(List<TreeItem<Node>> itemPath) {
@@ -276,7 +270,7 @@ public class MPLEditorController implements Initializable {
 			treeView.getSelectionModel().select(node);
 			treeView.refresh();
 			int nodeIndex = treeView.getRow(node);
-			treeView.scrollTo(nodeIndex-3);
+			treeView.scrollTo(nodeIndex - 3);
 		}
 	}
 
