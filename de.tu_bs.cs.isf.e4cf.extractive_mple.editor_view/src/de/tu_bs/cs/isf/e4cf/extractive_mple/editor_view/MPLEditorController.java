@@ -157,7 +157,7 @@ public class MPLEditorController implements Initializable {
 				TreeItem<Node> parent = currentItem.getParent();
 				if (parent.getChildren().size() > 1) {
 					int prevIndex = parent.getChildren().indexOf(currentItem) - 1;
-					// select previous sibling in parent child list, if the item is not the first item in the list
+					// select previous sibling in parent child list, if the item isn't first in the list
 					TreeItem<Node> nextSelection = parent.getChildren().get(prevIndex >= 0 ? prevIndex : 0);
 					selectSingleNode(nextSelection.getValue().getUUID());
 				}
@@ -168,8 +168,8 @@ public class MPLEditorController implements Initializable {
 				int childCount = parent.getChildren().size();
 				if (childCount > 1) {
 					int nextIndex = parent.getChildren().indexOf(currentItem) + 1;
-					// select previous sibling in parent child list, if the item is not the first item in the list
-					TreeItem<Node> nextSelection = parent.getChildren().get(nextIndex < childCount ? nextIndex : childCount + 1);
+					// select next sibling in parent child list, if the item isn't last in the list
+					TreeItem<Node> nextSelection = parent.getChildren().get(nextIndex < childCount ? nextIndex : childCount - 1);
 					selectSingleNode(nextSelection.getValue().getUUID());
 				}
 				keyEvent.consume();
