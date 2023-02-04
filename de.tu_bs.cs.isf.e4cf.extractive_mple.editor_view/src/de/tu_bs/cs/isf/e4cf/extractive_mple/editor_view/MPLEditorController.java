@@ -40,6 +40,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 
 /**
@@ -84,7 +85,6 @@ public class MPLEditorController implements Initializable {
 	private MPLPlatform currentPlatform;
 	private Tree currentTree;
 	private Configuration currentConfiguration;
-	private UUID currentSelectedNode;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -127,18 +127,56 @@ public class MPLEditorController implements Initializable {
 						if (node != null && currentConfiguration != null
 								&& currentConfiguration.getUUIDs().contains(node.getUUID())) {
 							setStyle("-fx-background-color:LIGHTGREEN;");
-						} else if (node != null && node.getUUID().equals(currentSelectedNode)) {
-							setStyle("-fx-background-color:LIGHTGREEN;");
-						} else {
-							setStyle("");
 						}
 					}
 				};
 			}
 		});
-
+		
+		// keyboard shortcuts for keyboard only tree-navigation
+		treeView.setOnKeyPressed(keyEvent -> {
+			KeyCode pressed = keyEvent.getCode();
+			if (pressed == KeyCode.SPACE) { // toggle current tree item expanded
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				currentItem.setExpanded(!currentItem.isExpanded());
+				keyEvent.consume();
+			} else if (keyEvent.isShiftDown() && pressed == KeyCode.UP) { // jump to parent
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				selectSingleNode(currentItem.getParent().getValue().getUUID());
+				keyEvent.consume();
+			} else if (keyEvent.isShiftDown() && pressed == KeyCode.DOWN) { // jump to first expanded child
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				TreeItem<Node> firstExpandedChild = currentItem.getChildren().stream()
+						.filter(TreeItem::isExpanded)
+						.findFirst()
+						.orElseGet(() -> currentItem);
+				selectSingleNode(firstExpandedChild.getValue().getUUID());
+				keyEvent.consume();
+			} else if (keyEvent.isControlDown() && pressed == KeyCode.UP) { // jump to previous sibling
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				TreeItem<Node> parent = currentItem.getParent();
+				if (parent.getChildren().size() > 1) {
+					int prevIndex = parent.getChildren().indexOf(currentItem) - 1;
+					// select previous sibling in parent child list, if the item is not the first item in the list
+					TreeItem<Node> nextSelection = parent.getChildren().get(prevIndex >= 0 ? prevIndex : 0);
+					selectSingleNode(nextSelection.getValue().getUUID());
+				}
+				keyEvent.consume();
+			} else if (keyEvent.isControlDown() && pressed == KeyCode.DOWN) { // jump to next sibling
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				TreeItem<Node> parent = currentItem.getParent();
+				int childCount = parent.getChildren().size();
+				if (childCount > 1) {
+					int nextIndex = parent.getChildren().indexOf(currentItem) + 1;
+					// select previous sibling in parent child list, if the item is not the first item in the list
+					TreeItem<Node> nextSelection = parent.getChildren().get(nextIndex < childCount ? nextIndex : childCount + 1);
+					selectSingleNode(nextSelection.getValue().getUUID());
+				}
+				keyEvent.consume();
+			}
+		});
+		
 		addListeners();
-
 	}
 
 	private void decorateTreeRoot(Tree tree) {
@@ -153,10 +191,9 @@ public class MPLEditorController implements Initializable {
 	 * 
 	 */
 	private void addListeners() {
+		// display attributes of current tree item in properties view
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldVal, newVal) -> {
 			if (newVal != null) {
-				currentSelectedNode = newVal.getValue().getUUID();
-				treeView.refresh();
 				services.eventBroker.send(MPLEEditorConsts.NODE_PROPERTIES_EVENT, newVal.getValue());
 			}
 		});
@@ -221,7 +258,6 @@ public class MPLEditorController implements Initializable {
 	@Optional
 	@Inject
 	public void selectSingleNode(@UIEventTopic(MPLEEditorConsts.SHOW_UUID) UUID uuid) {
-		currentSelectedNode = uuid;
 		if (uuid == null) {
 			return;
 		}
