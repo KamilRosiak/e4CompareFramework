@@ -8,25 +8,27 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.MPLEditorController">
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.MPLEditorController">
    <bottom>
       <HBox BorderPane.alignment="CENTER">
          <children>
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="   TreeDecorator    " />
-            <ComboBox fx:id="decoratorCombo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+            <ComboBox fx:id="decoratorCombo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="Choose" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
    </bottom>
    <center>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Loaded MPL:" VBox.vgrow="ALWAYS" />
              <TreeTableView fx:id="treeView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <columns>
-                  <TreeTableColumn fx:id="nameCol" prefWidth="250.0" text="Name" />
-                  <TreeTableColumn fx:id="componentCol" prefWidth="150.0" text="UUID" />
-                  <TreeTableColumn fx:id="configCol" prefWidth="250.0" text="Configuration" />
-               </columns></TreeTableView>
+                  <TreeTableColumn fx:id="nameCol" editable="false" prefWidth="500.0" sortable="false" text="Element" />
+                  <TreeTableColumn fx:id="componentCol" editable="false" maxWidth="2500.0" prefWidth="250.0" sortable="false" text="UUID" />
+                  <TreeTableColumn fx:id="configCol" editable="false" maxWidth="1000.0" prefWidth="100.0" sortable="false" text="Variants" />
+               </columns>
+               <columnResizePolicy>
+                  <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy></TreeTableView>
          </children>
       </VBox>
    </center>
