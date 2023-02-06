@@ -130,11 +130,11 @@ public class NodeImpl extends AbstractNode {
 				uuids.add(value.getUUID());
 			});
 		});
-
-		for (Node child : getChildren()) {
-			uuids.addAll(child.getAllUUIDS(uuids));
-		}
+		
+		getChildren().forEach(child -> child.getAllUUIDS(uuids));
+		
 		return uuids;
 	}
+
 
 }

@@ -1,7 +1,6 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.arch;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml;
 
 import java.io.IOException;
-
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -14,25 +13,25 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 
-public class ArchReader extends AbstractArtifactReader {
-	public final static String[] SUPPORTED_FILE_ENDINGS = { "arch" };
+public class UMLReader extends AbstractArtifactReader {
+	public final static String[] SUPPORTED_FILE_ENDINGS = { "uml" };
 
-	public ArchReader() {
+	public UMLReader() {
 		super(SUPPORTED_FILE_ENDINGS);
 	}
 
 	@Override
 	public Tree readArtifact(FileTreeElement fileTreeElement) {
-		CharStream archFileStream;
+		CharStream umlFileStream;
 		try {
-			archFileStream = new ANTLRFileStream(fileTreeElement.getAbsolutePath());
-			ArchLexerGrammar archLexer = new ArchLexerGrammar(archFileStream);
-			CommonTokenStream tokens = new CommonTokenStream(archLexer);
-			ArchParserGrammar archParser = new ArchParserGrammar(tokens);
-			ParseTree archFileTree = archParser.archfile();
-			ArchVisitor archVisitor = new ArchVisitor();
+			umlFileStream = new ANTLRFileStream(fileTreeElement.getAbsolutePath());
+			UMLLexer umlLexer = new UMLLexer(umlFileStream);
+			CommonTokenStream tokens = new CommonTokenStream(umlLexer);
+			UMLParser umlParser = new UMLParser(tokens);
+			ParseTree umlFileTree = umlParser.document();
+			UMLVisitor umlVisitor = new UMLVisitor();
 
-			Node root = archVisitor.visit(archFileTree);
+			Node root = umlVisitor.visit(umlFileTree);
 			root.addAttribute("filename", new StringValueImpl(fileTreeElement.getFileName()));
 			return new TreeImpl(fileTreeElement.getFileName(), root);
 		} catch (IOException e) {

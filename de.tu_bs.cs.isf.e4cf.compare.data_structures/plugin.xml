@@ -8,7 +8,7 @@
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaReader">
       </artifactReader>
       <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml_reader.UMLReader">
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml.UMLReader">
       </artifactReader>
       <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.tree_reader.TreeReader">
