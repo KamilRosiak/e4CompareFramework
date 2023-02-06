@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml;
 
-import java.lang.annotation.ElementType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +23,20 @@ public class UMLVisitor extends UMLParserBaseVisitor<Node> {
 	static {
 		elementType.put("packagedElement", NodeType.UML_PACKAGED_ELEMENT);
 		elementType.put("generalization", NodeType.UML_GENERALIZATION);
+		elementType.put("elementImport", NodeType.UML_ELEMENT_IMPORT);
 		elementType.put("ownedAttribute", NodeType.UML_OWNED_ATTRIBUTE);
 		elementType.put("ownedEnd", NodeType.UML_OWNED_END);
+		elementType.put("ownedParameter", NodeType.UML_OWNED_PARAMETER);
 		elementType.put("ownedOperation", NodeType.UML_OWNED_OPERATION);
 		elementType.put("ownedLiteral", NodeType.UML_OWNED_LITERAL);
+		elementType.put("defaultValue", NodeType.UML_DEFAULT_VALUE);
 		elementType.put("lowerValue", NodeType.UML_LOWER_VALUE);
 		elementType.put("upperValue", NodeType.UML_UPPER_VALUE);
 		elementType.put("type", NodeType.UML_TYPE);
+		elementType.put("interfaceRealization", NodeType.UML_INTERFACE_REALIZATION);
+		elementType.put("nestedClassifier", NodeType.UML_NESTED_CLASSIFIER);
+		elementType.put("name", NodeType.UML_NAME);
+		elementType.put("importedElement", NodeType.UML_IMPORTED_ELEMENT);
 		
 	}
 

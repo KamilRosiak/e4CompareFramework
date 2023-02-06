@@ -1,5 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.e4.core.contexts.IEclipseContext;

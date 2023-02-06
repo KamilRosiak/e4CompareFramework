@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml;
 
 import java.io.IOException;
-
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
