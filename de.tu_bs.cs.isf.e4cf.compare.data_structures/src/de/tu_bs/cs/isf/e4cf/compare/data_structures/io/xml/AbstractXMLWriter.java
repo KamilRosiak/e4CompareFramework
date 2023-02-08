@@ -1,8 +1,7 @@
-package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,18 +12,14 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
-public class XMIWriter extends AbstractArtifactWriter {
+public abstract class AbstractXMLWriter extends AbstractArtifactWriter {
 	public final static String NODE_TYPE_TREE = "TEXT";
 	private final static String INDENT = "  ";
 	private Map<NodeType, String> typeToName;
 	
-	public XMIWriter(String fileEnding) {
+	public AbstractXMLWriter(String fileEnding, Map<NodeType, String> typeNameMap) {
 		super(fileEnding);
-		this.typeToName = new HashMap<>();
-	}
-	
-	public XMIWriter(String fileEnding, Map<NodeType, String> typeNameMap) {
-		this(fileEnding);
+		typeNameMap.put(NodeType.XML_METADATA, "xml");
 		this.typeToName = typeNameMap;
 	}
 	

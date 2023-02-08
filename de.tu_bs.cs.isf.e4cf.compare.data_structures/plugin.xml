@@ -8,7 +8,7 @@
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java_reader.JavaReader">
       </artifactReader>
       <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.uml.UMLReader">
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml.uml.UMLReader">
       </artifactReader>
       <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.tree_reader.TreeReader">
@@ -17,7 +17,7 @@
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.text_reader.TextReader">
       </artifactReader>
       <artifactReader
-            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.arch.ArchReader">
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml.arch.ArchReader">
       </artifactReader>     
    </extension>
    <extension
@@ -29,7 +29,10 @@
             artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter2">
       </artifactWriter>
    <artifactWriter
-         artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.arch.ArchWriter">
+         artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml.arch.ArchWriter">
+   </artifactWriter>
+   <artifactWriter
+         artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml.uml.UMLWriter">
    </artifactWriter>
    </extension>
 </plugin>

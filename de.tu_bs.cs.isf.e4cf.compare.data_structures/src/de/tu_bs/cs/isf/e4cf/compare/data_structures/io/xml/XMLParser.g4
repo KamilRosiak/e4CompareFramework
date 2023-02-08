@@ -1,6 +1,6 @@
-parser grammar UMLParser;
+parser grammar XMLParser;
 
-options { tokenVocab=UMLLexer; }
+options { tokenVocab=XMLLexer; }
 
 document    :   prolog? root SEA_WS* EOF ;
 

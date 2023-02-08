@@ -1,4 +1,4 @@
-lexer grammar ArchLexerGrammar;
+lexer grammar XMLLexer;
 
 // Default "mode": Everything OUTSIDE of a tag
 COMMENT     :   '<!--' .*? '-->' ;
@@ -18,15 +18,6 @@ XMLDeclOpen :   '<?xml' WS               -> pushMode(INSIDE) ;
 SPECIAL_OPEN:   '<?' Name               -> more, pushMode(PROC_INSTR) ;
 
 TEXT        :   ~[<&]+ ;        // match any 16 bit char other than < and &
-
-ArchitectureName		: ArchitectureNameStart ':' ArchitectureNameEnd ;	
-
-fragment 
-ArchitectureNameStart	:	'architecture' ;
-fragment 
-ArchitectureNameEnd		:	'Architecture' ;
-
-ComponentName			:	'components' ;
 
 
 // ----------------- Everything INSIDE of a tag ---------------------
