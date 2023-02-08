@@ -111,7 +111,7 @@ public class UMLVisitor extends UMLParserBaseVisitor<Node> {
 			.filter(elementName::contains)
 			.collect(Collectors.toList());
 		if (elements.isEmpty()) {
-			System.out.println("Unhandeled xml element:" + elementName);
+			System.out.println("Unhandled xml element:" + elementName);
 			return NodeType.UNDEFINED;
 		} else if (elements.size() == 1) {
 			return elementType.get(elements.get(0));

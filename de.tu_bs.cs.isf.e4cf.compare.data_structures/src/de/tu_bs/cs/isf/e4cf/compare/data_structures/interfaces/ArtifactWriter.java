@@ -27,6 +27,6 @@ public interface ArtifactWriter {
      * returns true if file can be written.
      */
     default public boolean isFileSupported(String fileExtension) {
-	return getFileEnding().equals(fileExtension) ? true : false;
+    	return getFileEnding().equals(fileExtension) ? true : false;
     };
 }

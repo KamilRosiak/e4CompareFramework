@@ -28,5 +28,8 @@
 	  <artifactWriter
             artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter2">
       </artifactWriter>
+   <artifactWriter
+         artifactWriter="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.arch.ArchWriter">
+   </artifactWriter>
    </extension>
 </plugin>

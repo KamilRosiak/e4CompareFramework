@@ -1,6 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.arch;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -14,6 +16,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 
 public class ArchVisitor extends ArchParserGrammarBaseVisitor<Node> {
+	
+	private Map<String, NodeType> elementType = ArchTagMapper.getNameToType();
 
 	@Override
 	public Node visitArchfile(@NotNull ArchParserGrammar.ArchfileContext ctx) {
@@ -81,18 +85,18 @@ public class ArchVisitor extends ArchParserGrammarBaseVisitor<Node> {
 	}
 
 	private NodeType getElementType(String elementName) {
-		switch (elementName) {
-		case "signals":
-			return NodeType.ARCH_SIGNAL;
-		case "ports":
-			return NodeType.ARCH_PORT;
-		case "connectors":
-			return NodeType.ARCH_CONNECTOR;
-		case "ownedComments":
-			return NodeType.ARCH_OWNED_COMMENT;
-		default:
-			return NodeType.UNDEFINED;
-		}
+		List<String> elements = elementType.keySet().stream()
+				.filter(elementName::contains)
+				.collect(Collectors.toList());
+			if (elements.isEmpty()) {
+				System.out.println("Unhandled xml element:" + elementName);
+				return NodeType.UNDEFINED;
+			} else if (elements.size() == 1) {
+				return elementType.get(elements.get(0));
+			} else {
+				System.out.println(String.format("Multiple matches for element: %s - %s", elementName, elements.toString()));
+				return NodeType.UNDEFINED;
+			}
 	}
 
 	private void addChildren(Node node, List<ParseTree> children) {

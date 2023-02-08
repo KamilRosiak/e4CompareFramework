@@ -34,7 +34,10 @@ public class ArchReader extends AbstractArtifactReader {
 
 			Node root = archVisitor.visit(archFileTree);
 			root.addAttribute("filename", new StringValueImpl(fileTreeElement.getFileName()));
-			return new TreeImpl(fileTreeElement.getFileName(), root);
+			Tree archTree = new TreeImpl(fileTreeElement.getFileName(), root);
+			// TODO set file extension automatically for all readers
+			archTree.setFileExtension(SUPPORTED_FILE_ENDINGS[0]);
+			return archTree;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -33,7 +33,9 @@ public class UMLReader extends AbstractArtifactReader {
 
 			Node root = umlVisitor.visit(umlFileTree);
 			root.addAttribute("filename", new StringValueImpl(fileTreeElement.getFileName()));
-			return new TreeImpl(fileTreeElement.getFileName(), root);
+			Tree umlTree = new TreeImpl(fileTreeElement.getFileName(), root);
+			umlTree.setFileExtension(SUPPORTED_FILE_ENDINGS[0]);
+			return umlTree;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
