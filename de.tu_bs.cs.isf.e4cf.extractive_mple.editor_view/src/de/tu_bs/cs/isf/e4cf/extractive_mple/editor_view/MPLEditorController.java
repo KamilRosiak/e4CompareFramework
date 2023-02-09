@@ -4,7 +4,9 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -85,6 +87,8 @@ public class MPLEditorController implements Initializable {
 	private MPLPlatform currentPlatform;
 	private Tree currentTree;
 	private Configuration currentConfiguration;
+
+	private List<Set<UUID>> currentAtomicSets;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -248,6 +252,50 @@ public class MPLEditorController implements Initializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Optional
+	@Inject
+	public void showAtomicSets(@UIEventTopic("atomic_sets_found") List<Set<UUID>> atomicSets) {
+		currentAtomicSets = atomicSets;
+		
+		treeView.setRowFactory(new Callback<TreeTableView<Node>, TreeTableRow<Node>>() {
+			@Override
+			public TreeTableRow<Node> call(TreeTableView<Node> param) {
+				return new TreeTableRow<Node>() {
+					@Override
+					protected void updateItem(Node node, boolean paramBoolean) {
+						super.updateItem(node, paramBoolean);						
+						if (node != null && currentAtomicSets != null) {
+							for (int i = 0; i < currentAtomicSets.size(); i++) {
+								if (atomicSets.get(i).contains(node.getUUID())) {
+									int step = 255 / currentAtomicSets.size() * i;
+									String color = String.format("#%x%x%x", step, step/2 + 125, 255 - step);
+									setStyle("-fx-background-color:" + color + ";");
+								}
+							}
+							
+						}
+					}
+				};
+			}
+		});
+		treeView.refresh();
+		
+		TreeViewUtilities.decorateTree(treeView.getRoot(), new NodeDecorator() {
+			@Override
+			public boolean isSupportedTree(Tree tree) {
+				return true;
+			}
+
+			@Override
+			public TreeItem<Node> decorateNode(TreeItem<Node> node) {
+				node.setExpanded(true);
+				return node;
+			}
+			
+		});
+		treeView.refresh();
 	}
 
 	/**

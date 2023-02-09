@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -27,6 +29,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
@@ -288,11 +291,26 @@ public class MPLEPlatformController implements Initializable {
 	}
 
 	@FXML
-	private void showPlatfform() {
+	private void showPlatform() {
 		if (currentPlatform != null) {
 			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 			services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, currentPlatform);
 		}
+	}
+	
+	@FXML
+	private void locateFeatures() {
+		if (currentPlatform != null) {
+			IConfigurationElement[] configs = RCPContentProvider
+					.getIConfigurationElements("de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.LocateFeatures");
+			try {
+				IFeatureLocaterExtension handler = (IFeatureLocaterExtension) configs[0].createExecutableExtension("locate_feature_handler");
+				handler.locateFeatures(services, currentPlatform);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	private void showConfigurations() {

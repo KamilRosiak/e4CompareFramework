@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
+   <extension-point id="LocateFeatures" name="LocateFeatures" schema="schema/LocateFeatures.exsd"/>
 
    <extension
          id="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.fragment"

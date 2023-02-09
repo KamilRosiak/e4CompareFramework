@@ -99,8 +99,9 @@
    <top>
       <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-          <Button mnemonicParsing="false" onAction="#showPlatfform" text="Show Platform" />
+          <Button mnemonicParsing="false" onAction="#showPlatform" text="Show Platform" />
             <Button mnemonicParsing="false" onAction="#printDetails" text="Print Details" />
+            <Button mnemonicParsing="false" onAction="#locateFeatures" text="Locate Features" />
         </items>
       </ToolBar>
    </top>
