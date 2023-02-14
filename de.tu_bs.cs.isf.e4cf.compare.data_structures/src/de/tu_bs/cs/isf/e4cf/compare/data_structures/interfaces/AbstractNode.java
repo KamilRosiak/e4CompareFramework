@@ -14,6 +14,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeIterator;
 
 public abstract class AbstractNode implements Node {
+	private static final long serialVersionUID = -3547151067490334814L;
 	private String nodeType;
 	private String representation;
 	private NodeType standardizedNodeType = NodeType.UNDEFINED;
@@ -25,7 +26,6 @@ public abstract class AbstractNode implements Node {
 	private int startLine = -1;
 	private int endLine = -1;
 	private boolean isComponent = false;
-	private List<Configuration> configurations = new ArrayList<Configuration>();
 
 	public AbstractNode() {
 		initializeNode();
@@ -55,16 +55,6 @@ public abstract class AbstractNode implements Node {
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public List<Configuration> getConfigurations() {
-		return configurations;
-	}
-
-	@Override
-	public void addConfiguration(Configuration config) {
-		configurations.add(config);
 	}
 
 	@Override

@@ -146,7 +146,14 @@ public class MPLEPlatformController implements Initializable {
 			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID,
 					componentUUIDTable.getSelectionModel().getSelectedItem());
 		});
-
+		
+		componentConfigs.setOnMouseClicked(e-> {
+			if(e.getClickCount() == 2) {
+				services.eventBroker.send(MPLEEditorConsts.SEARCH_UUID,
+						componentConfigs.getSelectionModel().getSelectedItem().getComponentUUID());
+			}
+		});
+		
 		uuidTable.getSelectionModel().selectedItemProperty().addListener(e -> {
 			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID, uuidTable.getSelectionModel().getSelectedItem());
 		});

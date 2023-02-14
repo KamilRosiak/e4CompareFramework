@@ -18,14 +18,6 @@
             genModel="model/family_model.genmodel"/>
    </extension>
    <extension
-         id="id1"
-         point="org.eclipse.e4.workbench.model">
-      <fragment
-            apply="always"
-            uri="family_model_view.e4xmi">
-      </fragment>
-   </extension>
-   <extension
          point="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.family_model_properties">
       <artefactSpecialization
             extensionProvider="de.tu_bs.cs.isf.e4cf.family_model_view.prototype.data.CarExtensionProvider"

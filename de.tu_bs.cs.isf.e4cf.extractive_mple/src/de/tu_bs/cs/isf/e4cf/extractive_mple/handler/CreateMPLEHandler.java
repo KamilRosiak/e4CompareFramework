@@ -84,25 +84,6 @@ public class CreateMPLEHandler {
 				services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + name);
 	}
 
-	private void printPlatform(MPLPlatform platform) {
-		Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
-		platform.configurations.forEach(config -> {
-			config.getCloneConfigurations().forEach(cloneConfig -> {
-				if (!cloneClasses.containsKey(cloneConfig.componentUUID)) {
-					cloneClasses.put(cloneConfig.componentUUID, 1);
-				} else {
-					cloneClasses.put(cloneConfig.componentUUID, cloneClasses.get(cloneConfig.componentUUID) + 1);
-				}
-			});
-		});
-
-		int totalNumber = 0;
-		for (Entry<UUID, Integer> entry : cloneClasses.entrySet()) {
-			totalNumber = totalNumber + entry.getValue();
-		}
-
-	}
-
 	/**
 	 * This method checks if a artifact reader is available for this view
 	 * 

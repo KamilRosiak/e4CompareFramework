@@ -20,7 +20,7 @@
                <items>
                   <VBox>
                      <children>
-                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                            <children>
                               <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Variant Configurations" />
                               <TableView fx:id="configTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
@@ -38,9 +38,9 @@
                               </TableView>
                            </children>
                         </VBox>
-                        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                            <children>
-                              <SplitPane dividerPositions="0.5">
+                              <SplitPane dividerPositions="0.5" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                                  <items>
                                     <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                        <children>

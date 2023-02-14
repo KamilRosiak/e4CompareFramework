@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.swing.tree.TreeNode;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -225,6 +226,35 @@ public class MPLEditorController implements Initializable {
 	public void selectNode(@UIEventTopic(MPLEEditorConsts.SHOW_UUID) UUID uuid) {
 		currentSelectedNode = uuid;
 		treeView.refresh();
+	}
+
+	/**
+	 * Method to initialize the treeView from a given Tree
+	 * 
+	 * @param platform
+	 */
+	@Optional
+	@Inject
+	public void searchInTree(@UIEventTopic(MPLEEditorConsts.SEARCH_UUID) UUID uuid) {
+		openTree(uuid);
+	}
+
+	public void openTree(UUID uuid) {
+		searchInTree(uuid, treeView.getRoot());
+	}
+
+	public void searchInTree(UUID uuid, TreeItem<Node> treeItem) {
+		if (treeItem.getValue().getUUID().equals(uuid)) {
+			TreeItem<Node> currentItem = treeItem;
+			while (currentItem != treeView.getRoot()) {
+				currentItem.setExpanded(true);
+				currentItem = currentItem.getParent();
+			}
+		} else {
+			treeItem.getChildren().forEach(childNode -> {
+				searchInTree(uuid, childNode);
+			});
+		}
 	}
 
 	public MPLPlatform getCurrentPlatform() {

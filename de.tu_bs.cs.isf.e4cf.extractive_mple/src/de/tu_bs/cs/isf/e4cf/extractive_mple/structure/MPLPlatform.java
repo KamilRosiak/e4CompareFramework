@@ -2,9 +2,13 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple.structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -80,7 +84,7 @@ public class MPLPlatform implements Serializable {
 			 * creation of clone configurations
 			 */
 			List<CloneConfiguration> cloneConfigurations = refactorComponents(variant.getRoot());
-			//System.out.println("cloneConfigs:"+ cloneConfigurations.size());
+			// System.out.println("cloneConfigs:"+ cloneConfigurations.size());
 			List<CloneConfiguration> fixedCloneConfigs = new ArrayList<CloneConfiguration>();
 			/**
 			 * Intre clone refactoring detection clone artifacts within the variant and the
@@ -153,8 +157,8 @@ public class MPLPlatform implements Serializable {
 				if (!clusterNode.getParent().getChildren().contains(mergeTarget))
 					clusterNode.getParent().getChildren().add(mergeTarget);
 
-				componentConfigs.add(NodeConfigurationUtil.createCloneConfiguration(clusterNode,
-						clusterNode.getParent().getUUID()));
+				componentConfigs.add(
+						NodeConfigurationUtil.createCloneConfiguration(clusterNode, clusterNode.getParent().getUUID()));
 			}
 		}
 		return componentConfigs;
@@ -194,4 +198,21 @@ public class MPLPlatform implements Serializable {
 		configurations.remove(config);
 	}
 
+	public void printPlatform() {
+		Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
+		this.configurations.forEach(config -> {
+			config.getCloneConfigurations().forEach(cloneConfig -> {
+				if (!cloneClasses.containsKey(cloneConfig.componentUUID)) {
+					cloneClasses.put(cloneConfig.componentUUID, 1);
+				} else {
+					cloneClasses.put(cloneConfig.componentUUID, cloneClasses.get(cloneConfig.componentUUID) + 1);
+				}
+			});
+		});
+
+		int totalNumber = 0;
+		for (Entry<UUID, Integer> entry : cloneClasses.entrySet()) {
+			totalNumber = totalNumber + entry.getValue();
+		}
+	}
 }

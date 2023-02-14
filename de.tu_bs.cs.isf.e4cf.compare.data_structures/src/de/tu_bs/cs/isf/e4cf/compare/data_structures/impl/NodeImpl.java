@@ -16,8 +16,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
  *
  */
 public class NodeImpl extends AbstractNode {
-
-	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 2646668251637650151L;
 
 	public NodeImpl() {
