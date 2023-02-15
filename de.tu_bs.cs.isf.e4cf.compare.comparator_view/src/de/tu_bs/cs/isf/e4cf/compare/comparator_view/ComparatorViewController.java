@@ -13,14 +13,12 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLUtil;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 public class ComparatorViewController {
-    private static final String COMPARATOR_VIEW_FXML = "/ui/view/ComparatorView.fxml";
-    public static final String COMPARATOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
+    private static final String COMPARATOR_VIEW_FXML = "src/de/tu_bs/cs/isf/e4cf/compare/comparator_view/ComparatorView.fxml";
 
     private ComparatorView view;
 
     @PostConstruct
     public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
-	view = FXMLUtil.<ComparatorView>loadFXML(parent, context, ComparatorST.BUNDLE_NAME, COMPARATOR_VIEW_FXML);
-//	view.setCss(COMPARATOR_VIEW_CSS_LOCATION);
+    	view = FXMLUtil.<ComparatorView>loadFXML(parent, context, ComparatorST.BUNDLE_NAME, COMPARATOR_VIEW_FXML);
     }
 }

@@ -386,4 +386,24 @@ public abstract class AbstractNode implements Node {
 
 		return startAmount;
 	}
+	
+	@Override
+	public Set<UUID> getAllUUIDS() {
+		Set<UUID> uuids = new HashSet<>();
+		addAllUUIDS(uuids);
+		return uuids;
+	}
+	
+	@Override
+	public void addAllUUIDS(Set<UUID> uuids) {
+		uuids.add(getUUID());
+		getAttributes().forEach(attr -> {
+			uuids.add(attr.getUUID());
+			attr.getAttributeValues().forEach(value -> {
+				uuids.add(value.getUUID());
+			});
+		});
+		// insert all UUIDs of children in uuids
+		getChildren().forEach(child -> child.addAllUUIDS(uuids));
+	}
 }

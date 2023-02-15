@@ -4,14 +4,14 @@ Bundle-Name: Text_Editor
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.text_editor;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.apache.commons.lang3;bundle-version="3.1.0",
- org.eclipse.swt;bundle-version="3.115.0",
+ org.eclipse.swt;bundle-version="3.113.0",
  org.eclipse.e4.ui.di,
- org.eclipse.e4.ui.model.workbench;bundle-version="2.1.800.v20200828-0938",
+ org.eclipse.e4.ui.model.workbench;bundle-version="2.1.600",
  javax.inject;bundle-version="1.0.0",
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.core.contexts,
- org.eclipse.e4.core.services;bundle-version="2.2.400",
- org.eclipse.core.runtime;bundle-version="3.19.0",
+ org.eclipse.e4.core.services;bundle-version="2.2.100",
+ org.eclipse.core.runtime;bundle-version="3.17.0",
  de.tu_bs.cs.isf.e4cf.parts.project_explorer,
  de.tu_bs.cs.isf.e4cf.core
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.text.editor
