@@ -7,7 +7,7 @@
 <VBox xmlns="http://javafx.com/javafx/8.0.171"
 	xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="de.tu_bs.cs.isf.e4cf.parts.project_explorer.controller.NewFileViewController"
-	stylesheets="@ui/view/NewFileView.css" styleClass="box">
+	stylesheets="@NewFileView.css" styleClass="box">
 	<children>
 		<Text strokeType="OUTSIDE" strokeWidth="0.0"
 			text="Create a new file" />
