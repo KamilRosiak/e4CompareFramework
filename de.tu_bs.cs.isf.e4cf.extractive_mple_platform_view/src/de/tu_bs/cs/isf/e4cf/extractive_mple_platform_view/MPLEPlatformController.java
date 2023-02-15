@@ -266,7 +266,7 @@ public class MPLEPlatformController implements Initializable {
 		if (currentPlatform != null && currentPlatform.model != null) {
 			System.out.println("Platform number of nodes: " + currentPlatform.model.getAmountOfNodes(0));
 			System.out.println(
-					"Platform number of UUIDS: " + currentPlatform.model.getAllUUIDS(new HashSet<UUID>()).size());
+					"Platform number of UUIDS: " + currentPlatform.model.getAllUUIDS().size());
 			Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
 			currentPlatform.configurations.forEach(config -> {
 				config.getCloneConfigurations().forEach(cloneConfig -> {
