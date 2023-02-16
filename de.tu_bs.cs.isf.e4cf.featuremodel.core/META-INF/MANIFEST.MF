@@ -9,7 +9,8 @@ Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.core,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints,
- de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.listener
+ de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.listener,
+ de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements
 Bundle-Name: Core
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: javax.inject,
@@ -26,7 +27,8 @@ Require-Bundle: javax.inject,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.featuremodel.model,
  de.tu_bs.cs.isf.e4cf.EMFModelLoader,
- de.tu_bs.cs.isf.e4cf.parts.project_explorer
+ de.tu_bs.cs.isf.e4cf.parts.project_explorer,
+ de.tu_bs.cs.isf.e4cf.featuremodel.synthesis
 Bundle-ManifestVersion: 2
 Bundle-Activator: de.tu_bs.cs.isf.e4cf.featuremodel.core.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

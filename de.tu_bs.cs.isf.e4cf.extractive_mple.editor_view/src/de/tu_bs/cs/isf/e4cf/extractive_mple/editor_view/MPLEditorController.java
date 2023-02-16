@@ -269,8 +269,8 @@ public class MPLEditorController implements Initializable {
 						if (node != null && currentAtomicSets != null) {
 							for (int i = 0; i < currentAtomicSets.size(); i++) {
 								if (atomicSets.get(i).contains(node.getUUID())) {
-									int step = 255 / currentAtomicSets.size() * i;
-									String color = String.format("#%x%x%x", step, step/2 + 125, 255 - step);
+									int hue = 360 / currentAtomicSets.size() * i;
+									String color = String.format("hsb(%d, %s, %s)", hue, "100%", "50%");
 									setStyle("-fx-background-color:" + color + ";");
 								}
 							}

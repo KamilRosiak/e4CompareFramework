@@ -34,6 +34,8 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDi
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import featureConfiguration.FeatureConfiguration;
 import javafx.embed.swt.FXCanvas;
 import javafx.geometry.Rectangle2D;
@@ -651,6 +653,13 @@ public class FeatureModelEditorController {
 		FeatureDiagramm parsedModel = TreeParser.parse(tree);
 		loadFeatureDiagram(parsedModel);
 		services.eventBroker.send(FDEventTable.FORMAT_DIAGRAM_EVENT, "");
+	}
+	
+	@Optional
+	@Inject
+	public void createFeatureDiagramFromSyntaxGroups(@UIEventTopic(EventTable.PUBLISH_SYNTAX_GROUPS) List<SyntaxGroup> groups) {
+		getCurrentView().loadSyntaxGroups(groups);
+		return;
 	}
 
 }

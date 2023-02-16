@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.eclipse.e4.ui.di.UIEventTopic;
+
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
@@ -16,6 +18,7 @@ import FeatureDiagram.FeatureDiagramFactory;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
 import FeatureDiagram.impl.FeatureDiagramFactoryImpl;
+import FeatureDiagram.impl.FeatureImpl;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
@@ -50,6 +53,8 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactor
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FeatureModelEditorToolbar;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import featureConfiguration.FeatureConfiguration;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -94,7 +99,7 @@ public class FeatureModelEditorView {
 	private Map<FXGraphicalFeature, Line> featureLineMap;
 
 	private AnimationMap labelBorderAnimationMap;
-
+	
 	public FeatureModelEditorView(Tab tab, ServiceContainer services) {
 		this.services = services;
 		this.componentFeatureList = new ArrayList<FXGraphicalFeature>();
@@ -200,7 +205,7 @@ public class FeatureModelEditorView {
 	 * This method replaces all elements of the current loaded feature diagram
 	 */
 	public void formatDiagram(boolean askToSave) {
-		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
+		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.WALKERS_ALGORITHM);
 		placement.format(currentModel);
 		// Reset the translate offset so that large feature diagrams do not
 		// disappear after formatting
@@ -243,6 +248,14 @@ public class FeatureModelEditorView {
 		postProcessFeatureVisibility(fxRoot);
 		double xShift = this.getRootPane().getWidth() / 2 - model.getRoot().getGraphicalfeature().getX();
 		double yShift = this.getRootPane().getHeight() / 2 - model.getRoot().getGraphicalfeature().getY();
+		
+		for (Feature childFeature : model.getRoot().getChildren()) {
+			FXGraphicalFeature fxChild = addFeature(childFeature);
+			fxRoot.addChildFeature(fxChild);
+			fxChild.setParentFxFeature(fxRoot);
+			createLineToChildren(fxRoot, fxChild);
+		}
+		
 		// add all Feature to front so that no overlapping exists.
 		for (FXGraphicalFeature fxFeature : featureList) {
 			fxFeature.getFeature().getGraphicalfeature().setX(fxFeature.getFeature().getGraphicalfeature().getX() + xShift);
@@ -328,12 +341,8 @@ public class FeatureModelEditorView {
 		this.mouseX = x;
 		this.mouseY = y;
 	}
-
-	/**
-	 * This method adds a feature to the position of this graphicalFeature with his
-	 * children.
-	 */
-	public FXGraphicalFeature addFeature(Feature feature) {
+	
+	public FXGraphicalFeature createFXGraphicalFeature(Feature feature, Color background) {
 		// log feature added
 		services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE, feature);
 		if (feature.getGraphicalfeature() != null) {
@@ -341,6 +350,9 @@ public class FeatureModelEditorView {
 			feature.getGraphicalfeature().setY(feature.getGraphicalfeature().getY());
 		}
 		FXGraphicalFeature fxGraFeature = new FXGraphicalFeature(this, feature, services);
+		if (background != null) {
+			fxGraFeature.setBackgroundColor(background);
+		}
 		
 		//TODO: debug statements
 		//System.out.println("w: " + feature.getGraphicalfeature().getWidth());
@@ -350,27 +362,34 @@ public class FeatureModelEditorView {
 		if (feature.isAbstract()) {
 			fxGraFeature.getFeatureNameLabel().getStyleClass().add("abstractFeature");
 		}
-
-		rootPane.getChildren().add(fxGraFeature);
-		featureList.add(fxGraFeature);
-
-		for (Feature childFeature : feature.getChildren()) {
-			FXGraphicalFeature fxChild = addFeature(childFeature);
-			fxGraFeature.addChildFeature(fxChild);
-			fxChild.setParentFxFeature(fxGraFeature);
-			createLineToChildren(fxGraFeature, fxChild);
-		}
 		
-		
-
 		if (fxGraFeature.getFeature().isAlternative()) {
 			fxGraFeature.setGroupVariability_ALTERNATIVE();
 		} else if (fxGraFeature.getFeature().isOr()) {
 			fxGraFeature.setGroupVariability_OR();
 		}
+		
+		return fxGraFeature;
+	}
+	
+	public FXGraphicalFeature addFeature(Feature feature) {
+		return addFeature(feature, null);
+	}
+
+	/**
+	 * This method adds a feature to the position of this graphicalFeature with his
+	 * children.
+	 */
+	public FXGraphicalFeature addFeature(Feature feature, Color background) {
+		FXGraphicalFeature fxGraFeature = createFXGraphicalFeature(feature, background);
+
+		rootPane.getChildren().add(fxGraFeature);
+		featureList.add(fxGraFeature);
 
 		return fxGraFeature;
 	}
+	
+	
 	
 
 	/**
@@ -1091,6 +1110,38 @@ public class FeatureModelEditorView {
 				i++;
 			}
 		}
+	}
+
+	public void loadSyntaxGroups(@UIEventTopic(EventTable.PUBLISH_SYNTAX_GROUPS) List<SyntaxGroup> groups) {
+		clearAll();
+		
+		Iterator<SyntaxGroup> groupIterator = groups.iterator();
+		SyntaxGroup coreGroup = groupIterator.next();
+		Feature coreFeature = FeatureInitializer.createFeature("Core", true);
+		FXGraphicalFeature fxCore = addFeature(coreFeature, coreGroup.getColor());
+		
+		while (groupIterator.hasNext()) {
+			SyntaxGroup group = groupIterator.next();
+			Feature groupFeature = FeatureInitializer.createFeature(group.getNormalizedName(), false);
+			FXGraphicalFeature fxGroup = addFeature(groupFeature, group.getColor());
+			insertChild(coreFeature, groupFeature);
+			insertChild(fxCore, fxGroup);
+		}
+		
+		FeatureDiagramm diagram = new FeatureDiagram();
+		diagram.setRoot(coreFeature);
+		currentModel = diagram;
+	}
+	
+	private void insertChild(Feature parent, Feature child) {
+		parent.getChildren().add(child);
+		child.setParent(parent);
+	}
+	
+	private void insertChild(FXGraphicalFeature parent, FXGraphicalFeature child) {
+		parent.addChildFeature(child);
+		child.setParentFxFeature(parent);
+		createLineToChildren(parent, child);
 	}
 
 }

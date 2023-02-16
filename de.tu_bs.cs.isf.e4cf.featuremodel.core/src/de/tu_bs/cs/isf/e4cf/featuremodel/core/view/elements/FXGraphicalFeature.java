@@ -30,6 +30,7 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Pair;
 
 
@@ -214,6 +215,25 @@ public class FXGraphicalFeature extends VBox  {
 			}
 		});
 		getChildren().add(featureNameLabel);
+	}
+	
+	public void setBackgroundColor(Color color) {
+		int hue = (int) color.getHue();
+		double colorSaturation = color.getSaturation();
+		int saturation = (int) (100 * colorSaturation);
+		double colorBrightness = color.getBrightness();
+		int brightness = (int) (100 * colorBrightness);
+		String css = "-fx-background-color: \r\n" + 
+				"        #000,\r\n" + 
+				"        hsb("+ hue + ", " + saturation + "%, " + brightness + "%);\r\n" + 
+				"    -fx-background-insets: 0,1,1,2;\r\n" + 
+				"    -fx-background-radius: 2,1,1,1;\r\n" + 
+				"    -fx-padding: 2 5 2 5;\r\n" + 
+				"    -fx-text-fill: white;\r\n" + 
+				"    -fx-font-family: Monospaced;\r\n" + 
+				"	-fx-font-size: 10px;\r\n" + 
+				"	-fx-border-width: 1px;";
+		featureNameLabel.setStyle(css);
 	}
 
 	public void showRenameFeatureDialog() {

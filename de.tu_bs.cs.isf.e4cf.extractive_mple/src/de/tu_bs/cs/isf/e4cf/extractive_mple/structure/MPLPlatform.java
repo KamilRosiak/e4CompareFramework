@@ -61,8 +61,7 @@ public class MPLPlatform implements Serializable {
 	}
 
 	public Configuration getNextConfig(Tree node) {
-		ConfigurationImpl config = (ConfigurationImpl) NodeConfigurationUtil.generateConfiguration(node.getRoot(),
-				"Variant Config " + node.getTreeName());
+		ConfigurationImpl config = (ConfigurationImpl) NodeConfigurationUtil.generateConfiguration(node.getRoot(), node.getTreeName());
 		return config;
 	}
 

@@ -7,27 +7,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.swt.widgets.Composite;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
-import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.IFeatureLocaterExtension;
 
 public class FeatureLocator implements IFeatureLocaterExtension {
-	
-	private MPLPlatform mpl;
 	
 	@Inject
 	private ServiceContainer services;
@@ -35,17 +26,20 @@ public class FeatureLocator implements IFeatureLocaterExtension {
 	@Override
 	public void locateFeatures(ServiceContainer container, MPLPlatform platform) {
 		this.services = container;
-		mpl = platform;
-		System.out.println("Received platform: " + platform.name);
-		List<Set<UUID>> atomicSets = calculateAtomicSets(platform);
+		List<SyntaxGroup> syntaxGroups = calculateAtomicSets(platform);
+		List<Set<UUID>> atomicSets = syntaxGroups.stream()
+				.map(group -> group.getUuids())
+				.collect(Collectors.toList());
 		String workspace = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
 		//FileStreamUtil.writeTextToFile(workspace + "/atomicSets.txt", atomicSets.toString());
-		services.eventBroker.send("atomic_sets_found", atomicSets);
+		services.eventBroker.post("atomic_sets_found", atomicSets);
+
+		services.eventBroker.post(EventTable.PUBLISH_SYNTAX_GROUPS, syntaxGroups);
 	}
 	
-	private List<Set<UUID>> calculateAtomicSets(MPLPlatform platform) {
-		HashSet<UUID> uuids = new HashSet<>();
-		platform.model.getAllUUIDS(uuids);
+	private List<SyntaxGroup> calculateAtomicSets(MPLPlatform platform) {
+		Set<UUID> uuids = platform.model.getAllUUIDS();
+		
 		
 		// map uuid to configs that contain it
 		Map<UUID, String> configsForID = new HashMap<>();
@@ -83,10 +77,20 @@ public class FeatureLocator implements IFeatureLocaterExtension {
 		});
 		sortedConfigCombos.addAll(configCombos);
 		
-		List<Set<UUID>> atomicSets = new ArrayList<>();
+		int numSets = configCombos.size();
+		List<SyntaxGroup> atomicSets = new ArrayList<>();
+		int k = 0;
 		for (String combo : sortedConfigCombos) {
 			Set<UUID> ids = idsForConfigs.remove(combo);
-			atomicSets.add(ids);
+			Set<Configuration> configs = new HashSet<>();
+			String[] indices = combo.split("\\s+"); // split on whitespace
+			for (String token : indices) {
+				if (token.isEmpty()) continue;
+				int i = Integer.parseInt(token);
+				configs.add(platform.configurations.get(i - 1));
+			}
+			double hue = 360.0 / (numSets * 2) * 2 * k++;
+			atomicSets.add(new SyntaxGroup(configs, ids, hue));
 			
 			// remove ids from all remaining combos
 			List<String> toRemove = new ArrayList<>();
@@ -100,22 +104,9 @@ public class FeatureLocator implements IFeatureLocaterExtension {
 			for (String emptyCombo : toRemove) {
 				idsForConfigs.remove(emptyCombo);
 			}
-			
 		}
 		
 		return atomicSets;
-	}
-	
-	@Optional
-	@Inject
-	public void receiveMpl(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
-		mpl = platform;
-		System.out.println("Received platform");
-	}
-	
-	@PostConstruct
-	public void initialize(Composite parent, ServiceContainer services, IEclipseContext context) {
-		System.out.println("post construct");
 	}
 
 }

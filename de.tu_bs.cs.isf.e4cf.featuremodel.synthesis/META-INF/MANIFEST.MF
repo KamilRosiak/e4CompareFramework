@@ -20,11 +20,11 @@ Require-Bundle: de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view,
  org.sat4j.core;bundle-version="2.3.5",
  de.tu_bs.cs.isf.e4cf.core;bundle-version="1.0.0",
  de.tu_bs.cs.isf.e4cf.featuremodel.model;visibility:=reexport,
- de.tu_bs.cs.isf.e4cf.featuremodel.core;bundle-version="1.0.0",
- de.tu_bs.cs.isf.e4cf.parts.project_explorer;bundle-version="1.0.0",
  de.tu_bs.cs.isf.e4cf.extractive_mple;bundle-version="1.0.0",
  de.tu_bs.cs.isf.e4cf.compare.data_structures;bundle-version="1.0.0",
- de.tu_bs.cs.isf.e4cf.compare;bundle-version="1.0.0"
+ de.tu_bs.cs.isf.e4cf.compare;bundle-version="1.0.0",
+ de.tu_bs.cs.isf.e4cf.parts.project_explorer;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.featuremodel.synthesis
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.synthesis

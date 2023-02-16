@@ -106,5 +106,6 @@ public class FDEventTable {
 	 * Data Structure Editor View
 	 */
 	public static final String CREATE_FEATUREMODEL_FROM_TREEVIEW = "CREATE_FEATUREMODEL_FROM_TREEVIEW";
+	public static final String CREATE_FEATURE_DIAGRAM_FROM_SYNTAX_GROUPS = "CREATE_FEATURE_DIAGRAM_FROM_SYNTAX_GROUPS";
 
 }

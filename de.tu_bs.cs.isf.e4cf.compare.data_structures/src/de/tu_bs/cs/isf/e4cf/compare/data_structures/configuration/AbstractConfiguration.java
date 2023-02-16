@@ -94,4 +94,9 @@ public abstract class AbstractConfiguration implements Configuration {
 		return componentConfigs;
 
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }
