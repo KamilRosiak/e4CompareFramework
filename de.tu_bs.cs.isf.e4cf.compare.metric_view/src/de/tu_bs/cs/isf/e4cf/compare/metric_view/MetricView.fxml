@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #c1d5ef" stylesheets="@metric_view.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.compare.metric_view.view.MetricView">
+   <top>
+      <ToolBar fx:id="toolBarTop" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <items>
+            <Button fx:id="newMetricButton" onAction="#initMetric" mnemonicParsing="false" text="New Metric" />
+            <Button fx:id="storeMetricButton" onAction="#storeMetric" mnemonicParsing="false" text="Store Metric" />
+            <Button fx:id="loadMetricButton" onAction="#loadMetric" mnemonicParsing="false" text="Load Metric" />
+        </items>
+      </ToolBar>
+   </top>
+   <bottom>
+      <ToolBar fx:id="toolBarBottom" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <items>
+          <Button fx:id="ignoreTypeButton" mnemonicParsing="false" text="Add Type to Ignore" />
+        </items>
+      </ToolBar>
+   </bottom>
+   <right>
+      <TableView fx:id="metricTable" editable="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Grey;" BorderPane.alignment="CENTER">
+        <columns>
+            <TableColumn fx:id="ignoreColumn" editable="true" minWidth="0.0" prefWidth="75.0" sortable="false" text="Ignore" />
+            <TableColumn fx:id="nameColumn" editable="false" minWidth="100.0" prefWidth="125.0" sortable="false" text="Name" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </right>
+   <center>
+      <TreeTableView fx:id="treeTable" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TreeTableColumn fx:id="comparatorColumn" editable="false" prefWidth="95.0" sortable="false" text="Comparator" />
+          <TreeTableColumn fx:id="weightColumn" editable="true" prefWidth="104.0" sortable="false" text="Weight" />
+        </columns>
+         <columnResizePolicy>
+            <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TreeTableView>
+   </center>
+</BorderPane>

@@ -589,7 +589,6 @@ public class CloneEvaluator {
         eval.tree = tree;
         final Node variantCompRoot = new NodeImpl(NodeType.FILE, "Comparison");
         tree.setRoot(variantCompRoot);
-        variantCompRoot.addChildWithParent(eval.comp.mergeArtifacts(false));
         StringValueImpl _stringValueImpl = new StringValueImpl(eval.name);
         variantCompRoot.addAttribute("Name", _stringValueImpl);
         StringValueImpl _stringValueImpl_1 = new StringValueImpl(("" + Float.valueOf(eval.precision)));

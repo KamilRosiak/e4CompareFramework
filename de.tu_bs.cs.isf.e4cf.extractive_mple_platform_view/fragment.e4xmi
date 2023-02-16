@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_pRGnsAaIEe2G9_6c7uyNfg">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pxn60AaIEe2G9_6c7uyNfg" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.left_window">
+    <elements xsi:type="basic:Part" xmi:id="_srN-IAaIEe2G9_6c7uyNfg" elementId="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view/de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.MPLEPlatformAdapter" label="MPLPlatormView"/>
+  </fragments>
+</fragment:ModelFragments>

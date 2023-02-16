@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/opencsv-5.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/UML/common-2.0.0-v20140602-0749.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/UML/ecore-2.3.0-v200706262000.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/UML/ecore2xml-2.3.0-v200706262000.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/UML/types-2.0.0-v20140602-0749.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/UML/xmi-2.3.0-v200706262000.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/UML/uml-5.0.0-v20140602-0749.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gson-2.8.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="target/generated-sources/antlr4"/>
 	<classpathentry kind="src" path="src-test"/>
 	<classpathentry kind="lib" path="lib/javaparser-core-3.18.0.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-4.4-complete.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

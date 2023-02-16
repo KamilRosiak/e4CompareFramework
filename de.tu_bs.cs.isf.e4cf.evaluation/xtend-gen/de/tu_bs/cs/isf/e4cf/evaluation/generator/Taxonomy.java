@@ -1,17 +1,8 @@
 /**
- * This Class wraps the clone editing taxonomy of
- * 2009 - Roy, C. - A Mutation Injectionbased Automatic Framework for Evaluating Code Clone Detection Tools
- * Using the generic data structure and clone helper.
+ * This Class performs edits on a given tree with provided constraints
  */
 package de.tu_bs.cs.isf.e4cf.evaluation.generator;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper;
-import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger;
-import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
-import java.util.List;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
@@ -22,6 +13,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator;
+import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper;
+import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger;
 import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 import java.io.File;
 import java.lang.reflect.Method;
@@ -35,7 +28,6 @@ import java.util.function.Consumer;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Conversions;
@@ -54,15 +46,6 @@ public class Taxonomy {
   @Inject
   private CloneLogger logger;
   
-  public NodeImpl copyAndPaste(final Node source, final Node target) {
-    NodeImpl _xblockexpression = null;
-    {
-      this.logger.logRaw("Tax_CopyPaste");
-      _xblockexpression = this.helper.copyRecursively(source, target);
-    }
-    return _xblockexpression;
-  }
-
   /**
    * Static initializer only executed once
    * Reads in the clone repository
@@ -96,7 +79,6 @@ public class Taxonomy {
   /**
    * @param container is the container of the declaration of the value to modify
    */
-
   public void refactorIdentifiers(final Node container, final String newValue) {
     this.logger.logRaw(CloneST.REFACTOR_IDENT);
     this.helper.refactor(container, newValue);
@@ -199,7 +181,7 @@ public class Taxonomy {
             _switchResult = _xblockexpression_1;
             break;
           case "replaceIdentifier":
-            throw new UnsupportedOperationException("Not yet implemented Â«m.nameÂ»");
+            throw new UnsupportedOperationException("Not yet implemented «m.name»");
           case "literalChange":
             Object _xblockexpression_2 = null;
             {
@@ -422,29 +404,7 @@ public class Taxonomy {
     }
     return _xblockexpression;
   }
-
-  public void smallInlineInsertion(final Node parent, final String attributeKey, final String appendage) {
-    this.logger.logRaw(CloneST.INLINE_INSERTION_ATTR);
-    final String oldValue = this.helper.getAttributeValue(parent, attributeKey);
-    this.helper.setAttributeValue(parent, attributeKey, (oldValue + appendage));
-  }
   
-  public void smallInlineInsertion(final Node parent, final String attributeKey, final String insertion, final int startIndex) {
-    this.logger.logRaw(CloneST.INLINE_INSERTION_ATTR);
-    final String oldValue = this.helper.getAttributeValue(parent, attributeKey);
-    String _substring = oldValue.substring(0, startIndex);
-    String _plus = (_substring + insertion);
-    String _substring_1 = oldValue.substring(startIndex);
-    String newValue = (_plus + _substring_1);
-    this.helper.setAttributeValue(parent, attributeKey, newValue);
-  }
-  
-  public boolean smallInlineDeletion(final Node removal) {
-    boolean _xblockexpression = false;
-    {
-      this.logger.logRaw(CloneST.INLINE_DELETION_NODE);
-      _xblockexpression = this.helper.delete(removal);
-
   /**
    * Delete a sub tree
    */
@@ -481,35 +441,6 @@ public class Taxonomy {
     return _xblockexpression;
   }
   
-
-  public void smallInlineDeletion(final Node parent, final String attributeKey, final String removePhrase) {
-    this.logger.logRaw(CloneST.INLINE_DELETION_ATTR);
-    String value = this.helper.getAttributeValue(parent, attributeKey);
-    value.replaceAll(removePhrase, "");
-    this.helper.setAttributeValue(parent, attributeKey, value);
-  }
-  
-  public void deleteLines(final Node... nodes) {
-    this.logger.logRaw(CloneST.DELETE_LINES);
-    final Consumer<Node> _function = (Node n) -> {
-      this.helper.delete(n);
-    };
-    ((List<Node>)Conversions.doWrapArray(nodes)).forEach(_function);
-  }
-  
-  public void insertLines(final Node parent, final int targetIndex, final Node... insertions) {
-    this.logger.logRaw(CloneST.INSERT_LINES);
-    int index = targetIndex;
-    for (final Node n : insertions) {
-      int _plusPlus = index++;
-      this.helper.move(n, parent, _plusPlus);
-    }
-  }
-  
-  public Object modifyLines() {
-    return null;
-  }
-      
   /**
    * Returns a random method of clone type III
    */

@@ -8,9 +8,9 @@ import org.eclipse.e4.core.di.annotations.Execute;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPSelectionService;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.CloneModel;
 
@@ -35,9 +35,9 @@ public class IntegrationHandler {
 
 		
 			Map<String, Object> event = new HashMap<String, Object>();
-			event.put(DSEditorST.TREE, cloneModel1.getTree());
-			event.put(DSEditorST.CLONE_MODEL, cloneModel1);
-			services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, event);
+			event.put(MPLEEditorConsts.TREE, cloneModel1.getTree());
+			event.put(MPLEEditorConsts.CLONE_MODEL, cloneModel1);
+			services.eventBroker.send(MPLEEditorConsts.INITIALIZE_TREE_EVENT, event);
 		}
 
 	}
