@@ -11,6 +11,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonImportService;
+import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger;
 import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 import java.util.Collections;
 import java.util.List;

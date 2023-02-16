@@ -13,6 +13,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator;
+import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper;
+import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger;
 import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
 import java.io.File;
 import java.lang.reflect.Method;
