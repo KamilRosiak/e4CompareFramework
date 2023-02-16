@@ -6,7 +6,6 @@ public class Delete extends Action {
 
 	public Delete(Node x) {
 		super(ActionType.DELETE, x);
-
 	}
 
 }

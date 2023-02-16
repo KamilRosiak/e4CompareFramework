@@ -10,7 +10,7 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.AbstractMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.ArtifactFactory;
 
 public class SortingMatcher extends AbstractMatcher {
-	private final float THRESHOLD = 0.4f;
+	private final float THRESHOLD = 0.3f;
 	private ArtifactFactory factory = new ArtifactFactory();
 
 	public SortingMatcher() {
@@ -88,9 +88,8 @@ public class SortingMatcher extends AbstractMatcher {
 	@Override
 	public <K> void sortBySimilarityDesc(List<Comparison<K>> comparisons) {
 		comparisons.sort((first, second) -> {
-			//Multiply with -1 to sort descending 
+			// Multiply with -1 to sort descending
 			return -1 * Float.compare(first.getSimilarity(), second.getSimilarity());
 		});
 	}
-
 }

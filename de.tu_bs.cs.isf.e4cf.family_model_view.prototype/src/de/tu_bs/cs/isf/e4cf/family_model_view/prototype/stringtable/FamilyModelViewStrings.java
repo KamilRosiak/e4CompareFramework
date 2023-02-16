@@ -1,9 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable;
 
 public class FamilyModelViewStrings {
-
-
-	
 	/**
 	 * PLUGIN
 	 */

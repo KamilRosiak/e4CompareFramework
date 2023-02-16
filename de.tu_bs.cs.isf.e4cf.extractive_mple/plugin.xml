@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.4"?>
-<plugin
-   id="de.tu_bs.cs.isf.e4cf.extractive_mple"
-   name="Dissertations Plugin"
-   version="1.00"
->
-   <requires>
-      <import plugin="de.tu_bs.cs.isf.e4cf.core" version="1.0.0"/>
-   </requires>
+<plugin>
 
+   <extension
+         id="de.tu_bs.cs.isf.e4cf.extractive_mple.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi"
+            apply="always">
+      </fragment>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
+      <project_explorer_file_attr
+            file_extension="mpl"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.workspace.MPLExtension">
+      </project_explorer_file_attr>
+      <project_explorer_file_attr
+            file_extension="java"
+            project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.workspace.TreeExtension">
+      </project_explorer_file_attr>
+   </extension>
 
 </plugin>

@@ -24,3 +24,8 @@ bin/
 
 #ignore target folders
 target/
+
+# Generated files
+*.xtendbin
+*._trace
+*.project

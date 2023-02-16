@@ -10,13 +10,13 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFiles;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareST;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -26,6 +26,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -81,7 +82,7 @@ public class CompareEngineView implements Initializable {
 
 			if (artifacts.size() > 1) {
 				Tree mergedTree = engine.compare(artifacts);
-				services.eventBroker.send(DSEditorST.INITIALIZE_TREE_EVENT, mergedTree);
+				services.eventBroker.send(MPLEEditorConsts.SHOW_TREE, mergedTree);
 				// JavaWriter writer = new JavaWriter();
 				// writer.writeArtifact(mergedTree,
 				// services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()

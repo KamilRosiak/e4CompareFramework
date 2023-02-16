@@ -14,7 +14,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.data_structures,
- de.tu_bs.cs.isf.e4cf.compare.data_structures_editor,
  org.eclipse.xtend.lib.macro,
  com.google.guava,
  org.eclipse.xtend.lib

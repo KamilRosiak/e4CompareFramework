@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 import java.util.UUID;
 
 public abstract class AbstractValue<Type> implements Value<Type> {
+	private static final long serialVersionUID = 4244536325074876104L;
 	private UUID uuid;
 	private Type value;
 

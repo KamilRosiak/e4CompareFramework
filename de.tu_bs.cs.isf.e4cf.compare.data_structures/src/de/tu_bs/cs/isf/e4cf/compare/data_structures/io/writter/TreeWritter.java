@@ -13,7 +13,7 @@ public class TreeWritter extends AbstractArtifactWriter {
 	public final static String NODE_TYPE_TREE = "TREE";
 	@Inject
 	GsonExportService exporter;
-	
+
 	public TreeWritter() {
 		super(FILE_ENDING);
 	}
@@ -21,11 +21,7 @@ public class TreeWritter extends AbstractArtifactWriter {
 	@Override
 	public void writeArtifact(Tree tree, String path) {
 		// If the artifact is not of type text
-		if (!tree.getArtifactType().equals(NODE_TYPE_TREE)) {
-			return;
-		} else {
-			FileStreamUtil.writeTextToFile(path + "." + FILE_ENDING, exporter.exportTree((TreeImpl)tree));
-		}
+		FileStreamUtil.writeTextToFile(path + "." + FILE_ENDING, exporter.exportTree((TreeImpl) tree));
 	}
 
 	@Override

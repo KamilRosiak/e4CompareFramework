@@ -247,8 +247,6 @@ public class FeatureModelEditorView {
 		for (FXGraphicalFeature fxFeature : featureList) {
 			fxFeature.getFeature().getGraphicalfeature().setX(fxFeature.getFeature().getGraphicalfeature().getX() + xShift);
 			fxFeature.getFeature().getGraphicalfeature().setY(fxFeature.getFeature().getGraphicalfeature().getY() + yShift);
-//			fxFeature.setTranslateX(fxFeature.getFeature().getGraphicalfeature().getX());
-//			fxFeature.setTranslateY(fxFeature.getFeature().getGraphicalfeature().getY());
 			fxFeature.toFront();
 			if (fxFeature.getFeature() instanceof ComponentFeature) {
 				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
@@ -257,10 +255,8 @@ public class FeatureModelEditorView {
 				fxFeature.getFeatureNameLabel().getStyleClass().add("componentFeature");
 			}
 		}
-		System.out.println("x: " + rootPane.getTranslateX() + " y: " + rootPane.getTranslateY() + "\n");
 		rootPane.setTranslateX(xShift);
 		rootPane.setTranslateY(yShift);
-		System.out.println("x: " + rootPane.getTranslateX() + " y: " + rootPane.getTranslateY() + "\n");
 	}
 
 	private void postProcessFeatureVisibility(FXGraphicalFeature fxRoot) {
@@ -347,9 +343,9 @@ public class FeatureModelEditorView {
 		FXGraphicalFeature fxGraFeature = new FXGraphicalFeature(this, feature, services);
 		
 		//TODO: debug statements
-		System.out.println("w: " + feature.getGraphicalfeature().getWidth());
-		System.out.println("h: " + feature.getGraphicalfeature().getHeight());
-		System.out.println();
+		//System.out.println("w: " + feature.getGraphicalfeature().getWidth());
+		//System.out.println("h: " + feature.getGraphicalfeature().getHeight());
+		//System.out.println();
 
 		if (feature.isAbstract()) {
 			fxGraFeature.getFeatureNameLabel().getStyleClass().add("abstractFeature");

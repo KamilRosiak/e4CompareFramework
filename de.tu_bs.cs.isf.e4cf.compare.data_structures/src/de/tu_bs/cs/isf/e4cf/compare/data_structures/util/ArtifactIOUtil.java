@@ -107,6 +107,9 @@ public class ArtifactIOUtil {
 				return reader.readArtifact(file);
 			}
 		}
+		if (!file.isDirectory()) {
+			System.err.println("No ArtifactReader found for files of type: " + file.getExtension());
+		}
 		return null;
 	}
 

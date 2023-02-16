@@ -1,6 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
@@ -13,7 +15,13 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  * @author Kamil Rosiak
  *
  */
-public interface Node {
+public interface Node extends Serializable {
+	static final long serialVersionUID = 5776489857546412690L;
+
+	public void addConfiguration(Configuration config);
+
+	public List<Configuration> getConfigurations();
+
 	/**
 	 * Returns the start line of the respective artifact in its original artifact
 	 * type.
@@ -92,6 +100,10 @@ public interface Node {
 	 */
 	public boolean isLeaf();
 
+	public void setCloned(boolean isComponent);
+
+	public boolean isClone();
+
 	/**
 	 * Returns the parent Node of this Node if available else this node is the root
 	 * node.
@@ -121,7 +133,7 @@ public interface Node {
 	 * This method adds a child node to the current node at a given position and
 	 * sets the parent.
 	 */
-	public void addChildWithParent(Node node, int position);
+	public void addChildWithPositionAndParent(Node node, int position);
 
 	/**
 	 * This method adds a child node to the current node and sets the parent.
@@ -153,15 +165,11 @@ public interface Node {
 	 * This method returns all node types that are contained in this node. The node
 	 * type of this node is included as well as the children node types and
 	 * children's children node types.
-	 * 
-	 * @return
 	 */
-	public List<String> getAllNodeTypes();
+	public Set<String> getAllNodeTypes();
 
 	/**
 	 * This method returns the UUID of this node
-	 * 
-	 * @return
 	 */
 	public UUID getUUID();
 
@@ -219,15 +227,11 @@ public interface Node {
 
 	/**
 	 * Traverse the Node composite in a breadth first manner. Not safe for cycles
-	 * 
-	 * @return The iterator used for traversal
 	 */
 	public Iterable<Node> breadthFirstSearch();
 
 	/**
 	 * Traverse the Node composite in a depth first manner. Not safe for cycles
-	 * 
-	 * @return The iterator used for traversal
 	 */
 	public Iterable<Node> depthFirstSearch();
 
@@ -251,9 +255,20 @@ public interface Node {
 
 	/**
 	 * Returns the configuration of a single variant
-	 * 
-	 * @return
 	 */
 	public Configuration createConfiguration();
+
+	public int getAmountOfNodes(int startAmount);
+	
+	/**
+	 * Returns the set of uuids of itself, its attributes, all of its reachable child-nodes and their attributes
+	 */
+	public Set<UUID> getAllUUIDS();
+	
+	/**
+	 * Recursively adds the uuid of itself, its attributes, 
+	 * its child-nodes and their attributes to the given set
+	 */
+	public void addAllUUIDS(Set<UUID> uuids);
 
 }

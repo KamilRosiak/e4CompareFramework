@@ -159,9 +159,6 @@ public class FeatureModelEditorController {
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
-		
-		
-		
 	}
 	
 	/**

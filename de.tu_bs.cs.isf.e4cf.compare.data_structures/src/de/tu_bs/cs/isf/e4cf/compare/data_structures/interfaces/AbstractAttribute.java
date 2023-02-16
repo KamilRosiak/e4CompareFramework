@@ -72,13 +72,23 @@ public abstract class AbstractAttribute implements Attribute {
 		}
 		return null;
 	}
+	
+	@Override
+	public Value<?> getValue(int i) throws IndexOutOfBoundsException {
+		return getAttributeValues().get(i);
+	}
 
-	public UUID getUuid() {
+	public UUID getUUID() {
 		return uuid;
 	}
 
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s: %s", attributeKey, attributeValues.toString());
 	}
 	
 }

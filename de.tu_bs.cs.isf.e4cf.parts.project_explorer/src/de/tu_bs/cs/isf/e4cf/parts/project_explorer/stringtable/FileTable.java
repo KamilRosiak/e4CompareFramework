@@ -3,7 +3,7 @@ package de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable;
 import java.nio.file.Paths;
 
 public class FileTable {
-	public static final String PROJECT_EXPLORER_VIEWS = Paths.get("ui", "view").toString();
+	public static final String PROJECT_EXPLORER_VIEWS = "src/de/tu_bs/cs/isf/e4cf/parts/project_explorer/controller/";
 
 	public static final String PROJECT_EXPLORER_VIEW_FXML = Paths
 			.get(PROJECT_EXPLORER_VIEWS, "ProjectExplorerView.fxml").toString();

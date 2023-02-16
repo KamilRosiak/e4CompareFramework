@@ -1,8 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
@@ -12,8 +14,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeIterator;
 
 public abstract class AbstractNode implements Node {
-	@SuppressWarnings("unused")
-	private static final long serialVersionUID = 5776489857546412690L;
 	private String nodeType;
 	private String representation;
 	private NodeType standardizedNodeType = NodeType.UNDEFINED;
@@ -24,6 +24,8 @@ public abstract class AbstractNode implements Node {
 	private UUID uuid = UUID.randomUUID();
 	private int startLine = -1;
 	private int endLine = -1;
+	private boolean isComponent = false;
+	private List<Configuration> configurations = new ArrayList<Configuration>();
 
 	public AbstractNode() {
 		initializeNode();
@@ -53,6 +55,16 @@ public abstract class AbstractNode implements Node {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public List<Configuration> getConfigurations() {
+		return configurations;
+	}
+
+	@Override
+	public void addConfiguration(Configuration config) {
+		configurations.add(config);
 	}
 
 	@Override
@@ -108,8 +120,9 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public List<Node> getNodesOfType(String nodeType) {
 		List<Node> childrenList = new ArrayList<Node>();
-		if (getNodeType().equals(nodeType)) {
+		if (getStandardizedNodeType().toString().equals(nodeType)) {
 			childrenList.add(this);
+			return childrenList;
 		}
 
 		for (Node child : getChildren()) {
@@ -119,8 +132,8 @@ public abstract class AbstractNode implements Node {
 	}
 
 	@Override
-	public List<String> getAllNodeTypes() {
-		List<String> nodeTypes = new ArrayList<String>();
+	public Set<String> getAllNodeTypes() {
+		Set<String> nodeTypes = new HashSet<String>();
 		nodeTypes.add(getNodeType());
 		for (Node child : getChildren()) {
 			nodeTypes.addAll(child.getAllNodeTypes());
@@ -164,14 +177,7 @@ public abstract class AbstractNode implements Node {
 		// sort child artifacts if not empty
 		if (!getChildren().isEmpty()) {
 			getChildren().sort((a, b) -> {
-				if (a.getStartLine() < b.getStartLine()) {
-					return -1;
-				}
-
-				if (a.getStartLine() > b.getStartLine()) {
-					return 1;
-				}
-				return 0;
+				return Integer.compare(a.getStartLine(), b.getStartLine());
 			});
 		}
 	}
@@ -187,14 +193,15 @@ public abstract class AbstractNode implements Node {
 
 	@Override
 	public void addChildWithParent(Node child) {
-		child.setParent(this);
-		this.children.add(child);
+		if (child != null) {
+			child.setParent(this);
+			addChild(child);
+		}
 	}
 
 	@Override
-	public void addChildWithParent(Node child, int position) {
+	public void addChildWithPositionAndParent(Node child, int position) {
 		child.setParent(this);
-
 		addChild(child, position);
 	}
 
@@ -247,6 +254,7 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public void setStandardizedNodeType(NodeType type) {
 		standardizedNodeType = type;
+		setNodeType(type.name());
 	}
 
 	@Override
@@ -318,7 +326,7 @@ public abstract class AbstractNode implements Node {
 			this.parent.getChildren().add(position + 1, node);
 		}
 	}
-	
+
 	@Override
 	public int numberOfOptionals() {
 		return countVariabilityClassNodes(this, 0, VariabilityClass.OPTIONAL);
@@ -328,14 +336,14 @@ public abstract class AbstractNode implements Node {
 	 * Iterates over all comparisons recursively and counts optional elements.
 	 */
 	private int countVariabilityClassNodes(Node node, int number, VariabilityClass varClass) {
-		//if the node is an optional count number up
+		// if the node is an optional count number up
 		int nodeNumber = 0;
 		if (node.getVariabilityClass().equals(varClass)) {
 			nodeNumber++;
 		}
-		//process child nodes
+		// process child nodes
 		for (Node childNode : node.getChildren()) {
-			nodeNumber =  nodeNumber + countVariabilityClassNodes(childNode, 0, varClass);
+			nodeNumber = nodeNumber + countVariabilityClassNodes(childNode, 0, varClass);
 		}
 		return nodeNumber;
 	}
@@ -349,10 +357,53 @@ public abstract class AbstractNode implements Node {
 	public int numberOfMandatories() {
 		return countVariabilityClassNodes(this, 0, VariabilityClass.MANDATORY);
 	}
-	
 
 	@Override
 	public Configuration createConfiguration() {
 		return null;
+	}
+
+	@Override
+	public boolean isClone() {
+		return isComponent;
+	}
+
+	@Override
+	public void setCloned(boolean isComponent) {
+		this.isComponent = isComponent;
+	}
+
+	@Override
+	public int getAmountOfNodes(int startAmount) {
+		try {
+			startAmount++;
+			for (Node childNode : getChildren()) {
+				startAmount = startAmount + childNode.getAmountOfNodes(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return startAmount;
+	}
+	
+	@Override
+	public Set<UUID> getAllUUIDS() {
+		Set<UUID> uuids = new HashSet<>();
+		addAllUUIDS(uuids);
+		return uuids;
+	}
+	
+	@Override
+	public void addAllUUIDS(Set<UUID> uuids) {
+		uuids.add(getUUID());
+		getAttributes().forEach(attr -> {
+			uuids.add(attr.getUUID());
+			attr.getAttributeValues().forEach(value -> {
+				uuids.add(value.getUUID());
+			});
+		});
+		// insert all UUIDs of children in uuids
+		getChildren().forEach(child -> child.addAllUUIDS(uuids));
 	}
 }

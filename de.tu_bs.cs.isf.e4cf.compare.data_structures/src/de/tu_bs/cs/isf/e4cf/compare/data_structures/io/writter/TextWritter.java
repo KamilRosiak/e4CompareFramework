@@ -4,6 +4,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactW
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.text_reader.TextFileTags;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
 /**
@@ -16,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
  */
 public class TextWritter extends AbstractArtifactWriter {
 	public final static String FILE_ENDING = "txt";
-	public final static String NODE_TYPE_TREE = "TEXT";
+	public final static String NODE_TYPE_TREE = TextFileTags.TEXT.toString();
 
 	public TextWritter() {
 		super(FILE_ENDING);
