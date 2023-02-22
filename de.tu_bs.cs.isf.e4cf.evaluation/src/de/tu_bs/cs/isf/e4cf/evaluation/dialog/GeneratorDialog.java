@@ -14,7 +14,7 @@ import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 
 public class GeneratorDialog {
-	private final static String FXML_PATH = "src/de/tu_bs/cs/isf/e4cf/evaluation/dialog/CloneGeneratorDialog.fxml";
+	private final static String FXML_PATH = "de/tu_bs/cs/isf/e4cf/evaluation/dialog/CloneGeneratorDialog.fxml";
 
 	private Dialog<GeneratorOptions> dialog;
 	private GeneratorViewController generatorViewController;
