@@ -205,13 +205,13 @@ public class FeatureModelEditorView {
 	 * This method replaces all elements of the current loaded feature diagram
 	 */
 	public void formatDiagram(boolean askToSave) {
-		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.WALKERS_ALGORITHM);
+		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
 		placement.format(currentModel);
 		// Reset the translate offset so that large feature diagrams do not
 		// disappear after formatting
 		rootPane.setTranslateX(0d);
 		rootPane.setTranslateY(0d);
-		loadFeatureDiagram(currentModel, askToSave);
+		//loadFeatureDiagram(currentModel, askToSave);
 	}
 
 	/**

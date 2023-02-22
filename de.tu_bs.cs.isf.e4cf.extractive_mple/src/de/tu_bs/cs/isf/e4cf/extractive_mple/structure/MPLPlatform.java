@@ -105,6 +105,7 @@ public class MPLPlatform implements Serializable {
 		// Get all nodes of the selected type
 
 		List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
+		candidatNodes = new ArrayList<>();
 		Iterator<Node> candiateIterator = candidatNodes.iterator();
 
 		// Only take artifacts with at least 20 nodes into account (Clone size)

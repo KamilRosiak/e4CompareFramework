@@ -40,7 +40,7 @@ public class SyntaxGroup {
 		this.configurations = new LexicalConfigTreeSet(configs);
 		this.uuids = new HashSet<>();
 		this.uuids.addAll(uuids);
-		this.color = Color.hsb(hue, 1.0, 0.5);
+		this.color = Color.hsb(hue, 0.8, 0.5);
 		
 	}
 

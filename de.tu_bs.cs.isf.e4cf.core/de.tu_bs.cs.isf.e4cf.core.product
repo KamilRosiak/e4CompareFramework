@@ -3,7 +3,6 @@
 
 <product name="de.tu_bs.cs.isf.e4cf.core" uid="de.tu_bs.cs.isf.e4cf.core_1" id="de.tu_bs.cs.isf.e4cf.core.product" application="de.tu_bs.cs.isf.e4cf.core.FrameworkE4Application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -18,7 +17,6 @@
 
    <windowImages/>
 
-
    <launcher name="e4CompareFramework">
       <win useIco="true">
          <ico path="/de.tu_bs.cs.isf.e4cf.core/e4cIcon.ico"/>
@@ -26,11 +24,9 @@
       </win>
    </launcher>
 
-
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.google.guava"/>
@@ -52,6 +48,9 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.exchange"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.family_model_view.prototype"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.configuration"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view"/>
@@ -151,12 +150,10 @@
       <plugin id="org.eclipse.gef.geometry.convert.fx"/>
       <plugin id="org.eclipse.gef.mvc.fx"/>
       <plugin id="org.eclipse.help"/>
-      <plugin id="org.eclipse.jdt.annotation" version="2.2.600.v20200408-1511"/>
       <plugin id="org.eclipse.jdt.junit.runtime"/>
       <plugin id="org.eclipse.jdt.junit5.runtime"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
-      <plugin id="org.eclipse.jface.notifications"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.compatibility.state" fragment="true"/>
       <plugin id="org.eclipse.osgi.services"/>

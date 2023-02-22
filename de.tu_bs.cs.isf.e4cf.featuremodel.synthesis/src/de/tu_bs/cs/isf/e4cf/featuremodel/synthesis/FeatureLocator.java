@@ -90,6 +90,7 @@ public class FeatureLocator implements IFeatureLocaterExtension {
 				configs.add(platform.configurations.get(i - 1));
 			}
 			double hue = 360.0 / (numSets * 2) * 2 * k++;
+			System.out.println(hue);
 			atomicSets.add(new SyntaxGroup(configs, ids, hue));
 			
 			// remove ids from all remaining combos
