@@ -14,6 +14,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml.impl.XMLLexer;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml.impl.XMLParser;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 
 public abstract class AbstractXMLReader extends AbstractArtifactReader {
