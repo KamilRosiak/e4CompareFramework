@@ -289,31 +289,31 @@ public class ProjectExplorerViewController {
 	 * @return an image
 	 */
 	public Node getImage(Object element) {
-		Image image = null;
+		ImageView image = null;
 
 		if (element instanceof FileTreeElement) {
 			FileTreeElement fileElement = (FileTreeElement) element;
 			if (workspaceFileSystem.isProject(fileElement)) {
-				image = services.imageService.getImage(null, FileTable.PROJECT_PNG);
+				image = new ImageView(FileTable.PROJECT_PNG);
 			} else if (fileElement.isDirectory()) {
-				image = services.imageService.getImage(null, FileTable.FOLDER_PNG);
+				image = new ImageView(FileTable.FOLDER_PNG);
 			} else {
 				String fileExtension = fileElement.getExtension();
 				// load extended file icons
 				if (fileExtensions.containsKey(fileExtension)) {
-					image = fileExtensions.get(fileExtension).getIcon(services.imageService);
+					Image img = fileExtensions.get(fileExtension).getIcon(services.imageService);
+					WritableImage fxImage = SWTFXUtils.toFXImage(img.getImageData(), null);
+					image = new ImageView(fxImage);
 				} else if (fileExtension.equals(E4CStringTable.FILE_ENDING_XML)) {
-					image = services.imageService.getImage(null, FileTable.XML_PNG);
+					image = new ImageView(FileTable.XML_PNG);
 				} else {
 					// default file icon
-					image = services.imageService.getImage(null, FileTable.FILE_PNG);
+					image = new ImageView(FileTable.FILE_PNG);
 				}
 			}
 		}
 
-		WritableImage fxImage = SWTFXUtils.toFXImage(image.getImageData(), null);
-
-		return new ImageView(fxImage);
+		return image;
 	}
 
 	/**
