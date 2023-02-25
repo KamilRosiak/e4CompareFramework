@@ -25,20 +25,23 @@ public class SelectionAreaHandler implements EventHandler<MouseEvent>{
 	private Pane root;
 	private ServiceContainer services;
     
-    public SelectionAreaHandler(Pane pane, Pane root, List<FXGraphicalFeature> featureList, Rectangle selectionRectangle, 
-    		PrimaryMouseButtonClickedHandler mouseClickHandler, ServiceContainer services) {
-		this.selectionRectangle = selectionRectangle;
+    public SelectionAreaHandler(ServiceContainer services) {
+    	this.services = services;
+	}
+    
+    public void init(Pane pane, Pane root, List<FXGraphicalFeature> featureList, Rectangle selectionRectangle, 
+    		PrimaryMouseButtonClickedHandler mouseClickHandler)
+    {
+    	this.selectionRectangle = selectionRectangle;
 		this.mouseClickHandler = mouseClickHandler;
 		this.features = featureList;
 		this.pane = pane;
 		this.root = root;
-		this.services = services;
 		xStartPosition = 0;
 		yStartPosition = 0;
 		xPosMax = 0;
 		yPosMax = 0;
-	}
-
+    }
     
     @Override
 	public void handle(MouseEvent event) {

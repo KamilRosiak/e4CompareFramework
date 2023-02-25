@@ -30,7 +30,7 @@ public class FeatureDiagram extends FeatureDiagrammImpl {
     }
 	
     private void addRoot(FeatureDiagramm diagram) {	
-    	Feature root = FeatureInitializer.createFeature(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME, true);
+    	Feature root = FeatureInitializer.createFeature(FDStringTable.FD_DEFAULT_NAME, true);
 		diagram.setRoot(root);
 	}
 }

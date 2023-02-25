@@ -9,6 +9,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.ConstraintEditor;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FMEditorPaneView;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 
@@ -18,20 +19,22 @@ import javafx.scene.control.ToolBar;
  */
 public class FMEditorToolbar extends ToolBar  {
 	private ServiceContainer services;
-	private FMEditorView view;
+	private FMEditorPaneView view;
 	
-	public FMEditorToolbar(ServiceContainer services, FMEditorView view) {
+	public FMEditorToolbar(ServiceContainer services) {
 		this.services = services;
-		this.view = view;
 		initControl();
+	}
+	
+	public void  init(FMEditorPaneView view) {
+		this.view = view;
+		minWidthProperty().bind(view.rootPane.widthProperty());
 	}
 
 	/**
 	 * This method initializes the ToolBar and adds all buttons to it.
 	 */
-	private void initControl() {
-		minWidthProperty().bind(view.getRootPane().widthProperty());
-		
+	private void initControl() {		
 		/**
 		 * Add Buttons to ToolBar
 		 */
@@ -74,7 +77,7 @@ public class FMEditorToolbar extends ToolBar  {
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SHOW_CONFIG, e-> {
 			services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
-			services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.getCurrentModel());
+			services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.currentModel());
 		}));
 		
 		getItems().add(loggerButton);

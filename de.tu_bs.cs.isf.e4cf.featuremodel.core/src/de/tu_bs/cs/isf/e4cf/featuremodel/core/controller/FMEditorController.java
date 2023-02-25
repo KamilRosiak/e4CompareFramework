@@ -32,6 +32,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.TreeParser;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorControllerData;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
@@ -53,43 +54,40 @@ import javafx.util.Pair;
 @Singleton
 @Creatable
 public class FMEditorController {
-	private TabPane tabPane;
-	private ServiceContainer services;
-	
-	private List<ErrorListener> errorListeners;
-	
+	private FMEditorControllerData data = new FMEditorControllerData();
+
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, EMenuService menuService) {
 		FXCanvas canvas = new FXCanvas(parent, SWT.NONE);
-		tabPane = new TabPane();
-		canvas.setScene(new Scene(tabPane));
+		data.tabPane = new TabPane();
+		canvas.setScene(new Scene(data.tabPane));
 
 
 		menuService.registerContextMenu(canvas, "de.tu_bs.cs.isf.e4cf.featuremodel.core.featureModelMenü");
-		this.services = services;
-		this.errorListeners = new ArrayList<>();
+		this.data.services = services;
+		this.data.errorListeners = new ArrayList<>();
 
-		createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
+		createNewTab(FDStringTable.FD_DEFAULT_NAME);
 	}
 
 	private FMEditorView getCurrentView() {
-		Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
+		Tab currentTab = data.tabPane.getSelectionModel().getSelectedItem();
 		if (currentTab == null) {
-			return (FMEditorView) createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME).getUserData();
+			return (FMEditorView) createNewTab(FDStringTable.FD_DEFAULT_NAME).getUserData();
 		}
 		FMEditorView view = (FMEditorView) currentTab.getUserData();
 		return view;
 	}
 	
 	private Tab getCurrentTab() {
-		return tabPane.getSelectionModel().getSelectedItem();
+		return data.tabPane.getSelectionModel().getSelectedItem();
 	}
 
 	private Tab createNewTab(String title) {
 		Tab tab = newTab(title);
-		FMEditorView view = new FMEditorView(tab, services);
+		FMEditorView view = new FMEditorView(tab, data.services);
 		tab.setUserData(view);
-		tabPane.getTabs().add(tab);
+		data.tabPane.getTabs().add(tab);
 		return tab;
 	}
 
@@ -98,8 +96,8 @@ public class FMEditorController {
 		tab.setOnCloseRequest(event -> {
 			((FMEditorView) tab.getUserData()).askToSave();		
 			// don't allow the tabPane to be empty
-			if (tabPane.getTabs().size() == 1) {
-				createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
+			if (data.tabPane.getTabs().size() == 1) {
+				createNewTab(FDStringTable.FD_DEFAULT_NAME);
 			}
 		});
 		return tab;
@@ -114,13 +112,13 @@ public class FMEditorController {
 		if (openedTab != null) {
 			selectTab(openedTab);
 		} else {
-			services.eventBroker.send(FDEventTable.ADD_NEW_TAB, feature);
+			data.services.eventBroker.send(FDEventTable.ADD_NEW_TAB, feature);
 		}
 		
 	}
 	
 	private Tab getOpenedTabOrNull(FeatureDiagramm diagram) {
-		for (Tab tab : tabPane.getTabs()) {
+		for (Tab tab : data.tabPane.getTabs()) {
 			FeatureDiagramm tabDiagram = ((FMEditorView) tab.getUserData()).getCurrentModel();
 			if (diagram.getUuid().equals(tabDiagram.getUuid())) {
 				return tab;
@@ -130,7 +128,7 @@ public class FMEditorController {
 	}
 	
 	private void selectTab(Tab tab) {
-		tabPane.getSelectionModel().select(tab);
+		data.tabPane.getSelectionModel().select(tab);
 	}
 
 	@Optional
@@ -174,7 +172,7 @@ public class FMEditorController {
 	@Optional
 	@Inject
 	public void componentFeatureVariabilityChangeMandatory(@UIEventTopic(FDEventTable.ROOT_FEATURE_MANDATORY_EVENT) String uuid) {
-		tabPane.getTabs().forEach(tab -> {
+		data.tabPane.getTabs().forEach(tab -> {
 			List<FXGraphicalFeature> componentList = ((FMEditorView) tab.getUserData()).getComponentFeatureList();
 			for (FXGraphicalFeature graFeature : componentList) {
 				ComponentFeature component = (ComponentFeature) graFeature.getFeature();
@@ -188,7 +186,7 @@ public class FMEditorController {
 	@Optional
 	@Inject
 	public void componentFeatureVariabilityChangeOptional(@UIEventTopic(FDEventTable.ROOT_FEATURE_OPTIONAL_EVENT) String uuid) {
-		tabPane.getTabs().forEach(tab -> {
+		data.tabPane.getTabs().forEach(tab -> {
 			List<FXGraphicalFeature> componentList = ((FMEditorView) tab.getUserData()).getComponentFeatureList();
 			for (FXGraphicalFeature graFeature : componentList) {
 				ComponentFeature component = (ComponentFeature) graFeature.getFeature();
@@ -202,15 +200,15 @@ public class FMEditorController {
 	@Optional
 	@Inject 
 	public void registerErrorListener(@UIEventTopic(FDEventTable.REGISTER_ERR_LISTENER) ErrorListener errorListener) {
-		if (!errorListeners.contains(errorListener)) {
-			errorListeners.add(errorListener);
+		if (!data.errorListeners.contains(errorListener)) {
+			data.errorListeners.add(errorListener);
 		}
 	}
 	
 	@Optional
 	@Inject 
 	public void deregisterErrorListener(@UIEventTopic(FDEventTable.DEREGISTER_ERR_LISTENER) ErrorListener errorListener) {
-		errorListeners.remove(errorListener);
+		data.errorListeners.remove(errorListener);
 	}
 	
 	@Optional
@@ -221,7 +219,7 @@ public class FMEditorController {
 //			getCurrentView().addComponentFeatureBelow(parentFeature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(pair.getValue(), FDEventTable.ADD_COMPONENTFEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -232,7 +230,7 @@ public class FMEditorController {
 			getCurrentView().addFeatureToMousePosition(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.ADD_FEATURE_EVENT, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -243,7 +241,7 @@ public class FMEditorController {
 			getCurrentView().addFeatureBelow(pair);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(pair.getValue(), FDEventTable.ADD_FEATURE_BELOW, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -254,7 +252,7 @@ public class FMEditorController {
 			getCurrentView().addFeatureAbove(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.ADD_FEATURE_ABOVE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -265,7 +263,7 @@ public class FMEditorController {
 			getCurrentView().removeFeature(feature, true, false, true);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.REMOVE_FEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -276,7 +274,7 @@ public class FMEditorController {
 			getCurrentView().removeFeatureTrunk(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.REMOVE_FEATURE_TRUNK, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 
@@ -287,7 +285,7 @@ public class FMEditorController {
 			getCurrentView().removeFeature(feature, false, false, false);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.REMOVE_FEATURE_BY_LOGGER, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -298,7 +296,7 @@ public class FMEditorController {
 			getCurrentView().setFeatureAndGroup(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_AND_GROUP_BY_LOGGER, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -309,7 +307,7 @@ public class FMEditorController {
 			getCurrentView().setFeatureAlternativeGroup(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_ALTERNATIVE_GROUP_BY_LOGGER, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -320,7 +318,7 @@ public class FMEditorController {
 			getCurrentView().setFeatureOrGroup(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_OR_GROUP_BY_LOGGER, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -331,7 +329,7 @@ public class FMEditorController {
 			getCurrentView().setCurrentFeature(feature);						
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_CURRENT_FEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -345,7 +343,7 @@ public class FMEditorController {
 			}
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			this.data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -364,7 +362,7 @@ public class FMEditorController {
 			});
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.EVENT_RENAME_CONFIGURATIONFEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -398,7 +396,7 @@ public class FMEditorController {
         	
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(getCurrentView().getCurrentFeature(), FDEventTable.SET_FEATURE_NAME, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -409,7 +407,7 @@ public class FMEditorController {
 			getCurrentView().setFeatureAbstract(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_ABSTRACT, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -420,7 +418,7 @@ public class FMEditorController {
 			getCurrentView().setFeatureOptional(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_OPTIONAL, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -431,7 +429,7 @@ public class FMEditorController {
 			getCurrentView().setFeatureMandatory(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_FEATURE_MANDATORY, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -443,7 +441,7 @@ public class FMEditorController {
 			getCurrentView().changeSubfeaturesVisibility(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.CHANGE_SUBFEATURES_VISIBILITY, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	 
@@ -454,7 +452,7 @@ public class FMEditorController {
 			getCurrentView().saveFeatureDiagram();
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.SAVE_FEATURE_DIAGRAM, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -492,8 +490,8 @@ public class FMEditorController {
 	}
 	
 	private void showConstraintView() {
-		services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
-		services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, "");
+		data.services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
+		data.services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, "");
 	}
 	
 	@Optional
@@ -503,7 +501,7 @@ public class FMEditorController {
 			getCurrentView().formatDiagram(false);			
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.FORMAT_DIAGRAM_EVENT, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -514,7 +512,7 @@ public class FMEditorController {
 			getCurrentView().logDiagramChanges(startOrStop);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.START_LOGGER_DIAGRAM_EVENT, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -525,7 +523,7 @@ public class FMEditorController {
 			getCurrentView().replayModificationSet(modificationSet);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.REPLAY_FD_MODIFICATION_SET, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -538,7 +536,7 @@ public class FMEditorController {
 			getCurrentView().createNewFeatureDiagram();
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.NEW_FEATURE_DIAGRAM, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 
@@ -549,7 +547,7 @@ public class FMEditorController {
 			getCurrentView().setTheme(cssLocation);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.SET_FDE_THEME, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -560,7 +558,7 @@ public class FMEditorController {
 			getCurrentView().setSelectedFeature(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_SELECTED_FEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -575,7 +573,7 @@ public class FMEditorController {
 			}
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SET_SELECTED_FEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -586,7 +584,7 @@ public class FMEditorController {
 			getCurrentView().resetSelectedFeatures();
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(FDEventTable.RESET_SELECTED_FEATURES, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -598,7 +596,7 @@ public class FMEditorController {
 			getCurrentView().resetSelectedFeatures();		
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.GROUP_SELECTED_FEATURES_IN_FEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -610,7 +608,7 @@ public class FMEditorController {
 			getCurrentView().resetSelectedFeatures();
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.MOVE_SELECTED_FEATURES_UNDER_FEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -621,7 +619,7 @@ public class FMEditorController {
 			getCurrentView().splitFeature(feature);
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(feature, FDEventTable.SPLIT_FEATURE, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 	
@@ -637,14 +635,14 @@ public class FMEditorController {
 			}
 		} catch (Exception e) {
 			FeatureModelViewError error = new FeatureModelViewError(graphicFeature, FDEventTable.SET_DESCRIPTION, e.getMessage());
-			errorListeners.forEach(listener -> listener.onError(error));
+			data.errorListeners.forEach(listener -> listener.onError(error));
 		}
 	}
 
 	@Optional
 	@Inject 
 	public void sendAllFeature(@UIEventTopic(FDEventTable.SEND_ALL_FEATURE) String receiver) {
-		services.eventBroker.send(FDEventTable.RECEIVE_ALL_FEATURE, getCurrentView().getCurrentModel());
+		data.services.eventBroker.send(FDEventTable.RECEIVE_ALL_FEATURE, getCurrentView().getCurrentModel());
 	}
 	
 	@Optional
@@ -652,7 +650,7 @@ public class FMEditorController {
 	public void createFeatureModelFromTreeView(@UIEventTopic(FDEventTable.CREATE_FEATUREMODEL_FROM_TREEVIEW) Tree tree) {
 		FeatureDiagramm parsedModel = TreeParser.parse(tree);
 		loadFeatureDiagram(parsedModel);
-		services.eventBroker.send(FDEventTable.FORMAT_DIAGRAM_EVENT, "");
+		data.services.eventBroker.send(FDEventTable.FORMAT_DIAGRAM_EVENT, "");
 	}
 	
 	@Optional

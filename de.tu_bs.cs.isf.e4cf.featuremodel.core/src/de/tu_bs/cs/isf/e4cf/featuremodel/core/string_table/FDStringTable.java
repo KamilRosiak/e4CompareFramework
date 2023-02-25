@@ -15,6 +15,7 @@ public class FDStringTable {
 	/**
 	 * Feature Model Editor
 	 */
+	public static final String FD_TAB_VIEW_CONTEXT_MENU_ID = "de.tu_bs.cs.isf.e4cf.featuremodel.core.featureModelMenu";
 	public static final String FD_CONTEXT_MENU_ADD_FEATURE ="Add Feature";
 	public static final String FD_CONTEXT_MENU_REMOVE_FEATURE ="Remove Feature";
 	public static final String FD_CONTEXT_MENU_REMOVE_FEATURE_TRUNK = "Remove Feature Trunk";
@@ -86,7 +87,7 @@ public class FDStringTable {
 	 */
 	public static final String FD_FEATURE_CONFIG_PART_NAME = "de.tu_bs.cs.isf.e4cf.featuremodel.configuration.part.featuremodelconfiguration";
 	
-	public static final String FD_DEFAULT_FEATURE_DIAGRAM_NAME = "Feature Model";
+	public static final String FD_DEFAULT_NAME = "Feature Model";
 
 	
 }	
