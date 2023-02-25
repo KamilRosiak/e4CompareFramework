@@ -226,7 +226,7 @@ public class CustomTreeCell extends TreeCell<FileTreeElement> {
 
 		if (!empty) {
 			controller.text.setText(item.toString());
-			controller.image.setImage(fileImageProvider.getImage(item));
+			controller.image.setImage(fileImageProvider.getImageView(item).getImage());
 
 			ObservableList<Node> tagContainer = controller.tags.getChildren();
 			tagContainer.clear();

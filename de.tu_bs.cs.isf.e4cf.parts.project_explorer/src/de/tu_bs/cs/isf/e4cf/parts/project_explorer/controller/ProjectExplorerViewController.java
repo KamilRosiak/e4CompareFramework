@@ -29,7 +29,6 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -40,7 +39,6 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.sync.TreeSynchronization;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileEventLog;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
-import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
@@ -54,21 +52,17 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerEx
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.WorkspaceStructureTemplate;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
-import javafx.embed.swt.SWTFXUtils;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
@@ -107,16 +101,17 @@ public class ProjectExplorerViewController {
 	private TagService tagService;
 
 	// Controller fields
-
+	private ProjectExplorerToolBarController toolbarController;
 	private ListChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
-	private ProjectExplorerToolBarController toolbarController;
+	private FileImageProvider fileImageProvider;
 
 	private String filter = "";
 	private List<Tag> filterTags = new ArrayList<Tag>();
 	private boolean isFlatView = false;
 	private HashMap<String, Boolean> expansionStates;
+	
 
 	/**
 	 * This method is equivalent to the previous postContruct(), in that it sets up
@@ -124,7 +119,8 @@ public class ProjectExplorerViewController {
 	 */
 	public void initializeView(IEclipseContext context, WorkspaceFileSystem fileSystem, FXCanvas canvas) {
 
-		getContributions();
+		this.fileExtensions = getContributions();
+		this.fileImageProvider = new FileImageProvider(services, fileExtensions);
 
 		loadExpansionStates();
 
@@ -149,8 +145,6 @@ public class ProjectExplorerViewController {
 		canvas.getScene().setOnKeyPressed(new ProjectExplorerKeyListener(context, services));
 		canvas.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
 				new OpenFileListener(context, fileExtensions, services));
-
-		FileImageProvider fileImageProvider = new FileImageProvider(services, fileExtensions);
 
 		// Cell factory for custom tree cells
 		projectTree.setEditable(false);
@@ -229,7 +223,7 @@ public class ProjectExplorerViewController {
 	 */
 	private TreeItem<FileTreeElement> buildHierachialTree(FileTreeElement parentNode, boolean isRoot) {
 
-		Node imgNode = isRoot ? null : getImage(parentNode);
+		ImageView imgNode = isRoot ? null : fileImageProvider.getImageView(parentNode);
 
 		parentNode.setDisplayLongPath(false);
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
@@ -264,7 +258,7 @@ public class ProjectExplorerViewController {
 	private TreeItem<FileTreeElement> buildFlatTree(FileTreeElement parentNode, boolean isRoot,
 			TreeItem<FileTreeElement> rootNode) {
 
-		Node imgNode = isRoot ? null : getImage(parentNode);
+		ImageView imgNode = isRoot ? null : fileImageProvider.getImageView(parentNode);
 
 		parentNode.setDisplayLongPath(true);
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
@@ -283,47 +277,13 @@ public class ProjectExplorerViewController {
 	}
 
 	/**
-	 * Returns an appropriate image for a given tree element
-	 * 
-	 * @param element tree element
-	 * @return an image
-	 */
-	public Node getImage(Object element) {
-		ImageView image = null;
-
-		if (element instanceof FileTreeElement) {
-			FileTreeElement fileElement = (FileTreeElement) element;
-			if (workspaceFileSystem.isProject(fileElement)) {
-				image = new ImageView(FileTable.PROJECT_PNG);
-			} else if (fileElement.isDirectory()) {
-				image = new ImageView(FileTable.FOLDER_PNG);
-			} else {
-				String fileExtension = fileElement.getExtension();
-				// load extended file icons
-				if (fileExtensions.containsKey(fileExtension)) {
-					Image img = fileExtensions.get(fileExtension).getIcon(services.imageService);
-					WritableImage fxImage = SWTFXUtils.toFXImage(img.getImageData(), null);
-					image = new ImageView(fxImage);
-				} else if (fileExtension.equals(E4CStringTable.FILE_ENDING_XML)) {
-					image = new ImageView(FileTable.XML_PNG);
-				} else {
-					// default file icon
-					image = new ImageView(FileTable.FILE_PNG);
-				}
-			}
-		}
-
-		return image;
-	}
-
-	/**
 	 * Gets the file extension and the attribute from the Project explorer extension
 	 * point.
 	 */
-	private void getContributions() {
+	private Map<String, IProjectExplorerExtension> getContributions() {
 		IConfigurationElement[] configs = RCPContentProvider
 				.getIConfigurationElements(StringTable.PROJECT_EXPLORER_FILE_EXTENSION_POINT);
-		fileExtensions = new HashMap<String, IProjectExplorerExtension>();
+		HashMap<String, IProjectExplorerExtension> fileExtensions = new HashMap<String, IProjectExplorerExtension>();
 		for (IConfigurationElement config : configs) {
 			try {
 				IProjectExplorerExtension attr = (IProjectExplorerExtension) config
@@ -334,6 +294,8 @@ public class ProjectExplorerViewController {
 				e.printStackTrace();
 			}
 		}
+		
+		return fileExtensions;
 	}
 
 	/**
