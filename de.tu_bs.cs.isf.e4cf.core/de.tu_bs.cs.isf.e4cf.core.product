@@ -3,7 +3,6 @@
 
 <product name="de.tu_bs.cs.isf.e4cf.core" uid="de.tu_bs.cs.isf.e4cf.core_1" id="de.tu_bs.cs.isf.e4cf.core.product" application="de.tu_bs.cs.isf.e4cf.core.FrameworkE4Application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -18,14 +17,12 @@
 
    <windowImages/>
 
-
    <launcher name="e4CompareFramework">
       <win useIco="true">
          <ico path="/de.tu_bs.cs.isf.e4cf.core/e4cIcon.ico"/>
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
@@ -44,6 +41,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.comparator_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.compare_engine_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.data_structures"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.metric_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare"/>

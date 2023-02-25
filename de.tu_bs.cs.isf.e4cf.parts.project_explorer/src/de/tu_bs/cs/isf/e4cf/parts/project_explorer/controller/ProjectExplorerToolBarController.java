@@ -64,9 +64,9 @@ public class ProjectExplorerToolBarController {
 			services.eventBroker.send(E4CEventTable.EVENT_FILTER_CHANGED, search.getText());
 		});
 
-		ImageView searchImage = services.imageService.getFXImage(null, FileTable.SEARCH_PNG);
+		ImageView searchImage = new ImageView(FileTable.SEARCH_PNG);
 		Tooltip searchTooltip = new Tooltip("Search Files");
-		ImageView closeSearchImage = services.imageService.getFXImage(null, FileTable.X_PNG);
+		ImageView closeSearchImage = new ImageView(FileTable.X_PNG);
 		Tooltip closeSearchTooltip = new Tooltip("Exit Search");
 		Button searchButton = new Button("", searchImage);
 		searchButton.setTooltip(searchTooltip);
@@ -140,8 +140,8 @@ public class ProjectExplorerToolBarController {
 		});
 
 		// Switch between hierarchical and flat view
-		ImageView flatViewImage = services.imageService.getFXImage(null, FileTable.FLAT_VIEW_PNG);
-		ImageView hierViewImage = services.imageService.getFXImage(null, FileTable.HIERARCICAL_VIEW_PNG);
+		ImageView flatViewImage = new ImageView(FileTable.FLAT_VIEW_PNG);
+		ImageView hierViewImage = new ImageView(FileTable.HIERARCICAL_VIEW_PNG);
 		Button btnToggleView = new Button("", flatViewImage);
 		btnToggleView.setTooltip(new Tooltip("Change Representation"));
 		btnToggleView.setOnAction(actionEvent -> {
@@ -168,7 +168,7 @@ public class ProjectExplorerToolBarController {
 	 * @return The created button
 	 */
 	private Button createToolbarButton(String tooltip, String imagePath, EventHandler<ActionEvent> value) {
-		ImageView image = services.imageService.getFXImage(null, imagePath);
+		ImageView image = new ImageView(imagePath);
 		Button button = new Button("", image);
 		button.setTooltip(new Tooltip(tooltip));
 		button.setOnAction(value);

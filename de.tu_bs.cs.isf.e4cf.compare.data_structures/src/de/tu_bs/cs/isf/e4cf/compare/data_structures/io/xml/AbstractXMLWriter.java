@@ -116,6 +116,7 @@ public abstract class AbstractXMLWriter extends AbstractArtifactWriter {
 	private String createAttributes(Node node) {
 		String attributes = "";
 		for (Attribute attr : node.getAttributes()) {
+			// TODO: add additional values of the attribute
 			attributes += String.format(" %s=%s", attr.getAttributeKey(), attr.getAttributeValues().get(0).getValue().toString());
 		}
 		return attributes;
