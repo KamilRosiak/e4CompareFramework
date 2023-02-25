@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: de.rosi.spl.featuremodel.core
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.featuremodel.core;singleton:=true
 Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.core,
+ de.tu_bs.cs.isf.e4cf.featuremodel.core.controller,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.error,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util,
@@ -10,7 +11,7 @@ Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.core,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.listener,
- de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements
+ de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature
 Bundle-Name: Core
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: javax.inject,

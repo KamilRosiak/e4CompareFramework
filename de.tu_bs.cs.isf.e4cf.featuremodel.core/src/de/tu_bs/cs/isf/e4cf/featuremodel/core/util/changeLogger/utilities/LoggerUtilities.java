@@ -12,7 +12,7 @@ import FeatureDiagramModificationSet.Delta;
 import FeatureDiagramModificationSet.DeltaProperties;
 import FeatureDiagramModificationSet.FeatureDiagramModificationSetFactory;
 import FeatureDiagramModificationSet.Modification;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 
 public class LoggerUtilities {
 	

@@ -13,10 +13,10 @@ import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 
-public class FeatureModelEditorContextMenu extends ContextMenu {
+public class FMEditorContextMenu extends ContextMenu {
 	private IEventBroker eventBroker;
 	
-	public FeatureModelEditorContextMenu(IEventBroker eventBroker, FeatureDiagramm diagram) {
+	public FMEditorContextMenu(IEventBroker eventBroker, FeatureDiagramm diagram) {
 		createControl();
 		this.eventBroker = eventBroker;
 	}

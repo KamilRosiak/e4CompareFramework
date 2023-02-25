@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorView;
 import featureConfiguration.FeatureConfiguration;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -39,13 +39,13 @@ public class FXGraphicalFeature extends VBox  {
 	private FXFeatureUpperConnector upperConnector;
 	private Feature feature;
 	private ServiceContainer services;
-	private FeatureModelEditorView view;
+	private FMEditorView view;
 	private List<FXGraphicalFeature> childFeatures;
 	private DoubleProperty xPos, yPos;
 	private Label featureNameLabel;
 	private FXGraphicalFeature parentFxFeature;
 
-	public FXGraphicalFeature(FeatureModelEditorView featureModelEditorView, Feature feature, ServiceContainer services) {
+	public FXGraphicalFeature(FMEditorView featureModelEditorView, Feature feature, ServiceContainer services) {
 		this.feature = feature;
 		this.view = featureModelEditorView;
 		this.services = services;
@@ -281,7 +281,7 @@ public class FXGraphicalFeature extends VBox  {
 		return feature;
 	}
 	
-	public FeatureModelEditorView getView() {
+	public FMEditorView getView() {
 		return view;
 	}
 

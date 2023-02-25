@@ -28,7 +28,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramModificationSet
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLogger;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLoggerFactory;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.utilities.LoggerUtilities;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 
 @Singleton
 @Creatable

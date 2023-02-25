@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.error;
 
 import FeatureDiagram.Feature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 
 public interface ErrorListener {
 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;

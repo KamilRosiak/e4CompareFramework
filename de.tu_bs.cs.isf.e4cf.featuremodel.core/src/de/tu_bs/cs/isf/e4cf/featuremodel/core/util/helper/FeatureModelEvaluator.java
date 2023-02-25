@@ -8,7 +8,7 @@ import FeatureDiagram.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDDialogStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleDecsionDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleNoticeDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 
 public class FeatureModelEvaluator {
 	

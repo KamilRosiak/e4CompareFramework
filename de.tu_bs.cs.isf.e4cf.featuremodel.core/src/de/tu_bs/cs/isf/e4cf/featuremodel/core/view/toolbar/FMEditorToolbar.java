@@ -7,7 +7,7 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.ConstraintEditor;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
@@ -16,11 +16,11 @@ import javafx.scene.control.ToolBar;
  * This class represents the ToolBar in the FeatureDiagramEditor.
  * @author {Kamil Rosiak}
  */
-public class FeatureModelEditorToolbar extends ToolBar  {
+public class FMEditorToolbar extends ToolBar  {
 	private ServiceContainer services;
-	private FeatureModelEditorView view;
+	private FMEditorView view;
 	
-	public FeatureModelEditorToolbar(ServiceContainer services, FeatureModelEditorView view) {
+	public FMEditorToolbar(ServiceContainer services, FMEditorView view) {
 		this.services = services;
 		this.view = view;
 		initControl();

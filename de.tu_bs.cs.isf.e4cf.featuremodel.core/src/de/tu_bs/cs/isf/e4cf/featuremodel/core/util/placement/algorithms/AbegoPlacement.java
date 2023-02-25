@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.F
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDNodeExtentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDTreeForLayout;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.TreeUtil;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 
 public class AbegoPlacement implements PlacementAlgorithm {
 

@@ -21,7 +21,7 @@ import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.AbstractDialog;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorController;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.controller.FMEditorController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleNoticeDialog;
@@ -234,7 +234,7 @@ public class ConstraintEditor extends AbstractDialog {
 	 * This method creates the list with features that are currently in the feature diagram
 	 */
 	private TableView<FXFeature> createFeatureList() {
-		FeatureModelEditorController fmec = ContextInjectionFactory.make(FeatureModelEditorController.class, EclipseContextFactory.create());
+		FMEditorController fmec = ContextInjectionFactory.make(FMEditorController.class, EclipseContextFactory.create());
 		diagram = fmec.getCurrentFeatureDiagram();
 		ObservableList<FXFeature> featureList = FXCollections.observableArrayList();
 		for(Feature feature : FeatureDiagramUtil.getAllFeature(fmec.getCurrentFeatureDiagram())) {

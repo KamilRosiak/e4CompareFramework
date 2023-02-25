@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature;
 
 
 import FeatureDiagram.ComponentFeature;

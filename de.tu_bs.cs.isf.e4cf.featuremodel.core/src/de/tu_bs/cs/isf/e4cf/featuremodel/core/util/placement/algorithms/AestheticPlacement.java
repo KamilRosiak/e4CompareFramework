@@ -10,7 +10,7 @@ import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.TreeUtil;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 
 /**
  * A Layout Algorithm for m-ary Trees, Utilized for Feature Diagrams

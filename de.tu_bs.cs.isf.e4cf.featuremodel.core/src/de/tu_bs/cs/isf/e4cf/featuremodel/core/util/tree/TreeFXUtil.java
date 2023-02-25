@@ -2,7 +2,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree;
 
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 
 public class TreeFXUtil {
 	

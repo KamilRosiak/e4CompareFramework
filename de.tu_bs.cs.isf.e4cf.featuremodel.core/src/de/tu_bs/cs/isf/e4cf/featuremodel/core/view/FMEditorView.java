@@ -51,8 +51,8 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureModelEvaluator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactory;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FeatureModelEditorToolbar;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FMEditorToolbar;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import featureConfiguration.FeatureConfiguration;
@@ -75,7 +75,7 @@ import javafx.util.Pair;
  * @author {Kamil Rosiak, Alexander Schlie}
  *
  */
-public class FeatureModelEditorView {
+public class FMEditorView {
 	final double SCALE_DELTA = 1.1;
 	public double mouseX = 0;
 	public double mouseY = 0;
@@ -100,7 +100,7 @@ public class FeatureModelEditorView {
 
 	private AnimationMap labelBorderAnimationMap;
 	
-	public FeatureModelEditorView(Tab tab, ServiceContainer services) {
+	public FMEditorView(Tab tab, ServiceContainer services) {
 		this.services = services;
 		this.componentFeatureList = new ArrayList<FXGraphicalFeature>();
 		tab.setContent(createScene());
@@ -149,7 +149,7 @@ public class FeatureModelEditorView {
 		gesturePane.setStyle("-fx-background-color: white;");
 
 		arrangementPane.setCenter(gesturePane);
-		arrangementPane.setTop(new FeatureModelEditorToolbar(services, this));
+		arrangementPane.setTop(new FMEditorToolbar(services, this));
 		this.arrangementPane = arrangementPane;
 
 		// Creating and adding the mouse handler that allows zooming in and out with the

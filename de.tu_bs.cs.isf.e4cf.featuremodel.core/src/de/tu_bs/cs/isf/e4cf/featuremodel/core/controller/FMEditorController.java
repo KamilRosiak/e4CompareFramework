@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.controller;
  
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,8 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.TreeParser;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FeatureModelEditorView;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorView;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import featureConfiguration.FeatureConfiguration;
@@ -52,7 +52,7 @@ import javafx.util.Pair;
  */
 @Singleton
 @Creatable
-public class FeatureModelEditorController {
+public class FMEditorController {
 	private TabPane tabPane;
 	private ServiceContainer services;
 	
@@ -72,12 +72,12 @@ public class FeatureModelEditorController {
 		createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
 	}
 
-	private FeatureModelEditorView getCurrentView() {
+	private FMEditorView getCurrentView() {
 		Tab currentTab = tabPane.getSelectionModel().getSelectedItem();
 		if (currentTab == null) {
-			return (FeatureModelEditorView) createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME).getUserData();
+			return (FMEditorView) createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME).getUserData();
 		}
-		FeatureModelEditorView view = (FeatureModelEditorView) currentTab.getUserData();
+		FMEditorView view = (FMEditorView) currentTab.getUserData();
 		return view;
 	}
 	
@@ -87,7 +87,7 @@ public class FeatureModelEditorController {
 
 	private Tab createNewTab(String title) {
 		Tab tab = newTab(title);
-		FeatureModelEditorView view = new FeatureModelEditorView(tab, services);
+		FMEditorView view = new FMEditorView(tab, services);
 		tab.setUserData(view);
 		tabPane.getTabs().add(tab);
 		return tab;
@@ -96,7 +96,7 @@ public class FeatureModelEditorController {
 	private Tab newTab(String title) {
 		Tab tab = new Tab(title);
 		tab.setOnCloseRequest(event -> {
-			((FeatureModelEditorView) tab.getUserData()).askToSave();		
+			((FMEditorView) tab.getUserData()).askToSave();		
 			// don't allow the tabPane to be empty
 			if (tabPane.getTabs().size() == 1) {
 				createNewTab(FDStringTable.FD_DEFAULT_FEATURE_DIAGRAM_NAME);
@@ -121,7 +121,7 @@ public class FeatureModelEditorController {
 	
 	private Tab getOpenedTabOrNull(FeatureDiagramm diagram) {
 		for (Tab tab : tabPane.getTabs()) {
-			FeatureDiagramm tabDiagram = ((FeatureModelEditorView) tab.getUserData()).getCurrentModel();
+			FeatureDiagramm tabDiagram = ((FMEditorView) tab.getUserData()).getCurrentModel();
 			if (diagram.getUuid().equals(tabDiagram.getUuid())) {
 				return tab;
 			}
@@ -175,7 +175,7 @@ public class FeatureModelEditorController {
 	@Inject
 	public void componentFeatureVariabilityChangeMandatory(@UIEventTopic(FDEventTable.ROOT_FEATURE_MANDATORY_EVENT) String uuid) {
 		tabPane.getTabs().forEach(tab -> {
-			List<FXGraphicalFeature> componentList = ((FeatureModelEditorView) tab.getUserData()).getComponentFeatureList();
+			List<FXGraphicalFeature> componentList = ((FMEditorView) tab.getUserData()).getComponentFeatureList();
 			for (FXGraphicalFeature graFeature : componentList) {
 				ComponentFeature component = (ComponentFeature) graFeature.getFeature();
 				if (component.getFeaturediagramm().getUuid().equals(uuid)) {
@@ -189,7 +189,7 @@ public class FeatureModelEditorController {
 	@Inject
 	public void componentFeatureVariabilityChangeOptional(@UIEventTopic(FDEventTable.ROOT_FEATURE_OPTIONAL_EVENT) String uuid) {
 		tabPane.getTabs().forEach(tab -> {
-			List<FXGraphicalFeature> componentList = ((FeatureModelEditorView) tab.getUserData()).getComponentFeatureList();
+			List<FXGraphicalFeature> componentList = ((FMEditorView) tab.getUserData()).getComponentFeatureList();
 			for (FXGraphicalFeature graFeature : componentList) {
 				ComponentFeature component = (ComponentFeature) graFeature.getFeature();
 				if (component.getFeaturediagramm().getUuid().equals(uuid)) {

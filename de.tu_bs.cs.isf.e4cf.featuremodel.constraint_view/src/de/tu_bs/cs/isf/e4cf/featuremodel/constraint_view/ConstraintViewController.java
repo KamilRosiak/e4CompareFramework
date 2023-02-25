@@ -16,7 +16,7 @@ import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view.view.ConstraintView;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorController;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.controller.FMEditorController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import javafx.embed.swt.FXCanvas;
 
@@ -42,7 +42,7 @@ public class ConstraintViewController {
 	@Focus
 	public void updateView() {
 		try {
-			FeatureModelEditorController fmec = ContextInjectionFactory.make(FeatureModelEditorController.class, EclipseContextFactory.create());
+			FMEditorController fmec = ContextInjectionFactory.make(FMEditorController.class, EclipseContextFactory.create());
 			currentModel = fmec.getCurrentFeatureDiagram();
 			view.showConstraints(fmec.getCurrentFeatureDiagram().getConstraints());
 		} catch (Exception e) {
