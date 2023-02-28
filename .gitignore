@@ -28,4 +28,3 @@ target/
 # Generated files
 *.xtendbin
 *._trace
-*.project
