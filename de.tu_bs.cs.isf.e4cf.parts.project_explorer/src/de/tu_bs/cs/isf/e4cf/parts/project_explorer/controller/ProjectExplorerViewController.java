@@ -315,7 +315,7 @@ public class ProjectExplorerViewController {
 	/** Rebuild the project explorer and update it's view. */
 	@Inject
 	@Optional
-	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Object o) {
+	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Void o) {
 
 		// Store list of current selections before the tree is destroyed and rebuilt
 		List<FileTreeElement> selections = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
@@ -437,8 +437,7 @@ public class ProjectExplorerViewController {
 		List<WorkspaceStructureTemplate> workspaceExtension = ExtensionAttrUtil.getAttrsFromExtension(
 				StringTable.PROJECT_EXPLORER_WORKSPACE_STRUCUTRE, StringTable.WORKSPACE_STR_ATTR);
 		FileTreeElement root = workspaceFileSystem.getWorkspaceDirectory();
-		Path rootPath = FileHandlingUtility.getPath(root);
-		Path projectPath = rootPath.resolve("");
+		Path projectPath = FileHandlingUtility.getPath(root);
 
 		for (WorkspaceStructureTemplate extension : workspaceExtension) {
 			for (String directory : extension.getDirectories()) {

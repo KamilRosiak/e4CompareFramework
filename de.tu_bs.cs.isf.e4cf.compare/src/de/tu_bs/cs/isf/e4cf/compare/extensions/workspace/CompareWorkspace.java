@@ -12,12 +12,12 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.WorkspaceStructure
 public class CompareWorkspace extends WorkspaceStructureTemplate {
 
     public CompareWorkspace() {
-	addDirectory(CompareST.RAW_FOLDER);
-	addDirectory(CompareST.TREE_FOLDER);
-	addDirectory(CompareST.METRICS_FOLDER);
-	addDirectory(CompareST.FAMILY_MODELS);
-	addDirectory(CompareST.FEATURE_MODELS);
-	addDirectory(CompareST.FEATURE_CONFIGURATIONS);
+		addDirectory(CompareST.RAW_FOLDER);
+		addDirectory(CompareST.TREE_FOLDER);
+		addDirectory(CompareST.METRICS_FOLDER);
+		addDirectory(CompareST.FAMILY_MODELS);
+		addDirectory(CompareST.FEATURE_MODELS);
+		addDirectory(CompareST.FEATURE_CONFIGURATIONS);
     }
 
 }
