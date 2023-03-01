@@ -2,7 +2,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree;
 
 import java.util.List;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 
 public class TreeFXUtil {
 	
@@ -69,8 +69,8 @@ public class TreeFXUtil {
 	 * This method resets all positions of the given feature and his childs.
 	 */
 	public static void resetTreePosition(FXGraphicalFeature root) {
-		root.getFeature().getGraphicalfeature().setX(0d);
-		root.getFeature().getGraphicalfeature().setY(0d);
+		root.xPos.set(0d);
+		root.yPos.set(0d);
 		for(FXGraphicalFeature child : root.getChildFeatures()) {
 			resetTreePosition(child);
 		}

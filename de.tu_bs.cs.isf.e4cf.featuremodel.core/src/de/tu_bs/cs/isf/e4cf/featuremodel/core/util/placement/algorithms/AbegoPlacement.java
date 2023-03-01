@@ -12,12 +12,12 @@ import org.abego.treelayout.TreeLayout;
 
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDConfiguration;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDNodeExtentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDTreeForLayout;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.TreeUtil;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 
 public class AbegoPlacement implements PlacementAlgorithm {
 

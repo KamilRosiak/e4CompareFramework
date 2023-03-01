@@ -4,7 +4,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 
 import de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view.ConstraintViewController;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.controller.FMEditorController;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller.FMEditorController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -26,7 +26,7 @@ public class ConstraintViewContextMenu extends ContextMenu {
             @Override
             public void handle(ActionEvent event) {
         		FMEditorController fmec = ContextInjectionFactory.make(FMEditorController.class, EclipseContextFactory.create());
-        		fmec.getCurrentFeatureDiagram().getConstraints().remove(table.getSelectionModel().getSelectedItem().getConstraint());
+        		// TODO fmec.getCurrentFeatureDiagram().getConstraints().remove(table.getSelectionModel().getSelectedItem().getConstraint());
         		controller.updateView();
             	event.consume();
             }

@@ -18,5 +18,9 @@ public interface IFeature {
 	void addChild(IFeature child);
 	
 	void removeChild(IFeature child);
+	
+	default boolean isAbstract() {
+		return false;
+	}
 
 }

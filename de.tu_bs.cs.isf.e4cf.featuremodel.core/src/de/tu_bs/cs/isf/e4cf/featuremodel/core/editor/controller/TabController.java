@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.controller;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,13 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorTab;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.TabView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorTab;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.TabView;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.EventBroker;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
@@ -32,6 +33,7 @@ public class TabController {
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, EMenuService menuService) {
 		this.services = services;
+		EventBroker.set(services);
 		this.errorListeners = new ArrayList<>();
 		this.view = new TabView(
 			parent, 

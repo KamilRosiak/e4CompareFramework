@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
@@ -20,16 +20,21 @@ public class FXFeatureLowerConnector extends Arc {
 
 	private void addWidthListener(FXGraphicalFeature fxFeature) {
 		//bind width value for repaint
+		// TODO check if desired
 		fxFeature.widthProperty().addListener(e-> {
 			radius = fxFeature.getWidth()/2;
-			if (fxFeature.getFeature() != null) {
-				if(fxFeature.getFeature().isOr()) {
-					drawOr();
-				} else if(fxFeature.getFeature().isAlternative()) {
-					drawAlternative();
-				}
-			}
 			
+			switch (fxFeature.getFeature().getGroupVariability()) {
+			case AND:
+				// TODO define AND style
+				break;
+			case OR:
+				drawOr();
+				break;
+			case XOR:
+				drawAlternative();
+				break;			
+			}	
 		});
 	}
 	

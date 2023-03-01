@@ -1,15 +1,14 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.ConstraintEditor;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FMEditorPaneView;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 
@@ -19,22 +18,17 @@ import javafx.scene.control.ToolBar;
  */
 public class FMEditorToolbar extends ToolBar  {
 	private ServiceContainer services;
-	private FMEditorPaneView view;
+	//private FMEditorPaneView view;
 	
 	public FMEditorToolbar(ServiceContainer services) {
 		this.services = services;
-		initControl();
-	}
-	
-	public void  init(FMEditorPaneView view) {
-		this.view = view;
-		minWidthProperty().bind(view.rootPane.widthProperty());
+		constructUI();
 	}
 
 	/**
 	 * This method initializes the ToolBar and adds all buttons to it.
 	 */
-	private void initControl() {		
+	private void constructUI() {		
 		/**
 		 * Add Buttons to ToolBar
 		 */
@@ -45,7 +39,6 @@ public class FMEditorToolbar extends ToolBar  {
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_CONSTRAINTS, e -> {
 			try {
 				ConstraintEditor cEditor = ContextInjectionFactory.make(ConstraintEditor.class, EclipseContextFactory.create());
-
 				cEditor.showStage();	
 			} catch (Exception exc) {
 				exc.printStackTrace();
@@ -65,6 +58,12 @@ public class FMEditorToolbar extends ToolBar  {
 			services.eventBroker.send(FDEventTable.FORMAT_DIAGRAM_EVENT,"");
 		}));
 		
+		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SHOW_CONFIG, e-> {
+			services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
+			//services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.currentModel());
+		}));
+		
+		
 		Button loggerButton = JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_START_LOGGER, e-> {
     		if (((Button)e.getSource()).getText().equals(FDStringTable.FD_BAR_MENU_START_LOGGER)) {
     			((Button)e.getSource()).setText(FDStringTable.FD_BAR_MENU_STOP_LOGGER);
@@ -74,11 +73,6 @@ public class FMEditorToolbar extends ToolBar  {
     			services.eventBroker.send(FDEventTable.START_LOGGER_DIAGRAM_EVENT,false);
     		}	
 		});
-		
-		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SHOW_CONFIG, e-> {
-			services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
-			services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.currentModel());
-		}));
 		
 		getItems().add(loggerButton);
 	}

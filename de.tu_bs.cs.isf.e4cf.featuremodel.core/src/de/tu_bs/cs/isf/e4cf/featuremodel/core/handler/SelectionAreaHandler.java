@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -94,8 +94,8 @@ public class SelectionAreaHandler implements EventHandler<MouseEvent>{
 	private void getSelectedItems() {
 		List<FXGraphicalFeature> selectedFeatures = new ArrayList<FXGraphicalFeature>();
 		for (FXGraphicalFeature feature : features) {
-			if (((feature.getXPos().get()+root.getTranslateX()) > xStartPosition) && ((feature.getYPos().get()+root.getTranslateY()) > yStartPosition)
-					&& ((feature.getXPos().get()+root.getTranslateX()) < xPosMax) && ((feature.getYPos().get()+root.getTranslateY()) < yPosMax)) {
+			if (((feature.xPos.get()+root.getTranslateX()) > xStartPosition) && ((feature.yPos.get()+root.getTranslateY()) > yStartPosition)
+					&& ((feature.xPos.get()+root.getTranslateX()) < xPosMax) && ((feature.yPos.get()+root.getTranslateY()) < yPosMax)) {
 				selectedFeatures.add(feature);
 			}
 		}

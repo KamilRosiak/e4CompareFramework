@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import java.util.Map;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorToolbar;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.DragHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.KeyTranslateHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.PrimaryMouseButtonClickedHandler;
@@ -21,7 +22,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactory;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FMEditorToolbar;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -85,8 +85,8 @@ public class FMEditorPaneView extends BorderPane {
 		gesturePane.setStyle("-fx-background-color: white;");
 
 		this.setCenter(gesturePane);
-		toolbar.init(this);
 		this.setTop(this.toolbar);
+		this.toolbar.minWidthProperty().bind(this.rootPane.widthProperty());
 
 		// Creating and adding the mouse handler that allows zooming in and out with the
 		// mouse wheel.
@@ -200,10 +200,10 @@ public class FMEditorPaneView extends BorderPane {
 	private void connectFeatures(FXGraphicalFeature parent, FXGraphicalFeature child) {
 		final Line line = new Line();
 		// initial bind
-		line.startXProperty().bind(parent.getXPos().add(parent.getWidth() / 2));
+		line.startXProperty().bind(parent.xPos.add(parent.getWidth() / 2));
 		line.startYProperty().bind(
-				parent.getYPos()
-				.add(parent.getHeight() - parent.getLowerConnector().getRadiusY()
+				parent.yPos
+				.add(parent.getHeight() - parent.lowerConnector.getRadiusY()
 		));
 		line.endYProperty().bind(child.translateYProperty());
 		line.endXProperty().bind(
@@ -214,13 +214,13 @@ public class FMEditorPaneView extends BorderPane {
 		// after update size
 		parent.widthProperty().addListener(e -> {
 			line.startXProperty().unbind();
-			line.startXProperty().bind(parent.getXPos().add(parent.getWidth() / 2));
+			line.startXProperty().bind(parent.xPos.add(parent.getWidth() / 2));
 		});
 
 		parent.heightProperty().addListener(e -> {
 			line.startYProperty().unbind();
 			line.startYProperty()
-					.bind(parent.getYPos().add(parent.getHeight() - parent.getLowerConnector().getRadiusY()));
+					.bind(parent.yPos.add(parent.getHeight() - parent.lowerConnector.getRadiusY()));
 		});
 
 		// if height changes bind with new height.

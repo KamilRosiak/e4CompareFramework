@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature;
 
 
 import FeatureDiagram.ComponentFeature;
@@ -123,7 +123,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
             @Override
             public void handle(ActionEvent event) {
             	hide();				
-            	fxGraFeature.showRenameFeatureDialog();
+            	fxGraFeature.featureNameLabel.showRenameFeatureDialog();
             	event.consume();
             }
         });
@@ -267,9 +267,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	if (!fxGraFeature.getFeature().isAlternative()) {
-            		fxGraFeature.setGroupVariability_ALTERNATIVE();      		
-            	}
+            	fxGraFeature.setGroupVariability_ALTERNATIVE();
         		event.consume();
             }
         });
@@ -281,9 +279,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	if (!fxGraFeature.getFeature().isOr()) {
-            		fxGraFeature.setGroupVariability_OR();            		
-            	}
+            	fxGraFeature.setGroupVariability_OR();
         		event.consume();
             }
         });
@@ -295,7 +291,6 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	if (fxGraFeature.getFeature().isAlternative() || fxGraFeature.getFeature().isOr())
             	fxGraFeature.setGroupVariability_AND();
         		event.consume();
             }

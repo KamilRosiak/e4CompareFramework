@@ -21,7 +21,7 @@ import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.AbstractDialog;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.controller.FMEditorController;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller.FMEditorController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleNoticeDialog;
@@ -235,9 +235,9 @@ public class ConstraintEditor extends AbstractDialog {
 	 */
 	private TableView<FXFeature> createFeatureList() {
 		FMEditorController fmec = ContextInjectionFactory.make(FMEditorController.class, EclipseContextFactory.create());
-		diagram = fmec.getCurrentFeatureDiagram();
+		diagram = null; //fmec.getCurrentFeatureDiagram();
 		ObservableList<FXFeature> featureList = FXCollections.observableArrayList();
-		for(Feature feature : FeatureDiagramUtil.getAllFeature(fmec.getCurrentFeatureDiagram())) {
+		for(Feature feature : FeatureDiagramUtil.getAllFeature(null)) { //fmec.getCurrentFeatureDiagram())) {
 			//TODO: add different icons for different feature types
 			featureList.add(new FXFeature(feature,services.imageService.getURL(FDStringTable.BUNDLE_NAME, "icon/feature_blue_24.png")));
 		}

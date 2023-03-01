@@ -1,7 +1,7 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.controller.EditorController;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller.EditorController;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;

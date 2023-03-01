@@ -1,11 +1,11 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature;
 
 import FeatureDiagram.Feature;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorToolbar;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneView.FMEditorPaneMouseHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.PrimaryMouseButtonClickedHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.SelectionAreaHandler;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FMEditorPaneView.FMEditorPaneMouseHandler;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FMEditorToolbar;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -23,12 +23,12 @@ public class FMEditorPaneController {
 
 				@Override
 				public EventHandler<MouseEvent> resetHandler() {
-					return null;
+					return e -> e.consume();
 				}
 
 				@Override
 				public EventHandler<MouseEvent> dragHandler() {
-					return null;
+					return e -> e.consume();
 				}
 
 				@Override

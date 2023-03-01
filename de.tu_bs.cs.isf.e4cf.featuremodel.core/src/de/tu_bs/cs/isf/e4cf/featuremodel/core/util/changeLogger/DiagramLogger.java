@@ -3,7 +3,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger;
 import java.util.List;
 
 import FeatureDiagram.FeatureDiagramm;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 
 public interface DiagramLogger {	
 	void startLogging(FeatureDiagramm diagram, List<FXGraphicalFeature> featureList);

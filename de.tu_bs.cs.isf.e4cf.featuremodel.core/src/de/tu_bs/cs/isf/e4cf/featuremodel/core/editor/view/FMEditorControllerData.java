@@ -1,4 +1,4 @@
-package de.tu_bs.cs.isf.e4cf.featuremodel.core.view;
+package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view;
 
 import java.util.List;
 

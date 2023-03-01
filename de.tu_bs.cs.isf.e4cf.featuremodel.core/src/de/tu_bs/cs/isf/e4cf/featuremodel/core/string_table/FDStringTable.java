@@ -88,6 +88,7 @@ public class FDStringTable {
 	public static final String FD_FEATURE_CONFIG_PART_NAME = "de.tu_bs.cs.isf.e4cf.featuremodel.configuration.part.featuremodelconfiguration";
 	
 	public static final String FD_DEFAULT_NAME = "Feature Model";
+	public static final String DEFAULT_FEATURE_NAME = "Feature";
 
 	
 }	
