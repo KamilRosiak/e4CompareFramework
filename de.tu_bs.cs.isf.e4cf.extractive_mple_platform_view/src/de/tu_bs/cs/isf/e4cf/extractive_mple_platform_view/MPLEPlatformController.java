@@ -146,14 +146,14 @@ public class MPLEPlatformController implements Initializable {
 			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID,
 					componentUUIDTable.getSelectionModel().getSelectedItem());
 		});
-		
-		componentConfigs.setOnMouseClicked(e-> {
-			if(e.getClickCount() == 2) {
+
+		componentConfigs.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
 				services.eventBroker.send(MPLEEditorConsts.SEARCH_UUID,
 						componentConfigs.getSelectionModel().getSelectedItem().getComponentUUID());
 			}
 		});
-		
+
 		uuidTable.getSelectionModel().selectedItemProperty().addListener(e -> {
 			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID, uuidTable.getSelectionModel().getSelectedItem());
 		});
@@ -164,27 +164,28 @@ public class MPLEPlatformController implements Initializable {
 	 * Recovers the variant for the given configuration
 	 */
 	private Node configureVariant(Configuration selectedConfig, Node node) {
-		if (selectedConfig.getUUIDs().contains(node.getUUID())) {
-			node.setVariabilityClass(VariabilityClass.MANDATORY);
-			List<Attribute> attributeToRemove = new ArrayList<Attribute>();
-			// Configure Attributes
-			node.getAttributes().forEach(attribute -> {
-				if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
-					List<Value> valuestoRemove = new ArrayList<Value>();
-					// Configure Values
-					attribute.getAttributeValues().forEach(value -> {
-						if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
-							valuestoRemove.add(value);
-						}
-					});
-					attribute.getAttributeValues().removeAll(valuestoRemove);
+		if (selectedConfig != null)
+			if (selectedConfig.getUUIDs().contains(node.getUUID())) {
+				node.setVariabilityClass(VariabilityClass.MANDATORY);
+				List<Attribute> attributeToRemove = new ArrayList<Attribute>();
+				// Configure Attributes
+				node.getAttributes().forEach(attribute -> {
+					if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
+						List<Value> valuestoRemove = new ArrayList<Value>();
+						// Configure Values
+						attribute.getAttributeValues().forEach(value -> {
+							if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
+								valuestoRemove.add(value);
+							}
+						});
+						attribute.getAttributeValues().removeAll(valuestoRemove);
 
-				} else {
-					attributeToRemove.add(attribute);
-				}
-			});
-			node.getAttributes().removeAll(attributeToRemove);
-		}
+					} else {
+						attributeToRemove.add(attribute);
+					}
+				});
+				node.getAttributes().removeAll(attributeToRemove);
+			}
 		configureVariantRecursivly(selectedConfig, node);
 
 		return node;
