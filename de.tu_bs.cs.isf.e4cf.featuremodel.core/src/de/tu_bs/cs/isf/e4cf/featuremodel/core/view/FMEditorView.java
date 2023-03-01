@@ -12,15 +12,18 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
-import FeatureDiagram.Feature;
+
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
@@ -42,7 +45,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import featureConfiguration.FeatureConfiguration;
-import javafx.scene.Node;
+
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Pane;
@@ -61,17 +64,9 @@ public class FMEditorView {
 	private FMEditorPaneController editorPane;
 	private ServiceContainer services;
 
-	public FMEditorView(FMEditorPaneController editorPane, Consumer<Node> uiConsumer) {
+	public FMEditorView(FMEditorPaneController editorPane, Consumer<javafx.scene.Node> uiConsumer) {
 		this.editorPane = editorPane;
 		uiConsumer.accept(this.editorPane.ui());
-		
-		// creating an empty feature diagram
-		createNewFeatureDiagram();
-	}
-	
-	public void displayFeatureDiagram(FeatureDiagram diagram) {
-		// construct fxGraphicalFeature model
-		// display in editor pane
 	}
 	
 	public FMEditorView(Tab tab, ServiceContainer services) {
@@ -79,51 +74,21 @@ public class FMEditorView {
 		this.services = services;
 	}
 	
-	public FXGraphicalFeature getFXGraphicalFeature(Feature feature) {
-		for (FXGraphicalFeature fxGraFeature : editorPane.featureList) {
-			if (fxGraFeature.getFeature().equals(feature)) {
-				return fxGraFeature;
-			}
-		}
-		return null;
+	public void displayFeatureDiagram(FeatureDiagram diagram) {
+		FXGraphicalFeature root = buildFXGrapicalDiagram(diagram.getRoot());
+		editorPane.displayFeatureDiagram(root);
 	}
 	
-
-	public void setTheme(String cssLocation) {
-		editorPane.setTheme(cssLocation);
+	private FXGraphicalFeature buildFXGrapicalDiagram(Feature feature) {
+		FXGraphicalFeature fxRoot = new FXGraphicalFeature(feature);
+		for (Feature child : feature.getChildren()) {
+			FXGraphicalFeature fxChild = buildFXGrapicalDiagram(child);
+			fxRoot.addChildFeature(fxChild);
+		}
+		return fxRoot;
 	}
-
-	/**
-	 * This method replaces all elements of the current loaded feature diagram
-	 */
-	public void formatDiagram(boolean askToSave) {
-		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
-		placement.format(editorPane.currentModel);
-		// Reset the translate offset so that large feature diagrams do not
-		// disappear after formatting
-		editorPane.rootPane.setTranslateX(0d);
-		editorPane.rootPane.setTranslateY(0d);
-		//loadFeatureDiagram(currentModel, askToSave);
-	}
-
-	/**
-	 * This method creates a new FeatureDiagram and adds the root to FeatureDiagram.
-	 */
-	public void createNewFeatureDiagram() {
-		clearAll();
-		editorPane.currentModel = new FeatureDiagram();
-		initFeatureDiagram(editorPane.currentModel);
-		addFeature(editorPane.currentModel.getRoot(), this.getRootPane().getWidth() / 2, this.getRootPane().getHeight() / 2);
-	}
-
-	private FeatureDiagramm initFeatureDiagram(FeatureDiagramm diagram) {		
-		Feature root = createNewFeature(
-				FeatureInitializer.createFeature(FDStringTable.FD_DEFAULT_NAME, true), 
-				this.editorPane.rootPane.getWidth() / 2, 
-				this.editorPane.rootPane.getHeight() / 2);
-		diagram.setRoot(root);
-		return diagram;
-	}
+	
+	
 
 	/**
 	 * This method loads a FeatureDiagram.
@@ -179,89 +144,6 @@ public class FMEditorView {
 			changeFeatureVisibility(fxChild, true);
 			postProcessRecursivelyHideSubfeatures(fxChild);
 		}
-	}
-
-	/**
-	 * This method creates a dialog and checks if the user would like to save the
-	 * current diagram.
-	 */
-	public void askToSave() {
-		boolean isCurrentModel = RCPMessageProvider.questionMessage("FeatureDiagramEditor",
-				"Would you like to save the current Feature Model");
-		if (isCurrentModel) {
-			saveFeatureDiagram();
-		}
-	}
-
-	/**
-	 * This method clears the FeatureDiagramEditor
-	 */
-	public void clearAll() {
-		editorPane.rootPane.getChildren().clear();
-		// root.getChildren().add(selectionRectangle);
-		editorPane.featureLineMap.clear();
-		editorPane.featureList.clear();
-	}
-
-	/**
-	 * This method saves the current featureModel to into workspace.
-	 */
-	public void saveFeatureDiagram() {
-		FileTreeElement root = services.workspaceFileSystem.getWorkspaceDirectory();
-		Path rootPath = FileHandlingUtility.getPath(root);
-		Path projectPath = rootPath.resolve("");
-		Path uriPath = projectPath.resolve(E4CStringTable.FEATURE_MODEL_DIRECTORY);
-		String fileName = editorPane.currentModel.getRoot().getName() + FDStringTable.FD_FILE_ENDING;
-		String absolutePath = uriPath.toUri() + "/" + fileName;
-
-		
-		try {
-			if (services.workspaceFileSystem.search(uriPath.toAbsolutePath() + "\\" + fileName) != null) {
-				boolean result = RCPMessageProvider.questionMessage("Feature Model Editor", "File with same name already exists. Do you want to override it?");
-				if (!result) {
-					return;
-				}
-			}
-		} catch (NoSuchElementException e) {}
-		FeatureDiagramSerialiazer.save(editorPane.currentModel, absolutePath);
-	}
-
-	/**
-	 * This method sets the current mouse position (relative to the scene).
-	 */
-	public void setMousePosition(double x, double y) {
-		this.editorPane.mouseX = x;
-		this.editorPane.mouseY = y;
-	}
-	
-	public FXGraphicalFeature createFXGraphicalFeature(Feature feature, Color background) {
-		// log feature added
-		services.eventBroker.send(FDEventTable.LOGGER_ADD_FEATURE, feature);
-		if (feature.getGraphicalfeature() != null) {
-			feature.getGraphicalfeature().setX(feature.getGraphicalfeature().getX());
-			feature.getGraphicalfeature().setY(feature.getGraphicalfeature().getY());
-		}
-		FXGraphicalFeature fxGraFeature = new FXGraphicalFeature(this, feature, services);
-		if (background != null) {
-			fxGraFeature.setBackgroundColor(background);
-		}
-		
-		//TODO: debug statements
-		//System.out.println("w: " + feature.getGraphicalfeature().getWidth());
-		//System.out.println("h: " + feature.getGraphicalfeature().getHeight());
-		//System.out.println();
-
-		if (feature.isAbstract()) {
-			fxGraFeature.getFeatureNameLabel().getStyleClass().add("abstractFeature");
-		}
-		
-		if (fxGraFeature.getFeature().isAlternative()) {
-			fxGraFeature.setGroupVariability_ALTERNATIVE();
-		} else if (fxGraFeature.getFeature().isOr()) {
-			fxGraFeature.setGroupVariability_OR();
-		}
-		
-		return fxGraFeature;
 	}
 	
 	public FXGraphicalFeature addFeature(Feature feature) {

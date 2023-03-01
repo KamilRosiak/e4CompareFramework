@@ -23,6 +23,7 @@ public class TabView {
 	
 	public void addTab(FMEditorTab tab) {
 		this.tabPane.getTabs().add(tab);
+		this.tabPane.getSelectionModel().select(tab);
 	}
 	
 	public FMEditorTab currentTab() {

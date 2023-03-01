@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.DragHandler;
@@ -13,9 +14,13 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.PrimaryMouseButtonClickedH
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ResetHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.SelectionAreaHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ZoomHandler;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactory;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FMEditorToolbar;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
@@ -56,6 +61,9 @@ public class FMEditorPaneView extends BorderPane {
 	// model
 	public FeatureDiagramm currentModel;
 	public FXGraphicalFeature currentFeature;
+	
+	// my vars
+	private FXGraphicalFeature rootFeature;
 
 	public FMEditorPaneView(FMEditorToolbar toolbar, FMEditorPaneMouseHandler mouseEventHandler) {
 		this.toolbar = toolbar;
@@ -148,4 +156,88 @@ public class FMEditorPaneView extends BorderPane {
 	public FeatureDiagramm currentModel() {
 		return this.currentModel;
 	}
+	
+	public void formatDiagram() {
+		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
+		placement.format(this.currentModel);
+		// Reset the translate offset so that large feature diagrams do not
+		// disappear after formatting
+		this.rootPane.setTranslateX(0d);
+		this.rootPane.setTranslateY(0d);
+		//loadFeatureDiagram(currentModel, askToSave);
+	}
+	
+	public void setRootFeature(FXGraphicalFeature feature) {
+		this.clear();
+		this.rootFeature = feature;
+		this.rootPane.getChildren().add(feature);
+	}
+	
+	/**
+	 * This method clears the FeatureDiagramEditor
+	 */
+	private void clear() {
+		this.rootPane.getChildren().clear();
+		// root.getChildren().add(selectionRectangle);
+		this.featureLineMap.clear();
+		this.featureList.clear();
+	}
+	
+	public void insertFeatureBelow(FXGraphicalFeature parent, FXGraphicalFeature child) {
+		// insert child
+		this.rootPane.getChildren().add(child);
+		connectFeatures(parent, child);
+		//TODO set x,y positions of features depending on size 		
+		insertChildren(child);
+	}
+	
+	private void insertChildren(FXGraphicalFeature feature) {
+		for (FXGraphicalFeature child : feature.getChildFeatures()) {
+			insertFeatureBelow(feature, child);
+		}
+	}
+	
+	private void connectFeatures(FXGraphicalFeature parent, FXGraphicalFeature child) {
+		final Line line = new Line();
+		// initial bind
+		line.startXProperty().bind(parent.getXPos().add(parent.getWidth() / 2));
+		line.startYProperty().bind(
+				parent.getYPos()
+				.add(parent.getHeight() - parent.getLowerConnector().getRadiusY()
+		));
+		line.endYProperty().bind(child.translateYProperty());
+		line.endXProperty().bind(
+				child.translateXProperty()
+				.add(child.widthProperty().doubleValue() / 2
+		));
+
+		// after update size
+		parent.widthProperty().addListener(e -> {
+			line.startXProperty().unbind();
+			line.startXProperty().bind(parent.getXPos().add(parent.getWidth() / 2));
+		});
+
+		parent.heightProperty().addListener(e -> {
+			line.startYProperty().unbind();
+			line.startYProperty()
+					.bind(parent.getYPos().add(parent.getHeight() - parent.getLowerConnector().getRadiusY()));
+		});
+
+		// if height changes bind with new height.
+		child.heightProperty().addListener(e -> {
+			line.endYProperty().unbind();
+			line.endYProperty().bind(child.translateYProperty());
+		});
+
+		// if size changes bind with new width.
+		child.widthProperty().addListener(e -> {
+			line.endXProperty().unbind();
+			line.endXProperty().bind(child.translateXProperty().add(child.widthProperty().doubleValue() / 2));
+		});
+
+		this.rootPane.getChildren().add(line);
+	}
+	
+	
+	
 }

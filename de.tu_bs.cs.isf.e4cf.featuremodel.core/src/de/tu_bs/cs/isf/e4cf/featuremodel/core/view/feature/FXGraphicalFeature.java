@@ -8,9 +8,14 @@ import org.eclipse.swt.widgets.Display;
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
-import FeatureDiagram.Feature;
+
 import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
@@ -35,22 +40,62 @@ import javafx.util.Pair;
 
 
 public class FXGraphicalFeature extends VBox  {
+	private Label featureNameLabel;
 	private FXFeatureLowerConnector lowerConnector;
 	private FXFeatureUpperConnector upperConnector;
-	private Feature feature;
+	
 	private ServiceContainer services;
 	private FMEditorView view;
+	
+	private FXGraphicalFeature parentFxFeature;
 	private List<FXGraphicalFeature> childFeatures;
 	private DoubleProperty xPos, yPos;
-	private Label featureNameLabel;
-	private FXGraphicalFeature parentFxFeature;
+	private Feature feature;
+	
 
 	public FXGraphicalFeature(FMEditorView featureModelEditorView, Feature feature, ServiceContainer services) {
 		this.feature = feature;
 		this.view = featureModelEditorView;
 		this.services = services;
 		this.childFeatures = new ArrayList<FXGraphicalFeature>();
+		
 		createFeature();
+	}
+	
+	public FXGraphicalFeature(String name) {
+		this.childFeatures = new ArrayList<>();
+		createFeature();
+	}
+	
+	public FXGraphicalFeature(Feature feature) {
+		this(feature.getName());
+		this.setVariability(feature.getVariability());
+		this.setGroupVariability(feature.getGroupVariability());
+	}
+	
+	public void setVariability(Variability variability) {
+		switch (variability) {
+		case MANDATORY:
+			// TODO apply mandatory style
+			break;
+		case OPTIONAL:
+			// TODO apply optional style
+			break;
+		}
+	}
+	
+	public void setGroupVariability(GroupVariability groupVariability) {
+		switch (groupVariability) {
+		case AND:
+			this.setGroupVariability_AND();
+			break;
+		case OR:
+			this.setGroupVariability_OR();
+			break;
+		case XOR:
+			this.setGroupVariability_ALTERNATIVE();
+			break;		
+		}
 	}
 
 //	public void addConfigLabel(String name) {
@@ -124,7 +169,7 @@ public class FXGraphicalFeature extends VBox  {
 	            @Override
 	            public void handle(ContextMenuEvent event) {
 	            	if(event.getSource() instanceof FXGraphicalFeature) {
-	            		view.setMousePosition(event.getSceneX(), event.getSceneY());
+	            		//view.setMousePosition(event.getSceneX(), event.getSceneY());
 	            		modifyMenuItemAbstractConcrete(fmeContextMenu, (FXGraphicalFeature)event.getSource());
 	            		modifyMenuItemFeatureVisibility(fmeContextMenu, (FXGraphicalFeature)event.getSource());
 		            	fmeContextMenu.show(box, event.getScreenX(), event.getScreenY()); 
@@ -338,7 +383,7 @@ public class FXGraphicalFeature extends VBox  {
 		upperConnector.styleForOptional();
 	}
 	
-	public void setGroupVariability_ALTERNATIVE() {
+	private void setGroupVariability_ALTERNATIVE() {
 		
 		if (!feature.isAlternative()) {
 			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);
@@ -359,7 +404,7 @@ public class FXGraphicalFeature extends VBox  {
 		}
 	}
 	
-	public void setGroupVariability_OR() {
+	private void setGroupVariability_OR() {
 		if (!feature.isOr()) {
 			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);			
 			feature.setAlternative(false);
@@ -380,7 +425,7 @@ public class FXGraphicalFeature extends VBox  {
 		}			
 	}
 	
-	public void setGroupVariability_AND() {
+	private void setGroupVariability_AND() {
 		if (feature.isOr() || feature.isAlternative()) {
 			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);
 			feature.setAlternative(false);

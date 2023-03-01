@@ -8,18 +8,21 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeSerializer;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.FMEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.feature.FMEditorPaneController;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.toolbar.FMEditorToolbar;
 import javafx.scene.Node;
 
 public class EditorController {
@@ -31,6 +34,9 @@ public class EditorController {
 		this.services = services;
 		FMEditorPaneController editorPane = new FMEditorPaneController(services);
 		this.view = new FMEditorView(editorPane, uiConsumer);
+		
+		this.diagram = new FeatureDiagram(FDStringTable.FD_DEFAULT_NAME, new Feature("Root"));
+		this.view.displayFeatureDiagram(this.diagram);
 	}
 	
 	public EditorController(ServiceContainer services, Consumer<Node> uiConsumer, FeatureDiagram diagram) {
@@ -46,11 +52,15 @@ public class EditorController {
 		}
 	}
 	
+	public FeatureDiagram getFeatureDiagram() {
+		return this.diagram;
+	}
+	
 	@Optional
 	@Inject
-	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram diagram) {
+	public void setFeatureDiagram(FeatureDiagram diagram) {
 		this.view.displayFeatureDiagram(diagram);
-		System.out.println("Feature Diagram " + diagram.getRoot().getName() + " successfully loaded.");
+		System.out.println("Feature Diagram " + diagram.getName() + " successfully loaded.");
 	}
 	
 	public void saveDiagram() {
@@ -58,10 +68,9 @@ public class EditorController {
 		Path rootPath = FileHandlingUtility.getPath(root);
 		Path projectPath = rootPath.resolve("");
 		Path uriPath = projectPath.resolve(E4CStringTable.FEATURE_MODEL_DIRECTORY);
-		String fileName = this.diagram.getRoot().getName() + FDStringTable.FD_FILE_ENDING;
-		String absolutePath = uriPath.toUri() + "/" + fileName;
+		String absolutePath = uriPath.toUri().toString();
 
-		FeatureDiagramSerialiazer.save(this.diagram, absolutePath);
+		// TODO write serialization
 	}
 
 }
