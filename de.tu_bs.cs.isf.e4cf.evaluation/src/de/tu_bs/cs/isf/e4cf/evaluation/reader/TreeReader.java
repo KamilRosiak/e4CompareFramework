@@ -9,7 +9,6 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
 public class TreeReader extends AbstractArtifactReader {
-
 	public final static String[] SUPPORTED_FILE_ENDINGS = { "tree" };
 	
 	GsonImportService importService;
@@ -25,9 +24,7 @@ public class TreeReader extends AbstractArtifactReader {
 
 		if (isFileSupported(element)) {
 			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-			
 			tree = importService.importTree(s);
-		
 		}
 		return tree;
 	}

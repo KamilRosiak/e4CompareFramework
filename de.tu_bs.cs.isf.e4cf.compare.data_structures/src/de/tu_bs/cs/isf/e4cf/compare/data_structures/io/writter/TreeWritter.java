@@ -1,6 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactWriter;
@@ -8,6 +11,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService;
 import de.tu_bs.cs.isf.e4cf.core.util.file.FileStreamUtil;
 
+@Creatable
+@Singleton
 public class TreeWritter extends AbstractArtifactWriter {
 	public final static String FILE_ENDING = "tree";
 	public final static String NODE_TYPE_TREE = "TREE";

@@ -10,7 +10,6 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFiles;
@@ -26,6 +25,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -53,6 +53,8 @@ public class CompareEngineView implements Initializable {
 
 	@Inject
 	ServiceContainer services;
+	@Inject
+	CloneHelper helper;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -78,7 +80,11 @@ public class CompareEngineView implements Initializable {
 	public void compareArtifacts() {
 		try {
 			CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
-			List<Tree> artifacts = artifactTable.getItems();
+			List<Tree> artifacts = new ArrayList<Tree>();
+
+			artifactTable.getItems().forEach(artifact -> {
+				artifacts.add(helper.deepCopy(artifact));
+			});
 
 			if (artifacts.size() > 1) {
 				Tree mergedTree = engine.compare(artifacts);

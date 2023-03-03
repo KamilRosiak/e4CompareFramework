@@ -20,22 +20,25 @@ import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator;
 public class CloneGeneratorHandler {
 
 	@Execute
-	public void execute(IEclipseContext context, ServiceContainer services, ReaderManager readerManager, CloneGenerator gen) {
+	public void execute(IEclipseContext context, ServiceContainer services, ReaderManager readerManager,
+			CloneGenerator gen) {
 		System.out.println("Hello Generator");
-		
+
 		GeneratorDialog dialog = new GeneratorDialog(context, services.imageService);
 		Optional<GeneratorOptions> result = dialog.open();
 		result.ifPresent(options -> {
 			Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
 			gen.go(tree, options);
 		});
-		
+
 		System.out.println("Goodbye");
 	}
-	
+
 	@Evaluate
 	/**
-	 * Evaluates if the associated menu contribution is to be displayed. For clone generation, any single selection may be used.
+	 * Evaluates if the associated menu contribution is to be displayed. For clone
+	 * generation, any single selection may be used.
+	 * 
 	 * @param services injected to get current Explorer selection
 	 * @return true when the clone generator may be invoked
 	 */
@@ -46,5 +49,5 @@ public class CloneGeneratorHandler {
 			return false;
 		}
 	}
-	
+
 }
