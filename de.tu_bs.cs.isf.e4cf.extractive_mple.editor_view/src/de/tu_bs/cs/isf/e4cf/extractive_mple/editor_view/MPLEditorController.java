@@ -180,8 +180,7 @@ public class MPLEditorController implements Initializable {
 	}
 
 	private void decorateTreeRoot(Tree tree) {
-		treeView.setRoot(new TreeItem<Node>(tree.getRoot()));
-		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
+		treeView.setRoot(new TreeItem<Node>(tree.getRoot(), new ImageView(FileTable.rootImage)));
 		treeView.getRoot().setExpanded(true);
 		treeView.setShowRoot(true);
 	}
@@ -226,7 +225,7 @@ public class MPLEditorController implements Initializable {
 		Tree tree = new TreeImpl(platform.name, platform.model);
 		setCurrentPlatform(platform);
 		decorateTreeRoot(tree);
-		setCurrentTree(tree);
+		setCurrentTree(tree);		
 		// load decorator and select the first
 		// decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		// decoratorCombo.getSelectionModel().select(0);

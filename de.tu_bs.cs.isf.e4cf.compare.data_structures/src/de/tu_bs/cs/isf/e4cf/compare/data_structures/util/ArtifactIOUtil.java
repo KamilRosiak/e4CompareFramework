@@ -27,12 +27,9 @@ public class ArtifactIOUtil {
 	 * The extension point is defined in schema/ArtifactReader.exsd
 	 */
 	public static List<ArtifactReader> getAllArtifactReader() {
-		List<ArtifactReader> reader = RCPContentProvider.<ArtifactReader>getInstanceFromBundle(
-				DataStructureST.ARTIFACT_READER_SYMBOLIC_NAME, DataStructureST.ARTIFACT_READER_EXTENSION);
-		if (reader != null) {
-			return reader;
-		}
-		return new ArrayList<ArtifactReader>();
+		List<ArtifactReader> readers = RCPContentProvider.<ArtifactReader>getInstanceFromBundle(
+				DataStructureST.ARTIFACT_READER_EXTENSION_ID, DataStructureST.ARTIFACT_READER_EXTENSION);
+		return readers;
 	}
 	
 	/**
@@ -62,7 +59,7 @@ public class ArtifactIOUtil {
 	 */
 	public static List<ArtifactWriter> getAllArtifactWriter() {
 		List<ArtifactWriter> writer = RCPContentProvider.<ArtifactWriter>getInstanceFromBundle(
-				DataStructureST.ARTIFACT_WRITER_SYMBOLIC_NAME, DataStructureST.ARTIFACT_WRITER_EXTENSION);
+				DataStructureST.ARTIFACT_WRITER_EXTENSION_ID, DataStructureST.ARTIFACT_WRITER_EXTENSION);
 		if (writer != null) {
 			return writer;
 		}
