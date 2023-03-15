@@ -35,5 +35,7 @@ Export-Package: com.opencsv,
 Bundle-ClassPath: .,
  lib/javaparser-core-3.18.0.jar,
  lib/gson-2.8.6.jar,
- lib/jep.jar
+ lib/jep.jar,
+ lib/opencsv-5.5.2.jar,
+ lib/antlr-4.4-complete.jar
 Import-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces

@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.string_table;
 
 public class DataStructureST {
-	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.core.io";
+	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.compare.data_structures";
 	public static final String LOAD_ARTIFACTS_EVENET ="LOAD_ARTIFACTS_EVENET";
 	public static final String LOAD_ARTIFACTS_PATH_EVENET ="LOAD_ARTIFACTS_PATH_EVENET";
 
