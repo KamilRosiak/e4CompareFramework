@@ -43,7 +43,7 @@ public class JavaFormat implements IHighlighting, IIndenting, IFormatting {
 	private static final String SEMICOLON_PATTERN = "\\;";
 	private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
 	private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
-	private static final String ANNOTATION_PATTERN = "@" + "([^\n\s]*)";
+	private static final String ANNOTATION_PATTERN = "@" + "([^\\n\\s]*)";
 	private static final String INSTANCE_PATTERN = "(?<=\\s)\\w+(?=\\s\\=\\snew\\s\\w+\\([A-Za-z1-9_,\\s]*\\)\\;)";
 	private static final String INSTANCE_CALL_PATTERN = ".+(?=\\.\\w+\\([A-Za-z1-9_,\\s]*\\)\\;)";
 	private static final String JAVA_CLASS_PATTERN = "(?<=\\s)\\w+(?=\\s\\w+\\s\\=\\snew)";

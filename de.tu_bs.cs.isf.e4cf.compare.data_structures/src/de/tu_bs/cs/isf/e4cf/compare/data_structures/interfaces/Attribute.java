@@ -26,6 +26,14 @@ public interface Attribute extends Serializable {
 	public List<Value> getAttributeValues();
 
 	public Value getAttributeValue(Value value);
+	
+	/**
+	 * Returns the i-th value
+	 * @param i The index of the value
+	 * @return The value at the i-th position
+	 * @throws IndexOutOfBoundsException if the index is out of bounds
+	 */
+	public Value<?> getValue(int i) throws IndexOutOfBoundsException;
 
 	/**
 	 * Add an value to this attribute

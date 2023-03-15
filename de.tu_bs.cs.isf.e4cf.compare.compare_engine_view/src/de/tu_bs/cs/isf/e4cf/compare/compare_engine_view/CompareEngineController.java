@@ -24,8 +24,7 @@ import javafx.scene.Scene;
  *
  */
 public class CompareEngineController {
-	private static final String COMPARE_ENGINE_FXML = "/ui/view/CompareEngineView.fxml";
-	public static final String COMPARE_ENGINE_CSS_LOCATION = "/css/compare_engine.css";
+	private static final String COMPARE_ENGINE_FXML = "de/tu_bs/cs/isf/e4cf/compare/compare_engine_view/CompareEngineView.fxml";
 
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
@@ -34,7 +33,6 @@ public class CompareEngineController {
 				COMPARE_ENGINE_FXML);
 
 		Scene scene = new Scene(loader.getNode());
-		scene.getStylesheets().add(COMPARE_ENGINE_CSS_LOCATION);
 		canvans.setScene(scene);
 	}
 }

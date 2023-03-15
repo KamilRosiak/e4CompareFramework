@@ -18,7 +18,6 @@
 
    <windowImages/>
 
-
    <launcher name="e4CompareFramework">
       <win useIco="true">
          <ico path="/de.tu_bs.cs.isf.e4cf.core/e4cIcon.ico"/>
@@ -30,7 +29,6 @@
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.google.guava"/>
@@ -45,6 +43,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.comparator_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.compare_engine_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.data_structures"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.metric_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare"/>
@@ -52,6 +51,9 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.exchange"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.family_model_view.prototype"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.configuration"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view"/>
@@ -64,6 +66,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.parser.antlr"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.parts.consol_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.parts.project_explorer"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.refactoring.data_structures"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.replay_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.simple_text_editor"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.solver"/>
@@ -115,7 +118,6 @@
       <plugin id="org.eclipse.e4.ui.dialogs"/>
       <plugin id="org.eclipse.e4.ui.model.workbench"/>
       <plugin id="org.eclipse.e4.ui.services"/>
-      <plugin id="org.eclipse.e4.ui.swt.win32" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets"/>
       <plugin id="org.eclipse.e4.ui.workbench"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt"/>
@@ -126,6 +128,7 @@
       <plugin id="org.eclipse.emf.ecore"/>
       <plugin id="org.eclipse.emf.ecore.change"/>
       <plugin id="org.eclipse.emf.ecore.xmi"/>
+      <plugin id="org.eclipse.emf.emfstore.common"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.bidi"/>
       <plugin id="org.eclipse.equinox.common"/>
@@ -145,18 +148,19 @@
       <plugin id="org.eclipse.fx.core"/>
       <plugin id="org.eclipse.fx.osgi" fragment="true"/>
       <plugin id="org.eclipse.fx.osgi.util"/>
+      <plugin id="org.eclipse.fx.ui.controls"/>
+      <plugin id="org.eclipse.fx.ui.panes"/>
       <plugin id="org.eclipse.gef.common"/>
       <plugin id="org.eclipse.gef.fx"/>
       <plugin id="org.eclipse.gef.geometry"/>
       <plugin id="org.eclipse.gef.geometry.convert.fx"/>
       <plugin id="org.eclipse.gef.mvc.fx"/>
       <plugin id="org.eclipse.help"/>
-      <plugin id="org.eclipse.jdt.annotation" version="2.2.600.v20200408-1511"/>
+      <plugin id="org.eclipse.jdt.annotation"/>
       <plugin id="org.eclipse.jdt.junit.runtime"/>
       <plugin id="org.eclipse.jdt.junit5.runtime"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
-      <plugin id="org.eclipse.jface.notifications"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.compatibility.state" fragment="true"/>
       <plugin id="org.eclipse.osgi.services"/>

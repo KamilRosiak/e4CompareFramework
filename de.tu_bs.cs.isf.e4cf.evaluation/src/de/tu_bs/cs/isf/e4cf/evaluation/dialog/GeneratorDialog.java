@@ -14,6 +14,7 @@ import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 
 public class GeneratorDialog {
+	private final static String FXML_PATH = "de/tu_bs/cs/isf/e4cf/evaluation/dialog/CloneGeneratorDialog.fxml";
 
 	private Dialog<GeneratorOptions> dialog;
 	private GeneratorViewController generatorViewController;
@@ -30,8 +31,7 @@ public class GeneratorDialog {
 		stage.getIcons().add(imageService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
 
 		FXMLLoader<GeneratorViewController> loader = new FXMLLoader<>(context, 
-				"de.tu_bs.cs.isf.e4cf.evaluation",
-				Paths.get("ui", "view", "CloneGeneratorDialog.fxml").toString());
+				"de.tu_bs.cs.isf.e4cf.evaluation", FXML_PATH);
 		generatorViewController = loader.getController();
 		generatorViewController.init();
 		pane.setContent(loader.getNode());

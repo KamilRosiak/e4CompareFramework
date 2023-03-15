@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.MPLEPlatformController">
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.MPLEPlatformController">
    <center>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
@@ -25,8 +25,8 @@
                               <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Variant Configurations" />
                               <TableView fx:id="configTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                                 <columns>
-                                  <TableColumn fx:id="configNameCol" prefWidth="75.0" text="Name" />
-                                  <TableColumn fx:id="amountCol" prefWidth="75.0" text="#" />
+                                  <TableColumn fx:id="configNameCol" editable="false" prefWidth="200.0" sortable="false" text="Name" />
+                                  <TableColumn fx:id="amountCol" editable="false" maxWidth="1000.0" prefWidth="75.0" sortable="false" text="Size" />
                                 </columns>
                                  <contextMenu>
                                     <ContextMenu>
@@ -35,6 +35,9 @@
                                       </items>
                                     </ContextMenu>
                                  </contextMenu>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
                               </TableView>
                            </children>
                         </VBox>
@@ -47,8 +50,11 @@
                                           <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Variant Artifacts" VBox.vgrow="ALWAYS" />
                                           <TableView fx:id="uuidTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                                             <columns>
-                                              <TableColumn fx:id="configUUIDCol" minWidth="50.0" prefWidth="250.0" text="UUID" />
+                                              <TableColumn fx:id="configUUIDCol" editable="false" minWidth="50.0" prefWidth="223.19999986886978" sortable="false" text="UUID" />
                                             </columns>
+                                             <columnResizePolicy>
+                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                             </columnResizePolicy>
                                           </TableView>
                                        </children>
                                     </VBox>
@@ -57,9 +63,12 @@
                                           <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Clone Configurations" VBox.vgrow="ALWAYS" />
                                           <TableView fx:id="componentConfigs" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                                              <columns>
-                                                <TableColumn fx:id="componentIDCol" minWidth="50.0" prefWidth="243.0" text="ComponentID" />
-                                                <TableColumn fx:id="paarentCol" minWidth="50.0" prefWidth="257.0" text="ParentID" />
+                                                <TableColumn fx:id="componentIDCol" editable="false" minWidth="50.0" prefWidth="243.0" text="ComponentID" />
+                                                <TableColumn fx:id="paarentCol" editable="false" minWidth="50.0" prefWidth="257.0" text="ParentID" />
                                              </columns>
+                                             <columnResizePolicy>
+                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                             </columnResizePolicy>
                                           </TableView>
                                        </children>
                                     </VBox>
@@ -76,6 +85,9 @@
                           <columns>
                             <TableColumn fx:id="componentUUIDCol" prefWidth="709.0" text="UUID" />
                           </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
                         </TableView>
                      </children>
                   </VBox>

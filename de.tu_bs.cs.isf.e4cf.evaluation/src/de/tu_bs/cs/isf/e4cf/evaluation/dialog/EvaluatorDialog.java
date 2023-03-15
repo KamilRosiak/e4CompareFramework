@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.evaluation.dialog;
 
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -16,6 +15,7 @@ import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 
 public class EvaluatorDialog {
+	private static final String FXML_PATH = "de/tu_bs/cs/isf/e4cf/evaluation/dialog/VariantEvaluatorDialog.fxml";
 	
 	private Dialog<EvaluatorOptions> dialog;
 	private EvaluatorViewController controller;
@@ -31,8 +31,7 @@ public class EvaluatorDialog {
 		stage.getIcons().add(imageService.getFXImage(null, E4CFileTable.FRAMEWORK_LOGO_SMALL).getImage());
 		
 		FXMLLoader<EvaluatorViewController> loader = new FXMLLoader<>(context, 
-				"de.tu_bs.cs.isf.e4cf.evaluation",
-				Paths.get("ui", "view", "VariantEvaluatorDialog.fxml").toString());
+				"de.tu_bs.cs.isf.e4cf.evaluation", FXML_PATH);
 		controller = loader.getController();
 		controller.init();
 		pane.setContent(loader.getNode());

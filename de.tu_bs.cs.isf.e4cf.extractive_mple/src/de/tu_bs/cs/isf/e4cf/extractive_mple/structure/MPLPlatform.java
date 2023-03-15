@@ -87,7 +87,7 @@ public class MPLPlatform implements Serializable {
 			// System.out.println("cloneConfigs:"+ cloneConfigurations.size());
 			List<CloneConfiguration> fixedCloneConfigs = new ArrayList<CloneConfiguration>();
 			/**
-			 * Intre clone refactoring detection clone artifacts within the variant and the
+			 * Inter clone refactoring detection clone artifacts between variants and the
 			 * creation of clone configurations
 			 */
 			// compare variants with the platform clone model
@@ -122,8 +122,8 @@ public class MPLPlatform implements Serializable {
 			}
 		}
 
-		// Initialize the cluster engine and run the process output ist a list of sets
-		// of nodes. every set represents a clone cluster that have to be merged.
+		// Initialize the cluster engine and run the process output is a list of sets
+		// of nodes. Every set represents a clone cluster that has to be merged.
 		ClusterEngine clusterEngine = new ClusterEngine();
 		ClusterEngine.startProcess();
 		List<Set<Node>> nodeCluster = clusterEngine.detectClusters(candidatNodes,

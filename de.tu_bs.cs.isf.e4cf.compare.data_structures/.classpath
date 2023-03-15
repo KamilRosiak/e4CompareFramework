@@ -13,5 +13,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="src-test"/>
 	<classpathentry kind="lib" path="lib/javaparser-core-3.18.0.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-4.4-complete.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

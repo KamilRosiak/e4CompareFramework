@@ -14,8 +14,8 @@ public class MPLEEditorConsts {
 	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view";
 	public static final String PLATFORM_VIEW = "de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view";
 
-	public static final String TREE_VIEW_FXML = "ui/DSEditorView.fxml";
-	public static final String PROPERTIES_VIEW_FXML = "ui/DSPropertiesView.fxml";
+	public static final String TREE_VIEW_FXML = "de/tu_bs/cs/isf/e4cf/extractive_mple/editor_view/DSEditorView.fxml";
+	public static final String PROPERTIES_VIEW_FXML = "de/tu_bs/cs/isf/e4cf/extractive_mple/editor_view/DSPropertiesView.fxml";
 	public static final String COMPARATOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
 
 	public static final String EMPTY_PROPERTIES_TABLE_EVENT = "EMPTY_PROPERTIES_TABLE_EVENT";
@@ -43,7 +43,7 @@ public class MPLEEditorConsts {
 	public static final String SHOW_MPL = "SHOW_MPL";
 	public static final String SHOW_TREE = "SHOW_TREE";
 	public static final String SHOW_UUID = "SHOW_UUID";
-	public static final String SEARCH_UUID = "SEARCH_UUID";
+	public static final String SHOW_CLONE_UUID = "SHOW_CLONE_UUID";
 	
 	
 }

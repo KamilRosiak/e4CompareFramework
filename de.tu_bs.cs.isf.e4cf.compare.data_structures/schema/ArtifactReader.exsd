@@ -49,13 +49,13 @@
 
    <element name="artifactReader">
       <complexType>
-         <attribute name="artifactReader" type="string">
+         <attribute name="artifactReader" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader:"/>
+                  <meta.attribute kind="java" basedOn=":de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.ArtifactReader"/>
                </appinfo>
             </annotation>
          </attribute>

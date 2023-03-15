@@ -16,9 +16,8 @@ import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
 public class MetricViewController {
-    private static final String METRIC_VIEW_FXML = "/ui/view/MetricView.fxml";
-    public static final String METRIC_CSS_LOCATION = "css/metric_view.css";
-    
+    private static final String METRIC_VIEW_FXML = "de/tu_bs/cs/isf/e4cf/compare/metric_view/MetricView.fxml";
+
     @PostConstruct
     public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {
         FXCanvas canvans = new FXCanvas(parent, SWT.None);
@@ -26,7 +25,6 @@ public class MetricViewController {
         FXMLLoader<MetricView> loader = new FXMLLoader<MetricView>(context, MetricST.BUNDLE_NAME,METRIC_VIEW_FXML);
         //setting the css file
         Scene scene = new Scene(loader.getNode());
-        scene.getStylesheets().add(METRIC_CSS_LOCATION);
         canvans.setScene(scene);	
     }
 }

@@ -255,7 +255,16 @@ public interface Node extends Serializable {
 	public Configuration createConfiguration();
 
 	public int getAmountOfNodes(int startAmount);
-
-	public Set<UUID> getAllUUIDS(Set<UUID> uuids);
+	
+	/**
+	 * Returns the set of uuids of itself, its attributes, all of its reachable child-nodes and their attributes
+	 */
+	public Set<UUID> getAllUUIDS();
+	
+	/**
+	 * Recursively adds the uuid of itself, its attributes, 
+	 * its child-nodes and their attributes to the given set
+	 */
+	public void addAllUUIDS(Set<UUID> uuids);
 
 }

@@ -1,6 +1,8 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view;
 
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
@@ -39,6 +41,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 
 /**
@@ -83,7 +86,6 @@ public class MPLEditorController implements Initializable {
 	private MPLPlatform currentPlatform;
 	private Tree currentTree;
 	private Configuration currentConfiguration;
-	private UUID currentSelectedNode;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -97,34 +99,24 @@ public class MPLEditorController implements Initializable {
 			if (e.getValue().getValue().isClone()) {
 				name = "Clone Node : " + e.getValue().getValue().getUUID();
 			} else {
-				name = "UUID : " + e.getValue().getValue().getUUID();
+				name = e.getValue().getValue().getUUID().toString();
 			}
 			return new SimpleStringProperty(name);
 		});
 
 		configCol.setCellValueFactory(e -> {
-			String configString = "";
-			for (Configuration config : currentPlatform.configurations) {
+			StringBuilder configString = new StringBuilder();
+			for (int i = 0; i < currentPlatform.configurations.size(); i++) {
+				Configuration config = currentPlatform.configurations.get(i);
 				if (config.getUUIDs().contains(e.getValue().getValue().getUUID())) {
-					configString = configString + config.getName() + " ";
+					configString.append(i + 1);
+				} else {
+					configString.append("  ");
 				}
-
+				configString.append(' ');
 			}
-
-			return new SimpleStringProperty(configString);
+			return new SimpleStringProperty(configString.toString());
 		});
-
-	}
-
-	private NodeDecorator getSelectedDecorator() {
-		return new FamilyModelNodeDecorator();
-	}
-
-	private void decorateTreeRoot(Tree tree) {
-		treeView.setRoot(new TreeItem<Node>(tree.getRoot()));
-		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
-		treeView.getRoot().setExpanded(true);
-		treeView.setShowRoot(true);
 
 		treeView.setRowFactory(new Callback<TreeTableView<Node>, TreeTableRow<Node>>() {
 			@Override
@@ -136,30 +128,73 @@ public class MPLEditorController implements Initializable {
 						if (node != null && currentConfiguration != null
 								&& currentConfiguration.getUUIDs().contains(node.getUUID())) {
 							setStyle("-fx-background-color:LIGHTGREEN;");
-						} else if (node != null && node.getUUID().equals(currentSelectedNode)) {
-							setStyle("-fx-background-color:LIGHTGREEN;");
-						} else {
-							setStyle(null);
 						}
 					}
 				};
 			}
 		});
+		
+		// keyboard shortcuts for keyboard only tree-navigation
+		treeView.setOnKeyPressed(keyEvent -> {
+			KeyCode pressed = keyEvent.getCode();
+			if (pressed == KeyCode.SPACE) { // toggle current tree item expanded
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				currentItem.setExpanded(!currentItem.isExpanded());
+				keyEvent.consume();
+			} else if (keyEvent.isShiftDown() && pressed == KeyCode.UP) { // jump to parent
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				selectSingleNode(currentItem.getParent().getValue().getUUID());
+				keyEvent.consume();
+			} else if (keyEvent.isShiftDown() && pressed == KeyCode.DOWN) { // jump to first expanded child
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				TreeItem<Node> firstExpandedChild = currentItem.getChildren().stream()
+						.filter(TreeItem::isExpanded)
+						.findFirst()
+						.orElseGet(() -> currentItem);
+				selectSingleNode(firstExpandedChild.getValue().getUUID());
+				keyEvent.consume();
+			} else if (keyEvent.isControlDown() && pressed == KeyCode.UP) { // jump to previous sibling
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				TreeItem<Node> parent = currentItem.getParent();
+				if (parent.getChildren().size() > 1) {
+					int prevIndex = parent.getChildren().indexOf(currentItem) - 1;
+					// select previous sibling in parent child list, if the item isn't first in the list
+					TreeItem<Node> nextSelection = parent.getChildren().get(prevIndex >= 0 ? prevIndex : 0);
+					selectSingleNode(nextSelection.getValue().getUUID());
+				}
+				keyEvent.consume();
+			} else if (keyEvent.isControlDown() && pressed == KeyCode.DOWN) { // jump to next sibling
+				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
+				TreeItem<Node> parent = currentItem.getParent();
+				int childCount = parent.getChildren().size();
+				if (childCount > 1) {
+					int nextIndex = parent.getChildren().indexOf(currentItem) + 1;
+					// select next sibling in parent child list, if the item isn't last in the list
+					TreeItem<Node> nextSelection = parent.getChildren().get(nextIndex < childCount ? nextIndex : childCount - 1);
+					selectSingleNode(nextSelection.getValue().getUUID());
+				}
+				keyEvent.consume();
+			}
+		});
+		
+		addListeners();
+	}
 
+	private void decorateTreeRoot(Tree tree) {
+		treeView.setRoot(new TreeItem<Node>(tree.getRoot(), new ImageView(FileTable.rootImage)));
+		treeView.getRoot().setExpanded(true);
+		treeView.setShowRoot(true);
 	}
 
 	/**
-	 * Adds a listener to the TreeView so that PropertiesTable of a highlighted node
-	 * is displayed
+	 * Adds a listeners to the TreeView is displayed
 	 * 
 	 */
-	public void addListener() {
-		treeView.getSelectionModel().selectedItemProperty().addListener(e -> {
-			if (treeView.getSelectionModel().getSelectedIndices().size() == 1) {
-				services.partService.showPart(MPLEEditorConsts.PROPERTIES_VIEW_ID);
-
-				services.eventBroker.send(MPLEEditorConsts.NODE_PROPERTIES_EVENT,
-						treeView.getSelectionModel().getSelectedItem().getValue());
+	private void addListeners() {
+		// display attributes of current tree item in properties view
+		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldVal, newVal) -> {
+			if (newVal != null) {
+				services.eventBroker.send(MPLEEditorConsts.NODE_PROPERTIES_EVENT, newVal.getValue());
 			}
 		});
 
@@ -191,12 +226,11 @@ public class MPLEditorController implements Initializable {
 		Tree tree = new TreeImpl(platform.name, platform.model);
 		setCurrentPlatform(platform);
 		decorateTreeRoot(tree);
-		setCurrentTree(tree);
+		setCurrentTree(tree);		
 		// load decorator and select the first
 		// decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 		// decoratorCombo.getSelectionModel().select(0);
 		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), new FamilyModelNodeDecorator());
-		addListener();
 	}
 
 	/**
@@ -217,15 +251,63 @@ public class MPLEditorController implements Initializable {
 	}
 
 	/**
-	 * Method to initialize the treeView from a given Tree
+	 * Finds and selects a node in the tree by its UUID
 	 * 
-	 * @param platform
+	 * @param uuid The UUID of the desired node
 	 */
 	@Optional
 	@Inject
-	public void selectNode(@UIEventTopic(MPLEEditorConsts.SHOW_UUID) UUID uuid) {
-		currentSelectedNode = uuid;
-		treeView.refresh();
+	public void selectSingleNode(@UIEventTopic(MPLEEditorConsts.SHOW_UUID) UUID uuid) {
+		if (uuid == null) {
+			return;
+		}
+
+		List<TreeItem<Node>> itemPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), uuid.toString());
+		selectTreeItem(itemPath);
+	}
+
+	/**
+	 * Selects a clone node under a parent node in the tree view.
+	 * 
+	 * @param parentToChildUuid The parentUuid followed by the childUuid separated
+	 *                          by a '#' e.g. 4564-4021#8932-4893
+	 */
+	@Optional
+	@Inject
+	public void selectCloneNodeByParent(@UIEventTopic(MPLEEditorConsts.SHOW_CLONE_UUID) String parentToChildUuid) {
+		String[] splitUuid = parentToChildUuid.split("#");
+		String parentUuid = splitUuid[0];
+		String childUuid = splitUuid[1];
+
+		List<TreeItem<Node>> parentPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), parentUuid);
+		if (parentPath.size() > 0) {
+			TreeItem<Node> parent = parentPath.get(parentPath.size() - 1);
+			List<TreeItem<Node>> parentToChildPath = TreeViewUtilities.findFirstItemPath(parent, childUuid);
+			List<TreeItem<Node>> childPath = new LinkedList<>(parentPath);
+			childPath.add(parentToChildPath.get(parentToChildPath.size() - 1));
+
+			selectTreeItem(childPath);
+		}
+	}
+
+	/**
+	 * Selects a tree item at the end of a path of tree items in the tree view. The
+	 * tree item path has to start at the root item.
+	 * 
+	 * @param itemPath Sequence of tree items from the root to the item to select
+	 */
+	private void selectTreeItem(List<TreeItem<Node>> itemPath) {
+		if (itemPath.size() > 0) {
+			treeView.getSelectionModel().clearSelection();
+			TreeItem<Node> node = itemPath.get(itemPath.size() - 1);
+			for (TreeItem<Node> item : itemPath) {
+				item.setExpanded(true);
+			}
+			treeView.getSelectionModel().select(node);
+			treeView.refresh();
+			int nodeIndex = treeView.getRow(node);
+			treeView.scrollTo(nodeIndex - 3);
+		}
 	}
 
 	/**

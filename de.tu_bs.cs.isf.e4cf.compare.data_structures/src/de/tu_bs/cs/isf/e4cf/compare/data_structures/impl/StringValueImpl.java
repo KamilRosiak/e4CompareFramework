@@ -7,9 +7,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
  * Implementation of value
  */
 public class StringValueImpl extends AbstractValue<String> {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 532145710145962535L;
 
 	public StringValueImpl(String value) {
