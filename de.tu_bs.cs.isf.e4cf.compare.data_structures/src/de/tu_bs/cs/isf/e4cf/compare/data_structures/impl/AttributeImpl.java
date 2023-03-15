@@ -22,7 +22,7 @@ public class AttributeImpl extends AbstractAttribute {
 	}
 	
 	/**
-	 * Create an Attribute with a kay and corrosponding value
+	 * Create an Attribute with a key and corresponding value
 	 */
 	public AttributeImpl(String attrKey, Value attrValue) {
 		this(attrKey);
@@ -30,7 +30,7 @@ public class AttributeImpl extends AbstractAttribute {
 	}
 	
 	/**
-	 * Create an Attribute with a kay and corrosponding value
+	 * Create an Attribute with a key and corresponding value
 	 */
 	public AttributeImpl(String attrKey, List<Value> attrValues) {
 		this(attrKey);

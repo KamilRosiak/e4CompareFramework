@@ -25,7 +25,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.TreeWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
@@ -254,7 +254,7 @@ public class MPLEPlatformController implements Initializable {
 			Configuration selectedConfig = config;
 			node = configureVariant(selectedConfig, node);
 			Tree variantTree = new TreeImpl(selectedConfig.getName(), node);
-			TreeWritter writter = new TreeWritter();
+			TreeWriter writter = new TreeWriter();
 			ContextInjectionFactory.inject(writter, context);
 			writter.writeArtifact(variantTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
 					+ "\\" + selectedConfig.getName());

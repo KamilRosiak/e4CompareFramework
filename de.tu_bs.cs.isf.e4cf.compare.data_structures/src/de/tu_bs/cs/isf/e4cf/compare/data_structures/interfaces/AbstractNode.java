@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -90,7 +91,11 @@ public abstract class AbstractNode implements Node {
 
 	@Override
 	public Attribute getAttributeForKey(String key) {
+		try {
 		return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
+		} catch (NoSuchElementException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -396,4 +401,39 @@ public abstract class AbstractNode implements Node {
 		// insert all UUIDs of children in uuids
 		getChildren().forEach(child -> child.addAllUUIDS(uuids));
 	}
+	
+	@Override
+	public int cut() {
+		if (this.isRoot()) {
+			return -1;
+		}
+		int index = getParent().getChildren().indexOf(this);
+		getParent().getChildren().remove(index);
+		return index;
+	}
+	
+	@Override
+	public int cutWithoutChildren() {
+		if (this.isRoot()) {
+			return -1;
+		}
+		for (Node child : children) {
+			getParent().addChildWithParent(child); 
+		}
+		return this.cut();
+	}
+	@Override
+	public String getValueAt(int index) {
+		if (attributes.size() < (index + 1)) {
+			return null;
+		}	
+		return attributes.get(index).getAttributeValues().get(0).getValue().toString();
+	}
+	
+	@Override
+	public void updateParent(Node parent) {
+		this.cut();
+		parent.addChildWithParent(this);
+	}
+	
 }

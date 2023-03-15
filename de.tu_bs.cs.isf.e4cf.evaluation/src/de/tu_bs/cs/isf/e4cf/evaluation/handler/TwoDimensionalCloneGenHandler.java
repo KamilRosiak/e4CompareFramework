@@ -12,7 +12,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.TreeWriter;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper;
@@ -23,7 +23,7 @@ public class TwoDimensionalCloneGenHandler {
 
 	@Execute
 	public void execute(IEclipseContext context, ServiceContainer services, ReaderManager readerManager,
-			CloneGenerator gen, Taxonomy tax, CloneHelper helper, TreeWritter writter) {
+			CloneGenerator gen, Taxonomy tax, CloneHelper helper, TreeWriter writter) {
 
 		for (int numberOfVariants = 0; numberOfVariants < NUMBER_OF_VARIANTS; numberOfVariants++) {
 			Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());

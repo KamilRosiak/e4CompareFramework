@@ -10,6 +10,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
  * The concrete implementation of the Node interface.
  * 
  * @author Kamil Rosiak
+ * @author David Bumm
  *
  */
 public class NodeImpl extends AbstractNode {
@@ -20,7 +21,7 @@ public class NodeImpl extends AbstractNode {
 	}
 
 	/**
-	 * This constructor initializes a node without a parent , e.g, the root node.
+	 * This constructor initialises a node without a parent , e.g, the root node.
 	 * 
 	 * @param nodeType is the type of the node , e.g , statement, method, class
 	 */
@@ -31,9 +32,9 @@ public class NodeImpl extends AbstractNode {
 	}
 
 	/**
-	 * This constructor initializes a node without a parent , e.g, the root node.
+	 * This constructor initialises a node without a parent , e.g, the root node.
 	 * 
-	 * @param standardizedNodeType is the standardized type of the node
+	 * @param standardizedNodeType is the standardised type of the node
 	 */
 	public NodeImpl(NodeType standardizedNodeType) {
 		this();
@@ -42,9 +43,9 @@ public class NodeImpl extends AbstractNode {
 	}
 
 	/**
-	 * This constructor initializes a node without a parent , e.g, the root node.
+	 * This constructor initialises a node without a parent , e.g, the root node.
 	 * 
-	 * @param standardizedNodeType is the standardized type of the node
+	 * @param standardizedNodeType is the standardised type of the node
 	 * @param nodeType             is the type of the node , e.g , statement,
 	 *                             method, class
 	 */
@@ -55,7 +56,7 @@ public class NodeImpl extends AbstractNode {
 	}
 
 	/**
-	 * This constructor initializes a node with a given type. Also, the given parent
+	 * This constructor initialises a node with a given type. Also, the given parent
 	 * node is set, and this node is added as a child node.
 	 * 
 	 * @param nodeType is the type of the node , e.g , statement, method, class
@@ -69,9 +70,9 @@ public class NodeImpl extends AbstractNode {
 	}
 
 	/**
-	 * This constructor initializes a node under a given parent.
+	 * This constructor initialises a node under a given parent.
 	 * 
-	 * @param standardizedNodeType is the standardized type of the node
+	 * @param standardizedNodeType is the standardised type of the node
 	 * 
 	 * @param nodeType             is the type of the node , e.g , statement,
 	 *                             method, class
@@ -86,7 +87,7 @@ public class NodeImpl extends AbstractNode {
 	}
 
 	/**
-	 * This constructor initializes a node with a given type and a
+	 * This constructor initialises a node with a given type and a
 	 * given @VariabilityClass. Also, the given parent node is set, and this node is
 	 * added as a child node.
 	 * 
@@ -115,5 +116,13 @@ public class NodeImpl extends AbstractNode {
 		}
 		return newNode;
 	}
+
+	@Override
+	public void addAttribute(String attributeKey, String value) {
+		this.addAttribute(new AttributeImpl(attributeKey, new StringValueImpl(value)));
+		
+	}
+
+	
 
 }

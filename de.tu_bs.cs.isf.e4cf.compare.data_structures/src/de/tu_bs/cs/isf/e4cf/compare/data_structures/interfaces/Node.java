@@ -13,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
  * This interfaces defines all methods that are needed to realize a node.
  * 
  * @author Kamil Rosiak
+ * @author David Bumm
  *
  */
 public interface Node extends Serializable {
@@ -253,6 +254,46 @@ public interface Node extends Serializable {
 	 * Returns the configuration of a single variant
 	 */
 	public Configuration createConfiguration();
+	
+	/**
+	 * removes the node (and all its children) from the parent
+	 * 
+	 * @return the index of the previous position in the parent
+	 */
+	public int cut();
+	
+	/**
+	 * removes the node from the parent. All the children will be added to the parent
+	 * 
+	 * @return the index of the previous position in the parent
+	 */
+	public int cutWithoutChildren();
+	
+	/**
+	 * returns the String from the first Value to the corresponding Attribute.
+	 * The index selects the specific Attribute. The first Attribute has index. 
+	 * @param index
+	 * @return the Value as String
+	 */
+	public String getValueAt(int index);
+	
+	/**
+	 * This method sets the parent of this Node.
+	 * Also it removes this node from the old parent and adds it to the new parent.
+	 * This way no inconsistencies can occur when moving a node to a different parent.
+	 * 
+	 * @param parent is the new parent
+	 */
+	public void updateParent(Node parent);
+	
+	
+	/**
+	 * This method adds value for a given key and  value.
+	 * 
+	 * @param attributeKey the name of the key
+	 * @param value the name of the value
+	 */
+	public void addAttribute(String attributeKey, String value);
 
 	public int getAmountOfNodes(int startAmount);
 	

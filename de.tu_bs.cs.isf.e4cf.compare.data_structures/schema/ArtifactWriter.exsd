@@ -49,13 +49,13 @@
 
    <element name="artifactWriter">
       <complexType>
-         <attribute name="artifactWriter" type="string" use="required">
+         <attribute name="artifactWriter" type="string">
             <annotation>
                <documentation>
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.ArtifactWriter"/>
+                  <meta.attribute kind="java" basedOn="de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactWriter:"/>
                </appinfo>
             </annotation>
          </attribute>

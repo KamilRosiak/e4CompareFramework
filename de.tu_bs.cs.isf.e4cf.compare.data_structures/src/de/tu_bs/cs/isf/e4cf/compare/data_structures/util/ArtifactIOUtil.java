@@ -9,6 +9,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.ArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.ArtifactWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.python.PythonFileReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.string_table.DataStructureST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
