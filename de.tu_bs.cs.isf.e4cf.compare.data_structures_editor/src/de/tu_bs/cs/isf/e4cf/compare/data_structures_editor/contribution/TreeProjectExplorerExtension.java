@@ -1,11 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.contribution;
 
 import java.util.List;
+
 import org.eclipse.swt.graphics.Image;
+
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.handler.OpenInTreeViewHandler;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
-import de.tu_bs.cs.isf.e4cf.core.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.services.RCPImageService;

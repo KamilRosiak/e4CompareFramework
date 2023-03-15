@@ -8,10 +8,10 @@ import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.stringtable.DSEditorST;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
-import de.tu_bs.cs.isf.e4cf.core.io.reader.ReaderManager;
-import de.tu_bs.cs.isf.e4cf.core.io.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 /**

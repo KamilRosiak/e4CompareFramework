@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.tu_bs.cs.isf.e4cf.core.io.unittest.TestHelper;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.unittest.TestHelper;
 
 /**
  * Automatically Run JavaReader and Writer on setup suites in

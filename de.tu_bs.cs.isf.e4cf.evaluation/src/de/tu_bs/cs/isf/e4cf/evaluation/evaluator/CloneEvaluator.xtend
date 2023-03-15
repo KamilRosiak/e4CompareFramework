@@ -10,7 +10,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.StringValueImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
-
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement
@@ -29,8 +30,6 @@ import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
-import de.tu_bs.cs.isf.e4cf.core.io.reader.ReaderManager
-import de.tu_bs.cs.isf.e4cf.core.io.gson.GsonExportService
 
 @Singleton
 @Creatable

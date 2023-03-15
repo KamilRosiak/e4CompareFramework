@@ -15,11 +15,16 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.e4.core.di.annotations,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.core.compare,
- org.apache.commons.io;bundle-version="2.6.0"
+ org.apache.commons.io;bundle-version="2.6.0",
+ com.google.gson
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.enums,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.impl,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.util
 Bundle-ClassPath: .,
  lib/javaparser-core-3.18.0.jar,
- lib/gson-2.8.6.jar
+ lib/gson-2.8.6.jar,
+ lib/jep.jar
+Import-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces

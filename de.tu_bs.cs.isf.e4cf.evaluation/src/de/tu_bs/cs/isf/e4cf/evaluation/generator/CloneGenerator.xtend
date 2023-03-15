@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.evaluation.generator
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.GeneratorOptions
 import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST
@@ -13,10 +14,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
-import static de.tu_bs.cs.isf.e4cf.core.io.util.DSValidator.checkSyntax
-
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
-import de.tu_bs.cs.isf.e4cf.core.io.gson.GsonExportService
+import static de.tu_bs.cs.isf.e4cf.compare.data_structures.util.DSValidator.checkSyntax
 
 @Singleton
 @Creatable
