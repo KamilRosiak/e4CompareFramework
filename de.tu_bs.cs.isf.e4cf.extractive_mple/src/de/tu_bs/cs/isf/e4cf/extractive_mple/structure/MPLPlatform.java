@@ -227,8 +227,4 @@ public class MPLPlatform implements Serializable {
 	public Tree getModel() {
 		return this.modelTree;
 	}
-	
-	public Node getModelRoot() {
-		return this.modelTree.getRoot();
-	}
 }
