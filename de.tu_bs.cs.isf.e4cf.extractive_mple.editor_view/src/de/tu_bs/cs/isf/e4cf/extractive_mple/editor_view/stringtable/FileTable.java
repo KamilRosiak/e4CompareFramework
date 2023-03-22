@@ -1,7 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable;
 
-import javafx.scene.image.Image;
-
 public class FileTable {
 	public static final String nodeImage = "icons/file16.png";
 	public static final String rootImage = "icons/rootsmall.png";

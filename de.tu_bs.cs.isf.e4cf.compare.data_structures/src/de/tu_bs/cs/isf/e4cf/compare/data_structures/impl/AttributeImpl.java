@@ -18,6 +18,7 @@ public class AttributeImpl extends AbstractAttribute {
 	 * Create an Attribute with only a key and no value
 	 */
 	public AttributeImpl(String attrKey) {
+		super();
 		setAttributeKey(attrKey);
 	}
 	
@@ -40,7 +41,7 @@ public class AttributeImpl extends AbstractAttribute {
 	public Attribute cloneAttribute() {
 		Attribute attribute = new AttributeImpl(this.getAttributeKey());
 		
-		for(Value value : this.getAttributeValues()) {
+		for(Value<?> value : this.getAttributeValues()) {
 			attribute.addAttributeValue(new StringValueImpl((String)value.getValue()));
 		}
 		

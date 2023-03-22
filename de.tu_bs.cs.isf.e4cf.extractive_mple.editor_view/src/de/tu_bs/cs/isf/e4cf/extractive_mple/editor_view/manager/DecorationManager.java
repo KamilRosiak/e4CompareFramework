@@ -11,21 +11,21 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.interfaces.NodeDecorator;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable.IdTable;
 
 @Creatable
 @Singleton
 public class DecorationManager {
-	private NodeDecorator currentDecorater;
-	private static final String DECORATER_EXTENSION_POINT = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeDecorator";
-	private static final String DECORATER_ATTR = "node_decorator";
+	private NodeDecorator currentDecorator;
 
 	/**
 	 * This method returns all registered tree decorate
 	 * 
 	 * @return
 	 */
-	public List<NodeDecorator> getDecoraterFromExtension() {
-		return RCPContentProvider.<NodeDecorator>getInstanceFromBundle(DECORATER_EXTENSION_POINT, DECORATER_ATTR);
+	public List<NodeDecorator> getDecoratorFromExtension() {
+		return RCPContentProvider.<NodeDecorator>getInstanceFromBundle(IdTable.DECORATOR_EXTENSION_POINT_ID,
+				IdTable.DECORATER_EXTENSION_POINT_ATTR);
 	}
 
 	/**
@@ -33,26 +33,26 @@ public class DecorationManager {
 	 * family model decorator.
 	 */
 	public List<NodeDecorator> getDecoratorForTree(Tree tree) {
-		List<NodeDecorator> decorator = new ArrayList<NodeDecorator>();
-		
-		for (NodeDecorator decorater : getDecoraterFromExtension()) {
-			if (decorater.isSupportedTree(tree)) {
-				decorator.add(decorater);
+		List<NodeDecorator> decorators = new ArrayList<NodeDecorator>();
+
+		for (NodeDecorator decorator : getDecoratorFromExtension()) {
+			if (decorator.isSupportedTree(tree)) {
+				decorators.add(decorator);
 			}
 		}
-		
-		if (decorator.isEmpty()) {
-			decorator.add(new FamilyModelNodeDecorator());
+
+		if (decorators.isEmpty()) {
+			decorators.add(new FamilyModelNodeDecorator());
 		}
 
-		return decorator;
+		return decorators;
 	}
 
 	public NodeDecorator getCurrentDecorater() {
-		return currentDecorater;
+		return currentDecorator;
 	}
 
 	public void setCurrentDecorater(NodeDecorator currentDecorater) {
-		this.currentDecorater = currentDecorater;
+		this.currentDecorator = currentDecorater;
 	}
 }

@@ -47,7 +47,6 @@ public class RCPContentProvider {
 				objects.add((T) config.createExecutableExtension(extensionID));
 			} catch (CoreException e) {
 				e.printStackTrace();
-				return new ArrayList<>();
 			}
 		}
 		return objects;

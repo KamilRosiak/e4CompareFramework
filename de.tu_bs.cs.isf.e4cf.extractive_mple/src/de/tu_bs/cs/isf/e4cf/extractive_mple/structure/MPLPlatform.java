@@ -39,6 +39,7 @@ public class MPLPlatform implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 7052592590274822282L;
+	private Tree modelTree;
 	public String name;
 	public List<Configuration> configurations = new ArrayList<Configuration>();
 	public Node model;
@@ -216,5 +217,18 @@ public class MPLPlatform implements Serializable {
 		for (Entry<UUID, Integer> entry : cloneClasses.entrySet()) {
 			totalNumber = totalNumber + entry.getValue();
 		}
+	}
+	
+	public void setModel(Tree model) {
+		this.modelTree = model;
+		this.model = model.getRoot();
+	}
+	
+	public Tree getModel() {
+		return this.modelTree;
+	}
+	
+	public Node getModelRoot() {
+		return this.modelTree.getRoot();
 	}
 }
