@@ -64,6 +64,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.parser.antlr"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.parts.consol_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.parts.project_explorer"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.refactoring"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.refactoring.data_structures"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.replay_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.simple_text_editor"/>
