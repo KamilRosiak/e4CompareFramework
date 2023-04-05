@@ -14,8 +14,8 @@
             <TableView id="annotationTable" fx:id="annotationTable" editable="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columns>
                 <TableColumn fx:id="nameColumn" maxWidth="200.0" minWidth="100.0" prefWidth="200.0" sortable="false" text="Cluster" />
-                  <TableColumn fx:id="mandatoryColumn" maxWidth="80.0" minWidth="30.0" prefWidth="50.0" sortable="false" text="Mandatory" />
-                  <TableColumn fx:id="childSelectionColumn" maxWidth="100.0" minWidth="50.0" prefWidth="50.0" sortable="false" text="Child Selection" />
+                  <TableColumn fx:id="mandatoryColumn" maxWidth="120.0" minWidth="60.0" prefWidth="100.0" sortable="false" text="Mandatory" />
+                  <TableColumn fx:id="childSelectionColumn" maxWidth="120.0" minWidth="100.0" prefWidth="100.0" sortable="false" text="Child Selection" />
                   <TableColumn fx:id="childColumn" maxWidth="1000.0" minWidth="100.0" prefWidth="238.4000244140625" sortable="false" text="Children" />
               </columns>
                <columnResizePolicy>
@@ -24,7 +24,7 @@
                <contextMenu>
                   <ContextMenu fx:id="annotationTableContextMenu">
                     <items>
-                      <MenuItem fx:id="setRootMenuItem" mnemonicParsing="false" text="Set Root" />
+                      <MenuItem fx:id="setRootMenuItem" mnemonicParsing="false" text="Set Root" onAction="#fxSetRoot" />
                     </items>
                   </ContextMenu>
                </contextMenu>

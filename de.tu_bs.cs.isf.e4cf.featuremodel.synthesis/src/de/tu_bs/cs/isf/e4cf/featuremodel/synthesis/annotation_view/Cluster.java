@@ -66,6 +66,10 @@ public class Cluster {
 	public void setMandatory(boolean isMandatory) {
 		this.isMandatory = isMandatory;
 	}
+	
+	public boolean isAbstract() {
+		return this.syntaxGroup.getUuids().size() == 0;
+	}
 
 	/**
 	 * @return the childSelection
@@ -97,6 +101,10 @@ public class Cluster {
 		return this.children.remove(child);
 	}
 	
+	void setChildren(List<Cluster> children) {
+		this.children = children;
+	}
+	
 	public boolean isParentOf(Cluster cluster) {
 		return this.children.contains(cluster);
 	}
@@ -107,7 +115,7 @@ public class Cluster {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(childSelection, children, isMandatory, isRoot, syntaxGroup);
+		return Objects.hash(childSelection, children, isMandatory, isRoot, name, syntaxGroup);
 	}
 
 	@Override
@@ -118,14 +126,14 @@ public class Cluster {
 			return false;
 		Cluster other = (Cluster) obj;
 		return childSelection == other.childSelection && Objects.equals(children, other.children)
-				&& isMandatory == other.isMandatory && isRoot == other.isRoot
+				&& isMandatory == other.isMandatory && isRoot == other.isRoot && Objects.equals(name, other.name)
 				&& Objects.equals(syntaxGroup, other.syntaxGroup);
 	}
 
 	@Override
 	public String toString() {
-		return "Cluster [syntaxGroup=" + syntaxGroup + ", isRoot=" + isRoot + ", isMandatory=" + isMandatory
-				+ ", childSelection=" + childSelection + ", children=" + children + "]";
+		return "Cluster [name=" + name + ", syntaxGroup=" + syntaxGroup.getNormalizedName() + ", isRoot=" + isRoot + ", isMandatory="
+				+ isMandatory + ", childSelection=" + childSelection + ", children=" + children + "]";
 	}
 	
 	

@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -13,43 +14,36 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.CheckBoxTableCellBuilder;
-import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
 
 public class AnnotationViewController implements Initializable {
 	@Inject
 	private ServiceContainer services;
 
 	@FXML
-	private TableView<Cluster> annotationTable;
+	private TableView<ClusterViewModel> annotationTable;
 	@FXML
-	private TableColumn<Cluster, String> nameColumn;
+	private TableColumn<ClusterViewModel, String> nameColumn;
 	@FXML
-	private TableColumn<Cluster, Boolean> mandatoryColumn;
+	private TableColumn<ClusterViewModel, Boolean> mandatoryColumn;
 	@FXML
-	private TableColumn<Cluster, ChildSelectionModel> childSelectionColumn;
+	private TableColumn<ClusterViewModel, ChildSelectionModel> childSelectionColumn;
 	@FXML
-	private TableColumn<Cluster, String> childColumn;
-
-	private ObservableList<Cluster> clusters = new SimpleListProperty<>();
+	private TableColumn<ClusterViewModel, String> childColumn;
+	
+	private ObservableList<ClusterViewModel> clusters = new SimpleListProperty<>();
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -59,18 +53,69 @@ public class AnnotationViewController implements Initializable {
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
 		mandatoryColumn.setCellFactory(CheckBoxTableCell.forTableColumn(mandatoryColumn));
-		mandatoryColumn.setCellValueFactory(new PropertyValueFactory<>("isMandatory"));
+		mandatoryColumn.setCellValueFactory(new PropertyValueFactory<>("mandatory"));
 
 		childSelectionColumn.setCellFactory(ComboBoxTableCell.forTableColumn(ChildSelectionModel.DEFAULT,
 				ChildSelectionModel.ALTERNATIVE, ChildSelectionModel.OR));
-		childSelectionColumn.setCellValueFactory(new PropertyValueFactory<>("childSelection"));
+		childSelectionColumn.setCellValueFactory(new PropertyValueFactory<>("childSelectionModel"));
 		
 		childColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-		childColumn.setCellValueFactory(e -> {
-			String children = e.getValue().getChildren().stream()
-					.map(Cluster::getName)
-					.reduce("", (x, y) -> String.format("%s %s", x, y));
-			return new SimpleStringProperty(children);
+		childColumn.setCellValueFactory(new PropertyValueFactory<>("childrenDisplay"));
+		
+		annotationTable.setRowFactory(table -> {
+			return new TableRow<ClusterViewModel>() {
+				@Override
+				public void updateItem(ClusterViewModel model, boolean empty) {
+					super.updateItem(model, empty);
+					if (empty || model == null) {
+						setText(null);
+						setGraphic(null);
+					} else {
+						if (model.isRoot()) {
+							setStyle("-fx-background-color:lightsteelblue;");
+						}
+					}
+				}		
+			};
+		});
+		
+		
+		// update childrenDisplayProperties of parent clusters on name change
+		nameColumn.setOnEditCommit(e -> {
+			Cluster updatedCluster = e.getRowValue().getCluster();
+			for (ClusterViewModel model : this.annotationTable.getItems()) {
+				if (model.getCluster().isParentOf(updatedCluster)) {
+					String wholeWordOldName = String.format("\\b%s\\b", e.getOldValue());
+					String oldDisplay = model.childrenDisplayProperty().getValue();
+					String newDisplay = oldDisplay.replaceAll(wholeWordOldName, e.getNewValue());
+					model.childrenDisplayProperty().set(newDisplay);
+				}
+			}
+			e.getRowValue().nameProperty().set(e.getNewValue());
+			this.annotationTable.refresh();
+			//printDebug();
+			e.consume();
+		});
+		
+		
+		// add and remove children to cluster on children list edit
+		childColumn.setOnEditCommit(e -> {
+			String[] tokens = e.getNewValue().split("\\s+");
+			List<Cluster> newChildren = new ArrayList<>();
+			
+			for (String t : tokens) {
+				for (ClusterViewModel model : this.annotationTable.getItems()) {
+					if (model.getCluster().getName().equals(t)) {
+						newChildren.add(model.getCluster());
+						break;
+					}
+				}
+			}
+			
+			e.getRowValue().setChildren(newChildren);
+			this.annotationTable.refresh();
+			//printDebug();
+			e.consume();
 		});
 
 	}
@@ -78,10 +123,34 @@ public class AnnotationViewController implements Initializable {
 	@Optional
 	@Inject
 	public void setClusters(@UIEventTopic(EventTable.PUBLISH_SYNTAX_GROUPS) List<SyntaxGroup> groups) {
-		List<Cluster> clusters = groups.stream().map(Cluster::new).collect(Collectors.toList());
+		// convert syntaxGroups to viewModels
+		List<ClusterViewModel> viewModels = groups.stream()
+				.map(Cluster::new)
+				.map(ClusterViewModel::new)
+				.collect(Collectors.toList());
+		this.clusters = FXCollections.observableList(viewModels);
+		
 		this.annotationTable.getItems().clear();
-		this.annotationTable.setItems(FXCollections.observableList(clusters));
+		this.annotationTable.setItems(this.clusters);
 		this.annotationTable.refresh();
+	}
+	
+	@FXML
+	public void fxSetRoot(ActionEvent e) {
+		e.consume();
+		this.annotationTable.getItems().forEach(c -> c.setRoot(false));
+		ClusterViewModel selectedModel = this.annotationTable.getSelectionModel().getSelectedItem();
+		selectedModel.setRoot(true);
+		annotationTable.refresh();
+	}
+	
+	
+	
+	public void printDebug() {
+		System.out.println("");
+		for (ClusterViewModel c : this.annotationTable.getItems()) {
+			System.out.println(c);
+		}
 	}
 
 }
