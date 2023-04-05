@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.synthesis;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
@@ -7,10 +8,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.Collection;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
-import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import javafx.scene.paint.Color;
 
 public class SyntaxGroup {

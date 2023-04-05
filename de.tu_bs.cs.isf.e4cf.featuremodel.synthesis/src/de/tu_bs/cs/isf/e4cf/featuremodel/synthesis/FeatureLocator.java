@@ -30,7 +30,7 @@ public class FeatureLocator implements IFeatureLocaterExtension {
 		List<Set<UUID>> atomicSets = syntaxGroups.stream()
 				.map(group -> group.getUuids())
 				.collect(Collectors.toList());
-		String workspace = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
+		//String workspace = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
 		//FileStreamUtil.writeTextToFile(workspace + "/atomicSets.txt", atomicSets.toString());
 		services.eventBroker.post("atomic_sets_found", atomicSets);
 

@@ -2,8 +2,10 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -11,6 +13,8 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
@@ -71,9 +75,7 @@ public class AnnotationViewController implements Initializable {
 						setText(null);
 						setGraphic(null);
 					} else {
-						if (model.isRoot()) {
-							setStyle("-fx-background-color:lightsteelblue;");
-						}
+						Styler.style(this, model);
 					}
 				}		
 			};
@@ -82,6 +84,7 @@ public class AnnotationViewController implements Initializable {
 		
 		// update childrenDisplayProperties of parent clusters on name change
 		nameColumn.setOnEditCommit(e -> {
+			e.consume();
 			Cluster updatedCluster = e.getRowValue().getCluster();
 			for (ClusterViewModel model : this.annotationTable.getItems()) {
 				if (model.getCluster().isParentOf(updatedCluster)) {
@@ -94,12 +97,12 @@ public class AnnotationViewController implements Initializable {
 			e.getRowValue().nameProperty().set(e.getNewValue());
 			this.annotationTable.refresh();
 			//printDebug();
-			e.consume();
 		});
 		
 		
 		// add and remove children to cluster on children list edit
 		childColumn.setOnEditCommit(e -> {
+			e.consume();
 			String[] tokens = e.getNewValue().split("\\s+");
 			List<Cluster> newChildren = new ArrayList<>();
 			
@@ -115,7 +118,6 @@ public class AnnotationViewController implements Initializable {
 			e.getRowValue().setChildren(newChildren);
 			this.annotationTable.refresh();
 			//printDebug();
-			e.consume();
 		});
 
 	}
@@ -144,6 +146,30 @@ public class AnnotationViewController implements Initializable {
 		annotationTable.refresh();
 	}
 	
+	@FXML
+	public void fxAddAbstractCluster(ActionEvent e) {
+		e.consume();
+		
+		final String namePrefix = "Abstract";
+		
+		// find highest existing ordinal of an abstract cluster
+		int maxOrdinal = this.annotationTable.getItems().stream()
+			.map(ClusterViewModel::getName)
+			.filter(name -> name.matches(String.format("%s\\d", namePrefix)))
+			.map(name -> name.substring(namePrefix.length()))
+			.mapToInt(Integer::valueOf)
+			.max()
+			.orElse(0);
+		int ordinal = maxOrdinal + 1;
+		
+		Set<Configuration> configs = new HashSet<>();
+		configs.add(new ConfigurationImpl(namePrefix + ordinal));
+		Cluster abstractCluster = new Cluster(new SyntaxGroup(configs));
+		ClusterViewModel model = new ClusterViewModel(abstractCluster);
+		
+		this.annotationTable.getItems().add(model);
+		this.annotationTable.refresh();
+	}	
 	
 	
 	public void printDebug() {

@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.AnnotationViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.AnnotationViewController" stylesheets="res/style.css">
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -25,6 +25,7 @@
                   <ContextMenu fx:id="annotationTableContextMenu">
                     <items>
                       <MenuItem fx:id="setRootMenuItem" mnemonicParsing="false" text="Set Root" onAction="#fxSetRoot" />
+                      <MenuItem fx:id="addAbstractClusterItem" mnemonicParsing="false" text="Add abstract Cluster" onAction="#fxAddAbstractCluster" />
                     </items>
                   </ContextMenu>
                </contextMenu>
