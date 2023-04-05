@@ -25,13 +25,13 @@ public class FXFeatureLowerConnector extends Arc {
 			radius = fxFeature.getWidth()/2;
 			
 			switch (fxFeature.getFeature().getGroupVariability()) {
-			case AND:
+			case DEFAULT:
 				// TODO define AND style
 				break;
 			case OR:
 				drawOr();
 				break;
-			case XOR:
+			case ALTERNATIVE:
 				drawAlternative();
 				break;			
 			}	

@@ -8,8 +8,8 @@ import java.util.UUID;
 public class Feature implements IFeature {
 	private String name;
 	private final UUID uuid = UUID.randomUUID();;
-	private Variability variability = Variability.MANDATORY;
-	private GroupVariability groupVariability = GroupVariability.OR;
+	private Variability variability = Variability.OPTIONAL;
+	private GroupVariability groupVariability = GroupVariability.DEFAULT;
 	private final List<IFeature> children = new ArrayList<>();
 	
 	public Feature(String name) {

@@ -71,13 +71,13 @@ public class FXGraphicalFeature extends VBox  {
 	
 	public void setGroupVariability(GroupVariability groupVariability) {
 		switch (groupVariability) {
-		case AND:
+		case DEFAULT:
 			this.setGroupVariability_AND();
 			break;
 		case OR:
 			this.setGroupVariability_OR();
 			break;
-		case XOR:
+		case ALTERNATIVE:
 			this.setGroupVariability_ALTERNATIVE();
 			break;		
 		}
