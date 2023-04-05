@@ -77,6 +77,7 @@ public class AnnotationViewController implements Initializable {
 		this.clusters.forEach(c -> c.setRoot(false));
 		ClusterViewModel selectedModel = this.annotationTable.getSelectionModel().getSelectedItem();
 		selectedModel.setRoot(true);
+		selectedModel.setMandatory(true);
 		annotationTable.refresh();
 	}
 
