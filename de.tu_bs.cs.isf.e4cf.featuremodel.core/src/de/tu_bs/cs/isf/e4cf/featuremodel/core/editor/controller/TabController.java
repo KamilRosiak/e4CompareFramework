@@ -11,7 +11,6 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.widgets.Composite;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorTab;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.TabView;
@@ -22,7 +21,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.EventBroker;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.control.Tab;
 
 public class TabController {
 	private ServiceContainer services;

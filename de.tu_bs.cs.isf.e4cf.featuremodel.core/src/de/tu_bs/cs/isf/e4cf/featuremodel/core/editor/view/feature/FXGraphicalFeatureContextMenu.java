@@ -5,6 +5,9 @@ import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.DefaultFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import featureConfiguration.FeatureConfiguration;
@@ -160,13 +163,9 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 
 	private MenuItem addFeatureBelowMenuItem() {
 		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_ADD_FEATURE_BELOW);
-		item.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-            	Pair<String, FXGraphicalFeature> pair = new Pair<String, FXGraphicalFeature>(FDStringTable.FEATURE, fxGraFeature);
-            	services.eventBroker.send(FDEventTable.ADD_FEATURE_BELOW, pair);	
-            	event.consume();
-            }
+		item.setOnAction(e -> {
+				e.consume();
+				fxGraFeature.addChildFeature(new FXGraphicalFeature());
         });
 
 		return item;

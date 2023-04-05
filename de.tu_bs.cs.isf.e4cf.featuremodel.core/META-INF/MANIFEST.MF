@@ -8,6 +8,7 @@ Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.core;
    org.eclipse.ui.plugin",
  de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.error,
+ de.tu_bs.cs.isf.e4cf.featuremodel.core.model,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper,
@@ -29,8 +30,7 @@ Require-Bundle: javax.inject,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.featuremodel.model,
  de.tu_bs.cs.isf.e4cf.EMFModelLoader,
- de.tu_bs.cs.isf.e4cf.parts.project_explorer,
- de.tu_bs.cs.isf.e4cf.featuremodel.synthesis
+ de.tu_bs.cs.isf.e4cf.parts.project_explorer
 Bundle-ManifestVersion: 2
 Bundle-Activator: de.tu_bs.cs.isf.e4cf.featuremodel.core.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

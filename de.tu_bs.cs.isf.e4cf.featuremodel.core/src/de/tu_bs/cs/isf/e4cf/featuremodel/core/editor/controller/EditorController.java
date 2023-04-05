@@ -8,10 +8,6 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeSerializer;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
@@ -21,6 +17,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.scene.Node;
@@ -36,6 +33,7 @@ public class EditorController {
 		this.view = new FMEditorView(editorPane, uiConsumer);
 		
 		this.diagram = new FeatureDiagram(FDStringTable.FD_DEFAULT_NAME, new Feature("Root"));
+		this.diagram.getRoot().setVariability(Variability.MANDATORY);
 		this.view.displayFeatureDiagram(this.diagram);
 	}
 	

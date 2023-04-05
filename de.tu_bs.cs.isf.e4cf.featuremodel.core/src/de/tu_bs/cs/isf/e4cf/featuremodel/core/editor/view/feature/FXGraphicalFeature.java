@@ -3,15 +3,6 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.widgets.Display;
-
-import FeatureDiagram.ArtifactReference;
-import FeatureDiagram.ComponentFeature;
-import FeatureDiagram.ConfigurationFeature;
-
-import FeatureDiagram.FeatureDiagramm;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.DefaultFeature;
@@ -20,36 +11,30 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
-import featureConfiguration.FeatureConfiguration;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
+import javafx.scene.shape.Line;
 
 
-public class FXGraphicalFeature extends VBox  {
+public class FXGraphicalFeature extends VBox implements Observable  {
 	public FXFeatureNameLabel featureNameLabel;
 	public FXFeatureLowerConnector lowerConnector;
 	public FXFeatureUpperConnector upperConnector;
-	public DoubleProperty xPos, yPos;
+	public List<Line> childConnections = new ArrayList<>();
+	public DoubleProperty xPos = new SimpleDoubleProperty(), yPos = new SimpleDoubleProperty();
 	
 	private IFeature feature = new DefaultFeature();
 	private FXGraphicalFeature parentFxFeature;
-	private List<FXGraphicalFeature> childFeatures = new ArrayList<>();;
+	private List<FXGraphicalFeature> childFeatures = new ArrayList<>();
+	private List<InvalidationListener> listeners = new ArrayList<>();
 	
 	// TODO remove
 	private ServiceContainer services;
@@ -62,6 +47,10 @@ public class FXGraphicalFeature extends VBox  {
 	
 	public FXGraphicalFeature(String name) {
 		this(new Feature(name));
+	}
+	
+	public FXGraphicalFeature() {
+		this(new DefaultFeature());
 	}
 	
 	public void setVariability(Variability variability) {
@@ -154,52 +143,15 @@ public class FXGraphicalFeature extends VBox  {
 	  */
 	 private void createContextMenu() {
 		 FXGraphicalFeatureContextMenu fmeContextMenu = new FXGraphicalFeatureContextMenu(services, this);
-		 VBox box = this;
+		 VBox currentGraFeature = this;
 		 setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
 	            @Override
 	            public void handle(ContextMenuEvent event) {
 	            	if(event.getSource() instanceof FXGraphicalFeature) {
-	            		//view.setMousePosition(event.getSceneX(), event.getSceneY());
-	            		//modifyMenuItemAbstractConcrete(fmeContextMenu, (FXGraphicalFeature)event.getSource());
-	            		//modifyMenuItemFeatureVisibility(fmeContextMenu, (FXGraphicalFeature)event.getSource());
-		            	fmeContextMenu.show(box, event.getScreenX(), event.getScreenY()); 
-		            	event.consume();
+	            		event.consume();
+		            	fmeContextMenu.show(currentGraFeature, event.getScreenX(), event.getScreenY()); 
 	            	}
 	            }
-	            
-	            // Change the menu entry to either change a feature to concrete or abstract
-//				private void modifyMenuItemAbstractConcrete(FXGraphicalFeatureContextMenu fmeContextMenu, FXGraphicalFeature fxfeature) {
-//	           		if (!fxfeature.getFeature().isAbstract()) {
-//	           			for (MenuItem m : fmeContextMenu.getItems()) {
-//	           				if (m.getText() ==	FDStringTable.FX_FEATURE_CM_MAKE_CONCRETE) {
-//	           					m.setText(FDStringTable.FX_FEATURE_CM_MAKE_ABSTRACT);
-//	           				}
-//	           			}
-//	           		} else {
-//	           			for (MenuItem m : fmeContextMenu.getItems()) {
-//	           				if (m.getText() == FDStringTable.FX_FEATURE_CM_MAKE_ABSTRACT) {
-//	           					m.setText(FDStringTable.FX_FEATURE_CM_MAKE_CONCRETE);
-//	           				}
-//	           			}
-//	           		}
-//				}
-//				
-//				// Change the menu entry to either change a feature to hidden or visible
-//				private void modifyMenuItemFeatureVisibility(FXGraphicalFeatureContextMenu fmeContextMenu, FXGraphicalFeature fxfeature) {
-//	           		if (!fxfeature.getFeature().isHidden()) {
-//	           			for (MenuItem m : fmeContextMenu.getItems()) {
-//	           				if (m.getText() == FDStringTable.FX_FEATURE_CM_MAKE_SUBFEATURES_VISIBLE) {
-//	           					m.setText(FDStringTable.FX_FEATURE_CM_CHANGE_SUBFEATURES_VISIBILITY);
-//	           				}
-//	           			}
-//	           		} else {
-//	           			for (MenuItem m : fmeContextMenu.getItems()) {
-//	           				if (m.getText() == FDStringTable.FX_FEATURE_CM_CHANGE_SUBFEATURES_VISIBILITY) {
-//	           					m.setText(FDStringTable.FX_FEATURE_CM_MAKE_SUBFEATURES_VISIBLE);
-//	           				}
-//	           			}
-//	           		}
-//				}
 	        });
 	 }
 	
@@ -221,6 +173,20 @@ public class FXGraphicalFeature extends VBox  {
 				"	-fx-border-width: 1px;";
 		featureNameLabel.setStyle(css);
 	}
+
+	@Override
+	public void addListener(InvalidationListener listener) {
+		this.listeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(InvalidationListener listener) {
+		this.listeners.remove(listener);		
+	}
+	
+	private void invalidate() {
+		this.listeners.forEach(l -> l.invalidated(this));
+	}
 	
 	public IFeature getFeature() {
 		return feature;
@@ -230,16 +196,18 @@ public class FXGraphicalFeature extends VBox  {
 		return view;
 	}
 
-	public void setFeature(Feature feature) {
+	public void setFeature(IFeature feature) {
 		this.feature = feature;
 	}
-
+	
 	public List<FXGraphicalFeature> getChildFeatures() {
 		return childFeatures;
 	}
 	
 	public void addChildFeature(FXGraphicalFeature fxFeature) {
-		childFeatures.add(fxFeature);	
+		childFeatures.add(fxFeature);
+		feature.getChildren().add(fxFeature.getFeature());
+		invalidate();		
 	}
 	
 	public void addChildFeatureFormated(FXGraphicalFeature fxFeature) {
@@ -351,7 +319,7 @@ public class FXGraphicalFeature extends VBox  {
 	
 	@Override
 	public String toString() {
-		return this.feature.getName()+"\tID: "+ this.feature.getUuid();
-		
+		return this.feature.getName()+"\tID: "+ this.feature.getUuid();	
 	}
+	
 }

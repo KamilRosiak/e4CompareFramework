@@ -134,7 +134,7 @@ public class FMEditorPaneView extends BorderPane {
 	private void createSelectionRectangle(Pane parent) {
 		this.selectionRectangle = new Rectangle(20, 20, Color.TRANSPARENT);
 		parent.getChildren().add(this.selectionRectangle);
-		this.selectionRectangle.setDisable(true);
+		this.selectionRectangle.setDisable(false);
 		this.selectionRectangle.getStrokeDashArray().addAll(10d, 5d, 10d);
 	}
 	
@@ -171,6 +171,7 @@ public class FMEditorPaneView extends BorderPane {
 		this.clear();
 		this.rootFeature = feature;
 		this.rootPane.getChildren().add(feature);
+		addChangeListener(feature);
 	}
 	
 	/**
@@ -183,11 +184,20 @@ public class FMEditorPaneView extends BorderPane {
 		this.featureList.clear();
 	}
 	
+	private void addChangeListener(FXGraphicalFeature feature) {
+		feature.addListener(o -> {
+			feature.getChildFeatures().forEach(child -> remove(child));
+			insertChildren(feature);
+		});
+	}
+	
 	public void insertFeatureBelow(FXGraphicalFeature parent, FXGraphicalFeature child) {
 		// insert child
 		this.rootPane.getChildren().add(child);
+		addChangeListener(child);
 		connectFeatures(parent, child);
-		//TODO set x,y positions of features depending on size 		
+		//TODO set x,y positions of features depending on size
+		
 		insertChildren(child);
 	}
 	
@@ -234,8 +244,14 @@ public class FMEditorPaneView extends BorderPane {
 			line.endXProperty().unbind();
 			line.endXProperty().bind(child.translateXProperty().add(child.widthProperty().doubleValue() / 2));
 		});
-
+		parent.childConnections.add(line);
 		this.rootPane.getChildren().add(line);
+	}
+	
+	public void remove(FXGraphicalFeature feature) {
+		this.rootPane.getChildren().remove(feature);
+		this.rootPane.getChildren().removeAll(feature.childConnections);
+		feature.getChildFeatures().forEach(child -> remove(child));
 	}
 	
 	

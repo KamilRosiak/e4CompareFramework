@@ -16,6 +16,11 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import javafx.beans.property.SimpleListProperty;
@@ -89,9 +94,8 @@ public class AnnotationViewController implements Initializable {
 	@FXML
 	public void fxAddAbstractCluster(ActionEvent e) {
 		e.consume();
-
 		final String namePrefix = "Abstract";
-
+		
 		// find highest existing ordinal of an abstract cluster
 		int maxOrdinal = this.clusters.stream().filter(model -> model.getCluster().isAbstract())
 				.map(ClusterViewModel::getName).filter(name -> name.matches(String.format("%s\\d+", namePrefix)))
@@ -106,6 +110,60 @@ public class AnnotationViewController implements Initializable {
 		this.clusters.add(model);
 		this.annotationTable.refresh();
 	}
+	
+	
+	/**
+	 * Parses the annotations and builds the corresponding feature model
+	 * @param e ActionEvent from the menu item
+	 */
+	@FXML
+	public void synthesizeFeatureModel(ActionEvent e) throws InvalidAnnotationException {
+		e.consume();
+		// find root
+		ClusterViewModel rootModel = this.clusters.stream().filter(ClusterViewModel::isRoot).findFirst().orElse(null);
+		if (rootModel != null) {
+			Feature rootFeature = toFeature(rootModel.getCluster());
+			FeatureDiagram diagram = new FeatureDiagram("Synthesized Feature Model", rootFeature);
+			// display the finished model in the editor
+			services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, diagram);
+		} else {
+			throw new InvalidAnnotationException("No cluster annotated as root");
+		}
+	}
+	
+	private Feature toFeature(Cluster cluster) {
+		Feature feature = new Feature(cluster.getName());
+		if (cluster.isMandatory()) { 
+			feature.setVariability(Variability.MANDATORY);
+		} // feature is optional by default
+		if (cluster.isAbstract()) {
+			feature.setAbstract(true);
+		}
+		switch (cluster.getChildSelection()) {
+		case ALTERNATIVE:
+			feature.setGroupVariability(GroupVariability.ALTERNATIVE);
+			break;
+		case OR:
+			feature.setGroupVariability(GroupVariability.OR);
+			break;
+		default:
+			// feature groupVariability is DEFAULT by default
+			break;
+		}
+		for (Cluster child : cluster.getChildren()) {
+			Feature childFeature = toFeature(child);
+			feature.addChild(childFeature);
+		}
+		return feature;
+	}
+	
+	public class InvalidAnnotationException extends IllegalArgumentException {
+		private static final long serialVersionUID = 1L;
+
+		public InvalidAnnotationException(String string) {
+			super(string);
+		}
+	};
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {

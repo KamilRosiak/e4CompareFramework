@@ -1,50 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller;
  
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.services.EMenuService;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 
-import FeatureDiagram.ComponentFeature;
-import FeatureDiagram.ConfigurationFeature;
-import FeatureDiagram.Feature;
-import FeatureDiagram.FeatureDiagramm;
-import FeatureDiagramModificationSet.FeatureModelModificationSet;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.stringtable.CompareST;
-import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
-import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorControllerData;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorView;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener.FeatureModelViewError;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.TreeParser;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESetConfigurationDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleTextInputDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
-import featureConfiguration.FeatureConfiguration;
-import javafx.embed.swt.FXCanvas;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.stage.Screen;
-import javafx.util.Pair;
 
 /**
  * This class represents the controller of a MVC implementation. It handles events from FDEventTable.

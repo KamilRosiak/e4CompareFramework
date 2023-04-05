@@ -1,58 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-import org.eclipse.e4.ui.di.UIEventTopic;
-
-import FeatureDiagram.ArtifactReference;
-import FeatureDiagram.ComponentFeature;
-import FeatureDiagram.ConfigurationFeature;
-
-import FeatureDiagram.FeatureDiagramm;
-import FeatureDiagramModificationSet.FeatureModelModificationSet;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
-import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
-import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
-import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneController;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneController;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneView;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramSerialiazer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureInitializer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLogger;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLoggerConsts;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLoggerFactory;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.replayer.ModificationSetReplayer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleDecsionDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleNoticeDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureModelEvaluator;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactory;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
-import featureConfiguration.FeatureConfiguration;
-
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.util.Pair;
 
 /**
  * This class represents the view of the MVC implementation it represents the
@@ -84,7 +39,7 @@ public class FMEditorView {
 		FXGraphicalFeature fxRoot = new FXGraphicalFeature(feature);
 		for (IFeature child : feature.getChildren()) {
 			FXGraphicalFeature fxChild = buildFXGrapicalDiagram(child);
-			fxRoot.addChildFeature(fxChild);
+			fxRoot.getChildFeatures().add(fxChild);
 		}
 		return fxRoot;
 	}

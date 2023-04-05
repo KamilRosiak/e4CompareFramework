@@ -11,6 +11,7 @@ public class Feature implements IFeature {
 	private Variability variability = Variability.OPTIONAL;
 	private GroupVariability groupVariability = GroupVariability.DEFAULT;
 	private final List<IFeature> children = new ArrayList<>();
+	private boolean isAbstract = false;
 	
 	public Feature(String name) {
 		this.name = name;
@@ -88,6 +89,20 @@ public class Feature implements IFeature {
 	@Override
 	public void removeChild(IFeature child) {
 		this.children.remove(child);
+	}
+
+	/**
+	 * @return the isAbstract
+	 */
+	public boolean isAbstract() {
+		return isAbstract;
+	}
+
+	/**
+	 * @param isAbstract the isAbstract to set
+	 */
+	public void setAbstract(boolean isAbstract) {
+		this.isAbstract = isAbstract;
 	}
 
 	@Override

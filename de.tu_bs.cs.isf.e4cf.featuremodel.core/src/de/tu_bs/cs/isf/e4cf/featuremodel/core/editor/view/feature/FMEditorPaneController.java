@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature;
 
-import FeatureDiagram.Feature;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorToolbar;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneView.FMEditorPaneMouseHandler;
@@ -9,7 +8,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.SelectionAreaHandler;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.paint.Color;
 
 public class FMEditorPaneController {
 	private ServiceContainer services;
