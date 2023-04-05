@@ -35,7 +35,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 public class AnnotationViewController implements Initializable {
 	@Inject
 	private ServiceContainer services;
-
+	
 	@FXML
 	private TableView<ClusterViewModel> annotationTable;
 	@FXML
@@ -46,8 +46,65 @@ public class AnnotationViewController implements Initializable {
 	private TableColumn<ClusterViewModel, ChildSelectionModel> childSelectionColumn;
 	@FXML
 	private TableColumn<ClusterViewModel, String> childColumn;
-	
+
 	private ObservableList<ClusterViewModel> clusters = new SimpleListProperty<>();
+
+	/**
+	 * Displays a list of SyntaxGroups in the annotation view
+	 * 
+	 * @param groups List of {@link SyntaxGroup}
+	 */
+	@Optional
+	@Inject
+	public void displayClusters(@UIEventTopic(EventTable.PUBLISH_SYNTAX_GROUPS) List<SyntaxGroup> groups) {
+		// convert syntaxGroups to viewModels
+		List<ClusterViewModel> viewModels = groups.stream().map(Cluster::new).map(ClusterViewModel::new)
+				.collect(Collectors.toList());
+		this.clusters = FXCollections.observableList(viewModels);
+
+		this.annotationTable.setItems(this.clusters);
+		this.annotationTable.refresh();
+	}
+
+	/**
+	 * ContextMenuItem handler to set the currently selected cluster as root
+	 * 
+	 * @param e ActionEvent from the MenuItem
+	 */
+	@FXML
+	public void fxSetRoot(ActionEvent e) {
+		e.consume();
+		this.clusters.forEach(c -> c.setRoot(false));
+		ClusterViewModel selectedModel = this.annotationTable.getSelectionModel().getSelectedItem();
+		selectedModel.setRoot(true);
+		annotationTable.refresh();
+	}
+
+	/**
+	 * ContextMenuItem handler to add an abstract cluster to the annotation view
+	 * 
+	 * @param e ActionEvent from the MenuItem
+	 */
+	@FXML
+	public void fxAddAbstractCluster(ActionEvent e) {
+		e.consume();
+
+		final String namePrefix = "Abstract";
+
+		// find highest existing ordinal of an abstract cluster
+		int maxOrdinal = this.clusters.stream().filter(model -> model.getCluster().isAbstract())
+				.map(ClusterViewModel::getName).filter(name -> name.matches(String.format("%s\\d+", namePrefix)))
+				.map(name -> name.substring(namePrefix.length())).mapToInt(Integer::valueOf).max().orElse(0);
+		int ordinal = maxOrdinal + 1;
+
+		Set<Configuration> configs = new HashSet<>();
+		configs.add(new ConfigurationImpl(namePrefix + ordinal));
+		Cluster abstractCluster = new Cluster(new SyntaxGroup(configs));
+		ClusterViewModel model = new ClusterViewModel(abstractCluster);
+
+		this.clusters.add(model);
+		this.annotationTable.refresh();
+	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -62,10 +119,11 @@ public class AnnotationViewController implements Initializable {
 		childSelectionColumn.setCellFactory(ComboBoxTableCell.forTableColumn(ChildSelectionModel.DEFAULT,
 				ChildSelectionModel.ALTERNATIVE, ChildSelectionModel.OR));
 		childSelectionColumn.setCellValueFactory(new PropertyValueFactory<>("childSelectionModel"));
-		
+
 		childColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		childColumn.setCellValueFactory(new PropertyValueFactory<>("childrenDisplay"));
-		
+
+		// add special styling for certain clusters
 		annotationTable.setRowFactory(table -> {
 			return new TableRow<ClusterViewModel>() {
 				@Override
@@ -77,16 +135,15 @@ public class AnnotationViewController implements Initializable {
 					} else {
 						Styler.style(this, model);
 					}
-				}		
+				}
 			};
 		});
-		
-		
+
 		// update childrenDisplayProperties of parent clusters on name change
 		nameColumn.setOnEditCommit(e -> {
 			e.consume();
 			Cluster updatedCluster = e.getRowValue().getCluster();
-			for (ClusterViewModel model : this.annotationTable.getItems()) {
+			for (ClusterViewModel model : this.clusters) {
 				if (model.getCluster().isParentOf(updatedCluster)) {
 					String wholeWordOldName = String.format("\\b%s\\b", e.getOldValue());
 					String oldDisplay = model.childrenDisplayProperty().getValue();
@@ -98,84 +155,35 @@ public class AnnotationViewController implements Initializable {
 			this.annotationTable.refresh();
 			//printDebug();
 		});
-		
-		
+
 		// add and remove children to cluster on children list edit
 		childColumn.setOnEditCommit(e -> {
 			e.consume();
 			String[] tokens = e.getNewValue().split("\\s+");
 			List<Cluster> newChildren = new ArrayList<>();
-			
+
 			for (String t : tokens) {
-				for (ClusterViewModel model : this.annotationTable.getItems()) {
+				for (ClusterViewModel model : this.clusters) {
 					if (model.getCluster().getName().equals(t)) {
 						newChildren.add(model.getCluster());
 						break;
 					}
 				}
 			}
-			
+
 			e.getRowValue().setChildren(newChildren);
 			this.annotationTable.refresh();
 			//printDebug();
 		});
-
 	}
 
-	@Optional
-	@Inject
-	public void setClusters(@UIEventTopic(EventTable.PUBLISH_SYNTAX_GROUPS) List<SyntaxGroup> groups) {
-		// convert syntaxGroups to viewModels
-		List<ClusterViewModel> viewModels = groups.stream()
-				.map(Cluster::new)
-				.map(ClusterViewModel::new)
-				.collect(Collectors.toList());
-		this.clusters = FXCollections.observableList(viewModels);
-		
-		this.annotationTable.getItems().clear();
-		this.annotationTable.setItems(this.clusters);
-		this.annotationTable.refresh();
-	}
-	
-	@FXML
-	public void fxSetRoot(ActionEvent e) {
-		e.consume();
-		this.annotationTable.getItems().forEach(c -> c.setRoot(false));
-		ClusterViewModel selectedModel = this.annotationTable.getSelectionModel().getSelectedItem();
-		selectedModel.setRoot(true);
-		annotationTable.refresh();
-	}
-	
-	@FXML
-	public void fxAddAbstractCluster(ActionEvent e) {
-		e.consume();
-		
-		final String namePrefix = "Abstract";
-		
-		// find highest existing ordinal of an abstract cluster
-		int maxOrdinal = this.annotationTable.getItems().stream()
-			.map(ClusterViewModel::getName)
-			.filter(name -> name.matches(String.format("%s\\d", namePrefix)))
-			.map(name -> name.substring(namePrefix.length()))
-			.mapToInt(Integer::valueOf)
-			.max()
-			.orElse(0);
-		int ordinal = maxOrdinal + 1;
-		
-		Set<Configuration> configs = new HashSet<>();
-		configs.add(new ConfigurationImpl(namePrefix + ordinal));
-		Cluster abstractCluster = new Cluster(new SyntaxGroup(configs));
-		ClusterViewModel model = new ClusterViewModel(abstractCluster);
-		
-		this.annotationTable.getItems().add(model);
-		this.annotationTable.refresh();
-	}	
-	
-	
+	/**
+	 * Prints a list of all clusters and their properties in the annotation view
+	 */
 	public void printDebug() {
 		System.out.println("");
-		for (ClusterViewModel c : this.annotationTable.getItems()) {
-			System.out.println(c);
+		for (ClusterViewModel c : this.clusters) {
+			System.out.println(c.toString());
 		}
 	}
 

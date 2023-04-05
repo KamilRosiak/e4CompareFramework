@@ -78,7 +78,7 @@ public class SyntaxGroup {
 		for (Configuration config : configs) {
 			strBuilder.append(String.format("%s ", config.getName()));
 		}
-		return strBuilder.toString();
+		return strBuilder.toString().trim();
 	}
 
 	@Override
