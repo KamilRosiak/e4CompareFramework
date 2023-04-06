@@ -63,7 +63,7 @@ public class FMEditorPaneView extends BorderPane {
 		this.setCenter(gesturePane);
 		
 		this.rootPane = new Pane();
-		this.rootPane.setStyle("-fx-background-color: pink;");
+		this.rootPane.setStyle("-fx-background-color: white;");
 		this.gesturePane.getChildren().add(rootPane);
 		
 		// Mouse handler to zoom in and out of the rootPane

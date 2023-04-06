@@ -57,8 +57,6 @@ public class DragHandler implements EventHandler<MouseEvent> {
 		double newX = node.getLayoutX() + deltaX;
 		double newY = node.getLayoutY() + deltaY;
 		
-		System.out.println(String.format("x: %f, y: %f", event.getX(), event.getY()));
-		
 		node.relocate(newX, newY);
 	}
 	
