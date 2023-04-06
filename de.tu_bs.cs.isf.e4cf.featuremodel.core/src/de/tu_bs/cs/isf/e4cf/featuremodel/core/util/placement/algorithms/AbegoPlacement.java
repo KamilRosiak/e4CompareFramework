@@ -17,6 +17,9 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDConfiguration;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDNodeExtentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDTreeForLayout;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FXConfiguration;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FXNodeExtentProvider;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FXTreeForLayout;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.TreeUtil;
 
 public class AbegoPlacement implements PlacementAlgorithm {
@@ -40,12 +43,12 @@ public class AbegoPlacement implements PlacementAlgorithm {
 	
 	@Override
 	public void format(FXGraphicalFeature root) {
-		int width = 0;
-		for (int i = 0; i < root.getChildFeatures().size(); i++) {
-			FXGraphicalFeature child = root.getChildFeatures().get(i);
-			child.setPosition(root.xPos.doubleValue() + width, root.yPos.doubleValue() + 30);
-			format(child);
-			width += child.getWidth() + 10;
-		}
+		TreeUtil.resetTreePosition(root);
+		TreeForTreeLayout<FXGraphicalFeature> tree = new FXTreeForLayout(root);
+		NodeExtentProvider<FXGraphicalFeature> nodeExtend = new FXNodeExtentProvider();
+		Configuration<FXGraphicalFeature> config = new FXConfiguration(Location.Top);
+		TreeLayout<FXGraphicalFeature> treeLayout = new TreeLayout<>(tree, nodeExtend, config);
+		Map<FXGraphicalFeature, Double> featurePositionMap = treeLayout.getNodeBounds();
+		TreeUtil.setTreePosition(root, featurePositionMap);
 	}
 }

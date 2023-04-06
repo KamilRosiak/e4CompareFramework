@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
@@ -18,7 +17,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneCo
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.scene.Node;
 

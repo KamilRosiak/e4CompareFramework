@@ -63,7 +63,7 @@ public class FMEditorPaneView extends BorderPane {
 		this.setCenter(gesturePane);
 		
 		this.rootPane = new Pane();
-		this.rootPane.setStyle("-fx-background-color: white;");
+		this.rootPane.setStyle("-fx-background-color: pink;");
 		this.gesturePane.getChildren().add(rootPane);
 		
 		// Mouse handler to zoom in and out of the rootPane
@@ -105,15 +105,12 @@ public class FMEditorPaneView extends BorderPane {
 		return this.currentModel;
 	}
 
-	public void formatDiagram() {
-		rootFeature.setLayoutX(0);
-		rootFeature.setLayoutY(0);
-		
+	public void formatDiagram() {		
 		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
 		placement.format(this.rootFeature);
 		
-		double centerX = gesturePane.getWidth() / 2 - rootFeature.getWidth() / 2;
-		double centerY = gesturePane.getHeight() / 4 - rootFeature.getHeight() / 2;
+		double centerX = gesturePane.getWidth() / 2 - rootPane.getWidth() / 2;
+		double centerY = gesturePane.getHeight() / 4 - rootPane.getHeight() / 2;
 		this.rootPane.setLayoutX(centerX);
 		this.rootPane.setLayoutY(centerY);		
 		// Reset the translate offset so that large feature diagrams do not
