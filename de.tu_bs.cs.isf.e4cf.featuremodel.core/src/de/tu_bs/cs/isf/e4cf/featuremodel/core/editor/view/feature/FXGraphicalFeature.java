@@ -11,6 +11,8 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.INodeAnimator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -33,6 +35,8 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 	
 	private IFeature feature = new DefaultFeature();
 	private FXGraphicalFeature parentFxFeature;
+	private INodeAnimator animator;
+	
 	private List<FXGraphicalFeature> childFeatures = new ArrayList<>();
 	private List<InvalidationListener> listeners = new ArrayList<>();
 	
@@ -317,9 +321,26 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 		this.parentFxFeature = parentFxFeature;
 	}
 	
+	public void setPosition(double x, double y) {
+		this.xPos.set(x);
+		this.yPos.set(y);
+	}
+	
 	@Override
 	public String toString() {
 		return this.feature.getName()+"\tID: "+ this.feature.getUuid();	
+	}
+	
+	public void toggleSelected() {
+		if (this.animator != null) {
+			featureNameLabel.getStyleClass().remove("featureIsPartOfSelection");
+			this.animator.stop();
+			this.animator = null;
+		} else {
+			featureNameLabel.getStyleClass().add("featureIsPartOfSelection");
+			this.animator = new DashedBorderAnimation(featureNameLabel, 10, 5, 2);
+			this.animator.start();
+		}
 	}
 	
 }

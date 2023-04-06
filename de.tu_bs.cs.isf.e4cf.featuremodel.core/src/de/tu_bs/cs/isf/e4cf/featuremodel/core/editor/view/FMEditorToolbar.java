@@ -5,7 +5,7 @@ import org.eclipse.e4.core.contexts.EclipseContextFactory;
 
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneView;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.ConstraintEditor;
@@ -18,10 +18,13 @@ import javafx.scene.control.ToolBar;
  */
 public class FMEditorToolbar extends ToolBar  {
 	private ServiceContainer services;
+	private FMEditorPaneController controller;
 	//private FMEditorPaneView view;
 	
-	public FMEditorToolbar(ServiceContainer services) {
+	
+	public FMEditorToolbar(ServiceContainer services, FMEditorPaneController controller) {
 		this.services = services;
+		this.controller = controller;
 		constructUI();
 	}
 
@@ -55,7 +58,7 @@ public class FMEditorToolbar extends ToolBar  {
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_FORMAT_DIAGRAM, e-> {
-			services.eventBroker.send(FDEventTable.FORMAT_DIAGRAM_EVENT,"");
+			this.controller.formatDiagram();
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SHOW_CONFIG, e-> {

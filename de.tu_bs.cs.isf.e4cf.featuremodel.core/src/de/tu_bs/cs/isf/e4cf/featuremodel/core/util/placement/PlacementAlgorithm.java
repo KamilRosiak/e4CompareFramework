@@ -10,4 +10,8 @@ public interface PlacementAlgorithm {
 	void format(FeatureDiagramm diagram, List<FXGraphicalFeature> featureList);
 	void format(FeatureDiagramm root);
 	
+	default void format(FXGraphicalFeature root) {
+		
+	}
+	
 }

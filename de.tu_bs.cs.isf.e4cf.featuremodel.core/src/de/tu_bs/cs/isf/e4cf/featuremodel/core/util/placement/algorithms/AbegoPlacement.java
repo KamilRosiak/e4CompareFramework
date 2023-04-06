@@ -37,5 +37,15 @@ public class AbegoPlacement implements PlacementAlgorithm {
 		Map<Feature, Double> featurePositionMap =  treeLayout.getNodeBounds();
 		TreeUtil.setFeaturePosition(root.getRoot(), featurePositionMap);
 	}
-
+	
+	@Override
+	public void format(FXGraphicalFeature root) {
+		int width = 0;
+		for (int i = 0; i < root.getChildFeatures().size(); i++) {
+			FXGraphicalFeature child = root.getChildFeatures().get(i);
+			child.setPosition(width, root.xPos.doubleValue() + 30);
+			format(child);
+			width += child.getWidth() + 10;
+		}
+	}
 }

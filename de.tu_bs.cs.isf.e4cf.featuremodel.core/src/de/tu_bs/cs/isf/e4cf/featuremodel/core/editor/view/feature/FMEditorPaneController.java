@@ -16,7 +16,7 @@ public class FMEditorPaneController {
 	public FMEditorPaneController(ServiceContainer services) {
 		this.services = services;
 		this.view = new FMEditorPaneView(
-			new FMEditorToolbar(services),
+			new FMEditorToolbar(services, this),
 			new FMEditorPaneMouseHandler() {
 
 				@Override
@@ -31,7 +31,7 @@ public class FMEditorPaneController {
 
 				@Override
 				public EventHandler<MouseEvent> selectionAreaHandler() {
-					return new SelectionAreaHandler(services);
+					return null;
 				}
 
 				@Override
@@ -54,9 +54,10 @@ public class FMEditorPaneController {
 	
 	public void displayFeatureDiagram(FXGraphicalFeature root) {
 		this.view.setRootFeature(root);
-		for (FXGraphicalFeature child : root.getChildFeatures()) {
-			this.view.insertFeatureBelow(root, child);
-		}
+	}
+	
+	public void formatDiagram() {
+		this.view.formatDiagram();
 	}
 
 }
