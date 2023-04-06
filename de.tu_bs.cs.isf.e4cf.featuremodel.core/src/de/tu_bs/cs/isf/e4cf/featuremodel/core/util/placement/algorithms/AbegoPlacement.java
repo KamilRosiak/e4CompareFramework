@@ -43,7 +43,7 @@ public class AbegoPlacement implements PlacementAlgorithm {
 		int width = 0;
 		for (int i = 0; i < root.getChildFeatures().size(); i++) {
 			FXGraphicalFeature child = root.getChildFeatures().get(i);
-			child.setPosition(width, root.xPos.doubleValue() + 30);
+			child.setPosition(root.xPos.doubleValue() + width, root.yPos.doubleValue() + 30);
 			format(child);
 			width += child.getWidth() + 10;
 		}

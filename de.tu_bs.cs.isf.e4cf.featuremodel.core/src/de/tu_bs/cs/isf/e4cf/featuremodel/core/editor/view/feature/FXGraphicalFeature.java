@@ -96,6 +96,9 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 		addDrag();
 		addSelectionListener();
 		createContextMenu();
+		
+		xPos.bind(this.layoutXProperty());
+		yPos.bind(this.layoutYProperty());
 	}
 	
 	 /**
@@ -118,8 +121,9 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 		setOnMouseDragged(event -> {
 			if(!event.isShiftDown() && event.isPrimaryButtonDown()) {
 				toFront();
-				xPos.set(event.getX() + this.getTranslateX() - getWidth() / 2);
-				yPos.set(event.getY() + this.getTranslateY() - getHeight() / 2);
+				double x = event.getX() + this.getLayoutX() - getWidth() / 2;
+				double y = event.getY() + this.getLayoutY() - getHeight() / 2;
+				relocate(x, y);
 			}
 			event.consume();
 		});
@@ -245,16 +249,6 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 		services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 	}
 	
-	public void setMandatory() {
-		//feature.setMandatory(true);
-		//upperConnector.styleForMandatory();
-	}
-	
-	public void setOptional() {
-		//feature.setMandatory(false);
-		//upperConnector.styleForOptional();
-	}
-	
 	void setGroupVariability_ALTERNATIVE() {
 		
 //		if (!feature.isAlternative()) {
@@ -322,8 +316,8 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 	}
 	
 	public void setPosition(double x, double y) {
-		this.xPos.set(x);
-		this.yPos.set(y);
+		this.layoutXProperty().set(x);
+		this.layoutYProperty().set(y);
 	}
 	
 	@Override

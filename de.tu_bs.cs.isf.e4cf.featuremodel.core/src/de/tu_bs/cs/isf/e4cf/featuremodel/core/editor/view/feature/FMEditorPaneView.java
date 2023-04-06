@@ -8,7 +8,6 @@ import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorToolbar;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.DragHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.KeyTranslateHandler;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ResetHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.SelectionAreaHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ZoomHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
@@ -17,7 +16,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactory;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
-import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -28,28 +26,13 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 public class FMEditorPaneView extends BorderPane {
-
-	public interface FMEditorPaneMouseHandler {
-		public EventHandler<MouseEvent> resetHandler();
-
-		public EventHandler<MouseEvent> dragHandler();
-
-		public EventHandler<MouseEvent> selectionAreaHandler();
-
-		public EventHandler<MouseEvent> primaryMouseBtnHandler();
-
-		public EventHandler<ScrollEvent> zoomHandler();
-	}
-
 	// javafx widgets
 	public Pane rootPane;
 	public Pane gesturePane;
 	public Rectangle selectionRectangle;
-
 	private FMEditorToolbar toolbar;
-	private FMEditorPaneMouseHandler mouseEventHandler;
 
-	// lists
+	// collections
 	public List<FXGraphicalFeature> selectedFeatures;
 	public List<FXGraphicalFeature> componentFeatureList;
 	public AnimationMap labelBorderAnimationMap;
@@ -57,13 +40,10 @@ public class FMEditorPaneView extends BorderPane {
 	// model
 	public FeatureDiagramm currentModel;
 	public FXGraphicalFeature currentFeature;
-
-
 	private FXGraphicalFeature rootFeature;
 
-	public FMEditorPaneView(FMEditorToolbar toolbar, FMEditorPaneMouseHandler mouseEventHandler) {
+	public FMEditorPaneView(FMEditorToolbar toolbar) {
 		this.toolbar = toolbar;
-		this.mouseEventHandler = mouseEventHandler;
 		
 		this.labelBorderAnimationMap = new AnimationMap();
 		this.selectedFeatures = new ArrayList<FXGraphicalFeature>();
@@ -77,15 +57,13 @@ public class FMEditorPaneView extends BorderPane {
 	/**
 	 * This method creates the Scene and adds all Pane and Listener to it.
 	 */
-	private void constructUI() {
-		this.setTop(this.toolbar);
-		
+	private void constructUI() {		
 		this.gesturePane = new Pane();
 		this.gesturePane.setStyle("-fx-background-color: white;");
 		this.setCenter(gesturePane);
 		
 		this.rootPane = new Pane();
-		this.rootPane.setStyle("-fx-background-color: white;");
+		this.rootPane.setStyle("-fx-background-color: pink;");
 		this.gesturePane.getChildren().add(rootPane);
 		
 		// Mouse handler to zoom in and out of the rootPane
@@ -94,11 +72,14 @@ public class FMEditorPaneView extends BorderPane {
 		// move rootPane with wasd or arrow keys
 		this.addEventHandler(KeyEvent.ANY, new KeyTranslateHandler(this.rootPane, 10d));
 		// move rootPane with mouse when control key is pressed
-		DragHandler dragHandler = new DragHandler(this.rootPane);
+		DragHandler dragHandler = new DragHandler(this.rootPane, e -> e.isControlDown() && e.isPrimaryButtonDown());
 		gesturePane.addEventHandler(MouseEvent.ANY, dragHandler);
-
+		// toggle feature selection with a selection rectangle
 		createSelectionRectangle(gesturePane);
-		gesturePane.addEventHandler(MouseEvent.ANY, new SelectionAreaHandler(selectionRectangle, gesturePane, rootPane));
+		gesturePane.addEventHandler(MouseEvent.ANY, new SelectionAreaHandler(selectionRectangle, rootPane));
+		
+		// add last to be on top of other nodes (z-index)
+		this.setTop(this.toolbar);
 	}
 
 	/**
@@ -113,6 +94,7 @@ public class FMEditorPaneView extends BorderPane {
 
 	public void setTheme() {
 		// set theme from preferences
+		// TODO add parameter to select specific theme
 		String cssLocation = PreferencesUtil
 				.getValueWithDefault(FDStringTable.BUNDLE_NAME, FDStringTable.FME_THEME_KEY, DefaultTheme.DEFAULT_THEME)
 				.getStringValue();
@@ -124,15 +106,18 @@ public class FMEditorPaneView extends BorderPane {
 	}
 
 	public void formatDiagram() {
+		rootFeature.setLayoutX(0);
+		rootFeature.setLayoutY(0);
+		
 		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
 		placement.format(this.rootFeature);
+		
+		double centerX = gesturePane.getWidth() / 2 - rootFeature.getWidth() / 2;
+		double centerY = gesturePane.getHeight() / 4 - rootFeature.getHeight() / 2;
+		this.rootPane.setLayoutX(centerX);
+		this.rootPane.setLayoutY(centerY);		
 		// Reset the translate offset so that large feature diagrams do not
 		// disappear after formatting
-		double centerX = gesturePane.getWidth() / 2 - rootPane.getWidth() / 2;
-		double centerY = gesturePane.getHeight() / 4 - rootPane.getHeight() / 2;
-		this.rootPane.setLayoutX(centerX);
-		this.rootPane.setLayoutY(centerY);
-		this.setRootFeature(this.rootFeature);
 	}
 
 	public void setRootFeature(FXGraphicalFeature root) {
@@ -163,7 +148,8 @@ public class FMEditorPaneView extends BorderPane {
 		addChangeListener(child);
 		connectFeatures(parent, child);
 		// TODO set x,y positions of features depending on size
-
+		child.setLayoutX(parent.getLayoutX());
+		child.setLayoutY(parent.getLayoutY() + child.getHeight() * 2);
 		insertChildren(child);
 	}
 
@@ -176,37 +162,19 @@ public class FMEditorPaneView extends BorderPane {
 	private void connectFeatures(FXGraphicalFeature parent, FXGraphicalFeature child) {
 		final Line line = new Line();
 		// initial bind
-		line.startXProperty().bind(parent.xPos.add(parent.getWidth() / 2));
-		line.startYProperty().bind(parent.yPos.add(parent.getHeight() - parent.lowerConnector.getRadiusY()));
-		line.endYProperty().bind(child.translateYProperty());
-		line.endXProperty().bind(child.translateXProperty().add(child.widthProperty().doubleValue() / 2));
+		line.startXProperty().bind(parent.layoutXProperty().add(parent.widthProperty().divide(2.0)));
+		line.startYProperty().bind(parent.layoutYProperty().add(parent.heightProperty().subtract(parent.lowerConnector.radiusYProperty())));		
+		line.endXProperty().bind(child.layoutXProperty().add(child.widthProperty().divide(2.0)));
+		line.endYProperty().bind(child.layoutYProperty());
 
-		// after update size
-		parent.widthProperty().addListener(e -> {
-			line.startXProperty().unbind();
-			line.startXProperty().bind(parent.xPos.add(parent.getWidth() / 2));
-		});
-
-		parent.heightProperty().addListener(e -> {
-			line.startYProperty().unbind();
-			line.startYProperty().bind(parent.yPos.add(parent.getHeight() - parent.lowerConnector.getRadiusY()));
-		});
-
-		// if height changes bind with new height.
-		child.heightProperty().addListener(e -> {
-			line.endYProperty().unbind();
-			line.endYProperty().bind(child.translateYProperty());
-		});
-
-		// if size changes bind with new width.
-		child.widthProperty().addListener(e -> {
-			line.endXProperty().unbind();
-			line.endXProperty().bind(child.translateXProperty().add(child.widthProperty().doubleValue() / 2));
-		});
 		parent.childConnections.add(line);
 		this.rootPane.getChildren().add(line);
 	}
 
+	/**
+	 * Removes a feature and its children recursively
+	 * @param feature FXGraphicalFeature to remove from the editor
+	 */
 	public void remove(FXGraphicalFeature feature) {
 		this.rootPane.getChildren().remove(feature);
 		this.rootPane.getChildren().removeAll(feature.childConnections);

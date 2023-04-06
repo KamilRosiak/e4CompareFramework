@@ -1,34 +1,44 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.handler;
 
+import java.util.function.Predicate;
+
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 
 public class DragHandler implements EventHandler<MouseEvent> {
-	private Pane root;
+	private final Node node;
+	private final  Predicate<MouseEvent> keyActivation;
+	private final double dragFactor;
 	
-	private final double DRAG_SPEED = 1.0d;
+	private static final double DRAG_SPEED_DEFAULT = 1.0d;
 	
 	private double lastX = -1;
 	private double lastY = -1;
 	
-	private double translateX = 0;
-	private double translateY = 0;
+	private double deltaX = 0;
+	private double deltaY = 0;
 	
-	public DragHandler(Pane root) {
-		this.root = root;
+	public DragHandler(Node node, Predicate<MouseEvent> keyActivation, double dragFactor) {
+		this.node = node;
+		this.keyActivation = keyActivation;
+		this.dragFactor = dragFactor;
+	}
+	
+	public DragHandler(Node node, Predicate<MouseEvent> keyActivation) {
+		this(node, keyActivation, DRAG_SPEED_DEFAULT);
 	}
 	
 	@Override
 	public void handle(MouseEvent event) {
+		event.consume();
 		if (event.getEventType().equals(MouseEvent.MOUSE_DRAGGED)) {
-			if(event.isControlDown() && event.isPrimaryButtonDown()) {				
+			if(keyActivation.test(event)) {				
 				shift(event);
 			} 
 		} else if (event.getEventType().equals(MouseEvent.MOUSE_RELEASED)) {
 			reset();
 		}
-		event.consume();
 	}
 	
 	private void shift(MouseEvent event) {		
@@ -39,13 +49,17 @@ public class DragHandler implements EventHandler<MouseEvent> {
 			lastY = event.getY();
 		}			
 		
-		translateX = (event.getX() - lastX) * DRAG_SPEED;
+		deltaX = (event.getX() - lastX) * dragFactor;
 		lastX = event.getX(); 
-		translateY = (event.getY() - lastY) * DRAG_SPEED;
-		lastY = event.getY();		
+		deltaY = (event.getY() - lastY) * dragFactor;
+		lastY = event.getY();	
 		
-		root.setLayoutX(root.getLayoutX() + translateX);
-		root.setLayoutY(root.getLayoutY() + translateY);
+		double newX = node.getLayoutX() + deltaX;
+		double newY = node.getLayoutY() + deltaY;
+		
+		System.out.println(String.format("x: %f, y: %f", event.getX(), event.getY()));
+		
+		node.relocate(newX, newY);
 	}
 	
 	private void reset() {

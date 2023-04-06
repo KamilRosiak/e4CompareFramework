@@ -21,12 +21,10 @@ public class SelectionAreaHandler implements EventHandler<MouseEvent> {
 	private double yPosMax;
 
 	private Rectangle selectionRectangle;
-	private Pane gesture;
 	private Pane root;
 
-	public SelectionAreaHandler(Rectangle selectionRectangle, Pane gesturePane, Pane rootPane) {
+	public SelectionAreaHandler(Rectangle selectionRectangle, Pane rootPane) {
 		this.selectionRectangle = selectionRectangle;
-		this.gesture = gesturePane;
 		this.root = rootPane;
 	}
 
