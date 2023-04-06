@@ -67,7 +67,7 @@ public class FMEditorPaneView extends BorderPane {
 		this.setTop(this.toolbar);
 		
 		this.rootPane = new Pane();
-		this.rootPane.setStyle("-fx-background-color: pink;");
+		this.rootPane.setStyle("-fx-background-color: white;");
 		this.gesturePane.getChildren().add(rootPane);
 		
 		gesturePane.widthProperty().addListener(l -> {
