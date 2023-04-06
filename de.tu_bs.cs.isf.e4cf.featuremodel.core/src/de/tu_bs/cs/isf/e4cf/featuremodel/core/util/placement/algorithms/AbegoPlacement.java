@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.algorithms;
 
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.F
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FXNodeExtentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FXTreeForLayout;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.TreeUtil;
+import javafx.util.Pair;
 
 public class AbegoPlacement implements PlacementAlgorithm {
 
@@ -42,7 +44,7 @@ public class AbegoPlacement implements PlacementAlgorithm {
 	}
 	
 	@Override
-	public void format(FXGraphicalFeature root) {
+	public Pair<java.lang.Double, java.lang.Double> format(FXGraphicalFeature root) {
 		TreeUtil.resetTreePosition(root);
 		TreeForTreeLayout<FXGraphicalFeature> tree = new FXTreeForLayout(root);
 		NodeExtentProvider<FXGraphicalFeature> nodeExtend = new FXNodeExtentProvider();
@@ -50,5 +52,8 @@ public class AbegoPlacement implements PlacementAlgorithm {
 		TreeLayout<FXGraphicalFeature> treeLayout = new TreeLayout<>(tree, nodeExtend, config);
 		Map<FXGraphicalFeature, Double> featurePositionMap = treeLayout.getNodeBounds();
 		TreeUtil.setTreePosition(root, featurePositionMap);
+		
+		Rectangle2D bounds = treeLayout.getBounds();
+		return new Pair<>(bounds.getWidth(), bounds.getHeight());
 	}
 }

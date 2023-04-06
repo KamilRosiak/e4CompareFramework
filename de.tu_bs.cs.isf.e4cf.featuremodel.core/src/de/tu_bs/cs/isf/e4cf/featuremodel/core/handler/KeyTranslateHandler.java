@@ -37,6 +37,5 @@ public class KeyTranslateHandler implements EventHandler<KeyEvent> {
 	private void translateRoot(double x, double y) {
 		root.setLayoutX(root.getLayoutX() + x);
 		root.setLayoutY(root.getLayoutY() + y);
-		System.out.println(String.format("x:%i, y:%i", root.getTranslateX(), root.getTranslateY()));
 	}
 }

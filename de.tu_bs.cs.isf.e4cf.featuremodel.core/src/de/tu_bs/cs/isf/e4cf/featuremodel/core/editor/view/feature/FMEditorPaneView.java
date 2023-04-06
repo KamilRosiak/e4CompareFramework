@@ -7,6 +7,7 @@ import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorToolbar;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.DragHandler;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.HotkeyHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.KeyTranslateHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.SelectionAreaHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ZoomHandler;
@@ -24,6 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Pair;
 
 public class FMEditorPaneView extends BorderPane {
 	// javafx widgets
@@ -61,10 +63,19 @@ public class FMEditorPaneView extends BorderPane {
 		this.gesturePane = new Pane();
 		this.gesturePane.setStyle("-fx-background-color: white;");
 		this.setCenter(gesturePane);
+		// add after gesturePane to be on top (z-index)
+		this.setTop(this.toolbar);
 		
 		this.rootPane = new Pane();
 		this.rootPane.setStyle("-fx-background-color: pink;");
 		this.gesturePane.getChildren().add(rootPane);
+		
+		gesturePane.widthProperty().addListener(l -> {
+			formatDiagram();
+		});
+		gesturePane.heightProperty().addListener(l -> {
+			formatDiagram();
+		});
 		
 		// Mouse handler to zoom in and out of the rootPane
 		ZoomHandler zoomHandler = new ZoomHandler(this.rootPane);
@@ -77,9 +88,7 @@ public class FMEditorPaneView extends BorderPane {
 		// toggle feature selection with a selection rectangle
 		createSelectionRectangle(gesturePane);
 		gesturePane.addEventHandler(MouseEvent.ANY, new SelectionAreaHandler(selectionRectangle, rootPane));
-		
-		// add last to be on top of other nodes (z-index)
-		this.setTop(this.toolbar);
+		setOnKeyPressed(new HotkeyHandler(this));
 	}
 
 	/**
@@ -107,14 +116,12 @@ public class FMEditorPaneView extends BorderPane {
 
 	public void formatDiagram() {		
 		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
-		placement.format(this.rootFeature);
+		Pair<Double, Double> sizeXY =  placement.format(this.rootFeature);
 		
-		double centerX = gesturePane.getWidth() / 2 - rootPane.getWidth() / 2;
-		double centerY = gesturePane.getHeight() / 4 - rootPane.getHeight() / 2;
+		double centerX = gesturePane.getWidth() / 2 - sizeXY.getKey() / 2;
+		double centerY = gesturePane.getHeight() / 4;
 		this.rootPane.setLayoutX(centerX);
-		this.rootPane.setLayoutY(centerY);		
-		// Reset the translate offset so that large feature diagrams do not
-		// disappear after formatting
+		this.rootPane.setLayoutY(centerY);
 	}
 
 	public void setRootFeature(FXGraphicalFeature root) {
@@ -123,6 +130,7 @@ public class FMEditorPaneView extends BorderPane {
 		this.rootPane.getChildren().add(root);
 		addChangeListener(root);
 		insertChildren(root);
+		formatDiagram();
 	}
 
 	/**
@@ -136,6 +144,7 @@ public class FMEditorPaneView extends BorderPane {
 		feature.addListener(o -> {
 			feature.getChildFeatures().forEach(child -> remove(child));
 			insertChildren(feature);
+			formatDiagram();
 		});
 	}
 
@@ -144,9 +153,6 @@ public class FMEditorPaneView extends BorderPane {
 		this.rootPane.getChildren().add(child);
 		addChangeListener(child);
 		connectFeatures(parent, child);
-		// TODO set x,y positions of features depending on size
-		child.setLayoutX(parent.getLayoutX());
-		child.setLayoutY(parent.getLayoutY() + child.getHeight() * 2);
 		insertChildren(child);
 	}
 
