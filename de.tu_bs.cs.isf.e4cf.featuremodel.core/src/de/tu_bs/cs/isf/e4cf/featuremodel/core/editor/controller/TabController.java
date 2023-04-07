@@ -43,7 +43,7 @@ public class TabController {
 	
 	public FMEditorTab createTab(String tabTitle) {
 		EventHandler<Event> onTabClose = event -> {
-			this.currentEditor().askToSave();		
+			//	this.currentEditor().askToSave();		
 			// don't allow the tabPane to be empty
 			if (this.view.tabCount() == 1) {
 				createTab(FDStringTable.FD_DEFAULT_NAME);

@@ -39,7 +39,7 @@ public class ClusterStyler {
 		BackgroundFill fill = new BackgroundFill(model.getCluster().getSyntaxGroup().getColor(), CornerRadii.EMPTY, Insets.EMPTY);
 		ui.setBackground(new Background(fill));
 		ui.setPadding(new Insets(1.0d));
-		//manageStyle(true, ui, Style.COLOREDTABLE);
+		manageStyle(true, ui, Style.COLOREDTABLE);
 	}
 
 }

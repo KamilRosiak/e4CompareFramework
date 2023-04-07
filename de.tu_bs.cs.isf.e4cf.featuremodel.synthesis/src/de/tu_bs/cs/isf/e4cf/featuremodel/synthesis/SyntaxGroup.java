@@ -32,7 +32,7 @@ public class SyntaxGroup {
 			}
 		}
 
-		this.color = Color.web("#fff");
+		this.color = Color.GREY;
 	}
 
 	public SyntaxGroup(Set<Configuration> configs, Set<UUID> uuids, double hue) {

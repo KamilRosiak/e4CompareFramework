@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
@@ -20,9 +21,23 @@ import javafx.stage.Stage;
  * Utility Class for TreeViewController
  * 
  * @author Team05
+ * @author Lukas Cronauer
  *
  */
 public final class TreeViewUtilities {
+	
+	public static TreeItem<Node> createTreeItems(Node root) {
+		return createTreeItems(root, TreeItem::new);		
+	}
+	
+	public static TreeItem<Node> createTreeItems(Node node, Function<Node, TreeItem<Node>> creator) {
+		TreeItem<Node> nodeItem = creator.apply(node);
+		for (Node child : node.getChildren()) {
+			TreeItem<Node> childItem = createTreeItems(child, creator);
+			nodeItem.getChildren().add(childItem);
+		}
+		return nodeItem;
+	}
 
 	/**
 	 * Adds a nodes children to the respective TreeItem as children recursively
@@ -31,11 +46,11 @@ public final class TreeViewUtilities {
 	 * @param parent treeViews root object in first method call
 	 */
 	public static void createTreeView(Node node, TreeItem<Node> parent, NodeDecorator decorator) {
-		for (Node n : node.getChildren()) {
-			TreeItem<Node> ti = createTreeItem(n, decorator);
-			parent.getChildren().add(ti);
-			if (!n.isLeaf()) {
-				createTreeView(n, ti, decorator);
+		for (Node child : node.getChildren()) {
+			TreeItem<Node> item = createTreeItem(child, decorator);
+			parent.getChildren().add(item);
+			if (!child.isLeaf()) {
+				createTreeView(child, item, decorator);
 			}
 		}
 	}
@@ -120,14 +135,14 @@ public final class TreeViewUtilities {
 		return result;
 	}
 	
-	private static boolean isEqual(TreeItem<Node> item, String name) {
+	private static <T> boolean isEqual(TreeItem<T> item, String name) {
 		boolean isEqual = false;
 		if (item.getValue().toString().toLowerCase().contains(name)) {
 			isEqual = true;
 		}
-		else if (item.getValue().getUUID().toString().toLowerCase().equals(name.toLowerCase())) {
-			isEqual = true;
-		}
+//		else if (item.getValue().getUUID().toString().toLowerCase().equals(name.toLowerCase())) {
+//			isEqual = true;
+//		}
 		return isEqual;
 	}
 

@@ -25,4 +25,5 @@ Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.data.structures.editor.singl
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.interfaces,
  de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable
+Import-Package: org.eclipse.ui.internal.dialogs.cpd
 

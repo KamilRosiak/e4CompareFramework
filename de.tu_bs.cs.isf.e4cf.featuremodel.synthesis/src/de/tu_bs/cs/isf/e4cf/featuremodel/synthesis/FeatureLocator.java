@@ -30,9 +30,8 @@ public class FeatureLocator implements IFeatureLocaterExtension {
 	public void locateFeatures(ServiceContainer container, MPLPlatform platform) {
 		this.services = container;
 		List<SyntaxGroup> syntaxGroups = calculateAtomicSets(platform);
-		List<Set<UUID>> atomicSets = syntaxGroups.stream()
-				.map(group -> group.getUuids())
-				.collect(Collectors.toList());
+		Map<Set<UUID>, Color> atomicSets = syntaxGroups.stream()
+				.collect(Collectors.toMap(SyntaxGroup::getUuids, SyntaxGroup::getColor));
 		//String workspace = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
 		//FileStreamUtil.writeTextToFile(workspace + "/atomicSets.txt", atomicSets.toString());
 		services.eventBroker.post("atomic_sets_found", atomicSets);
