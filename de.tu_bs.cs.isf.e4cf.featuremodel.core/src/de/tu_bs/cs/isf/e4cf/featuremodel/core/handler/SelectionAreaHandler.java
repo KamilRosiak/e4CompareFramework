@@ -97,6 +97,7 @@ public class SelectionAreaHandler implements EventHandler<MouseEvent> {
 	}
 
 	private boolean inSelectionBounds(FXGraphicalFeature fx) {
+		// TODO add zoom level to calculation 
 		return 	((fx.xPos.get()+root.getLayoutX()) > xStartPosition) && 
 				((fx.yPos.get()+root.getLayoutY()) > yStartPosition) && 
 				((fx.xPos.get()+root.getLayoutX()) < xPosMax) && 

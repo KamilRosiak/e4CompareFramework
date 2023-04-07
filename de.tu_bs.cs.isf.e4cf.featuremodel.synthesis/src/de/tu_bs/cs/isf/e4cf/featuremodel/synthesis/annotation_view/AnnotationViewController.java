@@ -192,7 +192,7 @@ public class AnnotationViewController implements Initializable {
 						setText(null);
 						setGraphic(null);
 					} else {
-						Styler.style(this, model);
+						model.style(this);
 					}
 				}
 			};

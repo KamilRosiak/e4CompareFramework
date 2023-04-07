@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.TableRow;
 
 public class ClusterViewModel {
 	private StringProperty name;
@@ -164,6 +165,10 @@ public class ClusterViewModel {
 	public String toString() {
 		return "ClusterViewModel [cluster=" + cluster + "]";
 	}	
+	
+	public void style(TableRow<ClusterViewModel> row) {
+		ClusterStyler.style(row, this);
+	}
 	
 	
 }

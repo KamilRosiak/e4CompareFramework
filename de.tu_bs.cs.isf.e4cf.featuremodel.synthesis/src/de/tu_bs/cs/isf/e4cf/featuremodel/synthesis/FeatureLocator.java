@@ -7,16 +7,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.IFeatureLocaterExtension;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.util.ColorPicker;
+import javafx.scene.paint.Color;
 
 public class FeatureLocator implements IFeatureLocaterExtension {
 	
@@ -77,9 +80,9 @@ public class FeatureLocator implements IFeatureLocaterExtension {
 		});
 		sortedConfigCombos.addAll(configCombos);
 		
-		int numSets = configCombos.size();
 		List<SyntaxGroup> atomicSets = new ArrayList<>();
 		int k = 0;
+		List<Color> palette = ColorPicker.generatePalette(sortedConfigCombos.size());
 		for (String combo : sortedConfigCombos) {
 			Set<UUID> ids = idsForConfigs.remove(combo);
 			Set<Configuration> configs = new HashSet<>();
@@ -89,9 +92,8 @@ public class FeatureLocator implements IFeatureLocaterExtension {
 				int i = Integer.parseInt(token);
 				configs.add(platform.configurations.get(i - 1));
 			}
-			double hue = 360.0 / (numSets * 2) * 2 * k++;
-			//System.out.println(hue);
-			atomicSets.add(new SyntaxGroup(configs, ids, hue));
+			atomicSets.add(new SyntaxGroup(configs, ids, palette.get(k)));
+			k += 1;
 			
 			// remove ids from all remaining combos
 			List<String> toRemove = new ArrayList<>();

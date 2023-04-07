@@ -36,11 +36,14 @@ public class SyntaxGroup {
 	}
 
 	public SyntaxGroup(Set<Configuration> configs, Set<UUID> uuids, double hue) {
+		this(configs, uuids, Color.hsb(hue, 1.0d, 0.77));
+	}
+	
+	public SyntaxGroup(Set<Configuration> configs, Set<UUID> uuids, Color color) {
 		this.configurations = new LexicalConfigTreeSet(configs);
 		this.uuids = new HashSet<>();
 		this.uuids.addAll(uuids);
-		this.color = Color.hsb(hue, 0.8, 0.5);
-
+		this.color = color;
 	}
 
 	public void addConfiguration(Configuration config) {
