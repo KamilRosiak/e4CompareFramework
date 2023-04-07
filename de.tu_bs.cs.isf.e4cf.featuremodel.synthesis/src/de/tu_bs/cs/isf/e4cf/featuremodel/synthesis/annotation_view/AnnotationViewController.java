@@ -16,6 +16,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.ColoredFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
@@ -132,7 +133,7 @@ public class AnnotationViewController implements Initializable {
 	}
 	
 	private Feature toFeature(Cluster cluster) {
-		Feature feature = new Feature(cluster.getName());
+		Feature feature = new ColoredFeature(cluster.getName(), cluster.getSyntaxGroup().getColor());
 		if (cluster.isMandatory()) { 
 			feature.setVariability(Variability.MANDATORY);
 		} // feature is optional by default

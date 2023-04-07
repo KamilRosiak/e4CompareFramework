@@ -9,6 +9,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.DefaultFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.StylableFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
@@ -47,6 +48,9 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 	public FXGraphicalFeature(IFeature feature) {
 		this.feature = feature;
 		createUI();
+		if (feature instanceof StylableFeature) {
+			((StylableFeature) feature).style(this);
+		}
 	}
 	
 	public FXGraphicalFeature(String name) {
