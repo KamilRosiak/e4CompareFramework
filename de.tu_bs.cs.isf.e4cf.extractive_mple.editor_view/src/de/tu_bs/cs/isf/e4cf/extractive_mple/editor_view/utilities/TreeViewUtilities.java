@@ -30,10 +30,10 @@ public final class TreeViewUtilities {
 		return createTreeItems(root, TreeItem::new);		
 	}
 	
-	public static TreeItem<Node> createTreeItems(Node node, Function<Node, TreeItem<Node>> creator) {
-		TreeItem<Node> nodeItem = creator.apply(node);
+	public static TreeItem<Node> createTreeItems(Node node, Function<Node, TreeItem<Node>> constructor) {
+		TreeItem<Node> nodeItem = constructor.apply(node);
 		for (Node child : node.getChildren()) {
-			TreeItem<Node> childItem = createTreeItems(child, creator);
+			TreeItem<Node> childItem = createTreeItems(child, constructor);
 			nodeItem.getChildren().add(childItem);
 		}
 		return nodeItem;

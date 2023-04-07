@@ -7,35 +7,12 @@ import javafx.scene.shape.ArcType;
 public class FXFeatureLowerConnector extends Arc {
 	private double centerX;
 	private double centerY; 
-	private double radius;
-	private final double radiusY = 4d;
+	private final double radiusX = 7d;
+	private final double radiusY = 7d;
 	
 	public FXFeatureLowerConnector(FXGraphicalFeature fxFeature) {
 		centerX = fxFeature.getTranslateX() + fxFeature.getWidth()/2;
 		centerY = fxFeature.getTranslateY() + fxFeature.getHeight();
-		radius = fxFeature.getWidth()/2;
-		addWidthListener(fxFeature);
-	}
-	
-
-	private void addWidthListener(FXGraphicalFeature fxFeature) {
-		//bind width value for repaint
-		// TODO check if desired
-		fxFeature.widthProperty().addListener(e-> {
-			radius = fxFeature.getWidth()/2;
-			
-			switch (fxFeature.getFeature().getGroupVariability()) {
-			case DEFAULT:
-				// TODO define AND style
-				break;
-			case OR:
-				drawOr();
-				break;
-			case ALTERNATIVE:
-				drawAlternative();
-				break;			
-			}	
-		});
 	}
 	
 	/**
@@ -44,7 +21,7 @@ public class FXFeatureLowerConnector extends Arc {
     public void drawAlternative() {
     	setCenterX(centerX);
     	setCenterY(centerY);
-    	setRadiusX(radius-3);
+    	setRadiusX(radiusX);
     	setRadiusY(radiusY);
     	setLength(180);
     	setStartAngle(180);
@@ -59,7 +36,7 @@ public class FXFeatureLowerConnector extends Arc {
     public void drawOr() {
     	setCenterX(centerX);
     	setCenterY(centerY);
-    	setRadiusX(radius-3);
+    	setRadiusX(radiusX);
     	setRadiusY(radiusY);
     	setLength(180);
     	setStartAngle(180);

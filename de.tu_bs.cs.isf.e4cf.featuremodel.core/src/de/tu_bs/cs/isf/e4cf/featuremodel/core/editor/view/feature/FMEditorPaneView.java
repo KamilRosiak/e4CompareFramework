@@ -2,6 +2,9 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
@@ -17,6 +20,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgoFactory;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
+import javafx.collections.ListChangeListener;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -43,10 +47,11 @@ public class FMEditorPaneView extends BorderPane {
 	public FeatureDiagramm currentModel;
 	public FXGraphicalFeature currentFeature;
 	private FXGraphicalFeature rootFeature;
+	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	public FMEditorPaneView(FMEditorToolbar toolbar) {
 		this.toolbar = toolbar;
-		
+
 		this.labelBorderAnimationMap = new AnimationMap();
 		this.selectedFeatures = new ArrayList<FXGraphicalFeature>();
 		this.componentFeatureList = new ArrayList<FXGraphicalFeature>();
@@ -59,24 +64,24 @@ public class FMEditorPaneView extends BorderPane {
 	/**
 	 * This method creates the Scene and adds all Pane and Listener to it.
 	 */
-	private void constructUI() {		
+	private void constructUI() {
 		this.gesturePane = new Pane();
 		this.gesturePane.setStyle("-fx-background-color: white;");
 		this.setCenter(gesturePane);
 		// add after gesturePane to be on top (z-index)
 		this.setTop(this.toolbar);
-		
+
 		this.rootPane = new Pane();
 		this.rootPane.setStyle("-fx-background-color: white;");
 		this.gesturePane.getChildren().add(rootPane);
-		
+
 		gesturePane.widthProperty().addListener(l -> {
 			formatDiagram();
 		});
 		gesturePane.heightProperty().addListener(l -> {
 			formatDiagram();
 		});
-		
+
 		// Mouse handler to zoom in and out of the rootPane
 		ZoomHandler zoomHandler = new ZoomHandler(this.rootPane);
 		gesturePane.addEventHandler(ScrollEvent.ANY, zoomHandler);
@@ -114,10 +119,10 @@ public class FMEditorPaneView extends BorderPane {
 		return this.currentModel;
 	}
 
-	public void formatDiagram() {		
+	public void formatDiagram() {
 		PlacementAlgorithm placement = PlacementAlgoFactory.getPlacementAlgorithm(PlacemantConsts.ABEGO_PLACEMENT);
-		Pair<Double, Double> sizeXY =  placement.format(this.rootFeature);
-		
+		Pair<Double, Double> sizeXY = placement.format(this.rootFeature);
+
 		double centerX = gesturePane.getWidth() / 2 - sizeXY.getKey() / 2;
 		double centerY = gesturePane.getHeight() / 4;
 		this.rootPane.setLayoutX(centerX);
@@ -130,7 +135,6 @@ public class FMEditorPaneView extends BorderPane {
 		this.rootPane.getChildren().add(root);
 		addChangeListener(root);
 		insertChildren(root);
-		formatDiagram();
 	}
 
 	/**
@@ -141,11 +145,29 @@ public class FMEditorPaneView extends BorderPane {
 	}
 
 	private void addChangeListener(FXGraphicalFeature feature) {
-		feature.addListener(o -> {
-			feature.getChildFeatures().forEach(child -> remove(child));
-			insertChildren(feature);
-			formatDiagram();
+		feature.addListener(l -> this.formatDiagram());
+
+		FMEditorPaneView view = this;
+		feature.getChildFeatures().addListener(new ListChangeListener<FXGraphicalFeature>() {
+			@Override
+			public void onChanged(Change<? extends FXGraphicalFeature> change) {
+				while (change.next()) {
+					if (change.wasAdded()) {
+						change.getAddedSubList()
+								.forEach(feature -> view.insertFeatureBelow(feature.getParentFxFeature(), feature));
+					} else if (change.wasRemoved()) {
+						change.getRemoved().forEach(view::remove);
+					}
+				}
+				scheduler.schedule(view::formatDiagram, 5, TimeUnit.MILLISECONDS);
+			}
 		});
+	}
+
+	private void insertChildren(FXGraphicalFeature feature) {
+		for (FXGraphicalFeature child : feature.getChildFeatures()) {
+			insertFeatureBelow(feature, child);
+		}
 	}
 
 	public void insertFeatureBelow(FXGraphicalFeature parent, FXGraphicalFeature child) {
@@ -156,17 +178,12 @@ public class FMEditorPaneView extends BorderPane {
 		insertChildren(child);
 	}
 
-	private void insertChildren(FXGraphicalFeature feature) {
-		for (FXGraphicalFeature child : feature.getChildFeatures()) {
-			insertFeatureBelow(feature, child);
-		}
-	}
-
 	private void connectFeatures(FXGraphicalFeature parent, FXGraphicalFeature child) {
 		final Line line = new Line();
 		// initial bind
 		line.startXProperty().bind(parent.layoutXProperty().add(parent.widthProperty().divide(2.0)));
-		line.startYProperty().bind(parent.layoutYProperty().add(parent.heightProperty().subtract(parent.lowerConnector.radiusYProperty())));		
+		line.startYProperty().bind(parent.layoutYProperty()
+				.add(parent.heightProperty().subtract(parent.lowerConnector.radiusYProperty())));
 		line.endXProperty().bind(child.layoutXProperty().add(child.widthProperty().divide(2.0)));
 		line.endYProperty().bind(child.layoutYProperty());
 
@@ -176,6 +193,7 @@ public class FMEditorPaneView extends BorderPane {
 
 	/**
 	 * Removes a feature and its children recursively
+	 * 
 	 * @param feature FXGraphicalFeature to remove from the editor
 	 */
 	public void remove(FXGraphicalFeature feature) {

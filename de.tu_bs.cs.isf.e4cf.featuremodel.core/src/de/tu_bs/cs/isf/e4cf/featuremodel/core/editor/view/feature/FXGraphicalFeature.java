@@ -12,6 +12,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.StylableFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.ChangeList;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.INodeAnimator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
@@ -19,6 +20,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.input.ContextMenuEvent;
@@ -29,16 +31,16 @@ import javafx.scene.shape.Line;
 
 public class FXGraphicalFeature extends VBox implements Observable  {
 	public FXFeatureNameLabel featureNameLabel;
-	public FXFeatureLowerConnector lowerConnector;
 	public FXFeatureUpperConnector upperConnector;
+	public FXFeatureLowerConnector lowerConnector;
 	public List<Line> childConnections = new ArrayList<>();
 	public DoubleProperty xPos = new SimpleDoubleProperty(), yPos = new SimpleDoubleProperty();
 	
 	private IFeature feature = new DefaultFeature();
-	private FXGraphicalFeature parentFxFeature;
+	private FXGraphicalFeature parent;
 	private INodeAnimator animator;
 	
-	private List<FXGraphicalFeature> childFeatures = new ArrayList<>();
+	private ObservableList<FXGraphicalFeature> childFeatures = new ChangeList<>();
 	private List<InvalidationListener> listeners = new ArrayList<>();
 	
 	// TODO remove
@@ -103,6 +105,9 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 		
 		xPos.bind(this.layoutXProperty());
 		yPos.bind(this.layoutYProperty());
+		
+		this.widthProperty().addListener(l -> this.invalidate());
+		this.heightProperty().addListener(l -> this.invalidate());
 	}
 	
 	 /**
@@ -212,14 +217,14 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 		this.feature = feature;
 	}
 	
-	public List<FXGraphicalFeature> getChildFeatures() {
+	public ObservableList<FXGraphicalFeature> getChildFeatures() {
 		return childFeatures;
 	}
 	
 	public void addChildFeature(FXGraphicalFeature fxFeature) {
-		childFeatures.add(fxFeature);
-		feature.getChildren().add(fxFeature.getFeature());
-		invalidate();		
+		fxFeature.setParentFxFeature(this);
+		this.childFeatures.add(fxFeature);
+		feature.getChildren().add(fxFeature.getFeature());	
 	}
 	
 	public void addChildFeatureFormated(FXGraphicalFeature fxFeature) {
@@ -312,11 +317,11 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 	}
 
 	public FXGraphicalFeature getParentFxFeature() {
-		return parentFxFeature;
+		return parent;
 	}
 
 	public void setParentFxFeature(FXGraphicalFeature parentFxFeature) {
-		this.parentFxFeature = parentFxFeature;
+		this.parent = parentFxFeature;
 	}
 	
 	public void setPosition(double x, double y) {

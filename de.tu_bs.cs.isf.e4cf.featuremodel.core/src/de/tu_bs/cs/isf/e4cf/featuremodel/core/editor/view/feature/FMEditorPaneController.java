@@ -18,6 +18,7 @@ public class FMEditorPaneController {
 	
 	public void displayFeatureDiagram(FXGraphicalFeature root) {
 		this.view.setRootFeature(root);
+		formatDiagram();
 	}
 	
 	public void formatDiagram() {
