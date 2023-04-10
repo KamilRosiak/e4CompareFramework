@@ -3,7 +3,6 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -11,7 +10,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -27,11 +25,13 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -66,7 +66,7 @@ public class MPLEPlatformController implements Initializable {
 	 */
 	@FXML
 	TableView<UUID> uuidTable;
-	
+
 	/**
 	 * Clone Configuration Artifacts
 	 */
@@ -85,7 +85,7 @@ public class MPLEPlatformController implements Initializable {
 	TableColumn<CloneConfiguration, String> componentIDCol, paarentCol;
 
 	MPLPlatform currentPlatform;
-	
+
 	@Inject
 	IEclipseContext context;
 
@@ -130,36 +130,40 @@ public class MPLEPlatformController implements Initializable {
 				}
 			}
 		});
-		
+
 		// display variant artifacts and clone configs when a variant is selected
 		configTable.getSelectionModel().selectedItemProperty().addListener(e -> {
 			uuidTable.getItems().clear();
 			componentConfigs.getItems().clear();
-			
+
 			if (configTable.getSelectionModel().getSelectedItem() != null) {
 				uuidTable.getItems().addAll(configTable.getSelectionModel().getSelectedItem().getUUIDs());
-				componentConfigs.getItems().addAll(configTable.getSelectionModel().getSelectedItem().getCloneConfigurations());
+				componentConfigs.getItems()
+						.addAll(configTable.getSelectionModel().getSelectedItem().getCloneConfigurations());
 			}
 			uuidTable.refresh();
 			componentConfigs.refresh();
 		});
-		
+
 		// highlight parent of clone config in MPLEditor on selection of a clone config
 		componentConfigs.getSelectionModel().selectedItemProperty().addListener(e -> {
 			componentUUIDTable.getItems().clear();
-			
+
 			CloneConfiguration cloneConfig = componentConfigs.getSelectionModel().getSelectedItem();
 			if (cloneConfig != null) {
 				componentUUIDTable.getItems().addAll(cloneConfig.configuration.getUUIDs());
-				String parentToChildUuid = cloneConfig.getParentUUID().toString() + "#" + cloneConfig.getComponentUUID().toString();
+				String parentToChildUuid = cloneConfig.getParentUUID().toString() + "#"
+						+ cloneConfig.getComponentUUID().toString();
 				services.eventBroker.send(MPLEEditorConsts.SHOW_CLONE_UUID, parentToChildUuid);
 			}
 			componentUUIDTable.refresh();
 		});
-			
-		// highlight artifact in MPLEdito when it is selected in variant artifacts or clone config artifacts table
+
+		// highlight artifact in MPLEdito when it is selected in variant artifacts or
+		// clone config artifacts table
 		componentUUIDTable.getSelectionModel().selectedItemProperty().addListener(e -> {
-			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID, componentUUIDTable.getSelectionModel().getSelectedItem());
+			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID,
+					componentUUIDTable.getSelectionModel().getSelectedItem());
 		});
 		uuidTable.getSelectionModel().selectedItemProperty().addListener(e -> {
 			services.eventBroker.send(MPLEEditorConsts.SHOW_UUID, uuidTable.getSelectionModel().getSelectedItem());
@@ -265,11 +269,31 @@ public class MPLEPlatformController implements Initializable {
 	}
 
 	@FXML
+	private void showPlatform() {
+		if (currentPlatform != null) {
+			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
+			services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, currentPlatform);
+		}
+	}
+
+	@FXML
+	private void addVariant() {
+		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
+			ReaderManager reader = new ReaderManager();
+			services.rcpSelectionService.getCurrentSelectionsFromExplorer().stream().map(reader::readFile)
+					.forEach(currentPlatform::insertVariant);
+			MPLEPlatformUtil.storePlatform(
+					services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + "clone_model1.mpl",
+					currentPlatform);
+			showPlatform();
+		}
+	}
+
+	@FXML
 	private void printDetails() {
 		if (currentPlatform != null && currentPlatform.model != null) {
 			System.out.println("Platform number of nodes: " + currentPlatform.model.getAmountOfNodes(0));
-			System.out.println(
-					"Platform number of UUIDS: " + currentPlatform.model.getAllUUIDS().size());
+			System.out.println("Platform number of UUIDS: " + currentPlatform.model.getAllUUIDS().size());
 			Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
 			currentPlatform.configurations.forEach(config -> {
 				config.getCloneConfigurations().forEach(cloneConfig -> {
@@ -291,26 +315,19 @@ public class MPLEPlatformController implements Initializable {
 	}
 
 	@FXML
-	private void showPlatform() {
-		if (currentPlatform != null) {
-			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
-			services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, currentPlatform);
-		}
-	}
-	
-	@FXML
 	private void locateFeatures() {
 		if (currentPlatform != null) {
 			IConfigurationElement[] configs = RCPContentProvider
 					.getIConfigurationElements("de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.LocateFeatures");
 			try {
-				IFeatureLocaterExtension handler = (IFeatureLocaterExtension) configs[0].createExecutableExtension("locate_feature_handler");
+				IFeatureLocaterExtension handler = (IFeatureLocaterExtension) configs[0]
+						.createExecutableExtension("locate_feature_handler");
 				handler.locateFeatures(services, currentPlatform);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 	private void showConfigurations() {

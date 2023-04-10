@@ -101,6 +101,7 @@
         <items>
           <Button mnemonicParsing="false" onAction="#showPlatform" text="Show Platform" />
             <Button mnemonicParsing="false" onAction="#printDetails" text="Print Details" />
+            <Button layoutX="192.0" layoutY="12.0" mnemonicParsing="false" onAction="#addVariant" text="Add Variant" />
             <Button mnemonicParsing="false" onAction="#locateFeatures" text="Locate Features" />
         </items>
       </ToolBar>
