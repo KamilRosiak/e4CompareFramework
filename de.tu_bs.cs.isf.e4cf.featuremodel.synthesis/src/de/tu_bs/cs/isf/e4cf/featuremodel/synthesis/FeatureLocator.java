@@ -17,11 +17,11 @@ import javax.inject.Inject;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
-import de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.IFeatureLocaterExtension;
+import de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.IFeatureLocatorExtension;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.util.ColorPicker;
 import javafx.scene.paint.Color;
 
-public class FeatureLocator implements IFeatureLocaterExtension {
+public class FeatureLocator implements IFeatureLocatorExtension {
 	
 	@Inject
 	private ServiceContainer services;

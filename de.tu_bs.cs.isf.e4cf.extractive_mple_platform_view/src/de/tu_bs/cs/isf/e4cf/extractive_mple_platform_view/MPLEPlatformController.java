@@ -320,7 +320,7 @@ public class MPLEPlatformController implements Initializable {
 			IConfigurationElement[] configs = RCPContentProvider
 					.getIConfigurationElements("de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.LocateFeatures");
 			try {
-				IFeatureLocaterExtension handler = (IFeatureLocaterExtension) configs[0]
+				IFeatureLocatorExtension handler = (IFeatureLocatorExtension) configs[0]
 						.createExecutableExtension("locate_feature_handler");
 				handler.locateFeatures(services, currentPlatform);
 			} catch (Exception e) {
