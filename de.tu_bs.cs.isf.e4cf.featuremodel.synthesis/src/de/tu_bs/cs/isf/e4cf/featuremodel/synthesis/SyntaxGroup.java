@@ -55,6 +55,10 @@ public class SyntaxGroup {
 			this.uuids.retainAll(config.getUUIDs());
 		}
 	}
+	
+	public Collection<Configuration> getConfigurations() {
+		return this.configurations;
+	}
 
 	/**
 	 * @return the uuids

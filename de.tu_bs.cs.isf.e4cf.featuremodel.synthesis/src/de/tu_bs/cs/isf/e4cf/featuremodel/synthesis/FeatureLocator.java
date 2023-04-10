@@ -10,33 +10,23 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
-import de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.IFeatureLocatorExtension;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.util.ColorPicker;
 import javafx.scene.paint.Color;
 
-public class FeatureLocator implements IFeatureLocatorExtension {
+public class FeatureLocator {
+	private MPLPlatform currentMpl;
+	private List<SyntaxGroup> groups;
 	
-	@Inject
-	private ServiceContainer services;
-
-	@Override
-	public void locateFeatures(ServiceContainer container, MPLPlatform platform) {
-		this.services = container;
-		List<SyntaxGroup> syntaxGroups = calculateAtomicSets(platform);
-		Map<Set<UUID>, Color> atomicSets = syntaxGroups.stream()
-				.collect(Collectors.toMap(SyntaxGroup::getUuids, SyntaxGroup::getColor));
-		//String workspace = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
-		//FileStreamUtil.writeTextToFile(workspace + "/atomicSets.txt", atomicSets.toString());
-		services.eventBroker.post("atomic_sets_found", atomicSets);
-
-		services.eventBroker.post(EventTable.PUBLISH_SYNTAX_GROUPS, syntaxGroups);
+	public List<SyntaxGroup> locateFeatures(ServiceContainer container, MPLPlatform mpl) {
+		this.currentMpl = mpl;
+		
+		this.groups = calculateAtomicSets(mpl);
+		
+		return this.groups;
 	}
 	
 	private List<SyntaxGroup> calculateAtomicSets(MPLPlatform platform) {
@@ -110,5 +100,15 @@ public class FeatureLocator implements IFeatureLocatorExtension {
 		
 		return atomicSets;
 	}
-
+	
+	public List<SyntaxGroup> updateMPL(MPLPlatform newMpl) {
+		this.groups = recalculateAtomicGroups(this.groups, newMpl);
+		this.currentMpl = newMpl;
+		return this.groups;
+	}
+	
+	private List<SyntaxGroup> recalculateAtomicGroups(List<SyntaxGroup> groups, MPLPlatform mpl) {
+		return calculateAtomicSets(mpl);
+	}
 }
+

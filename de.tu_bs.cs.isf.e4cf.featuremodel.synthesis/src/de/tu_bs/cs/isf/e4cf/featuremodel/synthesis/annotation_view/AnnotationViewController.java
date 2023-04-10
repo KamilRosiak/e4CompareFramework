@@ -2,10 +2,14 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -16,14 +20,17 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.ColoredFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.EventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureLocator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SynthesisConsts;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,6 +44,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.paint.Color;
 
 public class AnnotationViewController implements Initializable {
 	@Inject
@@ -54,17 +62,105 @@ public class AnnotationViewController implements Initializable {
 	private TableColumn<ClusterViewModel, String> childColumn;
 
 	private ObservableList<ClusterViewModel> clusters = new SimpleListProperty<>();
+	private FeatureLocator locator = new FeatureLocator();
+	
+	
+	@Optional
+	@Inject
+	public void locateFeatures(@UIEventTopic(MPLEEditorConsts.LOCATE_FEATURES) MPLPlatform mpl) {
+		List<SyntaxGroup> clusters = this.locator.locateFeatures(services, mpl);
+		this.displayGroups(clusters);
+	}
+	
+	@Optional
+	@Inject
+	public void updateMPL(@UIEventTopic(MPLEEditorConsts.ADD_VARIANT_TO_MPL) MPLPlatform mpl) {
+		List<SyntaxGroup> groups = this.locator.updateMPL(mpl);
+		List<Cluster> newClusters = groups.stream().map(Cluster::new).collect(Collectors.toList());
+		List<Cluster> oldClusters = this.clusters.stream().map(ClusterViewModel::getCluster).collect(Collectors.toList());
+		updateClusters(oldClusters, newClusters);
+		this.displayClusters(newClusters);
+	}
+	
+	private void updateClusters(List<Cluster> oldClusters, List<Cluster> newClusters) {
+		String[] variants = newClusters.get(0).getName().split(" ");
+		String newVariantName = variants[variants.length - 1];
+		Map<Cluster, List<Cluster>> clusterMap = new HashMap<>();
+		for (Cluster c : oldClusters) {
+			clusterMap.put(c, new ArrayList<>());
+		}
+		
+		for (Cluster newC: newClusters) {
+			for (Cluster oldC : oldClusters) {
+				
+				if (oldC.getSyntaxGroup().getUuids().containsAll(newC.getSyntaxGroup().getUuids())) { // new cluster is subset of old cluster
+					if (oldC.getSyntaxGroup().getConfigurations().size() < newC.getSyntaxGroup().getConfigurations().size()) { // clusters are the same
+						newC.setName(oldC.getName());
+						newC.setRoot(oldC.isRoot());
+						newC.setMandatory(oldC.isMandatory());
+						newC.setChildSelection(oldC.getChildSelection());
+						clusterMap.get(oldC).add(newC);
+					} else { // remaining uuids not in new variant
+						newC.setName(oldC.getName() + "\\" + newVariantName);
+					}						
+					break;
+				} else if (!Collections.disjoint(oldC.getSyntaxGroup().getUuids(), newC.getSyntaxGroup().getUuids())) { // other uuids in new cluster
+					String newName = combineNames(oldC, newC);
+					newC.setName(newName);
+					System.out.println(newName);
+					break;
+				}
+			}
+		}
+		
+		// add children to new clusters
+		for (Cluster oldC : oldClusters) {
+			for (Cluster newC : clusterMap.get(oldC)) {
+				for (Cluster oldChild : oldC.getChildren()) {
+					clusterMap.get(oldChild).forEach(newC::addChild);
+				}
+			}
+		}
+	}
+	
+	private String combineNames(Cluster oldC, Cluster newC) {
+		String oldName = oldC.getName();
+		String clusters = newC.getName();
+		for (Configuration config : oldC.getSyntaxGroup().getConfigurations()) {
+			clusters = clusters.replaceAll("\\b" + config.getName() + "\\b", "");
+		}
+		clusters = clusters.trim();
+		String combined = oldName;
+		if (!clusters.isEmpty()) {
+			combined += "\\" + clusters;
+		}
+		return combined;
+	}
 
 	/**
 	 * Displays a list of SyntaxGroups in the annotation view
 	 * 
 	 * @param groups List of {@link SyntaxGroup}
 	 */
-	@Optional
-	@Inject
-	public void displayClusters(@UIEventTopic(EventTable.PUBLISH_SYNTAX_GROUPS) List<SyntaxGroup> groups) {
-		// convert syntaxGroups to viewModels
-		List<ClusterViewModel> viewModels = groups.stream().map(Cluster::new).map(ClusterViewModel::new)
+	public void displayGroups(List<SyntaxGroup> groups) {		
+		List<Cluster> clusters = groups.stream().map(Cluster::new).collect(Collectors.toList());
+		displayClusters(clusters);
+	}
+
+	private void publishGroups(List<SyntaxGroup> groups) {
+		Map<Set<UUID>, Color> atomicSets = groups.stream()
+				.collect(Collectors.toMap(SyntaxGroup::getUuids, SyntaxGroup::getColor));
+		//String workspace = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
+		//FileStreamUtil.writeTextToFile(workspace + "/atomicSets.txt", atomicSets.toString());
+		services.eventBroker.post("atomic_sets_found", atomicSets);
+	}
+	
+	public void displayClusters(List<Cluster> clusters) {
+		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
+		List<SyntaxGroup> groups = clusters.stream().map(Cluster::getSyntaxGroup).collect(Collectors.toList());
+		publishGroups(groups);		
+		
+		List<ClusterViewModel> viewModels = clusters.stream().map(ClusterViewModel::new)
 				.collect(Collectors.toList());
 		this.clusters = FXCollections.observableList(viewModels);
 

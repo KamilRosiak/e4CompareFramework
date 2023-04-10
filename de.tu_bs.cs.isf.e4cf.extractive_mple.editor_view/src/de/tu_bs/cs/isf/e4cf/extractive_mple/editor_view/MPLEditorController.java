@@ -146,6 +146,7 @@ public class MPLEditorController implements Initializable {
 		TreeItem<Node> root = TreeViewUtilities.createTreeItems(platform.model);
 		TreeViewUtilities.decorateTree(root, new FamilyModelNodeDecorator());
 		setTree(root);
+		treeView.refresh();
 	}
 	
 	private void setTree(TreeItem<Node> root) {
