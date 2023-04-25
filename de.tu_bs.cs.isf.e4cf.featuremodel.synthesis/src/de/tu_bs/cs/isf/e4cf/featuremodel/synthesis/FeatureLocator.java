@@ -35,12 +35,14 @@ public class FeatureLocator {
 		
 		// map uuid to configs that contain it
 		Map<UUID, String> configsForID = new HashMap<>();
+		// use enough whitespace for number of configurations
+		String format = "%" + ((int) Math.floor(Math.log10(platform.configurations.size())) + 2) + "s";
 		for (UUID id : uuids) {
 			StringBuilder configString = new StringBuilder();
 			for (int i = 0; i < platform.configurations.size(); i++) {
 				Configuration config = platform.configurations.get(i);
 				if (config.getUUIDs().contains(id)) {
-					configString.append(String.format("%2s", i + 1));
+					configString.append(String.format(format, i + 1));
 				}
 			}
 			configsForID.put(id, configString.toString());
@@ -78,7 +80,7 @@ public class FeatureLocator {
 			String[] indices = combo.split("\\s+"); // split on whitespace
 			for (String token : indices) {
 				if (token.isEmpty()) continue;
-				int i = Integer.parseInt(token);
+				int i = Integer.parseInt(token.trim());
 				configs.add(platform.configurations.get(i - 1));
 			}
 			atomicSets.add(new SyntaxGroup(configs, ids, palette.get(k)));
