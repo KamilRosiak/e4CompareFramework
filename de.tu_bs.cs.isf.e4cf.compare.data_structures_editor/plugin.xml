@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="NodeDecorator" name="NodeDecorator" schema="schema/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.exsd"/>
+   <extension-point id="NodeDecorator" name="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor" schema="schema/NodeDecorator.exsd"/>
    <extension
          id="id1"
          point="org.eclipse.e4.workbench.model">

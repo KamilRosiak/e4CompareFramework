@@ -23,7 +23,7 @@ public class MPLExtension implements IProjectExplorerExtension {
 
 	@Override
 	public Image getIcon(RCPImageService imageService) {
-		return imageService.getImage(FamilyModelViewStrings.BUNDLE_NAME, FamilyModelViewFiles.FV_ROOT_16);
+		return imageService.getImage(MPLEEditorConsts.EMPLE_BUNDLE_NAME, FamilyModelViewFiles.FV_ROOT_16);
 	}
 
 	@Override

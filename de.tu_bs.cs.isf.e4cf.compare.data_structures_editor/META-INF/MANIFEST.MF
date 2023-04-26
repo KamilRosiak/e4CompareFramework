@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.e4.ui.di,
  org.eclipse.swt,
  org.eclipse.e4.core.services,
+ de.tu_bs.cs.isf.e4cf.compare,
  javax.annotation,
  javax.inject,
  org.eclipse.e4.core.di.annotations,
@@ -16,10 +17,9 @@ Require-Bundle: org.eclipse.e4.ui.di,
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.parts.project_explorer,
  de.tu_bs.cs.isf.e4cf.refactoring.data_structures,
+ de.tu_bs.cs.isf.e4cf.featuremodel.core,
  com.google.guava,
- de.tu_bs.cs.isf.e4cf.compare,
- de.tu_bs.cs.isf.e4cf.featuremodel.model,
- de.tu_bs.cs.isf.e4cf.featuremodel.core
+ de.tu_bs.cs.isf.e4cf.featuremodel.model
 Automatic-Module-Name: de.tu.bs.cs.isf.e4cf.compare.data.structures.editor.singleton.true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.interfaces,

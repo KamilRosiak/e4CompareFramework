@@ -41,7 +41,6 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.comparator_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.compare_engine_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.data_structures"/>
-      <plugin id="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.compare.metric_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare"/>
@@ -57,6 +56,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.model"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.graph.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.graph.model"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.meta_models"/>

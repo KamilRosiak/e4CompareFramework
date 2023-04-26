@@ -6,6 +6,10 @@ import javafx.scene.control.TreeTableRow;
 
 public abstract class StylableTreeItem extends TreeItem<Node> {
 	
+	public StylableTreeItem() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public StylableTreeItem(Node node) {
 		super(node);
 	}

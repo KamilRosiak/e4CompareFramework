@@ -7,6 +7,10 @@ import javafx.scene.control.TreeItem;
 
 public class DetailedFamilyModelNodeDecorator extends FamilyModelNodeDecorator {
 	
+	public DetailedFamilyModelNodeDecorator() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	@Override
 	public TreeItem<Node> decorateNode(TreeItem<Node> node) {
 		super.decorateNode(node);

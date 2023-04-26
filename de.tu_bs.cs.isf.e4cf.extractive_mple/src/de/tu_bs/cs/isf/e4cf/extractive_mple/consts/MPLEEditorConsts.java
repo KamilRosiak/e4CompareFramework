@@ -8,7 +8,7 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple.consts;
  */
 
 public class MPLEEditorConsts {
-
+	public static final String EMPLE_BUNDLE_NAME ="de.tu_bs.cs.isf.e4cf.extractive_mple";
 	public static final String TREE_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view";
 	public static final String PROPERTIES_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view";
 	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view";
