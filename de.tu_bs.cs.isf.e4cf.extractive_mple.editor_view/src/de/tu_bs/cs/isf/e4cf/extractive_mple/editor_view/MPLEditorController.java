@@ -160,7 +160,7 @@ public class MPLEditorController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		this.selector = new TreeItemSelector(treeView);
 		
-		nameCol.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getValue().getNodeType()));
+		nameCol.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getValue().toString()));
 		componentCol.setCellValueFactory(p -> {
 			Node node = p.getValue().getValue();
 			String id = "";
@@ -176,11 +176,13 @@ public class MPLEditorController implements Initializable {
 			for (int i = 0; i < currentPlatform.configurations.size(); i++) {
 				Configuration config = currentPlatform.configurations.get(i);
 				if (config.getUUIDs().contains(p.getValue().getValue().getUUID())) {
-					configString.append(i + 1);
+					configString.append((i + 1) + " ");
 				} else {
-					configString.append("  ");
+					int space = (i+1)/10 * 2 + 3;
+					for (int j = 0; j < space; j++) {
+						configString.append(" ");
+					}
 				}
-				configString.append(' ');
 			}
 			return new SimpleStringProperty(configString.toString());
 		});
