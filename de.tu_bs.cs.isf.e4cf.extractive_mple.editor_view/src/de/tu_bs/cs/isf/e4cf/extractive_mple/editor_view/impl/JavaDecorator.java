@@ -18,64 +18,83 @@ public class JavaDecorator implements NodeDecorator {
 	public static final Image METHOD_DECLARATION = new Image("icons/refactoring/function_16.png");
 	public static final Image LINE_COMMENT = new Image("icons/refactoring/comment_16.png");
 	public static final Image FILED_DECLARATION = new Image("icons/refactoring/field_16.png");
+	public static final Image IMPORT = new Image("icons/refactoring/import_16.png");
+	public static final Image STATEMENT = new Image("icons/refactoring/statement_16.png");
+	public static final Image VARIABLE = new Image("icons/refactoring/variable_16.png");
+	public static final Image CONSTRUCTOR = new Image("icons/refactoring/constructor_16.png");
+	public static final Image ARGS = new Image("icons/refactoring/argument_16.png");
 
+	// required for extensions point creation
 	public JavaDecorator() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public TreeItem<Node> decorateNode(TreeItem<Node> node) {
+		// create node image with variability and type image
 		try {
-			HBox hbox = new HBox();
-			switch (node.getValue().getVariabilityClass()) {
-			case MANDATORY:
-				hbox.getChildren().add(new ImageView(FileTable.FV_MANDATORY_16));
-				break;
-			case ALTERNATIVE:
-				hbox.getChildren().add(new ImageView(FileTable.FV_ALTERNATIVE_16));
-				break;
-			case OPTIONAL:
-				hbox.getChildren().add(new ImageView(FileTable.FV_OPTIONAL_16));
-				break;
-			}
-
-			switch (node.getValue().getNodeType()) {
-			case "DIRECTORY":
-				hbox.getChildren().add(new ImageView(DIRECTORY));
-				break;
-			case "CompilationUnit":
-				hbox.getChildren().add(new ImageView(COMPILATION_UNIT));
-				break;
-			case "FILE":
-				hbox.getChildren().add(new ImageView(FILE));
-				break;
-			case "JAVA":
-				hbox.getChildren().add(new ImageView(JAVA));
-				break;
-			case "MethodDeclaration":
-				hbox.getChildren().add(new ImageView(METHOD_DECLARATION));
-				break;
-			case "LineComment":
-				hbox.getChildren().add(new ImageView(LINE_COMMENT));
-				break;
-			case "FieldDeclaration":
-				hbox.getChildren().add(new ImageView(FILED_DECLARATION));
-				break;
-			default:
-				break;
-			}
-			node.setGraphic(hbox);
+			node.setGraphic(new HBox(getImageForVariability(node), getImageForType(node)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+		// create node image with variability and type image
 		String detail = TreeViewUtilities.getNameDetails(node);
 		if (!detail.isEmpty()) {
-			node.getValue().setRepresentation(node.getValue().getNodeType() +  ": " + detail);
+			node.getValue().setRepresentation(node.getValue().getNodeType() + ": " + detail);
 		} else {
 			node.getValue().setRepresentation(node.getValue().getNodeType());
 		}
 		return node;
+	}
+
+	/**
+	 * Returns an ImageView for the nodes variability class
+	 */
+	private ImageView getImageForVariability(TreeItem<Node> node) {
+		switch (node.getValue().getVariabilityClass()) {
+		case MANDATORY:
+			return new ImageView(FileTable.FV_MANDATORY_16);
+		case ALTERNATIVE:
+			return new ImageView(FileTable.FV_ALTERNATIVE_16);
+		case OPTIONAL:
+			return new ImageView(FileTable.FV_OPTIONAL_16);
+		}
+		return new ImageView();
+	}
+
+	/**
+	 * Returns an ImageView for the nodes type
+	 */
+	private ImageView getImageForType(TreeItem<Node> node) {
+		switch (node.getValue().getNodeType()) {
+		case "DIRECTORY":
+			return new ImageView(DIRECTORY);
+		case "CompilationUnit":
+			return new ImageView(COMPILATION_UNIT);
+		case "FILE":
+			return new ImageView(FILE);
+		case "JAVA":
+			return new ImageView(JAVA);
+		case "MethodDeclaration":
+			return new ImageView(METHOD_DECLARATION);
+		case "LineComment":
+			return new ImageView(LINE_COMMENT);
+		case "FieldDeclaration":
+			return new ImageView(FILED_DECLARATION);
+		case "VariableDecarator":
+			return new ImageView(VARIABLE);
+		case "Import":
+			return new ImageView(IMPORT);
+		case "Imports":
+			return new ImageView(IMPORT);
+		case "ConstructorDeclaration":
+			return new ImageView(CONSTRUCTOR);
+		case "Argument":
+			return new ImageView(ARGS);
+		default:
+			break;
+		}
+		return new ImageView();
 	}
 
 	@Override
