@@ -30,6 +30,7 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -83,9 +84,9 @@ public class MPLEditorController implements Initializable {
 		services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 		setCurrentPlatform(platform);
 		// load decorator and select the first
-		// decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
-		// decoratorCombo.getSelectionModel().select(0);
-		
+		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoraterFromExtension()));
+		decoratorCombo.getSelectionModel().select(0);
+
 	}
 
 	/**
@@ -104,7 +105,7 @@ public class MPLEditorController implements Initializable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Optional
 	@Inject
 	public void showAtomicSets(@UIEventTopic("atomic_sets_found") Map<Set<UUID>, Color> atomicSets) {
@@ -117,12 +118,12 @@ public class MPLEditorController implements Initializable {
 			}
 			return item;
 		};
-		
+
 		TreeItem<Node> root = TreeViewUtilities.createTreeItems(treeView.getRoot().getValue(), coloredTreeCreator);
 		TreeViewUtilities.decorateTree(root, new FamilyModelNodeDecorator());
 		this.setTree(root);
 		TreeViewUtilities.decorateTree(root, new ExpandAllDecorator());
-		//treeView.refresh();
+		// treeView.refresh();
 	}
 
 	@Optional
@@ -140,7 +141,7 @@ public class MPLEditorController implements Initializable {
 	public MPLPlatform getCurrentPlatform() {
 		return currentPlatform;
 	}
-	
+
 	private void setCurrentPlatform(MPLPlatform platform) {
 		this.currentPlatform = platform;
 		TreeItem<Node> root = TreeViewUtilities.createTreeItems(platform.model);
@@ -148,18 +149,17 @@ public class MPLEditorController implements Initializable {
 		setTree(root);
 		treeView.refresh();
 	}
-	
+
 	private void setTree(TreeItem<Node> root) {
 		treeView.setRoot(root);
 		treeView.getRoot().setGraphic(new ImageView(FileTable.rootImage));
 		treeView.getRoot().setExpanded(true);
 		treeView.setShowRoot(true);
 	}
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		this.selector = new TreeItemSelector(treeView);
-		
 		nameCol.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getValue().toString()));
 		componentCol.setCellValueFactory(p -> {
 			Node node = p.getValue().getValue();
@@ -168,7 +168,7 @@ public class MPLEditorController implements Initializable {
 				id = "Clone Node : " + node.getUUID();
 			} else {
 				id = node.getUUID().toString();
-			}	
+			}
 			return new SimpleStringProperty(id);
 		});
 		configCol.setCellValueFactory(p -> {
@@ -194,27 +194,28 @@ public class MPLEditorController implements Initializable {
 					@Override
 					protected void updateItem(Node model, boolean empty) {
 						super.updateItem(model, empty);
-						
+
 						if (empty || model == null) {
 							setText(null);
 							setGraphic(null);
 						} else {
-							if (currentConfiguration != null && currentConfiguration.getUUIDs().contains(model.getUUID())) {
+							if (currentConfiguration != null
+									&& currentConfiguration.getUUIDs().contains(model.getUUID())) {
 								setStyle("-fx-background-color:LIGHTGREEN;");
 							}
-							
+
 							TreeItem<Node> treeItem = this.getTreeItem();
 							if (treeItem instanceof StylableTreeItem) {
 								StylableTreeItem styleTreeItem = (StylableTreeItem) treeItem;
 								styleTreeItem.style(this);
 							}
-							
+
 						}
 					}
 				};
 			}
 		});
-		
+
 		// keyboard shortcuts for keyboard only tree-navigation
 		treeView.setOnKeyPressed(keyEvent -> {
 			KeyCode pressed = keyEvent.getCode();
@@ -228,10 +229,8 @@ public class MPLEditorController implements Initializable {
 				keyEvent.consume();
 			} else if (keyEvent.isShiftDown() && pressed == KeyCode.DOWN) { // jump to first expanded child
 				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
-				TreeItem<Node> firstExpandedChild = currentItem.getChildren().stream()
-						.filter(TreeItem::isExpanded)
-						.findFirst()
-						.orElseGet(() -> currentItem);
+				TreeItem<Node> firstExpandedChild = currentItem.getChildren().stream().filter(TreeItem::isExpanded)
+						.findFirst().orElseGet(() -> currentItem);
 				selectNode(firstExpandedChild.getValue().getUUID());
 				keyEvent.consume();
 			} else if (keyEvent.isControlDown() && pressed == KeyCode.UP) { // jump to previous sibling
@@ -239,7 +238,8 @@ public class MPLEditorController implements Initializable {
 				TreeItem<Node> parent = currentItem.getParent();
 				if (parent.getChildren().size() > 1) {
 					int prevIndex = parent.getChildren().indexOf(currentItem) - 1;
-					// select previous sibling in parent child list, if the item isn't first in the list
+					// select previous sibling in parent child list, if the item isn't first in the
+					// list
 					TreeItem<Node> nextSelection = parent.getChildren().get(prevIndex >= 0 ? prevIndex : 0);
 					selectNode(nextSelection.getValue().getUUID());
 				}
@@ -251,13 +251,14 @@ public class MPLEditorController implements Initializable {
 				if (childCount > 1) {
 					int nextIndex = parent.getChildren().indexOf(currentItem) + 1;
 					// select next sibling in parent child list, if the item isn't last in the list
-					TreeItem<Node> nextSelection = parent.getChildren().get(nextIndex < childCount ? nextIndex : childCount - 1);
+					TreeItem<Node> nextSelection = parent.getChildren()
+							.get(nextIndex < childCount ? nextIndex : childCount - 1);
 					selectNode(nextSelection.getValue().getUUID());
 				}
 				keyEvent.consume();
 			}
 		});
-		
+
 		addListeners();
 	}
 

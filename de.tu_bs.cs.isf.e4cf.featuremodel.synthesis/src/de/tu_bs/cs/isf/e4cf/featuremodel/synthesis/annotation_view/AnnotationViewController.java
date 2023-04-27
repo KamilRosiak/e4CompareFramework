@@ -31,12 +31,15 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureLocator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SynthesisConsts;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.FeatureNameDialog;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.WordCounter;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -49,7 +52,7 @@ import javafx.scene.paint.Color;
 public class AnnotationViewController implements Initializable {
 	@Inject
 	private ServiceContainer services;
-	
+
 	@FXML
 	private TableView<ClusterViewModel> annotationTable;
 	@FXML
@@ -63,25 +66,27 @@ public class AnnotationViewController implements Initializable {
 
 	private ObservableList<ClusterViewModel> clusters = new SimpleListProperty<>();
 	private FeatureLocator locator = new FeatureLocator();
-	
-	
+	@FXML
+	private ContextMenu annotationTableContextMenu;
+
 	@Optional
 	@Inject
 	public void locateFeatures(@UIEventTopic(MPLEEditorConsts.LOCATE_FEATURES) MPLPlatform mpl) {
 		List<SyntaxGroup> clusters = this.locator.locateFeatures(services, mpl);
 		this.displayGroups(clusters);
 	}
-	
+
 	@Optional
 	@Inject
 	public void updateMPL(@UIEventTopic(MPLEEditorConsts.ADD_VARIANT_TO_MPL) MPLPlatform mpl) {
 		List<SyntaxGroup> groups = this.locator.updateMPL(mpl);
 		List<Cluster> newClusters = groups.stream().map(Cluster::new).collect(Collectors.toList());
-		List<Cluster> oldClusters = this.clusters.stream().map(ClusterViewModel::getCluster).collect(Collectors.toList());
+		List<Cluster> oldClusters = this.clusters.stream().map(ClusterViewModel::getCluster)
+				.collect(Collectors.toList());
 		updateClusters(oldClusters, newClusters);
 		this.displayClusters(newClusters);
 	}
-	
+
 	private void updateClusters(List<Cluster> oldClusters, List<Cluster> newClusters) {
 		String[] variants = newClusters.get(0).getName().split(" ");
 		String newVariantName = variants[variants.length - 1];
@@ -89,12 +94,15 @@ public class AnnotationViewController implements Initializable {
 		for (Cluster c : oldClusters) {
 			clusterMap.put(c, new ArrayList<>());
 		}
-		
-		for (Cluster newC: newClusters) {
+
+		for (Cluster newC : newClusters) {
 			for (Cluster oldC : oldClusters) {
-				
-				if (oldC.getSyntaxGroup().getUuids().containsAll(newC.getSyntaxGroup().getUuids())) { // new cluster is subset of old cluster
-					if (oldC.getSyntaxGroup().getConfigurations().size() < newC.getSyntaxGroup().getConfigurations().size()) { // clusters are the same
+
+				if (oldC.getSyntaxGroup().getUuids().containsAll(newC.getSyntaxGroup().getUuids())) { // new cluster is
+																										// subset of old
+																										// cluster
+					if (oldC.getSyntaxGroup().getConfigurations().size() < newC.getSyntaxGroup().getConfigurations()
+							.size()) { // clusters are the same
 						newC.setName(oldC.getName());
 						newC.setRoot(oldC.isRoot());
 						newC.setMandatory(oldC.isMandatory());
@@ -102,9 +110,13 @@ public class AnnotationViewController implements Initializable {
 						clusterMap.get(oldC).add(newC);
 					} else { // remaining uuids not in new variant
 						newC.setName(oldC.getName() + "\\" + newVariantName);
-					}						
+					}
 					break;
-				} else if (!Collections.disjoint(oldC.getSyntaxGroup().getUuids(), newC.getSyntaxGroup().getUuids())) { // other uuids in new cluster
+				} else if (!Collections.disjoint(oldC.getSyntaxGroup().getUuids(), newC.getSyntaxGroup().getUuids())) { // other
+																														// uuids
+																														// in
+																														// new
+																														// cluster
 					String newName = combineNames(oldC, newC);
 					newC.setName(newName);
 					System.out.println(newName);
@@ -112,7 +124,7 @@ public class AnnotationViewController implements Initializable {
 				}
 			}
 		}
-		
+
 		// add children to new clusters
 		for (Cluster oldC : oldClusters) {
 			for (Cluster newC : clusterMap.get(oldC)) {
@@ -122,7 +134,7 @@ public class AnnotationViewController implements Initializable {
 			}
 		}
 	}
-	
+
 	private String combineNames(Cluster oldC, Cluster newC) {
 		String oldName = oldC.getName();
 		String clusters = newC.getName();
@@ -142,7 +154,7 @@ public class AnnotationViewController implements Initializable {
 	 * 
 	 * @param groups List of {@link SyntaxGroup}
 	 */
-	public void displayGroups(List<SyntaxGroup> groups) {		
+	public void displayGroups(List<SyntaxGroup> groups) {
 		List<Cluster> clusters = groups.stream().map(Cluster::new).collect(Collectors.toList());
 		displayClusters(clusters);
 	}
@@ -150,18 +162,19 @@ public class AnnotationViewController implements Initializable {
 	private void publishGroups(List<SyntaxGroup> groups) {
 		Map<Set<UUID>, Color> atomicSets = groups.stream()
 				.collect(Collectors.toMap(SyntaxGroup::getUuids, SyntaxGroup::getColor));
-		//String workspace = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
-		//FileStreamUtil.writeTextToFile(workspace + "/atomicSets.txt", atomicSets.toString());
+		// String workspace =
+		// services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
+		// FileStreamUtil.writeTextToFile(workspace + "/atomicSets.txt",
+		// atomicSets.toString());
 		services.eventBroker.post("atomic_sets_found", atomicSets);
 	}
-	
+
 	public void displayClusters(List<Cluster> clusters) {
 		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
 		List<SyntaxGroup> groups = clusters.stream().map(Cluster::getSyntaxGroup).collect(Collectors.toList());
-		publishGroups(groups);		
-		
-		List<ClusterViewModel> viewModels = clusters.stream().map(ClusterViewModel::new)
-				.collect(Collectors.toList());
+		publishGroups(groups);
+
+		List<ClusterViewModel> viewModels = clusters.stream().map(ClusterViewModel::new).collect(Collectors.toList());
 		this.clusters = FXCollections.observableList(viewModels);
 
 		this.annotationTable.setItems(this.clusters);
@@ -192,7 +205,7 @@ public class AnnotationViewController implements Initializable {
 	public void fxAddAbstractCluster(ActionEvent e) {
 		e.consume();
 		final String namePrefix = "Abstract";
-		
+
 		// find highest existing ordinal of an abstract cluster
 		int maxOrdinal = this.clusters.stream().filter(model -> model.getCluster().isAbstract())
 				.map(ClusterViewModel::getName).filter(name -> name.matches(String.format("%s\\d+", namePrefix)))
@@ -207,10 +220,10 @@ public class AnnotationViewController implements Initializable {
 		this.clusters.add(model);
 		this.annotationTable.refresh();
 	}
-	
-	
+
 	/**
 	 * Parses the annotations and builds the corresponding feature model
+	 * 
 	 * @param e ActionEvent from the menu item
 	 */
 	@FXML
@@ -227,10 +240,20 @@ public class AnnotationViewController implements Initializable {
 			throw new InvalidAnnotationException("No cluster annotated as root");
 		}
 	}
-	
+
+	/**
+	 * Collects all name label from current atomic sets
+	 */
+	@FXML
+	private void proposeFeatureName() {
+		FeatureNameDialog fnd = new FeatureNameDialog(new ArrayList<WordCounter>(),
+				annotationTable.getSelectionModel().getSelectedItem());
+		annotationTable.refresh();
+	}
+
 	private Feature toFeature(Cluster cluster) {
 		Feature feature = new ColoredFeature(cluster.getName(), cluster.getSyntaxGroup().getColor());
-		if (cluster.isMandatory()) { 
+		if (cluster.isMandatory()) {
 			feature.setVariability(Variability.MANDATORY);
 		} // feature is optional by default
 		if (cluster.isAbstract()) {
@@ -253,7 +276,7 @@ public class AnnotationViewController implements Initializable {
 		}
 		return feature;
 	}
-	
+
 	public class InvalidAnnotationException extends IllegalArgumentException {
 		private static final long serialVersionUID = 1L;
 
@@ -309,7 +332,7 @@ public class AnnotationViewController implements Initializable {
 			}
 			e.getRowValue().nameProperty().set(e.getNewValue());
 			this.annotationTable.refresh();
-			//printDebug();
+			// printDebug();
 		});
 
 		// add and remove children to cluster on children list edit
@@ -329,8 +352,9 @@ public class AnnotationViewController implements Initializable {
 
 			e.getRowValue().setChildren(newChildren);
 			this.annotationTable.refresh();
-			//printDebug();
+			// printDebug();
 		});
+		annotationTableContextMenu.setAutoHide(true);
 	}
 
 	/**

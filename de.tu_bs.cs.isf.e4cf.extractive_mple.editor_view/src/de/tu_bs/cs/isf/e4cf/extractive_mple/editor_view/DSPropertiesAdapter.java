@@ -20,12 +20,12 @@ import javafx.scene.Scene;
  */
 
 public class DSPropertiesAdapter {
-
+	public static final String PROPERTIES_VIEW_FXML = "de/tu_bs/cs/isf/e4cf/extractive_mple/editor_view/DSPropertiesView.fxml";
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
 		FXMLLoader<DSPropertiesController> loader = new FXMLLoader<DSPropertiesController>(context, MPLEEditorConsts.BUNDLE_NAME,
-				MPLEEditorConsts.PROPERTIES_VIEW_FXML);
+				PROPERTIES_VIEW_FXML);
 
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);

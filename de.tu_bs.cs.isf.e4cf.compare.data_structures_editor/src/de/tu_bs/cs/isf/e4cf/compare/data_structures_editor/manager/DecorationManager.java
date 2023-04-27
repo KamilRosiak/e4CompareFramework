@@ -16,13 +16,11 @@ import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 @Singleton
 public class DecorationManager {
 	private NodeDecorator currentDecorater;
-	private static final String DECORATER_EXTENSION_POINT = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.NodeDecorator";
+	private static final String DECORATER_EXTENSION_POINT = "de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.NodeDecorator";
 	private static final String DECORATER_ATTR = "node_decorator";
 
 	/**
 	 * This method returns all registered tree decorate
-	 * 
-	 * @return
 	 */
 	public List<NodeDecorator> getDecoraterFromExtension() {
 		return RCPContentProvider.<NodeDecorator>getInstanceFromBundle(DECORATER_EXTENSION_POINT, DECORATER_ATTR);
@@ -34,13 +32,12 @@ public class DecorationManager {
 	 */
 	public List<NodeDecorator> getDecoratorForTree(Tree tree) {
 		List<NodeDecorator> decorator = new ArrayList<NodeDecorator>();
-		
 		for (NodeDecorator decorater : getDecoraterFromExtension()) {
 			if (decorater.isSupportedTree(tree)) {
 				decorator.add(decorater);
 			}
 		}
-		
+
 		if (decorator.isEmpty()) {
 			decorator.add(new FamilyModelNodeDecorator());
 		}

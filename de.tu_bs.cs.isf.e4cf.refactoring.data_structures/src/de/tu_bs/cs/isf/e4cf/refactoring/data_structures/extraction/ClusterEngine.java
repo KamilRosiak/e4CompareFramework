@@ -46,7 +46,6 @@ public class ClusterEngine {
 				+ "script/clustering_sklearn.exe").substring(1)).getPath();
 		scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
 				+ "script/clustering_sklearn.py").substring(1)).getPath();
-
 	}
 
 	private static ProcessUtil process;
@@ -216,9 +215,7 @@ public class ClusterEngine {
 					MultiSetNode multiSetNode = mapping.get(node);
 					MultiSetTree newTree = multiSetTree.removeRootAndCreateNewTree(multiSetNode);
 					newMultiSetTrees.add(newTree);
-
 				}
-
 			}
 		}
 	}
