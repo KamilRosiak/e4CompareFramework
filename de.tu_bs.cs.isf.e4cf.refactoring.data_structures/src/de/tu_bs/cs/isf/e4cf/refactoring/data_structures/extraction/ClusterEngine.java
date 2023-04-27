@@ -13,6 +13,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
+
 import com.google.common.collect.Lists;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
@@ -27,6 +31,8 @@ import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.MultiSetTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.model.ReferenceTree;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.util.ProcessUtil;
 
+@Singleton
+@Creatable
 public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
 	private static String scriptPathExe;

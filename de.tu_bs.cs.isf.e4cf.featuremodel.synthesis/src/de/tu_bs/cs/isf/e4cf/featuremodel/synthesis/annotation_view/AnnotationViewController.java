@@ -68,7 +68,7 @@ public class AnnotationViewController implements Initializable {
 	private FeatureLocator locator = new FeatureLocator();
 	@FXML
 	private ContextMenu annotationTableContextMenu;
-	
+
 	@Optional
 	@Inject
 	public void locateFeatures(@UIEventTopic(MPLEEditorConsts.LOCATE_FEATURES) MPLPlatform mpl) {
@@ -246,10 +246,9 @@ public class AnnotationViewController implements Initializable {
 	 */
 	@FXML
 	private void proposeFeatureName() {
-
 		FeatureNameDialog fnd = new FeatureNameDialog(new ArrayList<WordCounter>(),
 				annotationTable.getSelectionModel().getSelectedItem());
-
+		annotationTable.refresh();
 	}
 
 	private Feature toFeature(Cluster cluster) {
