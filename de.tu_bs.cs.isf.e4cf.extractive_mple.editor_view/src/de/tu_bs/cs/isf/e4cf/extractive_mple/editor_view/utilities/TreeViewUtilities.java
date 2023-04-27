@@ -3,9 +3,11 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.interfaces.NodeDecorator;
@@ -240,5 +242,60 @@ public final class TreeViewUtilities {
 			return true;
 		}
 		return false;
+	}
+	
+	
+	public static String getNameDetails(TreeItem<Node> node) {
+		String detail = "";
+		try {
+			Attribute scope = node.getValue().getAttributeForKey("Scope");
+			if (scope != null) {
+				detail += (String) scope.getValue(0).getValue() + ".";
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		try {
+			Attribute name = node.getValue().getAttributeForKey("Name");
+			if (name != null) {
+				detail += (String) name.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		try {
+			Attribute value = node.getValue().getAttributeForKey("Value");
+			if (value != null) {
+				detail += (String) value.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		try {
+			Attribute type = node.getValue().getAttributeForKey("Type");
+			if (type != null) {
+				detail += ":" + (String) type.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		
+		try {
+			Attribute target = node.getValue().getAttributeForKey("Target");
+			if (target != null) {
+				detail += (String) target.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		try {
+			Attribute operator = node.getValue().getAttributeForKey("Operator");
+			if (operator != null) {
+				detail += (String) operator.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		return detail;
 	}
 }
