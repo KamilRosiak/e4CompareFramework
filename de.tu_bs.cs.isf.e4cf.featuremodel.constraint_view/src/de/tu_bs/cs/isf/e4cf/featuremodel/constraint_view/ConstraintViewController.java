@@ -1,6 +1,5 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view;
 
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -24,7 +23,7 @@ public class ConstraintViewController {
 	private ServiceContainer services;
 	private ConstraintView view;
 	private FeatureDiagramm currentModel;
-	
+
 	@PostConstruct
 	public void createPartControl(Composite parent, ServiceContainer services) {
 		this.setServices(services);
@@ -38,23 +37,22 @@ public class ConstraintViewController {
 	public void setServices(ServiceContainer services) {
 		this.services = services;
 	}
-	
+
 	@Focus
 	public void updateView() {
 		try {
-			FMEditorController fmec = ContextInjectionFactory.make(FMEditorController.class, EclipseContextFactory.create());
-			currentModel = null; //TODO fmec.getCurrentFeatureDiagram();
-			view.showConstraints(null); // TODO fmec.getCurrentFeatureDiagram().getConstraints());
+			if (currentModel != null)
+				view.showConstraints(currentModel.getConstraints());
 		} catch (Exception e) {
 			RCPMessageProvider.errorMessage("Error", "No FeatureModel Loaded");
 		}
-		
 	}
-	
+
 	@Optional
-	@Inject 
-	public void showConstraints(@UIEventTopic(FDEventTable.SHOW_CONSTRAINT_EVENT) String event) {
+	@Inject
+	public void showConstraints(@UIEventTopic(FDEventTable.SHOW_CONSTRAINT_EVENT) FeatureDiagramm fd) {
+		currentModel = fd;
 		updateView();
 	}
-	
+
 }

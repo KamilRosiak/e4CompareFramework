@@ -5,9 +5,8 @@ import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.DefaultFeature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import featureConfiguration.FeatureConfiguration;
@@ -140,6 +139,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
             @Override
             public void handle(ActionEvent event) {
             	Pair<String, FXGraphicalFeature> pair = new Pair<String, FXGraphicalFeature>(FDStringTable.COMPONENTFEATURE, fxGraFeature);
+            	
             	services.eventBroker.send(FDEventTable.ADD_COMPONENTFEATURE, pair);	
             	event.consume();
             }
@@ -242,7 +242,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	services.eventBroker.send(FDEventTable.SET_FEATURE_MANDATORY, fxGraFeature);
+            	fxGraFeature.setVariability(Variability.MANDATORY);
         		event.consume();
             }
         });
@@ -254,7 +254,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	services.eventBroker.send(FDEventTable.SET_FEATURE_OPTIONAL, fxGraFeature);
+            	fxGraFeature.setVariability(Variability.OPTIONAL);
         		event.consume();
             }
         });

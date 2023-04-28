@@ -28,25 +28,24 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
-
-public class FXGraphicalFeature extends VBox implements Observable  {
+public class FXGraphicalFeature extends VBox implements Observable {
 	public FXFeatureNameLabel featureNameLabel;
 	public FXFeatureUpperConnector upperConnector;
 	public FXFeatureLowerConnector lowerConnector;
 	public List<Line> childConnections = new ArrayList<>();
 	public DoubleProperty xPos = new SimpleDoubleProperty(), yPos = new SimpleDoubleProperty();
-	
+
 	private IFeature feature = new DefaultFeature();
 	private FXGraphicalFeature parent;
 	private INodeAnimator animator;
-	
+
 	private ObservableList<FXGraphicalFeature> childFeatures = new ChangeList<>();
 	private List<InvalidationListener> listeners = new ArrayList<>();
-	
+
 	// TODO remove
 	private ServiceContainer services;
 	private FMEditorView view;
-	
+
 	public FXGraphicalFeature(IFeature feature) {
 		this.feature = feature;
 		createUI();
@@ -54,20 +53,19 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 			((StylableFeature) feature).style(this);
 		}
 	}
-	
+
 	public FXGraphicalFeature(String name) {
 		this(new Feature(name));
 	}
-	
+
 	public FXGraphicalFeature() {
 		this(new DefaultFeature());
 	}
-	
+
 	public void setVariability(Variability variability) {
-		// TODO set the feature
 		this.upperConnector.setVariability(variability);
 	}
-	
+
 	public void setGroupVariability(GroupVariability groupVariability) {
 		switch (groupVariability) {
 		case DEFAULT:
@@ -78,7 +76,7 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 			break;
 		case ALTERNATIVE:
 			this.setGroupVariability_ALTERNATIVE();
-			break;		
+			break;
 		}
 	}
 
@@ -102,33 +100,33 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 		addDrag();
 		addSelectionListener();
 		createContextMenu();
-		
+
 		xPos.bind(this.layoutXProperty());
 		yPos.bind(this.layoutYProperty());
-		
+
 		this.widthProperty().addListener(l -> this.invalidate());
 		this.heightProperty().addListener(l -> this.invalidate());
 	}
-	
-	 /**
-	  * initialize the  graphical feature. 
-	  */
+
+	/**
+	 * initialize the graphical feature.
+	 */
 	private void initGraphicalFeature() {
 		setAlignment(Pos.TOP_CENTER);
 		this.upperConnector = new FXFeatureUpperConnector(feature);
 		this.lowerConnector = new FXFeatureLowerConnector(this);
 		this.featureNameLabel = new FXFeatureNameLabel(feature);
 		getChildren().addAll(this.upperConnector, this.lowerConnector, this.featureNameLabel);
-		
+
 		this.setGroupVariability(feature.getGroupVariability());
 	}
-	
+
 	/**
-	 * Adding a Drag event to graphical feature 
+	 * Adding a Drag event to graphical feature
 	 */
 	private void addDrag() {
 		setOnMouseDragged(event -> {
-			if(!event.isShiftDown() && event.isPrimaryButtonDown()) {
+			if (!event.isShiftDown() && event.isPrimaryButtonDown()) {
 				toFront();
 				double x = event.getX() + this.getLayoutX() - getWidth() / 2;
 				double y = event.getY() + this.getLayoutY() - getHeight() / 2;
@@ -137,12 +135,12 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 			event.consume();
 		});
 	}
-	
+
 	private void addSelectionListener() {
 		setOnMousePressed(event -> {
-			if(event.isShiftDown()) {
+			if (event.isShiftDown()) {
 				toFront();
-				services.eventBroker.send(FDEventTable.SET_SELECTED_FEATURE, this);	
+				services.eventBroker.send(FDEventTable.SET_SELECTED_FEATURE, this);
 //				for (ArtifactReference artifact : this.getFeature().getArtifactReferences()) {
 //					System.out.println("Referenced Artifact for ClearName: "+artifact.getArtifactClearName());
 //					for (String referencedID : artifact.getReferencedArtifactIDs()) {
@@ -154,40 +152,35 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 			event.consume();
 		});
 	}
-	
-	 /**
-	  * Creating the context menu for the FMEditor.
-	  */
-	 private void createContextMenu() {
-		 FXGraphicalFeatureContextMenu fmeContextMenu = new FXGraphicalFeatureContextMenu(services, this);
-		 VBox currentGraFeature = this;
-		 setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-	            @Override
-	            public void handle(ContextMenuEvent event) {
-	            	if(event.getSource() instanceof FXGraphicalFeature) {
-	            		event.consume();
-		            	fmeContextMenu.show(currentGraFeature, event.getScreenX(), event.getScreenY()); 
-	            	}
-	            }
-	        });
-	 }
-	
+
+	/**
+	 * Creating the context menu for the FMEditor.
+	 */
+	private void createContextMenu() {
+		FXGraphicalFeatureContextMenu fmeContextMenu = new FXGraphicalFeatureContextMenu(services, this);
+		VBox currentGraFeature = this;
+		setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+			@Override
+			public void handle(ContextMenuEvent event) {
+				if (event.getSource() instanceof FXGraphicalFeature) {
+					event.consume();
+					fmeContextMenu.show(currentGraFeature, event.getScreenX(), event.getScreenY());
+				}
+			}
+		});
+	}
+
 	public void setBackgroundColor(Color color) {
 		int hue = (int) color.getHue();
 		double colorSaturation = color.getSaturation();
 		int saturation = (int) (100 * colorSaturation);
 		double colorBrightness = color.getBrightness();
 		int brightness = (int) (100 * colorBrightness);
-		String css = "-fx-background-color: \r\n" + 
-				"        #000,\r\n" + 
-				"        hsb("+ hue + ", " + saturation + "%, " + brightness + "%);\r\n" + 
-				"    -fx-background-insets: 0,1,1,2;\r\n" + 
-				"    -fx-background-radius: 2,1,1,1;\r\n" + 
-				"    -fx-padding: 2 5 2 5;\r\n" + 
-				"    -fx-text-fill: white;\r\n" + 
-				"    -fx-font-family: Monospaced;\r\n" + 
-				"	-fx-font-size: 10px;\r\n" + 
-				"	-fx-border-width: 1px;";
+		String css = "-fx-background-color: \r\n" + "        #000,\r\n" + "        hsb(" + hue + ", " + saturation
+				+ "%, " + brightness + "%);\r\n" + "    -fx-background-insets: 0,1,1,2;\r\n"
+				+ "    -fx-background-radius: 2,1,1,1;\r\n" + "    -fx-padding: 2 5 2 5;\r\n"
+				+ "    -fx-text-fill: white;\r\n" + "    -fx-font-family: Monospaced;\r\n"
+				+ "	-fx-font-size: 10px;\r\n" + "	-fx-border-width: 1px;";
 		featureNameLabel.setStyle(css);
 	}
 
@@ -198,17 +191,17 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 
 	@Override
 	public void removeListener(InvalidationListener listener) {
-		this.listeners.remove(listener);		
+		this.listeners.remove(listener);
 	}
-	
+
 	private void invalidate() {
 		this.listeners.forEach(l -> l.invalidated(this));
 	}
-	
+
 	public IFeature getFeature() {
 		return feature;
 	}
-	
+
 	public FMEditorView getView() {
 		return view;
 	}
@@ -216,67 +209,66 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 	public void setFeature(IFeature feature) {
 		this.feature = feature;
 	}
-	
+
 	public ObservableList<FXGraphicalFeature> getChildFeatures() {
 		return childFeatures;
 	}
-	
+
 	public void addChildFeature(FXGraphicalFeature fxFeature) {
 		fxFeature.setParentFxFeature(this);
 		this.childFeatures.add(fxFeature);
-		feature.getChildren().add(fxFeature.getFeature());	
+		feature.getChildren().add(fxFeature.getFeature());
 	}
-	
+
 	public void addChildFeatureFormated(FXGraphicalFeature fxFeature) {
 		addChildFeature(fxFeature);
 		translateChildren();
 	}
-	
-	
+
 	/**
 	 * replacing children.
 	 */
 	private void translateChildren() {
 		double xSum = 0;
-		for(FXGraphicalFeature fxGf : childFeatures) {
+		for (FXGraphicalFeature fxGf : childFeatures) {
 			xSum += fxGf.getWidth();
 		}
 		xSum += PlacemantConsts.FEATURE_DEFAUL_VALUE;
 		xSum += childFeatures.size() * PlacemantConsts.FEATURE_H_GAP_VALUE;
-		double position = (getTranslateX() + getWidth()/2) - xSum / 2;
+		double position = (getTranslateX() + getWidth() / 2) - xSum / 2;
 		double step = xSum / childFeatures.size();
-		for(FXGraphicalFeature fxGf : childFeatures) {
+		for (FXGraphicalFeature fxGf : childFeatures) {
 			fxGf.xPos.set(position);
 			fxGf.yPos.set(getTranslateY() + getHeight() + PlacemantConsts.FEATURE_V_GAP_VALUE);
 			position += step;
 		}
 	}
-	
+
 	public void setName(String name) {
-		//feature.setName(name);
+		// feature.setName(name);
 		featureNameLabel.setText(name);
 		services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 	}
-	
+
 	void setGroupVariability_ALTERNATIVE() {
-		
+
 //		if (!feature.isAlternative()) {
 //			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);
 //			feature.setAlternative(true);
 //			feature.setOr(false);
 //			services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY_GROUP, feature);			
 //		}
-		if(getChildren().contains(lowerConnector)) {
+		if (getChildren().contains(lowerConnector)) {
 			getChildren().remove(lowerConnector);
 		}
 		lowerConnector = new FXFeatureLowerConnector(this);
 		lowerConnector.drawAlternative();
-		for(FXGraphicalFeature childFeatures : childFeatures) {
+		for (FXGraphicalFeature childFeatures : childFeatures) {
 			childFeatures.removeUpper();
 		}
 		getChildren().addAll(lowerConnector);
 	}
-	
+
 	void setGroupVariability_OR() {
 //		if (!feature.isOr()) {
 //			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);			
@@ -284,18 +276,18 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 //			feature.setOr(true);
 //			services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY_GROUP, feature);			
 //		}
-		if(getChildren().contains(lowerConnector)) {
+		if (getChildren().contains(lowerConnector)) {
 			getChildren().remove(lowerConnector);
 		}
 		lowerConnector = new FXFeatureLowerConnector(this);
 		lowerConnector.drawOr();
 		lowerConnector.toBack();
-		for(FXGraphicalFeature childFeatures : childFeatures) {
+		for (FXGraphicalFeature childFeatures : childFeatures) {
 			childFeatures.removeUpper();
 		}
-		getChildren().addAll(lowerConnector);		
+		getChildren().addAll(lowerConnector);
 	}
-	
+
 	void setGroupVariability_AND() {
 //		if (feature.isOr() || feature.isAlternative()) {
 //			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);
@@ -303,15 +295,15 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 //			feature.setOr(false);
 //			services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY_GROUP, feature);
 //		}
-		if(getChildren().contains(lowerConnector)) {
+		if (getChildren().contains(lowerConnector)) {
 			getChildren().remove(lowerConnector);
 		}
-		
-		for(FXGraphicalFeature childFeature : childFeatures) {			
+
+		for (FXGraphicalFeature childFeature : childFeatures) {
 			childFeature.getChildren().add(0, childFeature.upperConnector);
 		}
 	}
-	
+
 	public void removeUpper() {
 		getChildren().remove(upperConnector);
 	}
@@ -323,17 +315,17 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 	public void setParentFxFeature(FXGraphicalFeature parentFxFeature) {
 		this.parent = parentFxFeature;
 	}
-	
+
 	public void setPosition(double x, double y) {
 		this.layoutXProperty().set(x);
 		this.layoutYProperty().set(y);
 	}
-	
+
 	@Override
 	public String toString() {
-		return this.feature.getName()+"\tID: "+ this.feature.getUuid();	
+		return this.feature.getName() + "\tID: " + this.feature.getUuid();
 	}
-	
+
 	public void toggleSelected() {
 		if (this.animator != null) {
 			featureNameLabel.getStyleClass().remove("featureIsPartOfSelection");
@@ -345,5 +337,5 @@ public class FXGraphicalFeature extends VBox implements Observable  {
 			this.animator.start();
 		}
 	}
-	
+
 }

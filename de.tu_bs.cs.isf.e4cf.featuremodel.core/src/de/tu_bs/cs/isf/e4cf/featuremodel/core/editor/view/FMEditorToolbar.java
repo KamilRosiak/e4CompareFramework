@@ -66,7 +66,6 @@ public class FMEditorToolbar extends ToolBar  {
 			//services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.currentModel());
 		}));
 		
-		
 		Button loggerButton = JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_START_LOGGER, e-> {
     		if (((Button)e.getSource()).getText().equals(FDStringTable.FD_BAR_MENU_START_LOGGER)) {
     			((Button)e.getSource()).setText(FDStringTable.FD_BAR_MENU_STOP_LOGGER);

@@ -25,48 +25,45 @@ import javafx.event.EventHandler;
 public class TabController {
 	private ServiceContainer services;
 	private List<ErrorListener> errorListeners;
-	
+
 	private TabView view;
-	
+
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, EMenuService menuService) {
 		this.services = services;
 		EventBroker.set(services);
 		this.errorListeners = new ArrayList<>();
-		this.view = new TabView(
-			parent, 
-			ui -> menuService.registerContextMenu(ui, FDStringTable.FD_TAB_VIEW_CONTEXT_MENU_ID)
-		);
-		
+		this.view = new TabView(parent,
+				ui -> menuService.registerContextMenu(ui, FDStringTable.FD_TAB_VIEW_CONTEXT_MENU_ID));
+
 		this.createTab(FDStringTable.FD_DEFAULT_NAME);
 	}
-	
+
 	public FMEditorTab createTab(String tabTitle) {
 		EventHandler<Event> onTabClose = event -> {
-			//	this.currentEditor().askToSave();		
+			// this.currentEditor().askToSave();
 			// don't allow the tabPane to be empty
 			if (this.view.tabCount() == 1) {
 				createTab(FDStringTable.FD_DEFAULT_NAME);
 			}
 		};
-		
+
 		FMEditorTab tab = new FMEditorTab(tabTitle, services, onTabClose);
 		this.view.addTab(tab);
-		
-		return tab;		
+
+		return tab;
 	}
-	
+
 	private EditorController currentEditor() {
 		return this.view.currentTab().editor();
 	}
-	
+
 	@Optional
 	@Inject
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram diagram) {
 		FMEditorTab newTab = this.createTab(diagram.getName());
+		services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, diagram);
 		newTab.editor().setFeatureDiagram(diagram);
 	}
-	
-	
 
 }

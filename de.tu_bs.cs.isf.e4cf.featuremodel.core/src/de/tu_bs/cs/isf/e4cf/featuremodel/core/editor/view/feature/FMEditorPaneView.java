@@ -51,12 +51,10 @@ public class FMEditorPaneView extends BorderPane {
 
 	public FMEditorPaneView(FMEditorToolbar toolbar) {
 		this.toolbar = toolbar;
-
 		this.labelBorderAnimationMap = new AnimationMap();
 		this.selectedFeatures = new ArrayList<FXGraphicalFeature>();
 		this.componentFeatureList = new ArrayList<FXGraphicalFeature>();
 		this.rootFeature = new FXGraphicalFeature();
-
 		setTheme();
 		this.constructUI();
 	}
