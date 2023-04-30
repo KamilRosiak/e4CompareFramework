@@ -25,6 +25,9 @@
       <artifactReader
             artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.python.PythonFileReader">
       </artifactReader>
+      <artifactReader
+            artifactReader="de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.iec_611331.IECReader">
+      </artifactReader>
    </extension>
    <extension
          point="de.tu_bs.cs.isf.e4cf.compare.data_structures.ArtifactWriter">
