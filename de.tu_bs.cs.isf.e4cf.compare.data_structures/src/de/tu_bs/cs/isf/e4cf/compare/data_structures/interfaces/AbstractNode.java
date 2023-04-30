@@ -92,7 +92,7 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public Attribute getAttributeForKey(String key) {
 		try {
-		return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
+			return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
 		} catch (NoSuchElementException e) {
 			return null;
 		}
@@ -134,32 +134,6 @@ public abstract class AbstractNode implements Node {
 			nodeTypes.addAll(child.getAllNodeTypes());
 		}
 		return nodeTypes;
-	}
-
-	/******************************************************
-	 * GETTER AND SETTER
-	 ******************************************************/
-	public Node getParent() {
-		return parent;
-	}
-
-	public void setParent(Node parent) {
-		this.parent = parent;
-	}
-
-	@Override
-	public String getNodeType() {
-		return nodeType;
-	}
-
-	@Override
-	public void setNodeType(String nodeType) {
-		this.nodeType = nodeType;
-	}
-
-	@Override
-	public List<Node> getChildren() {
-		return children;
 	}
 
 	@Override
@@ -381,14 +355,14 @@ public abstract class AbstractNode implements Node {
 
 		return startAmount;
 	}
-	
+
 	@Override
 	public Set<UUID> getAllUUIDS() {
 		Set<UUID> uuids = new HashSet<>();
 		addAllUUIDS(uuids);
 		return uuids;
 	}
-	
+
 	@Override
 	public void addAllUUIDS(Set<UUID> uuids) {
 		uuids.add(getUUID());
@@ -401,7 +375,7 @@ public abstract class AbstractNode implements Node {
 		// insert all UUIDs of children in uuids
 		getChildren().forEach(child -> child.addAllUUIDS(uuids));
 	}
-	
+
 	@Override
 	public int cut() {
 		if (this.isRoot()) {
@@ -411,29 +385,56 @@ public abstract class AbstractNode implements Node {
 		getParent().getChildren().remove(index);
 		return index;
 	}
-	
+
 	@Override
 	public int cutWithoutChildren() {
 		if (this.isRoot()) {
 			return -1;
 		}
 		for (Node child : children) {
-			getParent().addChildWithParent(child); 
+			getParent().addChildWithParent(child);
 		}
 		return this.cut();
 	}
+
 	@Override
 	public String getValueAt(int index) {
 		if (attributes.size() < (index + 1)) {
 			return null;
-		}	
+		}
 		return attributes.get(index).getAttributeValues().get(0).getValue().toString();
 	}
-	
+
 	@Override
 	public void updateParent(Node parent) {
 		this.cut();
 		parent.addChildWithParent(this);
 	}
-	
+
+	/******************************************************
+	 * GETTER AND SETTER
+	 ******************************************************/
+	public Node getParent() {
+		return parent;
+	}
+
+	public void setParent(Node parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public String getNodeType() {
+		return nodeType;
+	}
+
+	@Override
+	public void setNodeType(String nodeType) {
+		this.nodeType = nodeType;
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		return children;
+	}
+
 }

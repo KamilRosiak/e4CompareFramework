@@ -222,16 +222,21 @@ public class MPLEditorController implements Initializable {
 	@Optional
 	@Inject
 	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
-		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
-		Tree tree = platform.getModel();
-		setCurrentPlatform(platform);
-		decorateTreeRoot(tree);
-		setCurrentTree(tree);		
-		// load decorator and select the first
-		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
-		decoratorCombo.getSelectionModel().select(0);
-		TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), new FamilyModelNodeDecorator());
+		try {
+			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
+			Tree tree = platform.getModel();
+			setCurrentPlatform(platform);
+			decorateTreeRoot(tree);
+			setCurrentTree(tree);
+			// load decorator and select the first
+			decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
+			decoratorCombo.getSelectionModel().select(0);
+			TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), new FamilyModelNodeDecorator());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -242,6 +247,7 @@ public class MPLEditorController implements Initializable {
 	@Optional
 	@Inject
 	public void showTree(@UIEventTopic(MPLEEditorConsts.SHOW_TREE) Tree tree) {
+		System.out.println(tree.getTreeName());
 		try {
 			MPLPlatform platform = new MPLPlatform();
 			platform.setModel(tree);

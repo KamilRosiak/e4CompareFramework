@@ -1,19 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.iec_611331;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
-
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractArtifactReader;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.iec_611331.util.IEC61131Util;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
-import de.tu_bs.cs.isf.familymining.ppu_iec.parser.xml.processes.IECProjectConverter;
 import de.tu_bs.cs.isf.familymining.ppu_iec.ppuIECmetaModel.configuration.Configuration;
 import de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.EMFModelLoader.impl.EMFModelLoader;
 
@@ -31,17 +22,18 @@ public class IECReader extends AbstractArtifactReader {
 		// Configuration config = converter.parse(Paths.get(new
 		// File(element.getAbsolutePath()).toURI());
 		Configuration config = (Configuration) EMFModelLoader.load(element.getAbsolutePath(), "project");
-
-		System.out.println(config);
-
 		return createTreeFromConfiguration(config);
 	}
 
 	public Tree createTreeFromConfiguration(Configuration config) {
-		TreeImpl tree = new TreeImpl(config.getIdentifier());
-		tree.setFileExtension("project");
-		tree.setRoot(IEC61131Util.createConfigurationRoot(config));
-
+		TreeImpl tree = null;
+		try {
+			tree = new TreeImpl(config.getIdentifier());
+			tree.setFileExtension("project");
+			tree.setRoot(IEC61131Util.createConfigurationRoot(config));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return tree;
 	}
 
