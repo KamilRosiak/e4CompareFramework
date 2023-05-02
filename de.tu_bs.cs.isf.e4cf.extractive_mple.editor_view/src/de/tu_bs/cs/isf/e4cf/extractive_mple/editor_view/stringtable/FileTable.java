@@ -23,4 +23,8 @@ public class FileTable {
 	public static final String FV_CONFIGURATION_16 = "icons/refactoring/configuration_16.png";
 	public static final String FV_CONFIGURATION_24 = "icons/refactoring/configuration_24.png";
 	public static final String FV_CONFIGURATION_32 = "icons/refactoring/configuration_32.png";
+	
+	
+	
+	
 }
