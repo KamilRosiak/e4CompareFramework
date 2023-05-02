@@ -55,19 +55,15 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 		if (nodeType.equals(NodeType.RESOURCES.toString()) || node.getNodeType().equals(NodeType.RESOURCE.toString())) {
 			return new ImageView(RESOURCE);
 		}
-
 		if (nodeType.equals(NodeType.TASK.toString()) || node.getNodeType().equals(NodeType.TASKS.toString())) {
 			return new ImageView(TASK);
 		}
-
 		if (nodeType.equals(NodeType.POU.toString())) {
 			return new ImageView(POU);
 		}
-
 		if (nodeType.equals(NodeType.GLOBAL_VARIABELS.toString()) || nodeType.equals(NodeType.VARIABLE.toString())) {
 			return new ImageView(VARIABLES);
 		}
-
 		if (nodeType.equals(NodeType.ACTION.toString())) {
 			return new ImageView(ACTION);
 		}
@@ -81,20 +77,16 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 				|| nodeType.equals(NodeType.OUTGOING_TRANSISTIONS.toString())) {
 			return new ImageView(TRANSITIONS);
 		}
-
 		if (nodeType.equals(NodeType.INCOMING_TRANSISTION.toString())
 				|| nodeType.equals(NodeType.OUTGOING_TRANSISTION.toString())) {
 			return new ImageView(TRANSITION);
 		}
-
 		if (nodeType.equals(NodeType.METHOD_CALL.toString()) || nodeType.equals(NodeType.ASSIGNMENT.toString())) {
 			return new ImageView(STATEMENT);
 		}
-
 		if (nodeType.equals(NodeType.STEP.toString())) {
 			return new ImageView(STEP);
 		}
-
 		return new ImageView();
 	}
 
