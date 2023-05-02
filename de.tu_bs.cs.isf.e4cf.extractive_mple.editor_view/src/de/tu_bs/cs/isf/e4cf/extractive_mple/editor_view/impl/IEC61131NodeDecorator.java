@@ -22,6 +22,8 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 	public static final String IMPLEMENTATION = "icons/iec61131/implementation_24.png";
 	public static final String STATEMENT = "icons/iec61131/statement_16.png";
 	public static final String STEP = "icons/iec61131/step_24.png";
+	public static final String PARAM = "icons/iec61131/param_24.png";
+	public static final String PARAMS = "icons/iec61131/params_24.png";
 
 	public IEC61131NodeDecorator() {
 		// TODO Auto-generated constructor stub
@@ -30,8 +32,69 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 	@Override
 	public TreeItem<Node> decorateNode(TreeItem<Node> node) {
 		node.setGraphic(new HBox(getVariabilityImage(node), getTypeImage(node.getValue())));
-		node.getValue().setRepresentation(node.getValue().getNodeType());
+
+		// create node image with variability and type image
+		String detail = getNameDetails(node.getValue());
+		if (!detail.isEmpty()) {
+			node.getValue().setRepresentation(node.getValue().getNodeType() + ": " + detail);
+		} else {
+			node.getValue().setRepresentation(node.getValue().getNodeType());
+		}
 		return node;
+	}
+
+	private String getNameDetails(Node node) {
+		String nodeType = node.getNodeType();
+
+		if (nodeType.equals(NodeType.CONFIGURATION.toString())) {
+			return "" + node.getAttributeForKey("identifier").getValue(0).getValue();
+		}
+
+		if (nodeType.equals(NodeType.POUS.toString())) {
+			return "POUs";
+		}
+		if (nodeType.equals(NodeType.POU.toString())) {
+			return "" + node.getAttributeForKey("name").getValue(0);
+		}
+		if (nodeType.equals(NodeType.RESOURCES.toString()) || node.getNodeType().equals(NodeType.RESOURCE.toString())) {
+			return "";
+		}
+		if (nodeType.equals(NodeType.TASK.toString()) || node.getNodeType().equals(NodeType.TASKS.toString())) {
+			return "";
+		}
+		if (nodeType.equals(NodeType.POU.toString())) {
+			return "";
+		}
+		if (nodeType.equals(NodeType.GLOBAL_VARIABELS.toString()) || nodeType.equals(NodeType.VARIABLE.toString())) {
+			return "";
+		}
+		if (nodeType.equals(NodeType.ACTION.toString())) {
+			return "" + node.getAttributeForKey("name").getValue(0);
+		}
+		if (nodeType.equals(NodeType.ACTIONS.toString())) {
+			return "";
+		}
+		if (nodeType.equals(NodeType.IMPLEMENTATION.toString())) {
+			return "";
+		}
+
+		if (nodeType.equals(NodeType.ASSIGNMENT.toString())) {
+			return "" + node.getAttributeForKey("value").getValue(0);
+		}
+
+		if (nodeType.equals(NodeType.METHOD_CALL.toString())) {
+			return "" + node.getAttributeForKey("symbol").getValue(0);
+		}
+
+		if (nodeType.equals(NodeType.VARIABLE.toString())) {
+			return "" + node.getAttributeForKey("name").getValue(0) + " : "
+					+ node.getAttributeForKey("type").getValue(0);
+		}
+
+		if (nodeType.equals(NodeType.STEP.toString())) {
+			return "" + node.getAttributeForKey("name").getValue(0);
+		}
+		return "";
 	}
 
 	@Override
@@ -86,6 +149,12 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 		}
 		if (nodeType.equals(NodeType.STEP.toString())) {
 			return new ImageView(STEP);
+		}
+		if (nodeType.equals(NodeType.PARAMETER.toString())) {
+			return new ImageView(PARAM);
+		}
+		if (nodeType.equals(NodeType.PARAMETERS.toString())) {
+			return new ImageView(PARAMS);
 		}
 		return new ImageView();
 	}

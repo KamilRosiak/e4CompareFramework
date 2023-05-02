@@ -226,9 +226,10 @@ public class MPLEditorController implements Initializable {
 			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 			Tree tree = platform.getModel();
+			System.out.println(platform);
 			setCurrentPlatform(platform);
-			decorateTreeRoot(tree);
 			setCurrentTree(tree);
+			decorateTreeRoot(tree);
 			// load decorator and select the first
 			decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
 			decoratorCombo.getSelectionModel().select(0);

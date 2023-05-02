@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -18,14 +18,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfigura
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
-import de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences.PlatformPreferences;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 
 /**
@@ -173,6 +171,7 @@ public class MPLPlatform implements Serializable {
 	private void initializePlatform(Tree tree) {
 		List<CloneConfiguration> componentConfigs = refactorComponents(tree.getRoot());
 		model = tree.getRoot();
+		setModel(tree);
 		configurations = new ArrayList<Configuration>();
 		ConfigurationImpl config = (ConfigurationImpl) getNextConfig(tree);
 		config.getCloneConfigurations().addAll(componentConfigs);
