@@ -44,6 +44,10 @@ public class NodeBuilder {
 		if (value instanceof Boolean) {
 			v = new BoolValueImpl((Boolean) value);
 		}
+
+		if (v == null) {
+			v = new StringValueImpl((String) value);
+		}
 		return v;
 	}
 }
