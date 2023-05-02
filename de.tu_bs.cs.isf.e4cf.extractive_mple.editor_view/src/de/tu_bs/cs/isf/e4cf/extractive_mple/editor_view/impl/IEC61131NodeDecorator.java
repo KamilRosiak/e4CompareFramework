@@ -7,6 +7,7 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.interfaces.NodeDecorator
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable.FileTable;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 
 public class IEC61131NodeDecorator implements NodeDecorator {
 	public static final String POU = "icons/iec61131/pou_24.png";
@@ -17,7 +18,10 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 	public static final String ACTION = "icons/iec61131/action_24.png";
 	public static final String ACTIONS = "icons/iec61131/actions_24.png";
 	public static final String TRANSITION = "icons/iec61131/transition_24.png";
+	public static final String TRANSITIONS = "icons/iec61131/transitions_24.png";
 	public static final String IMPLEMENTATION = "icons/iec61131/implementation_24.png";
+	public static final String STATEMENT = "icons/iec61131/statement_16.png";
+	public static final String STEP = "icons/iec61131/step_24.png";
 
 	public IEC61131NodeDecorator() {
 		// TODO Auto-generated constructor stub
@@ -25,7 +29,7 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 
 	@Override
 	public TreeItem<Node> decorateNode(TreeItem<Node> node) {
-		node.setGraphic(getTypeImage(node.getValue()));
+		node.setGraphic(new HBox(getVariabilityImage(node), getTypeImage(node.getValue())));
 		node.getValue().setRepresentation(node.getValue().getNodeType());
 		return node;
 	}
@@ -37,7 +41,7 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 
 	@Override
 	public String toString() {
-		return "Family Model";
+		return "IEC61131-3 Family Model";
 	}
 
 	public ImageView getTypeImage(Node node) {
@@ -75,7 +79,20 @@ public class IEC61131NodeDecorator implements NodeDecorator {
 		}
 		if (nodeType.equals(NodeType.INCOMING_TRANSISTIONS.toString())
 				|| nodeType.equals(NodeType.OUTGOING_TRANSISTIONS.toString())) {
+			return new ImageView(TRANSITIONS);
+		}
+
+		if (nodeType.equals(NodeType.INCOMING_TRANSISTION.toString())
+				|| nodeType.equals(NodeType.OUTGOING_TRANSISTION.toString())) {
 			return new ImageView(TRANSITION);
+		}
+
+		if (nodeType.equals(NodeType.METHOD_CALL.toString()) || nodeType.equals(NodeType.ASSIGNMENT.toString())) {
+			return new ImageView(STATEMENT);
+		}
+
+		if (nodeType.equals(NodeType.STEP.toString())) {
+			return new ImageView(STEP);
 		}
 
 		return new ImageView();
