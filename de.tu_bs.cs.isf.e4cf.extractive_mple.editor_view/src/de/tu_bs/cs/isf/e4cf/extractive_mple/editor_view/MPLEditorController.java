@@ -226,7 +226,6 @@ public class MPLEditorController implements Initializable {
 			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 			Tree tree = platform.getModel();
-			System.out.println(platform);
 			setCurrentPlatform(platform);
 			setCurrentTree(tree);
 			decorateTreeRoot(tree);
@@ -237,7 +236,6 @@ public class MPLEditorController implements Initializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
