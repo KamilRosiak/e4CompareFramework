@@ -177,15 +177,32 @@ public class FMEditorPaneView extends BorderPane {
 	}
 
 	private void connectFeatures(FXGraphicalFeature parent, FXGraphicalFeature child) {
-		final Line line = new Line();
+		Line line = new Line();
 		// initial bind
 		line.startXProperty().bind(parent.layoutXProperty().add(parent.widthProperty().divide(2.0)));
 		line.startYProperty().bind(parent.layoutYProperty()
 				.add(parent.heightProperty().subtract(parent.lowerConnector.radiusYProperty())));
 		line.endXProperty().bind(child.layoutXProperty().add(child.widthProperty().divide(2.0)));
 		line.endYProperty().bind(child.layoutYProperty());
+		
+		parent.getChildFeatures().addListener((ListChangeListener<FXGraphicalFeature>) change -> {
+			while(change.next()) {
+				if (change.wasRemoved()) {
+					for (FXGraphicalFeature removedChild : change.getRemoved()) {
+						if (removedChild.equals(child)) {
+							this.rootPane.getChildren().remove(line);
+						}
+					}
+				}
+			}
+		});
+		child.parentFeatureProperty.addListener((obs, oldVal, newVal) -> {
+			if (!newVal.equals(parent)) {
+				this.rootPane.getChildren().remove(line);
+			}
+		});
 
-		parent.childConnections.add(line);
+		parent.childConnections.put(child, line);
 		this.rootPane.getChildren().add(line);
 	}
 
@@ -196,7 +213,7 @@ public class FMEditorPaneView extends BorderPane {
 	 */
 	public void remove(FXGraphicalFeature feature) {
 		this.rootPane.getChildren().remove(feature);
-		this.rootPane.getChildren().removeAll(feature.childConnections);
+		this.rootPane.getChildren().removeAll(feature.childConnections.values());
 		feature.getChildFeatures().forEach(child -> remove(child));
 	}
 

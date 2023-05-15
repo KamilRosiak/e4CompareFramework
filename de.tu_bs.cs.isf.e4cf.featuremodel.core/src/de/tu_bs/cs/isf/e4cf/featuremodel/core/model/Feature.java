@@ -1,17 +1,27 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Feature implements IFeature {
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
+
+public class Feature implements IFeature, Serializable {
+	private static final long serialVersionUID = 6965707151116269397L;
+	
 	private String name;
 	private final UUID uuid = UUID.randomUUID();;
 	private Variability variability = Variability.OPTIONAL;
 	private GroupVariability groupVariability = GroupVariability.DEFAULT;
+	private IFeature parent = null;
 	private final List<IFeature> children = new ArrayList<>();
 	private boolean isAbstract = false;
+	
+	public Feature() {
+		this(FDStringTable.DEFAULT_FEATURE_NAME);
+	}
 	
 	public Feature(String name) {
 		this.name = name;
@@ -84,6 +94,7 @@ public class Feature implements IFeature {
 	@Override
 	public void addChild(IFeature child) {
 		this.children.add(child);
+		child.setParent(this);
 	}
 	
 	@Override
@@ -125,6 +136,16 @@ public class Feature implements IFeature {
 	public String toString() {
 		return "Feature [name=" + name + ", uuid=" + uuid + ", variability=" + variability + ", groupVariability="
 				+ groupVariability + "]";
+	}
+
+	@Override
+	public IFeature getParent() {
+		return this.parent;
+	}
+
+	@Override
+	public void setParent(IFeature parent) {
+		this.parent = parent;
 	}
 	
 	

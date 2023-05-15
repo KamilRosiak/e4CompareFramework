@@ -1,11 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorView;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.DefaultFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
@@ -19,7 +20,9 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -32,11 +35,11 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	public FXFeatureNameLabel featureNameLabel;
 	public FXFeatureUpperConnector upperConnector;
 	public FXFeatureLowerConnector lowerConnector;
-	public List<Line> childConnections = new ArrayList<>();
+	public Map<FXGraphicalFeature, Line> childConnections = new HashMap<>();
 	public DoubleProperty xPos = new SimpleDoubleProperty(), yPos = new SimpleDoubleProperty();
 
-	private IFeature feature = new DefaultFeature();
-	private FXGraphicalFeature parent;
+	private IFeature feature = new Feature();
+	public ObjectProperty<FXGraphicalFeature> parentFeatureProperty = new SimpleObjectProperty<>();
 	private INodeAnimator animator;
 
 	private ObservableList<FXGraphicalFeature> childFeatures = new ChangeList<>();
@@ -59,11 +62,12 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	public FXGraphicalFeature() {
-		this(new DefaultFeature());
+		this(new Feature());
 	}
 
 	public void setVariability(Variability variability) {
 		this.upperConnector.setVariability(variability);
+		this.getFeature().setVariability(variability);
 	}
 
 	public void setGroupVariability(GroupVariability groupVariability) {
@@ -78,6 +82,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 			this.setGroupVariability_ALTERNATIVE();
 			break;
 		}
+		this.getFeature().setGroupVariability(groupVariability);
 	}
 
 //	public void addConfigLabel(String name) {
@@ -115,7 +120,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		setAlignment(Pos.TOP_CENTER);
 		this.upperConnector = new FXFeatureUpperConnector(feature);
 		this.lowerConnector = new FXFeatureLowerConnector(this);
-		this.featureNameLabel = new FXFeatureNameLabel(feature);
+		this.featureNameLabel = new FXFeatureNameLabel(this);
 		getChildren().addAll(this.upperConnector, this.lowerConnector, this.featureNameLabel);
 
 		this.setGroupVariability(feature.getGroupVariability());
@@ -219,10 +224,13 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		this.childFeatures.add(fxFeature);
 		feature.getChildren().add(fxFeature.getFeature());
 	}
-
-	public void addChildFeatureFormated(FXGraphicalFeature fxFeature) {
-		addChildFeature(fxFeature);
-		translateChildren();
+	
+	public boolean removeChildFeature(FXGraphicalFeature fxFeature) {
+		boolean removed = this.childFeatures.remove(fxFeature);
+		if (removed) {
+			this.getFeature().removeChild(fxFeature.getFeature());
+		}
+		return removed;
 	}
 
 	/**
@@ -247,6 +255,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	public void setName(String name) {
 		// feature.setName(name);
 		featureNameLabel.setText(name);
+		feature.setName(name);
 		services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 	}
 
@@ -309,11 +318,12 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	public FXGraphicalFeature getParentFxFeature() {
-		return parent;
+		return parentFeatureProperty.get();
 	}
 
 	public void setParentFxFeature(FXGraphicalFeature parentFxFeature) {
-		this.parent = parentFxFeature;
+		this.parentFeatureProperty.set(parentFxFeature);
+		this.getFeature().setParent(parentFxFeature.getFeature());
 	}
 
 	public void setPosition(double x, double y) {

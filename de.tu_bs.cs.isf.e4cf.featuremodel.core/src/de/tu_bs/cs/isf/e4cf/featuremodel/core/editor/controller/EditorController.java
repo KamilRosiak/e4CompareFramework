@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
@@ -10,6 +12,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorView;
@@ -64,9 +67,14 @@ public class EditorController {
 		Path rootPath = FileHandlingUtility.getPath(root);
 		Path projectPath = rootPath.resolve("");
 		Path uriPath = projectPath.resolve(E4CStringTable.FEATURE_MODEL_DIRECTORY);
-		String absolutePath = uriPath.toUri().toString();
+		String absolutePath = uriPath.toString() + "/" + diagram.getName() + ".fd";
+		
 
-		// TODO write serialization
+		try {
+			this.diagram.writeToFile(new File(absolutePath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

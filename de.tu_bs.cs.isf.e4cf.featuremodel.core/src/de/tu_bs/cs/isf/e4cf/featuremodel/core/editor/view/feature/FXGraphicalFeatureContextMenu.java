@@ -5,7 +5,6 @@ import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
@@ -176,7 +175,20 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	services.eventBroker.send(FDEventTable.ADD_FEATURE_ABOVE, fxGraFeature);	
+            	FXGraphicalFeature newFeature = new FXGraphicalFeature();
+            	FXGraphicalFeature parent = fxGraFeature.getParentFxFeature();
+            	if (parent != null) { // root has no parent
+            		parent.removeChildFeature(fxGraFeature);
+                	parent.addChildFeature(newFeature);
+                	newFeature.addChildFeature(fxGraFeature);
+            	} else {
+            		newFeature.getChildFeatures().add(fxGraFeature);
+            		newFeature.getFeature().addChild(fxGraFeature.getFeature());
+            		fxGraFeature.getFeature().setParent(newFeature.getFeature());
+            		fxGraFeature.setParentFxFeature(newFeature);
+            		
+            	}
+            	//services.eventBroker.send(FDEventTable.ADD_FEATURE_ABOVE, fxGraFeature);	
             	event.consume();
             }
         });
