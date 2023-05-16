@@ -33,5 +33,7 @@ public interface Comparator<Type> {
 	 * This method compares two nodes of the same type and returns the similarity.
 	 */
 	public ResultElement<Type> compare(Type firstNode, Type secondNode);
+	
+	public String getName();
 
 }

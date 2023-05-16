@@ -5,7 +5,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
@@ -22,6 +24,8 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.EventBroker;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 
+@Singleton
+@Creatable
 public class TabController {
 	private ServiceContainer services;
 	private List<ErrorListener> errorListeners;

@@ -23,6 +23,15 @@
       <comparator
             comparator="de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator">
       </comparator>
+      <comparator
+            comparator="de.tu_bs.cs.isf.e4cf.compare.comparator.impl.java.VariableTypeComperator">
+      </comparator>
+      <comparator
+            comparator="de.tu_bs.cs.isf.e4cf.compare.comparator.impl.java.VariableNameComperator">
+      </comparator>
+      <comparator
+            comparator="de.tu_bs.cs.isf.e4cf.compare.comparator.impl.java.VariableValueComperator">
+      </comparator>
    </extension>
 
 </plugin>

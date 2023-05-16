@@ -5,7 +5,6 @@ import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
