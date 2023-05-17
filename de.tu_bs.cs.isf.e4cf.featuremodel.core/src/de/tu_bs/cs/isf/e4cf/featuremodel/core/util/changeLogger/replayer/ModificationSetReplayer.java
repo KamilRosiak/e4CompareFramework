@@ -22,7 +22,7 @@ public class ModificationSetReplayer {
 	FeatureModelModificationSet _modificationSet;
 	ServiceContainer _services;
 	List<FXGraphicalFeature> _features;
-	Map<Integer, FXGraphicalFeature> _featureIDs = new HashMap<Integer, FXGraphicalFeature>();
+	Map<String, FXGraphicalFeature> _featureIDs = new HashMap<String, FXGraphicalFeature>();
 	
 	Integer featureID_ADD_operation;
 	boolean addFeatureBelow;

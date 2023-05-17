@@ -636,7 +636,7 @@ public class FeatureModelEditorView {
 	
 	public Feature createNewFeature(Feature feature, double x, double y) {
 		currentModel.setIdentifierIncrement(currentModel.getIdentifierIncrement() + 1);
-		feature.setIdentifier(currentModel.getIdentifierIncrement());
+		//feature.setIdentifier(currentModel.getIdentifierIncrement());
 		
 
 		/**

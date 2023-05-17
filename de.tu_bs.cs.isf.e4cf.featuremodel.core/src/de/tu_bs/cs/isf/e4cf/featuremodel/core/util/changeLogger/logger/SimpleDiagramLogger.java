@@ -193,14 +193,14 @@ public class SimpleDiagramLogger implements DiagramLogger {
 	@Optional
 	@Inject 
 	public void lineToParentFeatureRemoved(@UIEventTopic(FDEventTable.LOGGER_REMOVED_LINE_TO_PARENT_FEATURE) FXGraphicalFeature feature) {
-		currentParentFeatureID = feature.getFeature().getIdentifier();
+		//currentParentFeatureID = feature.getFeature().getIdentifier();
 	}
 	
 	@Optional
 	@Inject 
 	public void lineToParentFeatureReset(@UIEventTopic(FDEventTable.LOGGER_RESET_LINE_TO_PARENT_FEATURE) FXGraphicalFeature feature) {
 		Modification modification = LoggerUtilities.createModification(feature, FDEventTable.LOGGER_RESET_LINE_TO_PARENT_FEATURE);	
-		LoggerUtilities.createFeatureDelta(modification, DeltaProperties.LINE_TO_PARENT_RESET, Integer.toString(currentParentFeatureID), Integer.toString(feature.getParentFxFeature().getFeature().getIdentifier()));
+		LoggerUtilities.createFeatureDelta(modification, DeltaProperties.LINE_TO_PARENT_RESET, Integer.toString(currentParentFeatureID), feature.getParentFxFeature().getFeature().getIdentifier());
 		modificationSet.getModifications().add(modification);
 	}
 	

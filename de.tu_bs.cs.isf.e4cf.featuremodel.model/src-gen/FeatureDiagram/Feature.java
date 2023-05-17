@@ -206,16 +206,16 @@ public interface Feature extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Identifier</b></em>' attribute.
-	 * The default value is <code>"-1"</code>.
+	 * The default value is <code>"\"-1\""</code>.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Identifier</em>' attribute.
-	 * @see #setIdentifier(int)
+	 * @see #setIdentifier(String)
 	 * @see FeatureDiagram.FeatureDiagramPackage#getFeature_Identifier()
-	 * @model default="-1" required="true"
+	 * @model default="\"-1\"" required="true"
 	 * @generated
 	 */
-	int getIdentifier();
+	String getIdentifier();
 
 	/**
 	 * Sets the value of the '{@link FeatureDiagram.Feature#getIdentifier <em>Identifier</em>}' attribute.
@@ -225,7 +225,7 @@ public interface Feature extends EObject {
 	 * @see #getIdentifier()
 	 * @generated
 	 */
-	void setIdentifier(int value);
+	void setIdentifier(String value);
 
 	/**
 	 * Returns the value of the '<em><b>Abstract</b></em>' attribute.

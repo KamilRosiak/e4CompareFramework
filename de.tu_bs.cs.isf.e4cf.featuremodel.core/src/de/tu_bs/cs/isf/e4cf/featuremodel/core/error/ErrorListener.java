@@ -14,7 +14,7 @@ public interface ErrorListener {
 		}
 		
 		public FeatureModelViewError(Feature feature, String event, String msg) {
-			this.affectedId = feature != null ? feature.getIdentifier() : DEFAULT_FEATURE_ID;
+			this.affectedId = feature != null ? 0 : DEFAULT_FEATURE_ID;
 			this.event 		= event;
 			this.msg 		= msg;
 		}
