@@ -25,4 +25,13 @@ public interface IFeature {
 	default boolean isAbstract() {
 		return false;
 	}
+	void setAbstract(boolean isAbstract);
+	
+	default boolean isComponent() {
+		return false;
+	}
+	
+	String getDescription();
+	void setDescription(String description);
+	
 }

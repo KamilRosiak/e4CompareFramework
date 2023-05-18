@@ -17,12 +17,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 
 public class FXFeatureNameLabel extends Label {
+	private static final String STYLE_FEATURE = "feature";
+	private static final String STYLE_COMPONENT = "componentFeature";
+	private static final String STYLE_ABSTRACT = "abstractFeature";
+	
 	private FXGraphicalFeature fxGraFeature;
 	
 	public FXFeatureNameLabel(FXGraphicalFeature fxGraFeature) {
 		super(fxGraFeature.getFeature().getName());
-		this.getStyleClass().add("feature");
 		this.fxGraFeature = fxGraFeature;
+		
+		this.restyle();
 		
 		//Opens a Renaming dialog on double click 
 		this.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -49,6 +54,33 @@ public class FXFeatureNameLabel extends Label {
 		String newName = dialog.show(Double.valueOf(Display.getCurrent().getCursorLocation().x), Double.valueOf(Display.getCurrent().getCursorLocation().y));
 		if(!newName.equals(fxGraFeature.getFeature().getName())) {
 			fxGraFeature.setName(newName);
+		}
+	}
+	
+	public void restyle() {
+		this.getStyleClass().clear();
+		IFeature feature = fxGraFeature.getFeature();
+		if (feature.isComponent()) {
+			setComponent(true);
+		} else { // standard feature
+			this.getStyleClass().add(STYLE_FEATURE);
+			if (feature.isAbstract()) {
+				setAbstract(true);
+			}
+		}
+	}
+	
+	public void setAbstract(boolean isAbstract) {
+		this.getStyleClass().clear();
+		if (isAbstract) {
+			this.getStyleClass().add(STYLE_ABSTRACT);
+		}
+	}
+	
+	public void setComponent(boolean isComponent) {
+		this.getStyleClass().clear();
+		if (isComponent) {
+			this.getStyleClass().add(STYLE_COMPONENT);
 		}
 	}
 

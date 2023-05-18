@@ -16,7 +16,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.ChangeList;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.DashedBorderAnimation;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.INodeAnimator;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacemantConsts;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
@@ -66,14 +65,19 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	public void setVariability(Variability variability) {
-		this.upperConnector.setVariability(variability);
+		if (variability.equals(Variability.DEFAULT)) {
+			this.removeUpper();
+		} else {
+			this.upperConnector.setVariability(variability);
+			this.getChildren().add(0, upperConnector);
+		}
 		this.getFeature().setVariability(variability);
 	}
 
 	public void setGroupVariability(GroupVariability groupVariability) {
 		switch (groupVariability) {
 		case DEFAULT:
-			this.setGroupVariability_AND();
+			this.setGroupVariability_Default();
 			break;
 		case OR:
 			this.setGroupVariability_OR();
@@ -122,8 +126,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		this.lowerConnector = new FXFeatureLowerConnector(this);
 		this.featureNameLabel = new FXFeatureNameLabel(this);
 		getChildren().addAll(this.upperConnector, this.lowerConnector, this.featureNameLabel);
-
-		this.setGroupVariability(feature.getGroupVariability());
 	}
 
 	/**
@@ -233,25 +235,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		return removed;
 	}
 
-	/**
-	 * replacing children.
-	 */
-	private void translateChildren() {
-		double xSum = 0;
-		for (FXGraphicalFeature fxGf : childFeatures) {
-			xSum += fxGf.getWidth();
-		}
-		xSum += PlacemantConsts.FEATURE_DEFAUL_VALUE;
-		xSum += childFeatures.size() * PlacemantConsts.FEATURE_H_GAP_VALUE;
-		double position = (getTranslateX() + getWidth() / 2) - xSum / 2;
-		double step = xSum / childFeatures.size();
-		for (FXGraphicalFeature fxGf : childFeatures) {
-			fxGf.xPos.set(position);
-			fxGf.yPos.set(getTranslateY() + getHeight() + PlacemantConsts.FEATURE_V_GAP_VALUE);
-			position += step;
-		}
-	}
-
 	public void setName(String name) {
 		// feature.setName(name);
 		featureNameLabel.setText(name);
@@ -297,7 +280,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		getChildren().addAll(lowerConnector);
 	}
 
-	void setGroupVariability_AND() {
+	void setGroupVariability_Default() {
 //		if (feature.isOr() || feature.isAlternative()) {
 //			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);
 //			feature.setAlternative(false);
@@ -307,7 +290,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		if (getChildren().contains(lowerConnector)) {
 			getChildren().remove(lowerConnector);
 		}
-
+		lowerConnector = new FXFeatureLowerConnector(this);
 		for (FXGraphicalFeature childFeature : childFeatures) {
 			childFeature.getChildren().add(0, childFeature.upperConnector);
 		}
@@ -346,6 +329,11 @@ public class FXGraphicalFeature extends VBox implements Observable {
 			this.animator = new DashedBorderAnimation(featureNameLabel, 10, 5, 2);
 			this.animator.start();
 		}
+	}
+
+	public void setAbstract(boolean isAbstract) {
+		this.feature.setAbstract(isAbstract);
+		this.featureNameLabel.restyle();
 	}
 
 }

@@ -57,8 +57,18 @@
 }
 
 .abstractFeature {
+	-fx-background-insets: 0,1,1,2;
+    -fx-background-radius: 2,1,1,1;
+    -fx-padding: 2 5 2 5;
+    -fx-text-fill: black;
+    -fx-font-family: Monospaced;
+	-fx-font-size: 10px;
+	-fx-border-width: 1px;
+	
 	-fx-font-style: italic; 
 	-fx-font-weight: bold;
+	-fx-border-style: dotted;
+	
 }
 
 .featureIsPartOfSelection {

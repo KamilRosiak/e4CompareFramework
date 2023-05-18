@@ -46,13 +46,13 @@ public class TabController {
 		this.view = new TabView(parent, menuItems, contextMenuTarget);
 		
 		// create initial tab
-		this.createTab(FDStringTable.FD_DEFAULT_NAME);
+		this.createTab(FDStringTable.FD_DEFAULT_FM_NAME);
 	}
 	
 	private Map<String, MenuItem> getMenuItems() {
 		Map<String, MenuItem> menuItems = new HashMap<>();
 		MenuItem newTab = new MenuItem("New Tab");
-		newTab.setOnAction(e -> this.createTab(FDStringTable.FD_DEFAULT_NAME));
+		newTab.setOnAction(e -> this.createTab(FDStringTable.FD_DEFAULT_FM_NAME));
 		MenuItem save = new MenuItem("Save");
 		save.setOnAction(e -> this.saveCurrentTab());
 		MenuItem load = new MenuItem("Load");
@@ -80,7 +80,7 @@ public class TabController {
 		EventHandler<Event> onTabClose = event -> {
 			// this.currentEditor().askToSave();
 			if (this.view.tabCount() == 1) {
-				createTab(FDStringTable.FD_DEFAULT_NAME);
+				createTab(FDStringTable.FD_DEFAULT_FM_NAME);
 			}
 		};
 

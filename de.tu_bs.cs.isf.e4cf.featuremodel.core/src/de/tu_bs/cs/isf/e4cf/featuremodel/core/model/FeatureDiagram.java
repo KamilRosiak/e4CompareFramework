@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
@@ -58,6 +60,16 @@ public class FeatureDiagram implements Serializable {
 	 */
 	public UUID getUuid() {
 		return uuid;
+	}
+	
+	public boolean contains(IFeature feature) {
+		return FDUtil.DFS(root, feature);
+	}
+	
+	public Set<IFeature> getAllFeatures() {
+		Set<IFeature> allFeatures = new HashSet<>();
+		FDUtil.DFSVisitor(root, allFeatures::add);
+		return allFeatures;
 	}
 
 	@Override

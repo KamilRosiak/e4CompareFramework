@@ -33,7 +33,7 @@ public class EditorController {
 		FMEditorPaneController editorPane = new FMEditorPaneController(services);
 		this.view = new FMEditorView(editorPane, uiConsumer);
 		
-		this.diagram = new FeatureDiagram(FDStringTable.FD_DEFAULT_NAME, new Feature("Root"));
+		this.diagram = new FeatureDiagram(FDStringTable.FD_DEFAULT_FM_NAME, new Feature("Root"));
 		this.diagram.getRoot().setVariability(Variability.MANDATORY);
 		this.view.displayFeatureDiagram(this.diagram);
 	}

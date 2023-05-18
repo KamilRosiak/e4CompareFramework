@@ -41,6 +41,7 @@ public class FMEditorView {
 		for (IFeature child : feature.getChildren()) {
 			FXGraphicalFeature fxChild = buildFXGrapicalDiagram(child);
 			fxRoot.getChildFeatures().add(fxChild);
+			fxChild.setParentFxFeature(fxRoot);
 		}
 		return fxRoot;
 	}
