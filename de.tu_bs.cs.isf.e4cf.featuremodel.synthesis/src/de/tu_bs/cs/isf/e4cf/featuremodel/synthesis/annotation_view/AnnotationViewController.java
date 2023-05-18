@@ -26,6 +26,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.core.util.tree.Tree;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.ColoredFeature;
@@ -34,7 +35,9 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureLocator;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureOrganizer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SynthesisConsts;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.FeatureNameDialog;
@@ -187,6 +190,12 @@ public class AnnotationViewController implements Initializable {
 
 		this.annotationTable.setItems(this.clusters);
 		this.annotationTable.refresh();
+		
+		Tree<Cluster> hierarchy = FeatureOrganizer.createHierarchy(currentMpl, clusters);
+		Feature root = toFeature(hierarchy.getRoot().value());
+		FeatureDiagram diagram = new FeatureDiagram("Generated Feature Model", root);
+		services.partService.showPart(FDStringTable.BUNDLE_NAME);
+		services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, diagram);
 	}
 
 	/**
@@ -228,27 +237,7 @@ public class AnnotationViewController implements Initializable {
 		this.clusters.add(model);
 		this.annotationTable.refresh();
 	}
-
-	/**
-	 * Parses the annotations and builds the corresponding feature model
-	 * 
-	 * @param e ActionEvent from the menu item
-	 */
-	@FXML
-	public void synthesizeFeatureModel(ActionEvent e) throws InvalidAnnotationException {
-		e.consume();
-		// find root
-		ClusterViewModel rootModel = this.clusters.stream().filter(ClusterViewModel::isRoot).findFirst().orElse(null);
-		if (rootModel != null) {
-			Feature rootFeature = toFeature(rootModel.getCluster());
-			FeatureDiagram diagram = new FeatureDiagram("Synthesized Feature Model", rootFeature);
-			// display the finished model in the editor
-			services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, diagram);
-		} else {
-			throw new InvalidAnnotationException("No cluster annotated as root");
-		}
-	}
-
+	
 	/**
 	 * Collects all name label from current atomic sets
 	 */
@@ -289,10 +278,29 @@ public class AnnotationViewController implements Initializable {
 				.map(word -> new WordCounter(word, words.get(word)))
 				.collect(Collectors.toList());
 		annotationTableContextMenu.hide();
-		FeatureNameDialog fnd = new FeatureNameDialog(wordList, selectedModel);
+		new FeatureNameDialog(wordList, selectedModel);
 		annotationTable.refresh();
 	}
-	
+
+	/**
+	 * Parses the annotations and builds the corresponding feature model
+	 * 
+	 * @param e ActionEvent from the menu item
+	 */
+	@FXML
+	public void synthesizeFeatureModel(ActionEvent e) throws InvalidAnnotationException {
+		e.consume();
+		// find root
+		ClusterViewModel rootModel = this.clusters.stream().filter(ClusterViewModel::isRoot).findFirst().orElse(null);
+		if (rootModel != null) {
+			Feature rootFeature = toFeature(rootModel.getCluster());
+			FeatureDiagram diagram = new FeatureDiagram("Synthesized Feature Model", rootFeature);
+			// display the finished model in the editor
+			services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, diagram);
+		} else {
+			throw new InvalidAnnotationException("No cluster annotated as root");
+		}
+	}	
 
 	private Feature toFeature(Cluster cluster) {
 		Feature feature = new ColoredFeature(cluster.getName(), cluster.getSyntaxGroup().getColor());

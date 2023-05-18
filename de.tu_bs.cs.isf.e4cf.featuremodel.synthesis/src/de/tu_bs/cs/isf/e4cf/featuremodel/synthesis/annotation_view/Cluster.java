@@ -134,8 +134,7 @@ public class Cluster implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Cluster [name=" + name + ", syntaxGroup=" + syntaxGroup.getNormalizedName() + ", isRoot=" + isRoot + ", isMandatory="
-				+ isMandatory + ", childSelection=" + childSelection + ", children=" + children + "]";
+		return "Cluster[" + name + "]";
 	}
 	
 	
