@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +13,8 @@ enum ChildSelectionModel {
 	DEFAULT;
 }
 
-public class Cluster {
+public class Cluster implements Serializable {
+	private static final long serialVersionUID = 3304554399330246573L;
 	private String name;
 	private SyntaxGroup syntaxGroup;
 	private boolean isRoot = false;

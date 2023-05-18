@@ -10,15 +10,21 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.lang.model.SourceVersion;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
@@ -63,16 +69,18 @@ public class AnnotationViewController implements Initializable {
 	private TableColumn<ClusterViewModel, ChildSelectionModel> childSelectionColumn;
 	@FXML
 	private TableColumn<ClusterViewModel, String> childColumn;
+	@FXML
+	private ContextMenu annotationTableContextMenu;
 
 	private ObservableList<ClusterViewModel> clusters = new SimpleListProperty<>();
 	private FeatureLocator locator = new FeatureLocator();
-	@FXML
-	private ContextMenu annotationTableContextMenu;
+	private MPLPlatform currentMpl;
 
 	@Optional
 	@Inject
 	public void locateFeatures(@UIEventTopic(MPLEEditorConsts.LOCATE_FEATURES) MPLPlatform mpl) {
 		List<SyntaxGroup> clusters = this.locator.locateFeatures(services, mpl);
+		this.currentMpl = mpl;
 		this.displayGroups(clusters);
 	}
 
@@ -245,11 +253,46 @@ public class AnnotationViewController implements Initializable {
 	 * Collects all name label from current atomic sets
 	 */
 	@FXML
-	private void proposeFeatureName() {
-		FeatureNameDialog fnd = new FeatureNameDialog(new ArrayList<WordCounter>(),
-				annotationTable.getSelectionModel().getSelectedItem());
+	private void proposeFeatureName(ActionEvent e) {
+		e.consume();
+		ClusterViewModel selectedModel = annotationTable.getSelectionModel().getSelectedItem();
+		Map<String, Integer> words = new HashMap<>();
+		Set<UUID> selectedIds = selectedModel.getCluster().getSyntaxGroup().getUuids();
+		Set<Node> selectedNodes = currentMpl.getNodesForUUIDs(selectedIds);
+		
+		for (Node node : selectedNodes) {
+			for (Attribute attr : node.getAttributes()) {
+				for (Value<?> val : attr.getAttributeValues()) {
+					Object value = val.getValue();
+					if (value instanceof String) {
+						String token = (String) value;
+						String[] split = token.split("\\s");
+						for (String word : split) {
+							word = word.trim();
+							word = word.replaceAll("\\p{Punct}", "");
+							word = word.toLowerCase();
+							words.put(word, words.getOrDefault(word, 0)+1);
+						}
+					}
+				}
+			}
+		}
+		
+		
+		Pattern nonWord = Pattern.compile("[^\\w]*|\\d"); 
+		List<WordCounter> wordList = words.keySet().stream()
+				.filter(word -> !SourceVersion.isKeyword(word))
+				.filter(word -> {
+					Matcher m = nonWord.matcher(word);
+					return !m.matches();
+				})
+				.map(word -> new WordCounter(word, words.get(word)))
+				.collect(Collectors.toList());
+		annotationTableContextMenu.hide();
+		FeatureNameDialog fnd = new FeatureNameDialog(wordList, selectedModel);
 		annotationTable.refresh();
 	}
+	
 
 	private Feature toFeature(Cluster cluster) {
 		Feature feature = new ColoredFeature(cluster.getName(), cluster.getSyntaxGroup().getColor());

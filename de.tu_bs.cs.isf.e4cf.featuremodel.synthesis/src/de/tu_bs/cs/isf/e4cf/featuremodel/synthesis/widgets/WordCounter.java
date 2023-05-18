@@ -7,4 +7,9 @@ public class WordCounter {
 	public WordCounter(String word) {
 		this.word = word;
 	}
+	
+	public WordCounter(String word, int count) {
+		this(word);
+		this.count = count;
+	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -17,6 +18,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurat
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
@@ -191,6 +193,10 @@ public class MPLPlatform implements Serializable {
 
 	public void removeConfiguration(Configuration config) {
 		configurations.remove(config);
+	}
+	
+	public Set<Node> getNodesForUUIDs(Set<UUID> uuids) {
+		return TreeUtil.getNodesForCondition(model, node -> uuids.contains(node.getUUID()));
 	}
 
 }

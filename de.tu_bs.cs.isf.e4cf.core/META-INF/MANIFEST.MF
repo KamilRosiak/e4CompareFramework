@@ -45,6 +45,7 @@ Export-Package:
  de.tu_bs.cs.isf.e4cf.core.util.file,
  de.tu_bs.cs.isf.e4cf.core.util.services,
  de.tu_bs.cs.isf.e4cf.core.util.tagging,
+ de.tu_bs.cs.isf.e4cf.core.util.tree,
  org.eclipse.fx.ui.di,
  org.eclipse.wb.swt,
  org.fxmisc.richtext,
