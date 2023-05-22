@@ -29,7 +29,6 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.tree.Tree;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.ColoredFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
@@ -53,7 +52,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -304,7 +302,10 @@ public class AnnotationViewController implements Initializable {
 	}	
 
 	private Feature toFeature(Cluster cluster) {
-		Feature feature = new ColoredFeature(cluster.getName(), cluster.getSyntaxGroup().getColor());
+		Feature feature = new Feature(cluster.getName());
+		feature.setColor(cluster.getSyntaxGroup().getColor());
+		feature.getConfigurations().addAll(cluster.getSyntaxGroup().getConfigurations());
+		feature.getArtifactUUIDs().addAll(cluster.getSyntaxGroup().getUuids());
 		switch (cluster.getVariability()) {
 		case DEFAULT:
 			feature.setVariability(Variability.DEFAULT);
@@ -316,9 +317,6 @@ public class AnnotationViewController implements Initializable {
 			feature.setVariability(Variability.OPTIONAL);
 			break;		
 		}
-		if (cluster.isAbstract()) {
-			feature.setAbstract(true);
-		}
 		switch (cluster.getChildSelection()) {
 		case ALTERNATIVE:
 			feature.setGroupVariability(GroupVariability.ALTERNATIVE);
@@ -327,7 +325,7 @@ public class AnnotationViewController implements Initializable {
 			feature.setGroupVariability(GroupVariability.OR);
 			break;
 		default:
-			// feature groupVariability is DEFAULT by default
+			feature.setGroupVariability(GroupVariability.DEFAULT);
 			break;
 		}
 		for (Cluster child : cluster.getChildren()) {

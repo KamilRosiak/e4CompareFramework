@@ -70,7 +70,7 @@ public class Cluster implements Serializable {
 	}
 	
 	public boolean isAbstract() {
-		return this.syntaxGroup.getUuids().size() == 0;
+		return this.syntaxGroup.getUuids().isEmpty();
 	}
 
 	/**

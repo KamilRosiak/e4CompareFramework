@@ -51,7 +51,9 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	public FXGraphicalFeature(IFeature feature) {
 		this.feature = feature;
 		createUI();
-		if (feature instanceof StylableFeature) {
+		if (feature.getColor().isPresent()) {
+			this.setBackgroundColor(feature.getColor().get());
+		} else if (feature instanceof StylableFeature) {
 			((StylableFeature) feature).style(this);
 		}
 	}
@@ -347,7 +349,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	public void setAbstract(boolean isAbstract) {
-		this.feature.setAbstract(isAbstract);
+		//this.feature.setAbstract(isAbstract);
 		this.featureNameLabel.restyle();
 	}
 

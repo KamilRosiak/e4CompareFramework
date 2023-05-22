@@ -57,14 +57,7 @@ public class Feature extends AbstractFeature implements IFeature, Serializable {
 	 * @return the isAbstract
 	 */
 	public boolean isAbstract() {
-		return isAbstract;
-	}
-
-	/**
-	 * @param isAbstract the isAbstract to set
-	 */
-	public void setAbstract(boolean isAbstract) {
-		this.isAbstract = isAbstract;
+		return this.getArtifactUUIDs().isEmpty();
 	}
 
 	@Override

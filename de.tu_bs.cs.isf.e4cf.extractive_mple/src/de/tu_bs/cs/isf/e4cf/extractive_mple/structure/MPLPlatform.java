@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences.PlatformPreferences;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 
 /**
@@ -32,9 +34,6 @@ import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine
  *
  */
 public class MPLPlatform implements Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7052592590274822282L;
 	public String name;
 	public List<Configuration> configurations = new ArrayList<Configuration>();
@@ -42,6 +41,7 @@ public class MPLPlatform implements Serializable {
 	public Matcher matcher = new SortingMatcher();
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
 	public Configuration currrentConfiguration;
+	public Optional<FeatureDiagram> featureDiagram;
 
 	int configCount = 0;
 	int componentCount = 0;

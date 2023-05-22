@@ -21,3 +21,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.consts,
  de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences,
  de.tu_bs.cs.isf.e4cf.extractive_mple.structure
+Import-Package: de.tu_bs.cs.isf.e4cf.featuremodel.core.model
