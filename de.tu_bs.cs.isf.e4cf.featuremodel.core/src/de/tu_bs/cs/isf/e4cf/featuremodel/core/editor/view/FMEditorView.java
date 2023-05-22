@@ -2,7 +2,6 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view;
 
 import java.util.function.Consumer;
 
-import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
@@ -18,28 +17,31 @@ import javafx.scene.control.Tab;
  */
 public class FMEditorView {
 	private FMEditorPaneController editorPane;
-	private ServiceContainer services;
 
 	public FMEditorView(FMEditorPaneController editorPane, Consumer<javafx.scene.Node> uiConsumer) {
 		this.editorPane = editorPane;
 		uiConsumer.accept(this.editorPane.ui());
 	}
 	
-	public FMEditorView(Tab tab, ServiceContainer services) {
+	public FMEditorView(Tab tab) {
 		tab.setContent(this.editorPane.ui());
-		this.services = services;
 	}
 	
 	public void displayFeatureDiagram(FeatureDiagram diagram) {
 		FXGraphicalFeature root = buildFXGrapicalDiagram(diagram.getRoot());
+		root.parentFeatureProperty.addListener((obs, oldVal, newVal) -> {
+			diagram.setRoot(newVal.getFeature());
+			this.displayFeatureDiagram(diagram);
+		});
 		editorPane.displayFeatureDiagram(root);
 	}
-	
+		
 	private FXGraphicalFeature buildFXGrapicalDiagram(IFeature feature) {
 		FXGraphicalFeature fxRoot = new FXGraphicalFeature(feature);
 		for (IFeature child : feature.getChildren()) {
 			FXGraphicalFeature fxChild = buildFXGrapicalDiagram(child);
 			fxRoot.getChildFeatures().add(fxChild);
+			fxChild.setParentFxFeature(fxRoot);
 		}
 		return fxRoot;
 	}

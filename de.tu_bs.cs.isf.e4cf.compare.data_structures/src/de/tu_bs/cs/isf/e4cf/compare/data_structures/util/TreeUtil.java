@@ -1,7 +1,10 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -19,15 +22,19 @@ public class TreeUtil {
 	 * This method returns all nodes with the given node type
 	 */
 	public static List<Node> getNodesForType(Node node, String nodeType) {
-		List<Node> nodes = new ArrayList<Node>();
-		// if the given node is of this type add them to the node list
-		if(node.getNodeType().equals(nodeType)) {
+		Set<Node> nodes = getNodesForCondition(node, n -> n.getNodeType().equals(nodeType));
+		return new ArrayList<>(nodes);
+	}
+	
+	public static Set<Node> getNodesForCondition(Node node, Predicate<Node> condition) {
+		Set<Node> nodes = new HashSet<>();
+		// if the given node is of this type add them to the node set
+		if (condition.test(node)) {
 			nodes.add(node);
 		}
-		
-		// recursivly call of this method for all child nodes
-		for(Node childNode : node.getChildren()) {
-			nodes.addAll(getNodesForType(childNode, nodeType));
+		// recursively call of this method for all child nodes
+		for (Node child : node.getChildren()) {
+			nodes.addAll(getNodesForCondition(child, condition));
 		}
 		return nodes;
 	}

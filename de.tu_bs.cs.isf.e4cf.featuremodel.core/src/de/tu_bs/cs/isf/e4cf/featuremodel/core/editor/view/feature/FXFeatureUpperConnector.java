@@ -9,7 +9,7 @@ public class FXFeatureUpperConnector extends Circle {
 	public FXFeatureUpperConnector(IFeature feature) {
 		setCenterX(100.0f);
 		setCenterY(100.0f);
-		setRadius(5.0f);
+		setRadius(0.0f);
 		this.setVariability(feature.getVariability());
 	}
 	
@@ -18,9 +18,14 @@ public class FXFeatureUpperConnector extends Circle {
 		switch (variability) {
 		case MANDATORY:
 			this.getStyleClass().add("upperFeatureConnectorMandatory");
+			setRadius(5.0f);
 			break;
 		case OPTIONAL:
 			this.getStyleClass().add("upperFeatureConnectorOptional");
+			setRadius(5.0f);
+			break;
+		case DEFAULT:
+			setRadius(0.0f);
 			break;
 		}
 	}	

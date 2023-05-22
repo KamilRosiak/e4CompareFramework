@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -17,10 +19,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurat
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences.PlatformPreferences;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 
 /**
@@ -30,9 +34,6 @@ import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine
  *
  */
 public class MPLPlatform implements Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7052592590274822282L;
 	public String name;
 	public List<Configuration> configurations = new ArrayList<Configuration>();
@@ -40,9 +41,18 @@ public class MPLPlatform implements Serializable {
 	public Matcher matcher = new SortingMatcher();
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
 	public Configuration currrentConfiguration;
+	private Optional<FeatureDiagram> featureDiagram = Optional.empty();
 
 	int configCount = 0;
 	int componentCount = 0;
+	
+	public Optional<FeatureDiagram> getFeatureModel() {
+		return this.featureDiagram;
+	}
+	
+	public void setFeatureModel(FeatureDiagram diagram) {
+		this.featureDiagram = Optional.of(diagram);
+	}
 
 	public void insertVariants(List<Tree> variants) {
 		variants.forEach(variant -> {
@@ -191,6 +201,10 @@ public class MPLPlatform implements Serializable {
 
 	public void removeConfiguration(Configuration config) {
 		configurations.remove(config);
+	}
+	
+	public Set<Node> getNodesForUUIDs(Set<UUID> uuids) {
+		return TreeUtil.getNodesForCondition(model, node -> uuids.contains(node.getUUID()));
 	}
 
 }

@@ -18,7 +18,7 @@ public class SyntaxGroup {
 
 	private final Set<UUID> uuids;
 
-	private final Color color;
+	private Color color;
 
 	public SyntaxGroup(Set<Configuration> configurations) {
 		this.configurations = new LexicalConfigTreeSet(configurations);

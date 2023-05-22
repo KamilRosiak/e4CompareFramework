@@ -61,7 +61,11 @@ public final class RCPMessageProvider {
 	
 	
 	public static String inputDialog(String title, String message) {
-		InputDialog dialog = new InputDialog(new Shell(), title, message, "", null);
+		return inputDialog(title, message, "");
+	}
+	
+	public static String inputDialog(String title, String message, String initialValue) {
+		InputDialog dialog = new InputDialog(new Shell(), title, message, initialValue, null);
 		if(dialog.open() == Window.OK) {
 			return dialog.getValue();
 		} else {

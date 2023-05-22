@@ -4,11 +4,9 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorToolbar;
 
 public class FMEditorPaneController {
-	private ServiceContainer services;
 	private FMEditorPaneView view;
 	
 	public FMEditorPaneController(ServiceContainer services) {
-		this.services = services;
 		this.view = new FMEditorPaneView(new FMEditorToolbar(services, this));
 	}
 	

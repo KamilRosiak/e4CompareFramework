@@ -1,14 +1,30 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.model;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
-public class FeatureDiagram {
+import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
+
+public class FeatureDiagram implements Serializable {
+	private static final long serialVersionUID = 868183902095568314L;
+	
 	private String name;
 	private final UUID uuid = UUID.randomUUID();
-	private Feature root;
+	private IFeature root;
 	
-	public FeatureDiagram(String name, Feature rootFeature) {
+	public FeatureDiagram(String name, IFeature rootFeature) {
 		this.name = name;
 		this.root = rootFeature;
 	}
@@ -30,14 +46,14 @@ public class FeatureDiagram {
 	/**
 	 * @return the rootFeature
 	 */
-	public Feature getRoot() {
+	public IFeature getRoot() {
 		return root;
 	}
 
 	/**
 	 * @param rootFeature the rootFeature to set
 	 */
-	public void setRoot(Feature rootFeature) {
+	public void setRoot(IFeature rootFeature) {
 		this.root = rootFeature;
 	}
 
@@ -46,6 +62,16 @@ public class FeatureDiagram {
 	 */
 	public UUID getUuid() {
 		return uuid;
+	}
+	
+	public boolean contains(IFeature feature) {
+		return FDUtil.DFS(root, feature);
+	}
+	
+	public Set<IFeature> getAllFeatures() {
+		Set<IFeature> allFeatures = new HashSet<>();
+		FDUtil.DFSVisitor(root, allFeatures::add);
+		return allFeatures;
 	}
 
 	@Override
@@ -67,6 +93,36 @@ public class FeatureDiagram {
 	@Override
 	public String toString() {
 		return "FeatureDiagram [name=" + name + ", uuid=" + uuid + ", rootFeature=" + root + "]";
+	}
+	
+	public static void writeToFile(File file,  FeatureDiagram diagram) throws IOException {
+		FileOutputStream fileOutStream = new FileOutputStream(file);
+		ObjectOutputStream objectOutStream = new ObjectOutputStream(fileOutStream);
+		objectOutStream.writeObject(diagram);
+		objectOutStream.flush();
+		objectOutStream.close();
+	}
+	
+	public void writeToFile(File file) throws IOException {
+		if (file == null) { // ask for filename, file location
+			file = new File(RCPContentProvider.getCurrentWorkspacePath() + getName() + ".fd");
+		}
+		FeatureDiagram.writeToFile(file, this);
+	}
+	
+	public static FeatureDiagram loadFromFile() throws ClassNotFoundException, IOException {
+		String location = RCPMessageProvider.getFilePathDialog("Select a feature model", "");
+		if (location.isEmpty()) {
+			throw new IOException("No file selected");
+		}
+		
+		File file = new File(location);
+		
+		FileInputStream fileInStream = new FileInputStream(file);
+		ObjectInputStream objectInStream = new ObjectInputStream(fileInStream);
+		FeatureDiagram loadedDiagram = (FeatureDiagram) objectInStream.readObject();
+		objectInStream.close();
+		return loadedDiagram;
 	}
 	
 	

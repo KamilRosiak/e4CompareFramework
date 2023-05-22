@@ -3,6 +3,8 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view;
 import java.util.List;
 import java.util.Objects;
 
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.Cluster.ChildSelectionModel;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.Cluster.Variability;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,7 +16,7 @@ import javafx.scene.control.TableRow;
 public class ClusterViewModel {
 	private StringProperty name;
 	private BooleanProperty root;
-	private BooleanProperty mandatory;
+	private ObjectProperty<Variability> variability;
 	private ObjectProperty<ChildSelectionModel> childSelectionModel;
 	private StringProperty childrenDisplay;
 	
@@ -24,7 +26,7 @@ public class ClusterViewModel {
 		this.cluster = cluster;
 		this.name = new SimpleStringProperty(cluster.getName());
 		this.root = new SimpleBooleanProperty(cluster.isRoot());
-		this.mandatory = new SimpleBooleanProperty(cluster.isMandatory());
+		this.variability = new SimpleObjectProperty<>(cluster.getVariability());
 		this.childSelectionModel = new SimpleObjectProperty<>(cluster.getChildSelection());
 		this.childrenDisplay = new SimpleStringProperty(flattenChildren(cluster.getChildren()));
 		
@@ -34,8 +36,8 @@ public class ClusterViewModel {
 		this.root.addListener((obs, oldVal, newVal) -> {
 			this.cluster.setRoot(newVal);
 		});
-		this.mandatory.addListener((obs, oldVal, newVal) -> {
-			this.cluster.setMandatory(newVal);
+		this.variability.addListener((obs, oldVal, newVal) -> {
+			this.cluster.setVariability(newVal);
 		});
 		this.childSelectionModel.addListener((obs, oldVal, newVal) -> {
 			this.cluster.setChildSelection(newVal);
@@ -81,20 +83,17 @@ public class ClusterViewModel {
 		this.cluster.setRoot(root);
 	}
 	
-
-	public final BooleanProperty mandatoryProperty() {
-		return this.mandatory;
+	public final ObjectProperty<Cluster.Variability> variabilityProperty() {
+		return this.variability;
 	}
 	
-
-	public final boolean isMandatory() {
-		return this.mandatoryProperty().get();
+	public final Variability getVariability() {
+		return this.variability.get();
 	}
 	
-
-	public final void setMandatory(final boolean mandatory) {
-		this.mandatoryProperty().set(mandatory);
-		this.cluster.setMandatory(mandatory);
+	public final void setVariability(final Cluster.Variability variability) {
+		this.variability.set(variability);
+		this.cluster.setVariability(variability);
 	}
 	
 

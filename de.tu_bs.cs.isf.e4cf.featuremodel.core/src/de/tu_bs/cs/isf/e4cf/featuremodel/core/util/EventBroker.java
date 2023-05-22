@@ -19,6 +19,10 @@ public class EventBroker {
 		return services.eventBroker;
 	}
 	
+	public static ServiceContainer getServices() {
+		return services;
+	}
+	
 	
 
 }

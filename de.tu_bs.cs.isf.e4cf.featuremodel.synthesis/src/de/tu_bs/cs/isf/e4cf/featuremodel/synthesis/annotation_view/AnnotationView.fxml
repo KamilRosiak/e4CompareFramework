@@ -15,7 +15,7 @@
             <TableView id="annotationTable" fx:id="annotationTable" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columns>
                 <TableColumn fx:id="nameColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" sortable="false" text="Solution Space Feature" />
-                  <TableColumn fx:id="mandatoryColumn" maxWidth="80.0" minWidth="80.0" resizable="false" sortable="false" text="Mandatory" />
+                  <TableColumn fx:id="variabilityColumn" maxWidth="80.0" minWidth="80.0" resizable="false" sortable="false" text="Variability" />
                   <TableColumn fx:id="childSelectionColumn" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" resizable="false" sortable="false" text="Child Selection" />
                   <TableColumn fx:id="childColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" sortable="false" text="Children" />
               </columns>

@@ -1,56 +1,25 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
-public class Feature implements IFeature {
-	private String name;
-	private final UUID uuid = UUID.randomUUID();;
-	private Variability variability = Variability.OPTIONAL;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
+
+public class Feature extends AbstractFeature implements IFeature, Serializable {
+	private static final long serialVersionUID = 6965707151116269397L;
+
 	private GroupVariability groupVariability = GroupVariability.DEFAULT;
 	private final List<IFeature> children = new ArrayList<>();
 	private boolean isAbstract = false;
 	
-	public Feature(String name) {
-		this.name = name;
+	public Feature() {
+		super(FDStringTable.DEFAULT_FEATURE_NAME);
 	}
 	
-	public Feature(String name, Variability variability, GroupVariability groupVariability) {
-		this(name);
-		this.variability = variability;
-		this.groupVariability = groupVariability;
-	}
-
-	/**
-	 * @return the name
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * @return the variability
-	 */
-	@Override
-	public Variability getVariability() {
-		return variability;
-	}
-
-	/**
-	 * @param variability the variability to set
-	 */
-	public void setVariability(Variability variability) {
-		this.variability = variability;
+	public Feature(String name) {
+		super(name);
 	}
 
 	/**
@@ -67,14 +36,6 @@ public class Feature implements IFeature {
 	public void setGroupVariability(GroupVariability groupVariability) {
 		this.groupVariability = groupVariability;
 	}
-
-	/**
-	 * @return the uuid
-	 */
-	@Override
-	public UUID getUuid() {
-		return uuid;
-	}
 	
 	@Override
 	public List<IFeature> getChildren() {
@@ -84,6 +45,7 @@ public class Feature implements IFeature {
 	@Override
 	public void addChild(IFeature child) {
 		this.children.add(child);
+		child.setParent(this);
 	}
 	
 	@Override
@@ -95,37 +57,34 @@ public class Feature implements IFeature {
 	 * @return the isAbstract
 	 */
 	public boolean isAbstract() {
-		return isAbstract;
-	}
-
-	/**
-	 * @param isAbstract the isAbstract to set
-	 */
-	public void setAbstract(boolean isAbstract) {
-		this.isAbstract = isAbstract;
+		return this.getArtifactUUIDs().isEmpty();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(groupVariability, name, uuid, variability);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(children, groupVariability, isAbstract);
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
+		if (!super.equals(obj))
+			return false;
 		if (!(obj instanceof Feature))
 			return false;
 		Feature other = (Feature) obj;
-		return groupVariability == other.groupVariability && Objects.equals(name, other.name)
-				&& Objects.equals(uuid, other.uuid) && variability == other.variability;
+		return Objects.equals(children, other.children) && groupVariability == other.groupVariability
+				&& isAbstract == other.isAbstract;
 	}
 
 	@Override
 	public String toString() {
-		return "Feature [name=" + name + ", uuid=" + uuid + ", variability=" + variability + ", groupVariability="
-				+ groupVariability + "]";
+		return "Feature [groupVariability=" + groupVariability + ", children=" + children + ", isAbstract=" + isAbstract
+				+ "]";
 	}
-	
 	
 }

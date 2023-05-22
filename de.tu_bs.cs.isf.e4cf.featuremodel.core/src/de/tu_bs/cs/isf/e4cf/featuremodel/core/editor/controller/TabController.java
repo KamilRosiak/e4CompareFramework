@@ -1,7 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -12,6 +16,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Widget;
 
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorTab;
@@ -23,11 +28,13 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.EventBroker;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.MenuItem;
 
 @Singleton
 @Creatable
 public class TabController {
 	private ServiceContainer services;
+	@SuppressWarnings("unused")
 	private List<ErrorListener> errorListeners;
 
 	private TabView view;
@@ -37,18 +44,47 @@ public class TabController {
 		this.services = services;
 		EventBroker.set(services);
 		this.errorListeners = new ArrayList<>();
-		this.view = new TabView(parent,
-				ui -> menuService.registerContextMenu(ui, FDStringTable.FD_TAB_VIEW_CONTEXT_MENU_ID));
-
-		this.createTab(FDStringTable.FD_DEFAULT_NAME);
+		
+		Map<String, MenuItem> menuItems = getMenuItems();
+		Consumer<Widget> contextMenuTarget = ui -> menuService.registerContextMenu(ui, FDStringTable.FD_TAB_VIEW_CONTEXT_MENU_ID);
+		this.view = new TabView(parent, menuItems, contextMenuTarget);
+		
+		// create initial tab
+		this.createTab(FDStringTable.FD_DEFAULT_FM_NAME);
+	}
+	
+	private Map<String, MenuItem> getMenuItems() {
+		Map<String, MenuItem> menuItems = new HashMap<>();
+		MenuItem newTab = new MenuItem("New Tab");
+		newTab.setOnAction(e -> this.createTab(FDStringTable.FD_DEFAULT_FM_NAME));
+		MenuItem save = new MenuItem("Save");
+		save.setOnAction(e -> this.saveCurrentTab());
+		MenuItem load = new MenuItem("Load");
+		load.setOnAction(e -> {
+			
+			FeatureDiagram newDiagram;
+			try {
+				newDiagram = FeatureDiagram.loadFromFile();
+				this.loadFeatureDiagram(newDiagram);
+			} catch (ClassNotFoundException | IOException e1) {
+				//e1.printStackTrace();
+			}			
+		});
+		menuItems.put("new", newTab);
+		menuItems.put("save", save);
+		menuItems.put("load", load);
+		return menuItems;
+	}
+	
+	private EditorController currentEditor() {
+		return this.view.currentTab().editor();
 	}
 
 	public FMEditorTab createTab(String tabTitle) {
 		EventHandler<Event> onTabClose = event -> {
 			// this.currentEditor().askToSave();
-			// don't allow the tabPane to be empty
 			if (this.view.tabCount() == 1) {
-				createTab(FDStringTable.FD_DEFAULT_NAME);
+				createTab(FDStringTable.FD_DEFAULT_FM_NAME);
 			}
 		};
 
@@ -58,8 +94,8 @@ public class TabController {
 		return tab;
 	}
 
-	private EditorController currentEditor() {
-		return this.view.currentTab().editor();
+	public void saveCurrentTab() {
+		currentEditor().saveDiagram();
 	}
 
 	@Optional

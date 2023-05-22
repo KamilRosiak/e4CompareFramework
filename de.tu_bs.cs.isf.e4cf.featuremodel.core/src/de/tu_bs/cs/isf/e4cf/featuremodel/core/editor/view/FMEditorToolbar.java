@@ -35,9 +35,6 @@ public class FMEditorToolbar extends ToolBar  {
 		/**
 		 * Add Buttons to ToolBar
 		 */
-		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_NEW_DIAGRAM, e-> {
-			services.eventBroker.send(FDEventTable.NEW_FEATURE_DIAGRAM,"");
-		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_CONSTRAINTS, e -> {
 			try {
@@ -49,21 +46,13 @@ public class FMEditorToolbar extends ToolBar  {
 
 		}));
 		
-		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SAVE,e -> {
-			services.eventBroker.send(FDEventTable.SAVE_FEATURE_DIAGRAM,"");
-		}));
-		
-		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_LOAD,e -> {
-			services.eventBroker.send(FDEventTable.LOAD_FEATURE_DIAGRAM_FROM_FILE, "");
-		}));
-		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_FORMAT_DIAGRAM, e-> {
 			this.controller.formatDiagram();
 		}));
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SHOW_CONFIG, e-> {
 			services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
-			//services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, view.currentModel());
+			services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, null);
 		}));
 		
 		Button loggerButton = JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_START_LOGGER, e-> {
