@@ -14,6 +14,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.HotkeyHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.KeyTranslateHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.SelectionAreaHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ZoomHandler;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
@@ -133,6 +134,7 @@ public class FMEditorPaneView extends BorderPane {
 		this.rootPane.getChildren().add(root);
 		addChangeListener(root);
 		insertChildren(root);
+		root.setGroupVariability(root.getFeature().getGroupVariability());
 	}
 
 	/**
@@ -173,7 +175,11 @@ public class FMEditorPaneView extends BorderPane {
 		this.rootPane.getChildren().add(child);
 		addChangeListener(child);
 		connectFeatures(parent, child);
+//		if (!child.getFeature().getGroupVariability().equals(GroupVariability.DEFAULT)) {
+//			child.drawGroupVariability();
+//		}
 		insertChildren(child);
+		child.setGroupVariability(child.getFeature().getGroupVariability());
 	}
 
 	private void connectFeatures(FXGraphicalFeature parent, FXGraphicalFeature child) {

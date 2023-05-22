@@ -51,6 +51,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(addFeatureBelowMenuItem());
 		this.getItems().add(addFeatureAboveMenuItem());
 		this.getItems().add(createComponentFeature());
+		
 		// feature variability
 		this.getItems().add(new SeparatorMenuItem());
 		ToggleGroup variabilityToggle = new ToggleGroup();
@@ -63,6 +64,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(defaultVar);
 		this.getItems().add(optionalVar);
 		this.getItems().add(mandatoryVar);
+		
 		// group variability
 		this.getItems().add(new SeparatorMenuItem());
 		ToggleGroup groupVar = new ToggleGroup();

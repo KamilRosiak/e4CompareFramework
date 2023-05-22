@@ -40,6 +40,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureLocator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureOrganizer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SynthesisConsts;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.Cluster.ChildSelectionModel;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.FeatureNameDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.WordCounter;
 import javafx.beans.property.SimpleListProperty;
@@ -67,7 +68,7 @@ public class AnnotationViewController implements Initializable {
 	@FXML
 	private TableColumn<ClusterViewModel, String> nameColumn;
 	@FXML
-	private TableColumn<ClusterViewModel, Boolean> mandatoryColumn;
+	private TableColumn<ClusterViewModel, Cluster.Variability> variabilityColumn;
 	@FXML
 	private TableColumn<ClusterViewModel, ChildSelectionModel> childSelectionColumn;
 	@FXML
@@ -116,7 +117,7 @@ public class AnnotationViewController implements Initializable {
 							.size()) { // clusters are the same
 						newC.setName(oldC.getName());
 						newC.setRoot(oldC.isRoot());
-						newC.setMandatory(oldC.isMandatory());
+						newC.setVariability(oldC.getVariability());
 						newC.setChildSelection(oldC.getChildSelection());
 						clusterMap.get(oldC).add(newC);
 					} else { // remaining uuids not in new variant
@@ -209,7 +210,7 @@ public class AnnotationViewController implements Initializable {
 		this.clusters.forEach(c -> c.setRoot(false));
 		ClusterViewModel selectedModel = this.annotationTable.getSelectionModel().getSelectedItem();
 		selectedModel.setRoot(true);
-		selectedModel.setMandatory(true);
+		selectedModel.setVariability(Cluster.Variability.MANDATORY);
 		annotationTable.refresh();
 	}
 
@@ -304,9 +305,17 @@ public class AnnotationViewController implements Initializable {
 
 	private Feature toFeature(Cluster cluster) {
 		Feature feature = new ColoredFeature(cluster.getName(), cluster.getSyntaxGroup().getColor());
-		if (cluster.isMandatory()) {
+		switch (cluster.getVariability()) {
+		case DEFAULT:
+			feature.setVariability(Variability.DEFAULT);
+			break;
+		case MANDATORY:
 			feature.setVariability(Variability.MANDATORY);
-		} // feature is optional by default
+			break;
+		case OPTIONAL:
+			feature.setVariability(Variability.OPTIONAL);
+			break;		
+		}
 		if (cluster.isAbstract()) {
 			feature.setAbstract(true);
 		}
@@ -343,8 +352,9 @@ public class AnnotationViewController implements Initializable {
 		nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-		mandatoryColumn.setCellFactory(CheckBoxTableCell.forTableColumn(mandatoryColumn));
-		mandatoryColumn.setCellValueFactory(new PropertyValueFactory<>("mandatory"));
+		variabilityColumn.setCellFactory(ComboBoxTableCell.forTableColumn(Cluster.Variability.DEFAULT, 
+				Cluster.Variability.MANDATORY, Cluster.Variability.OPTIONAL));
+		variabilityColumn.setCellValueFactory(new PropertyValueFactory<>("variability"));
 
 		childSelectionColumn.setCellFactory(ComboBoxTableCell.forTableColumn(ChildSelectionModel.DEFAULT,
 				ChildSelectionModel.ALTERNATIVE, ChildSelectionModel.OR));

@@ -7,20 +7,26 @@ import java.util.Objects;
 
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 
-enum ChildSelectionModel {
-	ALTERNATIVE,
-	OR, 
-	DEFAULT;
-}
-
 public class Cluster implements Serializable {
 	private static final long serialVersionUID = 3304554399330246573L;
 	private String name;
 	private SyntaxGroup syntaxGroup;
 	private boolean isRoot = false;
-	private boolean isMandatory = false;
+	private Variability variability = Variability.DEFAULT;
 	private ChildSelectionModel childSelection = ChildSelectionModel.DEFAULT;
 	private List<Cluster> children = new ArrayList<>();
+	
+	public enum ChildSelectionModel {
+		ALTERNATIVE,
+		OR, 
+		DEFAULT;
+	}
+	
+	public enum Variability {
+		MANDATORY,
+		OPTIONAL,
+		DEFAULT;
+	}
 	
 	public Cluster(SyntaxGroup group) {
 		this.syntaxGroup = group;
@@ -54,19 +60,13 @@ public class Cluster implements Serializable {
 	public void setRoot(boolean isRoot) {
 		this.isRoot = isRoot;
 	}
-
-	/**
-	 * @return the isMandatory
-	 */
-	public boolean isMandatory() {
-		return isMandatory;
+	
+	public Variability getVariability() {
+		return this.variability;
 	}
-
-	/**
-	 * @param isMandatory the isMandatory to set
-	 */
-	public void setMandatory(boolean isMandatory) {
-		this.isMandatory = isMandatory;
+	
+	public void setVariability(Variability variability) {
+		this.variability = variability;
 	}
 	
 	public boolean isAbstract() {
@@ -117,7 +117,7 @@ public class Cluster implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(childSelection, children, isMandatory, isRoot, name, syntaxGroup);
+		return Objects.hash(childSelection, children, variability, isRoot, name, syntaxGroup);
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class Cluster implements Serializable {
 			return false;
 		Cluster other = (Cluster) obj;
 		return childSelection == other.childSelection && Objects.equals(children, other.children)
-				&& isMandatory == other.isMandatory && isRoot == other.isRoot && Objects.equals(name, other.name)
+				&& variability == other.getVariability() && isRoot == other.isRoot && Objects.equals(name, other.name)
 				&& Objects.equals(syntaxGroup, other.syntaxGroup);
 	}
 

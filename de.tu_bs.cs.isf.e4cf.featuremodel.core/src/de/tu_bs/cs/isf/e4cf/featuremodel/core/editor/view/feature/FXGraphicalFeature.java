@@ -241,6 +241,19 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		feature.setName(name);
 		services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 	}
+	
+	void drawGroupVariability() {
+		switch (feature.getGroupVariability()) {
+		case ALTERNATIVE:
+			this.lowerConnector.drawAlternative();
+			break;
+		case DEFAULT:
+			break;
+		case OR:
+			this.lowerConnector.drawOr();
+			break;
+		}
+	}
 
 	void setGroupVariability_ALTERNATIVE() {
 
@@ -292,7 +305,9 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		}
 		lowerConnector = new FXFeatureLowerConnector(this);
 		for (FXGraphicalFeature childFeature : childFeatures) {
-			childFeature.getChildren().add(0, childFeature.upperConnector);
+			if (!childFeature.getChildren().contains(childFeature.upperConnector)) {
+				childFeature.getChildren().add(0, childFeature.upperConnector);
+			}
 		}
 	}
 

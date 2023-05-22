@@ -25,6 +25,10 @@ public class Node<T> implements Serializable {
 		this.value = value;
 	}
 	
+	public List<Node<T>> children() {
+		return children;
+	}
+	
 	public void addChild(Node<T> child) {
 		this.children.add(child);
 	}

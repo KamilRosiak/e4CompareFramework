@@ -22,7 +22,37 @@ public class FeatureOrganizer {
 	
 	public static Tree<Cluster> createHierarchy(MPLPlatform mpl, List<Cluster> clusters) {		
 		Map<Configuration, List<Cluster>> configToClusters = mapConfigsToClusters(mpl.configurations, clusters);
-		return buildHierarchy(configToClusters, clusters);
+		Tree<Cluster> hierarchy = buildHierarchy(configToClusters, clusters);
+		return calculateVariability(hierarchy);
+	}
+	
+	public static Tree<Cluster> calculateVariability(Tree<Cluster> hierarchy) {
+		Cluster root = hierarchy.getRoot().value();
+		root.setVariability(Cluster.Variability.MANDATORY);
+		FeatureOrganizer.calculateChildVariability(root);
+		return hierarchy;
+	}
+	
+	private static void calculateChildVariability(Cluster parent) {
+		int parentConfigCount = parent.getSyntaxGroup().getConfigurations().size();
+		List<Cluster> sameConfigCountChildren = new ArrayList<>();
+		for (Cluster child : parent.getChildren()) {
+			int childConfigCount = child.getSyntaxGroup().getConfigurations().size();
+			if (childConfigCount == parentConfigCount) {
+				sameConfigCountChildren.add(child);
+			}
+		}
+		
+		if (sameConfigCountChildren.isEmpty() && parent.getChildren().size() > 1) {
+			parent.setChildSelection(Cluster.ChildSelectionModel.OR);
+			parent.getChildren().forEach(child -> child.setVariability(Cluster.Variability.DEFAULT));
+		} else {
+			parent.setChildSelection(Cluster.ChildSelectionModel.DEFAULT);
+			parent.getChildren().forEach(child -> child.setVariability(Cluster.Variability.OPTIONAL));
+			sameConfigCountChildren.forEach(child -> child.setVariability(Cluster.Variability.MANDATORY));
+		}
+		
+		parent.getChildren().forEach(FeatureOrganizer::calculateChildVariability);
 	}
 	
 	private static Map<Configuration, List<Cluster>> mapConfigsToClusters(List<Configuration> configs, List<Cluster> clusters) {
