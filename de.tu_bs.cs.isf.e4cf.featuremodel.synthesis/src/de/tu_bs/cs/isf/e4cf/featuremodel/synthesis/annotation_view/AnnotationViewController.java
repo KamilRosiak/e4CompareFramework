@@ -181,18 +181,25 @@ public class AnnotationViewController implements Initializable {
 
 	public void displayClusters(List<Cluster> clusters) {
 		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
-		List<SyntaxGroup> groups = clusters.stream().map(Cluster::getSyntaxGroup).collect(Collectors.toList());
-		publishGroups(groups);
+		//List<SyntaxGroup> groups = clusters.stream().map(Cluster::getSyntaxGroup).collect(Collectors.toList());
+		//publishGroups(groups);
 
+		// display clusters in annotation view
 		List<ClusterViewModel> viewModels = clusters.stream().map(ClusterViewModel::new).collect(Collectors.toList());
 		this.clusters = FXCollections.observableList(viewModels);
-
 		this.annotationTable.setItems(this.clusters);
 		this.annotationTable.refresh();
 		
+		// calculate initial feature diagram proposal
 		Tree<Cluster> hierarchy = FeatureOrganizer.createHierarchy(currentMpl, clusters);
 		Feature root = toFeature(hierarchy.getRoot().value());
 		FeatureDiagram diagram = new FeatureDiagram("Generated Feature Model", root);
+		this.currentMpl.setFeatureModel(diagram);
+		
+		
+		// display features in mpl editor
+		services.eventBroker.post(MPLEEditorConsts.SHOW_MPL, this.currentMpl);
+		// display diagram in feature model editor
 		services.partService.showPart(FDStringTable.BUNDLE_NAME);
 		services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, diagram);
 	}

@@ -86,8 +86,5 @@ public class Feature extends AbstractFeature implements IFeature, Serializable {
 		return "Feature [groupVariability=" + groupVariability + ", children=" + children + ", isAbstract=" + isAbstract
 				+ "]";
 	}
-
-	
-	
 	
 }

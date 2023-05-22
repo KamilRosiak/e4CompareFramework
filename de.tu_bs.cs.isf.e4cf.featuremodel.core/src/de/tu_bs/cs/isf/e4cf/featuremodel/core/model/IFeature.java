@@ -25,7 +25,7 @@ public interface IFeature {
 	void addChild(IFeature child);
 	void removeChild(IFeature child);
 	
-	IFeature getParent();
+	Optional<IFeature> getParent();
 	void setParent(IFeature parent);
 	
 	Variability getVariability();
@@ -44,5 +44,10 @@ public interface IFeature {
 	
 	String getDescription();
 	void setDescription(String description);
+	
+	@Override
+	public boolean equals(Object other);
+	@Override
+	public int hashCode();
 	
 }

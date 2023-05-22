@@ -17,7 +17,7 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	private String name;
 	private String description;
 	private Variability variability = Variability.OPTIONAL;
-	private IFeature parent = null;
+	private Optional<IFeature> parent = Optional.empty();
 	private Optional<Color> color = Optional.empty();
 	private final Set<Configuration> configurations = new HashSet<>();
 	private final Set<UUID> artifactUUIDs = new HashSet<>();
@@ -43,13 +43,13 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	}
 
 	@Override
-	public IFeature getParent() {
+	public Optional<IFeature> getParent() {
 		return parent;
 	}
 
 	@Override
 	public void setParent(IFeature parent) {
-		this.parent = parent;
+		this.parent = Optional.of(parent);
 		
 	}
 
@@ -95,7 +95,12 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(description, name, parent, uuid, variability);
+		if (parent.isPresent()) {
+			return Objects.hash(artifactUUIDs, color, configurations, description, parent.get().getUuid(), name, uuid, variability);
+		} else {
+			return Objects.hash(artifactUUIDs, color, configurations, description, name, uuid, variability);
+		}
+		
 	}
 
 	@Override
@@ -105,7 +110,9 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 		if (!(obj instanceof AbstractFeature))
 			return false;
 		AbstractFeature other = (AbstractFeature) obj;
-		return Objects.equals(description, other.description) && Objects.equals(name, other.name)
+		return Objects.equals(artifactUUIDs, other.artifactUUIDs) && Objects.equals(color, other.color)
+				&& Objects.equals(configurations, other.configurations)
+				&& Objects.equals(description, other.description) && Objects.equals(name, other.name)
 				&& Objects.equals(parent, other.parent) && Objects.equals(uuid, other.uuid)
 				&& variability == other.variability;
 	}
@@ -113,9 +120,8 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	@Override
 	public String toString() {
 		return "AbstractFeature [uuid=" + uuid + ", name=" + name + ", description=" + description + ", variability="
-				+ variability + ", parent=" + parent + "]";
-	}
-
-	
+				+ variability + ", parent=" + parent + ", color=" + color + ", configurations=" + configurations
+				+ ", artifactUUIDs=" + artifactUUIDs + "]";
+	}	
 
 }

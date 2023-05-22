@@ -1,7 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +26,8 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities.TreeItemSelector;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities.TreeViewUtilities;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.beans.property.SimpleStringProperty;
@@ -79,13 +80,17 @@ public class MPLEditorController implements Initializable {
 	 */
 	@Optional
 	@Inject
-	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
+	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {		
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
-		setCurrentPlatform(platform);
+		this.setCurrentPlatform(platform);
 		// load decorator and select the first
 		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoraterFromExtension()));
 		decoratorCombo.getSelectionModel().select(0);
+		
+		if (platform.getFeatureModel() != null && platform.getFeatureModel().isPresent()) {
+			this.displayFeatures(platform.getFeatureModel().get());
+		}
 
 	}
 
@@ -106,14 +111,13 @@ public class MPLEditorController implements Initializable {
 		}
 	}
 
-	@Optional
-	@Inject
-	public void showAtomicSets(@UIEventTopic("atomic_sets_found") Map<Set<UUID>, Color> atomicSets) {
+	private void displayFeatures(FeatureDiagram diagram) {
+		Set<IFeature> features = diagram.getAllFeatures();
 		final Function<Node, TreeItem<Node>> coloredTreeCreator = node -> {
 			ColoredTreeItem item = new ColoredTreeItem(node, Color.WHITE);
-			for (Set<UUID> cluster : atomicSets.keySet()) {
-				if (cluster.contains(node.getUUID())) {
-					item.setColor(atomicSets.get(cluster));
+			for (IFeature feature : features) {
+				if (feature.getArtifactUUIDs().contains(node.getUUID())) {
+					item.setColor(feature.getColor().orElseGet(() -> Color.WHITE));
 				}
 			}
 			return item;
@@ -123,7 +127,6 @@ public class MPLEditorController implements Initializable {
 		TreeViewUtilities.decorateTree(root, new FamilyModelNodeDecorator());
 		this.setTree(root);
 		TreeViewUtilities.decorateTree(root, new ExpandAllDecorator());
-		// treeView.refresh();
 	}
 
 	@Optional
