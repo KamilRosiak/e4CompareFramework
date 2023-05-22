@@ -55,7 +55,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.paint.Color;
 
 public class AnnotationViewController implements Initializable {
 	@Inject
@@ -108,9 +107,8 @@ public class AnnotationViewController implements Initializable {
 		for (Cluster newC : newClusters) {
 			for (Cluster oldC : oldClusters) {
 
-				if (oldC.getSyntaxGroup().getUuids().containsAll(newC.getSyntaxGroup().getUuids())) { // new cluster is
-																										// subset of old
-																										// cluster
+				if (oldC.getSyntaxGroup().getUuids().containsAll(newC.getSyntaxGroup().getUuids())) { 
+					// new cluster is subset of old cluster
 					if (oldC.getSyntaxGroup().getConfigurations().size() < newC.getSyntaxGroup().getConfigurations()
 							.size()) { // clusters are the same
 						newC.setName(oldC.getName());
@@ -122,11 +120,8 @@ public class AnnotationViewController implements Initializable {
 						newC.setName(oldC.getName() + "\\" + newVariantName);
 					}
 					break;
-				} else if (!Collections.disjoint(oldC.getSyntaxGroup().getUuids(), newC.getSyntaxGroup().getUuids())) { // other
-																														// uuids
-																														// in
-																														// new
-																														// cluster
+				} else if (!Collections.disjoint(oldC.getSyntaxGroup().getUuids(), newC.getSyntaxGroup().getUuids())) {
+					// other uuids in new cluster
 					String newName = combineNames(oldC, newC);
 					newC.setName(newName);
 					System.out.println(newName);
@@ -169,20 +164,8 @@ public class AnnotationViewController implements Initializable {
 		displayClusters(clusters);
 	}
 
-	private void publishGroups(List<SyntaxGroup> groups) {
-		Map<Set<UUID>, Color> atomicSets = groups.stream()
-				.collect(Collectors.toMap(SyntaxGroup::getUuids, SyntaxGroup::getColor));
-		// String workspace =
-		// services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath();
-		// FileStreamUtil.writeTextToFile(workspace + "/atomicSets.txt",
-		// atomicSets.toString());
-		services.eventBroker.post("atomic_sets_found", atomicSets);
-	}
-
 	public void displayClusters(List<Cluster> clusters) {
 		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
-		//List<SyntaxGroup> groups = clusters.stream().map(Cluster::getSyntaxGroup).collect(Collectors.toList());
-		//publishGroups(groups);
 
 		// display clusters in annotation view
 		List<ClusterViewModel> viewModels = clusters.stream().map(ClusterViewModel::new).collect(Collectors.toList());
@@ -198,7 +181,7 @@ public class AnnotationViewController implements Initializable {
 		
 		
 		// display features in mpl editor
-		services.eventBroker.post(MPLEEditorConsts.SHOW_MPL, this.currentMpl);
+		services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, this.currentMpl);
 		// display diagram in feature model editor
 		services.partService.showPart(FDStringTable.BUNDLE_NAME);
 		services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, diagram);
