@@ -56,7 +56,7 @@ public class FeatureNameDialog extends BorderPane {
 		labelCol.setCellValueFactory(new PropertyValueFactory<>("word"));
 		countCol.setCellValueFactory(new PropertyValueFactory<>("count"));
 		wordTable.setOnMouseClicked(mouseEvent -> {
-			// double click select name from table
+			//double click select name from table
 			if (mouseEvent.getClickCount() == 2 && !wordTable.getSelectionModel().isEmpty()) {
 				selectedCluster.setName(wordTable.getSelectionModel().getSelectedItem().word);
 				stage.close();
