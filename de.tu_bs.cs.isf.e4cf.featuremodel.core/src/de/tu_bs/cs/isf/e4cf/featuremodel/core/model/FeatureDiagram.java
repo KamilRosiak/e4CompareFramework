@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import CrossTreeConstraints.AbstractConstraint;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 
@@ -23,6 +24,7 @@ public class FeatureDiagram implements Serializable {
 	private String name;
 	private final UUID uuid = UUID.randomUUID();
 	private IFeature root;
+	private List<AbstractConstraint> constraints = new ArrayList<>();
 	
 	public FeatureDiagram(String name, IFeature rootFeature) {
 		this.name = name;
@@ -62,6 +64,18 @@ public class FeatureDiagram implements Serializable {
 	 */
 	public UUID getUuid() {
 		return uuid;
+	}
+	
+	public List<AbstractConstraint> getConstraints() {
+		return this.constraints;
+	}
+	
+	public void addConstraint(AbstractConstraint constraint) {
+		this.constraints.add(constraint);
+	}
+	
+	public boolean removeConstraint(AbstractConstraint constraint) {
+		return this.constraints.remove(constraint);
 	}
 	
 	public boolean contains(IFeature feature) {

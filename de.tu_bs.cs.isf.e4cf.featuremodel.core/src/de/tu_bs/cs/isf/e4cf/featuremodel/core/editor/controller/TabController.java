@@ -9,7 +9,9 @@ import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
@@ -28,6 +30,8 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
 
+@Singleton
+@Creatable
 public class TabController {
 	private ServiceContainer services;
 	@SuppressWarnings("unused")
@@ -98,8 +102,13 @@ public class TabController {
 	@Inject
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram diagram) {
 		FMEditorTab newTab = this.createTab(diagram.getName());
+		services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
 		services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, diagram);
 		newTab.editor().setFeatureDiagram(diagram);
+	}
+	
+	public FeatureDiagram getCurrentFeatureDiagram() {
+		return this.currentEditor().getFeatureDiagram();
 	}
 
 }

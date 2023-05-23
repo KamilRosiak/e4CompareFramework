@@ -12,7 +12,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
-import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorView;
@@ -59,6 +58,7 @@ public class EditorController {
 	@Inject
 	public void setFeatureDiagram(FeatureDiagram diagram) {
 		this.view.displayFeatureDiagram(diagram);
+		this.diagram = diagram;
 		System.out.println("Feature Diagram " + diagram.getName() + " successfully loaded.");
 	}
 	

@@ -14,7 +14,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.HotkeyHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.KeyTranslateHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.SelectionAreaHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ZoomHandler;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;

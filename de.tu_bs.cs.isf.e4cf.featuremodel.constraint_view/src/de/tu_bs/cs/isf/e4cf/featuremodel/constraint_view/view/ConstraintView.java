@@ -66,7 +66,8 @@ public class ConstraintView {
 		});
 		
 		table.setContextMenu(new ConstraintViewContextMenu(table, controller));
-		table.getColumns().addAll(constraintCol, descriptionCol);
+		table.getColumns().add(constraintCol);
+		table.getColumns().add(descriptionCol);
 	}
 	
 	public void showConstraints(List<AbstractConstraint> constraints) {
