@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.synthesis;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +45,12 @@ public class FeatureOrganizer {
 		}
 		
 		if (sameConfigCountChildren.isEmpty() && parent.getChildren().size() > 1) {
-			parent.setChildSelection(Cluster.ChildSelectionModel.OR);
+			if (childrenOverlapping(parent.getChildren())) {
+				parent.setChildSelection(Cluster.ChildSelectionModel.OR);
+			} else {
+				parent.setChildSelection(Cluster.ChildSelectionModel.ALTERNATIVE);
+			}
+			
 			parent.getChildren().forEach(child -> child.setVariability(Cluster.Variability.DEFAULT));
 		} else {
 			parent.setChildSelection(Cluster.ChildSelectionModel.DEFAULT);
@@ -53,6 +59,18 @@ public class FeatureOrganizer {
 		}
 		
 		parent.getChildren().forEach(FeatureOrganizer::calculateChildVariability);
+	}
+	
+	private static boolean childrenOverlapping(Collection<Cluster> children) {
+		Set<String> productNames = new HashSet<>();
+		for (Cluster child : children) {
+			for (Configuration config : child.getSyntaxGroup().getConfigurations()) {
+				if (!productNames.add(config.getName())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	private static Map<Configuration, List<Cluster>> mapConfigsToClusters(List<Configuration> configs, List<Cluster> clusters) {

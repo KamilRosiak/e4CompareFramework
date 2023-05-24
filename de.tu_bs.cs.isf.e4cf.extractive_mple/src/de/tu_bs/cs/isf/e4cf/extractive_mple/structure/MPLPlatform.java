@@ -41,17 +41,21 @@ public class MPLPlatform implements Serializable {
 	public Matcher matcher = new SortingMatcher();
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
 	public Configuration currrentConfiguration;
-	private Optional<FeatureDiagram> featureDiagram = Optional.empty();
+	private FeatureDiagram featureDiagram = null;
 
 	int configCount = 0;
 	int componentCount = 0;
 	
 	public Optional<FeatureDiagram> getFeatureModel() {
-		return this.featureDiagram;
+		if (this.featureDiagram != null) {
+			return Optional.of(this.featureDiagram);
+		} else {
+			return Optional.empty();
+		}
 	}
 	
 	public void setFeatureModel(FeatureDiagram diagram) {
-		this.featureDiagram = Optional.of(diagram);
+		this.featureDiagram = diagram;
 	}
 
 	public void insertVariants(List<Tree> variants) {
