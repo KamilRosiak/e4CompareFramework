@@ -15,7 +15,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfigura
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
@@ -105,7 +104,6 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	@Override
 	public Node mergeArtifacts(List<Configuration> configs, List<CloneConfiguration> components,
 			List<CloneConfiguration> fixedConfigs) {
-		// return mergeArtifacts(true, configs, components, fixedConfigs);
 		return mergeArtifacts(configs, components);
 	}
 

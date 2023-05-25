@@ -42,10 +42,19 @@ public class MPLPlatform implements Serializable {
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
 	public Configuration currrentConfiguration;
 	private FeatureDiagram featureDiagram = null;
-
+	private boolean isMulti = true;
 	int configCount = 0;
 	int componentCount = 0;
-	
+
+	public MPLPlatform() {
+
+	}
+
+	public MPLPlatform(CompareEngineHierarchical compareEngine, boolean isMulti) {
+		this.isMulti = isMulti;
+		this.compareEngine = compareEngine;
+	}
+
 	public Optional<FeatureDiagram> getFeatureModel() {
 		if (this.featureDiagram != null) {
 			return Optional.of(this.featureDiagram);
@@ -53,7 +62,7 @@ public class MPLPlatform implements Serializable {
 			return Optional.empty();
 		}
 	}
-	
+
 	public void setFeatureModel(FeatureDiagram diagram) {
 		this.featureDiagram = diagram;
 	}
@@ -74,7 +83,8 @@ public class MPLPlatform implements Serializable {
 	}
 
 	public Configuration getNextConfig(Tree node) {
-		ConfigurationImpl config = (ConfigurationImpl) NodeConfigurationUtil.generateConfiguration(node.getRoot(), node.getTreeName());
+		ConfigurationImpl config = (ConfigurationImpl) NodeConfigurationUtil.generateConfiguration(node.getRoot(),
+				node.getTreeName());
 		return config;
 	}
 
@@ -91,9 +101,12 @@ public class MPLPlatform implements Serializable {
 			 * Intra clone refactoring detection clone artifacts within the variant and the
 			 * creation of clone configurations
 			 */
-			List<CloneConfiguration> cloneConfigurations = refactorComponents(variant.getRoot());
-			//System.out.println("cloneConfigs:"+ cloneConfigurations.size());
+			List<CloneConfiguration> cloneConfigurations = new ArrayList<CloneConfiguration>();
 			List<CloneConfiguration> fixedCloneConfigs = new ArrayList<CloneConfiguration>();
+			if (isMulti) {
+				cloneConfigurations = refactorComponents(variant.getRoot());
+			}
+
 			/**
 			 * Inter clone refactoring detection clone artifacts between variants and the
 			 * creation of clone configurations
@@ -111,6 +124,7 @@ public class MPLPlatform implements Serializable {
 		} else {
 			System.out.println("root node has other type");
 		}
+
 	}
 
 	private List<CloneConfiguration> refactorComponents(Node node) {
@@ -166,8 +180,8 @@ public class MPLPlatform implements Serializable {
 				if (!clusterNode.getParent().getChildren().contains(mergeTarget))
 					clusterNode.getParent().getChildren().add(mergeTarget);
 
-				componentConfigs.add(NodeConfigurationUtil.createCloneConfiguration(clusterNode,
-						clusterNode.getParent().getUUID()));
+				componentConfigs.add(
+						NodeConfigurationUtil.createCloneConfiguration(clusterNode, clusterNode.getParent().getUUID()));
 			}
 		}
 		return componentConfigs;
@@ -206,7 +220,7 @@ public class MPLPlatform implements Serializable {
 	public void removeConfiguration(Configuration config) {
 		configurations.remove(config);
 	}
-	
+
 	public Set<Node> getNodesForUUIDs(Set<UUID> uuids) {
 		return TreeUtil.getNodesForCondition(model, node -> uuids.contains(node.getUUID()));
 	}

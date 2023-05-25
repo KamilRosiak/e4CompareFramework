@@ -116,6 +116,11 @@ public class MPLEditorController implements Initializable {
 		}
 	}
 
+	
+	
+	
+	
+	
 	private void displayFeatures(FeatureDiagram diagram) {
 		Set<IFeature> features = diagram.getAllFeatures();
 		final Function<Node, TreeItem<Node>> coloredTreeCreator = node -> {
