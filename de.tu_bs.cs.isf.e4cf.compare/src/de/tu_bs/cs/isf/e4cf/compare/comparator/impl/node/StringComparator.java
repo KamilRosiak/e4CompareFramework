@@ -10,9 +10,10 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 
 public class StringComparator extends AbstractNodeComparator {
 	float keyValueRatio = 0.4f;
+	public static final String NAME ="String Comparator";
 
 	public StringComparator() {
-		super(WILDCARD);
+		super(WILDCARD,NAME);
 	}
 
 	@Override
