@@ -18,7 +18,7 @@ public class ClusterStyler {
 	public static void style(Labeled ui, ClusterViewModel model) {
 		setBackgroundColor(ui, model);
 		manageStyle(model.isRoot(), ui, Style.ROOT);
-		manageStyle(model.getCluster().isAbstract(), ui, Style.ABSTRACT);
+		manageStyle(model.getFeature().isAbstract(), ui, Style.ABSTRACT);
 		
 	}
 	
@@ -36,7 +36,7 @@ public class ClusterStyler {
 	}
 	
 	private static void setBackgroundColor(Labeled ui, ClusterViewModel model) {
-		BackgroundFill fill = new BackgroundFill(model.getCluster().getSyntaxGroup().getColor(), CornerRadii.EMPTY, Insets.EMPTY);
+		BackgroundFill fill = new BackgroundFill(model.getFeature().getColor().get(), CornerRadii.EMPTY, Insets.EMPTY);
 		ui.setBackground(new Background(fill));
 		ui.setPadding(new Insets(1.0d));
 		manageStyle(true, ui, Style.COLOREDTABLE);

@@ -135,8 +135,6 @@ public class Cluster implements Serializable {
 	@Override
 	public String toString() {
 		return "Cluster[" + name + "]";
-	}
-	
-	
+	}	
 
 }

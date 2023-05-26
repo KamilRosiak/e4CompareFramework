@@ -14,6 +14,9 @@ public interface IFeature {
 	String getName();
 	void setName(String name);
 	
+	boolean isRoot();
+	void setIsRoot(boolean isRoot);
+	
 	Optional<Color> getColor();
 	void setColor(Color color);
 	

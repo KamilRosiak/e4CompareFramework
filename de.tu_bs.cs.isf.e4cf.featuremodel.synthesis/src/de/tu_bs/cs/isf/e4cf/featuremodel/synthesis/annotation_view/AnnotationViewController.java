@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +33,7 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
@@ -39,7 +41,6 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureLocator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureOrganizer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SynthesisConsts;
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.Cluster.ChildSelectionModel;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.FeatureNameDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.WordCounter;
 import javafx.beans.property.SimpleListProperty;
@@ -65,9 +66,9 @@ public class AnnotationViewController implements Initializable {
 	@FXML
 	private TableColumn<ClusterViewModel, String> nameColumn;
 	@FXML
-	private TableColumn<ClusterViewModel, Cluster.Variability> variabilityColumn;
+	private TableColumn<ClusterViewModel, Variability> variabilityColumn;
 	@FXML
-	private TableColumn<ClusterViewModel, ChildSelectionModel> childSelectionColumn;
+	private TableColumn<ClusterViewModel, GroupVariability> childSelectionColumn;
 	@FXML
 	private TableColumn<ClusterViewModel, String> childColumn;
 	@FXML
@@ -87,13 +88,13 @@ public class AnnotationViewController implements Initializable {
 
 	@Optional
 	@Inject
-	public void updateMPL(@UIEventTopic(MPLEEditorConsts.ADD_VARIANT_TO_MPL) MPLPlatform mpl) {
+	public void updateMPL(/*@UIEventTopic(MPLEEditorConsts.ADD_VARIANT_TO_MPL)*/ MPLPlatform mpl) {
 		List<SyntaxGroup> groups = this.locator.updateMPL(mpl);
-		List<Cluster> newClusters = groups.stream().map(Cluster::new).collect(Collectors.toList());
-		List<Cluster> oldClusters = this.clusters.stream().map(ClusterViewModel::getCluster)
-				.collect(Collectors.toList());
-		updateClusters(oldClusters, newClusters);
-		this.displayClusters(newClusters);
+//		List<IFeature> newClusters = groups.stream().map(Cluster::new).collect(Collectors.toList());
+//		List<IFeature> oldClusters = this.clusters.stream().map(ClusterViewModel::getFeature)
+//				.collect(Collectors.toList());
+//		updateClusters(new ArrayList<>(), new ArrayList<>());
+//		this.displayClusters(newClusters);
 	}
 
 	private void updateClusters(List<Cluster> oldClusters, List<Cluster> newClusters) {
@@ -166,25 +167,33 @@ public class AnnotationViewController implements Initializable {
 
 	public void displayClusters(List<Cluster> clusters) {
 		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
-
-		// display clusters in annotation view
-		List<ClusterViewModel> viewModels = clusters.stream().map(ClusterViewModel::new).collect(Collectors.toList());
-		this.clusters = FXCollections.observableList(viewModels);
-		this.annotationTable.setItems(this.clusters);
-		this.annotationTable.refresh();
 		
 		// calculate initial feature diagram proposal
 		Tree<Cluster> hierarchy = FeatureOrganizer.createHierarchy(currentMpl, clusters);
 		Feature root = toFeature(hierarchy.getRoot().value());
+		root.setIsRoot(true);
 		FeatureDiagram diagram = new FeatureDiagram("Generated Feature Model", root);
 		this.currentMpl.setFeatureModel(diagram);
-		
 		
 		// display features in mpl editor
 		services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, this.currentMpl);
 		// display diagram in feature model editor
 		services.partService.showPart(FDStringTable.BUNDLE_NAME);
 		services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, diagram);
+		
+		// display clusters in annotation view
+		TreeSet<IFeature> allFeatures = new TreeSet<>((f1, f2) -> {
+			int lengthDiff = f2.getName().length() - f1.getName().length();
+			if (lengthDiff == 0) {
+				lengthDiff = f2.getName().compareTo(f1.getName());
+			}
+			return lengthDiff;
+		});
+		allFeatures.addAll(diagram.getAllFeatures());
+		List<ClusterViewModel> viewModels = allFeatures.stream().map(ClusterViewModel::new).collect(Collectors.toList());
+		this.clusters = FXCollections.observableList(viewModels);
+		this.annotationTable.setItems(this.clusters);
+		this.annotationTable.refresh();
 	}
 
 	/**
@@ -198,7 +207,7 @@ public class AnnotationViewController implements Initializable {
 		this.clusters.forEach(c -> c.setRoot(false));
 		ClusterViewModel selectedModel = this.annotationTable.getSelectionModel().getSelectedItem();
 		selectedModel.setRoot(true);
-		selectedModel.setVariability(Cluster.Variability.MANDATORY);
+		selectedModel.setVariability(Variability.MANDATORY);
 		annotationTable.refresh();
 	}
 
@@ -213,7 +222,7 @@ public class AnnotationViewController implements Initializable {
 		final String namePrefix = "Abstract";
 
 		// find highest existing ordinal of an abstract cluster
-		int maxOrdinal = this.clusters.stream().filter(model -> model.getCluster().isAbstract())
+		int maxOrdinal = this.clusters.stream().filter(model -> model.getFeature().isAbstract())
 				.map(ClusterViewModel::getName).filter(name -> name.matches(String.format("%s\\d+", namePrefix)))
 				.map(name -> name.substring(namePrefix.length())).mapToInt(Integer::valueOf).max().orElse(0);
 		int ordinal = maxOrdinal + 1;
@@ -221,7 +230,8 @@ public class AnnotationViewController implements Initializable {
 		Set<Configuration> configs = new HashSet<>();
 		configs.add(new ConfigurationImpl(namePrefix + ordinal));
 		Cluster abstractCluster = new Cluster(new SyntaxGroup(configs));
-		ClusterViewModel model = new ClusterViewModel(abstractCluster);
+		IFeature abstractFeature = toFeature(abstractCluster);
+		ClusterViewModel model = new ClusterViewModel(abstractFeature);
 
 		this.clusters.add(model);
 		this.annotationTable.refresh();
@@ -235,7 +245,7 @@ public class AnnotationViewController implements Initializable {
 		e.consume();
 		ClusterViewModel selectedModel = annotationTable.getSelectionModel().getSelectedItem();
 		Map<String, Integer> words = new HashMap<>();
-		Set<UUID> selectedIds = selectedModel.getCluster().getSyntaxGroup().getUuids();
+		Set<UUID> selectedIds = selectedModel.getFeature().getArtifactUUIDs();
 		Set<Node> selectedNodes = currentMpl.getNodesForUUIDs(selectedIds);
 		
 		for (Node node : selectedNodes) {
@@ -282,7 +292,7 @@ public class AnnotationViewController implements Initializable {
 		// find root
 		ClusterViewModel rootModel = this.clusters.stream().filter(ClusterViewModel::isRoot).findFirst().orElse(null);
 		if (rootModel != null) {
-			Feature rootFeature = toFeature(rootModel.getCluster());
+			IFeature rootFeature = rootModel.getFeature();
 			FeatureDiagram diagram = new FeatureDiagram("Synthesized Feature Model", rootFeature);
 			// display the finished model in the editor
 			services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, diagram);
@@ -340,13 +350,13 @@ public class AnnotationViewController implements Initializable {
 		nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-		variabilityColumn.setCellFactory(ComboBoxTableCell.forTableColumn(Cluster.Variability.DEFAULT, 
-				Cluster.Variability.MANDATORY, Cluster.Variability.OPTIONAL));
+		variabilityColumn.setCellFactory(ComboBoxTableCell.forTableColumn(Variability.DEFAULT, 
+				Variability.MANDATORY, Variability.OPTIONAL));
 		variabilityColumn.setCellValueFactory(new PropertyValueFactory<>("variability"));
 
-		childSelectionColumn.setCellFactory(ComboBoxTableCell.forTableColumn(ChildSelectionModel.DEFAULT,
-				ChildSelectionModel.ALTERNATIVE, ChildSelectionModel.OR));
-		childSelectionColumn.setCellValueFactory(new PropertyValueFactory<>("childSelectionModel"));
+		childSelectionColumn.setCellFactory(ComboBoxTableCell.forTableColumn(GroupVariability.DEFAULT,
+				GroupVariability.ALTERNATIVE, GroupVariability.OR));
+		childSelectionColumn.setCellValueFactory(new PropertyValueFactory<>("groupVariability"));
 
 		childColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		childColumn.setCellValueFactory(new PropertyValueFactory<>("childrenDisplay"));
@@ -370,9 +380,9 @@ public class AnnotationViewController implements Initializable {
 		// update childrenDisplayProperties of parent clusters on name change
 		nameColumn.setOnEditCommit(e -> {
 			e.consume();
-			Cluster updatedCluster = e.getRowValue().getCluster();
+			IFeature updatedFeature = e.getRowValue().getFeature();
 			for (ClusterViewModel model : this.clusters) {
-				if (model.getCluster().isParentOf(updatedCluster)) {
+				if (model.getFeature().getChildren().contains(updatedFeature)) {
 					String wholeWordOldName = String.format("\\b%s\\b", e.getOldValue());
 					String oldDisplay = model.childrenDisplayProperty().getValue();
 					String newDisplay = oldDisplay.replaceAll(wholeWordOldName, e.getNewValue());
@@ -388,12 +398,12 @@ public class AnnotationViewController implements Initializable {
 		childColumn.setOnEditCommit(e -> {
 			e.consume();
 			String[] tokens = e.getNewValue().split("\\s+");
-			List<Cluster> newChildren = new ArrayList<>();
+			List<IFeature> newChildren = new ArrayList<>();
 
 			for (String t : tokens) {
 				for (ClusterViewModel model : this.clusters) {
-					if (model.getCluster().getName().equals(t)) {
-						newChildren.add(model.getCluster());
+					if (model.getFeature().getName().equals(t)) {
+						newChildren.add(model.getFeature());
 						break;
 					}
 				}

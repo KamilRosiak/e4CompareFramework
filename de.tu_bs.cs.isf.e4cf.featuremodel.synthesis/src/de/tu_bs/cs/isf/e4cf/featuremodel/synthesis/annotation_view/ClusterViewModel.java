@@ -3,8 +3,9 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view;
 import java.util.List;
 import java.util.Objects;
 
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.Cluster.ChildSelectionModel;
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.Cluster.Variability;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -17,36 +18,36 @@ public class ClusterViewModel {
 	private StringProperty name;
 	private BooleanProperty root;
 	private ObjectProperty<Variability> variability;
-	private ObjectProperty<ChildSelectionModel> childSelectionModel;
+	private ObjectProperty<GroupVariability> groupVariability;
 	private StringProperty childrenDisplay;
 	
-	private Cluster cluster;
+	private IFeature feature;
 	
-	ClusterViewModel(Cluster cluster) {
-		this.cluster = cluster;
-		this.name = new SimpleStringProperty(cluster.getName());
-		this.root = new SimpleBooleanProperty(cluster.isRoot());
-		this.variability = new SimpleObjectProperty<>(cluster.getVariability());
-		this.childSelectionModel = new SimpleObjectProperty<>(cluster.getChildSelection());
-		this.childrenDisplay = new SimpleStringProperty(flattenChildren(cluster.getChildren()));
+	ClusterViewModel(IFeature feature) {
+		this.feature = feature;
+		this.name = new SimpleStringProperty(feature.getName());
+		this.root = new SimpleBooleanProperty(feature.isRoot());
+		this.variability = new SimpleObjectProperty<>(feature.getVariability());
+		this.groupVariability = new SimpleObjectProperty<>(feature.getGroupVariability());
+		this.childrenDisplay = new SimpleStringProperty(flattenChildren(feature.getChildren()));
 		
 		this.name.addListener((obs, oldVal, newVal) -> {
-			this.cluster.setName(newVal);
+			this.feature.setName(newVal);
 		});
 		this.root.addListener((obs, oldVal, newVal) -> {
-			this.cluster.setRoot(newVal);
+			this.setRoot(newVal);
 		});
 		this.variability.addListener((obs, oldVal, newVal) -> {
-			this.cluster.setVariability(newVal);
+			this.feature.setVariability(newVal);
 		});
-		this.childSelectionModel.addListener((obs, oldVal, newVal) -> {
-			this.cluster.setChildSelection(newVal);
+		this.groupVariability.addListener((obs, oldVal, newVal) -> {
+			this.feature.setGroupVariability(newVal);
 		});
 	}
 	
-	private String flattenChildren(List<Cluster> children) {
+	private String flattenChildren(List<IFeature> children) {
 		String concat = children.stream()
-				.map(Cluster::getName)
+				.map(IFeature::getName)
 				.reduce("", (a, b) -> String.format("%s %s", a, b));
 		return concat.trim();
 	}
@@ -64,7 +65,7 @@ public class ClusterViewModel {
 
 	public final void setName(final String name) {
 		this.nameProperty().set(name);
-		this.cluster.setName(name);
+		this.feature.setName(name);
 	}
 	
 
@@ -80,10 +81,16 @@ public class ClusterViewModel {
 
 	public final void setRoot(final boolean root) {
 		this.rootProperty().set(root);
-		this.cluster.setRoot(root);
+		this.feature.setIsRoot(root);
+		
+		if (root && this.feature.getParent().isPresent()) {
+			IFeature parent = this.feature.getParent().get();
+			parent.removeChild(this.getFeature());
+		}
+		this.feature.setParent(null);
 	}
 	
-	public final ObjectProperty<Cluster.Variability> variabilityProperty() {
+	public final ObjectProperty<Variability> variabilityProperty() {
 		return this.variability;
 	}
 	
@@ -91,29 +98,33 @@ public class ClusterViewModel {
 		return this.variability.get();
 	}
 	
-	public final void setVariability(final Cluster.Variability variability) {
+	public final void setVariability(final Variability variability) {
 		this.variability.set(variability);
-		this.cluster.setVariability(variability);
+		this.feature.setVariability(variability);
 	}
 	
 
-	public final ObjectProperty<ChildSelectionModel> childSelectionModelProperty() {
-		return this.childSelectionModel;
+	public final ObjectProperty<GroupVariability> childSelectionModelProperty() {
+		return this.groupVariability;
 	}
 	
 
-	public final ChildSelectionModel getChildSelectionModel() {
+	public final GroupVariability getGroupVariability() {
 		return this.childSelectionModelProperty().get();
 	}
 	
 
-	public final void setChildSelectionModel(final ChildSelectionModel childSelectionModel) {
-		this.childSelectionModelProperty().set(childSelectionModel);
-		this.cluster.setChildSelection(childSelectionModel);
+	public final void setGroupVariability(final GroupVariability groupVar) {
+		this.childSelectionModelProperty().set(groupVar);
+		this.feature.setGroupVariability(groupVar);
 	}	
 
-	public final void setChildren(final List<Cluster> children) {
-		this.cluster.setChildren(children);
+	public final void setChildren(final List<IFeature> children) {
+		this.feature.getChildren().clear();
+		this.feature.getChildren().addAll(children);
+		for (IFeature child : children) {
+			child.setParent(this.feature);
+		}
 		this.childrenDisplay.setValue(flattenChildren(children));
 	}
 	
@@ -132,22 +143,22 @@ public class ClusterViewModel {
 	}
 
 	/**
-	 * @return the cluster
+	 * @return the feature
 	 */
-	public Cluster getCluster() {
-		return cluster;
+	public IFeature getFeature() {
+		return feature;
 	}
 
 	/**
-	 * @param cluster the cluster to set
+	 * @param feature the feature to set
 	 */
-	public void setCluster(Cluster cluster) {
-		this.cluster = cluster;
+	public void setFeature(IFeature feature) {
+		this.feature = feature;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(cluster);
+		return Objects.hash(feature);
 	}
 
 	@Override
@@ -157,12 +168,12 @@ public class ClusterViewModel {
 		if (!(obj instanceof ClusterViewModel))
 			return false;
 		ClusterViewModel other = (ClusterViewModel) obj;
-		return Objects.equals(cluster, other.cluster);
+		return Objects.equals(feature, other.feature);
 	}
 
 	@Override
 	public String toString() {
-		return "ClusterViewModel [cluster=" + cluster + "]";
+		return "ClusterViewModel [cluster=" + feature + "]";
 	}	
 	
 	public void style(TableRow<ClusterViewModel> row) {
