@@ -81,7 +81,7 @@ public class Feature extends AbstractFeature implements IFeature, Serializable {
 
 	@Override
 	public String toString() {
-		return "Feature [groupVariability=" + groupVariability + ", children=" + children + "]";
+		return "Feature [ name: " + getName() + ", gVar: " + this.groupVariability.toString() + ", " + super.toString() +  "]";
 	}
 	
 }

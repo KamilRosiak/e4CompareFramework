@@ -27,5 +27,6 @@ Require-Bundle: de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view,
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.featuremodel.synthesis
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.synthesis
+Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.synthesis,
+ de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view
 Import-Package: org.osgi.service.event

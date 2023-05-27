@@ -19,7 +19,7 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	private String description;
 	private Variability variability = Variability.OPTIONAL;
 	private IFeature parent = null;
-	private Color color = null;
+	private FeatureColor color = FeatureColor.Unset;
 	private final Set<Configuration> configurations = new HashSet<>();
 	private final Set<UUID> artifactUUIDs = new HashSet<>();
 	
@@ -90,16 +90,16 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	
 	@Override
 	public Optional<Color> getColor() {
-		if (color == null) {
+		if (color.equals(FeatureColor.Unset)) {
 			return Optional.empty();
 		} else {
-			return Optional.of(color);
+			return Optional.of(color.get());
 		}
 	}
 	
 	@Override
 	public void setColor(Color color) {
-		this.color = color;
+		this.color = new FeatureColor(color);
 	}
 	
 	@Override

@@ -46,6 +46,25 @@ public class MPLPlatform implements Serializable {
 	int configCount = 0;
 	int componentCount = 0;
 	
+	public MPLPlatform() {
+		
+	}
+	
+	public MPLPlatform(MPLPlatform platform) {
+		this.name = platform.name;
+		this.configurations = new ArrayList<>(platform.configurations);
+		this.model = platform.model;
+		this.matcher = platform.matcher;
+		this.compareEngine = platform.compareEngine;
+		this.currrentConfiguration = platform.currrentConfiguration;
+		if (platform.getFeatureModel().isPresent()) {
+			this.featureDiagram = new FeatureDiagram(platform.getFeatureModel().get());
+		}
+		this.configCount = platform.configCount;
+		this.componentCount = platform.componentCount;
+		
+	}
+	
 	public Optional<FeatureDiagram> getFeatureModel() {
 		if (this.featureDiagram != null) {
 			return Optional.of(this.featureDiagram);

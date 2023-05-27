@@ -179,7 +179,7 @@ public class MPLEPlatformController implements Initializable {
 			// Configure Attributes
 			node.getAttributes().forEach(attribute -> {
 				if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
-					List<Value> valuestoRemove = new ArrayList<Value>();
+					List<Value<?>> valuestoRemove = new ArrayList<>();
 					// Configure Values
 					attribute.getAttributeValues().forEach(value -> {
 						if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
@@ -211,7 +211,7 @@ public class MPLEPlatformController implements Initializable {
 					// Configure Attributes
 					childNode.getAttributes().forEach(attribute -> {
 						if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
-							List<Value> valuestoRemove = new ArrayList<Value>();
+							List<Value<?>> valuestoRemove = new ArrayList<>();
 							// Configure Values
 							attribute.getAttributeValues().forEach(value -> {
 								if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
@@ -277,13 +277,14 @@ public class MPLEPlatformController implements Initializable {
 	private void addVariant() {
 		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
 			ReaderManager reader = new ReaderManager();
-			services.rcpSelectionService.getCurrentSelectionsFromExplorer().stream().map(reader::readFile)
-					.forEach(currentPlatform::insertVariant);
-			MPLEPlatformUtil.storePlatform(
-					services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + "clone_model1.mpl",
-					currentPlatform);
+			Tree newVariant = reader.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
+			MPLPlatform newPlatform = new MPLPlatform(currentPlatform);
+			newPlatform.insertVariant(newVariant);
+			String fileName = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + "clone_model1.mpl";
+			MPLEPlatformUtil.storePlatform(fileName, newPlatform);
 			showPlatform();
-			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, currentPlatform);
+			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, newPlatform);
+			showMPL(newPlatform);
 		}
 	}
 
