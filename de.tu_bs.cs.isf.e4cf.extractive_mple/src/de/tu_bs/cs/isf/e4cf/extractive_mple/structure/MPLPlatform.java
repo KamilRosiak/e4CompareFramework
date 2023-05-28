@@ -42,6 +42,11 @@ public class MPLPlatform implements Serializable {
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
 	public Configuration currrentConfiguration;
 	private FeatureDiagram featureDiagram = null;
+	
+	/** 
+	 * File name of the mpl without the extension (.mpl)
+	 */
+	public String fileName;
 
 	int configCount = 0;
 	int componentCount = 0;

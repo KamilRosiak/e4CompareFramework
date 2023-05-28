@@ -36,7 +36,10 @@ public class MPLEPlatformUtil {
 			oin.close();
 			in.close();
 			if (obj instanceof MPLPlatform) {
-				return (MPLPlatform) obj;
+				MPLPlatform platform = (MPLPlatform) obj;
+				String filename = file.getName().substring(0, file.getName().lastIndexOf("."));
+				platform.fileName = filename;
+				return platform;
 			}
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();

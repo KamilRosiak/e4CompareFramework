@@ -28,6 +28,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.tree.Tree;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
@@ -83,7 +84,27 @@ public class AnnotationViewController implements Initializable {
 		List<SyntaxGroup> syntaxGroups = this.locator.locateFeatures(services, mpl);
 		this.currentMpl = mpl;
 		List<Cluster> clusters = syntaxGroups.stream().map(Cluster::new).collect(Collectors.toList());
-		displayClusters(clusters);
+		
+		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
+		// calculate initial feature diagram proposal
+		Tree<Cluster> hierarchy = FeatureOrganizer.createHierarchy(currentMpl, clusters);
+		IFeature root = FeatureUtil.toFeature(hierarchy.getRoot().value());
+		FeatureDiagram diagram = new FeatureDiagram("Generated Feature Model", root);
+		this.currentMpl.setFeatureModel(diagram);
+		String filename = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + this.currentMpl.fileName + ".mpl";
+		MPLEPlatformUtil.storePlatform(filename, this.currentMpl);
+		displayFeatures(diagram);
+	}
+	
+	@Optional
+	@Inject
+	public void showFeatures(@UIEventTopic(MPLEEditorConsts.SHOW_FEATURES) MPLPlatform platform) {
+		if (currentMpl == null || !currentMpl.equals(platform)) {
+			this.currentMpl = platform;
+			if (platform.getFeatureModel().isPresent()) {
+				displayFeatures(platform.getFeatureModel().get());
+			}
+		}
 	}
 
 	@Optional
@@ -93,16 +114,6 @@ public class AnnotationViewController implements Initializable {
 		this.currentMpl = newMpl;
 		this.currentMpl.setFeatureModel(newDiagram);
 		this.displayFeatures(newDiagram);
-	}
-
-	public void displayClusters(List<Cluster> clusters) {
-		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
-		
-		// calculate initial feature diagram proposal
-		Tree<Cluster> hierarchy = FeatureOrganizer.createHierarchy(currentMpl, clusters);
-		IFeature root = FeatureUtil.toFeature(hierarchy.getRoot().value());
-		FeatureDiagram diagram = new FeatureDiagram("Generated Feature Model", root);
-		displayFeatures(diagram);
 	}
 	
 	public void displayFeatures(FeatureDiagram featureDiagram) {

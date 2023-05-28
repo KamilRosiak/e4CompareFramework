@@ -280,7 +280,9 @@ public class MPLEPlatformController implements Initializable {
 			Tree newVariant = reader.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
 			MPLPlatform newPlatform = new MPLPlatform(currentPlatform);
 			newPlatform.insertVariant(newVariant);
-			String fileName = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + "clone_model1.mpl";
+			String fileName = currentPlatform.fileName + "-" + newVariant.getTreeName();
+			newPlatform.fileName = fileName;
+			fileName = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + fileName + ".mpl";
 			MPLEPlatformUtil.storePlatform(fileName, newPlatform);
 			showPlatform();
 			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, newPlatform);
@@ -335,8 +337,14 @@ public class MPLEPlatformController implements Initializable {
 	@Optional
 	@Inject
 	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
-		currentPlatform = platform;
-		showConfigurations();
+		if (currentPlatform == null || !currentPlatform.equals(platform)) {
+			currentPlatform = platform;
+			showConfigurations();
+			if (platform.getFeatureModel().isPresent()) {
+				services.partService.showPart(MPLEEditorConsts.SYNTHESIS_PLUGIN);
+				services.eventBroker.post(MPLEEditorConsts.SHOW_FEATURES, platform);
+			}
+		}
 	}
 
 }

@@ -85,7 +85,7 @@ public class MPLEditorController implements Initializable {
 	 */
 	@Optional
 	@Inject
-	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {		
+	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 		this.setCurrentPlatform(platform);

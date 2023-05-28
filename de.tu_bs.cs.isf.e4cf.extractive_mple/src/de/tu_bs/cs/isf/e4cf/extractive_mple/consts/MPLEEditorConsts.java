@@ -46,7 +46,9 @@ public class MPLEEditorConsts {
 	public static final String SHOW_CLONE_UUID = "SHOW_CLONE_UUID";
 	
 	public static final String LOCATE_FEATURES = "LOCATE_FEATURES";
+	public static final String SHOW_FEATURES = "SHOW_FEATURES";
 	public static final String ADD_VARIANT_TO_MPL = "ADD_VARIANT_TO_MPL";
+	public static final String SYNTHESIS_PLUGIN = "de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view";
 	
 	
 }
