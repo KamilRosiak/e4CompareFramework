@@ -25,7 +25,7 @@
    </launcher>
 
    <vm>
-      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
+      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
 
    <plugins>
@@ -70,6 +70,9 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.replay_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.simple_text_editor"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.solver"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.parser.ST"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.parser.xml"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.ppuIECmetaModel"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.servlet"/>
