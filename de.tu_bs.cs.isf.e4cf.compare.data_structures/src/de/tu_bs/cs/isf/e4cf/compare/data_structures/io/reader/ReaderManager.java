@@ -17,7 +17,7 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 
 /**
  * This class manages all artifact reader and creates a tree if file can be
- * read.
+ * readed. <
  * 
  * @author Kamil Rosiak
  *
@@ -35,7 +35,6 @@ public class ReaderManager {
 		} else {
 			tree.setFileExtension(fte.getExtension());
 		}
-
 		return tree;
 	}
 

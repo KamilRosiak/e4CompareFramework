@@ -8,7 +8,7 @@ import FeatureDiagram.ComponentFeature;
 import FeatureDiagram.ConfigurationFeature;
 import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureDiagram;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import featureConfiguration.FeatureConfiguration;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;

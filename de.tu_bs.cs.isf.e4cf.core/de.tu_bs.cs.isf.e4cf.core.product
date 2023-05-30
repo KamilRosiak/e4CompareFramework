@@ -57,6 +57,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.model"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.graph.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.graph.model"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.meta_models"/>
@@ -203,6 +204,7 @@
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
+      <property name="eclipse.log.level" value="INFO" />
    </configurations>
 
    <preferencesInfo>

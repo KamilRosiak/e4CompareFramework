@@ -1,20 +1,28 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.error;
 
-import FeatureDiagram.Feature;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import java.util.UUID;
+
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 
 public interface ErrorListener {
 
 	public static class FeatureModelViewError {
 		
-		private static final int DEFAULT_FEATURE_ID = -1;
+		private static final UUID DEFAULT_FEATURE_ID = UUID.fromString("default_feature_id");
 		
 		public FeatureModelViewError(FXGraphicalFeature feature, String event, String msg) {
 			this(feature != null ? feature.getFeature() : null, event, msg);
 		}
 		
+<<<<<<< HEAD
 		public FeatureModelViewError(Feature feature, String event, String msg) {
 			this.affectedId = feature != null ? 0 : DEFAULT_FEATURE_ID;
+=======
+		public FeatureModelViewError(IFeature feature, String event, String msg) {
+			this.affectedId = feature != null ? feature.getUuid() : DEFAULT_FEATURE_ID;
+>>>>>>> refs/heads/master_merg
 			this.event 		= event;
 			this.msg 		= msg;
 		}
@@ -25,7 +33,7 @@ public interface ErrorListener {
 			this.msg 		= msg;
 		}
 		
-		public int affectedId;
+		public UUID affectedId;
 		public String event;
 		public String msg;
 	}

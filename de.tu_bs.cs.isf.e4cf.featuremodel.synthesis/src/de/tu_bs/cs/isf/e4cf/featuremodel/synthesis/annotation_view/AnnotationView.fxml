@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" stylesheets="res/style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.AnnotationViewController">
+   <center>
+      <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+         <children>
+            <TableView id="annotationTable" fx:id="annotationTable" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columns>
+                <TableColumn fx:id="nameColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" sortable="false" text="Solution Space Feature" />
+                  <TableColumn fx:id="variabilityColumn" maxWidth="80.0" minWidth="80.0" resizable="false" sortable="false" text="Variability" />
+                  <TableColumn fx:id="childSelectionColumn" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" resizable="false" sortable="false" text="Child Selection" />
+                  <TableColumn fx:id="childColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" sortable="false" text="Children" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+               <contextMenu>
+                  <ContextMenu fx:id="annotationTableContextMenu">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#fxSetRoot" text="Set Root" />
+                      <MenuItem mnemonicParsing="false" onAction="#fxAddAbstractCluster" text="Add abstract Cluster" />
+                                            <MenuItem mnemonicParsing="false" onAction="#proposeFeatureName" text="Propose Feature Name" />
+                      <SeparatorMenuItem mnemonicParsing="false" />
+                      <MenuItem mnemonicParsing="false" onAction="#synthesizeFeatureModel" text="Synthesize FM" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu>
+            </TableView>
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>

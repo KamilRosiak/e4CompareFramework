@@ -16,7 +16,13 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable.IdTable;
 @Creatable
 @Singleton
 public class DecorationManager {
+<<<<<<< HEAD
 	private NodeDecorator currentDecorator;
+=======
+	private NodeDecorator currentDecorater;
+	private static final String DECORATER_EXTENSION_POINT = "de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.NodeDecorator";
+	private static final String DECORATER_ATTR = "node_decorator";
+>>>>>>> refs/heads/master_merg
 
 	/**
 	 * This method returns all registered tree decorate

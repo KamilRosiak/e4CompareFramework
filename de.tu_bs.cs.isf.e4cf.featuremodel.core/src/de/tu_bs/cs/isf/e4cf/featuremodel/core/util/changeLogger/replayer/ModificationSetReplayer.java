@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.replayer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.inject.Singleton;
 
@@ -12,8 +13,8 @@ import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagramModificationSet.FeatureModelModificationSet;
 import FeatureDiagramModificationSet.Modification;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 
 @Creatable
 @Singleton
@@ -22,7 +23,11 @@ public class ModificationSetReplayer {
 	FeatureModelModificationSet _modificationSet;
 	ServiceContainer _services;
 	List<FXGraphicalFeature> _features;
+<<<<<<< HEAD
 	Map<String, FXGraphicalFeature> _featureIDs = new HashMap<String, FXGraphicalFeature>();
+=======
+	Map<UUID, FXGraphicalFeature> _featureIDs = new HashMap<>();
+>>>>>>> refs/heads/master_merg
 	
 	Integer featureID_ADD_operation;
 	boolean addFeatureBelow;
@@ -36,7 +41,7 @@ public class ModificationSetReplayer {
 
 	private void retrieveFeatureIDs(List<FXGraphicalFeature> features) {
 		for (FXGraphicalFeature feature : features) {
-			_featureIDs.put(feature.getFeature().getIdentifier(), feature);
+			_featureIDs.put(feature.getFeature().getUuid(), feature);
 		}
 	}
 

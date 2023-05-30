@@ -15,14 +15,15 @@ public class FDStringTable {
 	/**
 	 * Feature Model Editor
 	 */
+	public static final String FD_TAB_VIEW_CONTEXT_MENU_ID = "de.tu_bs.cs.isf.e4cf.featuremodel.core.featureModelMenu";
 	public static final String FD_CONTEXT_MENU_ADD_FEATURE ="Add Feature";
-	public static final String FD_CONTEXT_MENU_REMOVE_FEATURE ="Remove Feature";
-	public static final String FD_CONTEXT_MENU_REMOVE_FEATURE_TRUNK = "Remove Feature Trunk";
+	public static final String FD_CONTEXT_MENU_REMOVE_FEATURE ="Remove";
+	public static final String FD_CONTEXT_MENU_REMOVE_FEATURE_TRUNK = "Remove Trunk";
 	
 	/**
 	 * FEATURE MODEL DIALOG
 	 */
-	public static final String FD_DIALOG_MENU_RENAME_FEATURE = "Rename Feature";
+	public static final String FD_DIALOG_MENU_RENAME_FEATURE = "Rename";
 	
 	/**
 	 * Feature Model Editor Main Bar
@@ -52,22 +53,22 @@ public class FDStringTable {
 	/**
 	 * Graphical Feature context menu constants.
 	 */
-	public static final String FX_FEATURE_CM_SPLIT_FEATURE = "Split Feature";
+	public static final String FX_FEATURE_CM_SPLIT_FEATURE = "Split";
 	public static final String FX_FEATURE_CM_ADD_FEATURE_BELOW ="Create Feature Below";
 	public static final String FX_FEATURE_CM_ADD_FEATURE_ABOVE ="Create Feature Above";
-	public static final String FX_FEATURE_CM_MANDATORY ="Mandatory";
-	public static final String FX_FEATURE_CM_OPTIONAL ="Optional";
-	public static final String FX_FEATURE_CM_ALTERNATIVE ="Alternative Group";
-	public static final String FX_FEATURE_CM_OR ="Or Group";
-	public static final String FX_FEATURE_CM_AND ="And Group";
-	public static final String FX_FEATURE_CM_MAKE_ABSTRACT ="Make Feature Abstract";
-	public static final String FX_FEATURE_CM_MAKE_CONCRETE ="Make Feature Concrete";
+	public static final String FX_FEATURE_CM_DEFAULT = "Variability Default";
+	public static final String FX_FEATURE_CM_MANDATORY ="Variability Mandatory";
+	public static final String FX_FEATURE_CM_OPTIONAL ="Variability Optional";
+	public static final String FX_FEATURE_CM_ALTERNATIVE ="Group Alternative";
+	public static final String FX_FEATURE_CM_OR ="Group Or";
+	public static final String FX_FEATURE_CM_GROUP_DEFAULT ="Group Default";
+	public static final String FX_FEATURE_CM_MAKE_ABSTRACT ="Set Abstract";
 	public static final String FX_FEATURE_CM_CHANGE_SUBFEATURES_VISIBILITY ="Hide features below";
 	public static final String FX_FEATURE_CM_MAKE_SUBFEATURES_VISIBLE ="Show features below";
 	public static final String FX_FEATURE_CM_GROUP_SELECTED_FEATURES ="Fuse Selected Features";
 	public static final String FX_FEATURE_CM_MOVE_SELECTED_FEATURES_HERE ="Move Selected Features";
 	public static final String FX_FEATURE_CM_SET_DESCRIPTION ="Set Description";
-	public static final String FX_FEATURE_CM_CREATE_COMPONENTFEATURE = "Create ComponentFeature";
+	public static final String FX_FEATURE_CM_CREATE_COMPONENTFEATURE = "Create ComponentFeature Below";
 	public static final String FX_FEATURE_CM_SHOW_CONFIGURATIONS = "Show Configurations";
 	public static final String FX_FEATURE_CM_SHOW_COMPONENT_CONFIGURATION = "Show Configuration";
 	public static final String FX_FEATURE_CM_SET_CONFIGURATION = "Set Configuration";
@@ -86,7 +87,8 @@ public class FDStringTable {
 	 */
 	public static final String FD_FEATURE_CONFIG_PART_NAME = "de.tu_bs.cs.isf.e4cf.featuremodel.configuration.part.featuremodelconfiguration";
 	
-	public static final String FD_DEFAULT_FEATURE_DIAGRAM_NAME = "Feature Model";
-
+	public static final String FD_DEFAULT_FM_NAME = "Feature Model";
+	public static final String DEFAULT_FEATURE_NAME = "Feature";
+	public static final String DEFAULT_COMPONENT_FEATURE_NAME = "Component Feature";
 	
 }	

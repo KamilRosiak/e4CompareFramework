@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.logger;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,13 +23,13 @@ import FeatureDiagramModificationSet.Modification;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.FeatureDiagramModificationSetSerializer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLogger;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.DiagramLoggerFactory;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.utilities.LoggerUtilities;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 
 @Singleton
 @Creatable
@@ -41,7 +42,7 @@ public class SimpleDiagramLogger implements DiagramLogger {
 	private static FeatureDiagramm currentDiagram;
 	private static String selectedFeatureName;
 	private static String selectedFeatureVariabilityGroup;
-	private static int currentParentFeatureID;
+	private static UUID currentParentFeatureID;
 	private static List<FXGraphicalFeature> currentFeatureSelection;
 	
 	@Override
@@ -171,36 +172,40 @@ public class SimpleDiagramLogger implements DiagramLogger {
 	@Optional
 	@Inject 
 	public void featureMadeOptional(@UIEventTopic(FDEventTable.SET_FEATURE_OPTIONAL) FXGraphicalFeature feature) {
-		if (feature.getFeature().isMandatory()) {
-			// only log this change if feature is not ALREADY optional
-			Modification modification = LoggerUtilities.createModification(feature, FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY);		
-			LoggerUtilities.createFeatureDelta(modification, DeltaProperties.FEATURE_VARIABILITY, "mandatory", "optional");			
-			modificationSet.getModifications().add(modification);
-		}
+		// only log this change if feature is not ALREADY optional
+		Modification modification = LoggerUtilities.createModification(feature, FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY);		
+		LoggerUtilities.createFeatureDelta(modification, DeltaProperties.FEATURE_VARIABILITY, "mandatory", "optional");			
+		modificationSet.getModifications().add(modification);
 	}
 	
 	@Optional
 	@Inject 
 	public void featureMadeMandatory(@UIEventTopic(FDEventTable.SET_FEATURE_MANDATORY) FXGraphicalFeature feature) {
-		if (!feature.getFeature().isMandatory()) {
-			// only log this change if feature is not ALREADY mandatory
-			Modification modification = LoggerUtilities.createModification(feature, FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY);		
-			LoggerUtilities.createFeatureDelta(modification, DeltaProperties.FEATURE_VARIABILITY, "optional", "mandatory");
-			modificationSet.getModifications().add(modification);
-		}
+		// only log this change if feature is not ALREADY mandatory
+		Modification modification = LoggerUtilities.createModification(feature, FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY);		
+		LoggerUtilities.createFeatureDelta(modification, DeltaProperties.FEATURE_VARIABILITY, "optional", "mandatory");
+		modificationSet.getModifications().add(modification);
 	}
 	
 	@Optional
 	@Inject 
 	public void lineToParentFeatureRemoved(@UIEventTopic(FDEventTable.LOGGER_REMOVED_LINE_TO_PARENT_FEATURE) FXGraphicalFeature feature) {
+<<<<<<< HEAD
 		//currentParentFeatureID = feature.getFeature().getIdentifier();
+=======
+		currentParentFeatureID = feature.getFeature().getUuid();
+>>>>>>> refs/heads/master_merg
 	}
 	
 	@Optional
 	@Inject 
 	public void lineToParentFeatureReset(@UIEventTopic(FDEventTable.LOGGER_RESET_LINE_TO_PARENT_FEATURE) FXGraphicalFeature feature) {
 		Modification modification = LoggerUtilities.createModification(feature, FDEventTable.LOGGER_RESET_LINE_TO_PARENT_FEATURE);	
+<<<<<<< HEAD
 		LoggerUtilities.createFeatureDelta(modification, DeltaProperties.LINE_TO_PARENT_RESET, Integer.toString(currentParentFeatureID), feature.getParentFxFeature().getFeature().getIdentifier());
+=======
+		LoggerUtilities.createFeatureDelta(modification, DeltaProperties.LINE_TO_PARENT_RESET, currentParentFeatureID.toString(), feature.getParentFxFeature().getFeature().getUuid().toString());
+>>>>>>> refs/heads/master_merg
 		modificationSet.getModifications().add(modification);
 	}
 	

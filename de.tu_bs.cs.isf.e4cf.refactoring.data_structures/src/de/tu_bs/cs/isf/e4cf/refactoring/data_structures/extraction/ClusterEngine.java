@@ -41,11 +41,15 @@ public class ClusterEngine {
 	public static boolean PYTHON = false;
 
 	public ClusterEngine() {
-		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
-		scriptPathExe = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ "script/clustering_sklearn.exe").substring(1)).getPath();
-		scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ "script/clustering_sklearn.py").substring(1)).getPath();
+		try {
+			compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
+			scriptPathExe = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+					+ "script/clustering_sklearn.exe").substring(1)).getPath();
+			scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+					+ "script/clustering_sklearn.py").substring(1)).getPath();
+		} catch (Exception e) {
+			System.out.println("no clustering available");
+		}
 
 	}
 
@@ -216,9 +220,7 @@ public class ClusterEngine {
 					MultiSetNode multiSetNode = mapping.get(node);
 					MultiSetTree newTree = multiSetTree.removeRootAndCreateNewTree(multiSetNode);
 					newMultiSetTrees.add(newTree);
-
 				}
-
 			}
 		}
 	}

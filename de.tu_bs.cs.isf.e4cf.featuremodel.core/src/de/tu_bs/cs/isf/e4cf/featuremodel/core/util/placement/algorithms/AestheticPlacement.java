@@ -8,9 +8,9 @@ import java.util.Map;
 
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.TreeUtil;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 
 /**
  * A Layout Algorithm for m-ary Trees, Utilized for Feature Diagrams
@@ -111,16 +111,17 @@ public class AestheticPlacement implements PlacementAlgorithm{
 					for (FXGraphicalFeature fxChildFeature : fx.getChildFeatures()) {
 						SizeInfo childFX = fxMap.get(fxChildFeature);
 						totalWidth += childFX.getTotalWidth();
-						if (TreeUtil.isMostLeftFeature(fxChildFeature.getFeature())){
-							combinedChildAlignmentWidth += childFX.getCenter()+(childFX.getRegularWidth()/2);
-						}
-						else if(TreeUtil.isMostRightFeature(fxChildFeature.getFeature())) {
-							combinedChildAlignmentWidth += childFX.getCenter()+(childFX.getRegularWidth()/2);
-						}
-
-						else {
-							combinedChildAlignmentWidth += childFX.getAlignmentWidth();	
-						}
+//						if (TreeUtil.isMostLeftFeature(fxChildFeature.getFeature())){
+//							combinedChildAlignmentWidth += childFX.getCenter()+(childFX.getRegularWidth()/2);
+//						}
+//						else if(TreeUtil.isMostRightFeature(fxChildFeature.getFeature())) {
+//							combinedChildAlignmentWidth += childFX.getCenter()+(childFX.getRegularWidth()/2);
+//						}
+//
+//						else {
+//							combinedChildAlignmentWidth += childFX.getAlignmentWidth();	
+//						}
+						// TODO rework
 						
 					}
 					if (fx.getWidth() < totalWidth) {

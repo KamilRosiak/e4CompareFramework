@@ -3,8 +3,11 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Function;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.interfaces.NodeDecorator;
@@ -20,9 +23,23 @@ import javafx.stage.Stage;
  * Utility Class for TreeViewController
  * 
  * @author Team05
+ * @author Lukas Cronauer
  *
  */
 public final class TreeViewUtilities {
+	
+	public static TreeItem<Node> createTreeItems(Node root) {
+		return createTreeItems(root, TreeItem::new);		
+	}
+	
+	public static TreeItem<Node> createTreeItems(Node node, Function<Node, TreeItem<Node>> constructor) {
+		TreeItem<Node> nodeItem = constructor.apply(node);
+		for (Node child : node.getChildren()) {
+			TreeItem<Node> childItem = createTreeItems(child, constructor);
+			nodeItem.getChildren().add(childItem);
+		}
+		return nodeItem;
+	}
 
 	/**
 	 * Adds a nodes children to the respective TreeItem as children recursively
@@ -31,11 +48,11 @@ public final class TreeViewUtilities {
 	 * @param parent treeViews root object in first method call
 	 */
 	public static void createTreeView(Node node, TreeItem<Node> parent, NodeDecorator decorator) {
-		for (Node n : node.getChildren()) {
-			TreeItem<Node> ti = createTreeItem(n, decorator);
-			parent.getChildren().add(ti);
-			if (!n.isLeaf()) {
-				createTreeView(n, ti, decorator);
+		for (Node child : node.getChildren()) {
+			TreeItem<Node> item = createTreeItem(child, decorator);
+			parent.getChildren().add(item);
+			if (!child.isLeaf()) {
+				createTreeView(child, item, decorator);
 			}
 		}
 	}
@@ -120,14 +137,14 @@ public final class TreeViewUtilities {
 		return result;
 	}
 	
-	private static boolean isEqual(TreeItem<Node> item, String name) {
+	private static <T> boolean isEqual(TreeItem<T> item, String name) {
 		boolean isEqual = false;
 		if (item.getValue().toString().toLowerCase().contains(name)) {
 			isEqual = true;
 		}
-		else if (item.getValue().getUUID().toString().toLowerCase().equals(name.toLowerCase())) {
-			isEqual = true;
-		}
+//		else if (item.getValue().getUUID().toString().toLowerCase().equals(name.toLowerCase())) {
+//			isEqual = true;
+//		}
 		return isEqual;
 	}
 
@@ -225,5 +242,60 @@ public final class TreeViewUtilities {
 			return true;
 		}
 		return false;
+	}
+	
+	
+	public static String getNameDetails(TreeItem<Node> node) {
+		String detail = "";
+		try {
+			Attribute scope = node.getValue().getAttributeForKey("Scope");
+			if (scope != null) {
+				detail += (String) scope.getValue(0).getValue() + ".";
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		try {
+			Attribute name = node.getValue().getAttributeForKey("Name");
+			if (name != null) {
+				detail += (String) name.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		try {
+			Attribute value = node.getValue().getAttributeForKey("Value");
+			if (value != null) {
+				detail += (String) value.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		try {
+			Attribute type = node.getValue().getAttributeForKey("Type");
+			if (type != null) {
+				detail += ":" + (String) type.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		
+		try {
+			Attribute target = node.getValue().getAttributeForKey("Target");
+			if (target != null) {
+				detail += (String) target.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		try {
+			Attribute operator = node.getValue().getAttributeForKey("Operator");
+			if (operator != null) {
+				detail += (String) operator.getValue(0).getValue();
+			}
+		} catch (NoSuchElementException e) {
+			// value not present
+		}
+		return detail;
 	}
 }

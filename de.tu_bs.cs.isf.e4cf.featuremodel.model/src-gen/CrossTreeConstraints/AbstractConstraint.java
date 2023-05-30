@@ -2,6 +2,8 @@
  */
 package CrossTreeConstraints;
 
+import java.io.Serializable;
+
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -21,7 +23,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model abstract="true"
  * @generated
  */
-public interface AbstractConstraint extends EObject {
+public interface AbstractConstraint extends EObject, Serializable {
 	/**
 	 * Returns the value of the '<em><b>Is Negated</b></em>' attribute.
 	 * The default value is <code>"false"</code>.

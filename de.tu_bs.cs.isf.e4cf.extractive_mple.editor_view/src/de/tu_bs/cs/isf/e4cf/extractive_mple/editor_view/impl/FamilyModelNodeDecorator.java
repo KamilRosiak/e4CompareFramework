@@ -1,9 +1,13 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl;
 
+import java.util.NoSuchElementException;
+
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.interfaces.NodeDecorator;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable.FileTable;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities.TreeViewUtilities;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 
@@ -30,8 +34,13 @@ public class FamilyModelNodeDecorator implements NodeDecorator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		node.getValue().setRepresentation(node.getValue().getNodeType());
+		
+		String detail = TreeViewUtilities.getNameDetails(node);
+		if (!detail.isEmpty()) {
+			node.getValue().setRepresentation(node.getValue().getNodeType() +  ": " + detail);
+		} else {
+			node.getValue().setRepresentation(node.getValue().getNodeType());
+		}
 		return node;
 	}
 

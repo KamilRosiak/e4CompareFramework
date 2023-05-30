@@ -38,6 +38,11 @@ import org.eclipse.emf.ecore.util.InternalEList;
  */
 public class FormulaImpl extends AbstractConstraintImpl implements Formula {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * The default value of the '{@link #getOperator() <em>Operator</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -8,9 +8,11 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 
 public class TextDecorator implements NodeDecorator {
+
 	public TextDecorator() {
 		// TODO Auto-generated constructor stub
 	}
+
 	@Override
 	public TreeItem<Node> decorateNode(TreeItem<Node> node) {
 		switch (node.getValue().getNodeType()) {
@@ -32,7 +34,7 @@ public class TextDecorator implements NodeDecorator {
 	public boolean isSupportedTree(Tree tree) {
 		return tree.getFileExtension().equals("txt");
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Text Decorator";
