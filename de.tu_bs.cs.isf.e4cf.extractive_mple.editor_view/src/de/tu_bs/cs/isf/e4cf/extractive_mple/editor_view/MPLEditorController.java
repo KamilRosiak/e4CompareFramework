@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -33,10 +34,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-<<<<<<< HEAD
-=======
 import javafx.event.ActionEvent;
->>>>>>> refs/heads/master_merg
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -175,17 +173,6 @@ public class MPLEditorController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-<<<<<<< HEAD
-
-		nameCol.setCellValueFactory(treeItem -> {
-			return new SimpleStringProperty(treeItem.getValue().getValue().toString());
-		});
-
-		componentCol.setCellValueFactory(e -> {
-			String name = "";
-			if (e.getValue().getValue().isClone()) {
-				name = "Clone Node : " + e.getValue().getValue().getUUID();
-=======
 		this.selector = new TreeItemSelector(treeView);
 		nameCol.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getValue().toString()));
 		componentCol.setCellValueFactory(p -> {
@@ -193,7 +180,6 @@ public class MPLEditorController implements Initializable {
 			String id = "";
 			if (node.isClone()) {
 				id = "Clone Node : " + node.getUUID();
->>>>>>> refs/heads/master_merg
 			} else {
 				id = node.getUUID().toString();
 			}
@@ -259,11 +245,7 @@ public class MPLEditorController implements Initializable {
 				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
 				TreeItem<Node> firstExpandedChild = currentItem.getChildren().stream().filter(TreeItem::isExpanded)
 						.findFirst().orElseGet(() -> currentItem);
-<<<<<<< HEAD
-				selectSingleNode(firstExpandedChild.getValue().getUUID());
-=======
 				selectNode(firstExpandedChild.getValue().getUUID());
->>>>>>> refs/heads/master_merg
 				keyEvent.consume();
 			} else if (keyEvent.isControlDown() && pressed == KeyCode.UP) { // jump to previous sibling
 				TreeItem<Node> currentItem = treeView.getSelectionModel().getSelectedItem();
@@ -285,11 +267,7 @@ public class MPLEditorController implements Initializable {
 					// select next sibling in parent child list, if the item isn't last in the list
 					TreeItem<Node> nextSelection = parent.getChildren()
 							.get(nextIndex < childCount ? nextIndex : childCount - 1);
-<<<<<<< HEAD
-					selectSingleNode(nextSelection.getValue().getUUID());
-=======
 					selectNode(nextSelection.getValue().getUUID());
->>>>>>> refs/heads/master_merg
 				}
 				keyEvent.consume();
 			}
@@ -298,15 +276,6 @@ public class MPLEditorController implements Initializable {
 		addListeners();
 	}
 
-<<<<<<< HEAD
-	private void decorateTreeRoot(Tree tree) {
-		treeView.setRoot(new TreeItem<Node>(tree.getRoot(), new ImageView(FileTable.rootImage)));
-		treeView.getRoot().setExpanded(true);
-		treeView.setShowRoot(true);
-	}
-
-=======
->>>>>>> refs/heads/master_merg
 	/**
 	 * Adds a listeners to the TreeView
 	 * 
@@ -325,7 +294,6 @@ public class MPLEditorController implements Initializable {
 			decoManager.setCurrentDecorater(newValue);
 			TreeViewUtilities.decorateTree(treeView.getRoot(), decoManager.getCurrentDecorater());
 			services.eventBroker.send(MPLEEditorConsts.REFRESH_TREEVIEW_EVENT, true);
-			treeView.refresh();
 		});
 	}
 
@@ -334,154 +302,4 @@ public class MPLEditorController implements Initializable {
 		services.eventBroker.send(FDEventTable.CREATE_FEATUREMODEL_FROM_TREEVIEW, null);
 		services.partService.showPart(FDStringTable.BUNDLE_NAME);
 	}
-<<<<<<< HEAD
-
-	/**
-	 * Method to initialize the treeView from a given Tree
-	 * 
-	 * @param platform
-	 */
-	@Optional
-	@Inject
-	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
-		try {
-			treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
-			Tree tree = platform.getModel();
-			setCurrentPlatform(platform);
-			setCurrentTree(tree);
-			decorateTreeRoot(tree);
-			// load decorator and select the first
-			decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoratorForTree(tree)));
-			decoratorCombo.getSelectionModel().select(0);
-			TreeViewUtilities.createTreeView(tree.getRoot(), treeView.getRoot(), new FamilyModelNodeDecorator());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Method to initialize the treeView from a given Tree
-	 * 
-	 * @param platform
-	 */
-	@Optional
-	@Inject
-	public void showTree(@UIEventTopic(MPLEEditorConsts.SHOW_TREE) Tree tree) {
-		System.out.println(tree.getTreeName());
-		try {
-			MPLPlatform platform = new MPLPlatform();
-			platform.setModel(tree);
-			showMPL(platform);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Finds and selects a node in the tree by its UUID
-	 * 
-	 * @param uuid The UUID of the desired node
-	 */
-	@Optional
-	@Inject
-	public void selectSingleNode(@UIEventTopic(MPLEEditorConsts.SHOW_UUID) UUID uuid) {
-		if (uuid == null) {
-			return;
-		}
-
-		List<TreeItem<Node>> itemPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), uuid.toString());
-		selectTreeItem(itemPath);
-	}
-
-	/**
-	 * Selects a clone node under a parent node in the tree view.
-	 * 
-	 * @param parentToChildUuid The parentUuid followed by the childUuid separated
-	 *                          by a '#' e.g. 4564-4021#8932-4893
-	 */
-	@Optional
-	@Inject
-	public void selectCloneNodeByParent(@UIEventTopic(MPLEEditorConsts.SHOW_CLONE_UUID) String parentToChildUuid) {
-		String[] splitUuid = parentToChildUuid.split("#");
-		String parentUuid = splitUuid[0];
-		String childUuid = splitUuid[1];
-
-		List<TreeItem<Node>> parentPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), parentUuid);
-		if (parentPath.size() > 0) {
-			TreeItem<Node> parent = parentPath.get(parentPath.size() - 1);
-			List<TreeItem<Node>> parentToChildPath = TreeViewUtilities.findFirstItemPath(parent, childUuid);
-			List<TreeItem<Node>> childPath = new LinkedList<>(parentPath);
-			childPath.add(parentToChildPath.get(parentToChildPath.size() - 1));
-
-			selectTreeItem(childPath);
-		}
-	}
-
-	/**
-	 * Selects a tree item at the end of a path of tree items in the tree view. The
-	 * tree item path has to start at the root item.
-	 * 
-	 * @param itemPath Sequence of tree items from the root to the item to select
-	 */
-	private void selectTreeItem(List<TreeItem<Node>> itemPath) {
-		if (itemPath.size() > 0) {
-			treeView.getSelectionModel().clearSelection();
-			TreeItem<Node> node = itemPath.get(itemPath.size() - 1);
-			for (TreeItem<Node> item : itemPath) {
-				item.setExpanded(true);
-			}
-			treeView.getSelectionModel().select(node);
-			treeView.refresh();
-			int nodeIndex = treeView.getRow(node);
-			treeView.scrollTo(nodeIndex - 3);
-		}
-	}
-
-	/**
-	 * Method to initialize the treeView from a given Tree
-	 * 
-	 * @param platform
-	 */
-	@Optional
-	@Inject
-	public void searchInTree(@UIEventTopic(MPLEEditorConsts.SEARCH_UUID) UUID uuid) {
-		openTree(uuid);
-	}
-
-	public void openTree(UUID uuid) {
-		searchInTree(uuid, treeView.getRoot());
-	}
-
-	public void searchInTree(UUID uuid, TreeItem<Node> treeItem) {
-		if (treeItem.getValue().getUUID().equals(uuid)) {
-			TreeItem<Node> currentItem = treeItem;
-			while (currentItem != treeView.getRoot()) {
-				currentItem.setExpanded(true);
-				currentItem = currentItem.getParent();
-			}
-		} else {
-			treeItem.getChildren().forEach(childNode -> {
-				searchInTree(uuid, childNode);
-			});
-		}
-	}
-
-	public MPLPlatform getCurrentPlatform() {
-		return currentPlatform;
-	}
-
-	public void setCurrentPlatform(MPLPlatform currentPlatform) {
-		this.currentPlatform = currentPlatform;
-	}
-
-	public Tree getCurrentTree() {
-		return currentTree;
-	}
-
-	public void setCurrentTree(Tree currentTree) {
-		this.currentTree = currentTree;
-	}
-=======
->>>>>>> refs/heads/master_merg
 }

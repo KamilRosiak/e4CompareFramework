@@ -11,10 +11,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger;
 import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +32,7 @@ import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 
@@ -47,7 +50,31 @@ public class Taxonomy {
    * Static initializer only executed once
    * Reads in the clone repository
    */
-  private static final HashMap<String, Object> CLONE_REPOSITORY /* Skipped initializer because of errors */;
+  private static final HashMap<String, Tree> CLONE_REPOSITORY = new Function0<HashMap<String, Tree>>() {
+    @Override
+    public HashMap<String, Tree> apply() {
+      HashMap<String, Tree> _xblockexpression = null;
+      {
+        HashMap<String, Tree> map = CollectionLiterals.<String, Tree>newHashMap();
+        String path = "resources/clone_repository";
+        String _path = Taxonomy.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String _plus = (_path + path);
+        File f = new File(_plus);
+        File[] _listFiles = f.listFiles();
+        for (final File file : _listFiles) {
+          boolean _isFile = file.isFile();
+          if (_isFile) {
+            String _string = f.toPath().resolve(file.getName()).toString();
+            de.tu_bs.cs.isf.e4cf.core.file_structure.components.File input = new de.tu_bs.cs.isf.e4cf.core.file_structure.components.File(_string);
+            Tree tree = new ReaderManager().readFile(input);
+            map.put(file.getName(), tree);
+          }
+        }
+        _xblockexpression = map;
+      }
+      return _xblockexpression;
+    }
+  }.apply();
   
   /**
    * @param container is the container of the declaration of the value to modify
@@ -729,17 +756,80 @@ public class Taxonomy {
    * This is syntax save as we assume that the methods and classes are side effect free
    */
   public void addFromRepository(final Tree tree, final Method m, final boolean isSyntaxSafe) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field root is undefined for the type Object"
-      + "\nThe method or field standardizedNodeType is undefined for the type Object"
-      + "\nThere is no context to infer the closure\'s argument types from. Consider typing the arguments or put the closures into a typed context."
-      + "\ndepthFirstSearch cannot be resolved"
-      + "\nfilter cannot be resolved"
-      + "\nrandom cannot be resolved"
-      + "\n=== cannot be resolved"
-      + "\nstandardizedNodeType cannot be resolved"
-      + "\nstandardizedNodeType cannot be resolved"
-      + "\nstandardizedNodeType cannot be resolved");
+    final Tree sourceRepoTree = CloneHelper.<Tree>random(Taxonomy.CLONE_REPOSITORY.values());
+    final Function1<Node, Boolean> _function = (Node n) -> {
+      return Boolean.valueOf(Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.METHOD_DECLARATION, NodeType.CLASS)).contains(n.getStandardizedNodeType()));
+    };
+    final Node source = CloneHelper.<Node>random(IterableExtensions.<Node>filter(sourceRepoTree.getRoot().depthFirstSearch(), _function));
+    if ((source == null)) {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("Error with ");
+      String _name = m.getName();
+      _builder.append(_name);
+      _builder.append(" modification: No Source found");
+      System.err.println(_builder);
+      return;
+    }
+    Node target = null;
+    NodeType _standardizedNodeType = source.getStandardizedNodeType();
+    if (_standardizedNodeType != null) {
+      switch (_standardizedNodeType) {
+        case METHOD_DECLARATION:
+        case CLASS:
+          if (isSyntaxSafe) {
+            final Function1<Node, Boolean> _function_1 = (Node n) -> {
+              return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.COMPILATION_UNIT, NodeType.CLASS)).contains(n.getStandardizedNodeType()) && 
+                (!IterableExtensions.<Node>exists(n.getChildren(), ((Function1<Node, Boolean>) (Node c) -> {
+                  return Boolean.valueOf((Objects.equal(c.getStandardizedNodeType(), source.getStandardizedNodeType()) && 
+                    Objects.equal(this.helper.getAttributeValue(c, "Name"), this.helper.getAttributeValue(source, "Name"))));
+                })))));
+            };
+            target = CloneHelper.<Node>random(IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function_1));
+          } else {
+            final Function1<Node, Boolean> _function_2 = (Node n) -> {
+              return Boolean.valueOf(Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.COMPILATION_UNIT, NodeType.CLASS)).contains(n.getStandardizedNodeType()));
+            };
+            target = CloneHelper.<Node>random(IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function_2));
+          }
+          break;
+        default:
+          {
+            StringConcatenation _builder_1 = new StringConcatenation();
+            _builder_1.append("Error with ");
+            String _name_1 = m.getName();
+            _builder_1.append(_name_1);
+            _builder_1.append(" modification: Target for source ");
+            NodeType _standardizedNodeType_1 = source.getStandardizedNodeType();
+            _builder_1.append(_standardizedNodeType_1);
+            _builder_1.append(" cannot be determined");
+            System.err.println(_builder_1);
+            return;
+          }
+      }
+    } else {
+      {
+        StringConcatenation _builder_1 = new StringConcatenation();
+        _builder_1.append("Error with ");
+        String _name_1 = m.getName();
+        _builder_1.append(_name_1);
+        _builder_1.append(" modification: Target for source ");
+        NodeType _standardizedNodeType_1 = source.getStandardizedNodeType();
+        _builder_1.append(_standardizedNodeType_1);
+        _builder_1.append(" cannot be determined");
+        System.err.println(_builder_1);
+        return;
+      }
+    }
+    if ((target == null)) {
+      StringConcatenation _builder_1 = new StringConcatenation();
+      _builder_1.append("Error with ");
+      String _name_1 = m.getName();
+      _builder_1.append(_name_1);
+      _builder_1.append(" modification: No target found.");
+      System.err.println(_builder_1);
+      return;
+    }
+    this.addFromRepository(source, target);
   }
   
   public List<String> getLogFromLastCommonAncestor(final int donorId, final int receiverId) {

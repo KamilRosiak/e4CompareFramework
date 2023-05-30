@@ -20,11 +20,7 @@
                <items>
                   <VBox fx:id="top" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                      <children>
-<<<<<<< HEAD
-                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-=======
                         <VBox fx:id="configVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
->>>>>>> refs/heads/master_merg
                            <children>
                               <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Variant Configurations" />
                               <TableView fx:id="configTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">

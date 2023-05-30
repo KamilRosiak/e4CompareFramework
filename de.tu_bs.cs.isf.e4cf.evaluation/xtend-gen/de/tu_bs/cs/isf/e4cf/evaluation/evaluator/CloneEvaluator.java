@@ -13,13 +13,16 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson.GsonExportService;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.evaluation.dialog.EvaluatorOptions;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper;
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneLogger;
 import de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,11 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Conversions;
+import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.Functions.Function2;
 import org.eclipse.xtext.xbase.lib.InputOutput;
@@ -76,7 +81,7 @@ public class CloneEvaluator {
   private ServiceContainer services;
   
   @Inject
-  private /* ReaderManager */Object readerManager;
+  private ReaderManager readerManager;
   
   @Inject
   private GsonExportService gsonExportService;
@@ -99,13 +104,75 @@ public class CloneEvaluator {
    * Evaluates the selected directory
    */
   public void evaluate(final EvaluatorOptions options) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nType mismatch: cannot convert from HashMap<Integer, Object> to Map<Integer, Tree>"
-      + "\nType mismatch: cannot convert from HashMap<Integer, Object> to Map<Integer, Tree>"
-      + "\nThe field CloneEvaluator.readerManager refers to the missing type ReaderManager"
-      + "\nThe field CloneEvaluator.readerManager refers to the missing type ReaderManager"
-      + "\nreadFile cannot be resolved"
-      + "\nreadFile cannot be resolved");
+    try {
+      final FileTreeElement directoryElement = this.services.rcpSelectionService.getCurrentSelectionFromExplorer();
+      directoryElement.getChildren();
+      Tree originalTree = null;
+      final HashMap<Integer, Tree> variantTrees = CollectionLiterals.<Integer, Tree>newHashMap();
+      final HashMap<Integer, Tree> allTrees = CollectionLiterals.<Integer, Tree>newHashMap();
+      final ArrayList<String> allVariantNames = CollectionLiterals.<String>newArrayList();
+      List<FileTreeElement> _children = directoryElement.getChildren();
+      for (final FileTreeElement child : _children) {
+        {
+          final String name = child.getFileName();
+          boolean _endsWith = name.endsWith("0~0.tree");
+          if (_endsWith) {
+            originalTree = this.readerManager.readFile(child);
+            allTrees.put(Integer.valueOf(0), originalTree);
+            allVariantNames.add(name);
+          } else {
+            boolean _endsWith_1 = name.endsWith(".tree");
+            if (_endsWith_1) {
+              int index = Integer.parseInt(ListExtensions.<String>reverse(((List<String>)Conversions.doWrapArray(name.split("[~.]")))).get(1));
+              Tree tree = this.readerManager.readFile(child);
+              variantTrees.put(Integer.valueOf(index), tree);
+              allTrees.put(Integer.valueOf(index), tree);
+              allVariantNames.add(name);
+            } else {
+              boolean _endsWith_2 = name.endsWith(".log");
+              if (_endsWith_2) {
+                this.logger.read(child.getAbsolutePath());
+              }
+            }
+          }
+        }
+      }
+      final ArrayList<String> evaluatorResults = CollectionLiterals.<String>newArrayList();
+      this.logger.projectFolderName = this.PROJECT_PATH;
+      Path _xifexpression = null;
+      Path _outPutDirBasedOnSelection = this.logger.getOutPutDirBasedOnSelection();
+      boolean _tripleNotEquals = (_outPutDirBasedOnSelection != null);
+      if (_tripleNotEquals) {
+        _xifexpression = this.logger.getOutPutDirBasedOnSelection();
+      } else {
+        _xifexpression = this.logger.getOutputPath().resolve("Evaluation");
+      }
+      this.outputDir = _xifexpression;
+      boolean _exists = this.outputDir.toFile().exists();
+      if (_exists) {
+        final Predicate<Path> _function = (Path f) -> {
+          return f.getFileName().endsWith(".tree");
+        };
+        final Consumer<Path> _function_1 = (Path p) -> {
+          p.toFile().delete();
+        };
+        Files.walk(this.outputDir, 1).filter(_function).forEach(_function_1);
+      } else {
+        Files.createDirectories(this.outputDir);
+      }
+      if (options.doIntraEvaluation) {
+      }
+      if (options.doInterEvaluation) {
+        this.intervariantSimilarityEvaluation(originalTree, variantTrees, evaluatorResults, options);
+      }
+      if (options.doTaxonomyEvaluation) {
+        this.taxonomyEvaluation(allVariantNames, allTrees, evaluatorResults, options);
+      }
+      this.logger.write(this.outputDir, "CloneEvaluation.results", evaluatorResults);
+      this.logger.resetLogs();
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   /**

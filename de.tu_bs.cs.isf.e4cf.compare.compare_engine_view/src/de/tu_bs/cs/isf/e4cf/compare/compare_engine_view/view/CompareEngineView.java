@@ -25,7 +25,6 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
-import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
@@ -58,8 +57,6 @@ public class CompareEngineView implements Initializable {
 	private RadioButton twodimRadio, weightedRadio;
 	@Inject
 	ServiceContainer services;
-	@Inject
-	CloneHelper helper;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -84,22 +81,6 @@ public class CompareEngineView implements Initializable {
 	@FXML
 	public void compareArtifacts() {
 		try {
-<<<<<<< HEAD
-			CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
-			List<Tree> artifacts = new ArrayList<Tree>();
-
-			artifactTable.getItems().forEach(artifact -> {
-				artifacts.add(helper.deepCopy(artifact));
-			});
-
-			if (artifacts.size() > 1) {
-				Tree mergedTree = engine.compare(artifacts);
-				services.eventBroker.send(MPLEEditorConsts.SHOW_TREE, mergedTree);
-				// JavaWriter writer = new JavaWriter();
-				// writer.writeArtifact(mergedTree,
-				// services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-				// + "/" + mergedTree.getTreeName());
-=======
 			
 			List<Tree> variants = artifactTable.getItems();
 			MPLPlatform platform = new MPLPlatform();
@@ -109,7 +90,6 @@ public class CompareEngineView implements Initializable {
 				CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(),
 						getSelectedMetric());
 				platform = new MPLPlatform(engine, false);
->>>>>>> refs/heads/master_merg
 			}
 			
 			platform.insertVariants(variants);

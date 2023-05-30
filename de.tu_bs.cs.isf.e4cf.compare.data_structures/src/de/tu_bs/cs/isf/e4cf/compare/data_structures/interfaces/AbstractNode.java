@@ -89,18 +89,8 @@ public abstract class AbstractNode implements Node {
 		getAttributes().add(attr);
 	}
 
-	@Override
-<<<<<<< HEAD
-	public Attribute getAttributeForKey(String key) {
-		try {
-			return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
-		} catch (NoSuchElementException e) {
-			return null;
-		}
-=======
 	public Attribute getAttributeForKey(String key) throws NoSuchElementException {
 		return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
->>>>>>> refs/heads/master_merg
 	}
 
 	@Override

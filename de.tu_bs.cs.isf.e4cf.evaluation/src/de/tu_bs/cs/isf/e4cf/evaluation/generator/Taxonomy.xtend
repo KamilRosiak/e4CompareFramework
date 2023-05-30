@@ -5,7 +5,6 @@ package de.tu_bs.cs.isf.e4cf.evaluation.generator
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager
 import de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneGenerator.Variant
 import java.io.File
 import java.lang.reflect.Method
@@ -18,6 +17,7 @@ import static de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType.*
 import static de.tu_bs.cs.isf.e4cf.evaluation.string_table.CloneST.*
 
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager
 
 @Creatable
 @Singleton
@@ -632,7 +632,7 @@ class Taxonomy {
 	 */
 	def addFromRepository(Tree tree, Method m, boolean isSyntaxSafe) {
 		val sourceRepoTree = CLONE_REPOSITORY.values.random
-
+		
 		val source = sourceRepoTree.root.depthFirstSearch.filter [ n |
 			#[METHOD_DECLARATION, CLASS].contains(n.standardizedNodeType)
 		].random

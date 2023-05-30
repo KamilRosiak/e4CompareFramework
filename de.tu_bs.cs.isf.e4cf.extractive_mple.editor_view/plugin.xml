@@ -15,6 +15,9 @@
             node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.IEC61131NodeDecorator">
       </node_decorator>
       <node_decorator
+            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.JavaDecorator">
+      </node_decorator>
+      <node_decorator
             node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator">
       </node_decorator>
    </extension>

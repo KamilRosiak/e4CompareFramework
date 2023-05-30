@@ -1,18 +1,22 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.handler;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 
+import com.opencsv.CSVWriter;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
-<<<<<<< HEAD
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.TreeWriter;
-=======
->>>>>>> refs/heads/master_merg
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -40,7 +44,7 @@ public class CreateMPLEHandler {
 		}
 	}
 
-<<<<<<< HEAD
+
 	public static void removeRandomVariants(List<Tree> trees) {
 		Random r = new Random();
 		int times = r.nextInt(trees.size() - 1) + 1;
@@ -66,16 +70,8 @@ public class CreateMPLEHandler {
 		return writer;
 	}
 
-	private void storePlatformTree(MPLPlatform platform, IEclipseContext context, String name,
-			ServiceContainer services) {
-		TreeWriter treeWriter = new TreeWriter();
-		ContextInjectionFactory.inject(treeWriter, context);
-		treeWriter.witeArtifact(new TreeImpl(name, platform.model),
-				services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + name);
-	}
 
-=======
->>>>>>> refs/heads/master_merg
+
 	/**
 	 * This method checks if a artifact reader is available for this view
 	 * 

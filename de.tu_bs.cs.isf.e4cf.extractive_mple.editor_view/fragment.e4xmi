@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="ASCII"?>
-<<<<<<< HEAD
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_O29doCWzEeuQwOiyKUBDCA">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_QqhF8CWzEeuQwOiyKUBDCA" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.work_window">
-=======
+
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_O29doCWzEeuQwOiyKUBDCA">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_QqhF8CWzEeuQwOiyKUBDCA" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.work_window" positionInList="index:0">
->>>>>>> refs/heads/master_merg
     <elements xsi:type="basic:Part" xmi:id="_bwsJICWzEeuQwOiyKUBDCA" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.MPLEditorAdapter" label="MPLEditor" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/icons/tree_view_icon.png"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_9sFxgDYjEeuyNqzD07HHhw" featurename="children" parentElementId="de.tu_bs.cs.isf.e4cf.parts.project_explorer.context_menu">
-<<<<<<< HEAD
-    <elements xsi:type="menu:DirectMenuItem" xmi:id="_JEJ18DYkEeuyNqzD07HHhw" elementId="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.directmenuitem.openTreeViewButton" label="Open in TreeView" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/icons/tree_view_icon.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.handler.OpenInTreeViewHandler"/>
-    <elements xsi:type="menu:DirectMenuItem" xmi:id="_oasZMChrEe2Uy6Ly7mADoA" elementId="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.directmenuitem.store_as_model" label="Store As Model" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/icons/tree_view_icon.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.handler.StoreAsModelHandler"/>
-=======
     <elements xsi:type="menu:DirectMenuItem" xmi:id="_JEJ18DYkEeuyNqzD07HHhw" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.openTreeViewButton" label="Open in TreeView" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/icons/tree_view_icon.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.handler.OpenInTreeViewHandler">
       <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_bzRwgG3oEeuqueY8xAsV6g" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.handler.OpenInTreeViewHandler"/>
     </elements>
     <elements xsi:type="menu:DirectMenuItem" xmi:id="_oasZMChrEe2Uy6Ly7mADoA" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.directmenuitem.store_as_model" label="Store As Model" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/icons/tree_view_icon.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.handler.StoreAsModelHandler"/>
->>>>>>> refs/heads/master_merg
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0xKbkGrhEeuRZeGfchmsGQ" featurename="children" parentElementId="de.tu_bs.cs.isf.familymining.ppu_iec.rcp_e4.information_window">
     <elements xsi:type="basic:Part" xmi:id="_0xKbkWrhEeuRZeGfchmsGQ" elementId="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.DSPropertiesAdapter" label="Properties" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view/icons/control-panel.png"/>

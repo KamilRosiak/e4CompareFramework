@@ -5,12 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Map;
 import java.util.Map.Entry;
-=======
 import java.util.Optional;
->>>>>>> refs/heads/master_merg
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,11 +26,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
-<<<<<<< HEAD
-=======
 import de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences.PlatformPreferences;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
->>>>>>> refs/heads/master_merg
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 
 /**
@@ -144,7 +138,7 @@ public class MPLPlatform implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-<<<<<<< HEAD
+
 		if (variant.getRoot().getNodeType().equals(model.getNodeType())) {
 			/**
 			 * Intra clone refactoring detection clone artifacts within the variant and the
@@ -170,9 +164,7 @@ public class MPLPlatform implements Serializable {
 		} else {
 			System.out.println("root node has other type");
 		}
-=======
 
->>>>>>> refs/heads/master_merg
 	}
 
 	private List<CloneConfiguration> refactorComponents(Node node) {
@@ -183,25 +175,14 @@ public class MPLPlatform implements Serializable {
 			candidatNodes = new ArrayList<>();
 			Iterator<Node> candiateIterator = candidatNodes.iterator();
 
-<<<<<<< HEAD
-		// List<Node> candidatNodes =
-		// node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
-		List<Node> candidatNodes = node.getNodesOfType("FILE");
-		Iterator<Node> candiateIterator = candidatNodes.iterator();
 
-		// Only take artifacts with at least 20 nodes into account (Clone size)
-		while (candiateIterator.hasNext()) {
-			Node node2 = (Node) candiateIterator.next();
-			if (node2.getAmountOfNodes(0) < 20) {
-				candiateIterator.remove();
-=======
 			// Only take artifacts with at least 20 nodes into account (Clone size)
 			while (candiateIterator.hasNext()) {
 				Node node2 = (Node) candiateIterator.next();
 				if (node2.getAmountOfNodes(0) < 20) {
 					candiateIterator.remove();
 				}
->>>>>>> refs/heads/master_merg
+
 			}
 
 			// Initialize the cluster engine and run the process output is a list of sets
@@ -249,50 +230,6 @@ public class MPLPlatform implements Serializable {
 			System.out.println("Multi Product Line Extraction not avalable in this version");
 		}
 
-<<<<<<< HEAD
-		// Initialize the cluster engine and run the process output is a list of sets
-		// of nodes. Every set represents a clone cluster that has to be merged.
-		ClusterEngine clusterEngine = new ClusterEngine();
-		ClusterEngine.startProcess();
-		List<Set<Node>> nodeCluster = clusterEngine.detectClusters(candidatNodes,
-				clusterEngine.buildDistanceString(candidatNodes));
-
-		// filter all sets which only contain one element
-		Iterator<Set<Node>> iterator = nodeCluster.iterator();
-		while (iterator.hasNext()) {
-			Set<Node> set = iterator.next();
-			if (set.size() <= 1) {
-				iterator.remove();
-			}
-		}
-
-		for (Set<Node> clusterSet : nodeCluster) {
-			Node mergeTarget = clusterSet.iterator().next();
-			clusterSet.remove(mergeTarget);
-			// create configuration of the merge target component node.
-			CloneConfiguration firstConfig = NodeConfigurationUtil.createCloneConfiguration(mergeTarget,
-					mergeTarget.getParent().getUUID());
-			componentConfigs.add(firstConfig);
-
-			for (Node clusterNode : clusterSet) {
-				mergeTarget.setCloned(true);
-				clusterNode.setCloned(true);
-
-				NodeComparison nodeComparison = compareEngine.compare(mergeTarget, clusterNode);
-				nodeComparison.mergeArtifacts(configurations, new ArrayList<CloneConfiguration>(),
-						new ArrayList<CloneConfiguration>());
-
-				clusterNode.getParent().getChildren().remove(clusterNode);
-
-				if (!clusterNode.getParent().getChildren().contains(mergeTarget))
-					clusterNode.getParent().getChildren().add(mergeTarget);
-
-				componentConfigs.add(
-						NodeConfigurationUtil.createCloneConfiguration(clusterNode, clusterNode.getParent().getUUID()));
-			}
-		}
-=======
->>>>>>> refs/heads/master_merg
 		return componentConfigs;
 	}
 
@@ -300,15 +237,6 @@ public class MPLPlatform implements Serializable {
 	 * Sets the first variant as root variant which serves as a starting point
 	 */
 	private void initializePlatform(Tree tree) {
-<<<<<<< HEAD
-		List<CloneConfiguration> componentConfigs = refactorComponents(tree.getRoot());
-		model = tree.getRoot();
-		setModel(tree);
-		configurations = new ArrayList<Configuration>();
-		ConfigurationImpl config = (ConfigurationImpl) getNextConfig(tree);
-		config.getCloneConfigurations().addAll(componentConfigs);
-		configurations.add(config);
-=======
 		try {
 			List<CloneConfiguration> componentConfigs = new ArrayList<CloneConfiguration>();
 			if(isMulti) {
@@ -322,7 +250,7 @@ public class MPLPlatform implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
->>>>>>> refs/heads/master_merg
+
 	}
 
 	public void insertComponent(Node component) {
@@ -347,7 +275,7 @@ public class MPLPlatform implements Serializable {
 		configurations.remove(config);
 	}
 
-<<<<<<< HEAD
+
 	public void printPlatform() {
 		Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
 		this.configurations.forEach(config -> {
@@ -374,10 +302,9 @@ public class MPLPlatform implements Serializable {
 	public Tree getModel() {
 		return this.modelTree;
 	}
-=======
+
 	public Set<Node> getNodesForUUIDs(Set<UUID> uuids) {
 		return TreeUtil.getNodesForCondition(model, node -> uuids.contains(node.getUUID()));
 	}
 
->>>>>>> refs/heads/master_merg
 }
