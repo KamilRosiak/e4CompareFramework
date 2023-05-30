@@ -27,7 +27,9 @@
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#fxSetRoot" text="Set Root" />
                       <MenuItem mnemonicParsing="false" onAction="#fxAddAbstractCluster" text="Add abstract Cluster" />
-                                            <MenuItem mnemonicParsing="false" onAction="#proposeFeatureName" text="Propose Feature Name" />
+                      <SeparatorMenuItem mnemonicParsing="false" />
+                      <MenuItem mnemonicParsing="false" onAction="#proposeFeatureName" text="Propose Feature Name" />
+                      <MenuItem mnemonicParsing="false" onAction="#selectNext" text="Next Occurrence" />
                       <SeparatorMenuItem mnemonicParsing="false" />
                       <MenuItem mnemonicParsing="false" onAction="#synthesizeFeatureModel" text="Synthesize FM" />
                     </items>

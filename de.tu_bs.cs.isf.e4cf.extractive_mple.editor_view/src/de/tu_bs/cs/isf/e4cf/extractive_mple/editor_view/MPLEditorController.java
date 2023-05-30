@@ -115,6 +115,12 @@ public class MPLEditorController implements Initializable {
 			e.printStackTrace();
 		}
 	}
+	
+	@Optional
+	@Inject
+	public void selectNextOccurrence(@UIEventTopic(MPLEEditorConsts.SELECT_NEXT) IFeature feature) {
+		selector.selectNextTreeItem(feature.getArtifactUUIDs());
+	}
 
 	private void displayFeatures(FeatureDiagram diagram) {
 		Set<IFeature> features = diagram.getAllFeatures();

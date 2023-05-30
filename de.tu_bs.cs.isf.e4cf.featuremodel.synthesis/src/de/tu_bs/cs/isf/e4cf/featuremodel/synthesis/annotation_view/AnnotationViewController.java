@@ -47,6 +47,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
@@ -56,6 +57,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 public class AnnotationViewController implements Initializable {
 	@Inject
@@ -257,6 +260,12 @@ public class AnnotationViewController implements Initializable {
 		}
 		
 	}
+	
+	@FXML
+	private void selectNext(ActionEvent e) {
+		IFeature selectedFeature = annotationTable.getSelectionModel().getSelectedItem().getFeature();
+		services.eventBroker.post(MPLEEditorConsts.SELECT_NEXT, selectedFeature);
+	}
 
 	/**
 	 * Parses the annotations and builds the corresponding feature model
@@ -357,6 +366,13 @@ public class AnnotationViewController implements Initializable {
 			// printDebug();
 		});
 		annotationTableContextMenu.setAutoHide(true);
+		annotationTable.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+			if (e.isControlDown()) {
+				if (e.getCode() == KeyCode.DOWN) {
+					selectNext(new ActionEvent());
+				}
+			}
+		});
 	}
 
 	/**
