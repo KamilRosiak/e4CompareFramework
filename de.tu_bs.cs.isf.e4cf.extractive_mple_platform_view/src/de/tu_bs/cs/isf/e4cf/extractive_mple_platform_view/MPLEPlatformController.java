@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -27,10 +28,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.TreeWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
-import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.sync.FileTreeWatcher;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
@@ -40,13 +40,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
-import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -190,27 +188,28 @@ public class MPLEPlatformController implements Initializable {
 	 * Recovers the variant for the given configuration
 	 */
 	private Node configureVariant(Configuration selectedConfig, Node node) {
-		if (selectedConfig.getUUIDs().contains(node.getUUID())) {
-			node.setVariabilityClass(VariabilityClass.MANDATORY);
-			List<Attribute> attributeToRemove = new ArrayList<Attribute>();
-			// Configure Attributes
-			node.getAttributes().forEach(attribute -> {
-				if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
-					List<Value> valuestoRemove = new ArrayList<Value>();
-					// Configure Values
-					attribute.getAttributeValues().forEach(value -> {
-						if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
-							valuestoRemove.add(value);
-						}
-					});
-					attribute.getAttributeValues().removeAll(valuestoRemove);
+		if (selectedConfig != null)
+			if (selectedConfig.getUUIDs().contains(node.getUUID())) {
+				node.setVariabilityClass(VariabilityClass.MANDATORY);
+				List<Attribute> attributeToRemove = new ArrayList<Attribute>();
+				// Configure Attributes
+				node.getAttributes().forEach(attribute -> {
+					if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
+						List<Value> valuestoRemove = new ArrayList<Value>();
+						// Configure Values
+						attribute.getAttributeValues().forEach(value -> {
+							if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
+								valuestoRemove.add(value);
+							}
+						});
+						attribute.getAttributeValues().removeAll(valuestoRemove);
 
-				} else {
-					attributeToRemove.add(attribute);
-				}
-			});
-			node.getAttributes().removeAll(attributeToRemove);
-		}
+					} else {
+						attributeToRemove.add(attribute);
+					}
+				});
+				node.getAttributes().removeAll(attributeToRemove);
+			}
 		configureVariantRecursivly(selectedConfig, node);
 
 		return node;
@@ -275,7 +274,7 @@ public class MPLEPlatformController implements Initializable {
 			Configuration selectedConfig = config;
 			node = configureVariant(selectedConfig, node);
 			Tree variantTree = new TreeImpl(selectedConfig.getName(), node);
-			TreeWritter writter = new TreeWritter();
+			TreeWriter writter = new TreeWriter();
 			ContextInjectionFactory.inject(writter, context);
 			writter.writeArtifact(variantTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
 					+ "\\" + selectedConfig.getName());

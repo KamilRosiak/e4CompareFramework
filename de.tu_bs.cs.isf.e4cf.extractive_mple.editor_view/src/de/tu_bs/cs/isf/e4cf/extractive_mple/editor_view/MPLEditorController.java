@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;

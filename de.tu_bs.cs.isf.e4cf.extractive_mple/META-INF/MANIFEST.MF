@@ -13,12 +13,19 @@ Require-Bundle: org.eclipse.e4.core.services;bundle-version="2.2.100",
  org.eclipse.e4.ui.model.workbench;bundle-version="2.1.600.v20191106-1503",
  de.tu_bs.cs.isf.e4cf.core,
  org.eclipse.emf.emfstore.common,
- de.tu_bs.cs.isf.e4cf.family_model_view.prototype,
  de.tu_bs.cs.isf.e4cf.parts.project_explorer,
- de.tu_bs.cs.isf.e4cf.refactoring.data_structures
+ de.tu_bs.cs.isf.e4cf.refactoring.data_structures,
+ de.tu_bs.cs.isf.e4cf.core,
+ de.tu_bs.cs.isf.e4cf.parts.project_explorer,
+ de.tu_bs.cs.isf.e4cf.refactoring.data_structures,
+ de.tu_bs.cs.isf.e4cf.family_model_view.prototype
 Automatic-Module-Name: de.tu_bs.cs.isf.e4cf.extractive_mple
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.consts,
  de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences,
  de.tu_bs.cs.isf.e4cf.extractive_mple.structure
 Import-Package: de.tu_bs.cs.isf.e4cf.featuremodel.core.model
+Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.structure
+Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.consts
+Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.consts,
+ de.tu_bs.cs.isf.e4cf.extractive_mple.structure

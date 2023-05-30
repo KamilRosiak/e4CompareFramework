@@ -48,6 +48,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.exchange"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.evaluation"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view"/>
@@ -64,6 +65,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.parser.antlr"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.parts.consol_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.parts.project_explorer"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.refactoring"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.refactoring.data_structures"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.replay_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.simple_text_editor"/>
@@ -170,7 +172,10 @@
       <plugin id="org.eclipse.ui.trace"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.urischeme"/>
+      <plugin id="org.eclipse.xtend.lib"/>
+      <plugin id="org.eclipse.xtend.lib.macro"/>
       <plugin id="org.eclipse.xtext.logging" fragment="true"/>
+      <plugin id="org.eclipse.xtext.xbase.lib"/>
       <plugin id="org.hamcrest.core"/>
       <plugin id="org.junit"/>
       <plugin id="org.junit.jupiter.api"/>

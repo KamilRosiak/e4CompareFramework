@@ -72,7 +72,7 @@ public class LoggerUtilities {
 		Modification modification = FeatureDiagramModificationSetFactory.eINSTANCE.createModification();
 		modification.setTimeStamp(System.currentTimeMillis());
 		modification.setPrecisionTime(System.nanoTime());
-		modification.setFeatureID(feature.getIdentifier());
+		//modification.setFeatureID(feature.getIdentifier());
 		modification.setModificationType(modificationType);	
 		processArtifactReferences(modification, feature.getArtifactReferences());
 		return modification;

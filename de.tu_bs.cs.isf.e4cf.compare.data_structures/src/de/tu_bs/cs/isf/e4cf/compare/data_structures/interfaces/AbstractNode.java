@@ -15,6 +15,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.AttributeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.NodeIterator;
 
 public abstract class AbstractNode implements Node {
+	private static final long serialVersionUID = -3547151067490334814L;
 	private String nodeType;
 	private String representation;
 	private NodeType standardizedNodeType = NodeType.UNDEFINED;
@@ -26,7 +27,6 @@ public abstract class AbstractNode implements Node {
 	private int startLine = -1;
 	private int endLine = -1;
 	private boolean isComponent = false;
-	private List<Configuration> configurations = new ArrayList<Configuration>();
 
 	public AbstractNode() {
 		initializeNode();
@@ -56,16 +56,6 @@ public abstract class AbstractNode implements Node {
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	public List<Configuration> getConfigurations() {
-		return configurations;
-	}
-
-	@Override
-	public void addConfiguration(Configuration config) {
-		configurations.add(config);
 	}
 
 	@Override
@@ -99,7 +89,6 @@ public abstract class AbstractNode implements Node {
 		getAttributes().add(attr);
 	}
 
-	@Override
 	public Attribute getAttributeForKey(String key) throws NoSuchElementException {
 		return attributes.stream().filter(e -> e.getAttributeKey().equals(key)).findAny().get();
 	}
@@ -140,32 +129,6 @@ public abstract class AbstractNode implements Node {
 			nodeTypes.addAll(child.getAllNodeTypes());
 		}
 		return nodeTypes;
-	}
-
-	/******************************************************
-	 * GETTER AND SETTER
-	 ******************************************************/
-	public Node getParent() {
-		return parent;
-	}
-
-	public void setParent(Node parent) {
-		this.parent = parent;
-	}
-
-	@Override
-	public String getNodeType() {
-		return nodeType;
-	}
-
-	@Override
-	public void setNodeType(String nodeType) {
-		this.nodeType = nodeType;
-	}
-
-	@Override
-	public List<Node> getChildren() {
-		return children;
 	}
 
 	@Override
@@ -387,14 +350,14 @@ public abstract class AbstractNode implements Node {
 
 		return startAmount;
 	}
-	
+
 	@Override
 	public Set<UUID> getAllUUIDS() {
 		Set<UUID> uuids = new HashSet<>();
 		addAllUUIDS(uuids);
 		return uuids;
 	}
-	
+
 	@Override
 	public void addAllUUIDS(Set<UUID> uuids) {
 		uuids.add(getUUID());
@@ -407,4 +370,66 @@ public abstract class AbstractNode implements Node {
 		// insert all UUIDs of children in uuids
 		getChildren().forEach(child -> child.addAllUUIDS(uuids));
 	}
+
+	@Override
+	public int cut() {
+		if (this.isRoot()) {
+			return -1;
+		}
+		int index = getParent().getChildren().indexOf(this);
+		getParent().getChildren().remove(index);
+		return index;
+	}
+
+	@Override
+	public int cutWithoutChildren() {
+		if (this.isRoot()) {
+			return -1;
+		}
+		for (Node child : children) {
+			getParent().addChildWithParent(child);
+		}
+		return this.cut();
+	}
+
+	@Override
+	public String getValueAt(int index) {
+		if (attributes.size() < (index + 1)) {
+			return null;
+		}
+		return attributes.get(index).getAttributeValues().get(0).getValue().toString();
+	}
+
+	@Override
+	public void updateParent(Node parent) {
+		this.cut();
+		parent.addChildWithParent(this);
+	}
+
+	/******************************************************
+	 * GETTER AND SETTER
+	 ******************************************************/
+	public Node getParent() {
+		return parent;
+	}
+
+	public void setParent(Node parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public String getNodeType() {
+		return nodeType;
+	}
+
+	@Override
+	public void setNodeType(String nodeType) {
+		this.nodeType = nodeType;
+	}
+
+	@Override
+	public List<Node> getChildren() {
+		return children;
+	}
+
 }

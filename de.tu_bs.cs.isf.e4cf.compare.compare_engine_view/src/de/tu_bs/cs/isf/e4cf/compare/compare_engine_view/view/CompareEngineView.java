@@ -83,6 +83,8 @@ public class CompareEngineView implements Initializable {
 		try {
 			
 			List<Tree> variants = artifactTable.getItems();
+			
+		
 			MPLPlatform platform = new MPLPlatform();
 			// if spl compare is active
 		

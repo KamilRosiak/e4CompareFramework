@@ -45,6 +45,7 @@ public class MPLEEditorConsts {
 	public static final String SHOW_TREE = "SHOW_TREE";
 	public static final String SHOW_UUID = "SHOW_UUID";
 	public static final String SHOW_CLONE_UUID = "SHOW_CLONE_UUID";
+	public static final String SEARCH_UUID = "SEARCH_UUID";
 	
 	public static final String LOCATE_FEATURES = "LOCATE_FEATURES";
 	public static final String ADD_VARIANT_TO_MPL = "ADD_VARIANT_TO_MPL";

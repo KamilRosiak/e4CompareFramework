@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 public abstract class AbstractAttribute implements Attribute {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String attributeKey;
 	private List<Value> attributeValues;

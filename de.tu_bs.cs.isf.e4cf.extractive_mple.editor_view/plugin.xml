@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="NodeDecorator" name="NodeDecorator" schema="schema/de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.exsd"/>
+   <extension-point id="NodeDecorator" name="NodeDecorator" schema="schema/node_decorator.exsd"/>
    <extension
          id="id1"
          point="org.eclipse.e4.workbench.model">
@@ -10,29 +10,23 @@
       </fragment>
    </extension>
    <extension
+         point="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.NodeDecorator">
+      <node_decorator
+            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.IEC61131NodeDecorator">
+      </node_decorator>
+      <node_decorator
+            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.JavaDecorator">
+      </node_decorator>
+      <node_decorator
+            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator">
+      </node_decorator>
+   </extension>
+   <extension
          point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
       <project_explorer_file_attr
             file_extension="tree"
             project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.contribution.TreeProjectExplorerExtension">
       </project_explorer_file_attr>
-   </extension>
-   <extension
-         point="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.NodeDecorator">
-      <node_decorator
-            new_attribute="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator"
-            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator">
-      </node_decorator>
-      <node_decorator
-            new_attribute="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.DetailedFamilyModelNodeDecorator"
-            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.DetailedFamilyModelNodeDecorator">
-      </node_decorator>
-      <node_decorator
-            new_attribute="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.TextDecorator"
-            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.TextDecorator">
-      </node_decorator>
-      <node_decorator
-            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.JavaDecorator">
-      </node_decorator>
    </extension>
 
 

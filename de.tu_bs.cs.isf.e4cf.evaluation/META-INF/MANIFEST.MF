@@ -5,7 +5,7 @@ Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.evaluation;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.e4.core.contexts,
  org.junit,
- javax.inject;bundle-version="1.0.0",
+ javax.inject,
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.services,
