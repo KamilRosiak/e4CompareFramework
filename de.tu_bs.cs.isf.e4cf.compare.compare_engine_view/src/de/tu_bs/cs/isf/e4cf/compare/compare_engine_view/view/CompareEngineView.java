@@ -81,16 +81,19 @@ public class CompareEngineView implements Initializable {
 	@FXML
 	public void compareArtifacts() {
 		try {
+			
 			List<Tree> variants = artifactTable.getItems();
 			MPLPlatform platform = new MPLPlatform();
 			// if spl compare is active
+		
 			if (!twodimRadio.isSelected()) {
 				CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(),
 						getSelectedMetric());
 				platform = new MPLPlatform(engine, false);
 			}
-
+			
 			platform.insertVariants(variants);
+
 			String path = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
 					+ "clone_model.mpl";
 			// if spl compare is active
@@ -99,7 +102,6 @@ public class CompareEngineView implements Initializable {
 						+ "clone_model.spl";
 			}
 
-			
 			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 			services.partService.showPart(MPLEEditorConsts.PLATFORM_VIEW);
 			services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, platform);

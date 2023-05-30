@@ -41,11 +41,16 @@ public class ClusterEngine {
 	public static boolean PYTHON = false;
 
 	public ClusterEngine() {
-		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
-		scriptPathExe = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ "script/clustering_sklearn.exe").substring(1)).getPath();
-		scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ "script/clustering_sklearn.py").substring(1)).getPath();
+		try {
+			compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
+			scriptPathExe = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+					+ "script/clustering_sklearn.exe").substring(1)).getPath();
+			scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
+					+ "script/clustering_sklearn.py").substring(1)).getPath();
+		} catch (Exception e) {
+			System.out.println("no clustering available");
+		}
+
 	}
 
 	private static ProcessUtil process;
