@@ -27,7 +27,7 @@ public class FeatureNameDialog extends BorderPane {
 	public FeatureNameDialog(List<WordCounter> wordList, ClusterViewModel model) {
 		this.selectedCluster = model;
 		try {
-			wordList.sort((w1, w2) -> -Integer.compare(w1.count, w2.count));
+			wordList.sort((w1, w2) -> -Double.compare(w1.count, w2.count));
 			initializeView(wordList);
 		} catch (IOException e) {
 			e.printStackTrace();

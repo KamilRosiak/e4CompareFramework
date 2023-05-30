@@ -187,11 +187,40 @@ public class AnnotationViewController implements Initializable {
 	@FXML
 	private void proposeFeatureName(ActionEvent e) {
 		e.consume();
+		annotationTableContextMenu.hide();
 		ClusterViewModel selectedModel = annotationTable.getSelectionModel().getSelectedItem();
-		Map<String, Integer> words = new HashMap<>();
-		Set<UUID> selectedIds = selectedModel.getFeature().getArtifactUUIDs();
-		Set<Node> selectedNodes = currentMpl.getNodesForUUIDs(selectedIds);
+		List<WordCounter> wordList = getInverseDocumentFrequency(selectedModel.getFeature());
+		new FeatureNameDialog(wordList, selectedModel);
+		annotationTable.refresh();
+	}
+	
+	private List<WordCounter> getInverseDocumentFrequency(IFeature feature) {
+		double documentCount = annotationTable.getItems().size();
+		Map<String, List<IFeature>> wordDocCount = new HashMap<>();
+		for (ClusterViewModel model : annotationTable.getItems()) {
+			List<WordCounter> wordCounts = getWordFrequency(model.getFeature().getArtifactUUIDs());
+			for (WordCounter wordCount : wordCounts) {
+				List<IFeature> docs = wordDocCount.get(wordCount.word);
+				if (docs != null) {
+					docs.add(model.getFeature());
+				} else {
+					docs = new ArrayList<>();
+					docs.add(model.getFeature());
+					wordDocCount.put(wordCount.word, docs);
+				}
+			}
+		}
+		Map<String, Double> idf = new HashMap<>();
+		wordDocCount.forEach((word, docs) -> idf.put(word, Math.log(documentCount / docs.size())));
 		
+		List<WordCounter> featureWords = getWordFrequency(feature.getArtifactUUIDs());
+		featureWords.forEach(wc -> wc.count = idf.get(wc.word) * wc.count);
+		return featureWords;
+	}
+	
+	private List<WordCounter> getWordFrequency(Set<UUID> selectedIds) {
+		Set<Node> selectedNodes = currentMpl.getNodesForUUIDs(selectedIds);
+		Map<String, Integer> words = new HashMap<>();
 		for (Node node : selectedNodes) {
 			for (Attribute attr : node.getAttributes()) {
 				for (Value<?> val : attr.getAttributeValues()) {
@@ -208,21 +237,25 @@ public class AnnotationViewController implements Initializable {
 					}
 				}
 			}
+		}	
+		if (words.size() > 0) {
+			int maxCount = words.values().stream().max(Integer::compare).get();
+			Map<String, Float> relativeWordFrequency = new HashMap<>();
+			words.forEach((word, count) -> relativeWordFrequency.put(word, ((float) count) / maxCount));
+			final Pattern nonWord = Pattern.compile("[^\\w]*|\\d"); 
+			List<WordCounter> wordList = relativeWordFrequency.keySet().stream()
+					.filter(word -> !SourceVersion.isKeyword(word))
+					.filter(word -> {
+						Matcher m = nonWord.matcher(word);
+						return !m.matches();
+					})
+					.map(word -> new WordCounter(word, words.get(word)))
+					.collect(Collectors.toList());
+			return wordList;
+		} else {
+			return new ArrayList<>();
 		}
 		
-		
-		Pattern nonWord = Pattern.compile("[^\\w]*|\\d"); 
-		List<WordCounter> wordList = words.keySet().stream()
-				.filter(word -> !SourceVersion.isKeyword(word))
-				.filter(word -> {
-					Matcher m = nonWord.matcher(word);
-					return !m.matches();
-				})
-				.map(word -> new WordCounter(word, words.get(word)))
-				.collect(Collectors.toList());
-		annotationTableContextMenu.hide();
-		new FeatureNameDialog(wordList, selectedModel);
-		annotationTable.refresh();
 	}
 
 	/**
