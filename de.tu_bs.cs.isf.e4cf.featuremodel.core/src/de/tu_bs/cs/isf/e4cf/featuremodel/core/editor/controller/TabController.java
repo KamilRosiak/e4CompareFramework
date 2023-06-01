@@ -102,7 +102,7 @@ public class TabController {
 	@Inject
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram diagram) {
 		FMEditorTab newTab = this.createTab(diagram.getName());
-		services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
+		//services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
 		services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, diagram);
 		newTab.editor().setFeatureDiagram(diagram);
 	}

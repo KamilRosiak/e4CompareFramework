@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
@@ -117,15 +118,15 @@ public final class TreeViewUtilities {
 	 * @param name The name of the wanted item
 	 * @return List of TreeItem(s) to the wanted item or an empty list if the item was not found.
 	 */
-	public static List<TreeItem<Node>> findFirstItemPath(TreeItem<Node> item, String name) {
+	public static List<TreeItem<Node>> findFirstItemPath(TreeItem<Node> item, UUID uuid) {
 		List<TreeItem<Node>> result = new LinkedList<>();
-		if (isEqual(item, name)) {
+		if (item.getValue().getUUID().equals(uuid)) {
 			result.add(item);
 		}
 		
 		if (result.isEmpty()) {
 			for (TreeItem<Node> child : item.getChildren()) {
-				List<TreeItem<Node>> childResult = findFirstItemPath(child, name);
+				List<TreeItem<Node>> childResult = findFirstItemPath(child, uuid);
 				if (!childResult.isEmpty()) {
 					result.add(item);
 					result.addAll(childResult);

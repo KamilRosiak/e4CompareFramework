@@ -83,9 +83,10 @@ public class SyntaxGroup {
 	private static String getName(SortedSet<Configuration> configs) {
 		StringBuilder strBuilder = new StringBuilder();
 		for (Configuration config : configs) {
-			strBuilder.append(String.format("%s ", config.getName()));
+			strBuilder.append(String.format("%s-", config.getName()));
 		}
-		return strBuilder.toString().trim();
+		String name = strBuilder.toString();
+		return name.substring(0, name.length() - 1);
 	}
 
 	@Override

@@ -86,7 +86,7 @@ public class MPLEditorController implements Initializable {
 	 */
 	@Optional
 	@Inject
-	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {		
+	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
 		treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
 		this.setCurrentPlatform(platform);
@@ -115,6 +115,12 @@ public class MPLEditorController implements Initializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Optional
+	@Inject
+	public void selectNextOccurrence(@UIEventTopic(MPLEEditorConsts.SELECT_NEXT) IFeature feature) {
+		selector.selectNextTreeItem(feature.getArtifactUUIDs());
 	}
 
 	

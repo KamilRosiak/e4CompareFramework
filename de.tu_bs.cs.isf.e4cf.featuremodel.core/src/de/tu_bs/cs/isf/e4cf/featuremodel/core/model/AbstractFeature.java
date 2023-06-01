@@ -15,10 +15,11 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	
 	private final UUID uuid = UUID.randomUUID();
 	private String name;
+	private boolean isRoot = false;
 	private String description;
 	private Variability variability = Variability.OPTIONAL;
-	private Optional<IFeature> parent = Optional.empty();
-	private Optional<Color> color = Optional.empty();
+	private IFeature parent = null;
+	private FeatureColor color = FeatureColor.Unset;
 	private final Set<Configuration> configurations = new HashSet<>();
 	private final Set<UUID> artifactUUIDs = new HashSet<>();
 	
@@ -41,15 +42,29 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 		this.name = name;
 		
 	}
+	
+	@Override 
+	public boolean isRoot() {
+		return isRoot;
+	}
+	
+	@Override
+	public void setIsRoot(boolean isRoot) {
+		this.isRoot = isRoot;
+	}
 
 	@Override
 	public Optional<IFeature> getParent() {
-		return parent;
+		if (parent == null) {
+			return Optional.empty();
+		} else {
+			return Optional.of(parent);
+		}
 	}
 
 	@Override
 	public void setParent(IFeature parent) {
-		this.parent = Optional.of(parent);
+		this.parent = parent;
 		
 	}
 
@@ -75,12 +90,16 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	
 	@Override
 	public Optional<Color> getColor() {
-		return this.color;
+		if (color.equals(FeatureColor.Unset)) {
+			return Optional.empty();
+		} else {
+			return Optional.of(color.get());
+		}
 	}
 	
 	@Override
 	public void setColor(Color color) {
-		this.color = Optional.of(color);
+		this.color = new FeatureColor(color);
 	}
 	
 	@Override
@@ -95,10 +114,10 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 
 	@Override
 	public int hashCode() {
-		if (parent.isPresent()) {
-			return Objects.hash(artifactUUIDs, color, configurations, description, parent.get().getUuid(), name, uuid, variability);
+		if (this.getParent().isPresent()) {
+			return Objects.hash(artifactUUIDs, color, configurations, description, parent.getUuid(), name, uuid, isRoot, variability);
 		} else {
-			return Objects.hash(artifactUUIDs, color, configurations, description, name, uuid, variability);
+			return Objects.hash(artifactUUIDs, color, configurations, description, name, uuid, isRoot, variability);
 		}
 		
 	}
@@ -114,7 +133,7 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 				&& Objects.equals(configurations, other.configurations)
 				&& Objects.equals(description, other.description) && Objects.equals(name, other.name)
 				&& Objects.equals(parent, other.parent) && Objects.equals(uuid, other.uuid)
-				&& variability == other.variability;
+				&& variability == other.variability && isRoot == other.isRoot();
 	}
 
 	@Override

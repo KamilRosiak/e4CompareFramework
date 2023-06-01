@@ -42,18 +42,40 @@ public class MPLPlatform implements Serializable {
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
 	public Configuration currrentConfiguration;
 	private FeatureDiagram featureDiagram = null;
+
+	
+	/** 
+	 * File name of the mpl without the extension (.mpl)
+	 */
+	public String fileName;
 	private boolean isMulti = true;
 	int configCount = 0;
 	int componentCount = 0;
-
+	
 	public MPLPlatform() {
-
+		
+	}
+	
+	public MPLPlatform(MPLPlatform platform) {
+		this.name = platform.name;
+		this.configurations = new ArrayList<>(platform.configurations);
+		this.model = platform.model;
+		this.matcher = platform.matcher;
+		this.compareEngine = platform.compareEngine;
+		this.currrentConfiguration = platform.currrentConfiguration;
+		if (platform.getFeatureModel().isPresent()) {
+			this.featureDiagram = new FeatureDiagram(platform.getFeatureModel().get());
+		}
+		this.configCount = platform.configCount;
+		this.componentCount = platform.componentCount;
+		
 	}
 
 	public MPLPlatform(CompareEngineHierarchical compareEngine, boolean isMulti) {
 		this.isMulti = isMulti;
 		this.compareEngine = compareEngine;
 	}
+
 
 	public Optional<FeatureDiagram> getFeatureModel() {
 		if (this.featureDiagram != null) {

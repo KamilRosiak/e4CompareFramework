@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +27,7 @@ public class TreeItemSelector {
 			return;
 		}
 
-		List<TreeItem<Node>> itemPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), uuid.toString());
+		List<TreeItem<Node>> itemPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), uuid);
 		selectTreeItem(itemPath);
 	}
 
@@ -40,10 +42,10 @@ public class TreeItemSelector {
 		String parentUuid = splitUuid[0];
 		String childUuid = splitUuid[1];
 
-		List<TreeItem<Node>> parentPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), parentUuid);
+		List<TreeItem<Node>> parentPath = TreeViewUtilities.findFirstItemPath(treeView.getRoot(), UUID.fromString(parentUuid));
 		if (parentPath.size() > 0) {
 			TreeItem<Node> parent = parentPath.get(parentPath.size() - 1);
-			List<TreeItem<Node>> parentToChildPath = TreeViewUtilities.findFirstItemPath(parent, childUuid);
+			List<TreeItem<Node>> parentToChildPath = TreeViewUtilities.findFirstItemPath(parent, UUID.fromString(childUuid));
 			List<TreeItem<Node>> childPath = new LinkedList<>(parentPath);
 			childPath.add(parentToChildPath.get(parentToChildPath.size() - 1));
 
@@ -68,6 +70,55 @@ public class TreeItemSelector {
 			treeView.refresh();
 			int nodeIndex = treeView.getRow(node);
 			treeView.scrollTo(nodeIndex - 3);
+		}
+	}
+	
+	public void selectNextTreeItem(Collection<UUID> uuids) {
+		List<TreeItem<Node>> tree = TreeViewUtilities.getSubTreeAsList(treeView.getRoot(), new ArrayList<>());
+		TreeItem<Node> selectedItem = treeView.getSelectionModel().getSelectedItem();
+		
+		if (selectedItem == null) {
+			selectedItem = treeView.getRoot();
+		}
+		
+		int startIndex = tree.indexOf(selectedItem);
+		int nextBlockStart = -1;
+		if (uuids.contains(selectedItem.getValue().getUUID())) {
+			for (int i = startIndex+1; i < tree.size(); i++) {
+				TreeItem<Node> item = tree.get(i);
+				if (!uuids.contains(item.getValue().getUUID())) {
+					nextBlockStart = i;
+					break;
+				}
+			}
+		}
+		nextBlockStart = Math.max(startIndex, nextBlockStart);
+		if (nextBlockStart == startIndex && uuids.contains(tree.get(tree.size() - 1).getValue().getUUID())) {
+			nextBlockStart = 0;
+		}
+		
+		TreeItem<Node> nextItem = null;
+		if (nextBlockStart != -1) {
+			for (int i = nextBlockStart+1; i < tree.size(); i++) {
+				TreeItem<Node> item = tree.get(i);
+				if (uuids.contains(item.getValue().getUUID())) {
+					nextItem = item;
+					break;
+				}
+			}
+		}		
+		if (nextItem == null) {
+			for (int i = 0; i < startIndex; i++) {
+				TreeItem<Node> item = tree.get(i);
+				if (uuids.contains(item.getValue().getUUID())) {
+					nextItem = item;
+					break;
+				}
+			}
+		}
+		
+		if (nextItem != null) {
+			selectNode(nextItem.getValue().getUUID());
 		}
 	}
 

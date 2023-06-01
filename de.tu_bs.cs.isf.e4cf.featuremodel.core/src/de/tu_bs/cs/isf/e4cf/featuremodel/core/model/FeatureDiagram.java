@@ -29,6 +29,13 @@ public class FeatureDiagram implements Serializable {
 	public FeatureDiagram(String name, IFeature rootFeature) {
 		this.name = name;
 		this.root = rootFeature;
+		rootFeature.setIsRoot(true);
+	}
+	
+	public FeatureDiagram(FeatureDiagram diagram) {
+		this.name = new String(diagram.getName());
+		this.root = diagram.getRoot();
+		this.constraints = new ArrayList<>(diagram.getConstraints());
 	}
 
 	/**
@@ -137,6 +144,10 @@ public class FeatureDiagram implements Serializable {
 		FeatureDiagram loadedDiagram = (FeatureDiagram) objectInStream.readObject();
 		objectInStream.close();
 		return loadedDiagram;
+	}
+	
+	public int getDepth(IFeature feature) {
+		return root.getDepth(feature, 0);
 	}
 	
 	

@@ -12,7 +12,6 @@ public class Feature extends AbstractFeature implements IFeature, Serializable {
 
 	private GroupVariability groupVariability = GroupVariability.DEFAULT;
 	private final List<IFeature> children = new ArrayList<>();
-	private boolean isAbstract = false;
 	
 	public Feature() {
 		super(FDStringTable.DEFAULT_FEATURE_NAME);
@@ -64,7 +63,7 @@ public class Feature extends AbstractFeature implements IFeature, Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(children, groupVariability, isAbstract);
+		result = prime * result + Objects.hash(children, groupVariability);
 		return result;
 	}
 
@@ -77,14 +76,12 @@ public class Feature extends AbstractFeature implements IFeature, Serializable {
 		if (!(obj instanceof Feature))
 			return false;
 		Feature other = (Feature) obj;
-		return Objects.equals(children, other.children) && groupVariability == other.groupVariability
-				&& isAbstract == other.isAbstract;
+		return Objects.equals(children, other.children) && groupVariability == other.groupVariability;
 	}
 
 	@Override
 	public String toString() {
-		return "Feature [groupVariability=" + groupVariability + ", children=" + children + ", isAbstract=" + isAbstract
-				+ "]";
+		return "Feature [ name: " + getName() + ", gVar: " + this.groupVariability.toString() + ", " + super.toString() +  "]";
 	}
 	
 }

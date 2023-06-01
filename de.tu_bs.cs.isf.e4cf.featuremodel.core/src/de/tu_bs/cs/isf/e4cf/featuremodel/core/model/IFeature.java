@@ -14,6 +14,9 @@ public interface IFeature {
 	String getName();
 	void setName(String name);
 	
+	boolean isRoot();
+	void setIsRoot(boolean isRoot);
+	
 	Optional<Color> getColor();
 	void setColor(Color color);
 	
@@ -49,5 +52,18 @@ public interface IFeature {
 	public boolean equals(Object other);
 	@Override
 	public int hashCode();
+	
+	public default int getDepth(IFeature feature, int depth) {
+		if (this.equals(feature)) {
+			return depth;
+		}
+		for (IFeature child : this.getChildren()) {
+			int childDepth = child.getDepth(feature, depth + 1);
+			if (childDepth != -1) {
+				return childDepth;
+			}
+		}
+		return -1;
+	}
 	
 }

@@ -203,7 +203,6 @@ public class MPLEPlatformController implements Initializable {
 							}
 						});
 						attribute.getAttributeValues().removeAll(valuestoRemove);
-
 					} else {
 						attributeToRemove.add(attribute);
 					}
@@ -227,7 +226,7 @@ public class MPLEPlatformController implements Initializable {
 					// Configure Attributes
 					childNode.getAttributes().forEach(attribute -> {
 						if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
-							List<Value> valuestoRemove = new ArrayList<Value>();
+							List<Value<?>> valuestoRemove = new ArrayList<>();
 							// Configure Values
 							attribute.getAttributeValues().forEach(value -> {
 								if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
@@ -302,13 +301,17 @@ public class MPLEPlatformController implements Initializable {
 					.collect(Collectors.toList());
 
 			ReaderManager reader = new ReaderManager();
-			ftes.stream().map(reader::readFile).forEach(currentPlatform::insertVariant);
-			// TODO: Optional can be stored
-			MPLEPlatformUtil.storePlatform(
-					services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + "clone_model1.mpl",
-					currentPlatform);
+
+			Tree newVariant = reader.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
+			MPLPlatform newPlatform = new MPLPlatform(currentPlatform);
+			newPlatform.insertVariant(newVariant);
+			String fileName = currentPlatform.fileName + "-" + newVariant.getTreeName();
+			newPlatform.fileName = fileName;
+			fileName = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + fileName + ".mpl";
+			MPLEPlatformUtil.storePlatform(fileName, newPlatform);
 			showPlatform();
-			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, currentPlatform);
+			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, newPlatform);
+			showMPL(newPlatform);
 
 		}
 		/**
@@ -370,6 +373,7 @@ public class MPLEPlatformController implements Initializable {
 	@Optional
 	@Inject
 	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
+  	if (currentPlatform == null || !currentPlatform.equals(platform)) {
 		try {
 			currentPlatform = platform;
 			/**
@@ -383,10 +387,13 @@ public class MPLEPlatformController implements Initializable {
 			 * viewContainer.getItems().add(variantVbox); }
 			 **/
 			showConfigurations();
+			if (platform.getFeatureModel().isPresent()) {
+				services.partService.showPart(MPLEEditorConsts.SYNTHESIS_PLUGIN);
+				services.eventBroker.post(MPLEEditorConsts.SHOW_FEATURES, platform);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+    }
 	}
-
 }
