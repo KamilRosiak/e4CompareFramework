@@ -25,7 +25,7 @@
    </launcher>
 
    <vm>
-      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
+      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
 
    <plugins>
@@ -48,6 +48,7 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.exchange"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.evaluation"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view"/>
@@ -68,6 +69,9 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.replay_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.simple_text_editor"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.solver"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.parser.ST"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.parser.xml"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.ppuIECmetaModel"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.servlet"/>
@@ -170,7 +174,10 @@
       <plugin id="org.eclipse.ui.trace"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.urischeme"/>
+      <plugin id="org.eclipse.xtend.lib"/>
+      <plugin id="org.eclipse.xtend.lib.macro"/>
       <plugin id="org.eclipse.xtext.logging" fragment="true"/>
+      <plugin id="org.eclipse.xtext.xbase.lib"/>
       <plugin id="org.hamcrest.core"/>
       <plugin id="org.junit"/>
       <plugin id="org.junit.jupiter.api"/>

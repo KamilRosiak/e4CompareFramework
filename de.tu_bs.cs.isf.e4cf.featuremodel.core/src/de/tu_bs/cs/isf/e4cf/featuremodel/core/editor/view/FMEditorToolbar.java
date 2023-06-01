@@ -52,7 +52,9 @@ public class FMEditorToolbar extends ToolBar  {
 		
 		getItems().add(JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_SHOW_CONFIG, e-> {
 			services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
+			
 			services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, null);
+			
 		}));
 		
 		Button loggerButton = JavaFXBuilder.createButton(FDStringTable.FD_BAR_MENU_START_LOGGER, e-> {

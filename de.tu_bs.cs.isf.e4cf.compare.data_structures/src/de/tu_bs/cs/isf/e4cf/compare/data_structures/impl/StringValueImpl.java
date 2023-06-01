@@ -16,7 +16,10 @@ public class StringValueImpl extends AbstractValue<String> {
 	@Override
 	public boolean equals(Value<String> val) {
 		if (val instanceof StringValueImpl) {
-			return val.getValue().equals(getValue());
+			if (val.getValue() != null) {
+				return val.getValue().equals(getValue());
+			}
+			return false;
 		} else {
 			return false;
 		}

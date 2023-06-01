@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 
 /**

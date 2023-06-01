@@ -166,11 +166,11 @@ public class Taxonomy {
             Object _xblockexpression_1 = null;
             {
               final Function1<Node, Boolean> _function = (Node n) -> {
-                return Boolean.valueOf(((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.ARGUMENT, NodeType.CLASS, NodeType.COMPILATION_UNIT, NodeType.METHOD_DECLARATION, NodeType.VARIABLE_DECLARATOR)).contains(n.getStandardizedNodeType()) && 
-                  (!IterableExtensions.isNullOrEmpty(IterableExtensions.<Attribute>filter(n.getAttributes(), ((Function1<Attribute, Boolean>) (Attribute a) -> {
-                    String _attributeKey = a.getAttributeKey();
-                    return Boolean.valueOf(Objects.equal(_attributeKey, "Name"));
-                  }))))) && 
+                return Boolean.valueOf(((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.ARGUMENT, NodeType.CLASS, NodeType.COMPILATION_UNIT, NodeType.METHOD_DECLARATION, NodeType.VARIABLE_DECLARATOR)).contains(
+                  n.getStandardizedNodeType()) && (!IterableExtensions.isNullOrEmpty(IterableExtensions.<Attribute>filter(n.getAttributes(), ((Function1<Attribute, Boolean>) (Attribute a) -> {
+                  String _attributeKey = a.getAttributeKey();
+                  return Boolean.valueOf(Objects.equal(_attributeKey, "Name"));
+                }))))) && 
                   (!Objects.equal(n.getParent().getStandardizedNodeType(), NodeType.TEMPLATE))));
               };
               final Node declaration = CloneHelper.<Node>random(IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function));
@@ -294,11 +294,11 @@ public class Taxonomy {
           Object _xblockexpression = null;
           {
             final Function1<Node, Boolean> _function = (Node n) -> {
-              return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.ARGUMENT, NodeType.CLASS, NodeType.COMPILATION_UNIT, NodeType.METHOD_DECLARATION, NodeType.VARIABLE_DECLARATOR)).contains(n.getStandardizedNodeType()) && 
-                (!IterableExtensions.isNullOrEmpty(IterableExtensions.<Attribute>filter(n.getAttributes(), ((Function1<Attribute, Boolean>) (Attribute a) -> {
-                  String _attributeKey = a.getAttributeKey();
-                  return Boolean.valueOf(Objects.equal(_attributeKey, "Name"));
-                }))))));
+              return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.ARGUMENT, NodeType.CLASS, NodeType.COMPILATION_UNIT, NodeType.METHOD_DECLARATION, NodeType.VARIABLE_DECLARATOR)).contains(
+                n.getStandardizedNodeType()) && (!IterableExtensions.isNullOrEmpty(IterableExtensions.<Attribute>filter(n.getAttributes(), ((Function1<Attribute, Boolean>) (Attribute a) -> {
+                String _attributeKey = a.getAttributeKey();
+                return Boolean.valueOf(Objects.equal(_attributeKey, "Name"));
+              }))))));
             };
             final Node declaration = CloneHelper.<Node>random(IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function));
             int _nextInt = new Random().nextInt(Integer.MAX_VALUE);
@@ -311,11 +311,10 @@ public class Taxonomy {
           Object _xblockexpression_1 = null;
           {
             final Function1<Node, Boolean> _function = (Node n) -> {
-              return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.ARGUMENT, NodeType.CLASS, NodeType.COMPILATION_UNIT, NodeType.EXPRESSION, NodeType.METHOD_CALL, NodeType.METHOD_DECLARATION, NodeType.VARIABLE_DECLARATOR)).contains(n.getStandardizedNodeType()) && 
-                (!IterableExtensions.isNullOrEmpty(IterableExtensions.<Attribute>filter(n.getAttributes(), ((Function1<Attribute, Boolean>) (Attribute a) -> {
-                  String _attributeKey = a.getAttributeKey();
-                  return Boolean.valueOf(Objects.equal(_attributeKey, "Name"));
-                }))))));
+              return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.ARGUMENT, NodeType.CLASS, NodeType.COMPILATION_UNIT, NodeType.EXPRESSION, NodeType.METHOD_CALL, NodeType.METHOD_DECLARATION, NodeType.VARIABLE_DECLARATOR)).contains(n.getStandardizedNodeType()) && (!IterableExtensions.isNullOrEmpty(IterableExtensions.<Attribute>filter(n.getAttributes(), ((Function1<Attribute, Boolean>) (Attribute a) -> {
+                String _attributeKey = a.getAttributeKey();
+                return Boolean.valueOf(Objects.equal(_attributeKey, "Name"));
+              }))))));
             };
             final Node ident = CloneHelper.<Node>random(IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function));
             int _nextInt = new Random().nextInt(Integer.MAX_VALUE);
@@ -345,11 +344,10 @@ public class Taxonomy {
           Object _xblockexpression_3 = null;
           {
             final Function1<Node, Boolean> _function = (Node n) -> {
-              return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.ARGUMENT, NodeType.VARIABLE_DECLARATOR)).contains(n.getStandardizedNodeType()) && 
-                (!IterableExtensions.isNullOrEmpty(IterableExtensions.<Attribute>filter(n.getAttributes(), ((Function1<Attribute, Boolean>) (Attribute a) -> {
-                  String _attributeKey = a.getAttributeKey();
-                  return Boolean.valueOf(Objects.equal(_attributeKey, "Type"));
-                }))))));
+              return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.ARGUMENT, NodeType.VARIABLE_DECLARATOR)).contains(n.getStandardizedNodeType()) && (!IterableExtensions.isNullOrEmpty(IterableExtensions.<Attribute>filter(n.getAttributes(), ((Function1<Attribute, Boolean>) (Attribute a) -> {
+                String _attributeKey = a.getAttributeKey();
+                return Boolean.valueOf(Objects.equal(_attributeKey, "Type"));
+              }))))));
             };
             final Node declaration = CloneHelper.<Node>random(IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function));
             String _random = CloneHelper.<String>random(Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList("boolean", "int", "String", "float", "Object")));
@@ -557,7 +555,8 @@ public class Taxonomy {
         case VARIABLE_DECLARATION:
         case FIELD_DECLARATION:
           final Function1<Node, Boolean> _function = (Node n) -> {
-            return Boolean.valueOf((Objects.equal(n.getStandardizedNodeType(), NodeType.EXPRESSION) && Objects.equal(this.helper.getAttributeValue(IterableExtensions.<Node>head(target.getChildren()), "Name"), this.helper.getAttributeValue(n, "Name"))));
+            return Boolean.valueOf((Objects.equal(n.getStandardizedNodeType(), NodeType.EXPRESSION) && 
+              Objects.equal(this.helper.getAttributeValue(IterableExtensions.<Node>head(target.getChildren()), "Name"), this.helper.getAttributeValue(n, "Name"))));
           };
           Iterable<Node> references = IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function);
           boolean _isEmpty = IterableExtensions.isEmpty(references);
@@ -575,7 +574,8 @@ public class Taxonomy {
           break;
         case CONSTRUCTION:
           final Function1<Node, Boolean> _function_1 = (Node n) -> {
-            return Boolean.valueOf((Objects.equal(n.getStandardizedNodeType(), NodeType.EXPRESSION) && Objects.equal(this.helper.getAttributeValue(target, "Name"), this.helper.getAttributeValue(n, "Type"))));
+            return Boolean.valueOf((Objects.equal(n.getStandardizedNodeType(), NodeType.EXPRESSION) && 
+              Objects.equal(this.helper.getAttributeValue(target, "Name"), this.helper.getAttributeValue(n, "Type"))));
           };
           Iterable<Node> calls = IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function_1);
           boolean _isEmpty_2 = IterableExtensions.isEmpty(calls);
@@ -744,7 +744,8 @@ public class Taxonomy {
   
   public Iterable<Node> getMethodDeclarationCalls(final Tree tree, final Node methodDecl) {
     final Function1<Node, Boolean> _function = (Node n) -> {
-      return Boolean.valueOf(((Objects.equal(n.getStandardizedNodeType(), NodeType.METHOD_CALL) && Objects.equal(this.helper.getAttributeValue(methodDecl, "Name"), this.helper.getAttributeValue(n, "Name"))) && (IterableExtensions.<Node>head(n.getChildren()).getChildren().size() == IterableExtensions.<Node>head(methodDecl.getChildren()).getChildren().size())));
+      return Boolean.valueOf(((Objects.equal(n.getStandardizedNodeType(), NodeType.METHOD_CALL) && 
+        Objects.equal(this.helper.getAttributeValue(methodDecl, "Name"), this.helper.getAttributeValue(n, "Name"))) && (IterableExtensions.<Node>head(n.getChildren()).getChildren().size() == IterableExtensions.<Node>head(methodDecl.getChildren()).getChildren().size())));
     };
     return IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function);
   }
@@ -778,11 +779,10 @@ public class Taxonomy {
           if (isSyntaxSafe) {
             final Function1<Node, Boolean> _function_1 = (Node n) -> {
               return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.COMPILATION_UNIT, NodeType.CLASS)).contains(n.getStandardizedNodeType()) && 
-                (!IterableExtensions.<Node>exists(n.getChildren(), 
-                  ((Function1<Node, Boolean>) (Node c) -> {
-                    return Boolean.valueOf((Objects.equal(c.getStandardizedNodeType(), source.getStandardizedNodeType()) && 
-                      Objects.equal(this.helper.getAttributeValue(c, "Name"), this.helper.getAttributeValue(source, "Name"))));
-                  })))));
+                (!IterableExtensions.<Node>exists(n.getChildren(), ((Function1<Node, Boolean>) (Node c) -> {
+                  return Boolean.valueOf((Objects.equal(c.getStandardizedNodeType(), source.getStandardizedNodeType()) && 
+                    Objects.equal(this.helper.getAttributeValue(c, "Name"), this.helper.getAttributeValue(source, "Name"))));
+                })))));
             };
             target = CloneHelper.<Node>random(IterableExtensions.<Node>filter(tree.getRoot().depthFirstSearch(), _function_1));
           } else {
@@ -869,7 +869,8 @@ public class Taxonomy {
     final TreeImpl donorTree = this.helper.deepCopy(donor.tree);
     this.helper.setTrackingTree(receiver.trackingTree);
     final Function1<Node, Boolean> _function = (Node n) -> {
-      return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.METHOD_DECLARATION)).contains(n.getStandardizedNodeType()) && this.variantHasChangesInSubtree(donor.index, receiver.index, n)));
+      return Boolean.valueOf((Collections.<NodeType>unmodifiableList(CollectionLiterals.<NodeType>newArrayList(NodeType.METHOD_DECLARATION)).contains(n.getStandardizedNodeType()) && 
+        this.variantHasChangesInSubtree(donor.index, receiver.index, n)));
     };
     final Iterable<Node> donations = IterableExtensions.<Node>filter(donorTree.getRoot().depthFirstSearch(), _function);
     final Function1<Node, Boolean> _function_1 = (Node n) -> {

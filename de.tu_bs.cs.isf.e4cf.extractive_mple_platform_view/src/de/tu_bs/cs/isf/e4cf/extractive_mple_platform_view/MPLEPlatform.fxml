@@ -16,11 +16,11 @@
    <center>
       <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
-            <SplitPane dividerPositions="0.5" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+            <SplitPane fx:id="viewContainer" dividerPositions="0.5" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" VBox.vgrow="ALWAYS">
                <items>
-                  <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                  <VBox fx:id="top" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                      <children>
-                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                        <VBox fx:id="configVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                            <children>
                               <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Variant Configurations" />
                               <TableView fx:id="configTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
@@ -45,9 +45,9 @@
                            <children>
                               <SplitPane dividerPositions="0.5" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                                  <items>
-                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                    <VBox fx:id="variantVbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                        <children>
-                                          <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Variant Artifacts" VBox.vgrow="ALWAYS" />
+                                          <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Variant Artifact Ids" VBox.vgrow="ALWAYS" />
                                           <TableView fx:id="uuidTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                                             <columns>
                                               <TableColumn fx:id="configUUIDCol" editable="false" minWidth="50.0" prefWidth="223.19999986886978" sortable="false" text="UUID" />
@@ -58,9 +58,9 @@
                                           </TableView>
                                        </children>
                                     </VBox>
-                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                    <VBox fx:id="cloneVbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                        <children>
-                                          <Label alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Clone Configurations" VBox.vgrow="ALWAYS" />
+                                          <Label fx:id="cloneConfigurations" alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Clone Configurations" VBox.vgrow="ALWAYS" />
                                           <TableView fx:id="componentConfigs" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                                              <columns>
                                                 <TableColumn fx:id="componentIDCol" editable="false" minWidth="50.0" prefWidth="243.0" text="ComponentID" />
@@ -78,7 +78,7 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="754.0">
+                  <VBox fx:id="bottom" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                      <children>
                         <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Clone Configuration Artifacts" VBox.vgrow="ALWAYS" />
                         <TableView fx:id="componentUUIDTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
@@ -97,13 +97,19 @@
       </VBox>
    </center>
    <top>
-      <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <ToolBar prefHeight="40.0" BorderPane.alignment="CENTER">
         <items>
-          <Button mnemonicParsing="false" onAction="#showPlatform" text="Show Platform" />
-            <Button mnemonicParsing="false" onAction="#printDetails" text="Print Details" />
             <Button layoutX="192.0" layoutY="12.0" mnemonicParsing="false" onAction="#addVariant" text="Add Variant" />
             <Button mnemonicParsing="false" onAction="#locateFeatures" text="Locate Features" />
         </items>
       </ToolBar>
    </top>
+   <bottom>
+      <ToolBar prefHeight="40.0" BorderPane.alignment="CENTER">
+         <items>
+          <Button mnemonicParsing="false" onAction="#showPlatform" text="Show Platform" />
+            <Button mnemonicParsing="false" onAction="#printDetails" text="Print Details" />
+         </items>
+      </ToolBar>
+   </bottom>
 </BorderPane>

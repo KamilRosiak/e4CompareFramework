@@ -25,7 +25,7 @@ import com.opencsv.CSVWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.TreeWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -106,7 +106,7 @@ public class CreateMPLEEvalHandler {
 
 	private void storePlatformTree(MPLPlatform platform, IEclipseContext context, String name,
 			ServiceContainer services) {
-		TreeWritter treeWriter = new TreeWritter();
+		TreeWriter treeWriter = new TreeWriter();
 		ContextInjectionFactory.inject(treeWriter, context);
 		treeWriter.witeArtifact(new TreeImpl(name, platform.model),
 				services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + name);

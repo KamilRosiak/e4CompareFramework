@@ -14,9 +14,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import org.eclipse.e4.core.di.annotations.Creatable
 
-import static de.tu_bs.cs.isf.e4cf.compare.data_structures.util.DSValidator.checkSyntax
-
 import static extension de.tu_bs.cs.isf.e4cf.evaluation.generator.CloneHelper.random
+import static de.tu_bs.cs.isf.e4cf.compare.data_structures.util.DSValidator.checkSyntax
 
 @Singleton
 @Creatable
@@ -88,7 +87,6 @@ class CloneGenerator {
 					val numModifications = Math.ceil(currentTree.root.depthFirstSearch.size /
 						(nodeToSourceFactor * modToLineFactor)) * options.variantChangeDegree
 					for (var mod = 1; mod <= numModifications; mod++) {
-
 						// Determine Type
 						if (new Random().nextInt(100) < options.modificationRatioPercentage) {
 							// Type II Modification
@@ -97,15 +95,12 @@ class CloneGenerator {
 							// Type III Modification
 							taxonomy.performType3Modification(currentTree, options.isSyntaxSafe)
 						}
-
 					}
-
 					// Sanity Check
 					val isVariantSyntaxCorrect = checkSyntax(currentTree.root)
 					if (printLogs) {
 						println("  Sanity Syntax Check: " + isVariantSyntaxCorrect)
 					}
-
 					logger.logRaw(CloneST.SYNTAX_CORRECT_FLAG + isVariantSyntaxCorrect)
 
 					// Store Variant
@@ -176,7 +171,7 @@ class CloneGenerator {
 	/** Saves tree strings to json file and log */
 	def private void save(List<Variant> variants) {
 		// Set the logger export project
-		logger.projectFolderName = " 02 Trees"
+		logger.projectFolderName = "02 Trees"
 
 		val selectedPath = logger.getOutPutDirBasedOnSelection() !== null
 				? logger.getOutPutDirBasedOnSelection()

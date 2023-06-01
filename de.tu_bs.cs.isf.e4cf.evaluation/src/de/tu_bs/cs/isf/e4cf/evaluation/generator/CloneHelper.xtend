@@ -387,6 +387,8 @@ class CloneHelper {
 			return node.getAttributeForKey(attributeKey).attributeValues.head.value as String
 		} catch (NoSuchElementException e) {
 			return null
+		} catch (NullPointerException e) {
+			return null
 		}
 	}
 	

@@ -201,7 +201,7 @@ public class CloneGenerator {
    * Saves tree strings to json file and log
    */
   private void save(final List<CloneGenerator.Variant> variants) {
-    this.logger.projectFolderName = " 02 Trees";
+    this.logger.projectFolderName = "02 Trees";
     Path _xifexpression = null;
     Path _outPutDirBasedOnSelection = this.logger.getOutPutDirBasedOnSelection();
     boolean _tripleNotEquals = (_outPutDirBasedOnSelection != null);

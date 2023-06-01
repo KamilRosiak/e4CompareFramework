@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -25,8 +28,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.TreeWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
@@ -37,8 +41,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 
 /**
  * 
@@ -70,6 +79,12 @@ public class MPLEPlatformController implements Initializable {
 	 */
 	@FXML
 	TableView<UUID> componentUUIDTable;
+
+	@FXML
+	SplitPane viewContainer;
+
+	@FXML
+	VBox configVbox, variantVbox, top, bottom;
 
 	@FXML
 	TableColumn<UUID, String> configUUIDCol, componentUUIDCol;
@@ -173,27 +188,27 @@ public class MPLEPlatformController implements Initializable {
 	 * Recovers the variant for the given configuration
 	 */
 	private Node configureVariant(Configuration selectedConfig, Node node) {
-		if (selectedConfig.getUUIDs().contains(node.getUUID())) {
-			node.setVariabilityClass(VariabilityClass.MANDATORY);
-			List<Attribute> attributeToRemove = new ArrayList<Attribute>();
-			// Configure Attributes
-			node.getAttributes().forEach(attribute -> {
-				if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
-					List<Value<?>> valuestoRemove = new ArrayList<>();
-					// Configure Values
-					attribute.getAttributeValues().forEach(value -> {
-						if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
-							valuestoRemove.add(value);
-						}
-					});
-					attribute.getAttributeValues().removeAll(valuestoRemove);
-
-				} else {
-					attributeToRemove.add(attribute);
-				}
-			});
-			node.getAttributes().removeAll(attributeToRemove);
-		}
+		if (selectedConfig != null)
+			if (selectedConfig.getUUIDs().contains(node.getUUID())) {
+				node.setVariabilityClass(VariabilityClass.MANDATORY);
+				List<Attribute> attributeToRemove = new ArrayList<Attribute>();
+				// Configure Attributes
+				node.getAttributes().forEach(attribute -> {
+					if (selectedConfig.getUUIDs().contains(attribute.getUUID())) {
+						List<Value> valuestoRemove = new ArrayList<Value>();
+						// Configure Values
+						attribute.getAttributeValues().forEach(value -> {
+							if (!selectedConfig.getUUIDs().contains(value.getUUID())) {
+								valuestoRemove.add(value);
+							}
+						});
+						attribute.getAttributeValues().removeAll(valuestoRemove);
+					} else {
+						attributeToRemove.add(attribute);
+					}
+				});
+				node.getAttributes().removeAll(attributeToRemove);
+			}
 		configureVariantRecursivly(selectedConfig, node);
 
 		return node;
@@ -258,7 +273,7 @@ public class MPLEPlatformController implements Initializable {
 			Configuration selectedConfig = config;
 			node = configureVariant(selectedConfig, node);
 			Tree variantTree = new TreeImpl(selectedConfig.getName(), node);
-			TreeWritter writter = new TreeWritter();
+			TreeWriter writter = new TreeWriter();
 			ContextInjectionFactory.inject(writter, context);
 			writter.writeArtifact(variantTree, services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
 					+ "\\" + selectedConfig.getName());
@@ -275,8 +290,18 @@ public class MPLEPlatformController implements Initializable {
 
 	@FXML
 	private void addVariant() {
-		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
+		FileChooser fc = new FileChooser();
+		fc.setSelectedExtensionFilter(new ExtensionFilter("tree", "*.tree"));
+		fc.setInitialDirectory(new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toString()));
+
+		List<File> files = fc.showOpenMultipleDialog(new Stage());
+		if (files != null) {
+			List<FileTreeElement> ftes = files.stream()
+					.map(file -> new de.tu_bs.cs.isf.e4cf.core.file_structure.components.File(file.getAbsolutePath()))
+					.collect(Collectors.toList());
+
 			ReaderManager reader = new ReaderManager();
+
 			Tree newVariant = reader.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
 			MPLPlatform newPlatform = new MPLPlatform(currentPlatform);
 			newPlatform.insertVariant(newVariant);
@@ -287,7 +312,18 @@ public class MPLEPlatformController implements Initializable {
 			showPlatform();
 			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, newPlatform);
 			showMPL(newPlatform);
+
 		}
+		/**
+		 * if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() >
+		 * 0) { ReaderManager reader = new ReaderManager();
+		 * services.rcpSelectionService.getCurrentSelectionsFromExplorer().stream().map(reader::readFile)
+		 * .forEach(currentPlatform::insertVariant); MPLEPlatformUtil.storePlatform(
+		 * services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+		 * + "clone_model1.mpl", currentPlatform); showPlatform();
+		 * services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL,
+		 * currentPlatform); }
+		 **/
 	}
 
 	@FXML
@@ -337,14 +373,27 @@ public class MPLEPlatformController implements Initializable {
 	@Optional
 	@Inject
 	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
-		if (currentPlatform == null || !currentPlatform.equals(platform)) {
+  	if (currentPlatform == null || !currentPlatform.equals(platform)) {
+		try {
 			currentPlatform = platform;
+			/**
+			 * view switch boolean hasClones = false;
+			 * 
+			 * for (Configuration config : platform.configurations) { if
+			 * (!config.getCloneConfigurations().isEmpty()) { hasClones = true; break; } }
+			 * if (!hasClones) { viewContainer.getItems().remove(top);
+			 * viewContainer.getItems().remove(bottom);
+			 * viewContainer.getItems().add(configVbox);
+			 * viewContainer.getItems().add(variantVbox); }
+			 **/
 			showConfigurations();
 			if (platform.getFeatureModel().isPresent()) {
 				services.partService.showPart(MPLEEditorConsts.SYNTHESIS_PLUGIN);
 				services.eventBroker.post(MPLEEditorConsts.SHOW_FEATURES, platform);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+    }
 	}
-
 }

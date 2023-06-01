@@ -28,11 +28,16 @@ public class OpenInTreeViewHandler {
 	 */
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager) {
-		Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
-		if (tree != null) {
-			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
-			services.eventBroker.send(MPLEEditorConsts.SHOW_TREE, tree);
+		try {
+			Tree tree = readerManager.readFile(services.rcpSelectionService.getCurrentSelectionFromExplorer());
+			if (tree != null) {
+				services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
+				services.eventBroker.send(MPLEEditorConsts.SHOW_TREE, tree);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
 	}
 
 	/**

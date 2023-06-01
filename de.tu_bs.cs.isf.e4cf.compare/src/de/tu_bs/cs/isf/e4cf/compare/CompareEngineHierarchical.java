@@ -12,7 +12,6 @@ import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -36,6 +35,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	private StringComparator defaultComparator = new StringComparator();
 	private Metric metric;
 	private Matcher matcher;
+	private List<Configuration> configList = new ArrayList<Configuration>();
 
 	public CompareEngineHierarchical(Matcher selectedMatcher, Metric selectedMetric) {
 		this.metric = selectedMetric;
@@ -51,7 +51,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root
 				.findOptionalMatchings();
 
-		Node rootNode = root.mergeArtifacts(new ArrayList<Configuration>(), new ArrayList<CloneConfiguration>(),
+		Node rootNode = root.mergeArtifacts(configList, new ArrayList<CloneConfiguration>(),
 				new ArrayList<CloneConfiguration>());
 
 		return rootNode;
@@ -127,6 +127,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 
 	@Override
 	public Tree compare(List<Tree> variants) {
+		configList.clear();
 		Iterator<Tree> variantIterator = variants.iterator();
 		Tree mergedTree = null;
 		for (Tree variant : variants) {
@@ -138,6 +139,14 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			}
 		}
 		return mergedTree;
+	}
+
+	public List<Configuration> getConfigList() {
+		return configList;
+	}
+
+	public void setConfigList(List<Configuration> configList) {
+		this.configList = configList;
 	}
 
 	@Override

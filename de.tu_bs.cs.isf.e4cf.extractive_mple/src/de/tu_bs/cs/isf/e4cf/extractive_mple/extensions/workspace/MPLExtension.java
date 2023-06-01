@@ -13,7 +13,6 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewFiles;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 
 public class MPLExtension implements IProjectExplorerExtension {

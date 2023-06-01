@@ -10,7 +10,6 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.model.application.ui.advanced.MPlaceholder;
 
 import de.tu_bs.cs.isf.e4cf.compare.CompareEngineHierarchical;
 import de.tu_bs.cs.isf.e4cf.compare.compare_engine_view.string_table.CompareFiles;
@@ -27,10 +26,13 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -51,6 +53,8 @@ public class CompareEngineView implements Initializable {
 	@FXML
 	private ComboBox<Matcher> matcherCombo;
 
+	@FXML
+	private RadioButton twodimRadio, weightedRadio;
 	@Inject
 	ServiceContainer services;
 
@@ -77,17 +81,33 @@ public class CompareEngineView implements Initializable {
 	@FXML
 	public void compareArtifacts() {
 		try {
-			CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(), getSelectedMetric());
-			List<Tree> artifacts = artifactTable.getItems();
-
-			if (artifacts.size() > 1) {
-				Tree mergedTree = engine.compare(artifacts);
-				services.eventBroker.send(MPLEEditorConsts.SHOW_TREE, mergedTree);
-				// JavaWriter writer = new JavaWriter();
-				// writer.writeArtifact(mergedTree,
-				// services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-				// + "/" + mergedTree.getTreeName());
+			
+			List<Tree> variants = artifactTable.getItems();
+			
+		
+			MPLPlatform platform = new MPLPlatform();
+			// if spl compare is active
+		
+			if (!twodimRadio.isSelected()) {
+				CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(),
+						getSelectedMetric());
+				platform = new MPLPlatform(engine, false);
 			}
+			
+			platform.insertVariants(variants);
+
+			String path = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+					+ "clone_model.mpl";
+			// if spl compare is active
+			if (!twodimRadio.isSelected()) {
+				path = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+						+ "clone_model.spl";
+			}
+
+			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
+			services.partService.showPart(MPLEEditorConsts.PLATFORM_VIEW);
+			services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, platform);
+			MPLEPlatformUtil.storePlatform(path, platform);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

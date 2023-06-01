@@ -1,6 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.core.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -40,12 +41,12 @@ public class RCPContentProvider {
 	 */
 	public static <T> List<T> getInstanceFromBundle(String point, String extensionID) {
 		List<T> objects = new ArrayList<T>();
-		for (IConfigurationElement config : getIConfigurationElements(point)) {
+		List<IConfigurationElement> elements = Arrays.asList(getIConfigurationElements(point));
+		for (IConfigurationElement config : elements) {
 			try {
 				objects.add((T) config.createExecutableExtension(extensionID));
 			} catch (CoreException e) {
 				e.printStackTrace();
-				return null;
 			}
 		}
 		return objects;

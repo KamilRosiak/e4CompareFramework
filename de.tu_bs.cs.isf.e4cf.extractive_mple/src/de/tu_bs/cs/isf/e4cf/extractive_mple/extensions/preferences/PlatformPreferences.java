@@ -4,6 +4,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 
 public class PlatformPreferences {
 	// public static NodeType GRANULARITY_LEVEL = NodeType.COMPILATION_UNIT;
-	public static NodeType GRANULARITY_LEVEL = NodeType.METHOD_DECLARATION;
+	public static NodeType GRANULARITY_LEVEL = NodeType.COMPILATION_UNIT;
 	public static float COMPONENT_THRESHOLD = 0.80f;
 }
