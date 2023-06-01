@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,6 +17,9 @@ import java.util.Set;
 
 import javax.inject.Singleton;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.google.common.collect.Lists;
@@ -40,14 +45,23 @@ public class ClusterEngine {
 	public static float THRESHOLD = 0.20f;
 	public static boolean PYTHON = false;
 
+	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.refactoring.data_structures";
+	private static final String CLUSTER_EXE = Platform.getBundle(BUNDLE_NAME).getDataFile("clustering_sklearn.exe")
+			.getPath();
+	private static final String CLUSTER_PY = Platform.getBundle(BUNDLE_NAME).getDataFile("clustering_sklearn.py")
+			.getPath();
+
 	public ClusterEngine() {
 		try {
+
 			compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
-			scriptPathExe = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-					+ "script/clustering_sklearn.exe").substring(1)).getPath();
-			scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-					+ "script/clustering_sklearn.py").substring(1)).getPath();
+
+			scriptPathExe = FileLocator.resolve(FileLocator.find(Platform.getBundle(BUNDLE_NAME),
+					new Path("script/clustering_sklearn.exe"), Collections.EMPTY_MAP)).getPath();
+			scriptPathPython = FileLocator.resolve(FileLocator.find(Platform.getBundle(BUNDLE_NAME),
+					new Path("script/clustering_sklearn.py"), Collections.EMPTY_MAP)).getPath();
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println("no clustering available");
 		}
 

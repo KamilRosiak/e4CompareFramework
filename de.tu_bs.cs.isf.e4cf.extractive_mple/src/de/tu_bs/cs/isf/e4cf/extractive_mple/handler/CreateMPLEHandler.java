@@ -1,19 +1,11 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.handler;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
-
-import com.opencsv.CSVWriter;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
@@ -27,50 +19,25 @@ public class CreateMPLEHandler {
 
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, IEclipseContext context) {
-		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
-
-			MPLPlatform platform = new MPLPlatform();
-			List<Tree> variants = new ArrayList<Tree>();
-			// read all variants
-			for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
-				variants.add(readerManager.readFile(treeElement));
-			}
-
-			platform.insertVariants(variants);
-
-			MPLEPlatformUtil.storePlatform(
-					services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + "clone_model.mpl",
-					platform);
-		}
-	}
-
-
-	public static void removeRandomVariants(List<Tree> trees) {
-		Random r = new Random();
-		int times = r.nextInt(trees.size() - 1) + 1;
-
-		for (int i = 0; i < times; i++) {
-			int randomIndex = r.nextInt(trees.size() - 1) + 1;
-			trees.remove(randomIndex);
-		}
-	}
-
-	/**
-	 * Create a UTF8 CSV Writer with semicolon as separation symbol
-	 */
-	public static CSVWriter creatCSVWriter(File file) {
-		CSVWriter writer = null;
 		try {
-			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file),
-					StandardCharsets.UTF_8);
-			writer = new CSVWriter(outputStreamWriter, ';', '"', '/', "\n");
-		} catch (IOException e) {
-			e.printStackTrace();
+			if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
+
+				MPLPlatform platform = new MPLPlatform();
+				List<Tree> variants = new ArrayList<Tree>();
+				// read all variants
+				for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
+					variants.add(readerManager.readFile(treeElement));
+				}
+
+				platform.insertVariants(variants);
+
+				MPLEPlatformUtil.storePlatform(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+						+ "//" + "clone_model.mpl", platform);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		return writer;
 	}
-
-
 
 	/**
 	 * This method checks if a artifact reader is available for this view
