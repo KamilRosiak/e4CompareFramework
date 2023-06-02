@@ -52,6 +52,7 @@ public class MPLEEditorConsts {
 	public static final String ADD_VARIANT_TO_MPL = "ADD_VARIANT_TO_MPL";
 	public static final String SYNTHESIS_PLUGIN = "de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view";
 	public static final String SELECT_NEXT = "SELECT_NEXT";
+	public static final String COLORS_CHANGED = "COLORS_CHANGED";
 	
 	
 }

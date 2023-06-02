@@ -221,5 +221,4 @@ public class FMEditorPaneView extends BorderPane {
 		this.rootPane.getChildren().removeAll(feature.childConnections.values());
 		feature.getChildFeatures().forEach(child -> remove(child));
 	}
-
 }

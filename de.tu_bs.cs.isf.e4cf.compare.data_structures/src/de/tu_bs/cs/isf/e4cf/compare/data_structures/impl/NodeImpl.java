@@ -122,5 +122,4 @@ public class NodeImpl extends AbstractNode {
 		this.addAttribute(new AttributeImpl(attributeKey, new StringValueImpl(value)));
 
 	}
-
 }

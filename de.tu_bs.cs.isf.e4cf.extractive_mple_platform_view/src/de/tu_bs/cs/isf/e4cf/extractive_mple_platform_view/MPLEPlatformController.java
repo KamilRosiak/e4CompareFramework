@@ -31,6 +31,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.TreeWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
+import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
@@ -40,11 +41,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -307,7 +310,8 @@ public class MPLEPlatformController implements Initializable {
 			newPlatform.insertVariant(newVariant);
 			String fileName = currentPlatform.fileName + "-" + newVariant.getTreeName();
 			newPlatform.fileName = fileName;
-			fileName = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + fileName + ".mpl";
+			fileName = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + fileName
+					+ ".mpl";
 			MPLEPlatformUtil.storePlatform(fileName, newPlatform);
 			showPlatform();
 			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, newPlatform);
@@ -324,6 +328,17 @@ public class MPLEPlatformController implements Initializable {
 		 * services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL,
 		 * currentPlatform); }
 		 **/
+	}
+
+	@FXML
+	private void storeCurrentPlatform() {
+		if (currentPlatform.location.equals("")) {
+			String name = RCPMessageProvider.inputDialog("Platform View", "Enter Name for Current Platform.");
+			currentPlatform.location = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+					+ name + ".mpl";
+		}
+
+		MPLEPlatformUtil.storePlatform(currentPlatform.location, currentPlatform);
 	}
 
 	@FXML
@@ -373,27 +388,27 @@ public class MPLEPlatformController implements Initializable {
 	@Optional
 	@Inject
 	public void showMPL(@UIEventTopic(MPLEEditorConsts.SHOW_MPL) MPLPlatform platform) {
-  	if (currentPlatform == null || !currentPlatform.equals(platform)) {
-		try {
-			currentPlatform = platform;
-			/**
-			 * view switch boolean hasClones = false;
-			 * 
-			 * for (Configuration config : platform.configurations) { if
-			 * (!config.getCloneConfigurations().isEmpty()) { hasClones = true; break; } }
-			 * if (!hasClones) { viewContainer.getItems().remove(top);
-			 * viewContainer.getItems().remove(bottom);
-			 * viewContainer.getItems().add(configVbox);
-			 * viewContainer.getItems().add(variantVbox); }
-			 **/
-			showConfigurations();
-			if (platform.getFeatureModel().isPresent()) {
-				services.partService.showPart(MPLEEditorConsts.SYNTHESIS_PLUGIN);
-				services.eventBroker.post(MPLEEditorConsts.SHOW_FEATURES, platform);
+		if (currentPlatform == null || !currentPlatform.equals(platform)) {
+			try {
+				currentPlatform = platform;
+				/**
+				 * view switch boolean hasClones = false;
+				 * 
+				 * for (Configuration config : platform.configurations) { if
+				 * (!config.getCloneConfigurations().isEmpty()) { hasClones = true; break; } }
+				 * if (!hasClones) { viewContainer.getItems().remove(top);
+				 * viewContainer.getItems().remove(bottom);
+				 * viewContainer.getItems().add(configVbox);
+				 * viewContainer.getItems().add(variantVbox); }
+				 **/
+				showConfigurations();
+				if (platform.getFeatureModel().isPresent()) {
+					services.partService.showPart(MPLEEditorConsts.SYNTHESIS_PLUGIN);
+					services.eventBroker.post(MPLEEditorConsts.SHOW_FEATURES, platform);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-    }
 	}
 }

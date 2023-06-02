@@ -1,7 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view;
 
 import java.net.URL;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -10,6 +10,7 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
@@ -27,6 +28,7 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.manager.DecorationManage
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities.TreeItemSelector;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities.TreeViewUtilities;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.utilities.widgets.color_picker.FeatureSelectionDialog;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
@@ -72,11 +74,10 @@ public class MPLEditorController implements Initializable {
 	private MPLPlatform currentPlatform;
 	private Configuration currentConfiguration;
 	private TreeItemSelector selector;
-	
+
 	@FXML
 	public void fxMoveArtifacts(ActionEvent e) {
 		List<TreeItem<Node>> selectedNodes = this.treeView.getSelectionModel().getSelectedItems();
-		System.out.println(selectedNodes.size());
 	}
 
 	/**
@@ -93,11 +94,10 @@ public class MPLEditorController implements Initializable {
 		// load decorator and select the first
 		decoratorCombo.setItems(FXCollections.observableArrayList(decoManager.getDecoraterFromExtension()));
 		decoratorCombo.getSelectionModel().select(0);
-		
-		if (platform.getFeatureModel() != null && platform.getFeatureModel().isPresent()) {
-			this.displayFeatures(platform.getFeatureModel().get());
-		}
 
+		if (platform.getFeatureModel() != null && platform.getFeatureModel().isPresent()) {
+			this.displayFeatures(platform.getFeatureModel().get().getAllFeatures());
+		}
 	}
 
 	/**
@@ -116,22 +116,23 @@ public class MPLEditorController implements Initializable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Optional
 	@Inject
 	public void selectNextOccurrence(@UIEventTopic(MPLEEditorConsts.SELECT_NEXT) IFeature feature) {
 		selector.selectNextTreeItem(feature.getArtifactUUIDs());
 	}
 
-	
-	
-	
-	
-	
-	private void displayFeatures(FeatureDiagram diagram) {
-		Set<IFeature> features = diagram.getAllFeatures();
+	@Optional
+	@Inject
+	public void selectNextOccurrence(@UIEventTopic(MPLEEditorConsts.COLORS_CHANGED) Set<IFeature> features) {
+		displayFeatures(features);
+	}
+
+	private void displayFeatures(Set<IFeature> features) {
 		final Function<Node, TreeItem<Node>> coloredTreeCreator = node -> {
 			ColoredTreeItem item = new ColoredTreeItem(node, Color.WHITE);
+			ContextInjectionFactory.inject(item, services.context);
 			for (IFeature feature : features) {
 				if (feature.getArtifactUUIDs().contains(node.getUUID())) {
 					item.setColor(feature.getColor().orElseGet(() -> Color.WHITE));
@@ -139,11 +140,11 @@ public class MPLEditorController implements Initializable {
 			}
 			return item;
 		};
-
 		TreeItem<Node> root = TreeViewUtilities.createTreeItems(treeView.getRoot().getValue(), coloredTreeCreator);
 		TreeViewUtilities.decorateTree(root, new FamilyModelNodeDecorator());
 		this.setTree(root);
 		TreeViewUtilities.decorateTree(root, new ExpandAllDecorator());
+		treeView.refresh();
 	}
 
 	@Optional
@@ -198,7 +199,7 @@ public class MPLEditorController implements Initializable {
 				if (config.getUUIDs().contains(p.getValue().getValue().getUUID())) {
 					configString.append((i + 1) + " ");
 				} else {
-					int space = (i+1)/10 * 2 + 3;
+					int space = (i + 1) / 10 * 2 + 3;
 					for (int j = 0; j < space; j++) {
 						configString.append(" ");
 					}
@@ -280,6 +281,67 @@ public class MPLEditorController implements Initializable {
 		});
 
 		addListeners();
+	}
+
+	@FXML
+	private void changeColor() {
+		FeatureSelectionDialog dialog = new FeatureSelectionDialog(
+				currentPlatform.getFeatureModel().get().getAllFeatures());
+		IFeature selectedFeature = dialog.getSelectedFeature();
+
+		treeView.getSelectionModel().getSelectedItems().forEach(treeItem -> {
+			try {
+				if (treeItem instanceof ColoredTreeItem) {
+					ColoredTreeItem cti = (ColoredTreeItem) treeItem;
+					for (IFeature feature : currentPlatform.getFeatureModel().get().getAllFeatures()) {
+						if (feature.getColor().get().equals(cti.getColor())) {
+							feature.getArtifactUUIDs().removeAll(treeItem.getValue().getUUIDsForNode());
+							break;
+						}
+					}
+
+					cti.setColor(selectedFeature.getColor().get());
+					selectedFeature.getArtifactUUIDs().addAll(treeItem.getValue().getUUIDsForNode());
+				}
+			} catch (Exception e) {
+			}
+		});
+		treeView.refresh();
+	}
+
+	@FXML
+	private void changeColorsWithChildren() {
+		FeatureSelectionDialog dialog = new FeatureSelectionDialog(
+				currentPlatform.getFeatureModel().get().getAllFeatures());
+		IFeature selectedFeature = dialog.getSelectedFeature();
+
+		treeView.getSelectionModel().getSelectedItems().forEach(treeItem -> {
+			try {
+				if (treeItem instanceof ColoredTreeItem) {
+					ColoredTreeItem cti = (ColoredTreeItem) treeItem;
+					for (IFeature feature : currentPlatform.getFeatureModel().get().getAllFeatures()) {
+						if (feature.getColor().get().equals(cti.getColor())) {
+							feature.getArtifactUUIDs().removeAll(treeItem.getValue().getAllUUIDS());
+							break;
+						}
+					}
+					colorChildRecursivly(treeItem, selectedFeature.getColor().get());
+					selectedFeature.getArtifactUUIDs().addAll(treeItem.getValue().getAllUUIDS());
+				}
+			} catch (Exception e) {
+			}
+		});
+		treeView.refresh();
+	}
+
+	private void colorChildRecursivly(TreeItem<Node> child2, Color color) {
+		if (child2 instanceof ColoredTreeItem) {
+			((ColoredTreeItem) child2).setColor(color);
+		}
+
+		child2.getChildren().forEach(child -> {
+			colorChildRecursivly(child, color);
+		});
 	}
 
 	/**

@@ -6,6 +6,8 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TreeTableColumn?>
 <?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -34,7 +36,22 @@
                <contextMenu>
                   <ContextMenu>
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#fxMoveArtifacts" text="Move to Feature" />
+                      <MenuItem mnemonicParsing="false" onAction="#changeColor" text="Change Annotations">
+                           <graphic>
+                              <ImageView fitHeight="150.0" fitWidth="24" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../icons/color_24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
+                      <MenuItem mnemonicParsing="false" onAction="#changeColorsWithChildren" text="Change Annotations With Children">
+                           <graphic>
+                              <ImageView fitHeight="150.0" fitWidth="24" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../icons/color_24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
                     </items>
                   </ContextMenu>
                </contextMenu></TreeTableView>

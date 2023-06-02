@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -44,14 +45,17 @@ public class TabController {
 		this.services = services;
 		EventBroker.set(services);
 		this.errorListeners = new ArrayList<>();
-		
 		Map<String, MenuItem> menuItems = getMenuItems();
 		Consumer<Widget> contextMenuTarget = ui -> menuService.registerContextMenu(ui, FDStringTable.FD_TAB_VIEW_CONTEXT_MENU_ID);
 		this.view = new TabView(parent, menuItems, contextMenuTarget);
 		
 		// create initial tab
 		this.createTab(FDStringTable.FD_DEFAULT_FM_NAME);
+			
 	}
+	
+	
+	
 	
 	private Map<String, MenuItem> getMenuItems() {
 		Map<String, MenuItem> menuItems = new HashMap<>();

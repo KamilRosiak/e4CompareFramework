@@ -109,6 +109,7 @@
          <items>
           <Button mnemonicParsing="false" onAction="#showPlatform" text="Show Platform" />
             <Button mnemonicParsing="false" onAction="#printDetails" text="Print Details" />
+            <Button mnemonicParsing="false" onAction="#storeCurrentPlatform" text="Save Platform" />
          </items>
       </ToolBar>
    </bottom>

@@ -38,7 +38,7 @@ public class SPLExtension implements IProjectExplorerExtension {
 			}
 			
 			MPLPlatform platform = MPLEPlatformUtil.loadPlatform(new File(selectedFileElement.getAbsolutePath()));
-			
+			platform.location = selectedFileElement.getAbsolutePath();
 			// send load event
 			container.partService.showPart(MPLEEditorConsts.PLATFORM_VIEW);
 			container.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);

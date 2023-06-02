@@ -2,10 +2,14 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view;
 
 import java.util.function.Consumer;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.di.annotations.Evaluate;
+
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.EventBroker;
 import javafx.scene.control.Tab;
 
 /**
@@ -22,11 +26,11 @@ public class FMEditorView {
 		this.editorPane = editorPane;
 		uiConsumer.accept(this.editorPane.ui());
 	}
-	
+
 	public FMEditorView(Tab tab) {
 		tab.setContent(this.editorPane.ui());
 	}
-	
+
 	public void displayFeatureDiagram(FeatureDiagram diagram) {
 		FXGraphicalFeature root = buildFXGrapicalDiagram(diagram.getRoot());
 		root.parentFeatureProperty.addListener((obs, oldVal, newVal) -> {
@@ -35,9 +39,10 @@ public class FMEditorView {
 		});
 		editorPane.displayFeatureDiagram(root);
 	}
-		
+
 	private FXGraphicalFeature buildFXGrapicalDiagram(IFeature feature) {
 		FXGraphicalFeature fxRoot = new FXGraphicalFeature(feature);
+		ContextInjectionFactory.inject(fxRoot, EventBroker.getServices().context);
 		for (IFeature child : feature.getChildren()) {
 			FXGraphicalFeature fxChild = buildFXGrapicalDiagram(child);
 			fxRoot.getChildFeatures().add(fxChild);
@@ -45,7 +50,7 @@ public class FMEditorView {
 		}
 		return fxRoot;
 	}
-	
+
 //	
 //
 //	/**
@@ -122,7 +127,7 @@ public class FMEditorView {
 //	}
 //	
 //	
-	
+
 //
 //	/**
 //	 * This method adds a feature to FeatureModelEditor to given coordinates.

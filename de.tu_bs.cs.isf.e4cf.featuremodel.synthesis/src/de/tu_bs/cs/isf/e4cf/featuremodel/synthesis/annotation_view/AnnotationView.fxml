@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" stylesheets="res/style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.AnnotationViewController">
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" stylesheets="res/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.AnnotationViewController">
    <center>
       <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
          <children>
@@ -25,13 +29,65 @@
                <contextMenu>
                   <ContextMenu fx:id="annotationTableContextMenu">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#fxSetRoot" text="Set Root" />
-                      <MenuItem mnemonicParsing="false" onAction="#fxAddAbstractCluster" text="Add abstract Cluster" />
+                      <MenuItem mnemonicParsing="false" onAction="#selectColor" text="Select Color">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../../res/color_24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
+                      <MenuItem mnemonicParsing="false" onAction="#fxSetRoot" text="Set Root">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../../res/root_24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
                       <SeparatorMenuItem mnemonicParsing="false" />
-                      <MenuItem mnemonicParsing="false" onAction="#proposeFeatureName" text="Propose Feature Name" />
-                      <MenuItem mnemonicParsing="false" onAction="#selectNext" text="Next Occurrence" />
+                      <MenuItem mnemonicParsing="false" onAction="#fxAddAbstractCluster" text="Add abstract Feature">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../../res/abstract_24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
+                      <MenuItem mnemonicParsing="false" onAction="#mergeFeature" text="Merge Feature">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../../res/merge_24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
                       <SeparatorMenuItem mnemonicParsing="false" />
-                      <MenuItem mnemonicParsing="false" onAction="#synthesizeFeatureModel" text="Synthesize FM" />
+                      <MenuItem mnemonicParsing="false" onAction="#proposeFeatureName" text="Propose Feature Name">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../../res/identify_24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
+                      <MenuItem mnemonicParsing="false" onAction="#selectNext" text="Next Occurrence">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../../res/next_244.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
+                      <SeparatorMenuItem mnemonicParsing="false" />
+                      <MenuItem mnemonicParsing="false" onAction="#synthesizeFeatureModel" text="Synthesize FM">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../../../../../res/synthesis_24.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></MenuItem>
                     </items>
                   </ContextMenu>
                </contextMenu>
@@ -39,4 +95,11 @@
          </children>
       </AnchorPane>
    </center>
+   <top>
+      <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="40.0" BorderPane.alignment="CENTER">
+        <items>
+          <Button mnemonicParsing="false" onAction="#synthesizeFeatureModel" text="Synthesis Feature Model" />
+        </items>
+      </ToolBar>
+   </top>
 </BorderPane>

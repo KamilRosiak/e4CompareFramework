@@ -25,7 +25,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.GroupVariability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view.Cluster;
-import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.util.ColorPicker;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.util.ColorPickerUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.util.FeatureUtil;
 import javafx.scene.paint.Color;
 
@@ -91,7 +91,7 @@ public class FeatureLocator {
 		// cluster uuids into atomic sets
 		List<SyntaxGroup> atomicSets = new ArrayList<>();
 		int k = 0;
-		List<Color> palette = ColorPicker.generatePalette(sortedVariantCombos.size());
+		List<Color> palette = ColorPickerUtil.generatePalette(sortedVariantCombos.size());
 		for (String combo : sortedVariantCombos) { // iterate by decreasing combo length == number of variants in combination
 			// get uuids of the combination of variants
 			Set<UUID> uuidsOfVariantCombo = variantComboToUUIDs.remove(combo);

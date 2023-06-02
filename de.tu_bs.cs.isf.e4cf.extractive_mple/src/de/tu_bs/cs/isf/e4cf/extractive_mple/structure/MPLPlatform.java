@@ -19,10 +19,12 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurat
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
+import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences.PlatformPreferences;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
@@ -42,20 +44,20 @@ public class MPLPlatform implements Serializable {
 	public CompareEngineHierarchical compareEngine = new CompareEngineHierarchical(matcher, new MetricImpl("MPLE"));
 	public Configuration currrentConfiguration;
 	private FeatureDiagram featureDiagram = null;
+	public String location = "";
 
-	
-	/** 
+	/**
 	 * File name of the mpl without the extension (.mpl)
 	 */
 	public String fileName;
 	private boolean isMulti = true;
 	int configCount = 0;
 	int componentCount = 0;
-	
+
 	public MPLPlatform() {
-		
+
 	}
-	
+
 	public MPLPlatform(MPLPlatform platform) {
 		this.name = platform.name;
 		this.configurations = new ArrayList<>(platform.configurations);
@@ -68,14 +70,13 @@ public class MPLPlatform implements Serializable {
 		}
 		this.configCount = platform.configCount;
 		this.componentCount = platform.componentCount;
-		
+
 	}
 
 	public MPLPlatform(CompareEngineHierarchical compareEngine, boolean isMulti) {
 		this.isMulti = isMulti;
 		this.compareEngine = compareEngine;
 	}
-
 
 	public Optional<FeatureDiagram> getFeatureModel() {
 		if (this.featureDiagram != null) {
@@ -229,7 +230,7 @@ public class MPLPlatform implements Serializable {
 	private void initializePlatform(Tree tree) {
 		try {
 			List<CloneConfiguration> componentConfigs = new ArrayList<CloneConfiguration>();
-			if(isMulti) {
+			if (isMulti) {
 				componentConfigs = refactorComponents(tree.getRoot());
 			}
 			model = tree.getRoot();
@@ -267,5 +268,4 @@ public class MPLPlatform implements Serializable {
 	public Set<Node> getNodesForUUIDs(Set<UUID> uuids) {
 		return TreeUtil.getNodesForCondition(model, node -> uuids.contains(node.getUUID()));
 	}
-
 }

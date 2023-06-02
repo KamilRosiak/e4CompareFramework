@@ -28,7 +28,6 @@ public class FXFeatureNameLabel extends Label {
 		this.fxGraFeature = fxGraFeature;
 		
 		this.restyle();
-		
 		//Opens a Renaming dialog on double click 
 		this.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if(event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {

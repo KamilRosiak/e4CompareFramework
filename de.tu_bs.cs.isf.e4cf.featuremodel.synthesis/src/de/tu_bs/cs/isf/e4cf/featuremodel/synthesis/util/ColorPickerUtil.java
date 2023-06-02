@@ -8,14 +8,14 @@ import javafx.scene.paint.Color;
 
 
 
-public class ColorPicker {
+public class ColorPickerUtil {
 	
 	public static List<Color> generatePalette(int size) {
 		List<Color> palette = new ArrayList<>(size);
 		double hueFraction = 360.0 / size;
 		for (int i = 0; i < size; i++) {
 			double hue = hueFraction * i;
-			palette.add(Color.hsb(hue, 1.0d, 0.77));
+			palette.add(Color.hsb(hue, 0.7d, 0.6));
 		}
 		// shuffle to reduce likelihood of similar colors near each other
 		Collections.shuffle(palette);

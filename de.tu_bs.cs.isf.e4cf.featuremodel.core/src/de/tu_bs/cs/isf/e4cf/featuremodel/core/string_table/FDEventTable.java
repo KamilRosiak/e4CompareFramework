@@ -110,4 +110,5 @@ public class FDEventTable {
 
 	
 	public static final String DISPLAY_FEATUREMODEL = "DISPLAY_FEATUREMODEL";
+	public static final String UPDATE_FEATURE = "UPDATE_FEATURE";
 }

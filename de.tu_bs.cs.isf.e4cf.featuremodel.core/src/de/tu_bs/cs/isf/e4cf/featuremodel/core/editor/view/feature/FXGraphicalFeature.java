@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
+
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Feature;
@@ -51,11 +56,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	public FXGraphicalFeature(IFeature feature) {
 		this.feature = feature;
 		createUI();
-		if (feature.getColor().isPresent()) {
-			this.setBackgroundColor(feature.getColor().get());
-		} else if (feature instanceof StylableFeature) {
-			((StylableFeature) feature).style(this);
-		}
 	}
 
 	public FXGraphicalFeature(String name) {
@@ -91,20 +91,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		this.getFeature().setGroupVariability(groupVariability);
 	}
 
-//	public void addConfigLabel(String name) {
-//		Label configLabel = new Label(name);
-//		configLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-//			if(event.getButton().equals(MouseButton.PRIMARY)) {
-//				if(event.getClickCount() == 2) {
-//					services.eventBroker.send(FDEventTable.SELECT_CONFIGURATION_EVENT, this);
-//					event.consume();
-//				}
-//			}
-//		});
-//		configLabel.getStyleClass().add("componentFeature");
-//		getChildren().add(configLabel);
-//	}
-
 	private void createUI() {
 		setSpacing(0);
 		initGraphicalFeature();
@@ -127,7 +113,14 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		this.upperConnector = new FXFeatureUpperConnector(feature);
 		this.lowerConnector = new FXFeatureLowerConnector(this);
 		this.featureNameLabel = new FXFeatureNameLabel(this);
+		getChildren().clear();
 		getChildren().addAll(this.upperConnector, this.lowerConnector, this.featureNameLabel);
+		// set selected background color if available
+		if (feature.getColor().isPresent()) {
+			this.setBackgroundColor(feature.getColor().get());
+		} else if (feature instanceof StylableFeature) {
+			((StylableFeature) feature).style(this);
+		}
 	}
 
 	/**
@@ -150,13 +143,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 			if (event.isShiftDown()) {
 				toFront();
 				services.eventBroker.send(FDEventTable.SET_SELECTED_FEATURE, this);
-//				for (ArtifactReference artifact : this.getFeature().getArtifactReferences()) {
-//					System.out.println("Referenced Artifact for ClearName: "+artifact.getArtifactClearName());
-//					for (String referencedID : artifact.getReferencedArtifactIDs()) {
-//						System.out.println("-> "+referencedID);
-//					}
-//					System.out.println("\n");
-//				}
 			}
 			event.consume();
 		});
@@ -228,7 +214,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		this.childFeatures.add(fxFeature);
 		feature.getChildren().add(fxFeature.getFeature());
 	}
-	
+
 	public boolean removeChildFeature(FXGraphicalFeature fxFeature) {
 		boolean removed = this.childFeatures.remove(fxFeature);
 		if (removed) {
@@ -243,7 +229,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		feature.setName(name);
 		services.eventBroker.send(FDEventTable.LOGGER_RENAMED_FEATURE, feature);
 	}
-	
+
 	void drawGroupVariability() {
 		switch (feature.getGroupVariability()) {
 		case ALTERNATIVE:
@@ -258,7 +244,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	void setGroupVariability_ALTERNATIVE() {
-
 //		if (!feature.isAlternative()) {
 //			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);
 //			feature.setAlternative(true);
@@ -349,8 +334,16 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	public void setAbstract(boolean isAbstract) {
-		//this.feature.setAbstract(isAbstract);
+		// this.feature.setAbstract(isAbstract);
 		this.featureNameLabel.restyle();
+	}
+
+	@Optional
+	@Inject
+	public void updateFeature(@UIEventTopic(FDEventTable.UPDATE_FEATURE) IFeature feature) {
+		if (this.feature.equals(feature)) {
+			initGraphicalFeature();
+		}
 	}
 
 }

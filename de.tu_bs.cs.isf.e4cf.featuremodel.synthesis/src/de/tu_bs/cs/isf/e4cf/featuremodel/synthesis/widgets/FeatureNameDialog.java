@@ -32,28 +32,28 @@ public class FeatureNameDialog extends BorderPane {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	} 
+	}
 
 	/**
 	 * load fxml for feature name dialog
 	 * 
 	 * @throws IOException
 	 */
-	private void initializeView(List<WordCounter> wordList) throws IOException {		
+	private void initializeView(List<WordCounter> wordList) throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(FeatureNameDialog.class.getResource("FeatureNameDialog.fxml"));
 		fxmlLoader.setController(this);
 		fxmlLoader.setRoot(this);
 		fxmlLoader.load();
-		
+
 		initializeTable();
 		wordTable.getItems().addAll(wordList);
 		wordTable.refresh();
-		
+
 		stage = new Stage();
 		stage.setTitle("WordCounter");
 		// stage.getIcons().add(new Image(""));
 		stage.setX(MouseInfo.getPointerInfo().getLocation().getX());
-		stage.setY(MouseInfo.getPointerInfo().getLocation().getY());
+		stage.setY(MouseInfo.getPointerInfo().getLocation().getY() - stage.getHeight());
 		Scene scene = new Scene(this);
 		stage.setScene(scene);
 		this.setOnKeyPressed(null);
@@ -66,7 +66,7 @@ public class FeatureNameDialog extends BorderPane {
 		countCol.setCellFactory(TextFieldTableCell.forTableColumn());
 		countCol.setCellValueFactory(wc -> new SimpleStringProperty(String.valueOf(wc.getValue().count)));
 		wordTable.setOnMouseClicked(mouseEvent -> {
-			//double click select name from table
+			// double click select name from table
 			if (mouseEvent.getClickCount() == 2 && !wordTable.getSelectionModel().isEmpty()) {
 				selectedCluster.setName(wordTable.getSelectionModel().getSelectedItem().word);
 				stage.close();

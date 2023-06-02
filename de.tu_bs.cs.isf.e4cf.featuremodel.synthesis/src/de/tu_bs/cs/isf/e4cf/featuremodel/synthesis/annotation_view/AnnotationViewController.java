@@ -25,6 +25,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationI
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
+import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.tree.Tree;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
@@ -40,6 +41,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureLocator;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureOrganizer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SyntaxGroup;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.SynthesisConsts;
+import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.exceptions.InvalidAnnotationException;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.util.FeatureUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.FeatureNameDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.widgets.WordCounter;
@@ -50,7 +52,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -59,6 +64,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class AnnotationViewController implements Initializable {
 	@Inject
@@ -87,18 +94,19 @@ public class AnnotationViewController implements Initializable {
 		List<SyntaxGroup> syntaxGroups = this.locator.locateFeatures(services, mpl);
 		this.currentMpl = mpl;
 		List<Cluster> clusters = syntaxGroups.stream().map(Cluster::new).collect(Collectors.toList());
-		
+
 		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
 		// calculate initial feature diagram proposal
 		Tree<Cluster> hierarchy = FeatureOrganizer.createHierarchy(currentMpl, clusters);
 		IFeature root = FeatureUtil.toFeature(hierarchy.getRoot().value());
 		FeatureDiagram diagram = new FeatureDiagram("Generated Feature Model", root);
 		this.currentMpl.setFeatureModel(diagram);
-		String filename = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + this.currentMpl.fileName + ".mpl";
+		String filename = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+				+ this.currentMpl.fileName + ".mpl";
 		MPLEPlatformUtil.storePlatform(filename, this.currentMpl);
 		displayFeatures(diagram);
 	}
-	
+
 	@Optional
 	@Inject
 	public void showFeatures(@UIEventTopic(MPLEEditorConsts.SHOW_FEATURES) MPLPlatform platform) {
@@ -118,16 +126,16 @@ public class AnnotationViewController implements Initializable {
 		this.currentMpl.setFeatureModel(newDiagram);
 		this.displayFeatures(newDiagram);
 	}
-	
+
 	public void displayFeatures(FeatureDiagram featureDiagram) {
 		this.currentMpl.setFeatureModel(featureDiagram);
-		
+
 		// display features in mpl editor
 		services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, this.currentMpl);
 		// display diagram in feature model editor
 		services.partService.showPart(FDStringTable.BUNDLE_NAME);
 		services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, featureDiagram);
-		
+
 		// display clusters in annotation view
 		TreeSet<IFeature> allFeatures = new TreeSet<>((f1, f2) -> {
 			int lengthDiff = f2.getName().length() - f1.getName().length();
@@ -137,7 +145,8 @@ public class AnnotationViewController implements Initializable {
 			return lengthDiff;
 		});
 		allFeatures.addAll(featureDiagram.getAllFeatures());
-		List<ClusterViewModel> viewModels = allFeatures.stream().map(ClusterViewModel::new).collect(Collectors.toList());
+		List<ClusterViewModel> viewModels = allFeatures.stream().map(ClusterViewModel::new)
+				.collect(Collectors.toList());
 		this.clusters = FXCollections.observableList(viewModels);
 		this.annotationTable.setItems(this.clusters);
 		this.annotationTable.refresh();
@@ -183,7 +192,7 @@ public class AnnotationViewController implements Initializable {
 		this.clusters.add(model);
 		this.annotationTable.refresh();
 	}
-	
+
 	/**
 	 * Collects all name label from current atomic sets
 	 */
@@ -196,7 +205,7 @@ public class AnnotationViewController implements Initializable {
 		new FeatureNameDialog(wordList, selectedModel);
 		annotationTable.refresh();
 	}
-	
+
 	private List<WordCounter> getInverseDocumentFrequency(IFeature feature) {
 		double documentCount = annotationTable.getItems().size();
 		Map<String, List<IFeature>> wordDocCount = new HashMap<>();
@@ -215,12 +224,12 @@ public class AnnotationViewController implements Initializable {
 		}
 		Map<String, Double> idf = new HashMap<>();
 		wordDocCount.forEach((word, docs) -> idf.put(word, Math.log(documentCount / docs.size())));
-		
+
 		List<WordCounter> featureWords = getWordFrequency(feature.getArtifactUUIDs());
 		featureWords.forEach(wc -> wc.count = idf.get(wc.word) * wc.count);
 		return featureWords;
 	}
-	
+
 	private List<WordCounter> getWordFrequency(Set<UUID> selectedIds) {
 		Set<Node> selectedNodes = currentMpl.getNodesForUUIDs(selectedIds);
 		Map<String, Integer> words = new HashMap<>();
@@ -235,32 +244,52 @@ public class AnnotationViewController implements Initializable {
 							word = word.trim();
 							word = word.replaceAll("\\p{Punct}", "");
 							word = word.toLowerCase();
-							words.put(word, words.getOrDefault(word, 0)+1);
+							words.put(word, words.getOrDefault(word, 0) + 1);
 						}
 					}
 				}
 			}
-		}	
+		}
 		if (words.size() > 0) {
 			int maxCount = words.values().stream().max(Integer::compare).get();
 			Map<String, Float> relativeWordFrequency = new HashMap<>();
 			words.forEach((word, count) -> relativeWordFrequency.put(word, ((float) count) / maxCount));
-			final Pattern nonWord = Pattern.compile("[^\\w]*|\\d"); 
+			final Pattern nonWord = Pattern.compile("[^\\w]*|\\d");
 			List<WordCounter> wordList = relativeWordFrequency.keySet().stream()
-					.filter(word -> !SourceVersion.isKeyword(word))
-					.filter(word -> {
+					.filter(word -> !SourceVersion.isKeyword(word)).filter(word -> {
 						Matcher m = nonWord.matcher(word);
 						return !m.matches();
-					})
-					.map(word -> new WordCounter(word, words.get(word)))
-					.collect(Collectors.toList());
+					}).map(word -> new WordCounter(word, words.get(word))).collect(Collectors.toList());
 			return wordList;
 		} else {
 			return new ArrayList<>();
 		}
-		
+
 	}
-	
+
+	@FXML
+	private void selectColor(ActionEvent e) {
+		IFeature selectedFeature = annotationTable.getSelectionModel().getSelectedItem().getFeature();
+		Color oldColor = selectedFeature.getColor().get();
+		ColorPicker picker = new ColorPicker(selectedFeature.getColor().orElse(new Color(1, 1, 1, 1)));
+		Scene scne = new Scene(picker);
+		Stage stage = new Stage();
+		stage.setTitle("Select Color");
+		stage.setScene(scne);
+		picker.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				selectedFeature.setColor(picker.getValue());
+				services.eventBroker.send(FDEventTable.UPDATE_FEATURE, selectedFeature);
+				services.eventBroker.send(FDEventTable.UPDATE_FEATURE,
+						new Pair<Color, Color>(oldColor, picker.getValue()));
+				annotationTable.refresh();
+				stage.close();
+			}
+		});
+		stage.showAndWait();
+	}
+
 	@FXML
 	private void selectNext(ActionEvent e) {
 		IFeature selectedFeature = annotationTable.getSelectionModel().getSelectedItem().getFeature();
@@ -287,23 +316,16 @@ public class AnnotationViewController implements Initializable {
 		}
 	}
 
-	public class InvalidAnnotationException extends IllegalArgumentException {
-		private static final long serialVersionUID = 1L;
-
-		public InvalidAnnotationException(String string) {
-			super(string);
-		}
-	};
-
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		this.annotationTable.setItems(clusters);
+		this.annotationTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		// initialize view
 		nameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-		variabilityColumn.setCellFactory(ComboBoxTableCell.forTableColumn(Variability.DEFAULT, 
-				Variability.MANDATORY, Variability.OPTIONAL));
+		variabilityColumn.setCellFactory(
+				ComboBoxTableCell.forTableColumn(Variability.DEFAULT, Variability.MANDATORY, Variability.OPTIONAL));
 		variabilityColumn.setCellValueFactory(new PropertyValueFactory<>("variability"));
 
 		childSelectionColumn.setCellFactory(ComboBoxTableCell.forTableColumn(GroupVariability.DEFAULT,
@@ -343,6 +365,7 @@ public class AnnotationViewController implements Initializable {
 			}
 			e.getRowValue().nameProperty().set(e.getNewValue());
 			this.annotationTable.refresh();
+			services.eventBroker.send(FDEventTable.UPDATE_FEATURE, updatedFeature);
 			// printDebug();
 		});
 
@@ -373,6 +396,37 @@ public class AnnotationViewController implements Initializable {
 				}
 			}
 		});
+	}
+
+	@FXML
+	private void mergeFeature() {
+		try {
+			List<ClusterViewModel> selection = new ArrayList<ClusterViewModel>(
+					annotationTable.getSelectionModel().getSelectedItems());
+			if (selection.size() > 1) {
+				ClusterViewModel first = selection.get(0);
+				selection.remove(first);
+
+				selection.forEach(viewmodel -> {
+					first.getFeature().getArtifactUUIDs().addAll(viewmodel.getFeature().getArtifactUUIDs());
+					currentMpl.getFeatureModel().get().getAllFeatures().remove(viewmodel.getFeature());
+					currentMpl.getFeatureModel().get().getAllFeatures().forEach(feature -> {
+						feature.removeChild(viewmodel.getFeature());
+					});
+
+					this.clusters.remove(viewmodel);
+				});
+
+				annotationTable.getItems().removeAll(selection);
+				annotationTable.refresh();
+
+				services.eventBroker.send(MPLEEditorConsts.COLORS_CHANGED,
+						currentMpl.getFeatureModel().get().getAllFeatures());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
