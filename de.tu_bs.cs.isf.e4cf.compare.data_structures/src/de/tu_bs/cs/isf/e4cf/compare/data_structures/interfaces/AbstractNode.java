@@ -110,7 +110,7 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public List<Node> getNodesOfType(String nodeType) {
 		List<Node> childrenList = new ArrayList<Node>();
-		if (getStandardizedNodeType().toString().equals(nodeType)) {
+		if (getStandardizedNodeType().toString().equals(nodeType) || getNodeType().toString().equals(nodeType)) {
 			childrenList.add(this);
 			return childrenList;
 		}
@@ -124,7 +124,7 @@ public abstract class AbstractNode implements Node {
 	@Override
 	public Set<String> getAllNodeTypes() {
 		Set<String> nodeTypes = new HashSet<String>();
-		nodeTypes.add(getNodeType());
+		nodeTypes.add(getStandardizedNodeType().toString());
 		for (Node child : getChildren()) {
 			nodeTypes.addAll(child.getAllNodeTypes());
 		}

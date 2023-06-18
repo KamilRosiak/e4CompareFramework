@@ -44,13 +44,17 @@ public class JavaReader extends AbstractArtifactReader {
 		Tree tree = null;
 
 		if (isFileSupported(element)) {
-			String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
-			String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
-			CompilationUnit cu = StaticJavaParser.parse(s);
-			Node rootNode = new NodeImpl(NodeType.FILE, JavaWriter2.NODE_TYPE_TREE);
-			JavaVisitor visitor = new JavaVisitor(new NodeFactory(new StatementNodeFactory()));
-			visitor.visit(cu, rootNode);
-			tree = new TreeImpl(fileName, rootNode);
+			try {
+				String s = FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath()));
+				String fileName = Paths.get(element.getAbsolutePath()).getFileName().toString();
+				CompilationUnit cu = StaticJavaParser.parse(s);
+				Node rootNode = new NodeImpl(NodeType.FILE, JavaWriter2.NODE_TYPE_TREE);
+				JavaVisitor visitor = new JavaVisitor(new NodeFactory(new StatementNodeFactory()));
+				visitor.visit(cu, rootNode);
+				tree = new TreeImpl(fileName, rootNode);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return tree;

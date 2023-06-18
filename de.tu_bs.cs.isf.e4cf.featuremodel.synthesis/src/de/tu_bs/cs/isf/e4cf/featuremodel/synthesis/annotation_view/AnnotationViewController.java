@@ -17,6 +17,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
@@ -26,6 +30,8 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
+import de.tu_bs.cs.isf.e4cf.core.status_bar.util.E4CStatus;
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.tree.Tree;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
@@ -91,20 +97,28 @@ public class AnnotationViewController implements Initializable {
 	@Optional
 	@Inject
 	public void locateFeatures(@UIEventTopic(MPLEEditorConsts.LOCATE_FEATURES) MPLPlatform mpl) {
-		List<SyntaxGroup> syntaxGroups = this.locator.locateFeatures(services, mpl);
-		this.currentMpl = mpl;
-		List<Cluster> clusters = syntaxGroups.stream().map(Cluster::new).collect(Collectors.toList());
+		new Job("feature location") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				services.eventBroker.send(E4CEventTable.UPDATE_STATUS_BAR, new E4CStatus("Locating Features", 1, 1));
+				List<SyntaxGroup> syntaxGroups = locator.locateFeatures(services, mpl);
+				currentMpl = mpl;
+				List<Cluster> clusters = syntaxGroups.stream().map(Cluster::new).collect(Collectors.toList());
 
-		services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
-		// calculate initial feature diagram proposal
-		Tree<Cluster> hierarchy = FeatureOrganizer.createHierarchy(currentMpl, clusters);
-		IFeature root = FeatureUtil.toFeature(hierarchy.getRoot().value());
-		FeatureDiagram diagram = new FeatureDiagram("Generated Feature Model", root);
-		this.currentMpl.setFeatureModel(diagram);
-		String filename = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
-				+ this.currentMpl.fileName + ".mpl";
-		MPLEPlatformUtil.storePlatform(filename, this.currentMpl);
-		displayFeatures(diagram);
+				services.partService.showPart(SynthesisConsts.BUNDLE_NAME);
+				// calculate initial feature diagram proposal
+				Tree<Cluster> hierarchy = FeatureOrganizer.createHierarchy(currentMpl, clusters);
+				IFeature root = FeatureUtil.toFeature(hierarchy.getRoot().value());
+				FeatureDiagram diagram = new FeatureDiagram("Generated Feature Model", root);
+				currentMpl.setFeatureModel(diagram);
+				String filename = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+						+ currentMpl.fileName + ".mpl";
+				MPLEPlatformUtil.storePlatform(filename, currentMpl);
+				displayFeatures(diagram);
+				services.eventBroker.send(E4CEventTable.UPDATE_STATUS_BAR, new E4CStatus("Features Located", 0, 0));
+				return Status.OK_STATUS;
+			}
+		}.schedule();
 	}
 
 	@Optional

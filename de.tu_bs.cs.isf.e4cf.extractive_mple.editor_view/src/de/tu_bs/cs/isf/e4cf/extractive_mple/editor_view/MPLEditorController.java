@@ -10,6 +10,10 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -142,7 +146,7 @@ public class MPLEditorController implements Initializable {
 		};
 		TreeItem<Node> root = TreeViewUtilities.createTreeItems(treeView.getRoot().getValue(), coloredTreeCreator);
 		TreeViewUtilities.decorateTree(root, new FamilyModelNodeDecorator());
-		this.setTree(root);
+		setTree(root);
 		TreeViewUtilities.decorateTree(root, new ExpandAllDecorator());
 		treeView.refresh();
 	}

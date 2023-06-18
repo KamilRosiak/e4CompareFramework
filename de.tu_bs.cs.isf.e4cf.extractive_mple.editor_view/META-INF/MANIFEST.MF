@@ -5,9 +5,11 @@ Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view;singleton:
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.e4.ui.di,
  org.eclipse.e4.core.services,
+ org.eclipse.core.jobs,
  javax.annotation,
  javax.inject,
  org.eclipse.swt;bundle-version="3.113.0",
+ org.eclipse.equinox.common;bundle-version="3.10.600",
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.core.contexts,
  de.tu_bs.cs.isf.e4cf.compare.data_structures,

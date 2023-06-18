@@ -19,6 +19,11 @@ public class TreeReader extends AbstractArtifactReader {
 		super(SUPPORTED_FILE_ENDINGS);
 	}
 
+	public TreeReader(GsonImportService importer) {
+		this();
+		this.importer = importer;
+	}
+
 	@Override
 	public Tree readArtifact(FileTreeElement element) {
 		return importer.importTree(FileStreamUtil.readLineByLine(Paths.get(element.getAbsolutePath())));

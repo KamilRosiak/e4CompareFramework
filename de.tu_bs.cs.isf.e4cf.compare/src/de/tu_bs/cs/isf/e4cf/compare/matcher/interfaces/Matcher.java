@@ -36,4 +36,6 @@ public interface Matcher extends Serializable {
 	 * Returns the description of the corresponding matching approach.
 	 */
 	public String getMatcherDescription();
+
+	public void setThreshold(float threshold);
 }

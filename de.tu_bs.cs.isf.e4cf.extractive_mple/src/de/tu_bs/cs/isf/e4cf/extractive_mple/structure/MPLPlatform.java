@@ -2,8 +2,11 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple.structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -19,13 +22,14 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurat
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.TreeUtil;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.SortingMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
-import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
-import de.tu_bs.cs.isf.e4cf.extractive_mple.extensions.preferences.PlatformPreferences;
+import de.tu_bs.cs.isf.e4cf.compare.preferences.ComparisonPrefs;
+import de.tu_bs.cs.isf.e4cf.core.status_bar.util.E4CStatus;
+import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
+import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.refactoring.data_structures.extraction.ClusterEngine;
 
@@ -45,6 +49,8 @@ public class MPLPlatform implements Serializable {
 	public Configuration currrentConfiguration;
 	private FeatureDiagram featureDiagram = null;
 	public String location = "";
+	public boolean isEvaluation = true;
+	public ComparisonPrefs prefs = new ComparisonPrefs();
 
 	/**
 	 * File name of the mpl without the extension (.mpl)
@@ -70,12 +76,15 @@ public class MPLPlatform implements Serializable {
 		}
 		this.configCount = platform.configCount;
 		this.componentCount = platform.componentCount;
-
+		this.prefs = platform.prefs;
 	}
 
-	public MPLPlatform(CompareEngineHierarchical compareEngine, boolean isMulti) {
+	public MPLPlatform(CompareEngineHierarchical compareEngine, ComparisonPrefs prefs, boolean isMulti) {
 		this.isMulti = isMulti;
 		this.compareEngine = compareEngine;
+		this.prefs = prefs;
+		compareEngine.getMatcher().setThreshold(prefs.getOptionalThreshold());
+
 	}
 
 	public Optional<FeatureDiagram> getFeatureModel() {
@@ -90,6 +99,28 @@ public class MPLPlatform implements Serializable {
 		this.featureDiagram = diagram;
 	}
 
+	/**
+	 * Creating the family model in an other thread.
+	 */
+	public void insertVariants(List<Tree> variants, ServiceContainer services) {
+		try {
+			// sort by size
+			// variants.sort((a, b) -> {
+			// return Integer.compare(a.getSize(), b.getSize());
+			// });
+			variants.forEach(variant -> {
+				services.eventBroker.send(E4CEventTable.UPDATE_STATUS_BAR,
+						new E4CStatus("comparing variants (" + variants.indexOf(variant) + "/" + variants.size() + ")",
+								variants.size(), variants.indexOf(variant)));
+				insertVariant(variant);
+				resetConfigurations();
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		services.eventBroker.send(E4CEventTable.UPDATE_STATUS_BAR, new E4CStatus("comparison done", 0, 0));
+	}
+
 	public void insertVariants(List<Tree> variants) {
 		try {
 			variants.forEach(variant -> {
@@ -99,14 +130,42 @@ public class MPLPlatform implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void resetConfigurations() {
+		Set<UUID> cloneConfigs = new HashSet<UUID>();
 		configurations.forEach(config -> {
 			config.getCloneConfigurations().forEach(cloneConfig -> {
+				cloneConfigs.add(cloneConfig.componentUUID);
 				cloneConfig.isMerged = false;
 			});
+		});
+		/*
+		 * After each step clean up clone configs that are not valid anymore clone
+		 * configurations that are only contained one time in each variants are not
+		 * needed
+		 */
+		cloneConfigs.forEach(uuid -> {
+			boolean hasTwo = false;
+			for (Configuration config : configurations) {
+				if (config.getConfigurationsForComponent(uuid).size() > 1) {
+					hasTwo = true;
+					break;
+				}
+			}
+			if (!hasTwo) {
+				for (Configuration config : configurations) {
+					List<CloneConfiguration> configs = config.getConfigurationsForComponent(uuid);
+					config.getCloneConfigurations().removeAll(configs);
+					for (CloneConfiguration cloneConfig : configs) {
+						config.getUUIDs().addAll(cloneConfig.getConfiguration().getUUIDs());
+						config.getUUIDs().add(cloneConfig.componentUUID);
+					}
+				}
+				Node node = model.getNodeByUUID(uuid);
+				if (node != null)
+					node.setCloned(false);
+			}
 		});
 	}
 
@@ -114,6 +173,43 @@ public class MPLPlatform implements Serializable {
 		ConfigurationImpl config = (ConfigurationImpl) NodeConfigurationUtil.generateConfiguration(node.getRoot(),
 				node.getTreeName());
 		return config;
+	}
+
+	public void calculateVariability() {
+
+	}
+
+	public void caluclateComponentVariability() {
+		Map<UUID, List<CloneConfiguration>> cloneConfigMap = new HashMap<UUID, List<CloneConfiguration>>();
+		configurations.forEach(config -> {
+			config.getCloneConfigurations().forEach(cloneConfig -> {
+				if (!cloneConfigMap.containsKey(cloneConfig.getComponentUUID())) {
+					cloneConfigMap.put(cloneConfig.getComponentUUID(), new ArrayList<CloneConfiguration>());
+				}
+				cloneConfigMap.get(cloneConfig.componentUUID).add(cloneConfig);
+			});
+		});
+
+		cloneConfigMap.entrySet().forEach(clone -> {
+			Node cloneNode = model.getNodeByUUID(clone.getKey());
+			assignVariabilityRecursivly(clone.getKey(), clone.getValue());
+
+		});
+	}
+
+	private void assignVariabilityRecursivly(UUID key, List<CloneConfiguration> value) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void calculateCloneVariabilityRecursivly(Node node, Map<UUID, List<CloneConfiguration>> cloneConfigMap) {
+		if (node.isClone()) {
+			List<CloneConfiguration> cloneConfigs = cloneConfigMap.get(node.getUUID());
+		} else {
+			node.getChildren().forEach(childNode -> {
+				calculateCloneVariabilityRecursivly(childNode, cloneConfigMap);
+			});
+		}
 	}
 
 	/**
@@ -143,8 +239,12 @@ public class MPLPlatform implements Serializable {
 				 */
 				// compare variants with the platform clone model
 				NodeComparison comparison = compareEngine.compare(model, variant.getRoot());
+				if (isEvaluation) {
+					System.out.println(comparison.getSimilarity());
+				}
 				// merge the new variant into the clone model
 				model = comparison.mergeArtifacts(configurations, cloneConfigurations, fixedCloneConfigs);
+
 				// generate the variant configuration for the merged variant
 				Configuration variantConfig = getNextConfig(variant);
 				variantConfig.getCloneConfigurations().addAll(cloneConfigurations);
@@ -164,18 +264,16 @@ public class MPLPlatform implements Serializable {
 		List<CloneConfiguration> componentConfigs = new ArrayList<CloneConfiguration>();
 		try {
 			// Get all nodes of the selected type
-			List<Node> candidatNodes = node.getNodesOfType(PlatformPreferences.GRANULARITY_LEVEL.toString());
-			candidatNodes = new ArrayList<>();
+			List<Node> candidatNodes = node.getNodesOfType(prefs.getGranularityLevel());
 			Iterator<Node> candiateIterator = candidatNodes.iterator();
-
-			// Only take artifacts with at least 20 nodes into account (Clone size)
+			// Only take artifacts with at least the number of nodes defined by clone size
 			while (candiateIterator.hasNext()) {
 				Node node2 = (Node) candiateIterator.next();
-				if (node2.getAmountOfNodes(0) < 20) {
+				if (node2.getAmountOfNodes(0) < prefs.getCloneSize()) {
 					candiateIterator.remove();
 				}
 			}
-
+			System.out.println("candidate nodes:" + candidatNodes.size());
 			// Initialize the cluster engine and run the process output is a list of sets
 			// of nodes. Every set represents a clone cluster that has to be merged.
 			ClusterEngine clusterEngine = new ClusterEngine();
@@ -252,7 +350,6 @@ public class MPLPlatform implements Serializable {
 		Node variant = (Node) SerializationUtils.clone(rootNode);
 
 		Iterator<Attribute> iterator = variant.getAttributes().iterator();
-
 		iterator.forEachRemaining(attribute -> {
 			if (!config.getUUIDs().contains(attribute.getUUID())) {
 				iterator.remove();

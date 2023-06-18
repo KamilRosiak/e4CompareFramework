@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -46,17 +45,14 @@ public class TabController {
 		EventBroker.set(services);
 		this.errorListeners = new ArrayList<>();
 		Map<String, MenuItem> menuItems = getMenuItems();
-		Consumer<Widget> contextMenuTarget = ui -> menuService.registerContextMenu(ui, FDStringTable.FD_TAB_VIEW_CONTEXT_MENU_ID);
+		Consumer<Widget> contextMenuTarget = ui -> menuService.registerContextMenu(ui,
+				FDStringTable.FD_TAB_VIEW_CONTEXT_MENU_ID);
 		this.view = new TabView(parent, menuItems, contextMenuTarget);
-		
 		// create initial tab
 		this.createTab(FDStringTable.FD_DEFAULT_FM_NAME);
-			
+
 	}
-	
-	
-	
-	
+
 	private Map<String, MenuItem> getMenuItems() {
 		Map<String, MenuItem> menuItems = new HashMap<>();
 		MenuItem newTab = new MenuItem("New Tab");
@@ -65,25 +61,27 @@ public class TabController {
 		save.setOnAction(e -> this.saveCurrentTab());
 		MenuItem load = new MenuItem("Load");
 		load.setOnAction(e -> {
-			
 			FeatureDiagram newDiagram;
 			try {
 				newDiagram = FeatureDiagram.loadFromFile();
 				this.loadFeatureDiagram(newDiagram);
 			} catch (ClassNotFoundException | IOException e1) {
-				//e1.printStackTrace();
-			}			
+				// e1.printStackTrace();
+			}
 		});
 		menuItems.put("new", newTab);
 		menuItems.put("save", save);
 		menuItems.put("load", load);
 		return menuItems;
 	}
-	
+
 	private EditorController currentEditor() {
 		return this.view.currentTab().editor();
 	}
 
+	/**
+	 * Create a new tab and add it to the tab view
+	 */
 	public FMEditorTab createTab(String tabTitle) {
 		EventHandler<Event> onTabClose = event -> {
 			// this.currentEditor().askToSave();
@@ -94,7 +92,6 @@ public class TabController {
 
 		FMEditorTab tab = new FMEditorTab(tabTitle, services, onTabClose);
 		this.view.addTab(tab);
-
 		return tab;
 	}
 
@@ -106,11 +103,11 @@ public class TabController {
 	@Inject
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram diagram) {
 		FMEditorTab newTab = this.createTab(diagram.getName());
-		//services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
+		// services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
 		services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, diagram);
 		newTab.editor().setFeatureDiagram(diagram);
 	}
-	
+
 	public FeatureDiagram getCurrentFeatureDiagram() {
 		return this.currentEditor().getFeatureDiagram();
 	}

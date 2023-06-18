@@ -111,7 +111,6 @@ public class ProjectExplorerViewController {
 	private List<Tag> filterTags = new ArrayList<Tag>();
 	private boolean isFlatView = false;
 	private HashMap<String, Boolean> expansionStates;
-	
 
 	/**
 	 * This method is equivalent to the previous postContruct(), in that it sets up
@@ -294,7 +293,7 @@ public class ProjectExplorerViewController {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return fileExtensions;
 	}
 
@@ -414,15 +413,17 @@ public class ProjectExplorerViewController {
 		changeListener = new ListChangeListener<TreeItem<FileTreeElement>>() {
 			@Override
 			public void onChanged(Change<? extends TreeItem<FileTreeElement>> change) {
+				try {
+					StructuredSelection selection = new StructuredSelection(
+							projectTree.getSelectionModel().getSelectedItems());
 
-				StructuredSelection selection = new StructuredSelection(
-						projectTree.getSelectionModel().getSelectedItems());
-
-				_selectionService.setSelection(selection);
-				_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
-				toolbarController.update();
+					_selectionService.setSelection(selection);
+					_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
+					toolbarController.update();
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
-
 		};
 
 		projectTree.getSelectionModel().getSelectedItems().addListener(changeListener);

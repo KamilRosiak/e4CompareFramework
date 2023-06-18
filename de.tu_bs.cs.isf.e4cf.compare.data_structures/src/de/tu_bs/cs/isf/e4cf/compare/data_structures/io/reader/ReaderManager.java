@@ -54,7 +54,8 @@ public class ReaderManager {
 			ArtifactReader reader = ArtifactIOUtil.getReaderForType(fte, context);
 
 			if (reader != null) {
-				return reader.readArtifact(fte).getRoot();
+				Node node = reader.readArtifact(fte).getRoot();
+				return node;
 			} else {
 				// store files that can't be processed as files
 				Node fileNode = new NodeImpl(NodeType.FILE);

@@ -31,4 +31,6 @@ Export-Package: de.tu_bs.cs.isf.e4cf.compare,
  de.tu_bs.cs.isf.e4cf.compare.metric,
  de.tu_bs.cs.isf.e4cf.compare.metric.interfaces,
  de.tu_bs.cs.isf.e4cf.compare.metric.util,
+ de.tu_bs.cs.isf.e4cf.compare.preferences,
+ de.tu_bs.cs.isf.e4cf.compare.preferences.dialog,
  de.tu_bs.cs.isf.e4cf.compare.stringtable

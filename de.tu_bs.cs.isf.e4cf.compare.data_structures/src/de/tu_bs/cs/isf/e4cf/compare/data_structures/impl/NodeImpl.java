@@ -1,5 +1,7 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
+import java.util.UUID;
+
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.AbstractNode;
@@ -121,5 +123,21 @@ public class NodeImpl extends AbstractNode {
 	public void addAttribute(String attributeKey, String value) {
 		this.addAttribute(new AttributeImpl(attributeKey, new StringValueImpl(value)));
 
+	}
+
+	@Override
+	public Node getNodeByUUID(UUID key) {
+		return searchNodeByUUID(this, key);
+	}
+
+	private Node searchNodeByUUID(Node nodeImpl, UUID key) {
+		if (nodeImpl.getUUID().equals(key)) {
+			return nodeImpl;
+		} else {
+			for (Node childNode : nodeImpl.getChildren()) {
+				return searchNodeByUUID(childNode, key);
+			}
+		}
+		return null;
 	}
 }

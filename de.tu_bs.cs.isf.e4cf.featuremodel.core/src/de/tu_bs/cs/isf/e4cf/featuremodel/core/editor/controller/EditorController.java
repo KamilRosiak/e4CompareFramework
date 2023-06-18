@@ -26,22 +26,22 @@ public class EditorController {
 	private final ServiceContainer services;
 	private final FMEditorView view;
 	private FeatureDiagram diagram;
-	
+
 	public EditorController(ServiceContainer services, Consumer<Node> uiConsumer) {
 		this.services = services;
 		FMEditorPaneController editorPane = new FMEditorPaneController(services);
 		this.view = new FMEditorView(editorPane, uiConsumer);
-		
+
 		this.diagram = new FeatureDiagram(FDStringTable.FD_DEFAULT_FM_NAME, new Feature("Root"));
 		this.diagram.getRoot().setVariability(Variability.MANDATORY);
 		this.view.displayFeatureDiagram(this.diagram);
 	}
-	
+
 	public EditorController(ServiceContainer services, Consumer<Node> uiConsumer, FeatureDiagram diagram) {
 		this(services, uiConsumer);
 		this.diagram = diagram;
 	}
-	
+
 	public void askToSave() {
 		boolean shouldSave = RCPMessageProvider.questionMessage("Feature-Diagram Editor",
 				"Would you like to save the current Feature Model?");
@@ -49,11 +49,11 @@ public class EditorController {
 			saveDiagram();
 		}
 	}
-	
+
 	public FeatureDiagram getFeatureDiagram() {
 		return this.diagram;
 	}
-	
+
 	@Optional
 	@Inject
 	public void setFeatureDiagram(FeatureDiagram diagram) {
@@ -61,14 +61,13 @@ public class EditorController {
 		this.diagram = diagram;
 		System.out.println("Feature Diagram " + diagram.getName() + " successfully loaded.");
 	}
-	
+
 	public void saveDiagram() {
 		FileTreeElement root = services.workspaceFileSystem.getWorkspaceDirectory();
 		Path rootPath = FileHandlingUtility.getPath(root);
 		Path projectPath = rootPath.resolve("");
 		Path uriPath = projectPath.resolve(E4CStringTable.FEATURE_MODEL_DIRECTORY);
 		String absolutePath = uriPath.toString() + "/" + diagram.getName() + ".fd";
-		
 
 		try {
 			this.diagram.writeToFile(new File(absolutePath));

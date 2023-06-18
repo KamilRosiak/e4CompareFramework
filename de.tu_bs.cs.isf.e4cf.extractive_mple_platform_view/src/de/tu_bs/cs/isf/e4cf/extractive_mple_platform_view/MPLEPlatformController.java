@@ -1,11 +1,16 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,6 +22,8 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+
+import com.opencsv.CSVWriter;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
@@ -41,13 +48,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
-import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -304,30 +309,31 @@ public class MPLEPlatformController implements Initializable {
 					.collect(Collectors.toList());
 
 			ReaderManager reader = new ReaderManager();
+			ftes.forEach(variant -> {
+				Tree newVariant = reader.readFile(variant);
+				currentPlatform.insertVariant(newVariant);
 
-			Tree newVariant = reader.readFile(services.rcpSelectionService.getCurrentSelectionsFromExplorer().get(0));
-			MPLPlatform newPlatform = new MPLPlatform(currentPlatform);
-			newPlatform.insertVariant(newVariant);
-			String fileName = currentPlatform.fileName + "-" + newVariant.getTreeName();
-			newPlatform.fileName = fileName;
+			});
+			String fileName = currentPlatform.fileName;
 			fileName = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + fileName
 					+ ".mpl";
-			MPLEPlatformUtil.storePlatform(fileName, newPlatform);
+			MPLEPlatformUtil.storePlatform(fileName, currentPlatform);
 			showPlatform();
-			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, newPlatform);
-			showMPL(newPlatform);
-
+			showConfigurations();
+			showMPL(currentPlatform);
 		}
-		/**
-		 * if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() >
-		 * 0) { ReaderManager reader = new ReaderManager();
-		 * services.rcpSelectionService.getCurrentSelectionsFromExplorer().stream().map(reader::readFile)
-		 * .forEach(currentPlatform::insertVariant); MPLEPlatformUtil.storePlatform(
-		 * services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
-		 * + "clone_model1.mpl", currentPlatform); showPlatform();
-		 * services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL,
-		 * currentPlatform); }
-		 **/
+
+		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
+			ReaderManager reader = new ReaderManager();
+			services.rcpSelectionService.getCurrentSelectionsFromExplorer().stream().map(reader::readFile)
+					.forEach(currentPlatform::insertVariant);
+			MPLEPlatformUtil.storePlatform(
+					services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + "clone_model1.mpl",
+					currentPlatform);
+			showPlatform();
+			services.eventBroker.post(MPLEEditorConsts.ADD_VARIANT_TO_MPL, currentPlatform);
+		}
+
 	}
 
 	@FXML
@@ -358,12 +364,86 @@ public class MPLEPlatformController implements Initializable {
 			});
 
 			System.out.println("Total Clone Classes: " + cloneClasses.size());
-			System.out.println("Clone Configurations");
-			cloneClasses.entrySet().forEach(e -> {
+			System.out.println("Clone Configurations:");
+			int configCount = 0;
+			for (Entry<UUID, Integer> e : cloneClasses.entrySet()) {
 				System.out.println("CloneClassId: " + e.getKey() + " number of configs: " + e.getValue());
-			});
-		}
+				configCount += e.getValue();
+			}
+			System.out.println("Total Configurations:" + configCount);
 
+			printCloneDistribution();
+		}
+	}
+
+	@FXML
+	private void printCloneDistribution() {
+		Map<UUID, Integer> cloneClasses = new HashMap<UUID, Integer>();
+		currentPlatform.configurations.forEach(config -> {
+			config.getCloneConfigurations().forEach(cloneConfig -> {
+				if (!cloneClasses.containsKey(cloneConfig.componentUUID)) {
+					cloneClasses.put(cloneConfig.componentUUID, 1);
+				} else {
+					cloneClasses.put(cloneConfig.componentUUID, cloneClasses.get(cloneConfig.componentUUID) + 1);
+				}
+			});
+		});
+
+		CSVWriter csvWritter = creatCSVWriter(
+				new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+						+ "\\clone_distribution_family_model.csv"));
+		List<String> nextLine = new ArrayList<String>();
+		nextLine.add("");
+		for (Entry<UUID, Integer> e : cloneClasses.entrySet()) {
+			nextLine.add("Clone:" + e.getKey());
+		}
+		String[] line = new String[nextLine.size()];
+		csvWritter.writeNext(nextLine.toArray(line));
+		for (Configuration variantConfig : currentPlatform.configurations) {
+			nextLine.clear();
+			// varuant name
+			nextLine.add(variantConfig.getName());
+			int index = currentPlatform.configurations.indexOf(variantConfig) + 1;
+			System.out.println("Current Variant: " + variantConfig.getName() + " (" + index + "/"
+					+ currentPlatform.configurations.size() + ")");
+			// value for each clone config
+			for (Entry<UUID, Integer> e : cloneClasses.entrySet()) {
+				int count = 0;
+				for (CloneConfiguration cloneConfig : variantConfig.getCloneConfigurations()) {
+					if (cloneConfig.getComponentUUID().equals(e.getKey())) {
+						count++;
+					}
+				}
+				if (count == 0) {
+					nextLine.add("");
+				} else {
+					nextLine.add(String.valueOf(count));
+				}
+			}
+			line = new String[nextLine.size()];
+			csvWritter.writeNext(nextLine.toArray(line));
+		}
+		try {
+			csvWritter.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	/**
+	 * Create a UTF8 CSV Writer with semicolon as separation symbol
+	 */
+	public static CSVWriter creatCSVWriter(File file) {
+		CSVWriter writer = null;
+		try {
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file),
+					StandardCharsets.UTF_8);
+			writer = new CSVWriter(outputStreamWriter, ';', '"', '/', "\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return writer;
 	}
 
 	@FXML

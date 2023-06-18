@@ -315,4 +315,6 @@ public interface Node extends Serializable {
 	 */
 	public void addAllUUIDS(Set<UUID> uuids);
 
+	public Node getNodeByUUID(UUID key);
+
 }

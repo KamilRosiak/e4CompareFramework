@@ -8,6 +8,11 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 
@@ -20,6 +25,7 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.Matcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.MatcherUtil;
 import de.tu_bs.cs.isf.e4cf.compare.metric.MetricImpl;
 import de.tu_bs.cs.isf.e4cf.compare.metric.interfaces.Metric;
+import de.tu_bs.cs.isf.e4cf.compare.preferences.ComparisonPrefs;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.components.File;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
@@ -28,6 +34,7 @@ import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -57,6 +64,8 @@ public class CompareEngineView implements Initializable {
 	private RadioButton twodimRadio, weightedRadio;
 	@Inject
 	ServiceContainer services;
+	@Inject
+	IEclipseContext context;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -81,33 +90,43 @@ public class CompareEngineView implements Initializable {
 	@FXML
 	public void compareArtifacts() {
 		try {
-			
-			List<Tree> variants = artifactTable.getItems();
-			
-		
-			MPLPlatform platform = new MPLPlatform();
-			// if spl compare is active
-		
-			if (!twodimRadio.isSelected()) {
-				CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(),
-						getSelectedMetric());
-				platform = new MPLPlatform(engine, false);
-			}
-			
-			platform.insertVariants(variants);
+			new Job("compare job") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					ComparisonPrefs pref = new ComparisonPrefs();
 
-			String path = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
-					+ "clone_model.mpl";
-			// if spl compare is active
-			if (!twodimRadio.isSelected()) {
-				path = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
-						+ "clone_model.spl";
-			}
+					List<Tree> variants = artifactTable.getItems();
+					MPLPlatform platform = new MPLPlatform();
+					// if spl compare is active
+					if (!twodimRadio.isSelected()) {
+						CompareEngineHierarchical engine = new CompareEngineHierarchical(getSelectedMatcher(),
+								getSelectedMetric());
+						platform = new MPLPlatform(engine, pref, false);
+					}
 
-			services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
-			services.partService.showPart(MPLEEditorConsts.PLATFORM_VIEW);
-			services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, platform);
-			MPLEPlatformUtil.storePlatform(path, platform);
+					platform.insertVariants(variants, services);
+
+					String path = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+							+ "clone_model.mpl";
+					// if spl compare is active
+					if (!twodimRadio.isSelected()) {
+						path = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+								+ "clone_model.spl";
+					}
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							services.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);
+							services.partService.showPart(MPLEEditorConsts.PLATFORM_VIEW);
+						}
+					});
+
+					services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, platform);
+					MPLEPlatformUtil.storePlatform(path, platform);
+					return Status.OK_STATUS;
+				}
+			}.schedule();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -118,11 +137,16 @@ public class CompareEngineView implements Initializable {
 	 */
 	@FXML
 	public void addArtifacts() {
-		List<FileTreeElement> parsedFiles = JavaFXBuilder
-				.createFileChooser(RCPContentProvider.getCurrentWorkspacePath(), "Select More Artifacts").stream()
-				.map(file -> new File(file.getAbsolutePath())).collect(Collectors.toList());
-		collectParsedFilePaths(parsedFiles);
-		artifactTable.getItems().addAll(ArtifactIOUtil.parseArtifacts(parsedFiles));
+		try {
+			List<FileTreeElement> selectedFiles = JavaFXBuilder
+					.createFileChooser(RCPContentProvider.getCurrentWorkspacePath(), "Select More Artifacts").stream()
+					.map(file -> new File(file.getAbsolutePath())).collect(Collectors.toList());
+			collectParsedFilePaths(selectedFiles);
+
+			artifactTable.getItems().addAll(ArtifactIOUtil.parseArtifacts(selectedFiles, context));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

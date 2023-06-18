@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" type="BorderPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <center>
+      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+         <children>
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Label maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Granularity Level" HBox.hgrow="ALWAYS" />
+                  <ComboBox fx:id="typeCombo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Label maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Clone Size" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="cloneSizeText" maxHeight="30.0" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Label maxHeight="30.0" maxWidth="1.7976931348623157E308" text="Optional Threshold" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="thresholdText" maxHeight="30.0" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <children>
+                  <Label maxHeight="30.0" maxWidth="1.7976931348623157E308" text="FileName" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="fileNameText" maxHeight="30.0" maxWidth="1.7976931348623157E308" text="family_model" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </center>
+   <bottom>
+      <ToolBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+         <items>
+            <Button mnemonicParsing="false" onAction="#closeDialog" text="Close" />
+         </items></ToolBar>
+   </bottom>
+</fx:root>

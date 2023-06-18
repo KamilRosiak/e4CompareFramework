@@ -3,7 +3,6 @@ package de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view;
 import java.util.function.Consumer;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.di.annotations.Evaluate;
 
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FMEditorPaneController;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
@@ -38,6 +37,7 @@ public class FMEditorView {
 			this.displayFeatureDiagram(diagram);
 		});
 		editorPane.displayFeatureDiagram(root);
+		editorPane.ui().currentModel = diagram;
 	}
 
 	private FXGraphicalFeature buildFXGrapicalDiagram(IFeature feature) {

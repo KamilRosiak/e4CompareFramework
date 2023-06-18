@@ -32,6 +32,7 @@ Export-Package: com.opencsv,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.io.gson,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java,
+ de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.tree,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer,
  de.tu_bs.cs.isf.e4cf.compare.data_structures.util
 Bundle-ClassPath: .,

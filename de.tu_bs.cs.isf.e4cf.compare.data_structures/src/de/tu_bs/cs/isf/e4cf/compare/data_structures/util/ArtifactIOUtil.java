@@ -29,9 +29,10 @@ public class ArtifactIOUtil {
 	public static List<ArtifactReader> getAllArtifactReader() {
 		List<ArtifactReader> readers = RCPContentProvider.<ArtifactReader>getInstanceFromBundle(
 				DataStructureST.ARTIFACT_READER_EXTENSION_ID, DataStructureST.ARTIFACT_READER_EXTENSION);
+
 		return readers;
 	}
-	
+
 	/**
 	 * Returns the artifact reader for a given artifact type. The artifact type is
 	 * the type of the root node.
@@ -48,7 +49,7 @@ public class ArtifactIOUtil {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns all Artifact reader that extending the AtifactReader extension point.
 	 * The extension point is defined in schema/ArtifactWriter.exsd
@@ -78,11 +79,11 @@ public class ArtifactIOUtil {
 	/**
 	 * This method parses the given files if possible an returns a list of trees.
 	 */
-	public static List<Tree> parseArtifacts(List<FileTreeElement> files) {
+	public static List<Tree> parseArtifacts(List<FileTreeElement> files, IEclipseContext context) {
 		List<Tree> artifacts = new ArrayList<Tree>();
 		for (FileTreeElement file : files) {
 			Tree tree = null;
-			tree = parseArtifact(file);
+			tree = parseArtifact(file, context);
 			if (tree != null) {
 				artifacts.add(tree);
 			}
@@ -94,12 +95,16 @@ public class ArtifactIOUtil {
 	 * This method parsers a file into a tree. if no artifact reader is available
 	 * for the specific artifact type it returns null.
 	 */
-	public static Tree parseArtifact(FileTreeElement file) {
-		for (ArtifactReader reader : getAllArtifactReader()) {
-			if (reader.isFileSupported(file)) {
-				return reader.readArtifact(file);
+	public static Tree parseArtifact(FileTreeElement file, IEclipseContext context) {
+		try {
+			Tree tree = getReaderForType(file, context).readArtifact(file);
+			if (tree != null) {
+				return tree;
 			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
+
 		if (!file.isDirectory()) {
 			System.err.println("No ArtifactReader found for files of type: " + file.getExtension());
 		}

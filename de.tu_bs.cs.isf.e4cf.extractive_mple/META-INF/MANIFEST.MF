@@ -3,16 +3,18 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Extractive_mple
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.extractive_mple;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.eclipse.e4.core.services;bundle-version="2.2.100",
+Require-Bundle: org.eclipse.emf.emfstore.common,
+ org.eclipse.e4.core.services;bundle-version="2.2.100",
  de.tu_bs.cs.isf.e4cf.compare.data_structures,
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.core.contexts,
  org.eclipse.swt,
  de.tu_bs.cs.isf.e4cf.compare,
  javax.inject,
+ org.eclipse.core.jobs,
+ org.eclipse.equinox.registry,
  org.eclipse.e4.ui.model.workbench;bundle-version="2.1.600.v20191106-1503",
  de.tu_bs.cs.isf.e4cf.core,
- org.eclipse.emf.emfstore.common,
  de.tu_bs.cs.isf.e4cf.parts.project_explorer,
  de.tu_bs.cs.isf.e4cf.refactoring.data_structures,
  de.tu_bs.cs.isf.e4cf.core,
@@ -29,3 +31,5 @@ Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.structure
 Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.consts
 Export-Package: de.tu_bs.cs.isf.e4cf.extractive_mple.consts,
  de.tu_bs.cs.isf.e4cf.extractive_mple.structure
+Bundle-ClassPath: lib/opencsv-3.8.jar,
+ .

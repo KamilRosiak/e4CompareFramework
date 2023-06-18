@@ -6,7 +6,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorToolbar;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.DragHandler;
@@ -14,6 +13,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.HotkeyHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.KeyTranslateHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.SelectionAreaHandler;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.ZoomHandler;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.theme.themes.DefaultTheme;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.animation.AnimationMap;
@@ -44,7 +44,7 @@ public class FMEditorPaneView extends BorderPane {
 	public AnimationMap labelBorderAnimationMap;
 
 	// model
-	public FeatureDiagramm currentModel;
+	public FeatureDiagram currentModel;
 	public FXGraphicalFeature currentFeature;
 	private FXGraphicalFeature rootFeature;
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -113,7 +113,7 @@ public class FMEditorPaneView extends BorderPane {
 		this.getStylesheets().setAll(cssLocation);
 	}
 
-	public FeatureDiagramm currentModel() {
+	public FeatureDiagram currentModel() {
 		return this.currentModel;
 	}
 
@@ -189,9 +189,9 @@ public class FMEditorPaneView extends BorderPane {
 				.add(parent.heightProperty().subtract(parent.lowerConnector.radiusYProperty())));
 		line.endXProperty().bind(child.layoutXProperty().add(child.widthProperty().divide(2.0)));
 		line.endYProperty().bind(child.layoutYProperty());
-		
+
 		parent.getChildFeatures().addListener((ListChangeListener<FXGraphicalFeature>) change -> {
-			while(change.next()) {
+			while (change.next()) {
 				if (change.wasRemoved()) {
 					for (FXGraphicalFeature removedChild : change.getRemoved()) {
 						if (removedChild.equals(child)) {

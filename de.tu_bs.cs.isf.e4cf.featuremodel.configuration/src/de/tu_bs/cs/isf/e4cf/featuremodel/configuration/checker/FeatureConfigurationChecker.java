@@ -1,41 +1,36 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.configuration.checker;
 
-import featureConfiguration.FeatureConfiguration;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureConfiguration;
 
 public interface FeatureConfigurationChecker {
 
 	public enum OperationState {
-		UNDEFINED,
-		PRECONDITION_ERROR,
-		SUCCESS,
-		TIMEOUT,
-		IO_ERROR,
-		PARSE_ERROR;
-		
+		UNDEFINED, PRECONDITION_ERROR, SUCCESS, TIMEOUT, IO_ERROR, PARSE_ERROR;
+
 		private String info = null;
 		private boolean hasInfo = false;
-		
+
 		public boolean hasInfo() {
 			return hasInfo;
 		}
-		
+
 		public void setInfo(String info) {
 			this.info = info;
 			hasInfo = true;
 		}
-		
+
 		public String getInfo() {
 			if (info != null) {
-				return info;				
+				return info;
 			} else {
 				return "<no additional information>";
 			}
 		}
 	}
-	
+
 	public void initialize(FeatureConfiguration fc);
-	
+
 	public OperationState check();
-	
+
 	public boolean getResult();
 }
