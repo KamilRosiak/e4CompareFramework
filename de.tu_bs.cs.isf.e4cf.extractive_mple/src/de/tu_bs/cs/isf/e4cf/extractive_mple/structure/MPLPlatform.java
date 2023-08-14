@@ -1,6 +1,9 @@
 package de.tu_bs.cs.isf.e4cf.extractive_mple.structure;
 
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -221,8 +224,9 @@ public class MPLPlatform implements Serializable {
 				initializePlatform(variant);
 				return;
 			}
-
+			
 			if (variant.getRoot().getNodeType().equals(model.getNodeType())) {
+
 				/**
 				 * Intra clone refactoring detection clone artifacts within the variant and the
 				 * creation of clone configurations
@@ -232,16 +236,13 @@ public class MPLPlatform implements Serializable {
 				if (isMulti) {
 					cloneConfigurations = refactorComponents(variant.getRoot());
 				}
-
+				LocalTime start = LocalTime.now();
 				/**
 				 * Inter clone refactoring detection clone artifacts between variants and the
 				 * creation of clone configurations
 				 */
 				// compare variants with the platform clone model
 				NodeComparison comparison = compareEngine.compare(model, variant.getRoot());
-				if (isEvaluation) {
-					System.out.println(comparison.getSimilarity());
-				}
 				// merge the new variant into the clone model
 				model = comparison.mergeArtifacts(configurations, cloneConfigurations, fixedCloneConfigs);
 
@@ -250,6 +251,9 @@ public class MPLPlatform implements Serializable {
 				variantConfig.getCloneConfigurations().addAll(cloneConfigurations);
 				variantConfig.getCloneConfigurations().addAll(fixedCloneConfigs);
 				configurations.add(variantConfig);
+				if (isEvaluation) {
+					printTime(start,"inter variability mining");
+				}
 				// model.sortChildNodes();
 			} else {
 				System.out.println("root node has other type");
@@ -261,6 +265,7 @@ public class MPLPlatform implements Serializable {
 	}
 
 	private List<CloneConfiguration> refactorComponents(Node node) {
+		LocalTime start = LocalTime.now();
 		List<CloneConfiguration> componentConfigs = new ArrayList<CloneConfiguration>();
 		try {
 			// Get all nodes of the selected type
@@ -273,7 +278,6 @@ public class MPLPlatform implements Serializable {
 					candiateIterator.remove();
 				}
 			}
-			System.out.println("candidate nodes:" + candidatNodes.size());
 			// Initialize the cluster engine and run the process output is a list of sets
 			// of nodes. Every set represents a clone cluster that has to be merged.
 			ClusterEngine clusterEngine = new ClusterEngine();
@@ -318,8 +322,18 @@ public class MPLPlatform implements Serializable {
 		} catch (Exception e) {
 			System.out.println("Multi Product Line Extraction not avalable in this version");
 		}
+		if (isEvaluation) {
+			printTime(start,"intra variability mining");
+		}
 
 		return componentConfigs;
+	}
+
+	private void printTime(LocalTime start, String task) {
+		LocalTime end = LocalTime.now();
+		Duration duration = Duration.between(start, end);
+		System.out.println(task + ": " + duration.get(ChronoUnit.SECONDS) + ","
+				+ duration.get(ChronoUnit.NANOS) + " seconds");
 	}
 
 	/**

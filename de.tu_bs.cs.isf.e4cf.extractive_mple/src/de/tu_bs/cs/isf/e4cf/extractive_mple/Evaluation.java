@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -23,24 +24,25 @@ public class Evaluation {
 
 	public static void evaluate() {
 		try {
-			MPLPlatform platform = new MPLPlatform();
 			TreeReader reader = new TreeReader(new GsonImportService());
+			for (int i = 0; i < 11; i++) {
+				List<Tree> trees = new ArrayList<Tree>();
+				for (File file : new File("J://trees/MobileMediaSPL").listFiles()) {
+					trees.add(reader.readArtifact(
+							new de.tu_bs.cs.isf.e4cf.core.file_structure.components.File(file.getAbsolutePath())));
+				}
 
-			List<Tree> trees = new ArrayList<Tree>();
-			System.out.println("loading trees");
-			for (File file : new File("J://ApoGames").listFiles()) {
-				trees.add(reader.readArtifact(
-						new de.tu_bs.cs.isf.e4cf.core.file_structure.components.File(file.getAbsolutePath())));
+				MPLPlatform platform = new MPLPlatform();
+				System.out.println("Starting Variability Mining Run " + i);
+				for (Tree tree : trees) {
+					LocalTime now = LocalTime.now();
+					System.out.println("next variant " + tree.getTreeName() + " " + now.getHour() + ":"
+							+ now.getMinute() + ":" + now.getSecond());
+					platform.insertVariant(tree);
+				}
+				System.out.println("-------------------------------");
 			}
-			System.out.println("Starting Variability Mining");
-			for (Tree tree : trees) {
-				LocalTime start = LocalTime.now();
-				platform.insertVariant(tree);
-				LocalTime end = LocalTime.now();
-				
-				System.out.println(tree.getTreeName() + " inseration: " + Duration.between(start, end));
-			}
-			MPLEPlatformUtil.storePlatform("D://apoGames.mpl", platform);
+			// MPLEPlatformUtil.storePlatform("D://apoGames.mpl", platform);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -55,15 +57,12 @@ public class Evaluation {
 			for (File file : new File("D://ApoGames").listFiles()) {
 				if (!platform.configurations.isEmpty())
 					platform = MPLEPlatformUtil.loadPlatform(new File("D://apoGames.mpl"));
-				LocalTime start = LocalTime.now();
-				float currentTime = System.nanoTime();
+
 				platform.insertVariant(reader.readArtifact(
 						new de.tu_bs.cs.isf.e4cf.core.file_structure.components.File(file.getAbsolutePath())));
-				LocalTime end = LocalTime.now();
 
-				System.out.println("inseration:" + Duration.between(start, end));
-				MPLEPlatformUtil.storePlatform("D://apoGames.mpl", platform);
-				System.out.println(file.getAbsolutePath());
+				// MPLEPlatformUtil.storePlatform("D://apoGames.mpl", platform);
+
 			}
 
 		} catch (Exception e) {

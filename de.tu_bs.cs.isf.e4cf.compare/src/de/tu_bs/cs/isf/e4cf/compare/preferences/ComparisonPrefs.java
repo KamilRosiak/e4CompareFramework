@@ -16,8 +16,9 @@ public class ComparisonPrefs implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private float optionalThreshold = 0.4f;
-	private String granularityLevel = NodeType.COMPILATION_UNIT.toString();
-	private int cloneSize = 40;
+	
+	private String granularityLevel = NodeType.METHOD_DECLARATION.toString();
+	private int cloneSize = 20;
 	private String fileName = "family_model";
 
 	public ComparisonPrefs() {

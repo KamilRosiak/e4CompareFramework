@@ -1,9 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
@@ -71,7 +74,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		NodeComparison comparison = new NodeComparison(first, second);
 		// if nodes are of the same type
 		if (first.getNodeType().equals(second.getNodeType())) {
-
 			List<Comparator> comparators = metric.getComparatorForNodeType(first.getNodeType());
 			// check if the metric contains attribute for the comparison of this node type
 			if (!comparators.isEmpty()) {
@@ -81,7 +83,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			} else {
 				NodeResultElement c = defaultComparator.compare(first, second);
 				comparison.addResultElement(c);
-
 			}
 
 			// if no children available the recursion ends here
@@ -107,8 +108,12 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 							}
 						});
 					});
+					//memory optimization
+					comparison.updateSimilarity();
+					matcher.calculateMatching(comparison);
 				}
 			}
+
 			return comparison;
 		} else {
 			return comparison;

@@ -15,9 +15,7 @@ import java.util.Set;
 
 import javax.inject.Singleton;
 
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.google.common.collect.Lists;
@@ -40,7 +38,7 @@ public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
 	private static String scriptPathExe;
 	private static String scriptPathPython;
-	public static float THRESHOLD = 0.15f;
+	public static float THRESHOLD = 0.30f;
 	public static boolean PYTHON = false;
 
 	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.refactoring.data_structures";
@@ -49,25 +47,18 @@ public class ClusterEngine {
 		try {
 			Path pathExe = new Path("/script/clustering_sklearn.exe");
 			Path pathPy = new Path("/script/clustering_sklearn.py");
-			scriptPathExe = new File(
-					FileLocator.getBundleFile(Platform.getBundle(BUNDLE_NAME)).getAbsolutePath() + pathExe).getPath();
-			scriptPathPython = new File(
-					FileLocator.getBundleFile(Platform.getBundle(BUNDLE_NAME)).getAbsolutePath() + pathPy).getPath();
 
-			/**
-			 * scriptPathExe = new
-			 * File((ClusterEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath()
-			 * + "script/clustering_sklearn.exe").substring(1)).getPath(); scriptPathPython
-			 * = new File(
-			 * (ClusterEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath()
-			 * + "script/clustering_sklearn.py").substring(1)).getPath();
-			 **/
+			scriptPathExe = new File((ClusterEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath()
+					+ "script/clustering_sklearn.exe").substring(1)).getPath();
+			scriptPathPython = new File(
+					(ClusterEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath()
+							+ "script/clustering_sklearn.py").substring(1)).getPath();
+
 			compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("no clustering available");
 		}
-
 	}
 
 	private static ProcessUtil process;

@@ -6,6 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.swt.widgets.Display;
+
 import de.tu_bs.cs.isf.e4cf.core.preferences.util.PreferencesUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorToolbar;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.handler.DragHandler;
@@ -178,7 +180,10 @@ public class FMEditorPaneView extends BorderPane {
 //			child.drawGroupVariability();
 //		}
 		insertChildren(child);
-		child.setGroupVariability(child.getFeature().getGroupVariability());
+		Display.getCurrent().syncExec(() -> {
+			child.setGroupVariability(child.getFeature().getGroupVariability());
+		});
+
 	}
 
 	private void connectFeatures(FXGraphicalFeature parent, FXGraphicalFeature child) {

@@ -31,8 +31,12 @@ public class SortingMatcher extends AbstractMatcher {
 	public <K> void calculateMatching(List<Comparison<K>> comparisons) {
 		// first match all child comparison
 		comparisons.stream().forEach(e -> {
-			calculateMatching(e.getChildComparisons());
+			if (!e.isMatched()) {
+				calculateMatching(e.getChildComparisons());
+				e.setMatched();
+			}
 			e.updateSimilarity();
+
 		});
 		// sort by similarity
 		sortBySimilarityDesc(comparisons);
@@ -78,7 +82,6 @@ public class SortingMatcher extends AbstractMatcher {
 					e.setLeftArtifact(null);
 					comparisons.add(e);
 				}
-
 			} else if (e.getLeftArtifact() != null || e.getRightArtifact() != null) {
 				// that are all containers that was added as optional by the compare-engine.
 				comparisons.add(e);
