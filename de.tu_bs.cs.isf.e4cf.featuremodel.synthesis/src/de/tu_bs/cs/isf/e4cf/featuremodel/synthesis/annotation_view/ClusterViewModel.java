@@ -13,6 +13,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.TableRow;
+import javafx.beans.value.ObservableValue;
 
 public class ClusterViewModel {
 	private StringProperty name;
