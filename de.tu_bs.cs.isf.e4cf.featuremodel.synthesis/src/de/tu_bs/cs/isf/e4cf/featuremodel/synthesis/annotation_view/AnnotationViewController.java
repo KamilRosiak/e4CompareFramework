@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.swt.widgets.Display;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
@@ -143,12 +144,18 @@ public class AnnotationViewController implements Initializable {
 
 	public void displayFeatures(FeatureDiagram featureDiagram) {
 		this.currentMpl.setFeatureModel(featureDiagram);
+		
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				// display features in mpl editor
+				services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, currentMpl);
+				// display diagram in feature model editor
+				services.partService.showPart(FDStringTable.BUNDLE_NAME);
+				services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, featureDiagram);
 
-		// display features in mpl editor
-		services.eventBroker.send(MPLEEditorConsts.SHOW_MPL, this.currentMpl);
-		// display diagram in feature model editor
-		services.partService.showPart(FDStringTable.BUNDLE_NAME);
-		services.eventBroker.post(FDEventTable.LOAD_FEATURE_DIAGRAM, featureDiagram);
+			}
+		});
 
 		// display clusters in annotation view
 		TreeSet<IFeature> allFeatures = new TreeSet<>((f1, f2) -> {
@@ -161,6 +168,7 @@ public class AnnotationViewController implements Initializable {
 		allFeatures.addAll(featureDiagram.getAllFeatures());
 		List<ClusterViewModel> viewModels = allFeatures.stream().map(ClusterViewModel::new)
 				.collect(Collectors.toList());
+
 		this.clusters = FXCollections.observableList(viewModels);
 		this.annotationTable.setItems(this.clusters);
 		this.annotationTable.refresh();
