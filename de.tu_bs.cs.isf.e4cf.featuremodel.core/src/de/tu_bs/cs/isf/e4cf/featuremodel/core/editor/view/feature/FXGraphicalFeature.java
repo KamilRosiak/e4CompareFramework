@@ -64,6 +64,8 @@ public class FXGraphicalFeature extends VBox implements Observable {
 
 	public FXGraphicalFeature() {
 		this(new Feature());
+		setAbstract(false);
+		this.feature.setComponent(false);
 	}
 
 	public void setVariability(Variability variability) {
@@ -117,6 +119,10 @@ public class FXGraphicalFeature extends VBox implements Observable {
 		getChildren().addAll(this.upperConnector, this.lowerConnector, this.featureNameLabel);
 		// set selected background color if available
 		if (feature.getColor().isPresent()) {
+			System.out.println(feature.getColor().get());
+			if (feature.getColor().get().toString().equals("0x000000ff")) {
+
+			}
 			this.setBackgroundColor(feature.getColor().get());
 		} else if (feature instanceof StylableFeature) {
 			((StylableFeature) feature).style(this);
@@ -244,12 +250,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	void setGroupVariability_ALTERNATIVE() {
-//		if (!feature.isAlternative()) {
-//			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);
-//			feature.setAlternative(true);
-//			feature.setOr(false);
-//			services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY_GROUP, feature);			
-//		}
 		if (getChildren().contains(lowerConnector)) {
 			getChildren().remove(lowerConnector);
 		}
@@ -262,12 +262,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	void setGroupVariability_OR() {
-//		if (!feature.isOr()) {
-//			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);			
-//			feature.setAlternative(false);
-//			feature.setOr(true);
-//			services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY_GROUP, feature);			
-//		}
 		if (getChildren().contains(lowerConnector)) {
 			getChildren().remove(lowerConnector);
 		}
@@ -281,12 +275,6 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	void setGroupVariability_Default() {
-//		if (feature.isOr() || feature.isAlternative()) {
-//			services.eventBroker.send(FDEventTable.LOGGER_SELECTED_FEATURE_TO_CHANGE_VARIABILITY_GROUP, feature);
-//			feature.setAlternative(false);
-//			feature.setOr(false);
-//			services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_VARIABILITY_GROUP, feature);
-//		}
 		if (getChildren().contains(lowerConnector)) {
 			getChildren().remove(lowerConnector);
 		}
@@ -334,7 +322,7 @@ public class FXGraphicalFeature extends VBox implements Observable {
 	}
 
 	public void setAbstract(boolean isAbstract) {
-		// this.feature.setAbstract(isAbstract);
+		getFeature().setAbstract(isAbstract);
 		this.featureNameLabel.restyle();
 	}
 

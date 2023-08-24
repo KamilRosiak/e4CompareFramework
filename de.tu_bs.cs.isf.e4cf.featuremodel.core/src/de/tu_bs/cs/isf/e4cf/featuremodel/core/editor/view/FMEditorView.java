@@ -42,6 +42,9 @@ public class FMEditorView {
 
 	private FXGraphicalFeature buildFXGrapicalDiagram(IFeature feature) {
 		FXGraphicalFeature fxRoot = new FXGraphicalFeature(feature);
+
+		fxRoot.setAbstract(feature.isAbstract());
+		
 		ContextInjectionFactory.inject(fxRoot, EventBroker.getServices().context);
 		for (IFeature child : feature.getChildren()) {
 			FXGraphicalFeature fxChild = buildFXGrapicalDiagram(child);

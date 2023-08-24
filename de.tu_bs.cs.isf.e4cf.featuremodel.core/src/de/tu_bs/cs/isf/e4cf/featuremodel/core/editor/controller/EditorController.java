@@ -31,7 +31,6 @@ public class EditorController {
 		this.services = services;
 		FMEditorPaneController editorPane = new FMEditorPaneController(services);
 		this.view = new FMEditorView(editorPane, uiConsumer);
-
 		this.diagram = new FeatureDiagram(FDStringTable.FD_DEFAULT_FM_NAME, new Feature("Root"));
 		this.diagram.getRoot().setVariability(Variability.MANDATORY);
 		this.view.displayFeatureDiagram(this.diagram);
@@ -59,6 +58,7 @@ public class EditorController {
 	public void setFeatureDiagram(FeatureDiagram diagram) {
 		this.view.displayFeatureDiagram(diagram);
 		this.diagram = diagram;
+		
 		System.out.println("Feature Diagram " + diagram.getName() + " successfully loaded.");
 	}
 

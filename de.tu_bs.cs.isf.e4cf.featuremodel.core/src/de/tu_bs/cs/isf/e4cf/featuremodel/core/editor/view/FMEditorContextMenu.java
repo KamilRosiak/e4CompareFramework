@@ -30,13 +30,16 @@ public class FMEditorContextMenu extends ContextMenu {
 		this.getItems().add(addFeatureMenuItem());
 	}
 
+	int counter = 0;
+
 	private MenuItem addFeatureMenuItem() {
 		MenuItem item = new MenuItem(FDStringTable.FD_CONTEXT_MENU_ADD_FEATURE);
 		item.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				Feature feature = FeatureDiagramFactory.eINSTANCE.createFeature();
-				feature.setName("Feature");
+				feature.setName("Feature " + counter);
+				counter++;
 				GraphicalFeature graphicalFeature = FeatureDiagramFactory.eINSTANCE.createGraphicalFeature();
 				feature.setGraphicalfeature(graphicalFeature);
 				feature.setMandatory(false);

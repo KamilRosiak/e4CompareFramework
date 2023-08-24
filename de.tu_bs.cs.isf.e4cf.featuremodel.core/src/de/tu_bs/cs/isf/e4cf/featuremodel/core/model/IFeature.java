@@ -10,49 +10,57 @@ import javafx.scene.paint.Color;
 
 public interface IFeature {
 	UUID getUuid();
-		
+
 	String getName();
+
 	void setName(String name);
-	
+
 	boolean isRoot();
+
 	void setIsRoot(boolean isRoot);
-	
+
 	Optional<Color> getColor();
+
 	void setColor(Color color);
-	
+
 	Set<Configuration> getConfigurations();
-	
+
 	Set<UUID> getArtifactUUIDs();
-		
+
 	List<IFeature> getChildren();
+
 	void addChild(IFeature child);
+
 	void removeChild(IFeature child);
-	
+
 	Optional<IFeature> getParent();
+
 	void setParent(IFeature parent);
-	
+
 	Variability getVariability();
+
 	void setVariability(Variability var);
-	
+
 	GroupVariability getGroupVariability();
+
 	void setGroupVariability(GroupVariability groupVar);
+
+	public boolean isAbstract();
+	public void setAbstract(boolean isAbstract);
 	
-	default boolean isAbstract() {
-		return false;
-	}
-	
-	default boolean isComponent() {
-		return false;
-	}
-	
+	public boolean isComponent();
+	public void setComponent(boolean isAbstract);
+
 	String getDescription();
+
 	void setDescription(String description);
-	
+
 	@Override
 	public boolean equals(Object other);
+
 	@Override
 	public int hashCode();
-	
+
 	public default int getDepth(IFeature feature, int depth) {
 		if (this.equals(feature)) {
 			return depth;
@@ -65,5 +73,5 @@ public interface IFeature {
 		}
 		return -1;
 	}
-	
+
 }

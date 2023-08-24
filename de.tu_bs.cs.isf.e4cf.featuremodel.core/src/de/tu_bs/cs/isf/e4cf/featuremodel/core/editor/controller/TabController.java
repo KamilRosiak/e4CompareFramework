@@ -23,6 +23,7 @@ import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.FMEditorTab;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.TabView;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.error.ErrorListener;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.Variability;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.EventBroker;
@@ -102,10 +103,12 @@ public class TabController {
 	@Optional
 	@Inject
 	public void loadFeatureDiagram(@UIEventTopic(FDEventTable.LOAD_FEATURE_DIAGRAM) FeatureDiagram diagram) {
+		diagram.getRoot().setVariability(Variability.MANDATORY);
 		FMEditorTab newTab = this.createTab(diagram.getName());
 		// services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
 		services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, diagram);
 		newTab.editor().setFeatureDiagram(diagram);
+		view.addTab(newTab);
 	}
 
 	public FeatureDiagram getCurrentFeatureDiagram() {

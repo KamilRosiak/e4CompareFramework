@@ -176,9 +176,7 @@ public class FMEditorPaneView extends BorderPane {
 		this.rootPane.getChildren().add(child);
 		addChangeListener(child);
 		connectFeatures(parent, child);
-//		if (!child.getFeature().getGroupVariability().equals(GroupVariability.DEFAULT)) {
-//			child.drawGroupVariability();
-//		}
+
 		insertChildren(child);
 		Display.getCurrent().syncExec(() -> {
 			child.setGroupVariability(child.getFeature().getGroupVariability());

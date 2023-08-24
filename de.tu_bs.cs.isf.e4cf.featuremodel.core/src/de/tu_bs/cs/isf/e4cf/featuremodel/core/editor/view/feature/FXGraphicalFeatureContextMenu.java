@@ -33,8 +33,8 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.fxGraFeature = fxGraFeature;
 		if (fxGraFeature.getFeature() instanceof ComponentFeature) {
 			createComponentControl();
-		//} else if (fxGraFeature.getFeature() instanceof ConfigurationFeature) {
-			//createConfigurationControl();
+			// } else if (fxGraFeature.getFeature() instanceof ConfigurationFeature) {
+			// createConfigurationControl();
 		} else {
 			createControl();
 		}
@@ -51,7 +51,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(addFeatureBelowMenuItem());
 		this.getItems().add(addFeatureAboveMenuItem());
 		this.getItems().add(createComponentFeature());
-		
+
 		// feature variability
 		this.getItems().add(new SeparatorMenuItem());
 		ToggleGroup variabilityToggle = new ToggleGroup();
@@ -64,7 +64,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(defaultVar);
 		this.getItems().add(optionalVar);
 		this.getItems().add(mandatoryVar);
-		
+
 		// group variability
 		this.getItems().add(new SeparatorMenuItem());
 		ToggleGroup groupVar = new ToggleGroup();
@@ -78,12 +78,12 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		this.getItems().add(defGroupVar);
 		this.getItems().add(orGroupVar);
 		this.getItems().add(altGroupVar);
-		
+
 		this.getItems().add(new SeparatorMenuItem());
 		this.getItems().add(addFeatureMakeHiddenMenuItem());
 		this.getItems().add(mergeSelectedFeatures());
 		this.getItems().add(moveSelectedFeatures());
-		
+
 	}
 
 	private void createComponentControl() {
@@ -138,7 +138,8 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 			@Override
 			public void handle(ActionEvent event) {
 				hide();
-				IComponentFeature componentFeature = ((IComponentFeature) fxGraFeature.getParentFxFeature().getFeature());
+				IComponentFeature componentFeature = ((IComponentFeature) fxGraFeature.getParentFxFeature()
+						.getFeature());
 				IFeatureConfiguration config = componentFeature.getConfiguration();
 				services.partService.showPart(FDStringTable.FD_FEATURE_CONFIG_PART_NAME);
 				services.eventBroker.send(FDEventTable.EVENT_SHOW_CONFIGURATION_VIEW, config);
@@ -163,22 +164,31 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 
 	private MenuItem createComponentFeature() {
-		MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_CREATE_COMPONENTFEATURE);
-		item.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				Pair<String, FXGraphicalFeature> pair = new Pair<String, FXGraphicalFeature>(
-						FDStringTable.COMPONENTFEATURE, fxGraFeature);
-				IFeature newComponent = new ComponentFeature();
-				FXGraphicalFeature newFxGra = new FXGraphicalFeature(newComponent);
-				fxGraFeature.addChildFeature(newFxGra);
-				contextMenu.hide();
-				event.consume();
-				services.eventBroker.post(FDEventTable.ADD_COMPONENTFEATURE, pair);
-			}
-		});
+		try {
+			MenuItem item = new MenuItem(FDStringTable.FX_FEATURE_CM_CREATE_COMPONENTFEATURE);
+			item.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					Pair<String, FXGraphicalFeature> pair = new Pair<String, FXGraphicalFeature>(
+							FDStringTable.COMPONENTFEATURE, fxGraFeature);
+					IFeature newComponent = new ComponentFeature();
 
-		return item;
+					FXGraphicalFeature newFxGra = new FXGraphicalFeature(newComponent);
+					newFxGra.getFeature().setComponent(true);
+					newFxGra.getFeature().setAbstract(false);
+					newFxGra.featureNameLabel.restyle();
+					fxGraFeature.addChildFeature(newFxGra);
+					contextMenu.hide();
+
+					services.eventBroker.post(FDEventTable.ADD_COMPONENTFEATURE, pair);
+					event.consume();
+				}
+			});
+			return item;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private MenuItem loadComponentFeatureDiagram() {
@@ -210,6 +220,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 			@Override
 			public void handle(ActionEvent event) {
 				FXGraphicalFeature newFeature = new FXGraphicalFeature();
+				newFeature.setAbstract(false);
 				FXGraphicalFeature parent = fxGraFeature.getParentFxFeature();
 				contextMenu.hide();
 				if (parent == null) { // root feature
@@ -222,6 +233,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 					parent.addChildFeature(newFeature);
 					newFeature.addChildFeature(fxGraFeature);
 				}
+
 				services.eventBroker.send(FDEventTable.ADD_FEATURE_ABOVE, fxGraFeature);
 				event.consume();
 			}
@@ -231,19 +243,19 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 	}
 
 	private MenuItem addFeatureMakeAbstractMenuItem() {
-
 		CheckMenuItem item = new CheckMenuItem(FDStringTable.FX_FEATURE_CM_MAKE_ABSTRACT);
 		item.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				fxGraFeature.setAbstract(item.isSelected());
+				System.out.println("context:" + item.isSelected());
 				contextMenu.hide();
 				event.consume();
 				services.eventBroker.send(FDEventTable.LOGGER_CHANGED_FEATURE_ABSTRACTION, fxGraFeature);
 				services.eventBroker.send(FDEventTable.SET_FEATURE_ABSTRACT, fxGraFeature);
 			}
 		});
-		item.setSelected(fxGraFeature.getFeature().isAbstract());
+		// item.setSelected(fxGraFeature.getFeature().isAbstract());
 		return item;
 	}
 
@@ -332,7 +344,7 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 		item.setSelected(fxGraFeature.getFeature().getVariability().equals(Variability.OPTIONAL));
 		return item;
 	}
-	
+
 	private RadioMenuItem setDefaultMenuItem() {
 		RadioMenuItem item = new RadioMenuItem(FDStringTable.FX_FEATURE_CM_DEFAULT);
 		item.setOnAction(event -> {
@@ -432,11 +444,9 @@ public class FXGraphicalFeatureContextMenu extends ContextMenu {
 			@Override
 			public void handle(ActionEvent event) {
 				hide();
-				String description = RCPMessageProvider.inputDialog(
-						"Set Feature Description", 
+				String description = RCPMessageProvider.inputDialog("Set Feature Description",
 						String.format("Describe Feature '%s'", fxGraFeature.getFeature().getName()),
-						fxGraFeature.getFeature().getDescription()
-				);
+						fxGraFeature.getFeature().getDescription());
 				fxGraFeature.getFeature().setDescription(description);
 				event.consume();
 			}

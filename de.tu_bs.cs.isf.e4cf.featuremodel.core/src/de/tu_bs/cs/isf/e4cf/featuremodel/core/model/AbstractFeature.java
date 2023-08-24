@@ -12,7 +12,8 @@ import javafx.scene.paint.Color;
 
 public abstract class AbstractFeature implements IFeature, Serializable {
 	private static final long serialVersionUID = -8018048333363966570L;
-	
+	private boolean isAbstract = true;
+	private boolean isComponent = false;
 	private final UUID uuid = UUID.randomUUID();
 	private String name;
 	private boolean isRoot = false;
@@ -22,11 +23,31 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	private FeatureColor color = FeatureColor.Unset;
 	private final Set<Configuration> configurations = new HashSet<>();
 	private final Set<UUID> artifactUUIDs = new HashSet<>();
-	
+
+	@Override
+	public void setComponent(boolean isComponent) {
+		this.isComponent = isComponent;
+	}
+
+	@Override
+	public boolean isComponent() {
+		return this.isComponent;
+	}
+
+	@Override
+	public boolean isAbstract() {
+		return this.isAbstract;
+	}
+
+	@Override
+	public void setAbstract(boolean isAbstract) {
+		this.isAbstract = isAbstract;
+	}
+
 	public AbstractFeature(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public UUID getUuid() {
 		return uuid;
@@ -40,14 +61,14 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	@Override
 	public void setName(String name) {
 		this.name = name;
-		
+
 	}
-	
-	@Override 
+
+	@Override
 	public boolean isRoot() {
 		return isRoot;
 	}
-	
+
 	@Override
 	public void setIsRoot(boolean isRoot) {
 		this.isRoot = isRoot;
@@ -65,7 +86,7 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	@Override
 	public void setParent(IFeature parent) {
 		this.parent = parent;
-		
+
 	}
 
 	@Override
@@ -77,17 +98,17 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	public void setVariability(Variability var) {
 		this.variability = var;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return description;
 	}
-	
+
 	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	@Override
 	public Optional<Color> getColor() {
 		if (color.equals(FeatureColor.Unset)) {
@@ -96,17 +117,17 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 			return Optional.of(color.get());
 		}
 	}
-	
+
 	@Override
 	public void setColor(Color color) {
 		this.color = new FeatureColor(color);
 	}
-	
+
 	@Override
 	public Set<Configuration> getConfigurations() {
 		return this.configurations;
 	}
-	
+
 	@Override
 	public Set<UUID> getArtifactUUIDs() {
 		return this.artifactUUIDs;
@@ -115,11 +136,12 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 	@Override
 	public int hashCode() {
 		if (this.getParent().isPresent()) {
-			return Objects.hash(artifactUUIDs, color, configurations, description, parent.getUuid(), name, uuid, isRoot, variability);
+			return Objects.hash(artifactUUIDs, color, configurations, description, parent.getUuid(), name, uuid, isRoot,
+					variability);
 		} else {
 			return Objects.hash(artifactUUIDs, color, configurations, description, name, uuid, isRoot, variability);
 		}
-		
+
 	}
 
 	@Override
@@ -141,6 +163,6 @@ public abstract class AbstractFeature implements IFeature, Serializable {
 		return "AbstractFeature [uuid=" + uuid + ", name=" + name + ", description=" + description + ", variability="
 				+ variability + ", parent=" + parent + ", color=" + color + ", configurations=" + configurations
 				+ ", artifactUUIDs=" + artifactUUIDs + "]";
-	}	
+	}
 
 }

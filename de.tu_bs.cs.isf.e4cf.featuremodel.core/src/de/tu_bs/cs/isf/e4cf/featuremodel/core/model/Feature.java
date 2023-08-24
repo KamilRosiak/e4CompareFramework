@@ -52,13 +52,6 @@ public class Feature extends AbstractFeature implements IFeature, Serializable {
 		this.children.remove(child);
 	}
 
-	/**
-	 * @return the isAbstract
-	 */
-	public boolean isAbstract() {
-		return this.getArtifactUUIDs().isEmpty();
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -83,5 +76,4 @@ public class Feature extends AbstractFeature implements IFeature, Serializable {
 	public String toString() {
 		return "Feature [ name: " + getName() + ", gVar: " + this.groupVariability.toString() + ", " + super.toString() +  "]";
 	}
-	
 }

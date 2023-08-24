@@ -16,7 +16,7 @@ public class ComponentFeature extends AbstractFeature implements IComponentFeatu
 		this.diagram = new FeatureDiagram(name, new Feature());
 		this.config = new FeatureConfiguration(this.diagram);
 	}
-	
+
 	public ComponentFeature(FeatureDiagram diagram) {
 		this();
 		setDiagram(diagram);
