@@ -317,4 +317,6 @@ public interface Node extends Serializable {
 
 	public Node getNodeByUUID(UUID key);
 
+	public void removeElementsOfType(String string);
+
 }

@@ -38,7 +38,7 @@ public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
 	private static String scriptPathExe;
 	private static String scriptPathPython;
-	public static float THRESHOLD = 0.30f;
+	public static float THRESHOLD = 0.3f;
 	public static boolean PYTHON = false;
 
 	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.refactoring.data_structures";

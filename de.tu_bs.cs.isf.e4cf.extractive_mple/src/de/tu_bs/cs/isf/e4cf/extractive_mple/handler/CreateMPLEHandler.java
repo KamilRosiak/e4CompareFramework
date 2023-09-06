@@ -11,7 +11,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
@@ -34,13 +33,7 @@ public class CreateMPLEHandler {
 				for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
 					variants.add(readerManager.readFile(treeElement));
 				}
-				
-				variants.forEach(variant -> {
-					System.out.println(variant.getTreeName());
-					System.out.println(variant.cloneTree().getRoot().getNodesOfType(NodeType.COMPILATION_UNIT.toString()).size());
-					System.out.println(variant.cloneTree().getRoot().getNodesOfType(NodeType.METHOD_DECLARATION.toString()).size());
-				});
-				
+
 				new ComparisonPrefDialog(platform.prefs, variants.get(0).getRoot());
 
 				new Job("create mpl job") {

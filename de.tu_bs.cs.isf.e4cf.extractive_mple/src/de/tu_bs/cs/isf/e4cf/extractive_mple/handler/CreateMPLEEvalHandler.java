@@ -20,6 +20,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 
 import com.opencsv.CSVWriter;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
@@ -34,11 +35,20 @@ public class CreateMPLEEvalHandler {
 	public void execute(ServiceContainer services, ReaderManager readerManager, IEclipseContext context) {
 		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
 			try {
-				CSVWriter csvWritter = creatCSVWriter(
-						new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-								+ "\\clone_platform_results.csv"));
-
 				MPLPlatform platform = new MPLPlatform();
+				platform.prefs.setOptionalThreshold(0.7f);
+				platform.prefs.setGranularityLevel(NodeType.METHOD_DECLARATION.toString());
+				platform.prefs.setCloneSize(10);
+				
+				
+				
+				CSVWriter csvWritter = creatCSVWriter(
+						new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+								+ "clone_model_cs_" + platform.prefs.getCloneSize() + "_gama_"
+								+ platform.prefs.getOptionalThreshold() + "_granularity_" + platform.prefs.getGranularityLevel()+".csv"));
+
+
+
 				csvWritter.writeNext(new String[] { "prefs:", "cloneSize: " + platform.prefs.getCloneSize(),
 						"threshold: " + platform.prefs.getOptionalThreshold(),
 						"granularity level: " + platform.prefs.getCloneSize() });
@@ -57,8 +67,11 @@ public class CreateMPLEEvalHandler {
 				long endTime = System.currentTimeMillis();
 				long time = endTime - startTime;
 
-				MPLEPlatformUtil.storePlatform(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-						+ "//" + "clone_model.mpl", platform);
+				MPLEPlatformUtil.storePlatform(
+						services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+								+ "clone_model_cs_" + platform.prefs.getCloneSize() + "_gama_"
+								+ platform.prefs.getOptionalThreshold() + "_granularity_" + platform.prefs.getGranularityLevel() + ".mpl",
+						platform);
 				long memoryConsumption = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
 				SimpleDateFormat formater = new SimpleDateFormat("ss,SSS");

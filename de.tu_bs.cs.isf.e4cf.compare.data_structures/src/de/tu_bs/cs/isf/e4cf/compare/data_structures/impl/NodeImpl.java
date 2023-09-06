@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.compare.data_structures.impl;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
@@ -139,5 +140,23 @@ public class NodeImpl extends AbstractNode {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void removeElementsOfType(String string) {
+		Iterator<Node> nodeIt = getChildren().iterator();
+		while (nodeIt.hasNext()) {
+			Node node = (Node) nodeIt.next();
+			if (node.getNodeType().equals(string)) {
+				nodeIt.remove();
+			} else {
+				if (node.getChildren() != null && !node.getChildren().isEmpty()) {
+					node.getChildren().forEach(childNode -> {
+						childNode.removeElementsOfType(string);
+					});
+				}
+			}
+
+		}
 	}
 }

@@ -22,6 +22,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfigura
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -111,6 +112,10 @@ public class MPLPlatform implements Serializable {
 			// variants.sort((a, b) -> {
 			// return Integer.compare(a.getSize(), b.getSize());
 			// });
+			variants.forEach(variant -> {
+				variant.getRoot().removeElementsOfType("LineComment");
+			});
+
 			variants.forEach(variant -> {
 				services.eventBroker.send(E4CEventTable.UPDATE_STATUS_BAR,
 						new E4CStatus("comparing variants (" + variants.indexOf(variant) + "/" + variants.size() + ")",
@@ -224,7 +229,7 @@ public class MPLPlatform implements Serializable {
 				initializePlatform(variant);
 				return;
 			}
-			
+
 			if (variant.getRoot().getNodeType().equals(model.getNodeType())) {
 
 				/**
@@ -252,7 +257,7 @@ public class MPLPlatform implements Serializable {
 				variantConfig.getCloneConfigurations().addAll(fixedCloneConfigs);
 				configurations.add(variantConfig);
 				if (isEvaluation) {
-					printTime(start,"inter variability mining");
+					printTime(start, "inter variability mining");
 				}
 				// model.sortChildNodes();
 			} else {
@@ -323,7 +328,7 @@ public class MPLPlatform implements Serializable {
 			System.out.println("Multi Product Line Extraction not avalable in this version");
 		}
 		if (isEvaluation) {
-			printTime(start,"intra variability mining");
+			printTime(start, "intra variability mining");
 		}
 
 		return componentConfigs;
@@ -332,8 +337,8 @@ public class MPLPlatform implements Serializable {
 	private void printTime(LocalTime start, String task) {
 		LocalTime end = LocalTime.now();
 		Duration duration = Duration.between(start, end);
-		System.out.println(task + ": " + duration.get(ChronoUnit.SECONDS) + ","
-				+ duration.get(ChronoUnit.NANOS) + " seconds");
+		System.out.println(
+				task + ": " + duration.get(ChronoUnit.SECONDS) + "," + duration.get(ChronoUnit.NANOS) + " seconds");
 	}
 
 	/**
