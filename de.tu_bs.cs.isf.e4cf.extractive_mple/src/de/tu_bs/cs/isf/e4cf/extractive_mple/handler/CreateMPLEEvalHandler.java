@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,62 +31,80 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 
 public class CreateMPLEEvalHandler {
+	List<Float> gamas = new LinkedList<Float>();
+	List<Integer> size = new LinkedList<Integer>();
+	List<String> type = new LinkedList<String>();
 
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, IEclipseContext context) {
-		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
-			try {
-				MPLPlatform platform = new MPLPlatform();
-				platform.prefs.setOptionalThreshold(0.7f);
-				platform.prefs.setGranularityLevel(NodeType.METHOD_DECLARATION.toString());
-				platform.prefs.setCloneSize(10);
-				
-				
-				
-				CSVWriter csvWritter = creatCSVWriter(
-						new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
-								+ "clone_model_cs_" + platform.prefs.getCloneSize() + "_gama_"
-								+ platform.prefs.getOptionalThreshold() + "_granularity_" + platform.prefs.getGranularityLevel()+".csv"));
+		gamas.add(0.7f);
+		gamas.add(0.8f);
+		gamas.add(0.9f);
+		gamas.add(1.0f);
+		size.add(10);
+		size.add(30);
+		size.add(50);
+		type.add(NodeType.METHOD_DECLARATION.toString());
+		type.add(NodeType.CLASS.toString());
 
+		type.forEach(type -> {
+			size.forEach(size -> {
+				gamas.forEach(gama -> {
+					if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
+						try {
+							MPLPlatform platform = new MPLPlatform();
+							platform.prefs.setOptionalThreshold(gama);
+							platform.prefs.setGranularityLevel(type);
+							platform.prefs.setCloneSize(size);
+							CSVWriter csvWritter = creatCSVWriter(
+									new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+											+ "//" + "clone_model_cs_" + platform.prefs.getCloneSize() + "_gama_"
+											+ platform.prefs.getOptionalThreshold() + "_granularity_"
+											+ platform.prefs.getGranularityLevel() + ".csv"));
 
+							csvWritter.writeNext(new String[] { "prefs:", "cloneSize: " + platform.prefs.getCloneSize(),
+									"threshold: " + platform.prefs.getOptionalThreshold(),
+									"granularity level: " + platform.prefs.getCloneSize() });
+							csvWritter.writeNext(new String[] { "permutations", "#UUIDs", "#classes", "#clone_configs",
+									"Runtime ss", "Memory Consuption" });
 
-				csvWritter.writeNext(new String[] { "prefs:", "cloneSize: " + platform.prefs.getCloneSize(),
-						"threshold: " + platform.prefs.getOptionalThreshold(),
-						"granularity level: " + platform.prefs.getCloneSize() });
-				csvWritter.writeNext(new String[] { "permutations", "#UUIDs", "#classes", "#clone_configs",
-						"Runtime ss", "Memory Consuption" });
+							List<Tree> variants = new ArrayList<Tree>();
+							// read all variants
+							for (FileTreeElement treeElement : services.rcpSelectionService
+									.getCurrentSelectionsFromExplorer()) {
+								variants.add(readerManager.readFile(treeElement));
+							}
+							// Collections.shuffle(variants);
 
-				List<Tree> variants = new ArrayList<Tree>();
-				// read all variants
-				for (FileTreeElement treeElement : services.rcpSelectionService.getCurrentSelectionsFromExplorer()) {
-					variants.add(readerManager.readFile(treeElement));
-				}
-				// Collections.shuffle(variants);
+							long startTime = System.currentTimeMillis();
+							platform.insertVariants(variants, services);
+							long endTime = System.currentTimeMillis();
+							long time = endTime - startTime;
 
-				long startTime = System.currentTimeMillis();
-				platform.insertVariants(variants, services);
-				long endTime = System.currentTimeMillis();
-				long time = endTime - startTime;
+							MPLEPlatformUtil.storePlatform(
+									services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+											+ "clone_model_cs_" + platform.prefs.getCloneSize() + "_gama_"
+											+ platform.prefs.getOptionalThreshold() + "_granularity_"
+											+ platform.prefs.getGranularityLevel() + ".mpl",
+									platform);
+							long memoryConsumption = Runtime.getRuntime().totalMemory()
+									- Runtime.getRuntime().freeMemory();
 
-				MPLEPlatformUtil.storePlatform(
-						services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
-								+ "clone_model_cs_" + platform.prefs.getCloneSize() + "_gama_"
-								+ platform.prefs.getOptionalThreshold() + "_granularity_" + platform.prefs.getGranularityLevel() + ".mpl",
-						platform);
-				long memoryConsumption = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+							SimpleDateFormat formater = new SimpleDateFormat("ss,SSS");
+							csvWritter.writeNext(new String[] {
+									"family_model_size_" + platform.prefs.getCloneSize() + "_threshold_"
+											+ platform.prefs.getOptionalThreshold(),
+									formater.format(time), String.valueOf(memoryConsumption) });
 
-				SimpleDateFormat formater = new SimpleDateFormat("ss,SSS");
-				csvWritter.writeNext(new String[] {
-						"family_model_size_" + platform.prefs.getCloneSize() + "_threshold_"
-								+ platform.prefs.getOptionalThreshold(),
-						formater.format(time), String.valueOf(memoryConsumption) });
-
-				csvWritter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			// Compare resulting trees
-		}
+							csvWritter.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						// Compare resulting trees
+					}
+				});
+			});
+		});
 	}
 
 	public static void removeRandomVariants(List<Tree> trees) {

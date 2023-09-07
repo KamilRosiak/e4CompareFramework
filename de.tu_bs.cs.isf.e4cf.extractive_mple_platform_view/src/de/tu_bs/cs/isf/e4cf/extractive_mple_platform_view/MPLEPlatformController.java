@@ -37,6 +37,7 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.TreeWriter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.PipedDeepCopy;
+import de.tu_bs.cs.isf.e4cf.compare.preferences.ComparisonPrefs;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPMessageProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -388,7 +389,10 @@ public class MPLEPlatformController implements Initializable {
 				}
 			});
 		});
-
+		String fileName = services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+				+ "clone_model_cs_" + currentPlatform.prefs.getCloneSize() + "_gama_"
+				+ currentPlatform.prefs.getOptionalThreshold() + "_granularity_"
+				+ currentPlatform.prefs.getGranularityLevel();
 		CSVWriter csvWritter = creatCSVWriter(
 				new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
 						+ "\\clone_distribution_family_model.csv"));

@@ -22,7 +22,6 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfigura
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.ConfigurationImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -87,8 +86,6 @@ public class MPLPlatform implements Serializable {
 		this.isMulti = isMulti;
 		this.compareEngine = compareEngine;
 		this.prefs = prefs;
-		compareEngine.getMatcher().setThreshold(prefs.getOptionalThreshold());
-
 	}
 
 	public Optional<FeatureDiagram> getFeatureModel() {
@@ -286,6 +283,7 @@ public class MPLPlatform implements Serializable {
 			// Initialize the cluster engine and run the process output is a list of sets
 			// of nodes. Every set represents a clone cluster that has to be merged.
 			ClusterEngine clusterEngine = new ClusterEngine();
+			clusterEngine.THRESHOLD = 1 - prefs.getOptionalThreshold();
 			ClusterEngine.startProcess();
 			List<Set<Node>> nodeCluster = clusterEngine.detectClusters(candidatNodes,
 					clusterEngine.buildDistanceString(candidatNodes));
