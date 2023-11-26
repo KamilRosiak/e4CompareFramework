@@ -15,6 +15,9 @@ import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.Pair;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml.impl.XMLParserBaseVisitor;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.xml.impl.XMLParser;
+
 public class XMLVisitor extends XMLParserBaseVisitor<Node> {
 	private final Map<String, NodeType> nameToType;
 	

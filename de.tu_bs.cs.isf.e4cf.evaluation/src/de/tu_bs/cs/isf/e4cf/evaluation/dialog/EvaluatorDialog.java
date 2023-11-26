@@ -15,7 +15,7 @@ import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 
 public class EvaluatorDialog {
-	private static final String FXML_PATH = "src/de/tu_bs/cs/isf/e4cf/evaluation/dialog/VariantEvaluatorDialog.fxml";
+	private static final String FXML_PATH = "de/tu_bs/cs/isf/e4cf/evaluation/dialog/VariantEvaluatorDialog.fxml";
 	
 	private Dialog<EvaluatorOptions> dialog;
 	private EvaluatorViewController controller;

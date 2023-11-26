@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="NodeDecorator" name="NodeDecorator" schema="schema/de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.exsd"/>
+   <extension-point id="NodeDecorator" name="NodeDecorator" schema="schema/node_decorator.exsd"/>
    <extension
          id="id1"
          point="org.eclipse.e4.workbench.model">
@@ -12,16 +12,13 @@
    <extension
          point="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.NodeDecorator">
       <node_decorator
-            decorator_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator"
+            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.IEC61131NodeDecorator">
+      </node_decorator>
+      <node_decorator
+            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.JavaDecorator">
+      </node_decorator>
+      <node_decorator
             node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.FamilyModelNodeDecorator">
-      </node_decorator>
-      <node_decorator
-            decorator_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.TextDecorator"
-            node_decorator="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.TextDecorator">
-      </node_decorator>
-      <node_decorator
-            decorator_attr="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl.DetailedFamilyModelNodeDecorator"
-            node_decorator="de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.impl.DetailedFamilyModelNodeDecorator">
       </node_decorator>
    </extension>
    <extension

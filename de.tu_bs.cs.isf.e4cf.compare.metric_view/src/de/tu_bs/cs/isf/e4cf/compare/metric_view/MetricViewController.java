@@ -16,7 +16,7 @@ import javafx.embed.swt.FXCanvas;
 import javafx.scene.Scene;
 
 public class MetricViewController {
-    private static final String METRIC_VIEW_FXML = "src/de/tu_bs/cs/isf/e4cf/compare/metric_view/MetricView.fxml";
+    private static final String METRIC_VIEW_FXML = "de/tu_bs/cs/isf/e4cf/compare/metric_view/MetricView.fxml";
 
     @PostConstruct
     public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {

@@ -10,7 +10,8 @@ Bundle-ClassPath: .,
  lib/com.google.guava_27.1.0.v20190517-1946.jar,
  lib/richtextfx-fat-0.10.4.jar,
  lib/org.eclipse.fx.ui.di-2.5.0.jar,
- lib/mockito-core-3.8.0.jar
+ lib/mockito-core-3.8.0.jar,
+ lib/jfxswt.jar
 Bundle-Activator: de.tu_bs.cs.isf.e4cf.core.Activator
 Export-Package: 
  com.google.common.collect,
@@ -44,6 +45,7 @@ Export-Package:
  de.tu_bs.cs.isf.e4cf.core.util.file,
  de.tu_bs.cs.isf.e4cf.core.util.services,
  de.tu_bs.cs.isf.e4cf.core.util.tagging,
+ de.tu_bs.cs.isf.e4cf.core.util.tree,
  org.eclipse.fx.ui.di,
  org.eclipse.wb.swt,
  org.fxmisc.richtext,

@@ -189,6 +189,7 @@ public class CloneLogger {
 	}
 	
 	public void deleteLogsContainingString(String contains) {
+		/**
 		if(isActive) for (int i=0; i < currentVariantLog.size(); i++) {
 			String entry = currentVariantLog.get(i);
 			if(entry.startsWith(CloneST.ATOMIC) 
@@ -197,5 +198,6 @@ public class CloneLogger {
 				currentVariantLog.remove(entry);
 			}
 		}
+		**/
 	}
 }

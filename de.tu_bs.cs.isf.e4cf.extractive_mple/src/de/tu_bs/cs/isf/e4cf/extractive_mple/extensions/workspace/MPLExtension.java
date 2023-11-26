@@ -13,7 +13,6 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.consts.MPLEEditorConsts;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewFiles;
-import de.tu_bs.cs.isf.e4cf.family_model_view.prototype.stringtable.FamilyModelViewStrings;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerExtension;
 
 public class MPLExtension implements IProjectExplorerExtension {
@@ -23,7 +22,7 @@ public class MPLExtension implements IProjectExplorerExtension {
 
 	@Override
 	public Image getIcon(RCPImageService imageService) {
-		return imageService.getImage(FamilyModelViewStrings.BUNDLE_NAME, FamilyModelViewFiles.FV_ROOT_16);
+		return imageService.getImage(MPLEEditorConsts.EMPLE_BUNDLE_NAME, FamilyModelViewFiles.FV_ROOT_16);
 	}
 
 	@Override
@@ -39,7 +38,7 @@ public class MPLExtension implements IProjectExplorerExtension {
 			}
 			
 			MPLPlatform platform = MPLEPlatformUtil.loadPlatform(new File(selectedFileElement.getAbsolutePath()));
-			
+			platform.location = selectedFileElement.getAbsolutePath();
 			// send load event
 			container.partService.showPart(MPLEEditorConsts.PLATFORM_VIEW);
 			container.partService.showPart(MPLEEditorConsts.TREE_VIEW_ID);

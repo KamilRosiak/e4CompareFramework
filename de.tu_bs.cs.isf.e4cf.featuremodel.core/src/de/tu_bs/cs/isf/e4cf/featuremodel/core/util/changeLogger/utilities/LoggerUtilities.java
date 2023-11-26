@@ -12,7 +12,7 @@ import FeatureDiagramModificationSet.Delta;
 import FeatureDiagramModificationSet.DeltaProperties;
 import FeatureDiagramModificationSet.FeatureDiagramModificationSetFactory;
 import FeatureDiagramModificationSet.Modification;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 
 public class LoggerUtilities {
 	
@@ -37,7 +37,8 @@ public class LoggerUtilities {
 	 * @return Feature Diagram Change object 
 	 */
 	public static Modification createModification(FXGraphicalFeature feature, String modificationType) {
-		return createModification(feature.getFeature(), modificationType);
+		// TODO check
+		return createModification(feature, modificationType);
 	}
 	
 	/**
@@ -71,7 +72,7 @@ public class LoggerUtilities {
 		Modification modification = FeatureDiagramModificationSetFactory.eINSTANCE.createModification();
 		modification.setTimeStamp(System.currentTimeMillis());
 		modification.setPrecisionTime(System.nanoTime());
-		modification.setFeatureID(feature.getIdentifier());
+		//modification.setFeatureID(feature.getIdentifier());
 		modification.setModificationType(modificationType);	
 		processArtifactReferences(modification, feature.getArtifactReferences());
 		return modification;

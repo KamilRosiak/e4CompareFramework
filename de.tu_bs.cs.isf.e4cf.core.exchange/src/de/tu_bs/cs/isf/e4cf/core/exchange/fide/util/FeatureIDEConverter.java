@@ -91,7 +91,7 @@ public class FeatureIDEConverter {
 		fmdFeature.setDescription(fideFeature.getDescription());
 		fmdFeature.setMandatory(fideFeature.isMandatory());
 		fmdFeature.setParent(parent);
-		fmdFeature.setIdentifier(idCounter);
+		//fmdFeature.setIdentifier(idCounter);
 		idCounter++;
 		fmdFeature.setAbstract(fideFeature.isAbstract());
 		fmdFeature.setHidden(fideFeature.isHidden());

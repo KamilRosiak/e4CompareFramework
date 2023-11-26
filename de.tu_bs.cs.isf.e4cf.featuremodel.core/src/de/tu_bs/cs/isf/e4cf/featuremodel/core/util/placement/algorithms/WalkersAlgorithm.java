@@ -5,10 +5,10 @@ import java.util.List;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.MinMax;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.TreeUtil;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 
 public class WalkersAlgorithm implements PlacementAlgorithm {
 	private double height= 75d;

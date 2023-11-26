@@ -16,14 +16,14 @@ private static final Float DEFAULT_WEIGHT = 0f;
 		this.comparatorType = comparator.getSupportedNodeType();
 		this.comparator = comparator;
 		this.weight = comparator.getWeight();
-		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
+		this.name = comparator.getName();
 	}
 	
 	public FXComparatorElement(Comparator comparator, Float weight, Boolean ignored) {
 		this.comparatorType = comparator.getSupportedNodeType();
 		this.comparator = comparator;
 		this.weight = comparator.getWeight();
-		this.name = this.comparator.toString().substring(0, this.comparator.toString().lastIndexOf("@"));
+		this.name = comparator.getName();
 	}
 	/**
 	 * typeNode Constructor

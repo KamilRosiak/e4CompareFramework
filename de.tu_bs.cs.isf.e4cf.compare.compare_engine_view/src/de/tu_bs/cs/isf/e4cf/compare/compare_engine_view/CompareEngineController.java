@@ -24,7 +24,7 @@ import javafx.scene.Scene;
  *
  */
 public class CompareEngineController {
-	private static final String COMPARE_ENGINE_FXML = "src/de/tu_bs/cs/isf/e4cf/compare/compare_engine_view/CompareEngineView.fxml";
+	private static final String COMPARE_ENGINE_FXML = "de/tu_bs/cs/isf/e4cf/compare/compare_engine_view/CompareEngineView.fxml";
 
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) throws IOException {

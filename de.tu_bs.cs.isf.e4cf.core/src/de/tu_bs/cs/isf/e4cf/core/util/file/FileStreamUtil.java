@@ -1,9 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.core.util.file;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -35,12 +38,18 @@ public class FileStreamUtil {
 	public static String readLineByLine(Path filePath) {
 		StringBuilder contentBuilder = new StringBuilder();
 
-		try (Stream<String> stream = Files.lines(Paths.get(filePath.toUri()), StandardCharsets.UTF_8)) {
-			stream.forEach(s -> {
-				contentBuilder.append(s).append("\n");
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
+			for (String line; (line = br.readLine()) != null;) {
+				contentBuilder.append(line).append("\n");
+
+			}
+			// line is not visible here.
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 		return contentBuilder.toString();

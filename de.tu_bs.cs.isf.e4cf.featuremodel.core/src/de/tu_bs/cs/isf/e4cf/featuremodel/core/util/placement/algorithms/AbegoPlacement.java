@@ -1,5 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.algorithms;
 
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +13,16 @@ import org.abego.treelayout.TreeLayout;
 
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.PlacementAlgorithm;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDConfiguration;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDNodeExtentProvider;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FDTreeForLayout;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FXConfiguration;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FXNodeExtentProvider;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement.abego_tree_layout.FXTreeForLayout;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.tree.TreeUtil;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
+import javafx.util.Pair;
 
 public class AbegoPlacement implements PlacementAlgorithm {
 
@@ -37,5 +42,18 @@ public class AbegoPlacement implements PlacementAlgorithm {
 		Map<Feature, Double> featurePositionMap =  treeLayout.getNodeBounds();
 		TreeUtil.setFeaturePosition(root.getRoot(), featurePositionMap);
 	}
-
+	
+	@Override
+	public Pair<java.lang.Double, java.lang.Double> format(FXGraphicalFeature root) {
+		TreeUtil.resetTreePosition(root);
+		TreeForTreeLayout<FXGraphicalFeature> tree = new FXTreeForLayout(root);
+		NodeExtentProvider<FXGraphicalFeature> nodeExtend = new FXNodeExtentProvider();
+		Configuration<FXGraphicalFeature> config = new FXConfiguration(Location.Top);
+		TreeLayout<FXGraphicalFeature> treeLayout = new TreeLayout<>(tree, nodeExtend, config);
+		Map<FXGraphicalFeature, Double> featurePositionMap = treeLayout.getNodeBounds();
+		TreeUtil.setTreePosition(root, featurePositionMap);
+		
+		Rectangle2D bounds = treeLayout.getBounds();
+		return new Pair<>(bounds.getWidth(), bounds.getHeight());
+	}
 }

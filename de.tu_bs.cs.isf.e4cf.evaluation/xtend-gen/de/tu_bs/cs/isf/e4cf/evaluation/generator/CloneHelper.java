@@ -555,6 +555,8 @@ public class CloneHelper {
     } catch (final Throwable _t) {
       if (_t instanceof NoSuchElementException) {
         return null;
+      } else if (_t instanceof NullPointerException) {
+        return null;
       } else {
         throw Exceptions.sneakyThrow(_t);
       }

@@ -1,6 +1,6 @@
 package de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.elements;
 
-import FeatureDiagram.Feature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -8,20 +8,20 @@ public class FXFeature {
 	private String featureName;
 	private String featureDescription;
 	private ImageView icon;
-	private Feature feature;
+	private IFeature feature;
 	
-	public FXFeature(Feature feature, String iconPath) {
+	public FXFeature(IFeature feature, String iconPath) {
 		this.setFeature(feature);
 		setFeatureName(feature.getName());
 		setFeatureDescription(feature.getDescription());
 		setImage(iconPath);
 	}
 
-	public Feature getFeature() {
+	public IFeature getFeature() {
 		return feature;
 	}
 
-	public void setFeature(Feature feature) {
+	public void setFeature(IFeature feature) {
 		this.feature = feature;
 	}
 	

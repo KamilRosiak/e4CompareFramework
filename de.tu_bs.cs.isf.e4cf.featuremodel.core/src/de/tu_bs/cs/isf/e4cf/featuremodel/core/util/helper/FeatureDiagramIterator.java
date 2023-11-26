@@ -4,26 +4,26 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import FeatureDiagram.Feature;
-import FeatureDiagram.FeatureDiagramm;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 
-public class FeatureDiagramIterator implements Iterator<Feature> {
-	private Queue<Feature> elementQueue;
-	
-	public FeatureDiagramIterator(FeatureDiagramm diagram) {
-		//fill queue:
-		elementQueue = new LinkedList<Feature>();
+public class FeatureDiagramIterator implements Iterator<IFeature> {
+	private Queue<IFeature> elementQueue;
+
+	public FeatureDiagramIterator(FeatureDiagram diagram) {
+		// fill queue:
+		elementQueue = new LinkedList<IFeature>();
 		elementQueue.add(diagram.getRoot());
 	}
-	
+
 	@Override
 	public boolean hasNext() {
 		return !elementQueue.isEmpty();
 	}
 
 	@Override
-	public Feature next() {
-		Feature head = elementQueue.poll();
+	public IFeature next() {
+		IFeature head = elementQueue.poll();
 		elementQueue.addAll(head.getChildren());
 		return head;
 	}

@@ -8,14 +8,15 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple.consts;
  */
 
 public class MPLEEditorConsts {
-
-	public static final String TREE_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.tree_view";
+	public static final String EMPLE_BUNDLE_NAME ="de.tu_bs.cs.isf.e4cf.extractive_mple";
+	public static final String TREE_VIEW_ID = "de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view";
 	public static final String PROPERTIES_VIEW_ID = "de.tu_bs.cs.isf.e4cf.compare.data_structures_editor.part.properties_view";
 	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view";
 	public static final String PLATFORM_VIEW = "de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view";
 
-	public static final String TREE_VIEW_FXML = "src/de/tu_bs/cs/isf/e4cf/extractive_mple/editor_view/DSEditorView.fxml";
-	public static final String PROPERTIES_VIEW_FXML = "src/de/tu_bs/cs/isf/e4cf/extractive_mple/editor_view/DSPropertiesView.fxml";
+	public static final String TREE_VIEW_FXML = "de/tu_bs/cs/isf/e4cf/extractive_mple/editor_view/DSEditorView.fxml";
+	public static final String TREE_PROPERTY_VIEW_FXML = "de/tu_bs/cs/isf/e4cf/extractive_mple/editor_view/DSPropertiesView.fxml";
+	
 	public static final String COMPARATOR_VIEW_CSS_LOCATION = "css/comparator_view.css";
 
 	public static final String EMPTY_PROPERTIES_TABLE_EVENT = "EMPTY_PROPERTIES_TABLE_EVENT";
@@ -44,6 +45,14 @@ public class MPLEEditorConsts {
 	public static final String SHOW_TREE = "SHOW_TREE";
 	public static final String SHOW_UUID = "SHOW_UUID";
 	public static final String SHOW_CLONE_UUID = "SHOW_CLONE_UUID";
+	public static final String SEARCH_UUID = "SEARCH_UUID";
+	
+	public static final String LOCATE_FEATURES = "LOCATE_FEATURES";
+	public static final String SHOW_FEATURES = "SHOW_FEATURES";
+	public static final String ADD_VARIANT_TO_MPL = "ADD_VARIANT_TO_MPL";
+	public static final String SYNTHESIS_PLUGIN = "de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.annotation_view";
+	public static final String SELECT_NEXT = "SELECT_NEXT";
+	public static final String COLORS_CHANGED = "COLORS_CHANGED";
 	
 	
 }

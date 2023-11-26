@@ -1,0 +1,11 @@
+package de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java.factory;
+
+import com.github.javaparser.ast.stmt.Statement;
+
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.java.JavaVisitor;
+
+public interface IStatementNodeFactory {
+    
+    public Node createStatementNode(Statement stmt, Node parent, JavaVisitor visitor);
+}

@@ -7,25 +7,23 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Execute;
 
 import com.opencsv.CSVWriter;
 
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.NodeType;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.reader.ReaderManager;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.TreeWritter;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.util.ArtifactIOUtil;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.FileTreeElement;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
@@ -33,50 +31,80 @@ import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLEPlatformUtil;
 import de.tu_bs.cs.isf.e4cf.extractive_mple.structure.MPLPlatform;
 
 public class CreateMPLEEvalHandler {
+	List<Float> gamas = new LinkedList<Float>();
+	List<Integer> size = new LinkedList<Integer>();
+	List<String> type = new LinkedList<String>();
 
 	@Execute
 	public void execute(ServiceContainer services, ReaderManager readerManager, IEclipseContext context) {
-		if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
-		
-			int numberPermutations = 20;
+		gamas.add(0.7f);
+		gamas.add(0.8f);
+		gamas.add(0.9f);
+		gamas.add(1.0f);
+		size.add(10);
+		size.add(30);
+		size.add(50);
+		type.add(NodeType.METHOD_DECLARATION.toString());
+		type.add(NodeType.CLASS.toString());
 
-			try {
-				CSVWriter csvWritter = creatCSVWriter(
-						new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
-								+ "\\clone_platform_results.csv"));
-				csvWritter.writeNext(new String[] { "permutations", "#UUIDs", "#classes", "#clone_configs",
-						"Runtime ss", "Memory Consuption" });
+		type.forEach(type -> {
+			size.forEach(size -> {
+				gamas.forEach(gama -> {
+					if (services.rcpSelectionService.getCurrentSelectionsFromExplorer().size() > 0) {
+						try {
+							MPLPlatform platform = new MPLPlatform();
+							platform.prefs.setOptionalThreshold(gama);
+							platform.prefs.setGranularityLevel(type);
+							platform.prefs.setCloneSize(size);
+							CSVWriter csvWritter = creatCSVWriter(
+									new File(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath()
+											+ "//" + "clone_model_cs_" + platform.prefs.getCloneSize() + "_gama_"
+											+ platform.prefs.getOptionalThreshold() + "_granularity_"
+											+ platform.prefs.getGranularityLevel() + ".csv"));
 
-				for (int i = 0; i < numberPermutations; i++) {
-					MPLPlatform platform = new MPLPlatform();
-					List<Tree> variants = new ArrayList<Tree>();
-					// read all variants
-					for (FileTreeElement treeElement : services.rcpSelectionService
-							.getCurrentSelectionsFromExplorer()) {
-						variants.add(readerManager.readFile(treeElement));
+							csvWritter.writeNext(new String[] { "prefs:", "cloneSize: " + platform.prefs.getCloneSize(),
+									"threshold: " + platform.prefs.getOptionalThreshold(),
+									"granularity level: " + platform.prefs.getCloneSize() });
+							csvWritter.writeNext(new String[] { "permutations", "#UUIDs", "#classes", "#clone_configs",
+									"Runtime ss", "Memory Consuption" });
+
+							List<Tree> variants = new ArrayList<Tree>();
+							// read all variants
+							for (FileTreeElement treeElement : services.rcpSelectionService
+									.getCurrentSelectionsFromExplorer()) {
+								variants.add(readerManager.readFile(treeElement));
+							}
+							// Collections.shuffle(variants);
+
+							long startTime = System.currentTimeMillis();
+							platform.insertVariants(variants, services);
+							long endTime = System.currentTimeMillis();
+							long time = endTime - startTime;
+
+							MPLEPlatformUtil.storePlatform(
+									services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
+											+ "clone_model_cs_" + platform.prefs.getCloneSize() + "_gama_"
+											+ platform.prefs.getOptionalThreshold() + "_granularity_"
+											+ platform.prefs.getGranularityLevel() + ".mpl",
+									platform);
+							long memoryConsumption = Runtime.getRuntime().totalMemory()
+									- Runtime.getRuntime().freeMemory();
+
+							SimpleDateFormat formater = new SimpleDateFormat("ss,SSS");
+							csvWritter.writeNext(new String[] {
+									"family_model_size_" + platform.prefs.getCloneSize() + "_threshold_"
+											+ platform.prefs.getOptionalThreshold(),
+									formater.format(time), String.valueOf(memoryConsumption) });
+
+							csvWritter.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						// Compare resulting trees
 					}
-					Collections.shuffle(variants);
-
-					long startTime = System.currentTimeMillis();
-					platform.insertVariants(variants);
-					long endTime = System.currentTimeMillis();
-					long time = endTime - startTime;
-
-					MPLEPlatformUtil
-							.storePlatform(services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//"
-									+ "clone_model_" + i + ".mpl", platform);
-					long memoryConsumption = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-
-					SimpleDateFormat formater = new SimpleDateFormat("ss,SSS");
-					csvWritter.writeNext(new String[] { "clone_model_" + i, formater.format(time),
-							String.valueOf(memoryConsumption) });
-				}
-				csvWritter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			// Compare resulting trees
-		}
+				});
+			});
+		});
 	}
 
 	public static void removeRandomVariants(List<Tree> trees) {
@@ -102,14 +130,6 @@ public class CreateMPLEEvalHandler {
 			e.printStackTrace();
 		}
 		return writer;
-	}
-
-	private void storePlatformTree(MPLPlatform platform, IEclipseContext context, String name,
-			ServiceContainer services) {
-		TreeWritter treeWriter = new TreeWritter();
-		ContextInjectionFactory.inject(treeWriter, context);
-		treeWriter.witeArtifact(new TreeImpl(name, platform.model),
-				services.workspaceFileSystem.getWorkspaceDirectory().getAbsolutePath() + "//" + name);
 	}
 
 	private void printPlatform(MPLPlatform platform) {

@@ -28,8 +28,8 @@ public class TreeParser {
 		root.setAlternative(false);
 		model.setRoot(root);
 		
-		for (Node n : tree.getRoot().getChildren()) {
-			createFeatureModel(n, root);
+		for (Node node : tree.getRoot().getChildren()) {
+			createFeatureModel(node, root);
 		}
 		
 		return model;

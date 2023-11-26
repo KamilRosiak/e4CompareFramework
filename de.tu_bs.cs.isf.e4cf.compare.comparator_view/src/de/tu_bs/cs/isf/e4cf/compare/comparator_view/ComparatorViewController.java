@@ -13,7 +13,7 @@ import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.FXMLUtil;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 
 public class ComparatorViewController {
-    private static final String COMPARATOR_VIEW_FXML = "src/de/tu_bs/cs/isf/e4cf/compare/comparator_view/ComparatorView.fxml";
+    private static final String COMPARATOR_VIEW_FXML = "de/tu_bs/cs/isf/e4cf/compare/comparator_view/ComparatorView.fxml";
 
     private ComparatorView view;
 

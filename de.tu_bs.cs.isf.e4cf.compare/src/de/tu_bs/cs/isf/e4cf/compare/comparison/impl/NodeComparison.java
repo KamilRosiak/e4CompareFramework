@@ -9,13 +9,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Combo;
+
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.util.ComparisonUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.NodeConfigurationUtil;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.enums.VariabilityClass;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Value;
@@ -105,7 +108,6 @@ public class NodeComparison extends AbstractComparsion<Node> {
 	@Override
 	public Node mergeArtifacts(List<Configuration> configs, List<CloneConfiguration> components,
 			List<CloneConfiguration> fixedConfigs) {
-		// return mergeArtifacts(true, configs, components, fixedConfigs);
 		return mergeArtifacts(configs, components);
 	}
 
@@ -185,14 +187,14 @@ public class NodeComparison extends AbstractComparsion<Node> {
 
 			if (leftArtifacts.size() > 0) {
 				Iterator<Node> nodeIterator = leftArtifacts.iterator();
-				while (nodeIterator.hasNext()) {
+				outter: while (nodeIterator.hasNext()) {
 					try {
-						Node node = (Node) nodeIterator.next();
+						Node node = nodeIterator.next();
 						for (Node childNode : getLeftArtifact().getChildren()) {
 							if (childNode.getUUID().equals(node.getUUID())) {
 								nodeIterator.remove();
+								continue outter;
 							}
-							continue;
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

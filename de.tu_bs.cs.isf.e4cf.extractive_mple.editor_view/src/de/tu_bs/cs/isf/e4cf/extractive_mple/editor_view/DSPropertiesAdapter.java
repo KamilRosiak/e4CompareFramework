@@ -24,8 +24,8 @@ public class DSPropertiesAdapter {
 	@PostConstruct
 	public void postConstruct(Composite parent, ServiceContainer services, IEclipseContext context) {
 		FXCanvas canvans = new FXCanvas(parent, SWT.None);
-		FXMLLoader<DSPropertiesController> loader = new FXMLLoader<DSPropertiesController>(context, MPLEEditorConsts.BUNDLE_NAME,
-				MPLEEditorConsts.PROPERTIES_VIEW_FXML);
+		FXMLLoader<DSPropertiesController> loader = new FXMLLoader<DSPropertiesController>(context,
+				MPLEEditorConsts.BUNDLE_NAME, MPLEEditorConsts.TREE_PROPERTY_VIEW_FXML);
 
 		Scene scene = new Scene(loader.getNode());
 		canvans.setScene(scene);

@@ -13,7 +13,7 @@
    <extension
          point="de.tu_bs.cs.isf.e4cf.parts.project_explorer.ProjectExplorerFileExtension">
       <project_explorer_file_attr
-            file_extension="fm"
+            file_extension="fd"
             project_explorer_file_attr="de.tu_bs.cs.isf.e4cf.featuremodel.core.contribution.project_explorer.FMFileExtension">
       </project_explorer_file_attr>
    </extension>

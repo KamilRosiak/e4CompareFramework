@@ -2,10 +2,15 @@ package de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view.impl;
 
 import java.util.NoSuchElementException;
 
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Attribute;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import javafx.scene.control.TreeItem;
 
 public class DetailedFamilyModelNodeDecorator extends FamilyModelNodeDecorator {
+	
+	public DetailedFamilyModelNodeDecorator() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	@Override
 	public TreeItem<Node> decorateNode(TreeItem<Node> node) {
@@ -22,13 +27,15 @@ public class DetailedFamilyModelNodeDecorator extends FamilyModelNodeDecorator {
 		return node;
 	}
 	
-	private String getAttributeValueFromNode(Node n, String key) {
-		try {
-			return " " + n.getAttributeForKey(key).getAttributeValues().stream().map(
-					v -> v.getValue().toString() + " ").reduce("", String::concat);
-		} catch (NoSuchElementException e) {
-			return "";
+	private String getAttributeValueFromNode(Node node, String key) {
+		Attribute attr = node.getAttributeForKey(key);
+		if (attr != null) {
+			String values = attr.getAttributeValues().stream()
+				.map(v -> v.getValue().toString() + " ")
+				.reduce("", String::concat);
+			return " " + values;
 		}
+		return "";
 	}
 	
 	@Override

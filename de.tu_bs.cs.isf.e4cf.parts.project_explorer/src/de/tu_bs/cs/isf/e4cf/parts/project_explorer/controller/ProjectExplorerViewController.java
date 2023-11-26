@@ -29,7 +29,6 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -40,7 +39,6 @@ import de.tu_bs.cs.isf.e4cf.core.file_structure.tree.sync.TreeSynchronization;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileEventLog;
 import de.tu_bs.cs.isf.e4cf.core.file_structure.util.FileHandlingUtility;
 import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CEventTable;
-import de.tu_bs.cs.isf.e4cf.core.stringtable.E4CStringTable;
 import de.tu_bs.cs.isf.e4cf.core.util.RCPContentProvider;
 import de.tu_bs.cs.isf.e4cf.core.util.ServiceContainer;
 import de.tu_bs.cs.isf.e4cf.core.util.extension_points.ExtensionAttrUtil;
@@ -54,21 +52,17 @@ import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.IProjectExplorerEx
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.interfaces.WorkspaceStructureTemplate;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.OpenFileListener;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.listeners.ProjectExplorerKeyListener;
-import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.FileTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.stringtable.StringTable;
 import de.tu_bs.cs.isf.e4cf.parts.project_explorer.wizards.drop_files.DropFilesDialog;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swt.FXCanvas;
-import javafx.embed.swt.SWTFXUtils;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 
@@ -107,11 +101,11 @@ public class ProjectExplorerViewController {
 	private TagService tagService;
 
 	// Controller fields
-
+	private ProjectExplorerToolBarController toolbarController;
 	private ListChangeListener<TreeItem<FileTreeElement>> changeListener;
 	private WorkspaceFileSystem workspaceFileSystem;
 	private Map<String, IProjectExplorerExtension> fileExtensions;
-	private ProjectExplorerToolBarController toolbarController;
+	private FileImageProvider fileImageProvider;
 
 	private String filter = "";
 	private List<Tag> filterTags = new ArrayList<Tag>();
@@ -124,7 +118,8 @@ public class ProjectExplorerViewController {
 	 */
 	public void initializeView(IEclipseContext context, WorkspaceFileSystem fileSystem, FXCanvas canvas) {
 
-		getContributions();
+		this.fileExtensions = getContributions();
+		this.fileImageProvider = new FileImageProvider(services, fileExtensions);
 
 		loadExpansionStates();
 
@@ -149,8 +144,6 @@ public class ProjectExplorerViewController {
 		canvas.getScene().setOnKeyPressed(new ProjectExplorerKeyListener(context, services));
 		canvas.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
 				new OpenFileListener(context, fileExtensions, services));
-
-		FileImageProvider fileImageProvider = new FileImageProvider(services, fileExtensions);
 
 		// Cell factory for custom tree cells
 		projectTree.setEditable(false);
@@ -229,7 +222,7 @@ public class ProjectExplorerViewController {
 	 */
 	private TreeItem<FileTreeElement> buildHierachialTree(FileTreeElement parentNode, boolean isRoot) {
 
-		Node imgNode = isRoot ? null : getImage(parentNode);
+		ImageView imgNode = isRoot ? null : fileImageProvider.getImageView(parentNode);
 
 		parentNode.setDisplayLongPath(false);
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
@@ -264,7 +257,7 @@ public class ProjectExplorerViewController {
 	private TreeItem<FileTreeElement> buildFlatTree(FileTreeElement parentNode, boolean isRoot,
 			TreeItem<FileTreeElement> rootNode) {
 
-		Node imgNode = isRoot ? null : getImage(parentNode);
+		ImageView imgNode = isRoot ? null : fileImageProvider.getImageView(parentNode);
 
 		parentNode.setDisplayLongPath(true);
 		TreeItem<FileTreeElement> currentNode = new TreeItem<FileTreeElement>(parentNode, imgNode);
@@ -283,47 +276,13 @@ public class ProjectExplorerViewController {
 	}
 
 	/**
-	 * Returns an appropriate image for a given tree element
-	 * 
-	 * @param element tree element
-	 * @return an image
-	 */
-	public Node getImage(Object element) {
-		Image image = null;
-
-		if (element instanceof FileTreeElement) {
-			FileTreeElement fileElement = (FileTreeElement) element;
-			if (workspaceFileSystem.isProject(fileElement)) {
-				image = services.imageService.getImage(null, FileTable.PROJECT_PNG);
-			} else if (fileElement.isDirectory()) {
-				image = services.imageService.getImage(null, FileTable.FOLDER_PNG);
-			} else {
-				String fileExtension = fileElement.getExtension();
-				// load extended file icons
-				if (fileExtensions.containsKey(fileExtension)) {
-					image = fileExtensions.get(fileExtension).getIcon(services.imageService);
-				} else if (fileExtension.equals(E4CStringTable.FILE_ENDING_XML)) {
-					image = services.imageService.getImage(null, FileTable.XML_PNG);
-				} else {
-					// default file icon
-					image = services.imageService.getImage(null, FileTable.FILE_PNG);
-				}
-			}
-		}
-
-		WritableImage fxImage = SWTFXUtils.toFXImage(image.getImageData(), null);
-
-		return new ImageView(fxImage);
-	}
-
-	/**
 	 * Gets the file extension and the attribute from the Project explorer extension
 	 * point.
 	 */
-	private void getContributions() {
+	private Map<String, IProjectExplorerExtension> getContributions() {
 		IConfigurationElement[] configs = RCPContentProvider
 				.getIConfigurationElements(StringTable.PROJECT_EXPLORER_FILE_EXTENSION_POINT);
-		fileExtensions = new HashMap<String, IProjectExplorerExtension>();
+		HashMap<String, IProjectExplorerExtension> fileExtensions = new HashMap<String, IProjectExplorerExtension>();
 		for (IConfigurationElement config : configs) {
 			try {
 				IProjectExplorerExtension attr = (IProjectExplorerExtension) config
@@ -334,6 +293,8 @@ public class ProjectExplorerViewController {
 				e.printStackTrace();
 			}
 		}
+
+		return fileExtensions;
 	}
 
 	/**
@@ -353,7 +314,7 @@ public class ProjectExplorerViewController {
 	/** Rebuild the project explorer and update it's view. */
 	@Inject
 	@Optional
-	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Object o) {
+	public void refresh(@UIEventTopic(E4CEventTable.EVENT_REFRESH_PROJECT_VIEWER) Void o) {
 
 		// Store list of current selections before the tree is destroyed and rebuilt
 		List<FileTreeElement> selections = services.rcpSelectionService.getCurrentSelectionsFromExplorer();
@@ -452,15 +413,17 @@ public class ProjectExplorerViewController {
 		changeListener = new ListChangeListener<TreeItem<FileTreeElement>>() {
 			@Override
 			public void onChanged(Change<? extends TreeItem<FileTreeElement>> change) {
+				try {
+					StructuredSelection selection = new StructuredSelection(
+							projectTree.getSelectionModel().getSelectedItems());
 
-				StructuredSelection selection = new StructuredSelection(
-						projectTree.getSelectionModel().getSelectedItems());
-
-				_selectionService.setSelection(selection);
-				_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
-				toolbarController.update();
+					_selectionService.setSelection(selection);
+					_eventBroker.send(E4CEventTable.SELECTION_CHANGED_EVENT, structuredSelection);
+					toolbarController.update();
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
-
 		};
 
 		projectTree.getSelectionModel().getSelectedItems().addListener(changeListener);
@@ -475,8 +438,7 @@ public class ProjectExplorerViewController {
 		List<WorkspaceStructureTemplate> workspaceExtension = ExtensionAttrUtil.getAttrsFromExtension(
 				StringTable.PROJECT_EXPLORER_WORKSPACE_STRUCUTRE, StringTable.WORKSPACE_STR_ATTR);
 		FileTreeElement root = workspaceFileSystem.getWorkspaceDirectory();
-		Path rootPath = FileHandlingUtility.getPath(root);
-		Path projectPath = rootPath.resolve("");
+		Path projectPath = FileHandlingUtility.getPath(root);
 
 		for (WorkspaceStructureTemplate extension : workspaceExtension) {
 			for (String directory : extension.getDirectories()) {

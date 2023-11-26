@@ -3,7 +3,6 @@
 
 <product name="de.tu_bs.cs.isf.e4cf.core" uid="de.tu_bs.cs.isf.e4cf.core_1" id="de.tu_bs.cs.isf.e4cf.core.product" application="de.tu_bs.cs.isf.e4cf.core.FrameworkE4Application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -18,7 +17,6 @@
 
    <windowImages/>
 
-
    <launcher name="e4CompareFramework">
       <win useIco="true">
          <ico path="/de.tu_bs.cs.isf.e4cf.core/e4cIcon.ico"/>
@@ -26,11 +24,9 @@
       </win>
    </launcher>
 
-
    <vm>
-      <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
+      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.google.guava"/>
@@ -52,11 +48,16 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.detail_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.compare.parts.weight_controller"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.core.exchange"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.evaluation"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple.editor_view"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.family_model_view.prototype"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.configuration"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.constraint_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.model"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.graph.core"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.graph.model"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.meta_models"/>
@@ -64,9 +65,13 @@
       <plugin id="de.tu_bs.cs.isf.e4cf.parser.antlr"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.parts.consol_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.parts.project_explorer"/>
+      <plugin id="de.tu_bs.cs.isf.e4cf.refactoring.data_structures"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.replay_view"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.simple_text_editor"/>
       <plugin id="de.tu_bs.cs.isf.e4cf.solver"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.parser.ST"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.parser.xml"/>
+      <plugin id="de.tu_bs.cs.isf.familymining.ppu_iec.ppuIECmetaModel"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.servlet"/>
@@ -115,7 +120,6 @@
       <plugin id="org.eclipse.e4.ui.dialogs"/>
       <plugin id="org.eclipse.e4.ui.model.workbench"/>
       <plugin id="org.eclipse.e4.ui.services"/>
-      <plugin id="org.eclipse.e4.ui.swt.win32" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets"/>
       <plugin id="org.eclipse.e4.ui.workbench"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt"/>
@@ -126,6 +130,7 @@
       <plugin id="org.eclipse.emf.ecore"/>
       <plugin id="org.eclipse.emf.ecore.change"/>
       <plugin id="org.eclipse.emf.ecore.xmi"/>
+      <plugin id="org.eclipse.emf.emfstore.common"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.bidi"/>
       <plugin id="org.eclipse.equinox.common"/>
@@ -145,18 +150,19 @@
       <plugin id="org.eclipse.fx.core"/>
       <plugin id="org.eclipse.fx.osgi" fragment="true"/>
       <plugin id="org.eclipse.fx.osgi.util"/>
+      <plugin id="org.eclipse.fx.ui.controls"/>
+      <plugin id="org.eclipse.fx.ui.panes"/>
       <plugin id="org.eclipse.gef.common"/>
       <plugin id="org.eclipse.gef.fx"/>
       <plugin id="org.eclipse.gef.geometry"/>
       <plugin id="org.eclipse.gef.geometry.convert.fx"/>
       <plugin id="org.eclipse.gef.mvc.fx"/>
       <plugin id="org.eclipse.help"/>
-      <plugin id="org.eclipse.jdt.annotation" version="2.2.600.v20200408-1511"/>
+      <plugin id="org.eclipse.jdt.annotation"/>
       <plugin id="org.eclipse.jdt.junit.runtime"/>
       <plugin id="org.eclipse.jdt.junit5.runtime"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
-      <plugin id="org.eclipse.jface.notifications"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.compatibility.state" fragment="true"/>
       <plugin id="org.eclipse.osgi.services"/>
@@ -168,7 +174,10 @@
       <plugin id="org.eclipse.ui.trace"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.urischeme"/>
+      <plugin id="org.eclipse.xtend.lib"/>
+      <plugin id="org.eclipse.xtend.lib.macro"/>
       <plugin id="org.eclipse.xtext.logging" fragment="true"/>
+      <plugin id="org.eclipse.xtext.xbase.lib"/>
       <plugin id="org.hamcrest.core"/>
       <plugin id="org.junit"/>
       <plugin id="org.junit.jupiter.api"/>
@@ -197,6 +206,7 @@
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
+      <property name="eclipse.log.level" value="INFO" />
    </configurations>
 
    <preferencesInfo>

@@ -10,7 +10,11 @@ import de.tu_bs.cs.isf.e4cf.compare.matcher.interfaces.AbstractMatcher;
 import de.tu_bs.cs.isf.e4cf.compare.matcher.util.ArtifactFactory;
 
 public class SortingMatcher extends AbstractMatcher {
-	private final float THRESHOLD = 0.3f;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7493106389830118897L;
+	public float optionalThreshold = 0.4f;
 	private ArtifactFactory factory = new ArtifactFactory();
 
 	public SortingMatcher() {
@@ -27,8 +31,12 @@ public class SortingMatcher extends AbstractMatcher {
 	public <K> void calculateMatching(List<Comparison<K>> comparisons) {
 		// first match all child comparison
 		comparisons.stream().forEach(e -> {
-			calculateMatching(e.getChildComparisons());
+			if (!e.isMatched()) {
+				calculateMatching(e.getChildComparisons());
+				e.setMatched();
+			}
 			e.updateSimilarity();
+
 		});
 		// sort by similarity
 		sortBySimilarityDesc(comparisons);
@@ -42,7 +50,7 @@ public class SortingMatcher extends AbstractMatcher {
 			// first match mandatory and alternative container
 			if (!matchedArtifacts.contains(nextComparison.getLeftArtifact())
 					&& !matchedArtifacts.contains(nextComparison.getRightArtifact())
-					&& nextComparison.getSimilarity() >= THRESHOLD) {
+					&& nextComparison.getSimilarity() >= optionalThreshold) {
 				matchedArtifacts.add(nextComparison.getLeftArtifact());
 				matchedArtifacts.add(nextComparison.getRightArtifact());
 			} else {
@@ -74,7 +82,6 @@ public class SortingMatcher extends AbstractMatcher {
 					e.setLeftArtifact(null);
 					comparisons.add(e);
 				}
-
 			} else if (e.getLeftArtifact() != null || e.getRightArtifact() != null) {
 				// that are all containers that was added as optional by the compare-engine.
 				comparisons.add(e);
@@ -91,5 +98,10 @@ public class SortingMatcher extends AbstractMatcher {
 			// Multiply with -1 to sort descending
 			return -1 * Float.compare(first.getSimilarity(), second.getSimilarity());
 		});
+	}
+
+	@Override
+	public void setThreshold(float threshold) {
+		this.optionalThreshold = threshold;
 	}
 }

@@ -1,0 +1,14 @@
+.abstract {
+	-fx-opacity: 0.8;
+}
+
+.root {
+	-fx-border-color: whitesmoke;
+	-fx-border-size: 1px;
+	-fx-border-style: solid;
+	-fx-padding: 0px;
+}
+
+.coloredtable .table-cell {
+	-fx-text-fill: whitesmoke;
+}

@@ -18,11 +18,12 @@ public class AttributeImpl extends AbstractAttribute {
 	 * Create an Attribute with only a key and no value
 	 */
 	public AttributeImpl(String attrKey) {
+		super();
 		setAttributeKey(attrKey);
 	}
 	
 	/**
-	 * Create an Attribute with a kay and corrosponding value
+	 * Create an Attribute with a key and corresponding value
 	 */
 	public AttributeImpl(String attrKey, Value attrValue) {
 		this(attrKey);
@@ -30,7 +31,7 @@ public class AttributeImpl extends AbstractAttribute {
 	}
 	
 	/**
-	 * Create an Attribute with a kay and corrosponding value
+	 * Create an Attribute with a key and corresponding value
 	 */
 	public AttributeImpl(String attrKey, List<Value> attrValues) {
 		this(attrKey);
@@ -40,7 +41,7 @@ public class AttributeImpl extends AbstractAttribute {
 	public Attribute cloneAttribute() {
 		Attribute attribute = new AttributeImpl(this.getAttributeKey());
 		
-		for(Value value : this.getAttributeValues()) {
+		for(Value<?> value : this.getAttributeValues()) {
 			attribute.addAttributeValue(new StringValueImpl((String)value.getValue()));
 		}
 		

@@ -3,6 +3,20 @@
    id="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis"
    version="1.0.0.qualifier"
 >
+   <extension
+         id="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+   <extension
+         point="de.tu_bs.cs.isf.e4cf.extractive_mple_platform_view.LocateFeatures">
+      <locate_feature_handler
+            locate_feature_handler="de.tu_bs.cs.isf.e4cf.featuremodel.synthesis.FeatureLocator">
+      </locate_feature_handler>
+   </extension>
 
 
 </plugin>

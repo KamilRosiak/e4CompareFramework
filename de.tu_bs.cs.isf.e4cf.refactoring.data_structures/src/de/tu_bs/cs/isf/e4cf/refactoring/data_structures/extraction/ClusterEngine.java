@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.inject.Singleton;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.google.common.collect.Lists;
@@ -37,16 +38,27 @@ public class ClusterEngine {
 	private CompareEngineHierarchical compareEngine;
 	private static String scriptPathExe;
 	private static String scriptPathPython;
-	public static float THRESHOLD = 0.20f;
+	public static float THRESHOLD = 0.3f;
 	public static boolean PYTHON = false;
 
-	public ClusterEngine() {
-		compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
-		scriptPathExe = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ "script/clustering_sklearn.exe").substring(1)).getPath();
-		scriptPathPython = new File((this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()
-				+ "script/clustering_sklearn.py").substring(1)).getPath();
+	public static final String BUNDLE_NAME = "de.tu_bs.cs.isf.e4cf.refactoring.data_structures";
 
+	public ClusterEngine() {
+		try {
+			Path pathExe = new Path("/script/clustering_sklearn.exe");
+			Path pathPy = new Path("/script/clustering_sklearn.py");
+
+			scriptPathExe = new File((ClusterEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath()
+					+ "script/clustering_sklearn.exe").substring(1)).getPath();
+			scriptPathPython = new File(
+					(ClusterEngine.class.getProtectionDomain().getCodeSource().getLocation().getPath()
+							+ "script/clustering_sklearn.py").substring(1)).getPath();
+
+			compareEngine = new CompareEngineHierarchical(new SortingMatcher(), new MetricImpl("test"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("no clustering available");
+		}
 	}
 
 	private static ProcessUtil process;
@@ -216,9 +228,7 @@ public class ClusterEngine {
 					MultiSetNode multiSetNode = mapping.get(node);
 					MultiSetTree newTree = multiSetTree.removeRootAndCreateNewTree(multiSetNode);
 					newMultiSetTrees.add(newTree);
-
 				}
-
 			}
 		}
 	}

@@ -1,9 +1,12 @@
 package de.tu_bs.cs.isf.e4cf.compare;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.NodeResultElement;
 import de.tu_bs.cs.isf.e4cf.compare.comparator.impl.node.StringComparator;
@@ -12,7 +15,6 @@ import de.tu_bs.cs.isf.e4cf.compare.comparison.impl.NodeComparison;
 import de.tu_bs.cs.isf.e4cf.compare.comparison.interfaces.Comparison;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.CloneConfiguration;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration.Configuration;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.MergeContext;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.impl.TreeImpl;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Tree;
@@ -36,6 +38,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 	private StringComparator defaultComparator = new StringComparator();
 	private Metric metric;
 	private Matcher matcher;
+	private List<Configuration> configList = new ArrayList<Configuration>();
 
 	public CompareEngineHierarchical(Matcher selectedMatcher, Metric selectedMetric) {
 		this.metric = selectedMetric;
@@ -51,7 +54,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		Pair<Map<String, List<Comparison<Node>>>, Map<String, List<Comparison<Node>>>> optionalMatchings = root
 				.findOptionalMatchings();
 
-		Node rootNode = root.mergeArtifacts(new ArrayList<Configuration>(), new ArrayList<CloneConfiguration>(),
+		Node rootNode = root.mergeArtifacts(configList, new ArrayList<CloneConfiguration>(),
 				new ArrayList<CloneConfiguration>());
 
 		return rootNode;
@@ -71,7 +74,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 		NodeComparison comparison = new NodeComparison(first, second);
 		// if nodes are of the same type
 		if (first.getNodeType().equals(second.getNodeType())) {
-
 			List<Comparator> comparators = metric.getComparatorForNodeType(first.getNodeType());
 			// check if the metric contains attribute for the comparison of this node type
 			if (!comparators.isEmpty()) {
@@ -81,7 +83,6 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			} else {
 				NodeResultElement c = defaultComparator.compare(first, second);
 				comparison.addResultElement(c);
-
 			}
 
 			// if no children available the recursion ends here
@@ -107,8 +108,12 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 							}
 						});
 					});
+					//memory optimization
+					comparison.updateSimilarity();
+					matcher.calculateMatching(comparison);
 				}
 			}
+
 			return comparison;
 		} else {
 			return comparison;
@@ -127,6 +132,7 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 
 	@Override
 	public Tree compare(List<Tree> variants) {
+		configList.clear();
 		Iterator<Tree> variantIterator = variants.iterator();
 		Tree mergedTree = null;
 		for (Tree variant : variants) {
@@ -138,6 +144,14 @@ public class CompareEngineHierarchical implements ICompareEngine<Node> {
 			}
 		}
 		return mergedTree;
+	}
+
+	public List<Configuration> getConfigList() {
+		return configList;
+	}
+
+	public void setConfigList(List<Configuration> configList) {
+		this.configList = configList;
 	}
 
 	@Override

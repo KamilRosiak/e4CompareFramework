@@ -129,11 +129,6 @@ public class ComparatorView implements Initializable {
 	private List<FXComparatorElement> getFxComparatorElements() {
 		ObservableList<Comparator> comparatorList = FXCollections
 				.observableArrayList(ComparisonUtil.getComparator());
-		StringComparator st1 = new StringComparator();
-		StringComparator st2 = new StringComparator();
-		StringComparator st3 = new StringComparator();
-		comparatorList.addAll(st1, st2, st3);
-		
 		List<FXComparatorElement> fxComparatorElementsList = new ArrayList<>();
 		comparatorList.stream().forEach(elem -> fxComparatorElementsList.add(new FXComparatorElement(elem)));
 		return fxComparatorElementsList;

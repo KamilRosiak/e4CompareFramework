@@ -6,7 +6,7 @@ import com.github.javaparser.ast.validator.Java15Validator;
 import com.github.javaparser.ast.validator.ProblemReporter;
 
 import de.tu_bs.cs.isf.e4cf.compare.data_structures.interfaces.Node;
-import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writter.JavaWriter2;
+import de.tu_bs.cs.isf.e4cf.compare.data_structures.io.writer.JavaWriter2;
 
 /**
  * Static Helper class helping in validating Node Trees by parsing them back to

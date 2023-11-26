@@ -6,7 +6,7 @@ import javafx.scene.input.ScrollEvent;
 
 public class ZoomHandler implements EventHandler<ScrollEvent>{
     private static final double MAX_SCALE = 4.0d;
-    private static final double MIN_SCALE = 0.6d;
+    private static final double MIN_SCALE = 1.0d;
 	final double DELTA = 1.1;
     private Node root;
 	
@@ -34,7 +34,7 @@ public class ZoomHandler implements EventHandler<ScrollEvent>{
 		
 	}
 	
-    public static double clamp(double value, double min, double max) {
+    private double clamp(double value, double min, double max) {
         if(Double.compare(value, min) < 0)
             return min;
 

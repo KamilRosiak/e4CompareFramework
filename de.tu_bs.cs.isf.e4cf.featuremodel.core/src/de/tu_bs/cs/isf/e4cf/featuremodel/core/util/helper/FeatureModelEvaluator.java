@@ -5,10 +5,10 @@ import java.util.List;
 
 import FeatureDiagram.ArtifactReference;
 import FeatureDiagram.Feature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDDialogStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleDecsionDialog;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleNoticeDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.elements.FXGraphicalFeature;
 
 public class FeatureModelEvaluator {
 	
@@ -63,22 +63,24 @@ public class FeatureModelEvaluator {
 			new FMESimpleNoticeDialog(FDDialogStringTable.FD_DIALOG_HEADER_OPERATION_ERROR, 
 					FDDialogStringTable.FD_DIALOG_OPERATION_ERROR_MSG_SPLIT_ROOT);
 			return false;
-		} else if (feature.getFeature().getArtifactReferences().isEmpty()) {
-			System.out.println("I can not split this feature - artifact references size");
-			return false;
-		} else {
-			int t = getNumberOfReferencedImplArtifacts(feature.getFeature());
-			
-			if (t == 0) {
-				new FMESimpleNoticeDialog(FDDialogStringTable.FD_DIALOG_HEADER_OPERATION_ERROR, 
-						FDDialogStringTable.FD_DIALOG_OPERATION_ERROR_MSG_SPLIT_NO_REFS);
-				return false;
-			} else if (t == 1) {
-				new FMESimpleNoticeDialog(FDDialogStringTable.FD_DIALOG_HEADER_OPERATION_ERROR, 
-						FDDialogStringTable.FD_DIALOG_OPERATION_ERROR_MSG_SPLIT_TOO_LOW_REFS);
-				return false;
-			}
 		}
+		// TODO rework
+//		} else if (feature.getFeature().getArtifactReferences().isEmpty()) {
+//			System.out.println("I can not split this feature - artifact references size");
+//			return false;
+//		} else {
+//			int t = getNumberOfReferencedImplArtifacts(feature.getFeature());
+//			
+//			if (t == 0) {
+//				new FMESimpleNoticeDialog(FDDialogStringTable.FD_DIALOG_HEADER_OPERATION_ERROR, 
+//						FDDialogStringTable.FD_DIALOG_OPERATION_ERROR_MSG_SPLIT_NO_REFS);
+//				return false;
+//			} else if (t == 1) {
+//				new FMESimpleNoticeDialog(FDDialogStringTable.FD_DIALOG_HEADER_OPERATION_ERROR, 
+//						FDDialogStringTable.FD_DIALOG_OPERATION_ERROR_MSG_SPLIT_TOO_LOW_REFS);
+//				return false;
+//			}
+//		}
 		return true;
 	}
 

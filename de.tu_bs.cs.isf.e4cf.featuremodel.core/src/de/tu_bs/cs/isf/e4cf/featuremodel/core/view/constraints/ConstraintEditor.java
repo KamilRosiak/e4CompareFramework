@@ -17,15 +17,14 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import CrossTreeConstraints.AbstractConstraint;
-import FeatureDiagram.Feature;
-import FeatureDiagram.FeatureDiagramm;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.templates.AbstractDialog;
 import de.tu_bs.cs.isf.e4cf.core.gui.java_fx.util.JavaFXBuilder;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.FeatureModelEditorController;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller.TabController;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.FeatureDiagram;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.model.IFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDEventTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table.FDStringTable;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.dialogs.FMESimpleNoticeDialog;
-import de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper.FeatureDiagramUtil;
 import de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.elements.FXFeature;
 import de.tu_bs.cs.isf.e4cf.featuremodel.model.parser.ConstraintParser;
 import de.tu_bs.cs.isf.e4cf.featuremodel.model.parser.handler.ParserError;
@@ -54,7 +53,8 @@ public class ConstraintEditor extends AbstractDialog {
 	private static double ICON_COL_WIDTH = 40d;
 	private Map<Integer, String> errorToolTips = new HashMap<>();
 
-	private FeatureDiagramm diagram;
+	private FeatureDiagram diagram;
+	AbstractConstraint currentConstraint = null;
 	
 
 	
@@ -222,7 +222,6 @@ public class ConstraintEditor extends AbstractDialog {
 		spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
 		return spansBuilder.create();
 	}
-	AbstractConstraint currentConstraint = null;
 	
 	public void editConstraint(AbstractConstraint constraint) {
 		currentConstraint = constraint;
@@ -234,10 +233,10 @@ public class ConstraintEditor extends AbstractDialog {
 	 * This method creates the list with features that are currently in the feature diagram
 	 */
 	private TableView<FXFeature> createFeatureList() {
-		FeatureModelEditorController fmec = ContextInjectionFactory.make(FeatureModelEditorController.class, EclipseContextFactory.create());
-		diagram = fmec.getCurrentFeatureDiagram();
+		TabController tabController = ContextInjectionFactory.make(TabController.class, EclipseContextFactory.create());
+		this.diagram = tabController.getCurrentFeatureDiagram();
 		ObservableList<FXFeature> featureList = FXCollections.observableArrayList();
-		for(Feature feature : FeatureDiagramUtil.getAllFeature(fmec.getCurrentFeatureDiagram())) {
+		for(IFeature feature : this.diagram.getAllFeatures()) {
 			//TODO: add different icons for different feature types
 			featureList.add(new FXFeature(feature,services.imageService.getURL(FDStringTable.BUNDLE_NAME, "icon/feature_blue_24.png")));
 		}
@@ -258,7 +257,9 @@ public class ConstraintEditor extends AbstractDialog {
 		featureNameCol.prefWidthProperty().bind(table.widthProperty().add(-ICON_COL_WIDTH).divide(3));
 		descriptionCol.prefWidthProperty().bind(table.widthProperty().add(-ICON_COL_WIDTH).divide(3).multiply(2));
 		
-		table.getColumns().addAll(iconCol,featureNameCol, descriptionCol);
+		table.getColumns().add(iconCol);
+		table.getColumns().add(featureNameCol);
+		table.getColumns().add(descriptionCol);
 		
 		table.setOnMouseClicked(e -> {
 			if(e.getClickCount() == 2 && e.getButton().equals(MouseButton.PRIMARY)) {
@@ -290,11 +291,13 @@ public class ConstraintEditor extends AbstractDialog {
 						diagram.getConstraints().remove(currentConstraint);
 						currentConstraint = null;
 					} 
+					
 					diagram.getConstraints().add(constraint);
 
 					codeArea.clear();
-					System.out.println("Constraint added to " + diagram.getRoot().getName());
-					services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, "");
+					System.out.println("Constraint added to " + diagram.getName());
+					services.partService.showPart(FDStringTable.CONSTRAINT_VIEW);
+					services.eventBroker.send(FDEventTable.SHOW_CONSTRAINT_EVENT, diagram);
 				} else {
 					new FMESimpleNoticeDialog("Syntax Error", "Constriant has incorrect syntax");
 				}

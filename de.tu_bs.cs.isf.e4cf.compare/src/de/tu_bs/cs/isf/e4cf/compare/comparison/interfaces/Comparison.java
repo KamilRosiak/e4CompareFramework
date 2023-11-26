@@ -21,6 +21,10 @@ public interface Comparison<Type> extends Serializable {
 	 */
 	public boolean areArtifactsOfSameType();
 
+	public boolean isMatched();
+
+	public void setMatched();
+
 	/**
 	 * Merges both nodes
 	 */

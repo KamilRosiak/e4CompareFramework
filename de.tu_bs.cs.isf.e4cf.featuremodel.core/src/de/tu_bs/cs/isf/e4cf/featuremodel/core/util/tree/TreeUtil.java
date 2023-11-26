@@ -6,6 +6,7 @@ import java.util.Map;
 import FeatureDiagram.Feature;
 import FeatureDiagram.FeatureDiagramm;
 import FeatureDiagram.GraphicalFeature;
+import de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.view.feature.FXGraphicalFeature;
 
 public class TreeUtil {
 
@@ -106,6 +107,19 @@ public class TreeUtil {
 			}
 		}
 			
+	}
+	
+	public static void  resetTreePosition(FXGraphicalFeature fx) {
+		fx.relocate(0.0d, 0.0d);
+		fx.getChildFeatures().forEach(TreeUtil::resetTreePosition);
+	}
+	
+	public static void setTreePosition(FXGraphicalFeature  feature, Map<FXGraphicalFeature, java.awt.geom.Rectangle2D.Double> featurePositionMap) {
+		java.awt.geom.Rectangle2D.Double featurePosition = featurePositionMap.get(feature);
+		if (featurePosition != null) {
+			feature.relocate(featurePosition.getX(), featurePosition.getY());
+			feature.getChildFeatures().forEach(child -> TreeUtil.setTreePosition(child, featurePositionMap));
+		}
 	}
 	
 	public static void setFeaturePosition(Feature feature , Map<Feature, java.awt.geom.Rectangle2D.Double> featurePositionMap) {

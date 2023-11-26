@@ -7,5 +7,6 @@
     <elements xsi:type="menu:DirectMenuItem" xmi:id="_3tyJoNaNEeu2IqOG5kOE8w" elementId="de.tu_bs.cs.isf.e4cf.evaluation.directmenuitem.evaluate" label="Evaluate Mutation Framework" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.evaluation/icons/CloneEvaluator24.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.evaluation/de.tu_bs.cs.isf.e4cf.evaluation.handler.CloneEvaluationHandler">
       <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_3tyJodaNEeu2IqOG5kOE8w" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.evaluation/de.tu_bs.cs.isf.e4cf.evaluation.handler.CloneEvaluationHandler"/>
     </elements>
+    <elements xsi:type="menu:DirectMenuItem" xmi:id="_rLocULhhEe2jxrQWKXBDJQ" elementId="de.tu_bs.cs.isf.e4cf.evaluation.directmenuitem.cloneandown" label="Clone-and-Own Simulation" iconURI="platform:/plugin/de.tu_bs.cs.isf.e4cf.evaluation/icons/CloneEvaluator24.png" contributionURI="bundleclass://de.tu_bs.cs.isf.e4cf.evaluation/de.tu_bs.cs.isf.e4cf.evaluation.handler.TwoDimensionalCloneGenHandler"/>
   </fragments>
 </fragment:ModelFragments>

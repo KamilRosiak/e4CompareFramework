@@ -13,12 +13,23 @@ public abstract class AbstractComparsion<Type> implements Comparison<Type> {
 	private float similarity;
 	private List<Comparison<Type>> childComparisons;
 	private List<ResultElement<Type>> results;
+	private boolean isMatched = false;
 
 	public AbstractComparsion(Type leftArtifact, Type rightArtifact) {
 		setLeftArtifact(leftArtifact);
 		setRightArtifact(rightArtifact);
 		this.childComparisons = new ArrayList<Comparison<Type>>();
 		this.results = new ArrayList<ResultElement<Type>>();
+	}
+
+	@Override
+	public boolean isMatched() {
+		return isMatched;
+	}
+
+	@Override
+	public void setMatched() {
+		isMatched = true;
 	}
 
 	@Override

@@ -112,6 +112,7 @@ public class FamilyModelViewController {
 	@Optional
 	@Inject
 	public void reload(@UIEventTopic(FamilyModelViewEvents.EVENT_RELOAD_VIEW) Object obj) {
+		System.out.println("reload");
 		collectProviderExtensions();
 		initializeCarExampleFamilyModel();
 		resetFamilyModelView();

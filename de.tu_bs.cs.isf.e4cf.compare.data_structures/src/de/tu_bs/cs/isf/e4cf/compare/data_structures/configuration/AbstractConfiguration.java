@@ -3,6 +3,7 @@ package de.tu_bs.cs.isf.e4cf.compare.data_structures.configuration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -94,4 +95,28 @@ public abstract class AbstractConfiguration implements Configuration {
 		return componentConfigs;
 
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(componentConfigurations, configName, configuration, root);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof AbstractConfiguration))
+			return false;
+		AbstractConfiguration other = (AbstractConfiguration) obj;
+		return Objects.equals(componentConfigurations, other.componentConfigurations)
+				&& Objects.equals(configName, other.configName) && Objects.equals(configuration, other.configuration)
+				&& Objects.equals(root, other.root);
+	}
+	
+	
 }

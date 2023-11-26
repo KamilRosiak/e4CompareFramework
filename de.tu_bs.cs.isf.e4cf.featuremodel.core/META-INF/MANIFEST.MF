@@ -1,15 +1,19 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: de.rosi.spl.featuremodel.core
 Bundle-SymbolicName: de.tu_bs.cs.isf.e4cf.featuremodel.core;singleton:=true
-Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.core,
+Export-Package: de.tu_bs.cs.isf.e4cf.featuremodel.core;
+  uses:="org.osgi.framework,
+   FeatureDiagram,
+   FeatureDiagram.impl,
+   org.eclipse.ui.plugin",
+ de.tu_bs.cs.isf.e4cf.featuremodel.core.editor.controller,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.error,
+ de.tu_bs.cs.isf.e4cf.featuremodel.core.model,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.string_table,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util,
- de.tu_bs.cs.isf.e4cf.featuremodel.core.util.changeLogger.replayer,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util.helper,
  de.tu_bs.cs.isf.e4cf.featuremodel.core.util.placement,
- de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints,
- de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints.listener
+ de.tu_bs.cs.isf.e4cf.featuremodel.core.view.constraints
 Bundle-Name: Core
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: javax.inject,
@@ -23,6 +27,7 @@ Require-Bundle: javax.inject,
  org.eclipse.emf.ecore.xmi,
  com.google.guava;bundle-version="21.0.0",
  org.eclipse.e4.core.di,
+ org.eclipse.e4.core.contexts;bundle-version="1.8.300",
  de.tu_bs.cs.isf.e4cf.core,
  de.tu_bs.cs.isf.e4cf.featuremodel.model,
  de.tu_bs.cs.isf.e4cf.EMFModelLoader,

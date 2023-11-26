@@ -186,7 +186,7 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
 	 * @generated
 	 * @ordered
 	 */
-	protected static final int IDENTIFIER_EDEFAULT = -1;
+	protected static final String IDENTIFIER_EDEFAULT = "\"-1\"";
 
 	/**
 	 * The cached value of the '{@link #getIdentifier() <em>Identifier</em>}' attribute.
@@ -196,7 +196,7 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
 	 * @generated
 	 * @ordered
 	 */
-	protected int identifier = IDENTIFIER_EDEFAULT;
+	protected String identifier = IDENTIFIER_EDEFAULT;
 
 	/**
 	 * The default value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
@@ -486,7 +486,7 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
 	 * @generated
 	 */
 	@Override
-	public int getIdentifier() {
+	public String getIdentifier() {
 		return identifier;
 	}
 
@@ -496,8 +496,8 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
 	 * @generated
 	 */
 	@Override
-	public void setIdentifier(int newIdentifier) {
-		int oldIdentifier = identifier;
+	public void setIdentifier(String newIdentifier) {
+		String oldIdentifier = identifier;
 		identifier = newIdentifier;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, FeatureDiagramPackage.FEATURE__IDENTIFIER, oldIdentifier, identifier));
@@ -652,7 +652,7 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
 				setParent((Feature)newValue);
 				return;
 			case FeatureDiagramPackage.FEATURE__IDENTIFIER:
-				setIdentifier((Integer)newValue);
+				setIdentifier((String)newValue);
 				return;
 			case FeatureDiagramPackage.FEATURE__ABSTRACT:
 				setAbstract((Boolean)newValue);
@@ -741,7 +741,7 @@ public class FeatureImpl extends MinimalEObjectImpl.Container implements Feature
 			case FeatureDiagramPackage.FEATURE__PARENT:
 				return parent != null;
 			case FeatureDiagramPackage.FEATURE__IDENTIFIER:
-				return identifier != IDENTIFIER_EDEFAULT;
+				return IDENTIFIER_EDEFAULT == null ? identifier != null : !IDENTIFIER_EDEFAULT.equals(identifier);
 			case FeatureDiagramPackage.FEATURE__ABSTRACT:
 				return abstract_ != ABSTRACT_EDEFAULT;
 			case FeatureDiagramPackage.FEATURE__HIDDEN:
